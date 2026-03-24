@@ -8823,6 +8823,18 @@ function _spotShowStep(){
   const rect = el.getBoundingClientRect();
   if(rect.width === 0 && rect.height === 0){ _spotStepIdx++; _spotShowStep(); return; }
 
+  // Scroll the element into view if it's off-screen, then re-measure after scroll settles
+  const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+  if(!inView){
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Wait for smooth scroll to finish before rendering the spotlight
+    setTimeout(() => {
+      _spotActive = true;
+      _spotRender(step, el.getBoundingClientRect());
+    }, 500);
+    return;
+  }
+
   _spotActive = true;
   _spotRender(step, rect);
 }
