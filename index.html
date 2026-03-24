@@ -4943,6 +4943,7 @@ function supabaseInit(){
     } else if(event === 'SIGNED_IN'){
       _pullOnLogin();
       show('home');
+      setTimeout(tutCheckAndShow, 1200);
     } else if(event === 'SIGNED_OUT'){
       show('login-screen');
       _initOneTap();
@@ -8552,39 +8553,59 @@ const TUT_SLIDES = [
   {
     emoji: '🌱',
     title: 'Welcome to My Math Roots!',
-    body: `A <strong>K–5 math review app</strong> built to help students practice and grow. Let's take a quick tour so you know your way around!`
+    body: `A <strong>K–5 math practice app</strong> for students to learn, practice, and grow. This tour takes about 2 minutes — tap <strong>Next</strong> to go through it, or <strong>Skip</strong> to jump straight in!`
   },
   {
     emoji: '📚',
-    title: '10 Math Units',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Scroll the unit cards</strong> on the home screen to browse all 10 units — from Counting & Numbers all the way to Fractions.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt"><strong>Units unlock as you progress</strong> — complete lessons to move forward.</div></div>`
+    title: 'Your 10 Math Units',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Scroll the unit cards</strong> on the home screen to browse all 10 units — from Counting &amp; Numbers all the way to Fractions &amp; Money.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt"><strong>Units unlock as you progress.</strong> Finish a Unit Quiz to open the next one. Unit 1 is always available to start!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">✅</span><div class="tut-feature-txt">Completed lessons show a <strong>green checkmark</strong> so you always know where you are.</div></div>`
   },
   {
-    emoji: '📝',
-    title: 'Lessons & Quizzes',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📖</span><div class="tut-feature-txt"><strong>Tap a unit</strong> to see its lessons. Read each lesson, then take the <strong>Lesson Quiz</strong> to test your knowledge.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">Complete all lessons to unlock the <strong>Unit Quiz</strong> — a 25-question challenge!</div></div>`
+    emoji: '📖',
+    title: 'Inside a Unit',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Tap any unit card</strong> to open it and see all its lessons. Lessons must be done <strong>in order</strong> — each one builds on the last.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt">Each lesson is <strong>locked</strong> until you pass the one before it. This makes sure you're always ready!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">The big <strong>Unit Quiz</strong> unlocks only after you complete <em>all</em> lessons in that unit.</div></div>`
   },
   {
-    emoji: '⭐',
-    title: 'Track Your Progress',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📊</span><div class="tut-feature-txt">Your <strong>progress bar</strong> on the home screen shows how many lessons you've completed across all units.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏅</span><div class="tut-feature-txt">Tap <strong>Score History</strong> to review every quiz you've taken, see your stars, and check your answers.</div></div>`
+    emoji: '💡',
+    title: 'Step 1 — Key Ideas',
+    body: `<div class="tut-step-banner" style="background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-family:'Boogaloo',cursive;font-size:1rem">Every lesson has 4 steps — here's the first!</div><div class="tut-feature-row"><span class="tut-feature-ico">💡</span><div class="tut-feature-txt"><strong>Key Ideas</strong> are the most important facts and rules for this lesson. <strong>Read these first</strong> — quiz questions are based directly on them!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">📌</span><div class="tut-feature-txt">Take your time here. If a key idea is confusing, re-read it slowly before moving on.</div></div>`
   },
   {
-    emoji: '🔐',
-    title: 'Parent Controls',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">⚙️</span><div class="tut-feature-txt">Tap the <strong>cog icon ⚙️</strong> on any screen to open Settings.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔐</span><div class="tut-feature-txt">Inside Settings, open <strong>Parent Controls</strong> to set quiz timers, lock/unlock content, change your PIN, and send feedback.</div></div>`
+    emoji: '📖',
+    title: 'Step 2 — Worked Examples',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📖</span><div class="tut-feature-txt"><strong>Worked Examples</strong> show you how to solve problems step by step — watch the method, not just the answer.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">✨</span><div class="tut-feature-txt">Tap <strong>✨ New Examples</strong> to get a fresh set of worked problems anytime you want more to study.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">👀</span><div class="tut-feature-txt">Try to <strong>follow along</strong> with each step before looking at the next line — it helps the method stick!</div></div>`
+  },
+  {
+    emoji: '✏️',
+    title: 'Step 3 — Practice Problems',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">✏️</span><div class="tut-feature-txt"><strong>Practice problems</strong> are your turn to try! Solve the problem on your own first — then tap <strong>👀 Show Answer</strong> to check your work and read a full explanation.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">➕</span><div class="tut-feature-txt">Tap <strong>➕ More Practice</strong> for unlimited fresh problems. Practice as much as you need before the quiz!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🗒️</span><div class="tut-feature-txt">Use the <strong>scratch pad</strong> in the quiz to work out problems by hand — just like using paper!</div></div>`
+  },
+  {
+    emoji: '🚀',
+    title: 'Step 4 — Quiz Time!',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">🚀</span><div class="tut-feature-txt">Each lesson ends with an <strong>8-question Lesson Quiz</strong>. You need to score <strong>100%</strong> to unlock the next lesson. Don't worry — you can retry as many times as you need!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">After finishing all lessons, take the <strong>Unit Quiz</strong> — 25 questions covering everything. Score <strong>80%+</strong> to unlock the next unit!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">⭐</span><div class="tut-feature-txt">Earn up to <strong>3 stars ⭐⭐⭐</strong> on every quiz — 1 star for passing, 3 stars for 90%+!</div></div>`
+  },
+  {
+    emoji: '📊',
+    title: 'Progress & Score History',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📊</span><div class="tut-feature-txt">Your <strong>progress bar</strong> on the home screen shows how many lessons you've completed across all 10 units.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏅</span><div class="tut-feature-txt">Tap <strong>Score History</strong> to review every quiz you've taken — see your stars, your score, and review which questions you got right or wrong!</div></div>`
+  },
+  {
+    emoji: '⚙️',
+    title: 'Settings & Parent Controls',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">⚙️</span><div class="tut-feature-txt">Tap the <strong>cog icon ⚙️</strong> on any screen to open Settings — change your name, appearance, and sound effects.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔐</span><div class="tut-feature-txt"><strong>Parent Controls</strong> (PIN: 1234) lets parents set quiz timers, unlock lessons, clear scores, and send feedback. Change the PIN after first login!</div></div>`
   },
   {
     emoji: '🎉',
     title: "You're all set!",
-    body: `Your progress and scores <strong>sync automatically</strong> across all your devices when you're signed in.<br><br>Now let's start learning! 🌱`
+    body: `Your progress and scores <strong>sync automatically</strong> across all your devices when you're signed in.<br><br>Remember: <strong>Read → Examples → Practice → Quiz</strong>. Take your time and you'll do great! 🌱`
   }
 ];
 
 let _tutIdx = 0;
 
 function tutCheckAndShow(){
-  if(localStorage.getItem('wb_tutorial_v1')) return;
+  if(localStorage.getItem('wb_tutorial_v2')) return;
   _tutIdx = 0;
   _tutRender();
   document.getElementById('tut-overlay').style.display = 'flex';
@@ -8593,7 +8614,6 @@ function tutCheckAndShow(){
 function _tutRender(){
   const slide = TUT_SLIDES[_tutIdx];
   const total = TUT_SLIDES.length;
-  // Emoji, title, body
   document.getElementById('tut-emoji').textContent = slide.emoji;
   document.getElementById('tut-title').textContent = slide.title;
   document.getElementById('tut-body').innerHTML = slide.body;
@@ -8623,7 +8643,7 @@ function tutNext(){
 }
 
 function tutSkip(){
-  localStorage.setItem('wb_tutorial_v1','1');
+  localStorage.setItem('wb_tutorial_v2','1');
   document.getElementById('tut-overlay').style.display = 'none';
 }
 
@@ -8699,6 +8719,32 @@ const SPOT_TOURS = {
       emoji: '📋',
       title: 'Score Entry',
       tip: 'Tap any entry to review your answers and see what you got right!'
+    }
+  ],
+  'lesson-screen': [
+    {
+      sel: '.learn-card',
+      emoji: '💡',
+      title: 'Step 1 — Key Ideas',
+      tip: 'Start here! These are the most important facts and rules for this lesson. Read them carefully before moving on.'
+    },
+    {
+      sel: '#ex-card',
+      emoji: '📖',
+      title: 'Step 2 — Worked Examples',
+      tip: 'Watch how problems are solved step by step. Tap ✨ New Examples anytime to see fresh ones!'
+    },
+    {
+      sel: '.practice-card',
+      emoji: '✏️',
+      title: 'Step 3 — Practice Problems',
+      tip: 'Try solving each problem yourself first, then tap 👀 Show Answer to check your work. Tap ➕ More Practice for unlimited extra problems!'
+    },
+    {
+      sel: '.lq-banner',
+      emoji: '🚀',
+      title: 'Step 4 — Quiz Time!',
+      tip: 'When you feel ready, tap here to take the 8-question Lesson Quiz. You need 100% to unlock the next lesson — retry as many times as you need!'
     }
   ]
 };
@@ -8857,8 +8903,8 @@ buildHome();
 const vEl = document.getElementById('app-version');
 if(vEl) vEl.textContent = APP_VERSION;
 supabaseInit();
-// Disable old slideshow tutorial — replaced by spotlight tour
-localStorage.setItem('wb_tutorial_v1','1');
+// Clear old tutorial flag so users see the improved v2 tutorial
+localStorage.removeItem('wb_tutorial_v1');
 // Safety net: if auth never resolves within 5s, dismiss splash and show login
 setTimeout(() => {
   const splash = document.getElementById('auth-splash');
@@ -10132,7 +10178,7 @@ function closeInstall(){
 <!-- ════════════════════════════════════════
      FIRST-TIME TUTORIAL
 ════════════════════════════════════════ -->
-<div class="tut-overlay" id="tut-overlay" style="display:none">
+<div class="tut-overlay" id="tut-overlay" style="display:none" onclick="event.stopPropagation()">
   <div class="tut-card" id="tut-card">
     <button class="tut-skip-top" onclick="tutSkip()">Skip</button>
 
@@ -10156,7 +10202,7 @@ function closeInstall(){
      SCREEN SPOTLIGHT TOUR
 ════════════════════════════════════════ -->
 <div id="spot-overlay">
-  <svg id="spot-svg" onclick="_spotAdvance()">
+  <svg id="spot-svg" onclick="event.stopPropagation()">
     <defs>
       <mask id="spot-mask">
         <rect id="spot-bg-rect" fill="white"/>
