@@ -8974,121 +8974,145 @@ setTimeout(() => {
 
 
 // ════════════════════════════════════════
-//  SWIPE BACK — iOS-style interactive transition
+//  SWIPE BACK — iOS-style interactive transition (full-screen gesture)
 // ════════════════════════════════════════
 (function(){
-  const EDGE      = 30;   // px from left edge to begin gesture
-  const COMMIT_PX = 80;   // px dragged to auto-commit on release
-  const COMMIT_V  = 0.4;  // px/ms velocity threshold for fast flick
-  const ANIM_MS   = 280;  // slide-out / snap-back animation duration
+  const COMMIT_PX  = 80;   // px dragged right to auto-commit on release
+  const COMMIT_V   = 0.4;  // px/ms velocity threshold for fast flick
+  const ANIM_MS    = 280;  // slide-out / snap-back animation duration
+  const DECIDE_PX  = 8;    // min movement before deciding swipe vs scroll
+  const H_RATIO    = 0.8;  // dx must exceed dy * this to be treated as horizontal
 
   // Current screen → { prev screen id, back function }
   const MAP = {
-    'unit-screen':    { prev:'home',         back:()=>{ playSwooshBack(); goHome(); } },
-    'lesson-screen':  { prev:'unit-screen',  back:()=>goUnit() },
-    'results-screen': { prev:'unit-screen',  back:()=>afterResults() },
-    'history-screen': { prev:'home',         back:()=>{ playSwooshBack(); goHome(); } },
-    'settings-screen':{ prev:'home',         back:()=>{ playSwooshBack(); goHome(); } },
-    'parent-screen':   { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); } },
+    'unit-screen':    { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
+    'lesson-screen':  { prev:'unit-screen',     back:()=>goUnit() },
+    'results-screen': { prev:'unit-screen',     back:()=>afterResults() },
+    'history-screen': { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
+    'settings-screen':{ prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
+    'parent-screen':  { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); } },
   };
 
   let curEl=null, prevEl=null, entry=null;
-  let sx=0, sy=0, t0=0, dragging=false, locked=false;
+  let sx=0, sy=0, t0=0;
+  let intentDecided=false, swiping=false, locked=false;
   const W = ()=>window.innerWidth;
 
   function getCurrent(){
     return Object.keys(MAP).find(id=>document.getElementById(id)?.classList.contains('on'));
   }
+  function css(el,props){ Object.assign(el.style,props); }
 
-  function css(el, props){ Object.assign(el.style, props); }
+  function _snapBack(){
+    if(!curEl) return;
+    locked = true;
+    const ease = `${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94)`;
+    css(curEl, {transition:`transform ${ease}, box-shadow ${ease}`,
+                transform:'translateX(0px)', boxShadow:''});
+    if(prevEl) css(prevEl, {transition:`transform ${ease}, opacity ${ease}`,
+                             transform:'translateX(-28%)', opacity:'0.88'});
+    setTimeout(cleanup, ANIM_MS);
+  }
 
   function cleanup(){
     document.body.classList.remove('swiping');
-    if(curEl){
-      css(curEl,{transition:'',transform:'',boxShadow:'',willChange:''});
-    }
+    if(curEl) css(curEl, {transition:'',transform:'',boxShadow:'',willChange:''});
     if(prevEl){
       prevEl.classList.remove('swipe-peek');
-      css(prevEl,{transition:'',transform:'',opacity:'',willChange:'',display:''});
+      css(prevEl, {transition:'',transform:'',opacity:'',willChange:'',display:''});
     }
-    curEl=null; prevEl=null; entry=null; dragging=false; locked=false;
+    curEl=null; prevEl=null; entry=null;
+    intentDecided=false; swiping=false; locked=false;
+  }
+
+  function _startSwipe(){
+    // Called once we've confirmed horizontal intent — reveal the previous screen
+    document.body.classList.add('swiping');
+    css(curEl, {transition:'none', willChange:'transform'});
+    if(prevEl){
+      prevEl.classList.add('swipe-peek');
+      css(prevEl, {transition:'none', transform:'translateX(-28%)',
+                   opacity:'0.88', willChange:'transform'});
+    }
   }
 
   document.addEventListener('touchstart', e=>{
     if(locked) return;
-    const t = e.touches[0];
-    if(t.clientX > EDGE) return;
     const id = getCurrent();
     if(!id) return;
     entry = MAP[id];
+    if(!entry){ entry=null; return; }
     curEl  = document.getElementById(id);
     prevEl = document.getElementById(entry.prev);
-    sx=t.clientX; sy=t.clientY; t0=Date.now(); dragging=true;
-    document.body.classList.add('swiping');
-
-    // Prepare both screens — no transitions during live drag
-    css(curEl, {transition:'none', willChange:'transform'});
-    if(prevEl){
-      prevEl.classList.add('swipe-peek');
-      css(prevEl, {transition:'none', transform:'translateX(-28%)', opacity:'0.88', willChange:'transform'});
-    }
+    const t = e.touches[0];
+    sx=t.clientX; sy=t.clientY; t0=Date.now();
+    intentDecided=false; swiping=false;
   }, {passive:true});
 
   document.addEventListener('touchmove', e=>{
-    if(!dragging||locked) return;
+    if(locked || !curEl) return;
     const t  = e.touches[0];
     const dx = t.clientX - sx;
     const dy = Math.abs(t.clientY - sy);
 
-    // Cancel if vertical or moving left
-    if(dx <= 0 || dy > dx * 1.2){
-      dragging=false;
-      cleanup();
-      return;
+    // ── Phase 1: decide intent once enough movement has happened ──
+    if(!intentDecided){
+      if(Math.max(dx, dy) < DECIDE_PX) return; // not enough movement yet
+      if(dx > 0 && dx >= dy * H_RATIO){
+        // Confirmed horizontal swipe — enter swipe mode
+        intentDecided = true;
+        swiping = true;
+        _startSwipe();
+      } else {
+        // Confirmed scroll or leftward drag — ignore for rest of gesture
+        intentDecided = true;
+        swiping = false;
+        curEl=null; prevEl=null; entry=null;
+        return;
+      }
     }
+
+    if(!swiping) return;
+
+    // Block browser from also scrolling/panning while we handle the drag
+    e.preventDefault();
+
+    if(dx <= 0){ _snapBack(); return; }
 
     const pct = Math.min(dx / W(), 1);
-    // Current screen: slide right with finger
     css(curEl, {transform:`translateX(${dx}px)`,
                 boxShadow:`-6px 0 24px rgba(0,0,0,${0.25*(1-pct)})`});
-    // Previous screen: parallax from -28% toward 0%
     if(prevEl){
-      const tx = -28 + pct * 28;
-      css(prevEl, {transform:`translateX(${tx}%)`, opacity:String(0.88 + pct*0.12)});
+      css(prevEl, {transform:`translateX(${-28 + pct*28}%)`,
+                   opacity:String(0.88 + pct*0.12)});
     }
-  }, {passive:true});
+  }, {passive:false}); // passive:false required to call preventDefault during confirmed swipe
 
   document.addEventListener('touchend', e=>{
-    if(!dragging||locked) return;
-    dragging=false;
+    if(locked || !swiping) return;
     const t  = e.changedTouches[0];
     const dx = t.clientX - sx;
     const v  = dx / (Date.now()-t0);
     const commit = dx >= COMMIT_PX || v >= COMMIT_V;
 
-    locked=true;
+    locked = true;
     const ease = `${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94)`;
 
     if(commit){
-      // Fly current off-screen right, previous slides fully in
       css(curEl, {transition:`transform ${ease}, box-shadow ${ease}`,
                   transform:`translateX(${W()}px)`, boxShadow:'none'});
-      if(prevEl) css(prevEl,{transition:`transform ${ease}, opacity ${ease}`,
-                              transform:'translateX(0%)', opacity:'1'});
-      const savedPrev = prevEl;
+      if(prevEl) css(prevEl, {transition:`transform ${ease}, opacity ${ease}`,
+                               transform:'translateX(0%)', opacity:'1'});
+      const savedPrev  = prevEl;
       const savedEntry = entry;
       setTimeout(()=>{
-        // Keep prevEl visible through show() which briefly hides all screens
-        if(savedPrev) { savedPrev.style.display = 'block'; savedPrev.style.animation = 'none'; }
-        // Navigate first (hides curEl), then clean up styles
+        if(savedPrev){ savedPrev.style.display='block'; savedPrev.style.animation='none'; }
         savedEntry.back();
         cleanup();
-        // Re-enable pop only after the screen next loses .on (user navigates away)
-        // Using MutationObserver avoids the 2-frame rAF flicker
         if(savedPrev){
           const obs = new MutationObserver(()=>{
             if(!savedPrev.classList.contains('on')){
-              savedPrev.style.animation = '';
+              savedPrev.style.animation='';
               obs.disconnect();
             }
           });
@@ -9096,13 +9120,13 @@ setTimeout(() => {
         }
       }, ANIM_MS);
     } else {
-      // Snap back — current slides home, previous retreats
-      css(curEl, {transition:`transform ${ease}, box-shadow ${ease}`,
-                  transform:'translateX(0px)', boxShadow:''});
-      if(prevEl) css(prevEl,{transition:`transform ${ease}, opacity ${ease}`,
-                              transform:'translateX(-28%)', opacity:'0.88'});
-      setTimeout(cleanup, ANIM_MS);
+      _snapBack();
     }
+  }, {passive:true});
+
+  // Clean abort if the system cancels the touch (e.g. notification arrives)
+  document.addEventListener('touchcancel', ()=>{
+    if(swiping) _snapBack(); else cleanup();
   }, {passive:true});
 })();
 
