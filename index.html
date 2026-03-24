@@ -4732,7 +4732,7 @@ function _friendlyError(err){
   if(msg.includes('email not confirmed'))
     return 'Please check your email and confirm your account first.';
   if(msg.includes('already registered') || msg.includes('user already exists') || msg.includes('already been registered'))
-    return 'An account with this email already exists. Try signing in instead.';
+    return 'If this email is not yet registered, a confirmation link will be sent. Otherwise, try signing in.';
   if(msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('429'))
     return 'Too many attempts. Please wait a moment and try again.';
   if(msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('load failed'))
@@ -4914,7 +4914,7 @@ function supabaseInit(){
   }
   _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
     auth: {
-      flowType: 'implicit',
+      flowType: 'pkce',
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
@@ -7310,20 +7310,20 @@ function _renderQ(){
     nb.textContent = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
     document.getElementById('qcard').innerHTML =
       '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-      '<div class="q-text">'+q.t+'</div>'+
+      '<div class="q-text">'+_escHtml(q.t)+'</div>'+
       '<div style="font-size:.8rem;color:var(--txt2);margin-bottom:10px">👁 Review — answer locked</div>'+
       '<div class="agrid">'+
         q.o.map(text=>{
           let cls = 'abtn';
           if(text === correct) cls += ' correct';
           if(chosen && text === chosen && text !== correct) cls += ' wrong';
-          return '<button class="'+cls+'" type="button" disabled>'+text+'</button>';
+          return '<button class="'+cls+'" type="button" disabled>'+_escHtml(text)+'</button>';
         }).join('')+
       '</div>'+
       (past ? '<div class="reveal show '+(past.ok?'ok':'no')+'">'+
         '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
-        (!past.ok ? '<div class="rev-correct">✅ Correct answer: '+correct+'</div>' : '')+
-        '<div class="rev-exp">💡 '+past.exp+'</div>'+
+        (!past.ok ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
+        '<div class="rev-exp">💡 '+_escHtml(past.exp)+'</div>'+
       '</div>' : '');
     qz._answered = true;
     return;
@@ -7340,10 +7340,10 @@ function _renderQ(){
   // Use inline onclick with data-index — no addEventListener stacking
   document.getElementById('qcard').innerHTML =
     '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-    '<div class="q-text">'+q.t+'</div>'+
+    '<div class="q-text">'+_escHtml(q.t)+'</div>'+
     '<div class="agrid">'+
       opts.map((opt,i)=>
-        '<button class="abtn" type="button" onclick="_pickAnswer('+i+')" id="abtn-'+i+'">'+opt.text+'</button>'
+        '<button class="abtn" type="button" onclick="_pickAnswer('+i+')" id="abtn-'+i+'">'+_escHtml(opt.text)+'</button>'
       ).join('')+
     '</div>'+
     '<div class="reveal" id="qreveal"></div>';
@@ -7382,8 +7382,8 @@ function _pickAnswer(btnIdx){
     rev.className = 'reveal show '+(isOk?'ok':'no');
     rev.innerHTML =
       '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
-      (!isOk ? '<div class="rev-correct">✅ Correct answer: '+correct+'</div>' : '')+
-      '<div class="rev-exp">💡 '+q.e+'</div>';
+      (!isOk ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
+      '<div class="rev-exp">💡 '+_escHtml(q.e)+'</div>';
   }
 
   qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e});
@@ -7876,58 +7876,25 @@ function setFilt(t, btn){
   renderScList();
 }
 
+// Private closure — score list index, inaccessible from global scope
+const _scFiltered = (()=>{
+  let _cache = [];
+  return {
+    set(arr){ _cache = arr; },
+    get(i){ return _cache[i] || null; }
+  };
+})();
+
 function renderScList(){
   const list = document.getElementById('sc-list');
   let filtered = SCORES;
   if(histFilter !== 'all') filtered = SCORES.filter(s=>s.type===histFilter);
+  _scFiltered.set(filtered);
   if(!filtered.length){ list.innerHTML=`<div class="empty">📭 No scores yet! Take a quiz to see your results here.</div>`; return; }
 
   list.innerHTML = filtered.map((s,i)=>{
     const u = UNITS_DATA[s.unitIdx] || {color:'#7f8c8d'};
-    const rid = 'sc-review-'+i;
     const pctColor = s.abandoned ? '#e67e22' : s.quit ? '#e74c3c' : s.pct>=80?'#27ae60':s.pct>=60?'#e67e22':'#e74c3c';
-
-    // Build question review rows
-    let reviewHtml = '';
-    if(s.answers && s.answers.length){
-      const wrong = s.answers.filter(a=>!a.ok);
-      const right = s.answers.filter(a=>a.ok);
-      if(wrong.length){
-        reviewHtml += `<div class="sc-rev-sec" style="color:#e74c3c">❌ Incorrect (${wrong.length})</div>`;
-        reviewHtml += wrong.map(a=>`
-          <div class="sc-rev-item sc-rev-wrong">
-            <div class="sc-rev-q">${_escHtml(a.t)}</div>
-            <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${_escHtml(a.chosen)}</span></div>
-            <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${_escHtml(a.correct)}</span></div>
-          </div>`).join('');
-      }
-      if(right.length){
-        reviewHtml += `<div class="sc-rev-sec" style="color:#27ae60">✅ Correct (${right.length})</div>`;
-        reviewHtml += right.map(a=>`
-          <div class="sc-rev-item sc-rev-right">
-            <div class="sc-rev-q">${_escHtml(a.t)}</div>
-            <div class="sc-rev-correct" style="color:#27ae60">✅ ${_escHtml(a.correct)}</div>
-          </div>`).join('');
-      }
-    } else {
-      reviewHtml = `<div style="color:var(--txt2);font-size:.85rem;padding:10px">No question detail available for this attempt.</div>`;
-    }
-
-    window._scReviews = window._scReviews || [];
-    window._scReviews[i] = {
-      headHtml: `
-        <button class="sc-lightbox-close" onclick="closeScLightbox()">✕</button>
-        <div class="sc-name" style="font-size:1.1rem">${_escHtml(s.name)}</div>
-        <div class="sc-type">${_escHtml(s.label)}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
-        <div class="sc-date" style="margin-top:4px">${_escHtml(s.date)} · ${_escHtml(s.time)}${s.timeTaken?` · ⏱ ${_escHtml(s.timeTaken)} mins`:''}</div>
-        <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
-          <span class="sc-stars" style="font-size:1.2rem">${s.abandoned?'⚠️':s.quit?'🚫':_escHtml(s.stars)}</span>
-          <span class="sc-grade" style="background:${(s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color)+'20'};color:${s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color}">${s.score}/${s.total}</span>
-          <span style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</span>
-        </div>`,
-      bodyHtml: reviewHtml
-    };
-
     const cardAccent = s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color;
     return `<div class="sc-card" style="border-left:4px solid ${cardAccent}" onclick="openScLightbox(${i})">
       <div class="sc-card-header">
@@ -7937,7 +7904,7 @@ function renderScList(){
           <div class="sc-date">${_escHtml(s.date)} · ${_escHtml(s.time)}${s.timeTaken?` · ⏱ ${_escHtml(s.timeTaken)} mins`:''}</div>
         </div>
         <div style="text-align:center;flex-shrink:0">
-          <span class="sc-stars">${(s.abandoned||s.quit)?'':s.stars}</span>
+          <span class="sc-stars">${(s.abandoned||s.quit)?'':_escHtml(s.stars)}</span>
           <div><span class="sc-grade" style="background:${cardAccent+'20'};color:${cardAccent}">${s.score}/${s.total}</span></div>
           <div style="font-family:'Boogaloo',cursive;font-size:.9rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</div>
         </div>
@@ -7947,9 +7914,52 @@ function renderScList(){
   }).join('');
 }
 
+function _buildScReviewHtml(s){
+  const u = UNITS_DATA[s.unitIdx] || {color:'#7f8c8d'};
+  const pctColor = s.abandoned ? '#e67e22' : s.quit ? '#e74c3c' : s.pct>=80?'#27ae60':s.pct>=60?'#e67e22':'#e74c3c';
+
+  let reviewHtml = '';
+  if(s.answers && s.answers.length){
+    const wrong = s.answers.filter(a=>!a.ok);
+    const right  = s.answers.filter(a=>a.ok);
+    if(wrong.length){
+      reviewHtml += `<div class="sc-rev-sec" style="color:#e74c3c">❌ Incorrect (${wrong.length})</div>`;
+      reviewHtml += wrong.map(a=>`
+        <div class="sc-rev-item sc-rev-wrong">
+          <div class="sc-rev-q">${_escHtml(a.t)}</div>
+          <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${_escHtml(a.chosen)}</span></div>
+          <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${_escHtml(a.correct)}</span></div>
+        </div>`).join('');
+    }
+    if(right.length){
+      reviewHtml += `<div class="sc-rev-sec" style="color:#27ae60">✅ Correct (${right.length})</div>`;
+      reviewHtml += right.map(a=>`
+        <div class="sc-rev-item sc-rev-right">
+          <div class="sc-rev-q">${_escHtml(a.t)}</div>
+          <div class="sc-rev-correct" style="color:#27ae60">✅ ${_escHtml(a.correct)}</div>
+        </div>`).join('');
+    }
+  } else {
+    reviewHtml = `<div style="color:var(--txt2);font-size:.85rem;padding:10px">No question detail available for this attempt.</div>`;
+  }
+
+  const headHtml = `
+    <button class="sc-lightbox-close" onclick="closeScLightbox()">✕</button>
+    <div class="sc-name" style="font-size:1.1rem">${_escHtml(s.name)}</div>
+    <div class="sc-type">${_escHtml(s.label)}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
+    <div class="sc-date" style="margin-top:4px">${_escHtml(s.date)} · ${_escHtml(s.time)}${s.timeTaken?` · ⏱ ${_escHtml(s.timeTaken)} mins`:''}</div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
+      <span class="sc-stars" style="font-size:1.2rem">${s.abandoned?'⚠️':s.quit?'🚫':_escHtml(s.stars)}</span>
+      <span class="sc-grade" style="background:${(s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color)+'20'};color:${s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color}">${s.score}/${s.total}</span>
+      <span style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</span>
+    </div>`;
+  return { headHtml, bodyHtml: reviewHtml };
+}
+
 function openScLightbox(i){
-  const r = window._scReviews && window._scReviews[i];
-  if(!r) return;
+  const s = _scFiltered.get(i);
+  if(!s) return;
+  const r = _buildScReviewHtml(s);
   document.getElementById('sc-lightbox-head').innerHTML = r.headHtml;
   document.getElementById('sc-lightbox-body').innerHTML = r.bodyHtml;
   document.getElementById('sc-lightbox-body').scrollTop = 0;
@@ -8161,7 +8171,7 @@ function applyStoredTheme(){
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.15';
+const APP_VERSION = 'v5.16';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -8207,8 +8217,8 @@ async function checkParentPin(){
   const msg = document.getElementById('pin-msg');
 
   // ── Brute-force lockout check ──
-  const failCount = parseInt(sessionStorage.getItem(_PIN_FAIL_COUNT_KEY) || '0');
-  const failTs    = parseInt(sessionStorage.getItem(_PIN_FAIL_KEY) || '0');
+  const failCount = parseInt(localStorage.getItem(_PIN_FAIL_COUNT_KEY) || '0');
+  const failTs    = parseInt(localStorage.getItem(_PIN_FAIL_KEY) || '0');
   if(failCount >= _PIN_MAX_ATTEMPTS){
     const elapsed = Date.now() - failTs;
     if(elapsed < _PIN_LOCKOUT_MS){
@@ -8218,16 +8228,16 @@ async function checkParentPin(){
       return;
     } else {
       // Lockout expired — reset counter
-      sessionStorage.removeItem(_PIN_FAIL_COUNT_KEY);
-      sessionStorage.removeItem(_PIN_FAIL_KEY);
+      localStorage.removeItem(_PIN_FAIL_COUNT_KEY);
+      localStorage.removeItem(_PIN_FAIL_KEY);
     }
   }
 
   const entered = document.getElementById('parent-pin-inp').value;
   if(await _verifyPin(entered)){
     // Success — clear fail counter
-    sessionStorage.removeItem(_PIN_FAIL_COUNT_KEY);
-    sessionStorage.removeItem(_PIN_FAIL_KEY);
+    localStorage.removeItem(_PIN_FAIL_COUNT_KEY);
+    localStorage.removeItem(_PIN_FAIL_KEY);
     closePinModal();
     document.getElementById('parent-pin-inp').value = '';
     playSwooshForward();
@@ -8254,8 +8264,8 @@ async function checkParentPin(){
   } else {
     // Failed — increment counter and record timestamp
     const newCount = failCount + 1;
-    sessionStorage.setItem(_PIN_FAIL_COUNT_KEY, String(newCount));
-    sessionStorage.setItem(_PIN_FAIL_KEY, String(Date.now()));
+    localStorage.setItem(_PIN_FAIL_COUNT_KEY, String(newCount));
+    localStorage.setItem(_PIN_FAIL_KEY, String(Date.now()));
     const remaining = _PIN_MAX_ATTEMPTS - newCount;
     if(remaining > 0){
       msg.textContent = `❌ Wrong PIN. ${remaining} attempt${remaining===1?'':'s'} left before lockout.`;
@@ -9596,7 +9606,7 @@ function closeInstall(){
   <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.15 — Current</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.16 — Current</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li>Spotlight tutorial now highlights the full element with matching rectangular shape</li>
         <li>Tutorial tooltip card is now semi-transparent so the highlighted element shows through</li>

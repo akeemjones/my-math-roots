@@ -34,10 +34,13 @@
         https://fonts.gstatic.com;
       connect-src 'self'
         https://omjegwtzirskgmgeojdn.supabase.co
-        https://api.resend.com;
+        https://accounts.google.com;
       img-src 'self' data: blob:
         https://lh3.googleusercontent.com;
       frame-src 'none';
+      frame-ancestors 'none';
+      form-action 'self';
+      worker-src 'self';
       object-src 'none';
       base-uri 'self';
     """

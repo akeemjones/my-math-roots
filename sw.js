@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v5.14.0-release';
+const CACHE = 'math-workbook-v5.15.1-release';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
@@ -8,9 +8,10 @@ self.addEventListener('install', e => {
   );
 });
 
-// Message from app — skip waiting immediately
+// Message from app — skip waiting immediately (origin-checked)
 self.addEventListener('message', e => {
-  if(e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+  const trusted = e.source && e.source.url && e.source.url.startsWith(self.location.origin);
+  if(e.data && e.data.type === 'SKIP_WAITING' && trusted) self.skipWaiting();
 });
 
 // Activate — remove old caches and claim clients immediately
