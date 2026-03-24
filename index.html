@@ -340,7 +340,7 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 .uq-btn-ico{ font-size:2rem; flex-shrink:0; }
 
 /* ── LESSON SCREEN ── */
-#lesson-screen .sc-in{ max-width:780px; margin:0 auto; padding:20px 16px 60px; }
+#lesson-screen .sc-in{ max-width:780px; margin:0 auto; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); }
 
 /* ── RESUME BANNER ── */
 .resume-banner{ background:linear-gradient(135deg,#f39c12,#e67e22); border-radius:var(--rad);
@@ -477,7 +477,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .sc-card:hover{ box-shadow:0 6px 20px rgba(0,0,0,.14); transform:translateY(-1px); transition:transform .15s, box-shadow .15s; }
 
 /* ── QUIZ SCREEN ── */
-#quiz-screen .sc-in{ max-width:700px; margin:0 auto; padding:20px 16px 60px; }
+#quiz-screen .sc-in{ max-width:700px; margin:0 auto; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); }
 
 .qhdr{ background:rgba(255,255,255,.18); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
         border:1px solid rgba(255,255,255,.25); border-radius:var(--rad); padding:18px 20px;
@@ -691,7 +691,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .ex-steps{ font-size:1rem; color:var(--txt3); line-height:1.9; margin-bottom:8px; }
 
 /* ── RESULTS ── */
-#results-screen .sc-in{ max-width:700px; margin:0 auto; padding:20px 16px 60px; }
+#results-screen .sc-in{ max-width:700px; margin:0 auto; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); }
 .rcard{ background:var(--card-bg); border-radius:var(--rad); padding:26px 22px;
          box-shadow:var(--shad); text-align:center; margin-bottom:16px; }
 .r-emoji{ font-size:4.5rem; display:block; margin-bottom:10px;
@@ -999,7 +999,7 @@ body.swiping *{ backdrop-filter:none !important; -webkit-backdrop-filter:none !i
 
 /* ── SETTINGS SCREEN ── */
 #settings-screen{ background-color:var(--bg); }
-#settings-screen .sc-in{ max-width:680px; margin:0 auto; padding:20px 16px 60px; }
+#settings-screen .sc-in{ max-width:680px; margin:0 auto; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); }
 .set-section{ background:rgba(255,255,255,.18);
   backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
   border-radius:var(--rad); overflow:hidden; margin-bottom:16px;
