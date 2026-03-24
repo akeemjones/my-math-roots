@@ -8232,7 +8232,7 @@ function applyStoredTheme(){
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.17';
+const APP_VERSION = 'v5.22';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -9791,22 +9791,26 @@ function closeInstall(){
   <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.17 — Current</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.22 — Current</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
-        <li>Spotlight tutorial now highlights the full element with matching rectangular shape</li>
-        <li>Tutorial tooltip card is now semi-transparent so the highlighted element shows through</li>
-        <li>Google Sign-In now shows "Connecting…" and surfaces any errors if sign-in fails</li>
+        <li>A host of security and stability improvements have been implemented to ensure user data is fully protected and isolated between sessions</li>
+        <li>Screen layouts updated — all pages now correctly respect iPhone safe areas so no content is hidden behind the home indicator on any device</li>
+        <li>Unit screen improved — the Unit Quiz button is always fully visible, no matter how many lessons are in the unit</li>
       </ul>
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.13</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.13 – v5.17</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
-        <li>Per-screen spotlight tutorial — first visit to each page highlights key features</li>
+        <li>Tutorial redesigned — streamlined to a 2-slide welcome, then guided page tours auto-run on your first visit to each screen</li>
+        <li>Full-screen swipe-back — swipe right from anywhere on screen (not just the edge) to go back, just like a native iOS app</li>
+        <li>Per-screen spotlight tours — home, units, lessons, quiz, settings, and history each get their own first-visit feature tour</li>
+        <li>Quiz spotlight tour covers timer, scratch pad, start-over, and quit</li>
+        <li>Spotlight auto-scrolls to off-screen elements before highlighting them</li>
         <li>Quiz timer now pauses during the first-time quiz spotlight tour</li>
         <li>Note Pad added to quiz screen — draw &amp; write to work out problems by hand</li>
         <li>Note Pad centered on screen (was previously a bottom sheet)</li>
-        <li>Spotlight circles tightened to fit individual elements precisely</li>
+        <li>Spotlight shape updated to rectangle matching each element precisely</li>
         <li>Forgot PIN lightbox now appears above the PIN entry lightbox (z-index fix)</li>
         <li>Change PIN dialog now properly resets and confirms after saving</li>
         <li>Forgot password link added below password field on login screen</li>
