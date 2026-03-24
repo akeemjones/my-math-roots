@@ -1070,10 +1070,11 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 
 /* ── Tutorial overlay ── */
 .tut-overlay{
-  position:fixed;inset:0;z-index:4000;
+  position:fixed;inset:0;z-index:6000;
   background:rgba(0,0,0,.7);
   display:flex;align-items:center;justify-content:center;
   padding:20px;box-sizing:border-box;
+  transition:background .3s ease;
 }
 .tut-card{
   background:var(--card-bg,#fff);
@@ -8558,12 +8559,13 @@ const TUT_SLIDES = [
   {
     emoji: '📚',
     title: 'Your 10 Math Units',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Scroll the unit cards</strong> on the home screen to browse all 10 units — from Counting &amp; Numbers all the way to Fractions &amp; Money.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt"><strong>Units unlock as you progress.</strong> Finish a Unit Quiz to open the next one. Unit 1 is always available to start!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">✅</span><div class="tut-feature-txt">Completed lessons show a <strong>green checkmark</strong> so you always know where you are.</div></div>`
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Scroll the unit cards</strong> on the home screen to browse all 10 units — from Counting &amp; Numbers all the way to Fractions &amp; Money.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt"><strong>Units unlock as you progress.</strong> Finish a Unit Quiz to open the next one. Unit 1 is always available to start!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">✅</span><div class="tut-feature-txt">Completed lessons show a <strong>green checkmark</strong> so you always know where you are.</div></div>`,
   },
   {
     emoji: '📖',
     title: 'Inside a Unit',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Tap any unit card</strong> to open it and see all its lessons. Lessons must be done <strong>in order</strong> — each one builds on the last.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt">Each lesson is <strong>locked</strong> until you pass the one before it. This makes sure you're always ready!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">The big <strong>Unit Quiz</strong> unlocks only after you complete <em>all</em> lessons in that unit.</div></div>`
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Tap any unit card</strong> to open it and see all its lessons. Lessons must be done <strong>in order</strong> — each one builds on the last.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt">Each lesson is <strong>locked</strong> until you pass the one before it. This makes sure you're always ready!</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">The big <strong>Unit Quiz</strong> unlocks only after you complete <em>all</em> lessons in that unit.</div></div>`,
+    spot: '#ugrid .cs'
   },
   {
     emoji: '💡',
@@ -8588,12 +8590,14 @@ const TUT_SLIDES = [
   {
     emoji: '📊',
     title: 'Progress & Score History',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📊</span><div class="tut-feature-txt">Your <strong>progress bar</strong> on the home screen shows how many lessons you've completed across all 10 units.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏅</span><div class="tut-feature-txt">Tap <strong>Score History</strong> to review every quiz you've taken — see your stars, your score, and review which questions you got right or wrong!</div></div>`
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📊</span><div class="tut-feature-txt">Your <strong>progress bar</strong> on the home screen shows how many lessons you've completed across all 10 units.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏅</span><div class="tut-feature-txt">Tap <strong>Score History</strong> to review every quiz you've taken — see your stars, your score, and review which questions you got right or wrong!</div></div>`,
+    spot: '.scores-link .big-btn'
   },
   {
     emoji: '⚙️',
     title: 'Settings & Parent Controls',
-    body: `<div class="tut-feature-row"><span class="tut-feature-ico">⚙️</span><div class="tut-feature-txt">Tap the <strong>cog icon ⚙️</strong> on any screen to open Settings — change your name, appearance, and sound effects.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔐</span><div class="tut-feature-txt"><strong>Parent Controls</strong> (PIN: 1234) lets parents set quiz timers, unlock lessons, clear scores, and send feedback. Change the PIN after first login!</div></div>`
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">⚙️</span><div class="tut-feature-txt">Tap the <strong>cog icon ⚙️</strong> on any screen to open Settings — change your name, appearance, and sound effects.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔐</span><div class="tut-feature-txt"><strong>Parent Controls</strong> (PIN: 1234) lets parents set quiz timers, unlock lessons, clear scores, and send feedback. Change the PIN after first login!</div></div>`,
+    spot: '.cog-btn'
   },
   {
     emoji: '🎉',
@@ -8610,6 +8614,56 @@ function tutCheckAndShow(){
   _tutRender();
   document.getElementById('tut-overlay').style.display = 'flex';
 }
+
+// ── Tutorial spotlight helpers ────────────────────────────────
+function _tutSpot(sel){
+  let el = null;
+  try { el = document.querySelector(sel); } catch(e){}
+  if(!el){ _tutClearSpot(); return; }
+  const rect = el.getBoundingClientRect();
+  if(!rect.width && !rect.height){ _tutClearSpot(); return; }
+
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pad = 12;
+  const hx = Math.max(0, rect.left - pad);
+  const hy = Math.max(0, rect.top  - pad);
+  const hw = Math.min(vw, rect.width  + pad * 2);
+  const hh = Math.min(vh, rect.height + pad * 2);
+  const rx = 16;
+
+  const svg = document.getElementById('spot-svg');
+  svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+  svg.setAttribute('width',  vw);
+  svg.setAttribute('height', vh);
+  document.getElementById('spot-bg-rect').setAttribute('width',  vw);
+  document.getElementById('spot-bg-rect').setAttribute('height', vh);
+  document.getElementById('spot-dim-rect').setAttribute('width',  vw);
+  document.getElementById('spot-dim-rect').setAttribute('height', vh);
+
+  const hole = document.getElementById('spot-hole');
+  hole.setAttribute('x', hx); hole.setAttribute('y', hy);
+  hole.setAttribute('width', hw); hole.setAttribute('height', hh);
+  hole.setAttribute('rx', rx);
+
+  const ring = document.getElementById('spot-ring');
+  ring.setAttribute('x', hx - 3); ring.setAttribute('y', hy - 3);
+  ring.setAttribute('width', hw + 6); ring.setAttribute('height', hh + 6);
+  ring.setAttribute('rx', rx + 3);
+
+  // Hide the spot tooltip card — the tutorial card handles the explanation
+  document.getElementById('spot-card').style.display = 'none';
+  document.getElementById('spot-overlay').style.display = 'block';
+
+  // Make tutorial overlay transparent so the spotlight dim shows through
+  document.getElementById('tut-overlay').style.background = 'transparent';
+}
+
+function _tutClearSpot(){
+  document.getElementById('spot-overlay').style.display = 'none';
+  document.getElementById('spot-card').style.display = '';
+  document.getElementById('tut-overlay').style.background = '';
+}
+// ─────────────────────────────────────────────────────────────
 
 function _tutRender(){
   const slide = TUT_SLIDES[_tutIdx];
@@ -8631,6 +8685,8 @@ function _tutRender(){
   const isLast = _tutIdx === total - 1;
   nextBtn.textContent = isLast ? "Let's Go! 🚀" : 'Next →';
   skipBtn.style.display = isLast ? 'none' : '';
+  // Spotlight
+  if(slide.spot){ _tutSpot(slide.spot); } else { _tutClearSpot(); }
 }
 
 function tutNext(){
@@ -8644,6 +8700,7 @@ function tutNext(){
 
 function tutSkip(){
   localStorage.setItem('wb_tutorial_v2','1');
+  _tutClearSpot();
   document.getElementById('tut-overlay').style.display = 'none';
 }
 
@@ -8659,7 +8716,7 @@ const SPOT_TOURS = {
       tip: 'Shows how many lessons you\'ve completed across all 10 units.'
     },
     {
-      sel: '#ugrid .ucard',
+      sel: '#ugrid .cs',
       emoji: '📚',
       title: 'Math Units',
       tip: 'Tap a unit card to start learning. Scroll right to see all 10 units!'
