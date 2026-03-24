@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>🌱 My Math Roots</title>
 
 <!-- ── PWA / iOS Native Feel ── -->
@@ -21,6 +21,8 @@
 <link rel="manifest" href="/manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ── BASE ── */
 :root{
@@ -89,8 +91,7 @@ button{ -webkit-appearance:none; font-family:inherit;
      overscroll-behavior:contain;
      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3C!-- Row 1 --%3E%3Ccircle cx='30' cy='30' r='22' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='30' y='30' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e74c3c' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='110' cy='20' r='16' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='110' y='20' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E7%3C/text%3E%3Crect x='185' y='8' width='40' height='40' rx='10' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='205' y='28' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='22' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='295' cy='25' r='20' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='295' y='25' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%2327ae60' opacity='.34'%3E12%3C/text%3E%3Ccircle cx='380' cy='35' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='380' y='35' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%238e44ad' opacity='.34'%3E%C3%B7%3C/text%3E%3C!-- Row 2 --%3E%3Ccircle cx='60' cy='105' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='60' y='105' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23e67e22' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='160' cy='95' r='22' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='160' y='95' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%231abc9c' opacity='.34'%3E%3D%3C/text%3E%3Ccircle cx='250' cy='110' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='250' y='110' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E5%3C/text%3E%3Crect x='320' y='88' width='38' height='38' rx='10' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='339' y='107' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23f1c40f' opacity='.34'%3E%E2%98%85%3C/text%3E%3C!-- Row 3 --%3E%3Ccircle cx='20' cy='195' r='20' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='20' y='195' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%234a90d9' opacity='.34'%3E3%3C/text%3E%3Ccircle cx='120' cy='185' r='16' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='120' y='185' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%2327ae60' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='210' cy='200' r='22' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='210' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%238e44ad' opacity='.34'%3E10%3C/text%3E%3Ccircle cx='310' cy='190' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='310' y='190' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e67e22' opacity='.34'%3E%E2%88%92%3C/text%3E%3Ccircle cx='395' cy='200' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='395' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BC%3C/text%3E%3C!-- Row 4 --%3E%3Ccircle cx='55' cy='290' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='55' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E8%3C/text%3E%3Crect x='145' y='272' width='36' height='36' rx='9' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='163' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='255' cy='285' r='20' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='255' y='285' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E6%3C/text%3E%3Ccircle cx='350' cy='295' r='18' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='350' y='295' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%2327ae60' opacity='.34'%3E%3D%3C/text%3E%3C!-- Row 5 --%3E%3Ccircle cx='30' cy='385' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='30' y='385' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%238e44ad' opacity='.34'%3E9%3C/text%3E%3Ccircle cx='130' cy='378' r='22' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='130' y='378' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e67e22' opacity='.34'%3E%C3%B7%3C/text%3E%3Ccircle cx='230' cy='390' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='230' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='320' cy='380' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='320' y='380' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E2%3C/text%3E%3Ccircle cx='400' cy='390' r='16' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='400' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%234a90d9' opacity='.34'%3E%2B%3C/text%3E%3C/svg%3E");
      background-size: 420px 420px; }
-.sc.on{ display:block; animation:pop .3s ease; }
-@keyframes pop{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+.sc.on{ display:block; }
 
 /* ── TOP BAR ── */
 .bar{ position:sticky; top:0; z-index:90; background:var(--bar-bg);
@@ -110,11 +111,13 @@ button{ -webkit-appearance:none; font-family:inherit;
 
 /* Lesson bar — title centered absolutely so it's always mid-screen */
 #lesson-screen .bar{ position:sticky; }
+#lesson-screen .bar .bar-back{ padding-left:12px; padding-right:12px; }
+#lesson-screen .bar .bar-badge{ margin-left:auto; }
 #lesson-screen .bar .bar-title,
 #history-screen .bar .bar-title{
   position:absolute; left:50%; transform:translateX(-50%);
   text-align:center; pointer-events:none;
-  max-width:60%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  max-width:43%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* ── HOME ── */
 #home{ background-color:var(--home-grad);
@@ -138,8 +141,9 @@ button{ -webkit-appearance:none; font-family:inherit;
 .hero{ text-align:center; padding:10px 16px 6px; }
 .hero-ico{ font-size:3rem; display:block; animation:bob 2.5s ease-in-out infinite; }
 @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
+@keyframes spin{ to{ transform:rotate(360deg); } }
 .hero-h1{ font-family:'Boogaloo',cursive; font-size:clamp(2rem,6vw,3rem);
-          line-height:1.1; text-shadow:2px 2px 0 rgba(0,0,0,.06); }
+          line-height:1.1; text-shadow:2px 2px 0 rgba(0,0,0,.06); text-transform:uppercase; }
 .hero-credit{ font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:800;
   color:#5a7080; margin-top:3px; letter-spacing:.3px; }
 .hero-sub{ font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:700;
@@ -317,6 +321,7 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
          border-radius:50px; white-space:nowrap; }
 .badge-done{ background:#eafaf1; color:#27ae60; }
 .badge-quiz{ background:#eafaf1; color:#27ae60; }
+body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
 .uq-btn{ background:var(--card-bg);
   border-radius:var(--rad); padding:12px 20px;
@@ -430,6 +435,7 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .mark-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
 .done-card{ background:#eafaf1; border-radius:var(--rad); padding:24px;
              text-align:center; border:2.5px solid #27ae60; margin-top:6px; }
+body.dark .done-card{ background:rgba(39,174,96,.15); }
 .done-ico{ font-size:2.8rem; animation:bob 1.5s ease-in-out infinite; display:block; margin-bottom:8px; }
 .done-title{ font-family:'Boogaloo',cursive; font-size:1.3rem; color:#27ae60; }
 
@@ -526,20 +532,20 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .rev-correct{ font-size:1rem; font-weight:900; color:#27ae60; margin-bottom:6px; }
 .rev-exp{ font-size:1.05rem; line-height:1.7; color:var(--txt); }
 
-.next-btn{ width:100%; font-family:'Boogaloo',cursive; font-size:1.4rem;
-            padding:22px 18px; border-radius:var(--rad); border:none; cursor:pointer;
-            background:linear-gradient(135deg,#27ae60,#1a7a45); color:#fff;
-            box-shadow:0 5px 0 #0f5c32; transition:transform .15s,box-shadow .15s;
-            margin-top:14px; display:none;
-            touch-action:manipulation; -webkit-tap-highlight-color:transparent;
-            position:relative; z-index:10; }
-.next-btn:hover{ transform:translateY(-2px); box-shadow:0 7px 0 #0f5c32; }
-.next-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #0f5c32; }
+.quiz-nav-row{ display:flex; align-items:center; margin-top:14px; gap:8px; }
+.next-btn{ font-family:'Boogaloo',cursive; font-size:1rem;
+            padding:11px 20px; border-radius:50px; border:2px solid #1a7a45; cursor:pointer;
+            background:#27ae60; color:#fff;
+            transition:transform .12s, background .15s;
+            display:none; margin-top:0; margin-left:auto;
+            touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.next-btn:hover{ background:#1a7a45; }
+.next-btn:active{ transform:scale(.95); }
 .prev-btn{ font-family:'Boogaloo',cursive; font-size:1rem;
             padding:11px 20px; border-radius:50px; border:2px solid var(--border2); cursor:pointer;
             background:var(--bg3); color:var(--txt2); text-align:center;
             transition:transform .12s, background .15s;
-            margin-top:14px; display:none;
+            margin-top:0; display:none;
             touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .prev-btn:hover{ background:rgba(0,0,0,.06); }
 .prev-btn:active{ transform:scale(.95); }
@@ -573,6 +579,62 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
   transition:background .15s, transform .1s; }
 .quiz-quit-btn:hover{ background:rgba(231,76,60,.06); }
 .quiz-quit-btn:active{ transform:scale(.95); }
+
+.quiz-scratch-btn{
+  font-family:'Boogaloo',cursive;font-size:.9rem;padding:8px 14px;
+  border-radius:50px;border:2px solid #f39c12;background:transparent;
+  color:#f39c12;cursor:pointer;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.scratch-overlay{
+  position:fixed;inset:0;z-index:3000;
+  background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;box-sizing:border-box;
+}
+.scratch-box{
+  background:var(--card-bg,#fff);
+  border-radius:22px;
+  width:100%;max-width:680px;
+  padding:0;
+  display:flex;flex-direction:column;
+  max-height:80vh;
+}
+.scratch-toolbar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px 8px;
+  border-bottom:1.5px solid var(--border,#e0e0e0);
+  flex-shrink:0;
+}
+.scratch-toolbar-title{
+  font-family:'Boogaloo',cursive;font-size:1.05rem;
+  color:var(--txt,#222);flex:1;
+}
+.scratch-color-btn{
+  width:28px;height:28px;border-radius:50%;border:3px solid transparent;
+  cursor:pointer;touch-action:manipulation;flex-shrink:0;
+  transition:border-color .15s;
+}
+.scratch-color-btn.active{ border-color:var(--txt,#222); }
+.scratch-tool-btn{
+  font-family:'Boogaloo',cursive;font-size:.85rem;
+  padding:6px 12px;border-radius:50px;
+  border:2px solid var(--border2,#ccc);
+  background:var(--bg,#f5f5f5);color:var(--txt,#222);
+  cursor:pointer;touch-action:manipulation;
+  transition:all .15s;
+}
+.scratch-tool-btn.active{
+  background:#4a90d9;color:#fff;border-color:#4a90d9;
+}
+.scratch-canvas-wrap{
+  flex:1;overflow:hidden;position:relative;
+  background:#fff;
+  min-height:280px;
+}
+.scratch-canvas-wrap canvas{
+  display:block;width:100%;height:100%;touch-action:none;
+}
 
 .more-practice-btn{ font-family:'Boogaloo',cursive; font-size:.95rem; padding:8px 16px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
@@ -634,8 +696,8 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .r-emoji{ font-size:4.5rem; display:block; margin-bottom:10px;
            animation:bob 1.5s ease-in-out infinite; }
 .r-score{ font-family:'Boogaloo',cursive; font-size:4rem; }
-.r-pct{ font-family:'Boogaloo',cursive; font-size:1.6rem; color:#7f8c8d; }
-.r-msg{ font-size:1.1rem; color:#7f8c8d; margin:8px 0 12px; }
+.r-pct{ font-family:'Boogaloo',cursive; font-size:1.6rem; color:var(--txt2); }
+.r-msg{ font-size:1.1rem; color:var(--txt2); margin:8px 0 12px; }
 .r-stars{ font-size:2.5rem; letter-spacing:5px; animation:starPop .5s cubic-bezier(.34,1.56,.64,1); }
 @keyframes starPop{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
 .rbtn-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
@@ -725,6 +787,8 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .sc-rev-item{ padding:10px 12px; border-radius:12px; margin-bottom:8px; }
 .sc-rev-wrong{ background:#fdecea; border-left:3px solid #e74c3c; }
 .sc-rev-right{ background:#eafaf1; border-left:3px solid #27ae60; }
+body.dark .sc-rev-wrong{ background:rgba(231,76,60,.18); }
+body.dark .sc-rev-right{ background:rgba(39,174,96,.18); }
 .sc-rev-q{ font-weight:700; font-size:.9rem; color:var(--txt); margin-bottom:4px; }
 .sc-rev-your{ font-size:.85rem; color:var(--txt2); }
 .sc-rev-correct{ font-size:.85rem; margin-top:3px; }
@@ -735,11 +799,11 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
           transition:box-shadow .15s; }
 .sc-row:hover{ box-shadow:0 8px 24px rgba(0,0,0,.13); }
 .sc-name{ font-family:'Boogaloo',cursive; font-size:1rem; }
-.sc-type{ font-size:.74rem; color:#7f8c8d; text-transform:uppercase; letter-spacing:.8px; }
+.sc-type{ font-size:.74rem; color:var(--txt2); text-transform:uppercase; letter-spacing:.8px; }
 .sc-grade{ font-family:'Boogaloo',cursive; font-size:1.15rem;
             padding:5px 14px; border-radius:50px; }
 .sc-stars{ font-size:1rem; display:block; min-height:1.4em; }
-.sc-date{ font-size:.76rem; color:#7f8c8d; text-align:left; }
+.sc-date{ font-size:.76rem; color:var(--txt2); text-align:left; }
 .sc-del{ background:rgba(231,76,60,.1); border:1.5px solid rgba(231,76,60,.2);
           color:#e74c3c; border-radius:8px; padding:4px 10px; cursor:pointer;
           font-size:.8rem; transition:background .15s; font-family:'Nunito',sans-serif; }
@@ -773,7 +837,7 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .vis-e.vis-x{ opacity:.28; text-decoration:line-through; filter:grayscale(1); }
 .vis-row{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin:5px 0; }
 .vis-sep{ font-family:'Boogaloo',cursive; font-size:2.2rem; color:#e74c3c;
-  display:flex; align-items:center; line-height:1; padding:0 4px; }
+  display:flex; align-items:center; justify-content:center; line-height:1; padding:0 4px; }
 .vis-eq{ font-family:'Boogaloo',cursive; font-size:1.1rem; margin-top:8px;
   color:#1a2535; text-align:center; }
 .vis-grps{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; }
@@ -897,6 +961,8 @@ img[data-coin]:active{ transform:scale(.95); }
 /* SWIPE BACK — peek class makes a screen visible behind the dragging screen */
 .sc.swipe-peek{ display:block !important; z-index:5 !important; pointer-events:none !important; }
 #history-screen.swipe-peek{ display:flex !important; }
+/* Disable expensive blur filters during swipe to prevent card jitter */
+body.swiping *{ backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
 
 /* UPDATE BANNER */
 .update-banner{
@@ -907,6 +973,13 @@ img[data-coin]:active{ transform:scale(.95); }
   white-space:nowrap; max-width:calc(100vw - 40px); }
 .update-banner.show{ transform:translateX(-50%) translateY(0); }
 .update-banner-txt{ font-family:'Boogaloo',cursive; font-size:1rem; }
+.fb-star{ font-size:1.8rem; background:none; border:none; cursor:pointer; padding:0 2px; line-height:1;
+  touch-action:manipulation; transition:transform .1s; }
+.fb-star:active{ transform:scale(.85); }
+.fb-cat-btn{ font-family:'Boogaloo',cursive; font-size:.88rem; padding:7px 13px; border-radius:50px;
+  border:2px solid var(--border2); background:var(--bg); color:var(--txt2); cursor:pointer;
+  touch-action:manipulation; transition:all .15s; }
+.fb-cat-btn.active{ background:#4a90d9; color:#fff; border-color:#4a90d9; }
 .update-banner-btn{ font-family:'Boogaloo',cursive; font-size:.95rem; background:#4ade80;
   color:#1a1a2e; border:none; border-radius:50px; padding:8px 18px; cursor:pointer;
   font-weight:700; flex-shrink:0; }
@@ -993,9 +1066,140 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
   padding:15px;border-radius:50px;border:none;cursor:pointer;
   background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;
   box-shadow:0 5px 0 rgba(0,0,0,.15);margin-top:16px; }
+
+/* ── Tutorial overlay ── */
+.tut-overlay{
+  position:fixed;inset:0;z-index:4000;
+  background:rgba(0,0,0,.7);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;box-sizing:border-box;
+}
+.tut-card{
+  background:var(--card-bg,#fff);
+  border-radius:28px;
+  width:100%;max-width:380px;
+  padding:32px 28px 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  position:relative;
+  text-align:center;
+}
+.tut-emoji{ font-size:3.2rem;margin-bottom:12px;display:block;line-height:1; }
+.tut-title{
+  font-family:'Boogaloo',cursive;font-size:1.6rem;
+  color:var(--txt,#222);margin:0 0 10px;line-height:1.2;
+}
+.tut-body{
+  font-size:.93rem;color:var(--txt2,#666);
+  line-height:1.65;margin:0 0 24px;
+}
+.tut-body strong{ color:var(--txt,#222); }
+.tut-dots{
+  display:flex;justify-content:center;gap:7px;margin-bottom:20px;
+}
+.tut-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border2,#ccc);transition:background .2s,transform .2s;
+}
+.tut-dot.active{ background:#4a90d9;transform:scale(1.3); }
+.tut-btns{ display:flex;gap:10px;justify-content:center; }
+.tut-btn-next{
+  font-family:'Boogaloo',cursive;font-size:1.05rem;
+  padding:13px 32px;border-radius:50px;border:none;
+  background:linear-gradient(135deg,#4a90d9,#27ae60);
+  color:#fff;cursor:pointer;touch-action:manipulation;
+  box-shadow:0 4px 0 rgba(0,0,0,.15);flex:1;
+}
+.tut-btn-skip{
+  font-family:'Boogaloo',cursive;font-size:.95rem;
+  padding:13px 18px;border-radius:50px;
+  border:2px solid var(--border2,#ccc);
+  background:transparent;color:var(--txt2,#888);
+  cursor:pointer;touch-action:manipulation;
+}
+.tut-skip-top{
+  position:absolute;top:14px;right:18px;
+  font-family:'Boogaloo',cursive;font-size:.85rem;
+  color:var(--txt2,#aaa);background:none;border:none;
+  cursor:pointer;touch-action:manipulation;padding:4px 8px;
+}
+.tut-feature-row{
+  display:flex;align-items:flex-start;gap:12px;
+  text-align:left;background:var(--bg3,#f5f5f5);
+  border-radius:14px;padding:12px 14px;margin-bottom:10px;
+}
+.tut-feature-ico{ font-size:1.6rem;flex-shrink:0;line-height:1; }
+.tut-feature-txt{ font-size:.88rem;color:var(--txt2,#666);line-height:1.5; }
+.tut-feature-txt strong{ color:var(--txt,#222);font-size:.92rem; }
+
+/* ── Screen Spotlight Tour ── */
+#spot-overlay{
+  position:fixed;inset:0;z-index:5000;
+  display:none;
+  pointer-events:all;
+}
+#spot-svg{
+  position:absolute;inset:0;
+  pointer-events:all;
+  cursor:pointer;
+}
+#spot-card{
+  position:absolute;
+  pointer-events:all;
+  background:rgba(255,255,255,0.84);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:16px 18px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.28);
+  max-width:300px;
+  z-index:5001;
+}
+body.dark #spot-card{
+  background:rgba(18,34,54,0.88);
+}
+.spot-card-emoji{ font-size:1.8rem;display:block;margin-bottom:4px;line-height:1; }
+.spot-card-title{
+  font-family:'Boogaloo',cursive;font-size:1.15rem;
+  color:var(--txt,#222);margin:0 0 4px;
+}
+.spot-card-tip{
+  font-size:.85rem;color:var(--txt2,#666);
+  line-height:1.55;margin:0 0 12px;
+}
+.spot-card-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;
+}
+.spot-count{
+  font-family:'Boogaloo',cursive;font-size:.82rem;color:var(--txt2,#aaa);
+}
+.spot-next-btn{
+  font-family:'Boogaloo',cursive;font-size:.9rem;
+  padding:9px 20px;border-radius:50px;border:none;
+  background:linear-gradient(135deg,#4a90d9,#27ae60);
+  color:#fff;cursor:pointer;touch-action:manipulation;
+  box-shadow:0 3px 0 rgba(0,0,0,.15);
+}
+.spot-skip-btn{
+  font-family:'Boogaloo',cursive;font-size:.8rem;
+  padding:6px 12px;border-radius:50px;
+  border:1.5px solid var(--border2,#ccc);
+  background:transparent;color:var(--txt2,#999);
+  cursor:pointer;touch-action:manipulation;
+}
+
+/* ── AUTH MODAL ── */
+.auth-role-btn{ flex:1;font-family:'Boogaloo',cursive;font-size:1rem;
+  padding:11px;border-radius:50px;cursor:pointer;transition:all .2s;
+  touch-action:manipulation; }
+.auth-role-btn.active{ background:#4a90d9;color:#fff;border:2px solid #4a90d9; }
+.auth-role-btn.idle{ background:transparent;color:var(--txt2);border:2px solid var(--border2); }
+.auth-tab-btn{ flex:1;font-family:'Boogaloo',cursive;font-size:1rem;
+  padding:11px;border:none;cursor:pointer;transition:background .2s; }
+.auth-tab-btn.active{ background:#4a90d9;color:#fff; }
+.auth-tab-btn.idle{ background:transparent;color:var(--txt2); }
 </style>
 </head>
-<body>
 <body>
 
 <!-- Fixed cog settings button — always visible -->
@@ -1005,15 +1209,106 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 
 <!-- Update available banner -->
 <div class="update-banner" id="update-banner" style="display:none">
-  <span class="update-banner-txt">🌱 Update ready!</span>
-  <button class="update-banner-btn" onclick="applyUpdate()">Update Now</button>
+  <span class="update-banner-txt">✅ App updated!</span>
 </div>
 
 
 <!-- ════════════════════════════════════════
+     AUTH SPLASH — shown while Supabase resolves session, fades out
+════════════════════════════════════════ -->
+<div id="auth-splash" style="
+  position:fixed;inset:0;z-index:99999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);
+  transition:opacity .35s ease;
+">
+  <div style="font-size:3.5rem;margin-bottom:8px;animation:bob 1.5s ease-in-out infinite">🌱</div>
+  <div style="font-family:'Boogaloo',cursive;font-size:2rem;color:var(--txt);letter-spacing:1px">My Math Roots</div>
+  <div style="margin-top:24px;width:36px;height:36px;border:4px solid var(--border2);border-top-color:#4a90d9;border-radius:50%;animation:spin .8s linear infinite"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+     LOGIN
+════════════════════════════════════════ -->
+<div id="login-screen" class="sc" style="overflow:hidden">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px 20px;box-sizing:border-box">
+    <!-- Branding -->
+    <div style="font-size:3rem;margin-bottom:4px">🌱</div>
+    <h1 style="font-family:'Boogaloo',cursive;font-size:2.2rem;text-transform:uppercase;margin:0 0 2px;color:var(--txt)">My Math Roots</h1>
+    <p style="font-size:.82rem;font-weight:800;color:var(--txt2);letter-spacing:.1em;margin:0 0 14px">K-5 REVIEW</p>
+
+    <!-- Auth card -->
+    <div style="background:var(--bg2);border-radius:28px;padding:18px 22px;width:100%;max-width:400px;box-shadow:var(--shad);box-sizing:border-box">
+      <!-- Social login -->
+      <button type="button" onclick="_lsOAuth('google')"
+        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:50px;border:2px solid var(--border2);background:var(--bg);cursor:pointer;font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt);margin-bottom:8px;touch-action:manipulation">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="flex:1;height:1px;background:var(--border2)"></div>
+        <span style="font-family:'Boogaloo',cursive;font-size:.85rem;color:var(--txt2)">or</span>
+        <div style="flex:1;height:1px;background:var(--border2)"></div>
+      </div>
+      <!-- Tab switcher -->
+      <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:14px;overflow:hidden">
+        <button id="ls-tab-login"  class="auth-tab-btn active" type="button" onclick="_lsSwitchTab('login')">Sign In</button>
+        <button id="ls-tab-signup" class="auth-tab-btn idle"   type="button" onclick="_lsSwitchTab('signup')">Create Account</button>
+      </div>
+      <!-- Name (signup only) -->
+      <div id="ls-name-row" style="display:none;margin-bottom:12px">
+        <input class="set-inp" id="ls-name" type="text" placeholder="Your name (e.g. Emma) *" maxlength="30" style="font-size:1rem;width:100%;box-sizing:border-box">
+      </div>
+      <!-- Role (signup only) -->
+      <div id="ls-role-row" style="display:none;margin-bottom:14px">
+        <div style="font-family:'Boogaloo',cursive;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
+        <div style="display:flex;gap:10px">
+          <button type="button" id="ls-role-student" class="auth-role-btn active" onclick="_lsSelectRole('student')">🎒 Student</button>
+          <button type="button" id="ls-role-parent"  class="auth-role-btn idle"   onclick="_lsSelectRole('parent')">👨‍👩‍👧 Parent</button>
+        </div>
+      </div>
+      <!-- Email -->
+      <div style="margin-bottom:12px">
+        <input class="set-inp" id="ls-email" type="email" placeholder="Email address" autocomplete="email" inputmode="email" style="font-size:1rem;width:100%;box-sizing:border-box">
+      </div>
+      <!-- Password -->
+      <div style="margin-bottom:4px">
+        <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:1rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')_lsSubmit()">
+      </div>
+      <!-- Forgot password — only visible on Sign In tab -->
+      <div id="ls-forgot-row" style="text-align:right;margin-bottom:6px">
+        <button type="button" onclick="_lsForgotPassword()"
+          style="font-family:'Boogaloo',cursive;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+          Forgot password?
+        </button>
+      </div>
+      <!-- Error/status -->
+      <div id="ls-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
+      <!-- Submit -->
+      <button id="ls-submit-btn" onclick="_lsSubmit()"
+        style="width:100%;font-family:'Boogaloo',cursive;font-size:1.15rem;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);touch-action:manipulation">
+        Sign In
+      </button>
+    </div>
+
+    <!-- Guest link -->
+    <button type="button" onclick="show('home')"
+      style="margin-top:20px;font-family:'Boogaloo',cursive;font-size:1rem;background:none;border:none;color:var(--txt2);cursor:pointer;text-decoration:underline;touch-action:manipulation">
+      Continue without an account →
+    </button>
+  </div>
+</div>
+
+<!--
+════════════════════════════════════════
      HOME
 ════════════════════════════════════════ -->
-<div id="home" class="sc on">
+<div id="home" class="sc">
+  <div id="home-sync-msg" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(74,144,217,0.92);color:#fff;text-align:center;padding:8px;font-family:'Boogaloo',cursive;font-size:.95rem;letter-spacing:.3px;">
+    ☁️ Syncing your data…
+  </div>
   <div class="home-in">
     <div class="hero">
       <span class="hero-ico">🌱</span>
@@ -1097,11 +1392,14 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
     </div>
     <div class="quiz-top-row">
       <button class="quiz-restart-btn" type="button" onclick="restartQuiz()">↩ Start Over</button>
+      <button class="quiz-scratch-btn" type="button" onclick="openScratchPad()">✏️ Note Pad</button>
       <button class="quiz-quit-btn" type="button" onclick="showQuitConfirm()">✕ Quit</button>
     </div>
     <div class="qcard" id="qcard"></div>
-    <button class="prev-btn" id="prev-btn" onclick="prevQ()">← Previous Question</button>
-    <button class="next-btn" id="next-btn" onclick="nextQ()">Next Question →</button>
+    <div class="quiz-nav-row">
+      <button class="prev-btn" id="prev-btn" onclick="prevQ()">← Previous Question</button>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">Next Question →</button>
+    </div>
   </div>
 </div>
 
@@ -1133,6 +1431,31 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
     <div class="restart-modal-btns">
       <button class="restart-confirm-no" onclick="cancelRestart()">Keep Going</button>
       <button class="restart-confirm-yes" onclick="confirmRestart()">Start Over</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scratch Pad -->
+<div class="scratch-overlay" id="scratch-overlay" style="display:none" onclick="if(event.target===this)closeScratchPad()">
+  <div class="scratch-box">
+    <div class="scratch-toolbar">
+      <span class="scratch-toolbar-title">✏️ Note Pad</span>
+      <!-- Colors -->
+      <button type="button" class="scratch-color-btn active" id="sc-col-black"
+        style="background:#222" onclick="setScratchColor('#222',this)" title="Black"></button>
+      <button type="button" class="scratch-color-btn" id="sc-col-blue"
+        style="background:#4a90d9" onclick="setScratchColor('#4a90d9',this)" title="Blue"></button>
+      <button type="button" class="scratch-color-btn" id="sc-col-red"
+        style="background:#e74c3c" onclick="setScratchColor('#e74c3c',this)" title="Red"></button>
+      <!-- Tools -->
+      <button type="button" class="scratch-tool-btn active" id="sc-pen-btn" onclick="setScratchTool('pen')">✏️ Pen</button>
+      <button type="button" class="scratch-tool-btn" id="sc-erase-btn" onclick="setScratchTool('eraser')">🧹 Erase</button>
+      <button type="button" class="scratch-tool-btn" onclick="clearScratchPad()" style="color:#e74c3c;border-color:#e74c3c">🗑️</button>
+      <button type="button" onclick="closeScratchPad()"
+        style="font-size:1.4rem;background:none;border:none;cursor:pointer;color:var(--txt2);padding:0 4px;line-height:1">×</button>
+    </div>
+    <div class="scratch-canvas-wrap" id="scratch-canvas-wrap">
+      <canvas id="scratch-canvas"></canvas>
     </div>
   </div>
 </div>
@@ -4355,21 +4678,432 @@ function safeLoad(k,d){ try{ return JSON.parse(localStorage.getItem(k)||'null')|
 function saveDone(){  localStorage.setItem('wb_done5',   JSON.stringify(DONE)); }
 function saveSc(){    localStorage.setItem('wb_sc5',     JSON.stringify(SCORES)); }
 
+// ════════════════════════════════════════
+//  SUPABASE — AUTH + SYNC
+// ════════════════════════════════════════
+const SUPA_URL = 'https://omjegwtzirskgmgeojdn.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tamVnd3R6aXJza2dtZ2VvamRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTI2MzUsImV4cCI6MjA4OTc4ODYzNX0.XABBIodFFKpcokjmz_5P37UluGQh4CSP7nTw1jDWVYk';
+let _supa      = null;
+let _supaUser  = null;
+let _authRole  = 'student';
+let _authLoading = false;
+
+function _dismissSplash(){
+  const splash = document.getElementById('auth-splash');
+  if(splash){ splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; },370); }
+}
+
+function supabaseInit(){
+  if(typeof supabase === 'undefined'){
+    // CDN failed — dismiss splash and show login so user isn't stuck
+    _dismissSplash();
+    show('login-screen');
+    return;
+  }
+  _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+    auth: {
+      flowType: 'implicit',
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    }
+  });
+
+  _supa.auth.onAuthStateChange((event, session) => {
+    _supaUser = session ? session.user : null;
+    updateAccountUI();
+    if(event === 'INITIAL_SESSION'){
+      if(_supaUser){ _pullOnLogin(); show('home'); }
+      else { show('login-screen'); _initOneTap(); }
+      // Dismiss the auth splash now that we know where to go
+      _dismissSplash();
+    } else if(event === 'SIGNED_IN'){
+      _pullOnLogin();
+      show('home');
+    } else if(event === 'SIGNED_OUT'){
+      show('login-screen');
+      _initOneTap();
+    }
+  });
+}
+
+// ── LOGIN SCREEN functions ────────────────
+let _lsRole = 'student';
+let _lsLoading = false;
+
+let _oneTapReady = false;
+let _oneTapNonce = null;
+async function _initOneTap(){
+  if(typeof google === 'undefined'){ setTimeout(_initOneTap, 400); return; }
+  if(!_supa) return;
+  if(!_oneTapReady){
+    _oneTapReady = true;
+    // Generate nonce — hashed version goes to Google, raw version to Supabase
+    const raw = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+    _oneTapNonce = raw;
+    const hashBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+    const hashed = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    google.accounts.id.initialize({
+      client_id: '143755334187-cgqpo91oubridh9k8bqobrpaocs6gth0.apps.googleusercontent.com',
+      nonce: hashed,
+      use_fedcm_for_prompt: true,
+      callback: async ({ credential }) => {
+        const { error } = await _supa.auth.signInWithIdToken({ provider:'google', token:credential, nonce:_oneTapNonce });
+        if(error){ const m=document.getElementById('ls-msg'); if(m) m.textContent=error.message; }
+      }
+    });
+  }
+  google.accounts.id.prompt();
+}
+
+async function _lsOAuth(provider){
+  const msg = document.getElementById('ls-msg');
+  if(msg) msg.textContent = '';
+  if(!_supa){
+    if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ Not connected. Please wait and try again.'; }
+    return;
+  }
+  // Show loading state on the button
+  const btn = [...document.querySelectorAll('#login-screen button')].find(b => (b.getAttribute('onclick')||'').includes(`_lsOAuth('${provider}')`));
+  const origHTML = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.style.opacity='0.65'; btn.textContent='Connecting…'; }
+  if(msg){ msg.style.color='#4a90d9'; msg.textContent='Redirecting to Google…'; }
+  try {
+    const { error } = await _supa.auth.signInWithOAuth({
+      provider,
+      options:{ redirectTo: location.origin + '/' }
+    });
+    if(error){
+      if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ ' + error.message; }
+      if(btn){ btn.disabled=false; btn.style.opacity='1'; btn.innerHTML=origHTML; }
+    }
+    // No error = browser is redirecting, leave button disabled
+  } catch(e){
+    if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ Sign in failed. Please try again.'; }
+    if(btn){ btn.disabled=false; btn.style.opacity='1'; btn.innerHTML=origHTML; }
+  }
+}
+
+function _lsSwitchTab(tab){
+  const isSignup = tab === 'signup';
+  document.getElementById('ls-tab-login').className  = 'auth-tab-btn ' + (isSignup?'idle':'active');
+  document.getElementById('ls-tab-signup').className = 'auth-tab-btn ' + (isSignup?'active':'idle');
+  document.getElementById('ls-name-row').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('ls-role-row').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('ls-submit-btn').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('login-screen').dataset.tab = tab;
+  document.getElementById('ls-msg').textContent = '';
+  const forgotRow = document.getElementById('ls-forgot-row');
+  if(forgotRow) forgotRow.style.display = isSignup ? 'none' : 'block';
+}
+
+async function _lsForgotPassword(){
+  if(!_supa) return;
+  const msgEl = document.getElementById('ls-msg');
+  const email = document.getElementById('ls-email').value.trim();
+  if(!email){
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ Enter your email address above first.';
+    document.getElementById('ls-email').focus();
+    return;
+  }
+  msgEl.style.color = '#4a90d9';
+  msgEl.textContent = 'Sending reset link…';
+  const { error } = await _supa.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://mymathroots.netlify.app'
+  });
+  if(error){
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ ' + error.message;
+  } else {
+    msgEl.style.color = '#27ae60';
+    msgEl.textContent = '✅ Reset link sent — check your email!';
+  }
+}
+
+function _lsSelectRole(role){
+  _lsRole = role;
+  document.getElementById('ls-role-student').className = 'auth-role-btn ' + (role==='student'?'active':'idle');
+  document.getElementById('ls-role-parent').className  = 'auth-role-btn ' + (role==='parent' ?'active':'idle');
+}
+
+async function _lsSubmit(){
+  if(!_supa || _lsLoading) return;
+  const tab      = document.getElementById('login-screen').dataset.tab || 'login';
+  const email    = document.getElementById('ls-email').value.trim();
+  const password = document.getElementById('ls-password').value;
+  const msgEl    = document.getElementById('ls-msg');
+  if(!email || !password){ msgEl.textContent='⚠️ Please enter email and password.'; return; }
+  if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
+  if(tab === 'signup'){
+    const nameVal = document.getElementById('ls-name').value.trim();
+    if(!nameVal){ msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ Please enter your name.'; document.getElementById('ls-name').focus(); return; }
+  }
+  _lsLoading = true;
+  const btn = document.getElementById('ls-submit-btn');
+  const origTxt = btn.textContent;
+  btn.textContent = '…';
+  msgEl.style.color = '#4a90d9';
+  msgEl.textContent = tab==='signup' ? 'Creating account…' : 'Signing in…';
+  try{
+    let result;
+    if(tab === 'signup'){
+      const displayName = document.getElementById('ls-name').value.trim() || 'Student';
+      result = await _supa.auth.signUp({
+        email, password,
+        options: { data: { display_name:displayName, role:_lsRole } }
+      });
+    } else {
+      result = await _supa.auth.signInWithPassword({ email, password });
+    }
+    if(result.error){
+      msgEl.style.color = '#e74c3c';
+      msgEl.textContent = '⚠️ ' + result.error.message;
+    } else if(tab==='signup' && !result.data.session){
+      msgEl.style.color = '#27ae60';
+      msgEl.textContent = '✅ Check your email to confirm your account!';
+    }
+    // onAuthStateChange handles navigation to home on success
+  } catch(e){
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ Network error — check your connection.';
+  } finally {
+    _lsLoading = false;
+    btn.textContent = origTxt;
+  }
+}
+
+async function _pullOnLogin(){
+  if(!_supa || !_supaUser) return;
+  // Show syncing indicator
+  const syncEl = document.getElementById('home-sync-msg');
+  if(syncEl) syncEl.style.display = 'block';
+  try{
+    // Run both queries in parallel
+    const [{ data: prog }, { data: remoteScores }] = await Promise.all([
+      _supa.from('student_progress').select('done_json')
+        .eq('user_id', _supaUser.id).maybeSingle(),
+      _supa.from('quiz_scores').select('*')
+        .eq('user_id', _supaUser.id)
+        .order('local_id', { ascending: false }).limit(200)
+    ]);
+    // Apply DONE
+    if(prog && prog.done_json){
+      Object.assign(DONE, prog.done_json);
+      localStorage.setItem('wb_done5', JSON.stringify(DONE));
+    }
+    // Apply SCORES
+    if(remoteScores && remoteScores.length){
+      const localIds = new Set(SCORES.map(s => s.id));
+      const incoming = remoteScores
+        .filter(r => !localIds.has(r.local_id))
+        .map(r => ({
+          qid:r.qid, label:r.label, type:r.type,
+          score:r.score, total:r.total, pct:r.pct, stars:r.stars,
+          unitIdx:r.unit_idx, color:r.color,
+          name:r.student_name, id:r.local_id,
+          timeTaken:r.time_taken, answers:r.answers||[],
+          date:r.date_str, time:r.time_str,
+          quit:r.quit, abandoned:r.abandoned
+        }));
+      SCORES.push(...incoming);
+      SCORES.sort((a,b) => b.id - a.id);
+      if(SCORES.length > 200) SCORES.length = 200;
+      localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
+    }
+    // Push any local-only data the server didn't have
+    _pushDone();
+    _pushScores();
+    updateSyncLabel();
+    buildHome();
+  } catch(e){ console.warn('[Supabase] pull error', e); }
+  finally{
+    if(syncEl) syncEl.style.display = 'none';
+  }
+}
+
+async function _pushDone(){
+  if(!_supa || !_supaUser) return;
+  try{
+    await _supa.from('student_progress').upsert(
+      { user_id:_supaUser.id, done_json:DONE, updated_at:new Date().toISOString() },
+      { onConflict:'user_id' }
+    );
+  } catch(e){ console.warn('[Supabase] pushDone error', e); }
+}
+
+async function _pushScores(){
+  if(!_supa || !_supaUser || !SCORES.length) return;
+  try{
+    const rows = SCORES.map(s => ({
+      user_id:_supaUser.id, local_id:s.id,
+      qid:s.qid||'', label:s.label||'', type:s.type||'',
+      score:s.score||0, total:s.total||0, pct:s.pct||0,
+      stars:s.stars||'', unit_idx:s.unitIdx??null, color:s.color||null,
+      student_name:s.name||null, time_taken:s.timeTaken||null,
+      answers:s.answers||[], date_str:s.date||null, time_str:s.time||null,
+      quit:!!s.quit, abandoned:!!s.abandoned
+    }));
+    await _supa.from('quiz_scores').upsert(rows,
+      { onConflict:'user_id,local_id', ignoreDuplicates:true });
+  } catch(e){ console.warn('[Supabase] pushScores error', e); }
+}
+
+async function _cloudDeleteAllScores(){
+  if(!_supa || !_supaUser) return;
+  try{
+    await _supa.from('quiz_scores').delete().eq('user_id', _supaUser.id);
+    await _supa.from('student_progress').upsert(
+      { user_id:_supaUser.id, done_json:{}, updated_at:new Date().toISOString() },
+      { onConflict:'user_id' }
+    );
+  } catch(e){ console.warn('[Supabase] cloudDelete error', e); }
+}
+
+async function _cloudDeleteScore(localId){
+  if(!_supa || !_supaUser) return;
+  try{
+    await _supa.from('quiz_scores').delete()
+      .eq('user_id', _supaUser.id).eq('local_id', localId);
+  } catch(e){ console.warn('[Supabase] cloudDeleteScore error', e); }
+}
+
+// Monkey-patch saveDone / saveSc to push to cloud on every local save
+const _origSaveDone = saveDone;
+saveDone = function(){ _origSaveDone(); _pushDone(); };
+const _origSaveSc = saveSc;
+saveSc = function(){ _origSaveSc(); _pushScores(); };
+
+async function syncNow(){
+  if(!_supa || !_supaUser){ showLockToast('Not signed in.'); return; }
+  showLockToast('Syncing…');
+  await _pushDone();
+  await _pushScores();
+  updateSyncLabel();
+  showLockToast('Synced! ✅');
+}
+
+// ── AUTH UI ──────────────────────────────
+function openAuthModal(){
+  _switchAuthTab('login');
+  document.getElementById('auth-email').value    = '';
+  document.getElementById('auth-password').value = '';
+  document.getElementById('auth-msg').textContent= '';
+  document.getElementById('auth-modal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('auth-email').focus(), 120);
+}
+
+function closeAuthModal(){
+  document.getElementById('auth-modal').style.display = 'none';
+}
+
+function _switchAuthTab(tab){
+  const isSignup = tab === 'signup';
+  document.getElementById('auth-tab-login').className  = 'auth-tab-btn ' + (isSignup?'idle':'active');
+  document.getElementById('auth-tab-signup').className = 'auth-tab-btn ' + (isSignup?'active':'idle');
+  document.getElementById('auth-name-row').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-role-row').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-submit-btn').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-modal').dataset.tab = tab;
+  document.getElementById('auth-msg').textContent = '';
+}
+
+function _selectAuthRole(role){
+  _authRole = role;
+  document.getElementById('auth-role-student').className = 'auth-role-btn ' + (role==='student'?'active':'idle');
+  document.getElementById('auth-role-parent').className  = 'auth-role-btn ' + (role==='parent' ?'active':'idle');
+}
+
+async function submitAuth(){
+  if(!_supa || _authLoading) return;
+  const tab      = document.getElementById('auth-modal').dataset.tab || 'login';
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const msgEl    = document.getElementById('auth-msg');
+  if(!email || !password){ msgEl.textContent='⚠️ Please enter email and password.'; return; }
+  if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
+  _authLoading = true;
+  const btn = document.getElementById('auth-submit-btn');
+  const origTxt = btn.textContent;
+  btn.textContent = '…';
+  msgEl.style.color = '#4a90d9';
+  msgEl.textContent = tab==='signup' ? 'Creating account…' : 'Signing in…';
+  try{
+    let result;
+    if(tab === 'signup'){
+      const displayName = document.getElementById('auth-name').value.trim()
+        || loadSettings().studentName || 'Student';
+      result = await _supa.auth.signUp({
+        email, password,
+        options: { data: { display_name:displayName, role:_authRole } }
+      });
+    } else {
+      result = await _supa.auth.signInWithPassword({ email, password });
+    }
+    if(result.error){
+      msgEl.style.color = '#e74c3c';
+      msgEl.textContent = '⚠️ ' + result.error.message;
+    } else if(tab==='signup' && !result.data.session){
+      msgEl.style.color = '#27ae60';
+      msgEl.textContent = '✅ Check your email to confirm your account!';
+    } else {
+      closeAuthModal();
+      showLockToast('Signed in! Syncing…');
+    }
+  } catch(e){
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ Network error — check your connection.';
+  } finally {
+    _authLoading = false;
+    btn.textContent = origTxt;
+  }
+}
+
+async function supaSignOut(){
+  if(!_supa) return;
+  if(!confirm('Sign out? Your local progress stays on this device.')) return;
+  await _supa.auth.signOut();
+  _supaUser = null;
+  updateAccountUI();
+  showLockToast('Signed out.');
+}
+
+function updateAccountUI(){
+  const nudge = document.getElementById('guest-account-nudge');
+  if(nudge) nudge.style.display = _supaUser ? 'none' : 'block';
+  const signout = document.getElementById('signout-btn-wrap');
+  if(signout) signout.style.display = _supaUser ? 'block' : 'none';
+}
+
+async function _signOut(){
+  if(!_supa) return;
+  await _supa.auth.signOut();
+  // onAuthStateChange SIGNED_OUT will redirect to login-screen
+}
+
+function updateSyncLabel(){
+  const el = document.getElementById('account-sync-lbl');
+  if(el) el.textContent = 'Last synced: ' +
+    new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
 let CUR = { unitIdx:0, lessonIdx:0, quiz:null };
 // quiz: { questions[], shuffled[], idx, score, answers[], id, label, type, returnTo }
 
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
-const ALL_SCREENS = ['home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen'];
+const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen'];
 function show(id){
-  ALL_SCREENS.forEach(s=>document.getElementById(s).classList.remove('on'));
+  ALL_SCREENS.forEach(s=>document.getElementById(s)?.classList.remove('on'));
   const el = document.getElementById(id);
   el.classList.add('on');
   el.scrollTop = 0;
   // Hide the settings cog when inside settings, show everywhere else
   const cog = document.querySelector('.cog-btn');
-  if(cog) cog.style.display = id === 'settings-screen' ? 'none' : '';
+  if(cog) cog.style.display = (id === 'settings-screen' || id === 'login-screen' || id === 'parent-screen') ? 'none' : '';
+  // Trigger per-screen spotlight tour on first visit
+  _spotCheckScreen(id);
 }
 
 // ════════════════════════════════════════
@@ -5898,7 +6632,7 @@ function openLesson(unitIdx, lessonIdx){
   // Badge only shows when quiz passed with 100%
   const quizPassed = SCORES.some(s => s.qid === 'lq_'+l.id && s.pct === 100);
   const badge = document.getElementById('les-badge');
-  if(quizPassed){ badge.textContent='✅ Complete'; badge.style.cssText='background:#eafaf1;color:#27ae60;border-radius:50px;padding:6px 16px'; }
+  if(quizPassed){ badge.textContent='✅'; badge.style.cssText='background:#eafaf1;color:#27ae60;border-radius:50px;padding:5px 10px;font-size:1.1rem'; }
   else { badge.textContent=''; badge.style.cssText=''; }
 
   const body = document.getElementById('les-body');
@@ -6295,7 +7029,13 @@ function _runQuiz(bank, qid, label, type, unitIdx){
 
   // Timer: 60 min for final, configurable for unit/lesson
   const secs = type === 'final' ? 60*60 : type === 'unit' ? getUnitTimerMins()*60 : getLessonTimerMins()*60;
-  _startTimer(secs, color);
+  // Defer timer start if quiz spotlight tour hasn't run yet (tour will start it when done)
+  if(!localStorage.getItem('wb_spot_quiz-screen')){
+    _pendingTimerSecs  = secs;
+    _pendingTimerColor = color;
+  } else {
+    _startTimer(secs, color);
+  }
 
   _renderQ();
   show('quiz-screen');
@@ -6409,6 +7149,7 @@ function _pickAnswer(btnIdx){
 
   const nb = document.getElementById('next-btn');
   if(nb) nb.style.display = 'block';
+
 }
 
 function nextQ(){
@@ -6680,6 +7421,107 @@ function showQuitConfirm(){
 function cancelQuit(){
   document.getElementById('quit-confirm-modal').style.display = 'none';
 }
+
+// ── Scratch Pad ──────────────────────────────────────────
+let _scratchCtx = null;
+let _scratchDrawing = false;
+let _scratchColor = '#222';
+let _scratchTool = 'pen';
+let _scratchLastX = 0;
+let _scratchLastY = 0;
+
+function openScratchPad(){
+  const overlay = document.getElementById('scratch-overlay');
+  if(!overlay) return;
+  overlay.style.display = 'flex';
+  setTimeout(_initScratchCanvas, 50);
+}
+
+function closeScratchPad(){
+  const overlay = document.getElementById('scratch-overlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+function _initScratchCanvas(){
+  const wrap = document.getElementById('scratch-canvas-wrap');
+  const canvas = document.getElementById('scratch-canvas');
+  if(!wrap || !canvas) return;
+  // Set canvas resolution to match physical pixels
+  const dpr = window.devicePixelRatio || 1;
+  const rect = wrap.getBoundingClientRect();
+  if(canvas._initialized && canvas.width === Math.round(rect.width * dpr)) return;
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  _scratchCtx = canvas.getContext('2d');
+  _scratchCtx.scale(dpr, dpr);
+  _scratchCtx.lineCap = 'round';
+  _scratchCtx.lineJoin = 'round';
+  canvas._initialized = true;
+  _bindScratchEvents(canvas);
+}
+
+function _bindScratchEvents(canvas){
+  if(canvas._bound) return;
+  canvas._bound = true;
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  }
+  function start(e){
+    e.preventDefault();
+    _scratchDrawing = true;
+    const p = getPos(e);
+    _scratchLastX = p.x; _scratchLastY = p.y;
+    _scratchCtx.beginPath();
+    _scratchCtx.arc(p.x, p.y, _scratchTool==='eraser'?10:2, 0, Math.PI*2);
+    _scratchCtx.fillStyle = _scratchTool==='eraser' ? '#fff' : _scratchColor;
+    _scratchCtx.fill();
+  }
+  function move(e){
+    e.preventDefault();
+    if(!_scratchDrawing) return;
+    const p = getPos(e);
+    _scratchCtx.beginPath();
+    _scratchCtx.moveTo(_scratchLastX, _scratchLastY);
+    _scratchCtx.lineTo(p.x, p.y);
+    _scratchCtx.strokeStyle = _scratchTool==='eraser' ? '#fff' : _scratchColor;
+    _scratchCtx.lineWidth = _scratchTool==='eraser' ? 22 : 3;
+    _scratchCtx.stroke();
+    _scratchLastX = p.x; _scratchLastY = p.y;
+  }
+  function stop(){ _scratchDrawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', stop);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', stop);
+}
+
+function clearScratchPad(){
+  if(!_scratchCtx) return;
+  const canvas = document.getElementById('scratch-canvas');
+  _scratchCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function setScratchColor(color, btn){
+  _scratchColor = color;
+  _scratchTool = 'pen';
+  document.querySelectorAll('.scratch-color-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('sc-pen-btn').classList.add('active');
+  document.getElementById('sc-erase-btn').classList.remove('active');
+  if(_scratchCtx){ _scratchCtx.strokeStyle = color; }
+}
+
+function setScratchTool(tool){
+  _scratchTool = tool;
+  document.getElementById('sc-pen-btn').classList.toggle('active', tool==='pen');
+  document.getElementById('sc-erase-btn').classList.toggle('active', tool==='eraser');
+}
 function confirmQuit(){
   document.getElementById('quit-confirm-modal').style.display = 'none';
   const qz = CUR.quiz;
@@ -6877,7 +7719,7 @@ function closeScLightbox(){
   document.getElementById('sc-lightbox').classList.remove('open');
 }
 
-function delScore(id){ const i=SCORES.findIndex(s=>s.id===id); if(i>-1){SCORES.splice(i,1);saveSc();buildHistory();} }
+function delScore(id){ const i=SCORES.findIndex(s=>s.id===id); if(i>-1){SCORES.splice(i,1);saveSc();_cloudDeleteScore(id);buildHistory();} }
 function clearAll(){ if(confirm('Clear ALL saved scores?')){SCORES.length=0;saveSc();buildHistory();} }
 
 // ════════════════════════════════════════
@@ -7078,7 +7920,7 @@ function applyStoredTheme(){
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.10';
+const APP_VERSION = 'v5.14';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -7112,9 +7954,11 @@ function checkParentPin(){
   const entered = document.getElementById('parent-pin-inp').value;
   const msg = document.getElementById('pin-msg');
   if(entered === getPin()){
-    document.getElementById('parent-panel').style.display = 'block';
-    document.getElementById('pin-entry-row').style.display = 'none';
+    closePinModal();
     document.getElementById('parent-pin-inp').value = '';
+    playSwooshForward();
+    show('parent-screen');
+    document.getElementById('parent-panel').style.display = 'block';
     // Show first-time PIN change prompt if still using default
     const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
     if(isDefault){
@@ -7130,16 +7974,9 @@ function checkParentPin(){
       msg.style.color = '#27ae60';
     }
     updateParentStatus();
-    show('settings-screen'); // ensure we stay on settings regardless of where we came from
-    // Scroll settings screen so parent panel is visible
-    setTimeout(()=>{
-      const panel = document.getElementById('parent-panel');
-      if(panel) panel.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 80);
   } else {
     msg.textContent = '❌ Wrong PIN. Try again.';
     msg.style.color = '#e74c3c';
-    document.getElementById('parent-panel').style.display = 'none';
   }
 }
 
@@ -7174,16 +8011,15 @@ function parentLockAll(){
   // Reset PIN to default and clear the changed flag
   localStorage.removeItem(PARENT_PIN_KEY);
   localStorage.removeItem(PIN_CHANGED_KEY);
-  // Hide panel, show PIN row
+  // Hide panel (PIN entry is now in the modal)
   document.getElementById('parent-panel').style.display = 'none';
-  const per = document.getElementById('pin-entry-row');
-  if(per) per.style.display = 'block';
   // Clear all lesson completion flags
   Object.keys(DONE).forEach(k => delete DONE[k]);
   saveDone();
   // Clear all scores so lock checks start fresh
   SCORES.length = 0;
   saveSc();
+  _cloudDeleteAllScores();
   updateParentStatus();
   showLockToast('Progress reset. Lessons re-locked.');
   buildHome();
@@ -7196,6 +8032,7 @@ function parentClearScores(){
   // Also clear DONE so lesson status resets
   Object.keys(DONE).forEach(k => delete DONE[k]);
   saveDone();
+  _cloudDeleteAllScores();
   updateParentStatus();
   showLockToast('All scores cleared.');
   buildHome();
@@ -7240,19 +8077,19 @@ function changePin(){
   const msg = document.getElementById('pin-change-msg');
   if(newPin.length < 4){ msg.textContent='⚠️ PIN must be at least 4 digits'; msg.style.color='#e74c3c'; return; }
   localStorage.setItem(PARENT_PIN_KEY, newPin);
-  localStorage.setItem(PIN_CHANGED_KEY, '1'); // Mark that PIN has been customised
-  const pinHint = document.getElementById('pin-default-hint');
-  if(pinHint) pinHint.style.display = 'none';
+  localStorage.setItem(PIN_CHANGED_KEY, '1');
+  // Hide default PIN notices everywhere
+  document.querySelectorAll('#pin-default-hint,#default-pin-notice').forEach(el=>{ if(el) el.style.display='none'; });
   document.getElementById('new-pin-inp').value = '';
-  msg.textContent = '✅ PIN changed successfully!';
+  msg.textContent = '✅ PIN changed!';
   msg.style.color = '#27ae60';
-  // Clear the first-time warning in pin-msg too
-  const pinMsg = document.getElementById('pin-msg');
-  if(pinMsg){ pinMsg.textContent = '✅ Parent controls unlocked!'; pinMsg.style.color='#27ae60'; }
   setTimeout(()=>{
-    msg.textContent='';
-    document.getElementById('pin-change-area').style.display='none';
-  }, 2000);
+    msg.textContent = '';
+    document.getElementById('pin-change-area').style.display = 'none';
+    // Update the Change PIN button label to confirm
+    const changePinBtn = document.querySelector('[onclick*="pin-change-area"][onclick*="block"]');
+    if(changePinBtn) changePinBtn.textContent = '🔑 Change PIN Again';
+  }, 1500);
 }
 
 // ════════════════════════════════════════
@@ -7274,8 +8111,70 @@ function autoSaveSettings(){
   saveSettings();
 }
 
+// ── FEEDBACK ─────────────────────────────
+let _fbRating = 0;
+let _fbCategory = '';
+
+function _fbSetRating(v){
+  _fbRating = v;
+  document.querySelectorAll('.fb-star').forEach(s => {
+    s.textContent = parseInt(s.dataset.v) <= v ? '★' : '☆';
+    s.style.color  = parseInt(s.dataset.v) <= v ? '#f1c40f' : '';
+  });
+}
+
+function _fbSetCat(el, cat){
+  _fbCategory = cat;
+  document.querySelectorAll('.fb-cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function _submitFeedback(){
+  const msg = document.getElementById('fb-msg');
+  if(!_fbRating){ msg.style.color='#e74c3c'; msg.textContent='Please select a star rating.'; return; }
+  if(!_fbCategory){ msg.style.color='#e74c3c'; msg.textContent='Please select a category.'; return; }
+  const comment = document.getElementById('fb-comment').value.trim();
+  msg.style.color='var(--txt2)'; msg.textContent='Sending…';
+
+  if(_supa){
+    const { error } = await _supa.from('feedback').insert({
+      rating: _fbRating,
+      category: _fbCategory,
+      comment: comment || null,
+      app_version: APP_VERSION,
+      user_id: _supaUser ? _supaUser.id : null
+    });
+    if(error){ msg.style.color='#e74c3c'; msg.textContent='Error: ' + error.message; return; }
+  }
+
+  // Reset form
+  _fbRating = 0; _fbCategory = '';
+  _fbSetRating(0);
+  document.querySelectorAll('.fb-cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('fb-comment').value = '';
+  msg.style.color='#27ae60'; msg.textContent='✅ Thank you for your feedback!';
+  setTimeout(()=>{ msg.textContent=''; }, 4000);
+}
+
+function goParentControls(){
+  playTap();
+  openPinModal();
+}
+
+function openPinModal(){
+  document.getElementById('pin-modal').style.display = '';
+  document.getElementById('parent-pin-inp').value = '';
+  document.getElementById('pin-msg').textContent = '';
+  setTimeout(()=>{ const inp = document.getElementById('parent-pin-inp'); if(inp) inp.focus(); }, 150);
+}
+
+function closePinModal(){
+  document.getElementById('pin-modal').style.display = 'none';
+}
+
 function goSettings(){
   playTap();
+  updateAccountUI();
   const cfg = loadSettings();
   document.getElementById('set-student').value = cfg.studentName || '';
   const mode = localStorage.getItem('wb_theme') || 'light';
@@ -7284,14 +8183,9 @@ function goSettings(){
   const snd = isSoundEnabled() ? 'on' : 'off';
   document.getElementById('sound-on').classList.toggle('active', snd==='on');
   document.getElementById('sound-off').classList.toggle('active', snd==='off');
-  // Hide default PIN hint if PIN has already been changed
-  const pinHint = document.getElementById('pin-default-hint');
-  if(pinHint) pinHint.style.display = localStorage.getItem(PIN_CHANGED_KEY) ? 'none' : 'block';
-  // Reset parent panel
-  document.getElementById('parent-pin-inp').value = '';
-  document.getElementById('pin-msg').textContent = '';
-  document.getElementById('parent-panel').style.display = 'none';
-  document.getElementById('pin-entry-row').style.display = 'block';
+  // Reset parent panel (PIN entry is now in the modal)
+  const ppanel = document.getElementById('parent-panel');
+  if(ppanel) ppanel.style.display = 'none';
   show('settings-screen');
 }
 
@@ -7320,6 +8214,309 @@ document.addEventListener('keydown', e => {
 });
 
 // ════════════════════════════════════════
+//  FIRST-TIME TUTORIAL
+// ════════════════════════════════════════
+const TUT_SLIDES = [
+  {
+    emoji: '🌱',
+    title: 'Welcome to My Math Roots!',
+    body: `A <strong>K–5 math review app</strong> built to help students practice and grow. Let's take a quick tour so you know your way around!`
+  },
+  {
+    emoji: '📚',
+    title: '10 Math Units',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">👆</span><div class="tut-feature-txt"><strong>Scroll the unit cards</strong> on the home screen to browse all 10 units — from Counting & Numbers all the way to Fractions.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔒</span><div class="tut-feature-txt"><strong>Units unlock as you progress</strong> — complete lessons to move forward.</div></div>`
+  },
+  {
+    emoji: '📝',
+    title: 'Lessons & Quizzes',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📖</span><div class="tut-feature-txt"><strong>Tap a unit</strong> to see its lessons. Read each lesson, then take the <strong>Lesson Quiz</strong> to test your knowledge.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏆</span><div class="tut-feature-txt">Complete all lessons to unlock the <strong>Unit Quiz</strong> — a 25-question challenge!</div></div>`
+  },
+  {
+    emoji: '⭐',
+    title: 'Track Your Progress',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">📊</span><div class="tut-feature-txt">Your <strong>progress bar</strong> on the home screen shows how many lessons you've completed across all units.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🏅</span><div class="tut-feature-txt">Tap <strong>Score History</strong> to review every quiz you've taken, see your stars, and check your answers.</div></div>`
+  },
+  {
+    emoji: '🔐',
+    title: 'Parent Controls',
+    body: `<div class="tut-feature-row"><span class="tut-feature-ico">⚙️</span><div class="tut-feature-txt">Tap the <strong>cog icon ⚙️</strong> on any screen to open Settings.</div></div><div class="tut-feature-row"><span class="tut-feature-ico">🔐</span><div class="tut-feature-txt">Inside Settings, open <strong>Parent Controls</strong> to set quiz timers, lock/unlock content, change your PIN, and send feedback.</div></div>`
+  },
+  {
+    emoji: '🎉',
+    title: "You're all set!",
+    body: `Your progress and scores <strong>sync automatically</strong> across all your devices when you're signed in.<br><br>Now let's start learning! 🌱`
+  }
+];
+
+let _tutIdx = 0;
+
+function tutCheckAndShow(){
+  if(localStorage.getItem('wb_tutorial_v1')) return;
+  _tutIdx = 0;
+  _tutRender();
+  document.getElementById('tut-overlay').style.display = 'flex';
+}
+
+function _tutRender(){
+  const slide = TUT_SLIDES[_tutIdx];
+  const total = TUT_SLIDES.length;
+  // Emoji, title, body
+  document.getElementById('tut-emoji').textContent = slide.emoji;
+  document.getElementById('tut-title').textContent = slide.title;
+  document.getElementById('tut-body').innerHTML = slide.body;
+  // Dots
+  const dotsEl = document.getElementById('tut-dots');
+  dotsEl.innerHTML = '';
+  for(let i=0;i<total;i++){
+    const d = document.createElement('div');
+    d.className = 'tut-dot' + (i===_tutIdx?' active':'');
+    dotsEl.appendChild(d);
+  }
+  // Buttons
+  const nextBtn = document.getElementById('tut-next-btn');
+  const skipBtn = document.getElementById('tut-skip-btn');
+  const isLast = _tutIdx === total - 1;
+  nextBtn.textContent = isLast ? "Let's Go! 🚀" : 'Next →';
+  skipBtn.style.display = isLast ? 'none' : '';
+}
+
+function tutNext(){
+  if(_tutIdx < TUT_SLIDES.length - 1){
+    _tutIdx++;
+    _tutRender();
+  } else {
+    tutSkip();
+  }
+}
+
+function tutSkip(){
+  localStorage.setItem('wb_tutorial_v1','1');
+  document.getElementById('tut-overlay').style.display = 'none';
+}
+
+// ════════════════════════════════════════
+//  SCREEN SPOTLIGHT TOUR
+// ════════════════════════════════════════
+const SPOT_TOURS = {
+  'home': [
+    {
+      sel: '.op-title',
+      emoji: '⭐',
+      title: 'Your Progress',
+      tip: 'Shows how many lessons you\'ve completed across all 10 units.'
+    },
+    {
+      sel: '#ugrid .ucard',
+      emoji: '📚',
+      title: 'Math Units',
+      tip: 'Tap a unit card to start learning. Scroll right to see all 10 units!'
+    },
+    {
+      sel: '.scores-link .big-btn',
+      emoji: '🏆',
+      title: 'Score History',
+      tip: 'Tap here to review all your past quizzes, star ratings, and answers.'
+    },
+    {
+      sel: '.cog-btn',
+      emoji: '⚙️',
+      title: 'Settings',
+      tip: 'Change your name, appearance, sounds, and open Parent Controls.'
+    }
+  ],
+  'unit-screen': [
+    {
+      sel: '#lesson-cards .lcard',
+      emoji: '📖',
+      title: 'Lessons',
+      tip: 'Tap a lesson to start. Complete all lessons to unlock the Unit Quiz!'
+    },
+    {
+      sel: '#uq-btn',
+      emoji: '🏆',
+      title: 'Unit Quiz',
+      tip: 'A 25-question challenge that tests everything from this unit!'
+    }
+  ],
+  'quiz-screen': [
+    {
+      sel: '#qlbl',
+      emoji: '📊',
+      title: 'Question Counter',
+      tip: 'Shows your current question number and total questions in this quiz.'
+    },
+    {
+      sel: '.quiz-scratch-btn',
+      emoji: '✏️',
+      title: 'Note Pad',
+      tip: 'Open a drawing pad to work out math problems by hand!'
+    }
+  ],
+  'settings-screen': [
+    {
+      sel: '[onclick="goParentControls()"]',
+      emoji: '🔐',
+      title: 'Parent Controls',
+      tip: 'Set timers, lock content, change PIN, and send feedback.'
+    }
+  ],
+  'history-screen': [
+    {
+      sel: '#history-list .hist-card',
+      emoji: '📋',
+      title: 'Score Entry',
+      tip: 'Tap any entry to review your answers and see what you got right!'
+    }
+  ]
+};
+
+let _spotScreen      = null;
+let _spotStepIdx     = 0;
+let _spotActive      = false;
+let _pendingTimerSecs  = 0;
+let _pendingTimerColor = '';
+
+function _spotCheckScreen(screenId){
+  if(_spotActive) return;
+  if(!SPOT_TOURS[screenId]) return;
+  if(localStorage.getItem('wb_spot_' + screenId)) return;
+  _spotScreen  = screenId;
+  _spotStepIdx = 0;
+  setTimeout(_spotShowStep, 700);
+}
+
+function _spotShowStep(){
+  const steps = SPOT_TOURS[_spotScreen];
+  if(!steps || _spotStepIdx >= steps.length){ _spotDone(); return; }
+
+  const step = steps[_spotStepIdx];
+  // Try to find the element
+  let el = null;
+  try { el = document.querySelector(step.sel); } catch(e){}
+  if(!el){
+    // Try fallback selectors for known tricky elements
+    if(step.sel.includes('goParentControls')){
+      // find the button directly
+      document.querySelectorAll('button').forEach(b=>{
+        if(b.getAttribute('onclick') && b.getAttribute('onclick').includes('goParentControls')) el = b;
+      });
+    }
+  }
+  if(!el){ _spotStepIdx++; _spotShowStep(); return; }
+
+  const rect = el.getBoundingClientRect();
+  if(rect.width === 0 && rect.height === 0){ _spotStepIdx++; _spotShowStep(); return; }
+
+  _spotActive = true;
+  _spotRender(step, rect);
+}
+
+function _spotRender(step, rect){
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Spotlight rectangle — match element dimensions + small padding
+  const pad = 10;
+  const hx  = Math.max(0, rect.left - pad);
+  const hy  = Math.max(0, rect.top  - pad);
+  const hw  = Math.min(vw, rect.width  + pad * 2);
+  const hh  = Math.min(vh, rect.height + pad * 2);
+  const rx  = 16; // rounded corners
+
+  // Center used for card placement
+  const cy = rect.top + rect.height / 2;
+
+  // Update SVG dimensions
+  const svg = document.getElementById('spot-svg');
+  svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+  svg.setAttribute('width',  vw);
+  svg.setAttribute('height', vh);
+
+  // Update mask background
+  const bgRect = document.getElementById('spot-bg-rect');
+  bgRect.setAttribute('width',  vw);
+  bgRect.setAttribute('height', vh);
+
+  const dimRect = document.getElementById('spot-dim-rect');
+  dimRect.setAttribute('width',  vw);
+  dimRect.setAttribute('height', vh);
+
+  // Update spotlight hole (rect in mask)
+  const hole = document.getElementById('spot-hole');
+  hole.setAttribute('x', hx);
+  hole.setAttribute('y', hy);
+  hole.setAttribute('width',  hw);
+  hole.setAttribute('height', hh);
+  hole.setAttribute('rx', rx);
+
+  // Update glowing outline ring
+  const ring = document.getElementById('spot-ring');
+  ring.setAttribute('x', hx - 3);
+  ring.setAttribute('y', hy - 3);
+  ring.setAttribute('width',  hw + 6);
+  ring.setAttribute('height', hh + 6);
+  ring.setAttribute('rx', rx + 3);
+
+  // Card content
+  document.getElementById('spot-emoji').textContent = step.emoji;
+  document.getElementById('spot-title').textContent = step.title;
+  document.getElementById('spot-tip').textContent   = step.tip;
+
+  const steps   = SPOT_TOURS[_spotScreen];
+  const isLast  = _spotStepIdx === steps.length - 1;
+  document.getElementById('spot-next-btn').textContent = isLast ? '✓ Got it!' : 'Next →';
+  document.getElementById('spot-count').textContent    = `${_spotStepIdx + 1} / ${steps.length}`;
+
+  // Position card: below spotlight if element in top half, above if in bottom half
+  const card  = document.getElementById('spot-card');
+  const cardW = Math.min(300, vw - 40);
+  card.style.width = cardW + 'px';
+
+  const cardLeft = Math.max(20, Math.min((vw - cardW) / 2, vw - cardW - 20));
+  card.style.left = cardLeft + 'px';
+
+  // Estimate card height ~130px
+  const cardH = 130;
+  let cardTop;
+  if(cy < vh * 0.55){
+    cardTop = hy + hh + 18;
+  } else {
+    cardTop = hy - cardH - 18;
+  }
+  cardTop = Math.max(12, Math.min(cardTop, vh - cardH - 12));
+  card.style.top = cardTop + 'px';
+
+  document.getElementById('spot-overlay').style.display = 'block';
+}
+
+function _spotAdvance(){
+  if(!_spotActive) return;
+  _spotStepIdx++;
+  const steps = SPOT_TOURS[_spotScreen];
+  if(!steps || _spotStepIdx >= steps.length){
+    _spotDone();
+  } else {
+    _spotActive = false;
+    _spotShowStep();
+  }
+}
+
+function _spotDone(){
+  const wasScreen = _spotScreen;
+  _spotActive = false;
+  if(_spotScreen) localStorage.setItem('wb_spot_' + _spotScreen, '1');
+  document.getElementById('spot-overlay').style.display = 'none';
+  _spotScreen = null;
+  // If quiz tour just finished, start the deferred timer
+  if(wasScreen === 'quiz-screen' && _pendingTimerSecs > 0){
+    _startTimer(_pendingTimerSecs, _pendingTimerColor);
+    _pendingTimerSecs = 0;
+    _pendingTimerColor = '';
+  }
+}
+
+// ════════════════════════════════════════
 //  BOOT
 // ════════════════════════════════════════
 applyStoredTheme();
@@ -7327,7 +8524,17 @@ buildHome();
 // Set version display
 const vEl = document.getElementById('app-version');
 if(vEl) vEl.textContent = APP_VERSION;
-
+supabaseInit();
+// Disable old slideshow tutorial — replaced by spotlight tour
+localStorage.setItem('wb_tutorial_v1','1');
+// Safety net: if auth never resolves within 5s, dismiss splash and show login
+setTimeout(() => {
+  const splash = document.getElementById('auth-splash');
+  if(splash && splash.style.display !== 'none'){
+    _dismissSplash();
+    if(!_supaUser) show('login-screen');
+  }
+}, 5000);
 
 
 
@@ -7348,6 +8555,7 @@ if(vEl) vEl.textContent = APP_VERSION;
     'results-screen': { prev:'unit-screen',  back:()=>afterResults() },
     'history-screen': { prev:'home',         back:()=>{ playSwooshBack(); goHome(); } },
     'settings-screen':{ prev:'home',         back:()=>{ playSwooshBack(); goHome(); } },
+    'parent-screen':   { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); } },
   };
 
   let curEl=null, prevEl=null, entry=null;
@@ -7361,12 +8569,13 @@ if(vEl) vEl.textContent = APP_VERSION;
   function css(el, props){ Object.assign(el.style, props); }
 
   function cleanup(){
+    document.body.classList.remove('swiping');
     if(curEl){
       css(curEl,{transition:'',transform:'',boxShadow:'',willChange:''});
     }
     if(prevEl){
       prevEl.classList.remove('swipe-peek');
-      css(prevEl,{transition:'',transform:'',opacity:'',willChange:''});
+      css(prevEl,{transition:'',transform:'',opacity:'',willChange:'',display:''});
     }
     curEl=null; prevEl=null; entry=null; dragging=false; locked=false;
   }
@@ -7381,6 +8590,7 @@ if(vEl) vEl.textContent = APP_VERSION;
     curEl  = document.getElementById(id);
     prevEl = document.getElementById(entry.prev);
     sx=t.clientX; sy=t.clientY; t0=Date.now(); dragging=true;
+    document.body.classList.add('swiping');
 
     // Prepare both screens — no transitions during live drag
     css(curEl, {transition:'none', willChange:'transform'});
@@ -7434,15 +8644,22 @@ if(vEl) vEl.textContent = APP_VERSION;
       const savedPrev = prevEl;
       const savedEntry = entry;
       setTimeout(()=>{
-        // Suppress pop animation on target — it already animated in via swipe
-        if(savedPrev) savedPrev.style.animation = 'none';
-        // Navigate first (removes .on from curEl → display:none) THEN cleanup styles
+        // Keep prevEl visible through show() which briefly hides all screens
+        if(savedPrev) { savedPrev.style.display = 'block'; savedPrev.style.animation = 'none'; }
+        // Navigate first (hides curEl), then clean up styles
         savedEntry.back();
         cleanup();
-        // Re-enable animation after paint so future navigation works normally
-        requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          if(savedPrev) savedPrev.style.animation = '';
-        }));
+        // Re-enable pop only after the screen next loses .on (user navigates away)
+        // Using MutationObserver avoids the 2-frame rAF flicker
+        if(savedPrev){
+          const obs = new MutationObserver(()=>{
+            if(!savedPrev.classList.contains('on')){
+              savedPrev.style.animation = '';
+              obs.disconnect();
+            }
+          });
+          obs.observe(savedPrev, {attributes:true, attributeFilter:['class']});
+        }
       }, ANIM_MS);
     } else {
       // Snap back — current slides home, previous retreats
@@ -7458,43 +8675,47 @@ if(vEl) vEl.textContent = APP_VERSION;
 // ════════════════════════════════════════
 //  PWA — SERVICE WORKER (full offline)
 // ════════════════════════════════════════
-function showUpdateBanner(){
+function _showUpdatedToast(){
   const b = document.getElementById('update-banner');
   if(!b) return;
   b.style.display = 'flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>b.classList.add('show')));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    b.classList.add('show');
+    setTimeout(()=>{
+      b.classList.remove('show');
+      setTimeout(()=>{ b.style.display='none'; }, 400);
+    }, 3000);
+  }));
 }
-function applyUpdate(){
-  const b = document.getElementById('update-banner');
-  if(b){ b.classList.remove('show'); }
-  // Tell waiting SW to take over, then reload
+function _autoApplyUpdate(){
+  sessionStorage.setItem('app-just-updated','1');
   navigator.serviceWorker.getRegistration().then(reg => {
     if(reg && reg.waiting){ reg.waiting.postMessage({type:'SKIP_WAITING'}); }
-    window.location.reload();
+    else { window.location.reload(); }
   });
 }
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').then(reg => {
-    // Check every minute for updates
     setInterval(()=>reg.update(), 60000);
-    // Also check on page visibility change (user returns to app)
     document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) reg.update(); });
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
       sw.addEventListener('statechange', () => {
         if(sw.state === 'installed' && navigator.serviceWorker.controller){
-          showUpdateBanner();
+          _autoApplyUpdate();
         }
       });
     });
-    // If a SW is already waiting when app opens (e.g. update happened while closed)
-    if(reg.waiting && navigator.serviceWorker.controller){
-      showUpdateBanner();
-    }
+    if(reg.waiting && navigator.serviceWorker.controller){ _autoApplyUpdate(); }
   }).catch(e => console.log('SW registration failed:', e));
-  // Reload when new SW takes control
   navigator.serviceWorker.addEventListener('controllerchange', ()=>window.location.reload());
+}
+
+// After auto-update reload, show brief toast
+if(sessionStorage.getItem('app-just-updated')){
+  sessionStorage.removeItem('app-just-updated');
+  document.addEventListener('DOMContentLoaded', ()=>setTimeout(_showUpdatedToast, 1200));
 }
 
 // ════════════════════════════════════════
@@ -7834,10 +9055,7 @@ function closeInstall(){
   document.getElementById('install-modal').style.display='none';
   localStorage.setItem('install_seen','1');
 }
-// Show install hint automatically on first visit (iOS only)
-if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone && !localStorage.getItem('install_seen')){
-  setTimeout(showInstall, 1500);
-}
+// Install hint removed — available via Settings > How to Install button only
 </script>
 <!-- ════════════════════════════════════════
      SETTINGS SCREEN
@@ -7892,37 +9110,67 @@ if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone && !lo
       </div>
     </div>
 
-    <!-- Parent Override -->
+    <!-- Parent Controls — navigate to dedicated screen -->
     <div class="set-section">
       <div class="set-sec-head"><span class="set-sec-ico">🔐</span> Parent Controls</div>
       <div class="set-body">
-        <div id="pin-entry-row">
-          <div class="set-lbl" style="margin-bottom:8px">Enter parent PIN to access controls</div>
-          <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px">
-            <input class="set-inp" id="parent-pin-inp" type="tel" inputmode="numeric"
-              pattern="[0-9]*" placeholder="----" maxlength="4"
-              style="width:120px;min-width:0;text-align:center;letter-spacing:6px;
-                     font-size:1.3rem;padding:12px 16px;font-family:'Boogaloo',cursive;
-                     box-sizing:border-box;"
-              oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-              onkeydown="if(event.key==='Enter')checkParentPin()">
-            <button type="button" class="set-save" style="padding:12px 22px;font-size:1rem" onclick="checkParentPin()">Unlock</button>
-          </div>
-          <div style="margin-bottom:8px">
-            <button type="button" onclick="openForgotPin()"
-              style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#4a90d9;
-                background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;
-                -webkit-tap-highlight-color:transparent">
-              🔓 Forgot your PIN?
-            </button>
-          </div>
-          <div id="pin-default-hint" style="font-size:.8rem;color:var(--txt2);margin-bottom:10px;line-height:1.6">
-            🔑 Default PIN is <strong>1234</strong> — enter it above, then change it to your own PIN inside Parent Controls.
-          </div>
-          <div id="pin-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;min-height:1.2rem;margin-bottom:10px"></div>
-        </div>
+        <p style="font-size:.88rem;color:var(--txt2);line-height:1.6;margin-bottom:10px">Access locks, timers, PIN settings, and feedback.</p>
+        <button class="set-save" style="background:linear-gradient(135deg,#8e44ad,#6c3483);box-shadow:0 4px 0 rgba(0,0,0,.15);" onclick="goParentControls()">
+          🔐 Open Parent Controls
+        </button>
+      </div>
+    </div>
 
-        <!-- Override panel — hidden until PIN entered -->
+    <!-- Install App -->
+    <div class="set-section">
+      <div class="set-sec-head"><span class="set-sec-ico">📲</span> Install App on iPhone or iPad</div>
+      <div class="set-body">
+        <p style="font-size:.88rem;color:#7f8c8d;line-height:1.6;margin-bottom:8px">
+          Add this app to your iPhone or iPad home screen for a full-screen, offline experience — no App Store needed.
+        </p>
+        <button class="set-save" style="background:linear-gradient(135deg,#4a90d9,#1a6fa8);box-shadow:0 4px 0 #0d4f7a;" onclick="showInstall()">
+          📲 How to Install
+        </button>
+      </div>
+    </div>
+
+    <!-- Guest: create account nudge -->
+    <div id="guest-account-nudge" style="text-align:center;padding:4px 0 24px;display:none">
+      <button type="button" onclick="show('login-screen');_lsSwitchTab('signup')"
+        style="font-family:'Boogaloo',cursive;font-size:.95rem;padding:10px 22px;
+               border-radius:50px;border:2px solid #4a90d9;background:transparent;
+               color:#4a90d9;cursor:pointer;touch-action:manipulation">
+        ☁️ Create a Free Account
+      </button>
+    </div>
+
+    <!-- Signed-in: sign out -->
+    <div id="signout-btn-wrap" style="text-align:center;padding:4px 0 24px;display:none">
+      <button type="button" onclick="_signOut()"
+        style="font-family:'Boogaloo',cursive;font-size:.95rem;padding:10px 22px;
+               border-radius:50px;border:2px solid #e74c3c;background:transparent;
+               color:#e74c3c;cursor:pointer;touch-action:manipulation">
+        Sign Out
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PARENT CONTROLS SCREEN
+════════════════════════════════════════ -->
+<div id="parent-screen" class="sc">
+  <div class="bar">
+    <button class="bar-back" style="color:#8e44ad" onclick="playSwooshBack();show('settings-screen')">← Settings</button>
+    <div class="bar-title">🔐 Parent Controls</div>
+  </div>
+  <div class="sc-in">
+
+    <div class="set-section">
+      <div class="set-body">
+
+        <!-- parent-panel is shown after PIN verified in modal -->
         <div id="parent-panel" style="display:none">
           <div class="parent-panel-inner">
             <div class="parent-status" id="parent-status-lbl"></div>
@@ -8000,335 +9248,271 @@ if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone && !lo
               </button>
             </div>
 
-            <!-- Parent Changelog -->
+            <!-- Feedback -->
             <div style="margin-top:20px">
-              <div class="set-lbl" style="margin-bottom:10px">📋 What's New in Each Version</div>
-              <div style="display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto;
-                padding-right:4px;border-radius:14px;">
+              <div class="set-lbl" style="margin-bottom:10px">📣 Send Feedback</div>
+              <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px">
 
-                <div class="cl-entry">
-                  <div class="cl-version">v5.10 — Current</div>
-                  <ul class="cl-list">
-
-                    <li><strong>📱 iOS-style swipe-back</strong> — drag from the left edge and the current screen slides with your finger while the previous screen appears behind it with a parallax effect (just like native iPhone apps). Release past 80px or with enough velocity to commit; release early to snap back. Works on Unit, Lesson, Results, History, and Settings screens.</li>
-
-                    <li><strong>📐 Unit screen no-scroll fix</strong> — the unit screen now uses a flex layout so the banner, all lesson cards, and the Unit Quiz button always fit within the viewport on iPhone 16 Pro Max with no scrolling needed. The lesson list grows to fill available space and would scroll internally only if more lessons were added.</li>
-
-                  </ul>
+                <!-- Star rating -->
+                <div style="margin-bottom:12px">
+                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">How are you enjoying the app?</div>
+                  <div id="fb-stars" style="display:flex;gap:6px">
+                    <button type="button" class="fb-star" data-v="1" onclick="_fbSetRating(1)">☆</button>
+                    <button type="button" class="fb-star" data-v="2" onclick="_fbSetRating(2)">☆</button>
+                    <button type="button" class="fb-star" data-v="3" onclick="_fbSetRating(3)">☆</button>
+                    <button type="button" class="fb-star" data-v="4" onclick="_fbSetRating(4)">☆</button>
+                    <button type="button" class="fb-star" data-v="5" onclick="_fbSetRating(5)">☆</button>
+                  </div>
                 </div>
 
-                <div class="cl-entry">
-                  <div class="cl-version">v5.9</div>
-                  <ul class="cl-list">
-
-                    <li><strong>👆 Swipe-back gesture</strong> — swipe right from the left edge of the screen on any sub-screen (Unit, Lesson, Results, History, Settings) to navigate back. A frosted glass handle follows your finger and snaps back if you release early. Quiz screen intentionally excluded to prevent accidental exits.</li>
-
-                    <li><strong>🎨 Contrast &amp; color refresh</strong> — light mode gradient is richer and more saturated; dark mode card backgrounds are distinctly lighter than the page background; background math bubbles are more visible in both modes; borders and shadows strengthened throughout.</li>
-
-                    <li><strong>📋 Compact Unit Quiz button</strong> — the Unit Quiz start button is now a slim horizontal card (icon left, title right) instead of a large centered block, so the entire unit screen fits without scrolling.</li>
-
-                    <li><strong>📐 Smaller unit banner</strong> — the colored unit header is more compact, giving more breathing room to the lesson list below it.</li>
-
-                  </ul>
+                <!-- Category -->
+                <div style="margin-bottom:12px">
+                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Category</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px" id="fb-cats">
+                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'General')">💬 General</button>
+                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Bug Report')">🐛 Bug Report</button>
+                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Feature Request')">💡 Feature Request</button>
+                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Content Issue')">📝 Content Issue</button>
+                  </div>
                 </div>
 
-                <div class="cl-entry">
-                  <div class="cl-version">v5.8</div>
-                  <ul class="cl-list">
-
-                    <li><strong>🔄 In-app update banner</strong> — "🌱 Update ready!" banner slides up when a new version is deployed. Tap Update Now to reload — no more removing the app from your home screen.</li>
-
-                    <li><strong>📊 Tally chart scaling fix</strong> — SVG charts now scale to fit any screen width; previously cut off on iPhone.</li>
-
-                    <li><strong>📱 iPhone Dynamic Island fix</strong> — all navigation bars now clear the Dynamic Island using <code>env(safe-area-inset-top)</code>.</li>
-
-                  </ul>
+                <!-- Comment -->
+                <div style="margin-bottom:12px">
+                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Comments <span style="opacity:.6">(optional)</span></div>
+                  <textarea id="fb-comment" maxlength="500" rows="3" placeholder="Tell us more…"
+                    style="width:100%;box-sizing:border-box;font-family:'Boogaloo',cursive;font-size:.95rem;
+                      padding:10px 12px;border-radius:10px;border:2px solid var(--border2);
+                      background:var(--bg);color:var(--txt);resize:vertical;outline:none"></textarea>
                 </div>
 
-                <div class="cl-entry">
-                  <div class="cl-version">v5.7</div>
-                  <ul class="cl-list">
-
-                    <li><strong>📱 iPhone 16 Pro Max Dynamic Island fix</strong> — initial safe-area padding applied to all navigation bars.</li>
-
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.6</div>
-                  <ul class="cl-list">
-
-                    <li><strong>✕ Quit button on all quizzes &amp; tests</strong> — a red Quit button now sits opposite the Start Over button on every quiz and test screen. Tapping it shows a confirmation; confirming ends the quiz immediately, navigates back to the previous screen, and records the attempt as <strong>🚫 Quit</strong> in score history — no pause, so a new quiz can be started right away.</li>
-
-                    <li><strong>↩ Start Over confirmation</strong> — restarting a quiz now shows a confirmation modal before wiping progress. If confirmed, the incomplete attempt is saved as <strong>⚠️ Abandoned</strong> (0 / total, DNF) in score history before the new attempt begins.</li>
-
-                    <li><strong>← Previous Question button</strong> — a back arrow appears after the first question is answered, letting students review their earlier answers in read-only mode before continuing forward.</li>
-
-                    <li><strong>Glass quiz cards</strong> — the question header and answer card now use the frosted-glass look (backdrop blur + translucent background) matching the rest of the app's UI theme.</li>
-
-                    <li><strong>Larger answer button spacing</strong> — answer choices in the 2×2 grid have more padding and a bigger minimum height, making them easier to tap on phone and tablet.</li>
-
-                    <li><strong>Score History redesign</strong>
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li>All result cards now live inside a frosted-glass scroll box (same style as the unit cards on the home page) at half screen height.</li>
-                        <li>Dates and times are left-aligned on every card.</li>
-                        <li>DNF cards (Abandoned / Quit) are vertically aligned with normal score cards — the star row uses a minimum height so the score badge lines up correctly.</li>
-                        <li>"🏆 Score History" title is centered in the header bar.</li>
-                        <li>Added breathing room between the header and the first card.</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>Score card lightbox</strong> — tapping any result card opens a full-detail lightbox overlay showing the full question-by-question review. Tap anywhere outside the card to close it.</li>
-
-                    <li><strong>Home button fix</strong> — the Home button on the Score History screen works correctly again after a layout refactor that had broken it.</li>
-
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.5</div>
-                  <ul class="cl-list">
-
-                    <li><strong>🎬 Step-by-step carry &amp; borrow animations (Unit 3)</strong> — tapping "🎬 Watch Step by Step" walks through column addition and subtraction one step at a time with color highlights:
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li>2-digit addition with carrying (e.g. 47 + 36) — highlights ones column, carry digit pop, then tens column</li>
-                        <li>2-digit subtraction with borrowing (e.g. 73 − 28) — shows the borrow from tens, crossed-out digit, regrouped value</li>
-                        <li>3-digit addition with carrying (e.g. 347 + 286, 456 + 378, 523 + 349, 615 + 247) — full three-column carry sequence with bounce &amp; pop animations on carry digits</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>🕐 Interactive clock — Unit 7 Lesson 2</strong> — students drag sliders to set the hour (1–12) and minutes (0–59); SVG clock hands rotate in real time showing the exact time they set. Reinforces reading analog clocks hands-on.</li>
-
-                    <li><strong>🌡️ Interactive thermometer — Unit 7 Lesson 3</strong> — students drag a slider to change the temperature (0–220 °F); the mercury column animates up and down and changes color (blue = freezing, green = comfortable, red = hot) with a text label updating live.</li>
-
-                    <li><strong>🖼️ Visual emoji examples across all lessons</strong> — worked examples now render animated, emoji-based graphics instead of plain text for key concept types:
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li><strong>Addition</strong> — emoji objects shown as two groups with a + sign and animated sum (e.g. 🍎🍎🍎 + 🍎🍎 = 5)</li>
-                        <li><strong>Subtraction</strong> — starting group shown with crossed-out items to visualize "taking away"</li>
-                        <li><strong>Doubles</strong> — two equal groups side by side with equation below</li>
-                        <li><strong>Ten-frame</strong> — 5×2 grid fills in circles to show a number and prompts "Need X more to reach 10!"</li>
-                        <li><strong>Add 3 numbers</strong> — three emoji groups with running total shown step by step</li>
-                        <li><strong>Equal groups &amp; arrays</strong> — emoji laid out in rows and columns to build multiplication intuition</li>
-                        <li><strong>Sharing equally</strong> — total emoji distributed across illustrated characters (👦👧🧒👶) to show division</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>🕐 Static SVG clock examples — Unit 7 Lesson 2</strong> — every worked example renders a correctly drawn analog clock face (circle, tick marks, numbers, hour and minute hands at exact angles) matching the time being taught.</li>
-
-                    <li><strong>🔍 Full answer-accuracy audit</strong> — all 2,438 questions across every unit were checked for correct answer accuracy, answer option duplicates, and explanation consistency.</li>
-
-                    <li><strong>🐛 Bug fix: 4 wrong correct-answer indices found and fixed</strong>
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li>Best estimate for 724 − 283: marked 500 — correct answer is 400 (700 − 300). Fixed in qBank and testBank.</li>
-                        <li>Best estimate for 876 − 324: marked 500 — correct answer is 600 (900 − 300). Fixed in qBank and testBank. Both had correct explanations — only the selected index was wrong.</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>⚖️ Answer position balance — Units 5, 6 &amp; 7</strong> — corrected severe imbalance where the correct answer clustered at the same position, letting students pattern-match instead of solving.
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li><strong>Unit 5 (Money)</strong> — 84 rewrites; worst case: U5L3 had zero questions at positions 0 or 3.</li>
-                        <li><strong>Unit 6 (Data Analysis)</strong> — 65 line fixes; worst case: U6L2 and U6L3 had zero questions at position 0.</li>
-                        <li><strong>Unit 7 (Measurement &amp; Time)</strong> — 60 line fixes; worst case: testBank had 55 at position 1 vs. only 4 at position 3 out of 129 questions.</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>⚖️ Answer position balance — Units 1–4</strong> — same rebalancing applied to place value, addition/subtraction, skip counting, and rounding banks across all lessons, quizzes, and testBanks.</li>
-
-                    <li><strong>✏️ Explanation rewrites — Unit 2</strong>
-                      <ul style="margin-top:4px;padding-left:18px;list-style:disc">
-                        <li>"807 ___ 780": removed contradictory "Wait—" mid-explanation.</li>
-                        <li>"Value of 0 in 908": replaced circular wording with "Zero tens = 0".</li>
-                      </ul>
-                    </li>
-
-                    <li><strong>0 duplicate answer options</strong> confirmed — no question in the entire app has two or more identical choices.</li>
-
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.4</div>
-                  <ul class="cl-list">
-                    <li><strong>🎓 Final Test added</strong> — after completing all 10 units with 80%+, a 50-question Final Test card appears inside the unit scroll box and draws questions from every unit.</li>
-                    <li><strong>Unit Quiz label corrected</strong> — the lessons screen now correctly shows "25 Questions" instead of "30".</li>
-                    <li><strong>Final Test card styled to match unit cards</strong> — same rounded corners, white card background, and purple accent border.</li>
-                    <li><strong>Bug fix: Final Test button now launches correctly</strong> — tapping the Final Test card previously did nothing; now opens the quiz immediately.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.3</div>
-                  <ul class="cl-list">
-                    <li><strong>Orange color now pops</strong> — buttons and accents use a brighter, more vivid orange throughout the app.</li>
-                    <li><strong>Gold lock buttons</strong> — lock 🔒 unlock buttons on both the home screen and lesson screen now use a consistent bright gold gradient.</li>
-                    <li><strong>Locked icons greyed out</strong> — icons for locked units and lessons now appear in grayscale at reduced opacity, with the name subtly dimmed but still readable.</li>
-                    <li><strong>Dark mode whites fixed</strong> — text in dark mode is now true white, no longer muted or grey.</li>
-                    <li><strong>Settings text in dark mode brightened</strong> — text inside settings boxes is brighter and clearly readable against the dark background.</li>
-                    <li><strong>Student name placeholder visible in dark mode</strong> — the "e.g. Emma" hint text is now clearly visible when dark mode is on.</li>
-                    <li><strong>Change PIN box fixed in dark mode</strong> — the PIN entry field now displays clearly without dark or dashed-looking characters.</li>
-                    <li><strong>"Muted" renamed to "Sound Off"</strong> — the sound toggle button now reads 🔇 Sound Off for clarity.</li>
-                    <li><strong>Bug fix: PIN no longer jumps to results</strong> — entering the parent PIN in Settings after completing a quiz now stays on the Settings screen instead of reverting to the quiz results tab.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.2</div>
-                  <ul class="cl-list">
-                    <li><strong>Unit scroll box fixed</strong> — unit cards on the home screen are scrollable again on iPhone and iPad.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.1</div>
-                  <ul class="cl-list">
-                    <li><strong>Individual Lesson Unlock</strong> — tap the 🔒 on any locked lesson and enter your parent PIN to unlock just that lesson, without unlocking everything.</li>
-                    <li><strong>Individual Unit Unlock</strong> — same method on the home screen for locked units.</li>
-                    <li><strong>Lock button tap area enlarged</strong> — easier to tap the 🔒 on both units and lessons without missing.</li>
-                    <li><strong>Scroll jitter fixed</strong> — unit cards no longer jitter when scrolling to the top on iPhone or iPad.</li>
-                    <li><strong>Settings glass theme fixed</strong> — settings boxes now correctly show the frosted glass look matching the rest of the app.</li>
-                    <li>Re-Lock All now also clears all individual unit and lesson unlocks.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v5.0</div>
-                  <ul class="cl-list">
-                    <li><strong>Individual Unit Unlock</strong> — on the home page, tap the 🔒 lock icon on any locked unit and enter the parent PIN to unlock that unit for your student without unlocking everything.</li>
-                    <li><strong>Glassmorphism UI</strong> — frosted glass units box and lesson cards, scroll-focus scaling, hover scale effect.</li>
-                    <li><strong>Home page no longer scrolls</strong> — fits screen exactly; only the unit cards box scrolls internally.</li>
-                    <li><strong>iPhone safe area fix</strong> — title no longer overlaps the notch or Dynamic Island in full-screen mode.</li>
-                    <li><strong>Install instructions</strong> updated for both iPhone and iPad — tabbed interface, correct tab auto-selected by device.</li>
-                    <li><strong>School branding removed</strong> — app is now generic and reusable.</li>
-                    <li><strong>Forgot your PIN?</strong> — solve a 3rd grade math problem to reset your PIN to 1234. 6 rotating problem types. Refreshable.</li>
-                    <li><strong>PIN entry box</strong> fixed — digits no longer get cut off; default PIN hint shown to new users and hides after PIN is changed.</li>
-                    <li><strong>Sound Mute toggle</strong> in Settings — same style as Light/Dark mode.</li>
-                    <li><strong>PIN limited to 4 digits</strong>, numbers only, numeric keypad on iPad/iPhone.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.9</div>
-                  <div class="cl-desc">Fixed the Home button broken by the v4.8 scrollable units box update.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.8</div>
-                  <div class="cl-desc">All 10 unit cards moved into a compact scrollable box on the home page — the page no longer stretches too long, and the Score History button stays always visible.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.7</div>
-                  <ul class="cl-list">
-                    <li>Added <strong>🔊 Sound On / 🔇 Muted</strong> toggle in Settings.</li>
-                    <li>Parent PIN limited to 4 digits, numbers only.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.6</div>
-                  <div class="cl-desc">Fixed a bug where entering the PIN from the quiz results screen would exit Settings. Screen now auto-scrolls to Parent Controls after unlocking.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.5</div>
-                  <div class="cl-desc">Start Quiz button is hidden when a quiz is already in progress — the Resume banner appears in its place.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.4</div>
-                  <ul class="cl-list">
-                    <li>Large <strong>🚀 Start Quiz</strong> button replaces the old banner.</li>
-                    <li>After scoring 100%, the <strong>Next Lesson</strong> button is built into the completion card — no separate box.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.3</div>
-                  <div class="cl-desc">Tapping a locked unit or lesson plays a negative buzz sound.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.2</div>
-                  <ul class="cl-list">
-                    <li>Upward swoosh moving forward; downward swoosh pressing Back.</li>
-                    <li>Soft tap click when opening Settings.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.1</div>
-                  <ul class="cl-list">
-                    <li>✅ Correct answer plays a bright chime.</li>
-                    <li>❌ Wrong answer plays a low buzz.</li>
-                    <li>🏆 Passing a quiz plays a fanfare + confetti burst sound.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v4.0</div>
-                  <div class="cl-desc">Quiz <strong>← Back</strong> button now saves quiz progress. <strong>Pause &amp; Resume</strong> — backing out saves your place; orange ▶ Resume banner appears on return.</div>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v3.6–v3.9</div>
-                  <ul class="cl-list">
-                    <li>Default PIN is <strong>1234</strong> — prompts to change on first use.</li>
-                    <li>PIN hides after unlocking. Timer adjustable in 1-minute steps (1–60 min lesson, 1–120 min unit).</li>
-                    <li>This <strong>What's New</strong> section added.</li>
-                    <li>Version number tracked and displayed.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v3.1–v3.5</div>
-                  <ul class="cl-list">
-                    <li><strong>Quiz Timer</strong> — 8 min lesson / 30 min unit with color warnings.</li>
-                    <li>Score History cards expand to show right and wrong questions per attempt.</li>
-                    <li>Column math examples with carry digit alignment.</li>
-                    <li>New Examples and More Practice buttons added to every lesson.</li>
-                    <li>Show/Hide Answer toggle in practice section.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v3.0</div>
-                  <ul class="cl-list">
-                    <li>Fixed multiple quiz bugs — results screen, Try Again, Back buttons all work correctly.</li>
-                    <li>Re-Lock All fully resets all progress and scores.</li>
-                    <li>Math wallpaper added to all screens.</li>
-                  </ul>
-                </div>
-
-                <div class="cl-entry">
-                  <div class="cl-version">v1.0–v2.0</div>
-                  <div class="cl-desc">Initial app — 10 units, 34 lessons, 2,502 questions covering all 2nd grade TEKS math standards. Lesson quizzes, unit quizzes, score history, parent controls, and iPad installation support.</div>
-                </div>
-
-
+                <!-- Status & Submit -->
+                <div id="fb-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.2rem;margin-bottom:8px;color:#27ae60"></div>
+                <button type="button" onclick="_submitFeedback()"
+                  style="font-family:'Boogaloo',cursive;font-size:1rem;padding:11px 28px;
+                    border-radius:50px;border:none;cursor:pointer;
+                    background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;
+                    box-shadow:0 4px 0 rgba(0,0,0,.12);touch-action:manipulation">
+                  Send Feedback
+                </button>
               </div>
+            </div>
+
+            <!-- Changelog -->
+            <div style="margin-top:20px">
+              <div class="set-lbl" style="margin-bottom:10px">📋 What's New</div>
+  <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.14 — Current</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li>Spotlight tutorial now highlights the full element with matching rectangular shape</li>
+        <li>Tutorial tooltip card is now semi-transparent so the highlighted element shows through</li>
+        <li>Google Sign-In now shows "Connecting…" and surfaces any errors if sign-in fails</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.13</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li>Per-screen spotlight tutorial — first visit to each page highlights key features</li>
+        <li>Quiz timer now pauses during the first-time quiz spotlight tour</li>
+        <li>Note Pad added to quiz screen — draw &amp; write to work out problems by hand</li>
+        <li>Note Pad centered on screen (was previously a bottom sheet)</li>
+        <li>Spotlight circles tightened to fit individual elements precisely</li>
+        <li>Forgot PIN lightbox now appears above the PIN entry lightbox (z-index fix)</li>
+        <li>Change PIN dialog now properly resets and confirms after saving</li>
+        <li>Forgot password link added below password field on login screen</li>
+        <li>Name field is now required when creating an account</li>
+        <li>Feedback system with star ratings, categories, and comments</li>
+        <li>Email notifications sent to developer for every new feedback submission</li>
+        <li>Parent Controls moved to its own dedicated screen with PIN lightbox entry</li>
+        <li>Detailed changelog added inside Parent Controls (this screen)</li>
+        <li>Parallel data sync on login — both queries run simultaneously (2× faster)</li>
+        <li>"☁️ Syncing your data…" banner shown on home while data loads</li>
+        <li>Session persistence — auto-refresh token keeps users logged in longer</li>
+        <li>Service worker updated to network-first for index.html — no more stale caches</li>
+        <li>App auto-updates silently on next open after a new deployment</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.12 — Google Sign-In, Auto-Update &amp; Polish</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Google Sign-In</strong> — Students and parents can sign in or create an account with one tap using their Google account. A "Continue with Google" button appears on the login screen, and Google One Tap shows automatically for a frictionless experience.</li>
+        <li><strong>Sign Out button</strong> — Appears at the bottom of Settings when a user is logged in. Tapping it signs the user out and returns to the login screen.</li>
+        <li><strong>Automatic silent updates</strong> — The app now updates itself automatically in the background whenever a new version is deployed. No more deleting the app from the home screen. A brief "✅ App updated!" toast appears after the update.</li>
+        <li><strong>Double-tap zoom disabled</strong> — Double-tapping the screen no longer zooms in on iPhone and iPad, keeping the app feeling native.</li>
+        <li><strong>Smoother screen transitions</strong> — The brief background flicker when navigating back between screens has been eliminated.</li>
+        <li><strong>Login screen layout fix</strong> — The login screen is now more compact and no longer scrolls on small iPhone screens.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.11 — Cloud Accounts &amp; Progress Sync</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Cloud accounts &amp; progress sync</strong> — Students can create a free account (email + password) and have their lesson completion and quiz scores automatically synced to the cloud. Progress is restored on any device after signing in.</li>
+        <li><strong>Login screen</strong> — A branded sign-in / create account screen appears before the home page. Already signed-in users go straight to home. A "Continue without an account" link lets students skip and play as a guest.</li>
+        <li><strong>Worked example operator fix</strong> — The + and = signs in visual worked examples are now perfectly centered between emoji groups instead of floating to the left.</li>
+        <li><strong>Quiz Next button redesign</strong> — The Next Question button is now a small green pill on the right, paired opposite the Previous Question button on the left.</li>
+        <li><strong>Title all-caps</strong> — The main page title is now displayed as MY MATH ROOTS.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.10 — iOS-Style Swipe-Back</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>iOS-style swipe-back</strong> — Drag from the left edge and the current screen slides with your finger while the previous screen appears behind it with a parallax effect. Release past 80px or with enough velocity to commit; release early to snap back. Works on Unit, Lesson, Results, History, and Settings screens.</li>
+        <li><strong>Unit screen no-scroll fix</strong> — The unit screen now uses a flex layout so the banner, all lesson cards, and the Unit Quiz button always fit within the viewport on iPhone 16 Pro Max with no scrolling needed.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.9 — Contrast &amp; Color Refresh</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Contrast &amp; color refresh</strong> — Light mode gradient is richer and more saturated; dark mode card backgrounds are distinctly lighter than the page background; background math bubbles are more visible in both modes; borders and shadows strengthened throughout.</li>
+        <li><strong>Compact Unit Quiz button</strong> — The Unit Quiz start button is now a slim horizontal card instead of a large centered block, so the entire unit screen fits without scrolling.</li>
+        <li><strong>Smaller unit banner</strong> — The colored unit header is more compact, giving more breathing room to the lesson list below it.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.8 — Charts, Dynamic Island &amp; Update Banner</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>In-app update banner</strong> — "Update ready!" banner slides up when a new version is deployed. Fully automatic as of v5.12 — no user action required.</li>
+        <li><strong>Tally chart scaling fix</strong> — SVG charts now scale to fit any screen width; previously cut off on iPhone.</li>
+        <li><strong>iPhone Dynamic Island fix</strong> — All navigation bars now clear the Dynamic Island using env(safe-area-inset-top).</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.6 — Quit, Start Over &amp; Previous Question</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Quit button on all quizzes &amp; tests</strong> — A red Quit button now sits opposite the Start Over button. Tapping it shows a confirmation; confirming ends the quiz and records the attempt as Quit in score history.</li>
+        <li><strong>Start Over confirmation</strong> — Restarting a quiz now shows a confirmation modal. The incomplete attempt is saved as Abandoned (DNF) in score history before the new attempt begins.</li>
+        <li><strong>Previous Question button</strong> — A back arrow appears after the first question is answered, letting students review earlier answers in read-only mode.</li>
+        <li><strong>Glass quiz cards</strong> — The question header and answer card now use the frosted-glass look matching the rest of the app.</li>
+        <li><strong>Larger answer button spacing</strong> — Answer choices in the 2×2 grid have more padding and a bigger minimum height, making them easier to tap.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.5 — Answer Accuracy &amp; Balance Fixes</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Answer correctness fix</strong> — Best estimate for 724 − 283 corrected (was 500, correct is 400). Best estimate for 876 − 324 corrected (was 500, correct is 600). Fixed in qBank and testBank.</li>
+        <li><strong>Answer position balance (Units 5, 6 &amp; 7)</strong> — Corrected severe imbalance where the correct answer clustered at the same position. Unit 5: 84 rewrites. Unit 6: 65 fixes. Unit 7: 60 fixes.</li>
+        <li><strong>Answer position balance (Units 1–4)</strong> — Same rebalancing applied to place value, addition/subtraction, skip counting, and rounding banks.</li>
+        <li><strong>Explanation rewrites (Unit 2)</strong> — Removed contradictory wording; replaced circular explanations with clearer text.</li>
+        <li><strong>0 duplicate answer options confirmed</strong> — No question in the entire app has two or more identical choices.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.4 — Final Test</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Final Test added</strong> — After completing all 10 units with 80%+, a 50-question Final Test card appears and draws questions from every unit.</li>
+        <li><strong>Unit Quiz label corrected</strong> — The lessons screen now correctly shows "25 Questions" instead of "30".</li>
+        <li><strong>Final Test card styled</strong> — Same rounded corners, white card background, and purple accent border to match unit cards.</li>
+        <li><strong>Bug fix</strong> — Final Test button now launches correctly.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.3 — Color &amp; Dark Mode Polish</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Orange color now pops</strong> — Buttons and accents use a brighter, more vivid orange throughout the app.</li>
+        <li><strong>Gold lock buttons</strong> — Lock/unlock buttons on both the home screen and lesson screen now use a consistent bright gold gradient.</li>
+        <li><strong>Locked icons greyed out</strong> — Icons for locked units and lessons now appear in grayscale at reduced opacity.</li>
+        <li><strong>Dark mode whites fixed</strong> — Text in dark mode is now true white, no longer muted or grey.</li>
+        <li><strong>Settings text in dark mode brightened</strong> — Text inside settings boxes is brighter and clearly readable.</li>
+        <li><strong>Bug fix</strong> — Entering the parent PIN in Settings after completing a quiz now stays on the Settings screen instead of jumping to results.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.1 — Individual Lesson &amp; Unit Unlocks</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Individual Lesson Unlock</strong> — Tap the lock on any locked lesson and enter your parent PIN to unlock just that lesson.</li>
+        <li><strong>Individual Unit Unlock</strong> — Same method on the home screen for locked units.</li>
+        <li><strong>Lock button tap area enlarged</strong> — Easier to tap the lock on both units and lessons without missing.</li>
+        <li><strong>Scroll jitter fixed</strong> — Unit cards no longer jitter when scrolling to the top on iPhone or iPad.</li>
+        <li><strong>Settings glass theme fixed</strong> — Settings boxes now correctly show the frosted glass look.</li>
+        <li><strong>Re-Lock All</strong> — Now also clears all individual unit and lesson unlocks.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.0 — Glassmorphism UI Overhaul</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Glassmorphism UI</strong> — Frosted glass units box and lesson cards, scroll-focus scaling, hover scale effect.</li>
+        <li><strong>Home page no longer scrolls</strong> — Fits screen exactly; only the unit cards box scrolls internally.</li>
+        <li><strong>iPhone safe area fix</strong> — Title no longer overlaps the notch or Dynamic Island in full-screen mode.</li>
+        <li><strong>Install instructions updated</strong> — Tabbed interface for both iPhone and iPad; correct tab auto-selected by device.</li>
+        <li><strong>School branding removed</strong> — App is now generic and reusable.</li>
+        <li><strong>Forgot your PIN?</strong> — Solve a 3rd grade math problem to reset your PIN to 1234.</li>
+        <li><strong>Sound Mute toggle</strong> — Added to Settings.</li>
+        <li><strong>PIN limited to 4 digits</strong> — Numbers only, numeric keypad on iPad/iPhone.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v4.5–v4.9 — Resume, Sound &amp; Timer Fixes</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Pause &amp; Resume (v4.0)</strong> — Quiz Back button now saves quiz progress. Backing out saves your place; orange Resume banner appears on return.</li>
+        <li><strong>Resume banner (v4.5)</strong> — Start Quiz button is hidden when a quiz is already in progress. The Resume banner appears in its place.</li>
+        <li><strong>Start Quiz button (v4.4)</strong> — Large Start Quiz button replaces the old banner.</li>
+        <li><strong>Sound effects (v4.3)</strong> — Correct answer plays a bright chime, wrong answer plays a low buzz, passing a quiz plays a fanfare + confetti burst.</li>
+        <li><strong>PIN settings fix (v4.6)</strong> — Fixed a bug where entering the PIN from the quiz results screen would exit Settings. Screen now auto-scrolls to Parent Controls after unlocking.</li>
+        <li><strong>Timer adjustable (v3.6–v3.9)</strong> — In 1-minute steps (1–60 min lesson, 1–120 min unit).</li>
+        <li><strong>Home button fix (v4.9)</strong> — Fixed the Home button broken by the v4.8 scrollable units box update.</li>
+        <li><strong>Scrollable units box (v4.8)</strong> — All 10 unit cards moved into a compact scrollable box on the home page. Score History button stays always visible.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.1–v3.9 — Quiz Timer &amp; Score History</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Quiz Timer</strong> — 8 min lesson / 30 min unit with color warnings (orange under 2 min, red under 30 sec).</li>
+        <li><strong>Score History</strong> — Cards expand to show right and wrong questions per attempt.</li>
+        <li><strong>Column math examples</strong> — With carry digit alignment.</li>
+        <li><strong>Examples and More Practice buttons</strong> — Added to every lesson.</li>
+        <li><strong>Show/Hide Answer toggle</strong> — In practice section.</li>
+        <li><strong>What's New section added</strong> — Version number tracked and displayed.</li>
+        <li><strong>Default PIN is 1234</strong> — Prompts to change on first use. PIN hides after unlocking.</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.0 — Quiz Bug Fixes &amp; Math Wallpaper</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Quiz bug fixes</strong> — Results screen, Try Again, and Back buttons all work correctly.</li>
+        <li><strong>Re-Lock All</strong> — Fully resets all progress and scores.</li>
+        <li><strong>Math wallpaper</strong> — Added to all screens.</li>
+      </ul>
+    </div>
+
+    <div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v1.0–v2.0 — Initial Release</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Initial release</strong> — 10 units, 34 lessons, 2,502 questions covering all K–5 math standards.</li>
+        <li>Lesson quizzes (8 questions) and unit quizzes (25 questions)</li>
+        <li>Sequential unlock system — 80%+ on unit quiz required to advance</li>
+        <li>Star ratings: ⭐⭐⭐ (90%+), ⭐⭐ (70%+), ⭐ (below 70%)</li>
+        <li>Score history with tap-to-expand answer review per attempt</li>
+        <li>Parent Controls with 4-digit PIN protection</li>
+        <li>Dark mode and Light mode themes</li>
+        <li>PWA installable on iPhone &amp; iPad via Safari — no App Store needed</li>
+        <li>Offline support — works without internet after first load</li>
+        <li>Student name personalization throughout the app</li>
+        <li>iPad installation support with step-by-step instructions</li>
+      </ul>
+    </div>
+
+  </div>
             </div>
 
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Install App -->
-    <div class="set-section">
-      <div class="set-sec-head"><span class="set-sec-ico">📲</span> Install App on iPhone or iPad</div>
-      <div class="set-body">
-        <p style="font-size:.88rem;color:#7f8c8d;line-height:1.6;margin-bottom:8px">
-          Add this app to your iPhone or iPad home screen for a full-screen, offline experience — no App Store needed.
-        </p>
-        <button class="set-save" style="background:linear-gradient(135deg,#4a90d9,#1a6fa8);box-shadow:0 4px 0 #0d4f7a;" onclick="showInstall()">
-          📲 How to Install
-        </button>
-      </div>
-    </div>
-
-    <!-- Save button -->
-    <div style="text-align:center; padding:10px 0 20px">
-
     </div>
 
   </div>
@@ -8450,7 +9634,7 @@ if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone && !lo
 </div>
 
 <!-- ── FORGOT PIN MODAL ── -->
-<div class="install-overlay centered" id="forgot-pin-modal" style="display:none" onclick="if(event.target===this)closeForgotPin()">
+<div class="install-overlay centered" id="forgot-pin-modal" style="display:none;z-index:6000" onclick="if(event.target===this)closeForgotPin()">
   <div class="install-box" style="max-width:420px">
     <div style="text-align:center;margin-bottom:4px"><span style="font-size:2.4rem">🔐</span></div>
     <h2>Reset Your PIN</h2>
@@ -8533,12 +9717,135 @@ if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone && !lo
 </div>
 
 <!-- ── COIN LIGHTBOX ── -->
+<!-- ════════════════════════════════════════
+     AUTH MODAL
+════════════════════════════════════════ -->
+<div class="install-overlay centered" id="auth-modal" style="display:none;z-index:9999"
+     onclick="if(event.target===this&&!_authLoading)closeAuthModal()">
+  <div class="install-box" style="max-width:400px;border-radius:28px;padding:28px 24px">
+    <div style="text-align:center;margin-bottom:4px;font-size:2.4rem">🌱</div>
+    <h2 id="auth-modal-title" style="font-family:'Boogaloo',cursive;font-size:1.6rem;text-align:center;margin:0 0 4px">Sign In</h2>
+    <p style="text-align:center;font-size:.85rem;color:var(--txt2);margin:0 0 18px">Save your progress across devices</p>
+    <!-- Tab switcher -->
+    <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:18px;overflow:hidden">
+      <button id="auth-tab-login" class="auth-tab-btn active" type="button" onclick="_switchAuthTab('login')">Sign In</button>
+      <button id="auth-tab-signup" class="auth-tab-btn idle" type="button" onclick="_switchAuthTab('signup')">Create Account</button>
+    </div>
+    <!-- Display name (signup only) -->
+    <div id="auth-name-row" style="display:none;margin-bottom:12px">
+      <input class="set-inp" id="auth-name" type="text" placeholder="Your name (e.g. Emma)" maxlength="30" style="font-size:1rem;width:100%;box-sizing:border-box">
+    </div>
+    <!-- Role selector (signup only) -->
+    <div id="auth-role-row" style="display:none;margin-bottom:14px">
+      <div style="font-family:'Boogaloo',cursive;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
+      <div style="display:flex;gap:10px">
+        <button type="button" id="auth-role-student" class="auth-role-btn active" onclick="_selectAuthRole('student')">🎒 Student</button>
+        <button type="button" id="auth-role-parent"  class="auth-role-btn idle"   onclick="_selectAuthRole('parent')">👨‍👩‍👧 Parent</button>
+      </div>
+    </div>
+    <!-- Email -->
+    <div style="margin-bottom:12px">
+      <input class="set-inp" id="auth-email" type="email" placeholder="Email address" autocomplete="email" inputmode="email" style="font-size:1rem;width:100%;box-sizing:border-box">
+    </div>
+    <!-- Password -->
+    <div style="margin-bottom:6px">
+      <input class="set-inp" id="auth-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:1rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')submitAuth()">
+    </div>
+    <!-- Error/status -->
+    <div id="auth-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
+    <!-- Submit -->
+    <button class="install-close" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+    <!-- Cancel -->
+    <button type="button" onclick="closeAuthModal()" style="width:100%;font-family:'Boogaloo',cursive;font-size:1rem;padding:12px;border-radius:50px;border:2px solid var(--border2);background:transparent;color:var(--txt2);cursor:pointer;margin-top:10px;touch-action:manipulation">Cancel — stay offline</button>
+  </div>
+</div>
+
+<!-- ── PIN ENTRY MODAL ── -->
+<div class="install-overlay centered" id="pin-modal" style="display:none" onclick="if(event.target===this)closePinModal()">
+  <div class="install-box" style="max-width:340px;text-align:center">
+    <button onclick="closePinModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--txt2)">×</button>
+    <div style="font-size:2.2rem;margin-bottom:6px">🔐</div>
+    <h2 style="margin:0 0 6px;font-family:'Boogaloo',cursive">Parent Controls</h2>
+    <p style="font-size:.85rem;color:var(--txt2);margin:0 0 16px">Enter your PIN to continue</p>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:8px">
+      <input class="set-inp" id="parent-pin-inp" type="tel" inputmode="numeric"
+        pattern="[0-9]*" placeholder="----" maxlength="4"
+        style="width:130px;min-width:0;text-align:center;letter-spacing:6px;
+               font-size:1.5rem;padding:12px 16px;font-family:'Boogaloo',cursive;box-sizing:border-box;"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+        onkeydown="if(event.key==='Enter')checkParentPin()">
+      <button type="button" class="set-save" style="padding:12px 22px;font-size:1rem" onclick="checkParentPin()">Unlock</button>
+    </div>
+    <div id="pin-default-hint" style="font-size:.8rem;color:var(--txt2);margin-bottom:8px;line-height:1.6">
+      🔑 Default PIN is <strong>1234</strong>
+    </div>
+    <div id="pin-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;min-height:1.2rem;margin-bottom:10px;color:#e74c3c"></div>
+    <button type="button" onclick="openForgotPin()"
+      style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+      🔓 Forgot your PIN?
+    </button>
+  </div>
+</div>
+
 <div class="coin-lightbox" id="coin-lightbox" style="display:none" onclick="closeCoinLightbox()">
   <div class="coin-lightbox-inner">
     <img id="cl-img" src="" alt="">
     <div class="coin-lightbox-lbl" id="cl-lbl"></div>
     <div class="coin-lightbox-val" id="cl-val"></div>
     <div class="coin-lightbox-hint">Tap anywhere to close</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FIRST-TIME TUTORIAL
+════════════════════════════════════════ -->
+<div class="tut-overlay" id="tut-overlay" style="display:none">
+  <div class="tut-card" id="tut-card">
+    <button class="tut-skip-top" onclick="tutSkip()">Skip</button>
+
+    <!-- Dots -->
+    <div class="tut-dots" id="tut-dots"></div>
+
+    <!-- Slide content injected by JS -->
+    <span class="tut-emoji" id="tut-emoji"></span>
+    <h2 class="tut-title" id="tut-title"></h2>
+    <div class="tut-body" id="tut-body"></div>
+
+    <!-- Buttons -->
+    <div class="tut-btns">
+      <button class="tut-btn-skip" id="tut-skip-btn" onclick="tutSkip()">Skip</button>
+      <button class="tut-btn-next" id="tut-next-btn" onclick="tutNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN SPOTLIGHT TOUR
+════════════════════════════════════════ -->
+<div id="spot-overlay">
+  <svg id="spot-svg" onclick="_spotAdvance()">
+    <defs>
+      <mask id="spot-mask">
+        <rect id="spot-bg-rect" fill="white"/>
+        <rect id="spot-hole" fill="black" x="100" y="250" width="200" height="80" rx="16"/>
+      </mask>
+    </defs>
+    <rect id="spot-dim-rect" fill="rgba(0,0,0,0.68)" mask="url(#spot-mask)"/>
+    <!-- Glowing outline around spotlight -->
+    <rect id="spot-ring" x="98" y="248" width="204" height="84" rx="18"
+      fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3"/>
+  </svg>
+  <div id="spot-card">
+    <span class="spot-card-emoji" id="spot-emoji"></span>
+    <h3 class="spot-card-title" id="spot-title"></h3>
+    <p class="spot-card-tip" id="spot-tip"></p>
+    <div class="spot-card-row">
+      <span class="spot-count" id="spot-count"></span>
+      <div style="display:flex;gap:8px">
+        <button class="spot-skip-btn" onclick="event.stopPropagation();_spotDone()">Skip</button>
+        <button class="spot-next-btn" id="spot-next-btn" onclick="event.stopPropagation();_spotAdvance()">Next →</button>
+      </div>
+    </div>
   </div>
 </div>
 
