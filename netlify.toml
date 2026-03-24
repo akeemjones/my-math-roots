@@ -1,0 +1,49 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# ── Security Headers ─────────────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+
+    # Prevent your app being embedded in iframes (clickjacking protection)
+    X-Frame-Options = "DENY"
+
+    # Stop browsers guessing file types (MIME sniffing attacks)
+    X-Content-Type-Options = "nosniff"
+
+    # Don't leak the full URL in referrer headers to third parties
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Block camera, microphone, location, and payment access
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # Force HTTPS for 1 year — never allow HTTP downgrade
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+    # Content Security Policy — only allow trusted sources
+    # unsafe-inline required because app is a single-file PWA with inline scripts/styles
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline'
+        https://cdn.jsdelivr.net
+        https://accounts.google.com
+        https://challenges.cloudflare.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self';
+      connect-src 'self'
+        https://omjegwtzirskgmgeojdn.supabase.co
+        https://accounts.google.com
+        https://challenges.cloudflare.com;
+      img-src 'self' data: blob:
+        https://lh3.googleusercontent.com;
+      frame-src
+        https://accounts.google.com
+        https://challenges.cloudflare.com;
+      frame-ancestors 'none';
+      form-action 'self';
+      worker-src 'self';
+      object-src 'none';
+      base-uri 'self';
+    """
