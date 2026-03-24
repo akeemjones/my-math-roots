@@ -23,6 +23,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 /* ── BASE ── */
 :root{
@@ -1301,6 +1302,16 @@ body.dark #spot-card{
           style="font-family:'Boogaloo',cursive;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
           Forgot password?
         </button>
+      </div>
+      <!-- Cloudflare Turnstile CAPTCHA -->
+      <div id="ls-turnstile" style="margin-bottom:10px;display:flex;justify-content:center">
+        <div class="cf-turnstile"
+          data-sitekey="0x4AAAAAACvY03hPN2AAZUGO"
+          data-theme="auto"
+          data-size="normal"
+          data-callback="_onTurnstileSuccess"
+          data-expired-callback="_onTurnstileExpired">
+        </div>
       </div>
       <!-- Error/status -->
       <div id="ls-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
@@ -5044,6 +5055,15 @@ function _lsSelectRole(role){
   document.getElementById('ls-role-parent').className  = 'auth-role-btn ' + (role==='parent' ?'active':'idle');
 }
 
+// ── Turnstile token state ─────────────────
+let _turnstileToken = null;
+function _onTurnstileSuccess(token){ _turnstileToken = token; }
+function _onTurnstileExpired(){ _turnstileToken = null; }
+function _resetTurnstile(){
+  _turnstileToken = null;
+  if(window.turnstile) window.turnstile.reset('#ls-turnstile .cf-turnstile');
+}
+
 async function _lsSubmit(){
   if(!_supa || _lsLoading) return;
   const tab      = document.getElementById('login-screen').dataset.tab || 'login';
@@ -5068,6 +5088,11 @@ async function _lsSubmit(){
   } else {
     if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
   }
+  // Turnstile CAPTCHA — must be verified before submitting
+  if(!_turnstileToken){
+    msgEl.textContent = '⚠️ Please complete the security check above.';
+    return;
+  }
   _lsLoading = true;
   const btn = document.getElementById('ls-submit-btn');
   const origTxt = btn.textContent;
@@ -5080,11 +5105,15 @@ async function _lsSubmit(){
       const displayName = _sanitize(document.getElementById('ls-name').value, 30) || 'Student';
       result = await _supa.auth.signUp({
         email, password,
-        options: { data: { display_name:displayName, role:_lsRole } }
+        options: { data: { display_name:displayName, role:_lsRole }, captchaToken: _turnstileToken }
       });
     } else {
-      result = await _supa.auth.signInWithPassword({ email, password });
+      result = await _supa.auth.signInWithPassword({
+        email, password,
+        options: { captchaToken: _turnstileToken }
+      });
     }
+    _resetTurnstile(); // always reset after use — token is single-use
     if(result.error){
       msgEl.style.color = '#e74c3c';
       msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
@@ -5097,6 +5126,7 @@ async function _lsSubmit(){
     // onAuthStateChange handles navigation to home on success
   } catch(e){
     _logError('lsSubmit', e);
+    _resetTurnstile();
     msgEl.style.color = '#e74c3c';
     msgEl.textContent = '⚠️ ' + _friendlyError(e);
   } finally {
@@ -8171,7 +8201,7 @@ function applyStoredTheme(){
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.16';
+const APP_VERSION = 'v5.17';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -9606,7 +9636,7 @@ function closeInstall(){
   <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.16 — Current</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.17 — Current</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li>Spotlight tutorial now highlights the full element with matching rectangular shape</li>
         <li>Tutorial tooltip card is now semi-transparent so the highlighted element shows through</li>
