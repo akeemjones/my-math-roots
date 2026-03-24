@@ -4946,6 +4946,7 @@ function supabaseInit(){
       show('home');
       setTimeout(tutCheckAndShow, 1200);
     } else if(event === 'SIGNED_OUT'){
+      _clearUserData();
       show('login-screen');
       _initOneTap();
     }
@@ -5327,12 +5328,39 @@ async function submitAuth(){
   }
 }
 
+function _clearUserData(){
+  // ── Wipe in-memory state ──────────────────────────────────────
+  SCORES.length = 0;
+  Object.keys(DONE).forEach(k => delete DONE[k]);
+  CUR.unitIdx = 0; CUR.lessonIdx = 0; CUR.quiz = null;
+  _supaUser = null;
+  _carouselInited = false;
+
+  // ── Wipe user-specific localStorage ──────────────────────────
+  // Progress & scores (synced to Supabase — reloaded on next login)
+  localStorage.removeItem('wb_sc5');
+  localStorage.removeItem('wb_done5');
+  // Paused quiz state
+  localStorage.removeItem('wb_paused_quiz');
+  // Parent-managed unlocks and PIN
+  localStorage.removeItem('wb_unit_unlocks');
+  localStorage.removeItem('wb_lesson_unlocks');
+  localStorage.removeItem('wb_parent_pin');
+  localStorage.removeItem('wb_parent_unlock');
+  localStorage.removeItem('wb_pin_changed');
+  // PIN brute-force lockout counters
+  localStorage.removeItem(_PIN_FAIL_KEY);
+  localStorage.removeItem(_PIN_FAIL_COUNT_KEY);
+
+  // Update UI to reflect logged-out state
+  updateAccountUI();
+}
+
 async function supaSignOut(){
   if(!_supa) return;
-  if(!confirm('Sign out? Your local progress stays on this device.')) return;
+  if(!confirm('Sign out? Your progress is saved to your account and will reload on next login.')) return;
   await _supa.auth.signOut();
-  _supaUser = null;
-  updateAccountUI();
+  // _clearUserData() and show('login-screen') handled by SIGNED_OUT auth event
   showLockToast('Signed out.');
 }
 
