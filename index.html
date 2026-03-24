@@ -1257,6 +1257,10 @@ body.dark #spot-card{
         <button id="ls-tab-login"  class="auth-tab-btn active" type="button" onclick="_lsSwitchTab('login')">Sign In</button>
         <button id="ls-tab-signup" class="auth-tab-btn idle"   type="button" onclick="_lsSwitchTab('signup')">Create Account</button>
       </div>
+      <!-- Honeypot — invisible to humans, traps bots. NEVER remove or label this. -->
+      <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true" tabindex="-1">
+        <input type="text" id="ls-hp" name="website" autocomplete="off" tabindex="-1" value="">
+      </div>
       <!-- Name (signup only) -->
       <div id="ls-name-row" style="display:none;margin-bottom:12px">
         <input class="set-inp" id="ls-name" type="text" placeholder="Your name (e.g. Emma) *" maxlength="30" style="font-size:1rem;width:100%;box-sizing:border-box">
@@ -1275,7 +1279,21 @@ body.dark #spot-card{
       </div>
       <!-- Password -->
       <div style="margin-bottom:4px">
-        <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:1rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')_lsSubmit()">
+        <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 8 characters)" autocomplete="current-password" style="font-size:1rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')_lsSubmit()" oninput="_updatePwStrength()">
+      </div>
+      <!-- Password strength bar — only shown on signup tab -->
+      <div id="ls-pw-strength" style="display:none;margin-bottom:6px;padding:0 2px">
+        <div style="height:5px;border-radius:50px;background:var(--border2);overflow:hidden">
+          <div id="ls-pw-bar" style="height:100%;width:0;border-radius:50px;transition:width .25s,background .25s"></div>
+        </div>
+        <div id="ls-pw-label" style="font-size:.72rem;margin-top:2px;text-align:right"></div>
+      </div>
+      <!-- Resend confirmation email — shown after successful signup -->
+      <div id="ls-resend-row" style="display:none;text-align:center;margin-bottom:6px">
+        <button type="button" onclick="_lsResend()"
+          style="font-family:'Boogaloo',cursive;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+          Resend confirmation email
+        </button>
       </div>
       <!-- Forgot password — only visible on Sign In tab -->
       <div id="ls-forgot-row" style="text-align:right;margin-bottom:6px">
@@ -4679,6 +4697,200 @@ function saveDone(){  localStorage.setItem('wb_done5',   JSON.stringify(DONE)); 
 function saveSc(){    localStorage.setItem('wb_sc5',     JSON.stringify(SCORES)); }
 
 // ════════════════════════════════════════
+//  SECURITY UTILITIES
+// ════════════════════════════════════════
+
+// Strip HTML tags and dangerous characters from user-entered text
+function _sanitize(str, maxLen = 200){
+  return String(str ?? '')
+    .replace(/<[^>]*>/g, '')      // strip HTML tags
+    .replace(/[<>"'`]/g, '')      // strip remaining dangerous chars
+    .trim()
+    .substring(0, maxLen);
+}
+
+// HTML-encode a value before interpolating into innerHTML — prevents XSS
+function _escHtml(str){
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Validate email format
+function _validEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
+// Map raw Supabase/network errors to friendly user messages
+function _friendlyError(err){
+  const msg = (err?.message || String(err)).toLowerCase();
+  if(msg.includes('invalid login credentials') || msg.includes('invalid credentials') || msg.includes('wrong password'))
+    return 'Incorrect email or password. Please try again.';
+  if(msg.includes('email not confirmed'))
+    return 'Please check your email and confirm your account first.';
+  if(msg.includes('already registered') || msg.includes('user already exists') || msg.includes('already been registered'))
+    return 'An account with this email already exists. Try signing in instead.';
+  if(msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('429'))
+    return 'Too many attempts. Please wait a moment and try again.';
+  if(msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('load failed'))
+    return 'Network error — check your connection and try again.';
+  if(msg.includes('weak password') || msg.includes('password should be'))
+    return 'Password is too weak. Please use at least 6 characters.';
+  if(msg.includes('valid email') || msg.includes('email address'))
+    return 'Please enter a valid email address.';
+  if(msg.includes('expired') || msg.includes('token'))
+    return 'Your session expired. Please sign in again.';
+  return 'Something went wrong. Please try again.';
+}
+
+// Client-side rate limiting — prevent form spam
+// Wrapped in IIFE so _rlBuckets is not accessible from the console
+const _rateLimit = (()=>{
+  const _rlBuckets = {};
+  return function(key, maxPerMin = 5){
+    const now = Date.now();
+    if(!_rlBuckets[key]) _rlBuckets[key] = [];
+    _rlBuckets[key] = _rlBuckets[key].filter(t => now - t < 60000);
+    if(_rlBuckets[key].length >= maxPerMin) return false;
+    _rlBuckets[key].push(now);
+    return true;
+  };
+})();
+
+// Error logging — captures unexpected errors silently in background
+const _appErrors = [];
+function _logError(context, err){
+  const entry = { context, msg: String(err?.message || err), ts: new Date().toISOString() };
+  console.warn('[App Error]', entry);
+  _appErrors.unshift(entry);
+  if(_appErrors.length > 30) _appErrors.pop();
+}
+// Global uncaught error handlers
+window.onerror = (msg, src, line, col, err) => { _logError('uncaught', err || msg); return false; };
+window.onunhandledrejection = (e) => { _logError('promise', e.reason); };
+
+// ── PASSWORD STRENGTH ────────────────────
+function _pwStrength(pw){
+  let score = 0;
+  if(pw.length >= 8)  score++;
+  if(pw.length >= 12) score++;
+  if(/[0-9]/.test(pw)) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[^a-zA-Z0-9]/.test(pw)) score++;
+  return Math.min(score, 4);
+}
+function _updatePwStrength(){
+  const tab = document.getElementById('login-screen')?.dataset?.tab || 'login';
+  const strengthEl = document.getElementById('ls-pw-strength');
+  if(!strengthEl) return;
+  if(tab !== 'signup'){ strengthEl.style.display = 'none'; return; }
+  const pw = document.getElementById('ls-password')?.value || '';
+  if(!pw){ strengthEl.style.display = 'none'; return; }
+  strengthEl.style.display = 'block';
+  const score = _pwStrength(pw);
+  const configs = [
+    { w:'20%', bg:'#e74c3c', text:'Weak — try adding numbers or symbols' },
+    { w:'45%', bg:'#e67e22', text:'Fair — getting better' },
+    { w:'70%', bg:'#f1c40f', text:'Good' },
+    { w:'100%', bg:'#27ae60', text:'Strong ✓' },
+  ];
+  const cfg = configs[Math.max(0, score - 1)];
+  const bar = document.getElementById('ls-pw-bar');
+  const lbl = document.getElementById('ls-pw-label');
+  bar.style.width = cfg.w;
+  bar.style.background = cfg.bg;
+  lbl.textContent = cfg.text;
+  lbl.style.color = cfg.bg;
+}
+
+// ── RESEND CONFIRMATION EMAIL ────────────
+let _lsLastSignupEmail = '';
+async function _lsResend(){
+  if(!_supa || !_lsLastSignupEmail) return;
+  const msgEl = document.getElementById('ls-msg');
+  try{
+    const { error } = await _supa.auth.resend({ type:'signup', email:_lsLastSignupEmail });
+    if(error){ msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ ' + _friendlyError(error); }
+    else { msgEl.style.color='#27ae60'; msgEl.textContent='✅ Confirmation email resent!'; }
+  } catch(e){
+    msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ ' + _friendlyError(e);
+  }
+}
+
+// ── PARENT SESSION TIMEOUT ───────────────
+const PARENT_SESSION_MINS = 10;
+let _parentTimerInterval = null;
+
+function _startParentSession(){
+  clearInterval(_parentTimerInterval);
+  _parentTimerInterval = setInterval(()=>{
+    if(!isParentUnlocked()){
+      clearInterval(_parentTimerInterval);
+      // Session expired — auto-lock and redirect
+      const panel = document.getElementById('parent-panel');
+      if(panel) panel.style.display = 'none';
+      show('settings-screen');
+      showLockToast('🔐 Parent session expired — locked.');
+    } else {
+      _updateParentTimerDisplay();
+    }
+  }, 15000); // check every 15 seconds
+  _updateParentTimerDisplay();
+}
+
+function _updateParentTimerDisplay(){
+  const stored = localStorage.getItem(PARENT_UNLOCK_KEY);
+  if(!stored) return;
+  const ts = parseInt(stored);
+  if(isNaN(ts)) return;
+  const remainSecs = Math.max(0, PARENT_SESSION_MINS * 60 - Math.floor((Date.now() - ts) / 1000));
+  const mins = Math.floor(remainSecs / 60);
+  const secs = remainSecs % 60;
+  const el = document.getElementById('parent-session-timer');
+  if(el){
+    el.textContent = remainSecs > 60
+      ? `⏱ Session expires in ${mins}m ${secs.toString().padStart(2,'0')}s`
+      : `⚠️ Session expires in ${remainSecs}s`;
+    el.style.color = remainSecs <= 60 ? '#e74c3c' : 'var(--txt2)';
+  }
+}
+
+// ── PIN SECURITY ─────────────────────────
+// Hash a PIN with SHA-256 + app salt so plain text is never stored
+async function _hashPin(pin){
+  const encoder = new TextEncoder();
+  const data = encoder.encode(String(pin) + 'mymathroots_pin_salt_2025');
+  const hashBuf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Save PIN as a hash
+async function _savePin(pin){
+  const hash = await _hashPin(pin);
+  localStorage.setItem(PARENT_PIN_KEY, hash);
+}
+
+// Verify entered PIN against stored hash (auto-migrates old plain-text PINs)
+async function _verifyPin(entered){
+  const stored = localStorage.getItem(PARENT_PIN_KEY);
+  const isHashed = stored && stored.length === 64;
+  if(!isHashed){
+    // Legacy plain-text PIN (or no PIN = default 1234) — migrate on correct entry
+    const plainPin = stored || DEFAULT_PIN;
+    if(String(entered) === plainPin){
+      await _savePin(plainPin); // auto-migrate to hashed
+      return true;
+    }
+    return false;
+  }
+  const enteredHash = await _hashPin(entered);
+  return enteredHash === stored;
+}
+
+// ════════════════════════════════════════
 //  SUPABASE — AUTH + SYNC
 // ════════════════════════════════════════
 const SUPA_URL = 'https://omjegwtzirskgmgeojdn.supabase.co';
@@ -4788,13 +5000,18 @@ function _lsSwitchTab(tab){
   const isSignup = tab === 'signup';
   document.getElementById('ls-tab-login').className  = 'auth-tab-btn ' + (isSignup?'idle':'active');
   document.getElementById('ls-tab-signup').className = 'auth-tab-btn ' + (isSignup?'active':'idle');
-  document.getElementById('ls-name-row').style.display = isSignup ? 'block' : 'none';
-  document.getElementById('ls-role-row').style.display = isSignup ? 'block' : 'none';
-  document.getElementById('ls-submit-btn').textContent = isSignup ? 'Create Account' : 'Sign In';
-  document.getElementById('login-screen').dataset.tab = tab;
-  document.getElementById('ls-msg').textContent = '';
+  document.getElementById('ls-name-row').style.display   = isSignup ? 'block' : 'none';
+  document.getElementById('ls-role-row').style.display   = isSignup ? 'block' : 'none';
+  document.getElementById('ls-submit-btn').textContent   = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('login-screen').dataset.tab    = tab;
+  document.getElementById('ls-msg').textContent          = '';
+  document.getElementById('ls-pw-strength').style.display = 'none';
+  document.getElementById('ls-resend-row').style.display  = 'none';
+  document.getElementById('ls-password').value            = '';
   const forgotRow = document.getElementById('ls-forgot-row');
   if(forgotRow) forgotRow.style.display = isSignup ? 'none' : 'block';
+  // Update placeholder text for password field
+  document.getElementById('ls-password').placeholder = isSignup ? 'Password (min 8 characters)' : 'Password';
 }
 
 async function _lsForgotPassword(){
@@ -4833,11 +5050,23 @@ async function _lsSubmit(){
   const email    = document.getElementById('ls-email').value.trim();
   const password = document.getElementById('ls-password').value;
   const msgEl    = document.getElementById('ls-msg');
+  msgEl.style.color = '#e74c3c';
+  // Honeypot — bots fill hidden fields, humans don't. Silently block.
+  if(document.getElementById('ls-hp')?.value){ return; }
+  // Rate limit — max 5 attempts per minute
+  if(!_rateLimit('login', 5)){
+    msgEl.textContent = '⚠️ Too many attempts. Please wait a moment.';
+    return;
+  }
   if(!email || !password){ msgEl.textContent='⚠️ Please enter email and password.'; return; }
-  if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
+  if(!_validEmail(email)){ msgEl.textContent='⚠️ Please enter a valid email address.'; return; }
   if(tab === 'signup'){
-    const nameVal = document.getElementById('ls-name').value.trim();
-    if(!nameVal){ msgEl.style.color='#e74c3c'; msgEl.textContent='⚠️ Please enter your name.'; document.getElementById('ls-name').focus(); return; }
+    if(password.length < 8){ msgEl.textContent='⚠️ Password must be at least 8 characters.'; return; }
+    if(_pwStrength(password) < 1){ msgEl.textContent='⚠️ Password is too weak — add numbers or symbols.'; return; }
+    const nameVal = _sanitize(document.getElementById('ls-name').value, 30);
+    if(!nameVal){ msgEl.textContent='⚠️ Please enter your name.'; document.getElementById('ls-name').focus(); return; }
+  } else {
+    if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
   }
   _lsLoading = true;
   const btn = document.getElementById('ls-submit-btn');
@@ -4848,7 +5077,7 @@ async function _lsSubmit(){
   try{
     let result;
     if(tab === 'signup'){
-      const displayName = document.getElementById('ls-name').value.trim() || 'Student';
+      const displayName = _sanitize(document.getElementById('ls-name').value, 30) || 'Student';
       result = await _supa.auth.signUp({
         email, password,
         options: { data: { display_name:displayName, role:_lsRole } }
@@ -4858,15 +5087,18 @@ async function _lsSubmit(){
     }
     if(result.error){
       msgEl.style.color = '#e74c3c';
-      msgEl.textContent = '⚠️ ' + result.error.message;
+      msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
     } else if(tab==='signup' && !result.data.session){
       msgEl.style.color = '#27ae60';
       msgEl.textContent = '✅ Check your email to confirm your account!';
+      _lsLastSignupEmail = email;
+      document.getElementById('ls-resend-row').style.display = 'block';
     }
     // onAuthStateChange handles navigation to home on success
   } catch(e){
+    _logError('lsSubmit', e);
     msgEl.style.color = '#e74c3c';
-    msgEl.textContent = '⚠️ Network error — check your connection.';
+    msgEl.textContent = '⚠️ ' + _friendlyError(e);
   } finally {
     _lsLoading = false;
     btn.textContent = origTxt;
@@ -5020,7 +5252,10 @@ async function submitAuth(){
   const email    = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
   const msgEl    = document.getElementById('auth-msg');
+  msgEl.style.color = '#e74c3c';
+  if(!_rateLimit('authModal', 5)){ msgEl.textContent='⚠️ Too many attempts. Please wait a moment.'; return; }
   if(!email || !password){ msgEl.textContent='⚠️ Please enter email and password.'; return; }
+  if(!_validEmail(email)){ msgEl.textContent='⚠️ Please enter a valid email address.'; return; }
   if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
   _authLoading = true;
   const btn = document.getElementById('auth-submit-btn');
@@ -5031,7 +5266,7 @@ async function submitAuth(){
   try{
     let result;
     if(tab === 'signup'){
-      const displayName = document.getElementById('auth-name').value.trim()
+      const displayName = _sanitize(document.getElementById('auth-name').value, 30)
         || loadSettings().studentName || 'Student';
       result = await _supa.auth.signUp({
         email, password,
@@ -5042,7 +5277,7 @@ async function submitAuth(){
     }
     if(result.error){
       msgEl.style.color = '#e74c3c';
-      msgEl.textContent = '⚠️ ' + result.error.message;
+      msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
     } else if(tab==='signup' && !result.data.session){
       msgEl.style.color = '#27ae60';
       msgEl.textContent = '✅ Check your email to confirm your account!';
@@ -5051,8 +5286,9 @@ async function submitAuth(){
       showLockToast('Signed in! Syncing…');
     }
   } catch(e){
+    _logError('submitAuth', e);
     msgEl.style.color = '#e74c3c';
-    msgEl.textContent = '⚠️ Network error — check your connection.';
+    msgEl.textContent = '⚠️ ' + _friendlyError(e);
   } finally {
     _authLoading = false;
     btn.textContent = origTxt;
@@ -5095,6 +5331,11 @@ let CUR = { unitIdx:0, lessonIdx:0, quiz:null };
 // ════════════════════════════════════════
 const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen'];
 function show(id){
+  // Guard: parent-screen requires a valid parent session
+  if(id === 'parent-screen' && !isParentUnlocked()){
+    console.warn('[Security] Blocked unauthorized access to parent-screen');
+    return;
+  }
   ALL_SCREENS.forEach(s=>document.getElementById(s)?.classList.remove('on'));
   const el = document.getElementById(id);
   el.classList.add('on');
@@ -7317,7 +7558,7 @@ function _finishQuiz(){
 
   // Score is auto-saved — show confirmation in save-card div
   const saveCard = document.getElementById('save-card');
-  if(saveCard) saveCard.innerHTML = `<p style="text-align:center;font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:8px">✅ Score auto-saved for <strong>${studentName}</strong></p>`;
+  if(saveCard) saveCard.innerHTML = `<p style="text-align:center;font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:8px">✅ Score auto-saved for <strong>${_escHtml(studentName)}</strong></p>`;
 
   // Review sections
   const wrong = qz.answers.filter(a=>!a.ok);
@@ -7382,12 +7623,12 @@ function buildRevSection(title, items, color, collapsed){
       ${items.map((a,i)=>`<div class="rev-item">
         <div class="rinum" style="background:${color}">${i+1}</div>
         <div class="ribody">
-          <div class="ri-q">${a.t}</div>
+          <div class="ri-q">${_escHtml(a.t)}</div>
           ${a.ok
-            ? `<div class="ri-a" style="color:#27ae60">Your answer: ${a.chosen} ✅</div>`
-            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#7f8c8d">${a.chosen}</span></div>
-               <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> ${a.correct} ✅</div>`}
-          <div class="ri-e">💡 ${a.exp}</div>
+            ? `<div class="ri-a" style="color:#27ae60">Your answer: ${_escHtml(a.chosen)} ✅</div>`
+            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#7f8c8d">${_escHtml(a.chosen)}</span></div>
+               <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> ${_escHtml(a.correct)} ✅</div>`}
+          <div class="ri-e">💡 ${_escHtml(a.exp)}</div>
         </div>
       </div>`).join('')}
     </div>
@@ -7655,17 +7896,17 @@ function renderScList(){
         reviewHtml += `<div class="sc-rev-sec" style="color:#e74c3c">❌ Incorrect (${wrong.length})</div>`;
         reviewHtml += wrong.map(a=>`
           <div class="sc-rev-item sc-rev-wrong">
-            <div class="sc-rev-q">${a.t}</div>
-            <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${a.chosen}</span></div>
-            <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${a.correct}</span></div>
+            <div class="sc-rev-q">${_escHtml(a.t)}</div>
+            <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${_escHtml(a.chosen)}</span></div>
+            <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${_escHtml(a.correct)}</span></div>
           </div>`).join('');
       }
       if(right.length){
         reviewHtml += `<div class="sc-rev-sec" style="color:#27ae60">✅ Correct (${right.length})</div>`;
         reviewHtml += right.map(a=>`
           <div class="sc-rev-item sc-rev-right">
-            <div class="sc-rev-q">${a.t}</div>
-            <div class="sc-rev-correct" style="color:#27ae60">✅ ${a.correct}</div>
+            <div class="sc-rev-q">${_escHtml(a.t)}</div>
+            <div class="sc-rev-correct" style="color:#27ae60">✅ ${_escHtml(a.correct)}</div>
           </div>`).join('');
       }
     } else {
@@ -7676,11 +7917,11 @@ function renderScList(){
     window._scReviews[i] = {
       headHtml: `
         <button class="sc-lightbox-close" onclick="closeScLightbox()">✕</button>
-        <div class="sc-name" style="font-size:1.1rem">${s.name}</div>
-        <div class="sc-type">${s.label}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
-        <div class="sc-date" style="margin-top:4px">${s.date} · ${s.time}${s.timeTaken?` · ⏱ ${s.timeTaken} mins`:''}</div>
+        <div class="sc-name" style="font-size:1.1rem">${_escHtml(s.name)}</div>
+        <div class="sc-type">${_escHtml(s.label)}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
+        <div class="sc-date" style="margin-top:4px">${_escHtml(s.date)} · ${_escHtml(s.time)}${s.timeTaken?` · ⏱ ${_escHtml(s.timeTaken)} mins`:''}</div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
-          <span class="sc-stars" style="font-size:1.2rem">${s.abandoned?'⚠️':s.quit?'🚫':s.stars}</span>
+          <span class="sc-stars" style="font-size:1.2rem">${s.abandoned?'⚠️':s.quit?'🚫':_escHtml(s.stars)}</span>
           <span class="sc-grade" style="background:${(s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color)+'20'};color:${s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color}">${s.score}/${s.total}</span>
           <span style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</span>
         </div>`,
@@ -7691,9 +7932,9 @@ function renderScList(){
     return `<div class="sc-card" style="border-left:4px solid ${cardAccent}" onclick="openScLightbox(${i})">
       <div class="sc-card-header">
         <div>
-          <div class="sc-name">${s.name}</div>
-          <div class="sc-type">${s.label}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
-          <div class="sc-date">${s.date} · ${s.time}${s.timeTaken?` · ⏱ ${s.timeTaken} mins`:''}</div>
+          <div class="sc-name">${_escHtml(s.name)}</div>
+          <div class="sc-type">${_escHtml(s.label)}${s.abandoned?' <span style="color:#e67e22;font-size:.8rem;font-family:Boogaloo,cursive">⚠️ Abandoned</span>':''}${s.quit?' <span style="color:#e74c3c;font-size:.8rem;font-family:Boogaloo,cursive">🚫 Quit</span>':''}</div>
+          <div class="sc-date">${_escHtml(s.date)} · ${_escHtml(s.time)}${s.timeTaken?` · ⏱ ${_escHtml(s.timeTaken)} mins`:''}</div>
         </div>
         <div style="text-align:center;flex-shrink:0">
           <span class="sc-stars">${(s.abandoned||s.quit)?'':s.stars}</span>
@@ -7920,7 +8161,7 @@ function applyStoredTheme(){
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.14';
+const APP_VERSION = 'v5.15';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -7948,17 +8189,53 @@ function isLessonIndividuallyUnlocked(unitIdx, lessonIdx){ return !!getLessonUnl
 
 function getPin(){ return localStorage.getItem(PARENT_PIN_KEY) || DEFAULT_PIN; }
 
-function isParentUnlocked(){ return localStorage.getItem(PARENT_UNLOCK_KEY) === 'all'; }
+function isParentUnlocked(){
+  const stored = localStorage.getItem(PARENT_UNLOCK_KEY);
+  if(!stored) return false;
+  // Legacy support: old value was 'all'
+  if(stored === 'all') return true;
+  const ts = parseInt(stored);
+  return !isNaN(ts) && (Date.now() - ts) < PARENT_SESSION_MINS * 60 * 1000;
+}
 
-function checkParentPin(){
-  const entered = document.getElementById('parent-pin-inp').value;
+const _PIN_FAIL_KEY = 'pin_fail_ts';
+const _PIN_FAIL_COUNT_KEY = 'pin_fail_count';
+const _PIN_MAX_ATTEMPTS = 5;
+const _PIN_LOCKOUT_MS = 30000; // 30 seconds
+
+async function checkParentPin(){
   const msg = document.getElementById('pin-msg');
-  if(entered === getPin()){
+
+  // ── Brute-force lockout check ──
+  const failCount = parseInt(sessionStorage.getItem(_PIN_FAIL_COUNT_KEY) || '0');
+  const failTs    = parseInt(sessionStorage.getItem(_PIN_FAIL_KEY) || '0');
+  if(failCount >= _PIN_MAX_ATTEMPTS){
+    const elapsed = Date.now() - failTs;
+    if(elapsed < _PIN_LOCKOUT_MS){
+      const secs = Math.ceil((_PIN_LOCKOUT_MS - elapsed) / 1000);
+      msg.textContent = `🔒 Too many wrong attempts. Try again in ${secs}s.`;
+      msg.style.color = '#e74c3c';
+      return;
+    } else {
+      // Lockout expired — reset counter
+      sessionStorage.removeItem(_PIN_FAIL_COUNT_KEY);
+      sessionStorage.removeItem(_PIN_FAIL_KEY);
+    }
+  }
+
+  const entered = document.getElementById('parent-pin-inp').value;
+  if(await _verifyPin(entered)){
+    // Success — clear fail counter
+    sessionStorage.removeItem(_PIN_FAIL_COUNT_KEY);
+    sessionStorage.removeItem(_PIN_FAIL_KEY);
     closePinModal();
     document.getElementById('parent-pin-inp').value = '';
     playSwooshForward();
+    // Stamp session start time
+    localStorage.setItem(PARENT_UNLOCK_KEY, Date.now().toString());
     show('parent-screen');
     document.getElementById('parent-panel').style.display = 'block';
+    _startParentSession();
     // Show first-time PIN change prompt if still using default
     const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
     if(isDefault){
@@ -7975,7 +8252,16 @@ function checkParentPin(){
     }
     updateParentStatus();
   } else {
-    msg.textContent = '❌ Wrong PIN. Try again.';
+    // Failed — increment counter and record timestamp
+    const newCount = failCount + 1;
+    sessionStorage.setItem(_PIN_FAIL_COUNT_KEY, String(newCount));
+    sessionStorage.setItem(_PIN_FAIL_KEY, String(Date.now()));
+    const remaining = _PIN_MAX_ATTEMPTS - newCount;
+    if(remaining > 0){
+      msg.textContent = `❌ Wrong PIN. ${remaining} attempt${remaining===1?'':'s'} left before lockout.`;
+    } else {
+      msg.textContent = `🔒 Too many wrong attempts. Locked for 30 seconds.`;
+    }
     msg.style.color = '#e74c3c';
   }
 }
@@ -7997,7 +8283,8 @@ function updateParentStatus(){
 }
 
 function parentUnlockAll(){
-  localStorage.setItem(PARENT_UNLOCK_KEY, 'all');
+  if(!isParentUnlocked()){ showLockToast('🔒 Parent PIN required.'); return; }
+  localStorage.setItem(PARENT_UNLOCK_KEY, Date.now().toString());
   updateParentStatus();
   showLockToast('All lessons and units unlocked!');
   buildHome(); // refresh home screen cards
@@ -8026,6 +8313,7 @@ function parentLockAll(){
 }
 
 function parentClearScores(){
+  if(!isParentUnlocked()){ showLockToast('🔒 Parent PIN required.'); return; }
   if(!confirm('Clear ALL score history? This cannot be undone.')) return;
   SCORES.length = 0;
   saveSc();
@@ -8072,11 +8360,11 @@ function adjustTimer(type, delta){
   showLockToast((type==='unit'?'Unit':'Lesson')+' quiz timer set to '+newVal+(newVal===1?' minute':' minutes')+'.');
 }
 
-function changePin(){
+async function changePin(){
   const newPin = document.getElementById('new-pin-inp').value.trim();
   const msg = document.getElementById('pin-change-msg');
   if(newPin.length < 4){ msg.textContent='⚠️ PIN must be at least 4 digits'; msg.style.color='#e74c3c'; return; }
-  localStorage.setItem(PARENT_PIN_KEY, newPin);
+  await _savePin(newPin);
   localStorage.setItem(PIN_CHANGED_KEY, '1');
   // Hide default PIN notices everywhere
   document.querySelectorAll('#pin-default-hint,#default-pin-notice').forEach(el=>{ if(el) el.style.display='none'; });
@@ -8133,7 +8421,11 @@ async function _submitFeedback(){
   const msg = document.getElementById('fb-msg');
   if(!_fbRating){ msg.style.color='#e74c3c'; msg.textContent='Please select a star rating.'; return; }
   if(!_fbCategory){ msg.style.color='#e74c3c'; msg.textContent='Please select a category.'; return; }
-  const comment = document.getElementById('fb-comment').value.trim();
+  // Rate limit — max 3 feedback submissions per minute
+  if(!_rateLimit('feedback', 3)){
+    msg.style.color='#e74c3c'; msg.textContent='Please wait before submitting again.'; return;
+  }
+  const comment = _sanitize(document.getElementById('fb-comment').value, 500);
   msg.style.color='var(--txt2)'; msg.textContent='Sending…';
 
   if(_supa){
@@ -8144,7 +8436,7 @@ async function _submitFeedback(){
       app_version: APP_VERSION,
       user_id: _supaUser ? _supaUser.id : null
     });
-    if(error){ msg.style.color='#e74c3c'; msg.textContent='Error: ' + error.message; return; }
+    if(error){ _logError('feedback', error); msg.style.color='#e74c3c'; msg.textContent='⚠️ ' + _friendlyError(error); return; }
   }
 
   // Reset form
@@ -8965,10 +9257,10 @@ function openLessonPinUnlock(unitIdx, lessonIdx){
   setTimeout(()=>document.getElementById('upm-pin-inp').focus(), 200);
 }
 
-function checkLessonPinUnlock(){
+async function checkLessonPinUnlock(){
   const entered = document.getElementById('upm-pin-inp').value;
   const msg = document.getElementById('upm-msg');
-  if(entered !== getPin()){
+  if(!(await _verifyPin(entered))){
     msg.textContent = '❌ Wrong PIN — try again.';
     msg.style.color = '#e74c3c';
     if(isSoundEnabled()) playWrong();
@@ -9011,10 +9303,10 @@ function closeUnitPinModal(){
   _upmUnitIdx = -1;
 }
 
-function checkUnitPinUnlock(){
+async function checkUnitPinUnlock(){
   const entered = document.getElementById('upm-pin-inp').value;
   const msg = document.getElementById('upm-msg');
-  if(entered !== getPin()){
+  if(!(await _verifyPin(entered))){
     msg.textContent = '❌ Wrong PIN — try again.';
     msg.style.color = '#e74c3c';
     if(isSoundEnabled()) playWrong();
@@ -9174,6 +9466,7 @@ function closeInstall(){
         <div id="parent-panel" style="display:none">
           <div class="parent-panel-inner">
             <div class="parent-status" id="parent-status-lbl"></div>
+            <div id="parent-session-timer" style="font-family:'Boogaloo',cursive;font-size:.8rem;color:var(--txt2);text-align:center;margin-top:6px;opacity:.75"></div>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
               <button class="parent-btn parent-btn-unlock" onclick="parentUnlockAll()">
@@ -9303,7 +9596,7 @@ function closeInstall(){
   <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.14 — Current</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.15 — Current</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li>Spotlight tutorial now highlights the full element with matching rectangular shape</li>
         <li>Tutorial tooltip card is now semi-transparent so the highlighted element shows through</li>
