@@ -100,14 +100,14 @@ button{ -webkit-appearance:none; font-family:inherit;
       padding:12px 16px; padding-top:calc(12px + env(safe-area-inset-top));
       display:flex; align-items:center; gap:10px;
       box-shadow:0 2px 12px rgba(0,0,0,.08); }
-.bar-back{ font-family:'Boogaloo',cursive; font-size:1.25rem;
+.bar-back{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.25rem;
            padding:10px 24px; border-radius:50px; border:3px solid currentColor;
            background:transparent; cursor:pointer; transition:all .15s;
            display:flex; align-items:center; gap:8px; flex-shrink:0; }
 .bar-back:hover{ background:rgba(0,0,0,.06); }
-.bar-title{ font-family:'Boogaloo',cursive; font-size:1.5rem;
+.bar-title{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.5rem;
             flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.bar-badge{ font-family:'Boogaloo',cursive; font-size:.9rem;
+.bar-badge{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.9rem;
             padding:6px 16px; border-radius:50px; flex-shrink:0; }
 
 /* Lesson bar — title centered absolutely so it's always mid-screen */
@@ -143,14 +143,14 @@ button{ -webkit-appearance:none; font-family:inherit;
 .hero-ico{ font-size:3rem; display:block; animation:bob 2.5s ease-in-out infinite; }
 @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
 @keyframes spin{ to{ transform:rotate(360deg); } }
-.hero-h1{ font-family:'Boogaloo',cursive; font-size:clamp(2rem,6vw,3rem);
+.hero-h1{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:clamp(2rem,6vw,3rem);
           line-height:1.1; text-shadow:2px 2px 0 rgba(0,0,0,.06); text-transform:uppercase; }
 .hero-credit{ font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:800;
   color:#5a7080; margin-top:3px; letter-spacing:.3px; }
 .hero-sub{ font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:700;
   color:#7a9aaa; letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
 .hero-tag{ display:inline-block; margin-top:6px; padding:6px 18px;
-           border-radius:50px; font-family:'Boogaloo',cursive;
+           border-radius:50px; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
            font-size:.95rem; color:#fff;
            background:linear-gradient(135deg,#e74c3c,#e67e22); }
 
@@ -160,7 +160,7 @@ button{ -webkit-appearance:none; font-family:inherit;
      border-radius:var(--rad); padding:12px 18px; margin:0 16px 8px;
      box-shadow:0 8px 32px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.3);
      border:1px solid rgba(255,255,255,.3); flex-shrink:0; }
-.op-title{ font-family:'Boogaloo',cursive; font-size:.9rem; margin-bottom:4px; color:var(--txt); }
+.op-title{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.9rem; margin-bottom:4px; color:var(--txt); }
 .pb{ height:14px; background:rgba(255,255,255,.2); border-radius:50px; overflow:hidden; margin:4px 0;
      box-shadow:inset 0 2px 6px rgba(0,0,0,.12), inset 0 -1px 0 rgba(255,255,255,.2);
      border:1px solid rgba(255,255,255,.3);
@@ -171,7 +171,7 @@ button{ -webkit-appearance:none; font-family:inherit;
 .pb-lbl{ font-size:.78rem; color:var(--txt2); font-weight:800; text-align:center; }
 
 /* Swipe hint */
-.carousel-hint{ text-align:center; font-family:'Boogaloo',cursive; font-size:.85rem;
+.carousel-hint{ text-align:center; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.85rem;
   color:var(--txt2); padding:3px 0 5px; flex-shrink:0; }
 
 /* ── UNIT SCROLL BOX ── */
@@ -224,17 +224,17 @@ button{ -webkit-appearance:none; font-family:inherit;
   display:flex; align-items:center; gap:12px;
   opacity:.82; }
 
-.cs-label{ font-family:'Boogaloo',cursive; font-size:.8rem; text-transform:uppercase;
+.cs-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.8rem; text-transform:uppercase;
   letter-spacing:2px; color:var(--uc); margin-bottom:3px; }
 .cs-icon{ font-size:3.5rem; display:block; margin-bottom:4px; }
-.cs-name{ font-family:'Boogaloo',cursive; font-size:1.6rem; line-height:1.15;
+.cs-name{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.6rem; line-height:1.15;
   color:var(--txt); margin-bottom:8px; }
 .cs-pb{ height:10px; background:rgba(0,0,0,.1); border-radius:50px; overflow:hidden; margin:6px 0 5px; }
 .cs-pbf{ height:100%; border-radius:50px;
   background:linear-gradient(90deg,var(--uc),var(--uc)cc); }
 .cs-stat{ font-size:.85rem; color:var(--txt2); font-weight:800; }
 .cs-enter-btn{ margin-top:13px; display:block; width:100%;
-  font-family:'Boogaloo',cursive; font-size:1.25rem; padding:12px;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.25rem; padding:12px;
   border-radius:16px; border:none; cursor:pointer; color:#fff;
   box-shadow:0 4px 0 rgba(0,0,0,.2);
   transition:transform .1s, box-shadow .1s; }
@@ -257,9 +257,9 @@ button{ -webkit-appearance:none; font-family:inherit;
 .cs-pin-unlock-btn:hover{ background:linear-gradient(135deg,#ffe84d,#ffb732); transform:scale(1.12); }
 .cs-pin-unlock-btn:active{ transform:scale(.92); }
 .cs-lock-info{ flex:1; }
-.cs-lock-label{ font-family:'Boogaloo',cursive; font-size:.7rem;
+.cs-lock-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.7rem;
   text-transform:uppercase; letter-spacing:1.5px; color:#aab; }
-.cs-lock-name{ font-family:'Boogaloo',cursive; font-size:1rem;
+.cs-lock-name{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem;
   color:var(--txt2); }
 .cs-lock-badge{ font-size:1.2rem; flex-shrink:0; }
 
@@ -289,12 +289,12 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
   max-height:calc(100dvh - 340px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
 .unit-banner{ border-radius:var(--rad); padding:10px 18px; color:#fff;
               box-shadow:var(--shad); flex-shrink:0; }
-.unit-banner h2{ font-family:'Boogaloo',cursive; font-size:1.35rem; margin-bottom:2px; }
+.unit-banner h2{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.35rem; margin-bottom:2px; }
 .unit-banner p{ font-size:.82rem; opacity:.9; }
 .unit-teks{ font-size:.72rem; background:rgba(255,255,255,.25);
              padding:2px 10px; border-radius:50px; display:inline-block; margin-top:4px; font-weight:800; }
 
-.sec-label{ font-family:'Boogaloo',cursive; font-size:1.1rem;
+.sec-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem;
              margin-bottom:12px; color:#444; }
 /* Lesson glass container */
 .lesson-glass-wrap{ border-radius:var(--rad);
@@ -314,12 +314,12 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
   box-shadow:0 8px 28px rgba(0,0,0,.15); }
 .lcard-num{ width:46px; height:46px; border-radius:50%; background:var(--uc,#ccc);
              color:#fff; display:flex; align-items:center; justify-content:center;
-             font-family:'Boogaloo',cursive; font-size:1.2rem; flex-shrink:0; }
+             font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.2rem; flex-shrink:0; }
 .lcard-info{ flex:1; }
-.lcard-title{ font-family:'Boogaloo',cursive; font-size:1.3rem; color:var(--txt); }
+.lcard-title{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.3rem; color:var(--txt); }
 .lcard-desc{ font-size:.95rem; color:var(--txt2); margin-top:3px; }
 .lcard-badges{ display:flex; gap:6px; flex-shrink:0; }
-.badge{ font-family:'Boogaloo',cursive; font-size:.72rem; padding:4px 10px;
+.badge{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.72rem; padding:4px 10px;
          border-radius:50px; white-space:nowrap; }
 .badge-done{ background:#eafaf1; color:#27ae60; }
 .badge-quiz{ background:#eafaf1; color:#27ae60; }
@@ -336,7 +336,7 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 .uq-btn:hover{ transform:translateY(-3px); box-shadow:0 14px 40px rgba(0,0,0,.2); }
 .uq-btn:active{ transform:translateY(1px); }
 .uq-btn-left{ text-align:left; flex:1; }
-.uq-btn-left h3{ font-family:'Boogaloo',cursive; font-size:1.35rem; color:var(--uc); margin-bottom:2px; }
+.uq-btn-left h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.35rem; color:var(--uc); margin-bottom:2px; }
 .uq-btn-left p{ font-size:.85rem; color:var(--txt2); }
 .uq-btn-ico{ font-size:2rem; flex-shrink:0; }
 
@@ -347,9 +347,9 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 .resume-banner{ background:linear-gradient(135deg,#f39c12,#e67e22); border-radius:var(--rad);
   padding:16px 18px; margin-bottom:12px; display:flex; align-items:center;
   justify-content:space-between; gap:12px; box-shadow:var(--shad); }
-.resume-banner-h{ font-family:'Boogaloo',cursive; font-size:1.15rem; color:#fff; }
+.resume-banner-h{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.15rem; color:#fff; }
 .resume-banner-sub{ font-size:.85rem; color:rgba(255,255,255,.88); margin-top:3px; }
-.resume-btn{ font-family:'Boogaloo',cursive; font-size:1.1rem; padding:12px 22px;
+.resume-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; padding:12px 22px;
   border-radius:50px; border:none; cursor:pointer; background:#fff;
   color:#e67e22; font-weight:900; flex-shrink:0;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent;
@@ -363,7 +363,7 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
 .learn-card{ background:var(--card-bg); border-radius:var(--rad); padding:22px 20px;
               margin-bottom:16px; box-shadow:var(--shad); }
-.learn-card h3{ font-family:'Boogaloo',cursive; font-size:1.2rem;
+.learn-card h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.2rem;
                 margin-bottom:12px; display:flex; align-items:center; gap:8px; }
 
 /* Key points */
@@ -375,30 +375,30 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
 /* Examples */
 .ex-list{ display:flex; flex-direction:column; gap:12px; margin-top:4px; }
-.new-ex-btn{ font-family:'Boogaloo',cursive; font-size:.95rem; padding:8px 16px;
+.new-ex-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem; padding:8px 16px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
   box-shadow:0 3px 0 rgba(0,0,0,.2); transition:transform .15s;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent; flex-shrink:0; }
 .new-ex-btn:active{ transform:scale(.95); }
 .ex{ border-radius:16px; padding:16px 18px; border:2.5px solid var(--exc,#ccc); background:var(--exbg,#f9f9f9); }
-.ex-tag{ font-family:'Boogaloo',cursive; font-size:.9rem; text-transform:uppercase;
+.ex-tag{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.9rem; text-transform:uppercase;
           letter-spacing:1px; color:var(--exc); margin-bottom:8px; }
-.ex-problem{ font-family:'Boogaloo',cursive; font-size:1.75rem; color:var(--exc); margin-bottom:8px; }
+.ex-problem{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.75rem; color:var(--exc); margin-bottom:8px; }
 .ex-steps{ font-size:1rem; color:var(--txt3); line-height:1.9; margin-bottom:8px; }
 .ex-steps br{ display:block; content:''; }
 .ex-steps svg{ max-width:100%; height:auto; }
-.ex-answer{ font-family:'Boogaloo',cursive; font-size:1.5rem; color:#27ae60; }
+.ex-answer{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.5rem; color:#27ae60; }
 
 /* Place value boxes */
 .pv-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:10px 0; }
 .pv{ border-radius:14px; padding:11px 18px; text-align:center; border:3px solid; min-width:76px; }
 .pv-lbl{ font-size:.7rem; font-weight:900; text-transform:uppercase; letter-spacing:.8px; margin-bottom:3px; }
-.pv-val{ font-family:'Boogaloo',cursive; font-size:2.2rem; line-height:1; }
+.pv-val{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:2.2rem; line-height:1; }
 .pv-sub{ font-size:.72rem; font-weight:800; margin-top:2px; }
 
 /* Coins */
 .coin{ display:inline-flex; align-items:center; justify-content:center;
-       border-radius:50%; font-family:'Boogaloo',cursive;
+       border-radius:50%; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
        box-shadow:inset 0 -3px 6px rgba(0,0,0,.2), 0 3px 8px rgba(0,0,0,.2); }
 .coin-p{ width:48px; height:48px; background:radial-gradient(circle at 35% 35%,#e8a96a,#b87333); color:#7a4010; font-size:.7rem; }
 .coin-n{ width:54px; height:54px; background:radial-gradient(circle at 35% 35%,#d4d5d9,#9e9ea3); color:#555; font-size:.7rem; }
@@ -409,26 +409,26 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
 /* Fractions */
 .frac{ display:inline-flex; flex-direction:column; align-items:center; }
-.frac-n{ font-family:'Boogaloo',cursive; font-size:2rem; line-height:1; }
+.frac-n{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:2rem; line-height:1; }
 .frac-l{ height:4px; border-radius:2px; margin:3px 0; }
-.frac-d{ font-family:'Boogaloo',cursive; font-size:2rem; line-height:1; }
+.frac-d{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:2rem; line-height:1; }
 .frac-row{ display:flex; gap:22px; justify-content:center; align-items:flex-end; flex-wrap:wrap; margin:10px 0; }
 
 /* Shapes */
 .shape-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:10px; }
 .shape-tile{ background:rgba(0,0,0,.03); border-radius:12px; padding:11px 6px; text-align:center; }
-.shape-lbl{ font-family:'Boogaloo',cursive; font-size:.82rem; margin-top:5px; }
+.shape-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.82rem; margin-top:5px; }
 .shape-sub{ font-size:.68rem; color:#7f8c8d; margin-top:2px; }
 
 /* Stacked addition/subtraction */
-.stack{ display:inline-block; text-align:right; font-family:'Boogaloo',cursive;
+.stack{ display:inline-block; text-align:right; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
         font-size:2rem; line-height:1.8; background:rgba(0,0,0,.03);
         padding:14px 20px; border-radius:14px; }
 .stack-line{ border-top:3px solid; padding-top:5px; }
 .stack-note{ font-size:.78rem; color:#7f8c8d; margin-top:6px; font-family:'Nunito',sans-serif; text-align:center; }
 
 /* Mark done btn */
-.mark-btn{ width:100%; font-family:'Boogaloo',cursive; font-size:1.2rem;
+.mark-btn{ width:100%; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.2rem;
             padding:16px; border-radius:var(--rad); border:none; cursor:pointer;
             color:#fff; margin-top:6px;
             box-shadow:0 5px 0 rgba(0,0,0,.18);
@@ -439,13 +439,13 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
              text-align:center; border:2.5px solid #27ae60; margin-top:6px; }
 body.dark .done-card{ background:rgba(39,174,96,.15); }
 .done-ico{ font-size:2.8rem; animation:bob 1.5s ease-in-out infinite; display:block; margin-bottom:8px; }
-.done-title{ font-family:'Boogaloo',cursive; font-size:1.3rem; color:#27ae60; }
+.done-title{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.3rem; color:#27ae60; }
 
 /* Lesson quiz banner */
 .lq-start-btn{ padding:20px 24px !important; border-radius:var(--rad) !important;
   box-shadow:0 6px 0 rgba(0,0,0,.2) !important; transition:transform .1s, box-shadow .1s !important; }
 .lq-start-btn:active{ transform:translateY(3px) !important; box-shadow:0 3px 0 rgba(0,0,0,.2) !important; }
-.lq-start-label{ font-family:'Boogaloo',cursive; font-size:1.6rem; color:#fff;
+.lq-start-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.6rem; color:#fff;
   margin-bottom:4px; letter-spacing:.5px; }
 .lq-start-sub{ font-size:.9rem; color:rgba(255,255,255,.88); }
 .lq-banner{ border-radius:var(--rad); padding:18px 20px; color:#fff;
@@ -455,7 +455,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
              touch-action:manipulation; -webkit-tap-highlight-color:transparent; 
              touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .lq-banner:hover{ filter:brightness(1.07); }
-.lq-banner-h{ font-family:'Boogaloo',cursive; font-size:1.1rem; }
+.lq-banner-h{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; }
 .lq-banner-sub{ font-size:.85rem; opacity:.88; margin-top:3px; }
 .lq-banner-ico{ font-size:2.2rem; }
 
@@ -483,7 +483,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .qhdr{ background:rgba(255,255,255,.18); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
         border:1px solid rgba(255,255,255,.25); border-radius:var(--rad); padding:18px 20px;
         margin-bottom:16px; box-shadow:var(--shad); }
-.q-timer{ font-family:'Boogaloo',cursive; font-size:1.1rem; padding:6px 14px;
+.q-timer{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; padding:6px 14px;
   border-radius:50px; background:rgba(0,0,0,.06); color:var(--txt);
   transition:background .3s, color .3s; white-space:nowrap; }
 .q-timer.warn{ background:#fff3cd; color:#e67e22; }
@@ -491,16 +491,16 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 @keyframes timerPulse{ 0%,100%{opacity:1;} 50%{opacity:.5;} }
 .qmeta{ display:flex; justify-content:space-between; align-items:center;
          flex-wrap:wrap; gap:8px; margin-bottom:10px; }
-.q-lbl{ font-family:'Boogaloo',cursive; font-size:1rem; }
-.q-score{ font-family:'Boogaloo',cursive; font-size:.95rem;
+.q-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; }
+.q-score{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem;
            padding:6px 16px; border-radius:50px; }
 .qpb{ height:14px; background:rgba(0,0,0,.08); border-radius:50px; overflow:hidden; }
 .qpbf{ height:100%; border-radius:50px; transition:width .4s; }
 
 .qcard{ background:rgba(255,255,255,.18); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
         border:1px solid rgba(255,255,255,.25); border-radius:var(--rad); padding:24px 20px; box-shadow:var(--shad); }
-.q-num{ font-family:'Boogaloo',cursive; font-size:.85rem; margin-bottom:7px; }
-.q-text{ font-family:'Boogaloo',cursive; font-size:1.6rem; line-height:1.5; margin-bottom:20px; color:var(--txt); }
+.q-num{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.85rem; margin-bottom:7px; }
+.q-text{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.6rem; line-height:1.5; margin-bottom:20px; color:var(--txt); }
 .q-visual{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
             padding:12px; background:rgba(0,0,0,.025); border-radius:14px;
             margin-bottom:16px; }
@@ -508,7 +508,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 
 /* Answer buttons — big! */
 .agrid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.abtn{ font-family:'Boogaloo',cursive; font-size:1.5rem;
+.abtn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.5rem;
         padding:26px 14px; border-radius:18px;
         border:3px solid var(--border2); cursor:pointer;
         background:var(--card-bg); color:var(--txt); text-align:center;
@@ -528,14 +528,14 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .reveal.show{ display:block; animation:pop .25s ease; }
 .reveal.ok{ background:rgba(39,174,96,.12); border:2.5px solid #27ae60; }
 .reveal.no{ background:rgba(231,76,60,.12); border:2.5px solid #e74c3c; }
-.rev-h{ font-family:'Boogaloo',cursive; font-size:1.35rem; margin-bottom:7px; }
+.rev-h{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.35rem; margin-bottom:7px; }
 .rev-h.ok{ color:#1a6e3c; }
 .rev-h.no{ color:#a93226; }
 .rev-correct{ font-size:1rem; font-weight:900; color:#27ae60; margin-bottom:6px; }
 .rev-exp{ font-size:1.05rem; line-height:1.7; color:var(--txt); }
 
 .quiz-nav-row{ display:flex; align-items:center; margin-top:14px; gap:8px; }
-.next-btn{ font-family:'Boogaloo',cursive; font-size:1rem;
+.next-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem;
             padding:11px 20px; border-radius:50px; border:2px solid #1a7a45; cursor:pointer;
             background:#27ae60; color:#fff;
             transition:transform .12s, background .15s;
@@ -543,7 +543,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
             touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .next-btn:hover{ background:#1a7a45; }
 .next-btn:active{ transform:scale(.95); }
-.prev-btn{ font-family:'Boogaloo',cursive; font-size:1rem;
+.prev-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem;
             padding:11px 20px; border-radius:50px; border:2px solid var(--border2); cursor:pointer;
             background:var(--bg3); color:var(--txt2); text-align:center;
             transition:transform .12s, background .15s;
@@ -556,10 +556,10 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
   display:none;align-items:center;justify-content:center;padding:20px; }
 .restart-modal-box{ background:var(--card-bg);border-radius:24px;padding:28px 24px;
   max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3); }
-.restart-modal-box h3{ font-family:'Boogaloo',cursive;font-size:1.6rem;margin:0 0 10px; }
+.restart-modal-box h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;margin:0 0 10px; }
 .restart-modal-box p{ font-size:1rem;color:var(--txt2);margin:0 0 22px;line-height:1.6; }
 .restart-modal-btns{ display:flex;gap:12px; }
-.restart-modal-btns button{ flex:1;font-family:'Boogaloo',cursive;font-size:1.1rem;
+.restart-modal-btns button{ flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.1rem;
   padding:14px;border-radius:14px;border:none;cursor:pointer;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent; }
 .restart-confirm-yes{ background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;box-shadow:0 4px 0 #922b21; }
@@ -568,13 +568,13 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .restart-confirm-no:active{ transform:scale(.97); }
 
 .quiz-top-row{ display:flex; justify-content:space-between; align-items:center; margin:10px 0; }
-.quiz-restart-btn{ font-family:'Boogaloo',cursive; font-size:.95rem;
+.quiz-restart-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem;
   background:var(--bg3); border:2px solid var(--border2);
   color:var(--txt2); cursor:pointer; padding:7px 18px; border-radius:50px;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent;
   transition:background .15s, transform .1s; }
 .quiz-restart-btn:active{ transform:scale(.95); }
-.quiz-quit-btn{ font-family:'Boogaloo',cursive; font-size:.95rem;
+.quiz-quit-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem;
   background:transparent; border:2px solid rgba(231,76,60,.35);
   color:#e74c3c; cursor:pointer; padding:7px 18px; border-radius:50px;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent;
@@ -583,7 +583,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .quiz-quit-btn:active{ transform:scale(.95); }
 
 .quiz-scratch-btn{
-  font-family:'Boogaloo',cursive;font-size:.9rem;padding:8px 14px;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;padding:8px 14px;
   border-radius:50px;border:2px solid #f39c12;background:transparent;
   color:#f39c12;cursor:pointer;touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
@@ -609,7 +609,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
   flex-shrink:0;
 }
 .scratch-toolbar-title{
-  font-family:'Boogaloo',cursive;font-size:1.05rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;
   color:var(--txt,#222);flex:1;
 }
 .scratch-color-btn{
@@ -619,7 +619,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 }
 .scratch-color-btn.active{ border-color:var(--txt,#222); }
 .scratch-tool-btn{
-  font-family:'Boogaloo',cursive;font-size:.85rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.85rem;
   padding:6px 12px;border-radius:50px;
   border:2px solid var(--border2,#ccc);
   background:var(--bg,#f5f5f5);color:var(--txt,#222);
@@ -638,7 +638,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
   display:block;width:100%;height:100%;touch-action:none;
 }
 
-.more-practice-btn{ font-family:'Boogaloo',cursive; font-size:.95rem; padding:8px 16px;
+.more-practice-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem; padding:8px 16px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
   box-shadow:0 3px 0 rgba(0,0,0,.2); transition:transform .1s;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent; flex-shrink:0; }
@@ -648,16 +648,16 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .pq-explanation .step{ display:flex; gap:8px; margin-bottom:4px; }
 .pq-explanation .step-num{ background:var(--ac,#4a90d9); color:#fff; border-radius:50%;
   width:22px; height:22px; display:flex; align-items:center; justify-content:center;
-  font-family:'Boogaloo',cursive; font-size:.8rem; flex-shrink:0; margin-top:1px; }
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.8rem; flex-shrink:0; margin-top:1px; }
 
 /* ── COLUMN MATH TABLE ── */
 .col-math{ border-collapse:collapse; margin:10px auto 14px;
-  font-family:'Boogaloo',cursive; font-size:1.6rem; }
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.6rem; }
 .col-math td{ width:38px; height:38px; text-align:center;
   vertical-align:middle; padding:2px 4px; }
 .col-math .cm-op{ font-weight:900; color:var(--ac,#4a90d9); }
 .col-math .cm-carry td{ font-size:1.1rem; color:#e74c3c; font-weight:900;
-  height:26px; font-family:'Boogaloo',cursive; }
+  height:26px; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; }
 .col-math .cm-line td{ padding:0; }
 .col-math .cm-line hr{ border:none; border-top:3px solid var(--txt);
   margin:2px 0; }
@@ -675,7 +675,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
   font-weight:600;line-height:1.45;text-align:center}
 .cca-btn{padding:9px 24px;border:none;border-radius:22px;font-size:.95rem;
   font-weight:700;cursor:pointer;color:#fff;margin-top:6px;
-  font-family:'Boogaloo',cursive;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
   box-shadow:0 5px 0 rgba(0,0,0,.2);
   transition:transform .15s,box-shadow .15s;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -697,13 +697,13 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
          box-shadow:var(--shad); text-align:center; margin-bottom:16px; }
 .r-emoji{ font-size:4.5rem; display:block; margin-bottom:10px;
            animation:bob 1.5s ease-in-out infinite; }
-.r-score{ font-family:'Boogaloo',cursive; font-size:4rem; }
-.r-pct{ font-family:'Boogaloo',cursive; font-size:1.6rem; color:var(--txt2); }
+.r-score{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:4rem; }
+.r-pct{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.6rem; color:var(--txt2); }
 .r-msg{ font-size:1.1rem; color:var(--txt2); margin:8px 0 12px; }
 .r-stars{ font-size:2.5rem; letter-spacing:5px; animation:starPop .5s cubic-bezier(.34,1.56,.64,1); }
 @keyframes starPop{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
 .rbtn-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
-.rbtn{ font-family:'Boogaloo',cursive; font-size:1.05rem;
+.rbtn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.05rem;
         padding:13px 26px; border-radius:50px; border:none; cursor:pointer; color:#fff;
         box-shadow:0 4px 0 rgba(0,0,0,.18); transition:transform .15s,box-shadow .15s; }
 .rbtn:hover{ transform:translateY(-2px); box-shadow:0 6px 0 rgba(0,0,0,.18); }
@@ -711,7 +711,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 /* Review section */
 .rev-section{ background:var(--card-bg); border-radius:var(--rad); box-shadow:var(--shad);
                overflow:hidden; margin-bottom:14px; }
-.rev-sec-head{ font-family:'Boogaloo',cursive; font-size:1rem;
+.rev-sec-head{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem;
                 padding:14px 20px; border-bottom:2px solid var(--border);
                 display:flex; justify-content:space-between; align-items:center;
                 cursor:pointer; user-select:none; }
@@ -720,7 +720,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .rev-item:last-child{ border-bottom:none; }
 .rinum{ width:30px; height:30px; border-radius:50%; display:flex;
          align-items:center; justify-content:center;
-         font-family:'Boogaloo',cursive; font-size:.8rem; color:#fff; flex-shrink:0; }
+         font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.8rem; color:#fff; flex-shrink:0; }
 .ribody{ flex:1; }
 .ri-q{ font-weight:900; font-size:.9rem; margin-bottom:4px; line-height:1.4; color:var(--txt); }
 .ri-a{ font-size:.85rem; margin-top:2px; }
@@ -729,19 +729,19 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 /* Save score */
 .save-card{ background:var(--card-bg); border-radius:var(--rad); padding:22px 20px;
              box-shadow:var(--shad); text-align:center; }
-.save-card h3{ font-family:'Boogaloo',cursive; font-size:1.3rem; margin-bottom:7px; }
+.save-card h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.3rem; margin-bottom:7px; }
 .save-card p{ color:#7f8c8d; font-size:.88rem; margin-bottom:14px; }
-.name-inp{ width:100%; max-width:300px; font-family:'Boogaloo',cursive;
+.name-inp{ width:100%; max-width:300px; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
             font-size:1.2rem; padding:13px 18px; border:3px solid var(--inp-border);
             border-radius:16px; text-align:center; outline:none;
             transition:border-color .2s; color:var(--txt); background:var(--bg3); }
 .name-inp:focus{ border-color:#27ae60; }
-.save-btn{ font-family:'Boogaloo',cursive; font-size:1.1rem; padding:13px 32px;
+.save-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; padding:13px 32px;
             border-radius:50px; border:none; cursor:pointer;
             background:linear-gradient(135deg,#27ae60,#1a7a45); color:#fff;
             box-shadow:0 4px 0 #0f5c32; transition:transform .15s; margin-top:12px; }
 .save-btn:hover{ transform:translateY(-2px); }
-.save-conf{ color:#27ae60; font-family:'Boogaloo',cursive; font-size:.95rem;
+.save-conf{ color:#27ae60; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem;
              min-height:1.4rem; margin-top:8px; }
 
 /* ── HISTORY ── */
@@ -766,10 +766,10 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
              gap:12px; margin-bottom:20px; }
 .stat-tile{ background:var(--card-bg); border-radius:18px; padding:16px 12px;
              text-align:center; box-shadow:var(--shad); }
-.stat-num{ font-family:'Boogaloo',cursive; font-size:2rem; }
+.stat-num{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:2rem; }
 .stat-lbl{ font-size:.78rem; color:#7f8c8d; font-weight:800; margin-top:3px; }
 .filt-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-.filt{ font-family:'Boogaloo',cursive; font-size:.88rem; padding:8px 18px;
+.filt{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.88rem; padding:8px 18px;
         border-radius:50px; border:2.5px solid rgba(0,0,0,.1);
         background:#fff; cursor:pointer; transition:all .15s; color:#1a2535; }
 .filt.on,.filt:hover{ border-color:#27ae60; background:#27ae60; color:#fff; }
@@ -784,7 +784,7 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .sc-card-header:active{ background:var(--bg3); }
 .sc-chevron{ font-size:1.4rem; color:var(--txt2); flex-shrink:0; transition:transform .2s; }
 .sc-review-body{ border-top:2px solid var(--border); padding:10px 14px 14px; }
-.sc-rev-sec{ font-family:'Boogaloo',cursive; font-size:1rem; padding:8px 0 4px;
+.sc-rev-sec{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; padding:8px 0 4px;
   font-weight:700; }
 .sc-rev-item{ padding:10px 12px; border-radius:12px; margin-bottom:8px; }
 .sc-rev-wrong{ background:#fdecea; border-left:3px solid #e74c3c; }
@@ -800,9 +800,9 @@ body.dark .sc-rev-right{ background:rgba(39,174,96,.18); }
           gap:10px; flex-wrap:wrap; box-shadow:var(--shad);
           transition:box-shadow .15s; }
 .sc-row:hover{ box-shadow:0 8px 24px rgba(0,0,0,.13); }
-.sc-name{ font-family:'Boogaloo',cursive; font-size:1rem; }
+.sc-name{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; }
 .sc-type{ font-size:.74rem; color:var(--txt2); text-transform:uppercase; letter-spacing:.8px; }
-.sc-grade{ font-family:'Boogaloo',cursive; font-size:1.15rem;
+.sc-grade{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.15rem;
             padding:5px 14px; border-radius:50px; }
 .sc-stars{ font-size:1rem; display:block; min-height:1.4em; }
 .sc-date{ font-size:.76rem; color:var(--txt2); text-align:left; }
@@ -819,7 +819,7 @@ body.dark .sc-rev-right{ background:rgba(39,174,96,.18); }
                     100%{ opacity:0; transform:translateY(105vh) rotate(720deg); } }
 
 /* BIG BUTTON */
-.big-btn{ font-family:'Boogaloo',cursive; font-size:1.1rem;
+.big-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem;
            padding:14px 30px; border-radius:50px; border:none; cursor:pointer;
            color:#fff; box-shadow:0 5px 0 rgba(0,0,0,.18);
            transition:transform .15s, box-shadow .15s; }
@@ -838,9 +838,9 @@ body.dark .sc-rev-right{ background:rgba(39,174,96,.18); }
 .vis-e{ font-size:1.9rem; line-height:1.25; display:inline-block; }
 .vis-e.vis-x{ opacity:.28; text-decoration:line-through; filter:grayscale(1); }
 .vis-row{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin:5px 0; }
-.vis-sep{ font-family:'Boogaloo',cursive; font-size:2.2rem; color:#e74c3c;
+.vis-sep{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:2.2rem; color:#e74c3c;
   display:flex; align-items:center; justify-content:center; line-height:1; padding:0 4px; }
-.vis-eq{ font-family:'Boogaloo',cursive; font-size:1.1rem; margin-top:8px;
+.vis-eq{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; margin-top:8px;
   color:#1a2535; text-align:center; }
 .vis-grps{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; }
 .vis-grp{ display:flex; flex-wrap:wrap; gap:3px; justify-content:center;
@@ -864,10 +864,10 @@ body.dark .sc-rev-right{ background:rgba(39,174,96,.18); }
   filter:drop-shadow(0 8px 24px rgba(0,0,0,.5));
   animation:coinPop .3s cubic-bezier(.34,1.56,.64,1); }
 @keyframes coinPop{ from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
-.coin-lightbox-lbl{ font-family:'Boogaloo',cursive;font-size:1.6rem;color:#fff;text-align:center; }
-.coin-lightbox-val{ font-family:'Boogaloo',cursive;font-size:1.3rem;color:#fff;
+.coin-lightbox-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;color:#fff;text-align:center; }
+.coin-lightbox-val{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.3rem;color:#fff;
   background:rgba(255,255,255,.2);border-radius:50px;padding:6px 22px; }
-.coin-lightbox-hint{ font-family:'Boogaloo',cursive;font-size:.95rem;color:rgba(255,255,255,.6);margin-top:4px; }
+.coin-lightbox-hint{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;color:rgba(255,255,255,.6);margin-top:4px; }
 img[data-coin]{ cursor:zoom-in;transition:transform .15s,filter .15s; }
 img[data-coin]:hover{ transform:scale(1.1);filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
 img[data-coin]:active{ transform:scale(.95); }
@@ -875,29 +875,29 @@ img[data-coin]:active{ transform:scale(.95); }
 /* ── PRACTICE SECTION ── */
 .practice-card{ background:var(--card-bg); border-radius:var(--rad); padding:22px 20px;
   box-shadow:var(--shad); margin-bottom:16px; }
-.practice-card h3{ font-family:'Boogaloo',cursive; font-size:1.25rem;
+.practice-card h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.25rem;
   margin-bottom:14px; display:flex; align-items:center; gap:8px; }
 .pq-item{ background:var(--bg3); border-radius:16px; padding:16px 18px;
   margin-bottom:12px; border:2.5px solid rgba(0,0,0,.07); transition:border-color .2s; }
 .pq-item.revealed{ border-color:#27ae60; background:#eafaf1; }
-.pq-q{ font-family:'Boogaloo',cursive; font-size:1.3rem; color:var(--txt);
+.pq-q{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.3rem; color:var(--txt);
   margin-bottom:10px; display:flex; align-items:center; gap:10px; }
 .pq-emo{ font-size:1.8rem; flex-shrink:0; }
-.pq-reveal-btn{ font-family:'Boogaloo',cursive; font-size:1rem; padding:10px 22px;
+.pq-reveal-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; padding:10px 22px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
   box-shadow:0 3px 0 rgba(0,0,0,.18); transition:transform .15s; }
 .pq-reveal-btn:hover{ transform:translateY(-2px); }
 .pq-answer{ display:none; margin-top:12px; padding:12px 14px;
   background:#d5f5e3; border-radius:12px; }
 .pq-answer.show{ display:block; animation:pop .25s ease; }
-.pq-ans-txt{ font-family:'Boogaloo',cursive; font-size:1.35rem; color:#1a6e3c; }
-.pq-how-label{ font-family:'Boogaloo',cursive; font-size:1rem; color:var(--txt2);
+.pq-ans-txt{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.35rem; color:#1a6e3c; }
+.pq-how-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; color:var(--txt2);
   margin-top:10px; margin-bottom:4px; }
 .pq-hint{ font-size:.95rem; color:#555; margin-top:5px; line-height:1.6; }
 
 .cl-entry{ background:var(--card-bg); border-radius:14px; padding:12px 14px;
   border-left:3px solid var(--ac,#4a90d9); }
-.cl-version{ font-family:'Boogaloo',cursive; font-size:1rem; color:var(--ac,#4a90d9);
+.cl-version{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; color:var(--ac,#4a90d9);
   margin-bottom:5px; }
 .cl-desc{ font-size:.88rem; color:var(--txt2); line-height:1.6; }
 .cl-list{ margin:4px 0 0 16px; padding:0; font-size:.88rem; color:var(--txt2);
@@ -907,10 +907,10 @@ img[data-coin]:active{ transform:scale(.95); }
 /* ── PARENT CONTROLS ── */
 .parent-panel-inner{ background:var(--bg3); border-radius:18px; padding:18px 16px;
   border:2px solid var(--border2); }
-.parent-status{ font-family:'Boogaloo',cursive; font-size:1rem; color:var(--txt2);
+.parent-status{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; color:var(--txt2);
   background:var(--bg2); border-radius:12px; padding:10px 14px;
   border:2px solid var(--border); text-align:center; }
-.parent-btn{ font-family:'Boogaloo',cursive; font-size:1.1rem; padding:14px 18px;
+.parent-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; padding:14px 18px;
   border-radius:16px; border:none; cursor:pointer; width:100%;
   transition:transform .15s, opacity .15s; box-shadow:0 3px 10px rgba(0,0,0,.12); }
 .parent-btn:active{ transform:scale(.97); }
@@ -918,7 +918,7 @@ img[data-coin]:active{ transform:scale(.95); }
 .parent-btn-lock{ background:linear-gradient(135deg,#e74c3c,#c0392b); color:#fff; }
 
 /* ── NEXT LESSON BUTTON ── */
-.next-lesson-btn{ width:100%; font-family:'Boogaloo',cursive; font-size:1.25rem;
+.next-lesson-btn{ width:100%; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.25rem;
   padding:18px; border-radius:var(--rad); border:3px solid;
   background:transparent; cursor:pointer; margin-top:14px;
   transition:background .15s, color .15s, transform .15s;
@@ -933,7 +933,7 @@ img[data-coin]:active{ transform:scale(.95); }
 /* ── LOCK SYSTEM ── */
 .uc-locked{ opacity:.75; cursor:pointer; }
 .uc-locked:hover{ transform:none!important; }
-.lock-badge{ font-family:'Boogaloo',cursive; font-size:.95rem;
+.lock-badge{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem;
   background:rgba(0,0,0,.1); color:var(--txt2); border-radius:50px;
   padding:4px 14px; display:inline-block; margin:6px 0; }
 .lcard-locked{ opacity:.75; cursor:pointer; }
@@ -947,17 +947,17 @@ img[data-coin]:active{ transform:scale(.95); }
 .lcard-pin-btn:hover{ background:linear-gradient(135deg,#ffe84d,#ffb732); transform:scale(1.12); }
 .lcard-pin-btn:active{ transform:scale(.92); }
 .lock-toast{ position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(20px);
-  background:#1a2535; color:#fff; font-family:'Boogaloo',cursive; font-size:1.05rem;
+  background:#1a2535; color:#fff; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.05rem;
   padding:13px 26px; border-radius:50px; box-shadow:0 8px 28px rgba(0,0,0,.3);
   z-index:997; opacity:0; transition:opacity .25s, transform .25s; pointer-events:none;
   white-space:nowrap; max-width:90vw; text-align:center; }
 .lock-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 .unlock-banner{ background:linear-gradient(135deg,#27ae60,#1abc9c);
-  color:#fff; font-family:'Boogaloo',cursive; font-size:1.15rem;
+  color:#fff; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.15rem;
   padding:12px 18px; border-radius:14px; margin-top:12px;
   animation:pop .4s cubic-bezier(.34,1.56,.64,1); }
 .lock-banner{ background:linear-gradient(135deg,#e74c3c,#c0392b);
-  color:#fff; font-family:'Boogaloo',cursive; font-size:1.05rem;
+  color:#fff; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.05rem;
   padding:12px 18px; border-radius:14px; margin-top:12px; }
 
 /* SWIPE BACK — peek class makes a screen visible behind the dragging screen */
@@ -974,15 +974,15 @@ body.swiping *{ backdrop-filter:none !important; -webkit-backdrop-filter:none !i
   box-shadow:0 8px 32px rgba(0,0,0,.4); transition:transform .4s cubic-bezier(.34,1.56,.64,1);
   white-space:nowrap; max-width:calc(100vw - 40px); }
 .update-banner.show{ transform:translateX(-50%) translateY(0); }
-.update-banner-txt{ font-family:'Boogaloo',cursive; font-size:1rem; }
+.update-banner-txt{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; }
 .fb-star{ font-size:1.8rem; background:none; border:none; cursor:pointer; padding:0 2px; line-height:1;
   touch-action:manipulation; transition:transform .1s; }
 .fb-star:active{ transform:scale(.85); }
-.fb-cat-btn{ font-family:'Boogaloo',cursive; font-size:.88rem; padding:7px 13px; border-radius:50px;
+.fb-cat-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.88rem; padding:7px 13px; border-radius:50px;
   border:2px solid var(--border2); background:var(--bg); color:var(--txt2); cursor:pointer;
   touch-action:manipulation; transition:all .15s; }
 .fb-cat-btn.active{ background:#4a90d9; color:#fff; border-color:#4a90d9; }
-.update-banner-btn{ font-family:'Boogaloo',cursive; font-size:.95rem; background:#4ade80;
+.update-banner-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.95rem; background:#4ade80;
   color:#1a1a2e; border:none; border-radius:50px; padding:8px 18px; cursor:pointer;
   font-weight:700; flex-shrink:0; }
 
@@ -1006,7 +1006,7 @@ body.swiping *{ backdrop-filter:none !important; -webkit-backdrop-filter:none !i
   border-radius:var(--rad); overflow:hidden; margin-bottom:16px;
   border:1px solid rgba(255,255,255,.35);
   box-shadow:0 6px 24px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.3); }
-.set-sec-head{ font-family:'Boogaloo',cursive; font-size:1.05rem; color:var(--txt);
+.set-sec-head{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.05rem; color:var(--txt);
   padding:14px 20px; border-bottom:1px solid rgba(255,255,255,.25);
   background:rgba(255,255,255,.18);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
@@ -1015,7 +1015,7 @@ body.swiping *{ backdrop-filter:none !important; -webkit-backdrop-filter:none !i
 .set-body{ padding:18px 20px; display:flex; flex-direction:column; gap:14px;
   background:rgba(255,255,255,.05); }
 .set-row{ display:flex; flex-direction:column; gap:6px; }
-.set-lbl{ font-family:'Boogaloo',cursive; font-size:.88rem; color:var(--txt); }
+.set-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.88rem; color:var(--txt); }
 .set-lbl small{ font-weight:400; font-family:'Nunito',sans-serif; color:var(--txt2); margin-left:6px; font-size:.8rem; }
 .set-inp{ font-family:'Nunito',sans-serif; font-size:1rem; font-weight:800;
   padding:12px 16px; border:1.5px solid rgba(255,255,255,.35); border-radius:14px;
@@ -1031,13 +1031,13 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 #parent-pin-inp.set-inp{ width:120px; min-width:120px; max-width:120px;
   padding-left:12px; padding-right:12px; overflow:hidden;
   text-overflow:clip; }
-.set-save{ font-family:'Boogaloo',cursive; font-size:1.1rem; padding:13px 32px;
+.set-save{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.1rem; padding:13px 32px;
   border-radius:50px; border:none; cursor:pointer;
   background:linear-gradient(135deg,#27ae60,#1a7a45); color:#fff;
   box-shadow:0 4px 0 #0f5c32; transition:transform .15s; margin-top:4px; }
 .set-save:hover{ transform:translateY(-2px); }
-.set-conf{ font-family:'Boogaloo',cursive; font-size:.88rem; min-height:1.2rem; margin-top:4px; }
-.theme-btn{ font-family:'Boogaloo',cursive; font-size:1.15rem; padding:14px 28px;
+.set-conf{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:.88rem; min-height:1.2rem; margin-top:4px; }
+.theme-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1.15rem; padding:14px 28px;
   border-radius:50px; border:3px solid var(--border2); cursor:pointer;
   background:var(--bg3); color:var(--txt); transition:all .2s;
   box-shadow:0 3px 10px rgba(0,0,0,.1); flex:1; min-width:140px; }
@@ -1055,16 +1055,16 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .install-box{ background:var(--card-bg);border-radius:28px 28px 0 0;padding:28px 24px 40px;
   max-width:540px;width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.2); }
-.install-box h2{ font-family:'Boogaloo',cursive;font-size:1.6rem;text-align:center;margin-bottom:6px;color:var(--txt); }
+.install-box h2{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;text-align:center;margin-bottom:6px;color:var(--txt); }
 .install-box .sub{ text-align:center;color:var(--txt2);font-size:.92rem;margin-bottom:22px; }
 .install-step{ display:flex;align-items:center;gap:14px;padding:13px 16px;
   background:var(--bg3);border-radius:16px;margin-bottom:10px; }
 .install-step-num{ width:36px;height:36px;border-radius:50%;background:#4a90d9;color:#fff;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Boogaloo',cursive;font-size:1rem;flex-shrink:0; }
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;flex-shrink:0; }
 .install-step p{ font-size:.9rem;font-weight:800;color:var(--txt);line-height:1.4; }
 .install-step small{ font-size:.8rem;color:var(--txt2); }
-.install-close{ width:100%;font-family:'Boogaloo',cursive;font-size:1.15rem;
+.install-close{ width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.15rem;
   padding:15px;border-radius:50px;border:none;cursor:pointer;
   background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;
   box-shadow:0 5px 0 rgba(0,0,0,.15);margin-top:16px; }
@@ -1088,7 +1088,7 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 }
 .tut-emoji{ font-size:3.2rem;margin-bottom:12px;display:block;line-height:1; }
 .tut-title{
-  font-family:'Boogaloo',cursive;font-size:1.6rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;
   color:var(--txt,#222);margin:0 0 10px;line-height:1.2;
 }
 .tut-body{
@@ -1106,14 +1106,14 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 .tut-dot.active{ background:#4a90d9;transform:scale(1.3); }
 .tut-btns{ display:flex;gap:10px;justify-content:center; }
 .tut-btn-next{
-  font-family:'Boogaloo',cursive;font-size:1.05rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;
   padding:13px 32px;border-radius:50px;border:none;
   background:linear-gradient(135deg,#4a90d9,#27ae60);
   color:#fff;cursor:pointer;touch-action:manipulation;
   box-shadow:0 4px 0 rgba(0,0,0,.15);flex:1;
 }
 .tut-btn-skip{
-  font-family:'Boogaloo',cursive;font-size:.95rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
   padding:13px 18px;border-radius:50px;
   border:2px solid var(--border2,#ccc);
   background:transparent;color:var(--txt2,#888);
@@ -1121,7 +1121,7 @@ body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 }
 .tut-skip-top{
   position:absolute;top:14px;right:18px;
-  font-family:'Boogaloo',cursive;font-size:.85rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.85rem;
   color:var(--txt2,#aaa);background:none;border:none;
   cursor:pointer;touch-action:manipulation;padding:4px 8px;
 }
@@ -1162,7 +1162,7 @@ body.dark #spot-card{
 }
 .spot-card-emoji{ font-size:1.8rem;display:block;margin-bottom:4px;line-height:1; }
 .spot-card-title{
-  font-family:'Boogaloo',cursive;font-size:1.15rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.15rem;
   color:var(--txt,#222);margin:0 0 4px;
 }
 .spot-card-tip{
@@ -1174,17 +1174,17 @@ body.dark #spot-card{
   gap:8px;
 }
 .spot-count{
-  font-family:'Boogaloo',cursive;font-size:.82rem;color:var(--txt2,#aaa);
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.82rem;color:var(--txt2,#aaa);
 }
 .spot-next-btn{
-  font-family:'Boogaloo',cursive;font-size:.9rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;
   padding:9px 20px;border-radius:50px;border:none;
   background:linear-gradient(135deg,#4a90d9,#27ae60);
   color:#fff;cursor:pointer;touch-action:manipulation;
   box-shadow:0 3px 0 rgba(0,0,0,.15);
 }
 .spot-skip-btn{
-  font-family:'Boogaloo',cursive;font-size:.8rem;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.8rem;
   padding:6px 12px;border-radius:50px;
   border:1.5px solid var(--border2,#ccc);
   background:transparent;color:var(--txt2,#999);
@@ -1192,12 +1192,12 @@ body.dark #spot-card{
 }
 
 /* ── AUTH MODAL ── */
-.auth-role-btn{ flex:1;font-family:'Boogaloo',cursive;font-size:1rem;
+.auth-role-btn{ flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;
   padding:11px;border-radius:50px;cursor:pointer;transition:all .2s;
   touch-action:manipulation; }
 .auth-role-btn.active{ background:#4a90d9;color:#fff;border:2px solid #4a90d9; }
 .auth-role-btn.idle{ background:transparent;color:var(--txt2);border:2px solid var(--border2); }
-.auth-tab-btn{ flex:1;font-family:'Boogaloo',cursive;font-size:1rem;
+.auth-tab-btn{ flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;
   padding:11px;border:none;cursor:pointer;transition:background .2s; }
 .auth-tab-btn.active{ background:#4a90d9;color:#fff; }
 .auth-tab-btn.idle{ background:transparent;color:var(--txt2); }
@@ -1226,7 +1226,7 @@ body.dark #spot-card{
   transition:opacity .35s ease;
 ">
   <div style="font-size:3.5rem;margin-bottom:8px;animation:bob 1.5s ease-in-out infinite">🌱</div>
-  <div style="font-family:'Boogaloo',cursive;font-size:2rem;color:var(--txt);letter-spacing:1px">My Math Roots</div>
+  <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:2rem;color:var(--txt);letter-spacing:1px">My Math Roots</div>
   <div style="margin-top:24px;width:36px;height:36px;border:4px solid var(--border2);border-top-color:#4a90d9;border-radius:50%;animation:spin .8s linear infinite"></div>
 </div>
 
@@ -1237,14 +1237,14 @@ body.dark #spot-card{
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px 20px;box-sizing:border-box">
     <!-- Branding -->
     <div style="font-size:3rem;margin-bottom:4px">🌱</div>
-    <h1 style="font-family:'Boogaloo',cursive;font-size:2.2rem;text-transform:uppercase;margin:0 0 2px;color:var(--txt)">My Math Roots</h1>
+    <h1 style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:2.2rem;text-transform:uppercase;margin:0 0 2px;color:var(--txt)">My Math Roots</h1>
     <p style="font-size:.82rem;font-weight:800;color:var(--txt2);letter-spacing:.1em;margin:0 0 14px">K-5 REVIEW</p>
 
     <!-- Auth card -->
     <div style="background:var(--bg2);border-radius:28px;padding:18px 22px;width:100%;max-width:400px;box-shadow:var(--shad);box-sizing:border-box">
       <!-- Social login -->
       <button type="button" onclick="_lsOAuth('google')"
-        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:50px;border:2px solid var(--border2);background:var(--bg);cursor:pointer;font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt);margin-bottom:8px;touch-action:manipulation">
+        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:50px;border:2px solid var(--border2);background:var(--bg);cursor:pointer;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:var(--txt);margin-bottom:8px;touch-action:manipulation">
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
         Continue with Google
       </button>
@@ -1252,7 +1252,7 @@ body.dark #spot-card{
       <!-- Divider -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <div style="flex:1;height:1px;background:var(--border2)"></div>
-        <span style="font-family:'Boogaloo',cursive;font-size:.85rem;color:var(--txt2)">or</span>
+        <span style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.85rem;color:var(--txt2)">or</span>
         <div style="flex:1;height:1px;background:var(--border2)"></div>
       </div>
       <!-- Tab switcher -->
@@ -1270,7 +1270,7 @@ body.dark #spot-card{
       </div>
       <!-- Role (signup only) -->
       <div id="ls-role-row" style="display:none;margin-bottom:14px">
-        <div style="font-family:'Boogaloo',cursive;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
+        <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
         <div style="display:flex;gap:10px">
           <button type="button" id="ls-role-student" class="auth-role-btn active" onclick="_lsSelectRole('student')">🎒 Student</button>
           <button type="button" id="ls-role-parent"  class="auth-role-btn idle"   onclick="_lsSelectRole('parent')">👨‍👩‍👧 Parent</button>
@@ -1294,14 +1294,14 @@ body.dark #spot-card{
       <!-- Resend confirmation email — shown after successful signup -->
       <div id="ls-resend-row" style="display:none;text-align:center;margin-bottom:6px">
         <button type="button" onclick="_lsResend()"
-          style="font-family:'Boogaloo',cursive;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
           Resend confirmation email
         </button>
       </div>
       <!-- Forgot password — only visible on Sign In tab -->
       <div id="ls-forgot-row" style="text-align:right;margin-bottom:6px">
         <button type="button" onclick="_lsForgotPassword()"
-          style="font-family:'Boogaloo',cursive;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.85rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
           Forgot password?
         </button>
       </div>
@@ -1316,17 +1316,17 @@ body.dark #spot-card{
         </div>
       </div>
       <!-- Error/status -->
-      <div id="ls-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
+      <div id="ls-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
       <!-- Submit -->
       <button id="ls-submit-btn" onclick="_lsSubmit()"
-        style="width:100%;font-family:'Boogaloo',cursive;font-size:1.15rem;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);touch-action:manipulation">
+        style="width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.15rem;padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);touch-action:manipulation">
         Sign In
       </button>
     </div>
 
     <!-- Guest link -->
     <button type="button" onclick="show('home')"
-      style="margin-top:20px;font-family:'Boogaloo',cursive;font-size:1rem;background:none;border:none;color:var(--txt2);cursor:pointer;text-decoration:underline;touch-action:manipulation">
+      style="margin-top:20px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;background:none;border:none;color:var(--txt2);cursor:pointer;text-decoration:underline;touch-action:manipulation">
       Continue without an account →
     </button>
   </div>
@@ -1337,7 +1337,7 @@ body.dark #spot-card{
      HOME
 ════════════════════════════════════════ -->
 <div id="home" class="sc">
-  <div id="home-sync-msg" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(74,144,217,0.92);color:#fff;text-align:center;padding:8px;font-family:'Boogaloo',cursive;font-size:.95rem;letter-spacing:.3px;">
+  <div id="home-sync-msg" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(74,144,217,0.92);color:#fff;text-align:center;padding:8px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;letter-spacing:.3px;">
     ☁️ Syncing your data…
   </div>
   <div class="home-in">
@@ -1655,9 +1655,9 @@ const UNITS_DATA = [
      a:'7 + 5 = 12 ✅',vis:'tenframe:7'},
    ],
    practice:[
-    {q:'8 + 4 = ?', a:'12', h:'8 needs 2 to reach 10. 8 needs 2 to reach 10. Then add 2 more = 12', e:'🔵'},
-    {q:'9 + 5 = ?', a:'14', h:'9 needs 1 to reach 10. 9 needs 1 to reach 10. Then add 4 more = 14', e:'🟡'},
-    {q:'7 + 4 = ?', a:'11', h:'7 needs 3 to reach 10. 7 needs 3 to reach 10. Then add 1 more = 11', e:'🟢'},
+    {q:'8 + 4 = ?', a:'12', h:'8 needs 2 to reach 10. Then add 2 more = 12', e:'🔵'},
+    {q:'9 + 5 = ?', a:'14', h:'9 needs 1 to reach 10. Then add 4 more = 14', e:'🟡'},
+    {q:'7 + 4 = ?', a:'11', h:'7 needs 3 to reach 10. Then add 1 more = 11', e:'🟢'},
   ],
    qBank:[
     q('Use the make-ten strategy. What is 9 + 4?',['11','12','13','14'],2,'9+1=10, then +3=13.'),
@@ -2428,7 +2428,7 @@ const UNITS_DATA = [
     q('What does the word "altogether" tell you to do?',['Subtract','Multiply','Add','Divide'],2,'Words like altogether = ADD.'),
     q('Lily had 143 coins and gave away 68. How many coins does she have left?',['75','55','85','30'],0,'"Gave away" = SUBTRACT. 143-68=75.'),
     q('There are 56 red apples and 78 green apples. How many apples are there in all?',['134','104','144','90'],0,'"Total" = ADD. 56+78=134.'),
-    q('There are 165 crayons and 78 are broken. How many good crayons are there?',['87','97','50','130'],0,'"Broke" = SUBTRACT. 165-78=87.'),
+    q('There are 165 crayons and 78 are broken. How many good crayons are there?',['87','97','50','130'],0,'"Broken" = SUBTRACT. 165-78=87.'),
     q('What does the phrase "how many left" tell you to do?',['Subtract','Add','Multiply','Count up'],0,'"Left" = what remains after subtracting.'),
     q('There are 82 students in one class and 59 in another. How many students are there combined?',['120','151','141','100'],2,'"Combined" = ADD. 82+59=141.'),
     q('What is the first step when solving a word problem?',['Guess the answer','Write numbers first','Read carefully','Add everything'],2,'Always read the problem carefully first!'),
@@ -2458,7 +2458,7 @@ const UNITS_DATA = [
     q('There are 56 red apples and 78 green apples. How many apples are there in all?',['104','134','144','90'],1,'"Total" = add. 56+78=134.'),
     q('What does the word "altogether" usually mean in a math problem?',['Subtract','Multiply','Add','Divide'],2,'Words like altogether, total, in all = add!'),
     q('A team scored 72 points and another scored 85 points combined. How many points are there in all?',['140','157','167','110'],1,'"Combined" = add. 72+85=157.'),
-    q('There are 165 crayons and 78 are broken. How many good crayons are there?',['97','87','50','130'],1,'"Broke" = subtract. 165-78=87.'),
+    q('There are 165 crayons and 78 are broken. How many good crayons are there?',['97','87','50','130'],1,'"Broken" = subtract. 165-78=87.'),
     q('What does the question "How many more?" ask you to find?',['Add','Subtract','Multiply','Cannot tell'],1,'"How many more?" asks for the DIFFERENCE, which means subtract.'),
    ]},
  ],
@@ -2559,7 +2559,7 @@ const UNITS_DATA = [
   q('What does the word "altogether" tell you to do?',['Subtract','Multiply','Add','Divide'],2,'Words like altogether = ADD.'),
   q('Lily had 143 coins and gave away 68. How many coins does she have left?',['75','55','85','30'],0,'"Gave away" = SUBTRACT. 143-68=75.'),
   q('There are 56 red apples and 78 green apples. How many apples are there in all?',['134','104','144','90'],0,'"Total" = ADD. 56+78=134.'),
-  q('There are 165 crayons and 78 are broken. How many good crayons are there?',['87','97','50','130'],0,'"Broke" = SUBTRACT. 165-78=87.'),
+  q('There are 165 crayons and 78 are broken. How many good crayons are there?',['87','97','50','130'],0,'"Broken" = SUBTRACT. 165-78=87.'),
   q('What does the phrase "how many left" tell you to do?',['Subtract','Add','Multiply','Count up'],0,'"Left" = what remains after subtracting.'),
   q('There are 82 students in one class and 59 in another. How many students are there combined?',['120','151','141','100'],2,'"Combined" = ADD. 82+59=141.'),
   q('What is the first step when solving a word problem?',['Guess the answer','Write numbers first','Read carefully','Add everything'],2,'Always read the problem carefully first!'),
@@ -3560,7 +3560,7 @@ const UNITS_DATA = [
     {c:'#1abc9c',tag:'Try It! Interactive Clock',p:'Move the sliders to set the hands:',s:'<div style="text-align:center;padding:4px"><svg id="iclock" width="240" height="240" viewBox="0 0 100 100" style="display:block;margin:6px auto"><circle cx="50" cy="50" r="46" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/><circle cx="50" cy="50" r="44" fill="#fffef5" stroke="#888" stroke-width="1.5"/><line x1="69.5" y1="16.2" x2="72.0" y2="11.9" stroke="#555" stroke-width="1"/><text x="67.5" y="19.7" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">1</text><line x1="83.8" y1="30.5" x2="88.1" y2="28.0" stroke="#555" stroke-width="1"/><text x="80.3" y="32.5" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">2</text><line x1="89.0" y1="50.0" x2="94.0" y2="50.0" stroke="#555" stroke-width="2"/><text x="85.0" y="50.0" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">3</text><line x1="83.8" y1="69.5" x2="88.1" y2="72.0" stroke="#555" stroke-width="1"/><text x="80.3" y="67.5" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">4</text><line x1="69.5" y1="83.8" x2="72.0" y2="88.1" stroke="#555" stroke-width="1"/><text x="67.5" y="80.3" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">5</text><line x1="50.0" y1="89.0" x2="50.0" y2="94.0" stroke="#555" stroke-width="2"/><text x="50.0" y="85.0" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">6</text><line x1="30.5" y1="83.8" x2="28.0" y2="88.1" stroke="#555" stroke-width="1"/><text x="32.5" y="80.3" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">7</text><line x1="16.2" y1="69.5" x2="11.9" y2="72.0" stroke="#555" stroke-width="1"/><text x="19.7" y="67.5" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">8</text><line x1="11.0" y1="50.0" x2="6.0" y2="50.0" stroke="#555" stroke-width="2"/><text x="15.0" y="50.0" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">9</text><line x1="16.2" y1="30.5" x2="11.9" y2="28.0" stroke="#555" stroke-width="1"/><text x="19.7" y="32.5" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">10</text><line x1="30.5" y1="16.2" x2="28.0" y2="11.9" stroke="#555" stroke-width="1"/><text x="32.5" y="19.7" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">11</text><line x1="50.0" y1="11.0" x2="50.0" y2="6.0" stroke="#555" stroke-width="2"/><text x="50.0" y="15.0" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="bold" fill="#333">12</text><line id="ic-mh" x1="50" y1="50" x2="50" y2="12" stroke="#333" stroke-width="2.5" stroke-linecap="round" transform="rotate(0,50,50)"/><line id="ic-hh" x1="50" y1="50" x2="50" y2="24" stroke="#2980b9" stroke-width="4.5" stroke-linecap="round" transform="rotate(90,50,50)"/><circle cx="50" cy="50" r="3.5" fill="#e74c3c"/></svg><div id="ic-dt" style="font-size:28px;font-weight:bold;color:#2980b9;margin:4px 0">3:00</div><div style="font-size:11px;color:#666;margin-bottom:10px">&#128309; Short hand (blue) = hours &nbsp;|&nbsp; &#11035; Long hand = minutes</div><div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap"><label style="font-size:13px;font-weight:bold;color:#333">&#x23F0; Hour<br><input id="ic-hs" type="range" min="1" max="12" value="3" style="width:120px;margin-top:4px" oninput="(function(){var h=+document.getElementById(&#39;ic-hs&#39;).value;var m=+document.getElementById(&#39;ic-ms&#39;).value;var ha=(h%12+m/60)*30;var ma=m*6;document.getElementById(&#39;ic-hh&#39;).setAttribute(&#39;transform&#39;,&#39;rotate(&#39;+ha+&#39;,50,50)&#39;);document.getElementById(&#39;ic-mh&#39;).setAttribute(&#39;transform&#39;,&#39;rotate(&#39;+ma+&#39;,50,50)&#39;);document.getElementById(&#39;ic-dt&#39;).textContent=h+&#39;:&#39;+(m<10?&#39;0&#39;:&#39;&#39;)+m;}).call(this)"></label><label style="font-size:13px;font-weight:bold;color:#333">&#8987; Minute<br><input id="ic-ms" type="range" min="0" max="59" step="1" value="0" style="width:120px;margin-top:4px" oninput="(function(){var h=+document.getElementById(&#39;ic-hs&#39;).value;var m=+document.getElementById(&#39;ic-ms&#39;).value;var ha=(h%12+m/60)*30;var ma=m*6;document.getElementById(&#39;ic-hh&#39;).setAttribute(&#39;transform&#39;,&#39;rotate(&#39;+ha+&#39;,50,50)&#39;);document.getElementById(&#39;ic-mh&#39;).setAttribute(&#39;transform&#39;,&#39;rotate(&#39;+ma+&#39;,50,50)&#39;);document.getElementById(&#39;ic-dt&#39;).textContent=h+&#39;:&#39;+(m<10?&#39;0&#39;:&#39;&#39;)+m;}).call(this)"></label></div></div>',a:'Short hand = hour, Long hand = minutes &#x2705;'},
    ],
    practice:[
-    {q:'Long hand at 12, short hand at 6. What time?', a:'6:00', h:'Long at 12 = on the hour. Short at 6 = 6 o clock!', e:'🕐'},
+    {q:'Long hand at 12, short hand at 6. What time?', a:'6:00', h:'Long at 12 = on the hour. Short at 6 = 6 o\'clock!', e:'🕐'},
     {q:'Half past 9 = ?', a:'9:30', h:'Half past = 30 minutes past. So 9:30!', e:'⏰'},
     {q:'Long hand pointing to 6 = how many minutes?', a:'30 minutes', h:'6 on the clock face always means 30 minutes!', e:'🕕'},
   ],
@@ -3806,7 +3806,7 @@ const UNITS_DATA = [
    ],
    practice:[
     {q:'Pizza cut into 4 equal pieces. You eat 1. What fraction?<svg width="110" height="110" viewBox="0 0 100 100" style="display:block;margin:4px auto"><circle cx="50" cy="50" r="44" fill="#F0B27A" stroke="#D35400" stroke-width="2"/><circle cx="50" cy="50" r="36" fill="#E74C3C"/><ellipse cx="35" cy="30" rx="9" ry="6" fill="#F9E79F"/><ellipse cx="63" cy="35" rx="10" ry="6" fill="#F9E79F"/><ellipse cx="33" cy="60" rx="7" ry="8" fill="#F9E79F"/><ellipse cx="63" cy="60" rx="8" ry="7" fill="#F9E79F"/><ellipse cx="50" cy="71" rx="7" ry="5" fill="#F9E79F"/><circle cx="38" cy="32" r="4.5" fill="#922B21" stroke="#7B241C" stroke-width="0.5" opacity="0.9"/><circle cx="63" cy="40" r="4.5" fill="#922B21" stroke="#7B241C" stroke-width="0.5" opacity="0.9"/><circle cx="36" cy="63" r="4.5" fill="#922B21" stroke="#7B241C" stroke-width="0.5" opacity="0.9"/><circle cx="64" cy="63" r="4.5" fill="#922B21" stroke="#7B241C" stroke-width="0.5" opacity="0.9"/><path d="M50,50 L50.0,6.0 A44,44,0,0,1,94.0,50.0 Z" fill="#27ae60" stroke="#27ae60" stroke-width="1"/><path d="M50,50 L50.0,6.0 A44,44,0,0,1,94.0,50.0 Z" fill="rgba(39,174,96,0.35)"/><line x1="50" y1="50" x2="50.0" y2="6.0" stroke="#D35400" stroke-width="1.8"/><line x1="50" y1="50" x2="94.0" y2="50.0" stroke="#D35400" stroke-width="1.8"/><line x1="50" y1="50" x2="50.0" y2="94.0" stroke="#D35400" stroke-width="1.8"/><line x1="50" y1="50" x2="6.0" y2="50.0" stroke="#D35400" stroke-width="1.8"/><circle cx="50" cy="50" r="44" fill="none" stroke="#D35400" stroke-width="2"/></svg>', a:'1/4', h:'1 piece out of 4 equal pieces = one fourth!', e:'🍕'},
-    {q:'The TOP number of a fraction is called?', a:'Numerator', h:'NUmerator is at the top! It tells how many parts you have.', e:'🔢'},
+    {q:'The TOP number of a fraction is called?', a:'Numerator', h:'NUMERATOR is at the top! It tells how many parts you have.', e:'🔢'},
     {q:'The BOTTOM number of a fraction is called?', a:'Denominator', h:'Denominator is DOWN at the bottom! Total equal parts.', e:'🔢'},
     {q:'A pie is cut into 8 equal slices. You take 3. What fraction do you have?<svg width="90" height="90" viewBox="0 0 90 90" style="display:block;margin:4px auto"><circle cx="45" cy="45" r="38" fill="#F5CBA7" stroke="#D4AC0D" stroke-width="2"/><circle cx="45" cy="45" r="32" fill="#E59866"/><path d="M45,45 L45.0,7.0 A38,38,0,0,1,71.9,18.1 Z" fill="rgba(142,68,173,0.5)" stroke="#8e44ad" stroke-width="1.5"/><path d="M45,45 L71.9,18.1 A38,38,0,0,1,83.0,45.0 Z" fill="rgba(142,68,173,0.5)" stroke="#8e44ad" stroke-width="1.5"/><path d="M45,45 L83.0,45.0 A38,38,0,0,1,71.9,71.9 Z" fill="rgba(142,68,173,0.5)" stroke="#8e44ad" stroke-width="1.5"/><line x1="45" y1="45" x2="45.0" y2="7.0" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="71.9" y2="18.1" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="83.0" y2="45.0" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="71.9" y2="71.9" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="45.0" y2="83.0" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="18.1" y2="71.9" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="7.0" y2="45.0" stroke="#D4AC0D" stroke-width="1.8"/><line x1="45" y1="45" x2="18.1" y2="18.1" stroke="#D4AC0D" stroke-width="1.8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#D4AC0D" stroke-width="2"/></svg>',a:'3/8',h:'You took 3 out of 8 equal slices. That is three eighths!',e:'🥧'},
     {q:'A chocolate bar is split into 4 equal pieces. You eat 1. What fraction is eaten?<svg width="180" height="50" viewBox="0 0 180 50" style="display:block;margin:4px auto"><rect x="15" y="4" width="150" height="40" rx="6" fill="#6E2F0A" stroke="#4A1C03" stroke-width="1.5"/><rect x="17.0" y="7" width="33.0" height="30" rx="3" fill="#F39C12"/><rect x="17.0" y="7" width="33.0" height="30" rx="3" fill="none" stroke="#E67E22" stroke-width="1.5"/><rect x="52.0" y="7" width="33.0" height="30" rx="3" fill="#784212"/><rect x="87.0" y="7" width="33.0" height="30" rx="3" fill="#784212"/><rect x="122.0" y="7" width="33.0" height="30" rx="3" fill="#784212"/></svg>',a:'1/4',h:'You ate 1 out of 4 equal pieces. That is one fourth!',e:'🍫'},
@@ -7029,7 +7029,7 @@ function openLesson(unitIdx, lessonIdx){
         <div class="done-title">Lesson Complete! All lessons done — take the Unit Quiz!</div>
         <button class="next-lesson-btn" style="border-color:${u.color};color:${u.color};margin-top:14px;width:100%"
           onclick="goUnit()">
-          ← Back to Unit Quiz →
+          Go to Unit Quiz →
         </button>
       </div>`;
     } else {
@@ -7614,12 +7614,12 @@ function _finishQuiz(){
     <div class="r-pct">${pct}%</div>
     <div class="r-msg">${msg}</div>
     <div class="r-stars">${stars}</div>
-    <div style="font-family:'Boogaloo',cursive;font-size:.9rem;color:var(--txt2);margin-top:6px">⏱ ${timeStr}</div>
+    <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;color:var(--txt2);margin-top:6px">⏱ ${timeStr}</div>
     ${unlockMsg}`;
 
   // Score is auto-saved — show confirmation in save-card div
   const saveCard = document.getElementById('save-card');
-  if(saveCard) saveCard.innerHTML = `<p style="text-align:center;font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:8px">✅ Score auto-saved for <strong>${_escHtml(studentName)}</strong></p>`;
+  if(saveCard) saveCard.innerHTML = `<p style="text-align:center;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:var(--txt2);margin-bottom:8px">✅ Score auto-saved for <strong>${_escHtml(studentName)}</strong></p>`;
 
   // Review sections
   const wrong = qz.answers.filter(a=>!a.ok);
@@ -7967,7 +7967,7 @@ function renderScList(){
         <div style="text-align:center;flex-shrink:0">
           <span class="sc-stars">${(s.abandoned||s.quit)?'':_escHtml(s.stars)}</span>
           <div><span class="sc-grade" style="background:${cardAccent+'20'};color:${cardAccent}">${s.score}/${s.total}</span></div>
-          <div style="font-family:'Boogaloo',cursive;font-size:.9rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</div>
+          <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</div>
         </div>
         <div class="sc-chevron">▸</div>
       </div>
@@ -8012,7 +8012,7 @@ function _buildScReviewHtml(s){
     <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
       <span class="sc-stars" style="font-size:1.2rem">${s.abandoned?'⚠️':s.quit?'🚫':_escHtml(s.stars)}</span>
       <span class="sc-grade" style="background:${(s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color)+'20'};color:${s.abandoned?'#e67e22':s.quit?'#e74c3c':u.color}">${s.score}/${s.total}</span>
-      <span style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</span>
+      <span style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.1rem;color:${pctColor}">${(s.abandoned||s.quit)?'DNF':s.pct+'%'}</span>
     </div>`;
   return { headHtml, bodyHtml: reviewHtml };
 }
@@ -8583,7 +8583,7 @@ const TUT_SLIDES = [
   {
     emoji: '🌱',
     title: 'Welcome to My Math Roots!',
-    body: `A <strong>K–5 math practice app</strong> built to help students learn, practise, and grow through structured lessons and quizzes. Tap <strong>Next</strong> to continue or <strong>Skip</strong> to jump straight in!`
+    body: `A <strong>K–5 math practice app</strong> built to help students learn, practice, and grow through structured lessons and quizzes. Tap <strong>Next</strong> to continue or <strong>Skip</strong> to jump straight in!`
   },
   {
     emoji: '🗺️',
@@ -9624,7 +9624,7 @@ function closeInstall(){
     <!-- Guest: create account nudge -->
     <div id="guest-account-nudge" style="text-align:center;padding:4px 0 24px;display:none">
       <button type="button" onclick="show('login-screen');_lsSwitchTab('signup')"
-        style="font-family:'Boogaloo',cursive;font-size:.95rem;padding:10px 22px;
+        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;padding:10px 22px;
                border-radius:50px;border:2px solid #4a90d9;background:transparent;
                color:#4a90d9;cursor:pointer;touch-action:manipulation">
         ☁️ Create a Free Account
@@ -9634,7 +9634,7 @@ function closeInstall(){
     <!-- Signed-in: sign out -->
     <div id="signout-btn-wrap" style="text-align:center;padding:4px 0 24px;display:none">
       <button type="button" onclick="_signOut()"
-        style="font-family:'Boogaloo',cursive;font-size:.95rem;padding:10px 22px;
+        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;padding:10px 22px;
                border-radius:50px;border:2px solid #e74c3c;background:transparent;
                color:#e74c3c;cursor:pointer;touch-action:manipulation">
         Sign Out
@@ -9661,7 +9661,7 @@ function closeInstall(){
         <div id="parent-panel" style="display:none">
           <div class="parent-panel-inner">
             <div class="parent-status" id="parent-status-lbl"></div>
-            <div id="parent-session-timer" style="font-family:'Boogaloo',cursive;font-size:.8rem;color:var(--txt2);text-align:center;margin-top:6px;opacity:.75"></div>
+            <div id="parent-session-timer" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.8rem;color:var(--txt2);text-align:center;margin-top:6px;opacity:.75"></div>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
               <button class="parent-btn parent-btn-unlock" onclick="parentUnlockAll()">
@@ -9679,11 +9679,11 @@ function closeInstall(){
               <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
                   <div>
-                    <div style="font-family:'Boogaloo',cursive;font-size:1.05rem;color:var(--txt)">⏱ Quiz Timer</div>
+                    <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;color:var(--txt)">⏱ Quiz Timer</div>
                     <div style="font-size:.82rem;color:var(--txt2);margin-top:2px">Set time limits or turn off entirely</div>
                   </div>
                   <button id="timer-toggle-btn" type="button" onclick="toggleQuizTimer()"
-                    style="font-family:'Boogaloo',cursive;font-size:.95rem;padding:9px 20px;
+                    style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;padding:9px 20px;
                     border-radius:50px;border:none;cursor:pointer;min-width:80px;
                     touch-action:manipulation;transition:background .2s,color .2s;">
                   </button>
@@ -9694,10 +9694,10 @@ function closeInstall(){
                     <div style="font-size:.9rem;color:var(--txt)">📝 Lesson Quiz</div>
                     <div style="display:flex;align-items:center;gap:8px">
                       <button type="button" onclick="adjustTimer('lesson',-1)"
-                        style="font-family:'Boogaloo',cursive;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
-                      <div id="lesson-timer-lbl" style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:var(--txt);min-width:60px;text-align:center">8 min</div>
+                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
+                      <div id="lesson-timer-lbl" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.1rem;color:var(--txt);min-width:60px;text-align:center">8 min</div>
                       <button type="button" onclick="adjustTimer('lesson',1)"
-                        style="font-family:'Boogaloo',cursive;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
+                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
                     </div>
                   </div>
                   <!-- Unit timer -->
@@ -9705,10 +9705,10 @@ function closeInstall(){
                     <div style="font-size:.9rem;color:var(--txt)">🏆 Unit Quiz</div>
                     <div style="display:flex;align-items:center;gap:8px">
                       <button type="button" onclick="adjustTimer('unit',-1)"
-                        style="font-family:'Boogaloo',cursive;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
-                      <div id="unit-timer-lbl" style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:var(--txt);min-width:60px;text-align:center">30 min</div>
+                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
+                      <div id="unit-timer-lbl" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.1rem;color:var(--txt);min-width:60px;text-align:center">30 min</div>
                       <button type="button" onclick="adjustTimer('unit',1)"
-                        style="font-family:'Boogaloo',cursive;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
+                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
                     </div>
                   </div>
                 </div>
@@ -9724,11 +9724,11 @@ function closeInstall(){
                 <div style="font-size:.85rem;color:var(--txt2);margin-bottom:10px">Enter a new PIN (at least 4 digits):</div>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                   <input class="set-inp" id="new-pin-inp" type="tel" inputmode="numeric" placeholder="New PIN" maxlength="8"
-                    style="max-width:140px;text-align:center;letter-spacing:4px;font-size:1.4rem;font-family:'Boogaloo',cursive">
+                    style="max-width:140px;text-align:center;letter-spacing:4px;font-size:1.4rem;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">
                   <button class="set-save" style="background:#27ae60;padding:10px 20px;font-size:1rem" onclick="changePin()">✅ Save</button>
                   <button class="set-save" style="background:#7f8c8d;padding:10px 16px;font-size:1rem" onclick="document.getElementById('pin-change-area').style.display='none'">Cancel</button>
                 </div>
-                <div id="pin-change-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
+                <div id="pin-change-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
               </div>
               <button class="parent-btn" style="background:var(--bg3);color:var(--txt);border:2px solid var(--border2);margin-top:4px"
                 onclick="document.getElementById('pin-change-area').style.display='block';document.getElementById('new-pin-inp').focus()">
@@ -9768,15 +9768,15 @@ function closeInstall(){
                 <div style="margin-bottom:12px">
                   <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Comments <span style="opacity:.6">(optional)</span></div>
                   <textarea id="fb-comment" maxlength="500" rows="3" placeholder="Tell us more…"
-                    style="width:100%;box-sizing:border-box;font-family:'Boogaloo',cursive;font-size:.95rem;
+                    style="width:100%;box-sizing:border-box;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
                       padding:10px 12px;border-radius:10px;border:2px solid var(--border2);
                       background:var(--bg);color:var(--txt);resize:vertical;outline:none"></textarea>
                 </div>
 
                 <!-- Status & Submit -->
-                <div id="fb-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.2rem;margin-bottom:8px;color:#27ae60"></div>
+                <div id="fb-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;min-height:1.2rem;margin-bottom:8px;color:#27ae60"></div>
                 <button type="button" onclick="_submitFeedback()"
-                  style="font-family:'Boogaloo',cursive;font-size:1rem;padding:11px 28px;
+                  style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:11px 28px;
                     border-radius:50px;border:none;cursor:pointer;
                     background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;
                     box-shadow:0 4px 0 rgba(0,0,0,.12);touch-action:manipulation">
@@ -9791,7 +9791,7 @@ function closeInstall(){
   <div style="background:var(--bg3);border:2px solid var(--border2);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.22 — Current</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.22 — Current</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li>A host of security and stability improvements have been implemented to ensure user data is fully protected and isolated between sessions</li>
         <li>Screen layouts updated — all pages now correctly respect iPhone safe areas so no content is hidden behind the home indicator on any device</li>
@@ -9800,7 +9800,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.13 – v5.17</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.13 — v5.17</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li>Tutorial redesigned — streamlined to a 2-slide welcome, then guided page tours auto-run on your first visit to each screen</li>
         <li>Full-screen swipe-back — swipe right from anywhere on screen (not just the edge) to go back, just like a native iOS app</li>
@@ -9828,7 +9828,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.12 — Google Sign-In, Auto-Update &amp; Polish</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.12 — Google Sign-In, Auto-Update &amp; Polish</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Google Sign-In</strong> — Students and parents can sign in or create an account with one tap using their Google account. A "Continue with Google" button appears on the login screen, and Google One Tap shows automatically for a frictionless experience.</li>
         <li><strong>Sign Out button</strong> — Appears at the bottom of Settings when a user is logged in. Tapping it signs the user out and returns to the login screen.</li>
@@ -9840,7 +9840,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.11 — Cloud Accounts &amp; Progress Sync</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.11 — Cloud Accounts &amp; Progress Sync</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Cloud accounts &amp; progress sync</strong> — Students can create a free account (email + password) and have their lesson completion and quiz scores automatically synced to the cloud. Progress is restored on any device after signing in.</li>
         <li><strong>Login screen</strong> — A branded sign-in / create account screen appears before the home page. Already signed-in users go straight to home. A "Continue without an account" link lets students skip and play as a guest.</li>
@@ -9851,7 +9851,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.10 — iOS-Style Swipe-Back</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.10 — iOS-Style Swipe-Back</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>iOS-style swipe-back</strong> — Drag from the left edge and the current screen slides with your finger while the previous screen appears behind it with a parallax effect. Release past 80px or with enough velocity to commit; release early to snap back. Works on Unit, Lesson, Results, History, and Settings screens.</li>
         <li><strong>Unit screen no-scroll fix</strong> — The unit screen now uses a flex layout so the banner, all lesson cards, and the Unit Quiz button always fit within the viewport on iPhone 16 Pro Max with no scrolling needed.</li>
@@ -9859,7 +9859,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.9 — Contrast &amp; Color Refresh</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.9 — Contrast &amp; Color Refresh</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Contrast &amp; color refresh</strong> — Light mode gradient is richer and more saturated; dark mode card backgrounds are distinctly lighter than the page background; background math bubbles are more visible in both modes; borders and shadows strengthened throughout.</li>
         <li><strong>Compact Unit Quiz button</strong> — The Unit Quiz start button is now a slim horizontal card instead of a large centered block, so the entire unit screen fits without scrolling.</li>
@@ -9868,7 +9868,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.8 — Charts, Dynamic Island &amp; Update Banner</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.8 — Charts, Dynamic Island &amp; Update Banner</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>In-app update banner</strong> — "Update ready!" banner slides up when a new version is deployed. Fully automatic as of v5.12 — no user action required.</li>
         <li><strong>Tally chart scaling fix</strong> — SVG charts now scale to fit any screen width; previously cut off on iPhone.</li>
@@ -9877,7 +9877,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.6 — Quit, Start Over &amp; Previous Question</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.6 — Quit, Start Over &amp; Previous Question</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Quit button on all quizzes &amp; tests</strong> — A red Quit button now sits opposite the Start Over button. Tapping it shows a confirmation; confirming ends the quiz and records the attempt as Quit in score history.</li>
         <li><strong>Start Over confirmation</strong> — Restarting a quiz now shows a confirmation modal. The incomplete attempt is saved as Abandoned (DNF) in score history before the new attempt begins.</li>
@@ -9888,7 +9888,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.5 — Answer Accuracy &amp; Balance Fixes</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.5 — Answer Accuracy &amp; Balance Fixes</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Answer correctness fix</strong> — Best estimate for 724 − 283 corrected (was 500, correct is 400). Best estimate for 876 − 324 corrected (was 500, correct is 600). Fixed in qBank and testBank.</li>
         <li><strong>Answer position balance (Units 5, 6 &amp; 7)</strong> — Corrected severe imbalance where the correct answer clustered at the same position. Unit 5: 84 rewrites. Unit 6: 65 fixes. Unit 7: 60 fixes.</li>
@@ -9899,7 +9899,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.4 — Final Test</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.4 — Final Test</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Final Test added</strong> — After completing all 10 units with 80%+, a 50-question Final Test card appears and draws questions from every unit.</li>
         <li><strong>Unit Quiz label corrected</strong> — The lessons screen now correctly shows "25 Questions" instead of "30".</li>
@@ -9909,11 +9909,11 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.3 — Color &amp; Dark Mode Polish</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.3 — Color &amp; Dark Mode Polish</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Orange color now pops</strong> — Buttons and accents use a brighter, more vivid orange throughout the app.</li>
         <li><strong>Gold lock buttons</strong> — Lock/unlock buttons on both the home screen and lesson screen now use a consistent bright gold gradient.</li>
-        <li><strong>Locked icons greyed out</strong> — Icons for locked units and lessons now appear in grayscale at reduced opacity.</li>
+        <li><strong>Locked icons grayed out</strong> — Icons for locked units and lessons now appear in grayscale at reduced opacity.</li>
         <li><strong>Dark mode whites fixed</strong> — Text in dark mode is now true white, no longer muted or grey.</li>
         <li><strong>Settings text in dark mode brightened</strong> — Text inside settings boxes is brighter and clearly readable.</li>
         <li><strong>Bug fix</strong> — Entering the parent PIN in Settings after completing a quiz now stays on the Settings screen instead of jumping to results.</li>
@@ -9921,7 +9921,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.1 — Individual Lesson &amp; Unit Unlocks</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.1 — Individual Lesson &amp; Unit Unlocks</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Individual Lesson Unlock</strong> — Tap the lock on any locked lesson and enter your parent PIN to unlock just that lesson.</li>
         <li><strong>Individual Unit Unlock</strong> — Same method on the home screen for locked units.</li>
@@ -9933,7 +9933,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.0 — Glassmorphism UI Overhaul</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.0 — Glassmorphism UI Overhaul</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Glassmorphism UI</strong> — Frosted glass units box and lesson cards, scroll-focus scaling, hover scale effect.</li>
         <li><strong>Home page no longer scrolls</strong> — Fits screen exactly; only the unit cards box scrolls internally.</li>
@@ -9947,7 +9947,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v4.5–v4.9 — Resume, Sound &amp; Timer Fixes</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v4.5–v4.9 — Resume, Sound &amp; Timer Fixes</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Pause &amp; Resume (v4.0)</strong> — Quiz Back button now saves quiz progress. Backing out saves your place; orange Resume banner appears on return.</li>
         <li><strong>Resume banner (v4.5)</strong> — Start Quiz button is hidden when a quiz is already in progress. The Resume banner appears in its place.</li>
@@ -9961,7 +9961,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.1–v3.9 — Quiz Timer &amp; Score History</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.1–v3.9 — Quiz Timer &amp; Score History</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Quiz Timer</strong> — 8 min lesson / 30 min unit with color warnings (orange under 2 min, red under 30 sec).</li>
         <li><strong>Score History</strong> — Cards expand to show right and wrong questions per attempt.</li>
@@ -9974,7 +9974,7 @@ function closeInstall(){
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.0 — Quiz Bug Fixes &amp; Math Wallpaper</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v3.0 — Quiz Bug Fixes &amp; Math Wallpaper</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Quiz bug fixes</strong> — Results screen, Try Again, and Back buttons all work correctly.</li>
         <li><strong>Re-Lock All</strong> — Fully resets all progress and scores.</li>
@@ -9983,7 +9983,7 @@ function closeInstall(){
     </div>
 
     <div>
-      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#4a90d9;margin-bottom:4px">v1.0–v2.0 — Initial Release</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v1.0–v2.0 — Initial Release</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Initial release</strong> — 10 units, 34 lessons, 2,502 questions covering all K–5 math standards.</li>
         <li>Lesson quizzes (8 questions) and unit quizzes (25 questions)</li>
@@ -10024,12 +10024,12 @@ function closeInstall(){
     <!-- Device tabs -->
     <div style="display:flex;gap:8px;margin-bottom:18px">
       <button type="button" id="tab-iphone" onclick="switchInstallTab('iphone')"
-        style="flex:1;font-family:'Boogaloo',cursive;font-size:1rem;padding:10px;border-radius:12px;
+        style="flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:10px;border-radius:12px;
         border:2.5px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer">
         📱 iPhone
       </button>
       <button type="button" id="tab-ipad" onclick="switchInstallTab('ipad')"
-        style="flex:1;font-family:'Boogaloo',cursive;font-size:1rem;padding:10px;border-radius:12px;
+        style="flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:10px;border-radius:12px;
         border:2.5px solid var(--border2);background:transparent;color:var(--txt2);cursor:pointer">
         🖥 iPad
       </button>
@@ -10134,7 +10134,7 @@ function closeInstall(){
 
     <div id="fp-problem-box" style="background:var(--bg3);border-radius:16px;padding:20px;
       text-align:center;margin:14px 0;border:2.5px solid var(--border2)">
-      <div id="fp-question" style="font-family:'Boogaloo',cursive;font-size:1.6rem;
+      <div id="fp-question" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;
         color:var(--txt);margin-bottom:6px"></div>
       <div id="fp-hint" style="font-size:.82rem;color:var(--txt2)"></div>
     </div>
@@ -10144,11 +10144,11 @@ function closeInstall(){
         placeholder="Your answer" maxlength="6"
         oninput="this.value=this.value.replace(/[^0-9]/g,'')"
         onkeydown="if(event.key==='Enter')checkForgotAnswer()"
-        style="flex:1;font-family:'Boogaloo',cursive;font-size:1.2rem;
+        style="flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;
           padding:12px 14px;border:2.5px solid var(--inp-border);border-radius:14px;
           outline:none;background:var(--bg3);color:var(--txt);text-align:center">
       <button type="button" onclick="checkForgotAnswer()"
-        style="font-family:'Boogaloo',cursive;font-size:1rem;padding:12px 20px;
+        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:12px 20px;
           border-radius:50px;border:none;cursor:pointer;
           background:linear-gradient(135deg,#27ae60,#1a7a45);color:#fff;
           box-shadow:0 3px 0 #0f5c32;white-space:nowrap">
@@ -10156,11 +10156,11 @@ function closeInstall(){
       </button>
     </div>
 
-    <div id="fp-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;
+    <div id="fp-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
       min-height:1.4rem;text-align:center;margin-bottom:10px"></div>
 
     <button type="button" onclick="refreshForgotProblem()"
-      style="width:100%;font-family:'Boogaloo',cursive;font-size:1rem;
+      style="width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;
         padding:11px;border-radius:14px;border:2px solid var(--border2);
         background:var(--bg3);color:var(--txt2);cursor:pointer;margin-bottom:8px">
       🔄 Try a Different Problem
@@ -10184,19 +10184,19 @@ function closeInstall(){
         placeholder="----" maxlength="4"
         oninput="this.value=this.value.replace(/[^0-9]/g,'')"
         onkeydown="if(event.key==='Enter')checkUnitPinUnlock()"
-        style="flex:1;font-family:'Boogaloo',cursive;font-size:1.4rem;letter-spacing:8px;
+        style="flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.4rem;letter-spacing:8px;
           padding:12px 10px;border:2px solid rgba(255,255,255,.3);border-radius:14px;
           outline:none;background:rgba(255,255,255,.55);color:var(--txt);text-align:center;
           backdrop-filter:blur(6px)">
       <button type="button" onclick="checkUnitPinUnlock()"
-        style="font-family:'Boogaloo',cursive;font-size:1rem;padding:12px 20px;
+        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:12px 20px;
           border-radius:50px;border:none;cursor:pointer;
           background:linear-gradient(135deg,#27ae60,#1a7a45);color:#fff;
           box-shadow:0 3px 0 #0f5c32;white-space:nowrap">
         🔓 Unlock
       </button>
     </div>
-    <div id="upm-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;
+    <div id="upm-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
       min-height:1.4rem;text-align:center;margin-bottom:10px"></div>
 
     <button class="install-close" onclick="closeUnitPinModal()" style="background:linear-gradient(135deg,#7f8c8d,#636e72)">
@@ -10216,7 +10216,7 @@ function closeInstall(){
      onclick="if(event.target===this&&!_authLoading)closeAuthModal()">
   <div class="install-box" style="max-width:400px;border-radius:28px;padding:28px 24px">
     <div style="text-align:center;margin-bottom:4px;font-size:2.4rem">🌱</div>
-    <h2 id="auth-modal-title" style="font-family:'Boogaloo',cursive;font-size:1.6rem;text-align:center;margin:0 0 4px">Sign In</h2>
+    <h2 id="auth-modal-title" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.6rem;text-align:center;margin:0 0 4px">Sign In</h2>
     <p style="text-align:center;font-size:.85rem;color:var(--txt2);margin:0 0 18px">Save your progress across devices</p>
     <!-- Tab switcher -->
     <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:18px;overflow:hidden">
@@ -10229,7 +10229,7 @@ function closeInstall(){
     </div>
     <!-- Role selector (signup only) -->
     <div id="auth-role-row" style="display:none;margin-bottom:14px">
-      <div style="font-family:'Boogaloo',cursive;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.88rem;color:var(--txt2);margin-bottom:6px">I am a:</div>
       <div style="display:flex;gap:10px">
         <button type="button" id="auth-role-student" class="auth-role-btn active" onclick="_selectAuthRole('student')">🎒 Student</button>
         <button type="button" id="auth-role-parent"  class="auth-role-btn idle"   onclick="_selectAuthRole('parent')">👨‍👩‍👧 Parent</button>
@@ -10244,11 +10244,11 @@ function closeInstall(){
       <input class="set-inp" id="auth-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:1rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')submitAuth()">
     </div>
     <!-- Error/status -->
-    <div id="auth-msg" style="font-family:'Boogaloo',cursive;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
+    <div id="auth-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
     <!-- Submit -->
     <button class="install-close" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
     <!-- Cancel -->
-    <button type="button" onclick="closeAuthModal()" style="width:100%;font-family:'Boogaloo',cursive;font-size:1rem;padding:12px;border-radius:50px;border:2px solid var(--border2);background:transparent;color:var(--txt2);cursor:pointer;margin-top:10px;touch-action:manipulation">Cancel — stay offline</button>
+    <button type="button" onclick="closeAuthModal()" style="width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:12px;border-radius:50px;border:2px solid var(--border2);background:transparent;color:var(--txt2);cursor:pointer;margin-top:10px;touch-action:manipulation">Cancel — stay offline</button>
   </div>
 </div>
 
@@ -10257,13 +10257,13 @@ function closeInstall(){
   <div class="install-box" style="max-width:340px;text-align:center">
     <button onclick="closePinModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--txt2)">×</button>
     <div style="font-size:2.2rem;margin-bottom:6px">🔐</div>
-    <h2 style="margin:0 0 6px;font-family:'Boogaloo',cursive">Parent Controls</h2>
+    <h2 style="margin:0 0 6px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">Parent Controls</h2>
     <p style="font-size:.85rem;color:var(--txt2);margin:0 0 16px">Enter your PIN to continue</p>
     <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:8px">
       <input class="set-inp" id="parent-pin-inp" type="tel" inputmode="numeric"
         pattern="[0-9]*" placeholder="----" maxlength="4"
         style="width:130px;min-width:0;text-align:center;letter-spacing:6px;
-               font-size:1.5rem;padding:12px 16px;font-family:'Boogaloo',cursive;box-sizing:border-box;"
+               font-size:1.5rem;padding:12px 16px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;box-sizing:border-box;"
         oninput="this.value=this.value.replace(/[^0-9]/g,'')"
         onkeydown="if(event.key==='Enter')checkParentPin()">
       <button type="button" class="set-save" style="padding:12px 22px;font-size:1rem" onclick="checkParentPin()">Unlock</button>
@@ -10271,9 +10271,9 @@ function closeInstall(){
     <div id="pin-default-hint" style="font-size:.8rem;color:var(--txt2);margin-bottom:8px;line-height:1.6">
       🔑 Default PIN is <strong>1234</strong>
     </div>
-    <div id="pin-msg" style="font-family:'Boogaloo',cursive;font-size:.95rem;min-height:1.2rem;margin-bottom:10px;color:#e74c3c"></div>
+    <div id="pin-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;min-height:1.2rem;margin-bottom:10px;color:#e74c3c"></div>
     <button type="button" onclick="openForgotPin()"
-      style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+      style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
       🔓 Forgot your PIN?
     </button>
   </div>
