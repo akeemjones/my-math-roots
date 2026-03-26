@@ -30,8 +30,9 @@
         https://cdn.jsdelivr.net
         https://accounts.google.com
         https://challenges.cloudflare.com;
-      style-src 'self' 'unsafe-inline';
-      font-src 'self';
+      style-src 'self' 'unsafe-inline'
+        https://accounts.google.com;
+      font-src 'self' data:;
       connect-src 'self'
         https://omjegwtzirskgmgeojdn.supabase.co
         https://accounts.google.com

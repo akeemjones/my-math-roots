@@ -22,6 +22,8 @@ const COPY_FILES = [
   'manifest-v5.1.json',
   'icon-192-v5.1.png',
   'icon-512-v5.1.png',
+  'icon-192.png',
+  'icon-512.png',
 ];
 
 async function build(){

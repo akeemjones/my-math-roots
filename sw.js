@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v5.17.0-release';
+const CACHE = 'math-workbook-v5.30.0-release';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
@@ -20,6 +20,34 @@ self.addEventListener('activate', e => {
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
+  );
+});
+
+// ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────────
+self.addEventListener('push', e => {
+  let data = { title: 'My Math Roots', body: "Time to practice math! 🌱", url: '/' };
+  try { if(e.data) data = { ...data, ...e.data.json() }; } catch(err) {}
+  e.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icon-192-v5.1.png',
+      badge: '/icon-192-v5.1.png',
+      tag: data.tag || 'mmr-reminder',
+      renotify: true,
+      data: { url: data.url }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const existing = list.find(c => c.url.startsWith(self.location.origin));
+      if(existing) return existing.focus();
+      return clients.openWindow(url);
+    })
   );
 });
 
