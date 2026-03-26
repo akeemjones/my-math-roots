@@ -5221,6 +5221,27 @@ function _dismissSplash(){
   if(splash){ splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; },370); }
 }
 
+// ── History guard ──────────────────────────────────────────────────────────
+// After Google OAuth, the browser history contains OAuth/callback URLs.
+// iOS's native edge-swipe navigates that history, showing the auth page
+// mid-transition. This guard replaces those entries and intercepts popstate
+// so the browser never leaves the app.
+let _historyGuardInstalled = false;
+function _installHistoryGuard(){
+  if(_historyGuardInstalled) return;
+  _historyGuardInstalled = true;
+  const url = location.pathname + location.search;
+  // Overwrite any OAuth redirect URLs in history with the clean app URL
+  history.replaceState({mmr:1}, '', url);
+  // Push a guard entry so popstate always has somewhere safe to land
+  history.pushState({mmr:1}, '', url);
+  // Re-push whenever the browser tries to go back (iOS native swipe or back btn)
+  // The app's own JS swipe handles visual transitions independently
+  window.addEventListener('popstate', function(){
+    history.pushState({mmr:1}, '', url);
+  });
+}
+
 function supabaseInit(){
   if(typeof supabase === 'undefined'){
     // CDN failed — dismiss splash and show login so user isn't stuck
@@ -5241,13 +5262,14 @@ function supabaseInit(){
     _supaUser = session ? session.user : null;
     updateAccountUI();
     if(event === 'INITIAL_SESSION'){
-      if(_supaUser){ _pullOnLogin(); show('home'); }
+      if(_supaUser){ _pullOnLogin(); show('home'); _installHistoryGuard(); }
       else { show('login-screen'); _initOneTap(); }
       // Dismiss the auth splash now that we know where to go
       _dismissSplash();
     } else if(event === 'SIGNED_IN'){
       _pullOnLogin();
       show('home');
+      _installHistoryGuard();
       setTimeout(tutCheckAndShow, 1200);
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
@@ -9409,7 +9431,7 @@ setTimeout(() => {
   function cleanup(){
     document.body.classList.remove('swiping');
     _skipNextHomeBuild=false; // safety reset if swipe was cancelled
-    if(curEl) css(curEl, {transition:'',transform:'',boxShadow:'',willChange:''});
+    if(curEl) css(curEl, {transition:'',transform:'',boxShadow:'',willChange:'',zIndex:''});
     if(prevEl){
       prevEl.classList.remove('swipe-peek');
       css(prevEl, {transition:'',transform:'',opacity:'',willChange:'',display:''});
@@ -9424,7 +9446,7 @@ setTimeout(() => {
     // Pre-build the home screen NOW so it's populated before it becomes visible.
     // This prevents the DOM-clear flash that happens when goHome() rebuilds mid-animation.
     if(entry && entry.prev==='home'){ _carouselInited=false; buildHome(true); _skipNextHomeBuild=true; }
-    css(curEl, {transition:'none', willChange:'transform'});
+    css(curEl, {transition:'none', willChange:'transform', zIndex:'10'});
     if(prevEl){
       prevEl.classList.add('swipe-peek');
       css(prevEl, {transition:'none', transform:'translateX(-28%)',
