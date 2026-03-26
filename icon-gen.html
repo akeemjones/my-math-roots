@@ -4,23 +4,33 @@
 <meta charset="utf-8">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 512px; height: 512px; background: #f0f4f8; overflow: hidden; }
+html, body { width: 512px; height: 512px; background: #eef4fb; overflow: hidden; }
 </style>
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <!-- White glass background -->
+    <!-- Bright white glass background -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#f0f4f8;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#f6faff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#eef4fb;stop-opacity:1"/>
     </linearGradient>
-    <!-- Highlight rim -->
+    <!-- Glassy inner highlight (top-left sheen) -->
+    <linearGradient id="sheenGrad" x1="0%" y1="0%" x2="60%" y2="60%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
+    <!-- Rim highlight -->
     <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
-      <stop offset="60%" style="stop-color:#ffffff;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#d0d8e0;stop-opacity:0.4"/>
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#c8d8e8;stop-opacity:0.5"/>
     </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="iconShadow" x="-4%" y="-4%" width="108%" height="114%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(60,100,160,0.13)"/>
+    </filter>
     <!-- Sprout gradients -->
     <linearGradient id="hi-l1" x1="5%" y1="5%" x2="95%" y2="95%"><stop offset="0%" stop-color="#ffd8a0"/><stop offset="38%" stop-color="#f5a020"/><stop offset="100%" stop-color="#c86c00"/></linearGradient>
     <linearGradient id="hi-l2" x1="95%" y1="5%" x2="5%" y2="95%"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="38%" stop-color="#ee9010"/><stop offset="100%" stop-color="#b85e00"/></linearGradient>
@@ -35,8 +45,10 @@ html, body { width: 512px; height: 512px; background: #f0f4f8; overflow: hidden;
     </style>
   </defs>
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="112" ry="112" fill="url(#bgGrad)"/>
+  <!-- Background with subtle drop shadow -->
+  <rect width="512" height="512" rx="112" ry="112" fill="url(#bgGrad)" filter="url(#iconShadow)"/>
+  <!-- Glass sheen — top-left quadrant highlight -->
+  <ellipse cx="170" cy="130" rx="210" ry="140" fill="url(#sheenGrad)" opacity="0.55"/>
 
   <!-- Math symbols scattered - very transparent -->
   <g clip-path="url(#roundedClip)">
@@ -110,9 +122,9 @@ html, body { width: 512px; height: 512px; background: #f0f4f8; overflow: hidden;
   <rect width="512" height="512" rx="112" ry="112"
         fill="none"
         stroke="url(#rimGrad)" stroke-width="3"/>
-  <!-- Top highlight sheen -->
-  <ellipse cx="220" cy="60" rx="130" ry="28"
-           fill="rgba(255,255,255,0.45)"/>
+  <!-- Rim stroke -->
+  <!-- Top specular dot -->
+  <ellipse cx="200" cy="48" rx="80" ry="18" fill="rgba(255,255,255,0.7)"/>
 </svg>
 </body>
 </html>
