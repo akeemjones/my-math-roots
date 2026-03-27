@@ -66,6 +66,31 @@ body.dark .set-section{
   border-right-color:rgba(255,255,255,.05);
   border-bottom-color:rgba(255,255,255,.04);
   box-shadow:0 8px 28px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.10); }
+body.dark .carousel-wrap{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.12);
+  box-shadow:0 8px 28px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+  scrollbar-color:rgba(255,255,255,.15) transparent; }
+body.dark .carousel-wrap::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.15); }
+body.dark .cog-btn{
+  background:rgba(255,255,255,.08);
+  border-top-color:rgba(255,255,255,.20);
+  border-left-color:rgba(255,255,255,.14);
+  border-right-color:rgba(255,255,255,.06);
+  border-bottom-color:rgba(255,255,255,.04);
+  box-shadow:0 4px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12); }
+body.dark .ls-google-btn{
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(255,255,255,.18) !important; }
+body.dark .login-card{
+  background:rgba(255,255,255,.07) !important;
+  backdrop-filter:blur(22px) saturate(140%) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(140%) !important;
+  border-top-color:rgba(255,255,255,.22) !important;
+  border-left-color:rgba(255,255,255,.14) !important;
+  border-right-color:rgba(255,255,255,.06) !important;
+  border-bottom-color:rgba(255,255,255,.04) !important;
+  box-shadow:0 24px 64px rgba(0,0,0,.55), inset 0 1.5px 0 rgba(255,255,255,.12) !important; }
 body.dark .uq-btn{
   background:rgba(12,22,42,0.84) !important;
   border-top-color:rgba(255,255,255,.12);
@@ -119,6 +144,17 @@ body.dark .set-inp{
   background:rgba(255,255,255,.12);
   border-color:rgba(255,255,255,.2);
   color:var(--txt); }
+/* Login screen inputs need a solid dark bg — backdrop-filter blurs the math-symbol SVG
+   behind them and makes the field appear light, causing white text to vanish */
+body.dark #login-screen .set-inp{
+  background:rgba(8,18,35,0.82);
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+  border-color:rgba(255,255,255,.28);
+  color:#fff; }
+body.dark #login-screen .set-inp:focus{
+  background:rgba(12,26,52,0.92);
+  border-color:#4a90d9;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 3px rgba(74,144,217,.25); }
 
 /* ── Dark-mode glass overrides ── */
 body.dark .restart-modal-box,
@@ -163,13 +199,17 @@ button{ -webkit-appearance:none; font-family:inherit;
 
 /* ── SCREENS ── */
 .sc{ display:none; position:fixed; inset:0; overflow-y:auto; overflow-x:hidden;
-     -webkit-overflow-scrolling:touch; background:transparent;
+     -webkit-overflow-scrolling:touch;
+     background-image:var(--app-bg-svg), var(--home-grad);
+     background-size:420px 420px, 100% 100%; background-repeat:repeat, no-repeat;
      z-index:10; overscroll-behavior:contain; }
 /* Lock all interaction on screens while tutorial/onboarding overlay is up */
-body.tut-active .sc{ pointer-events:none !important; overflow:hidden !important; }
-/* Lock scroll on all screen containers + inner scrollers during spotlight tour */
+body.tut-active .sc,
+body.tut-active .carousel-wrap{ pointer-events:none !important; overflow:hidden !important; }
+/* Lock scroll and interaction on all screen containers during spotlight tour */
 body.spot-scroll-lock .sc.on,
-body.spot-scroll-lock .lesson-glass-wrap{ overflow:hidden !important; touch-action:none !important; }
+body.spot-scroll-lock .lesson-glass-wrap,
+body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:none !important; pointer-events:none !important; }
 /* During swipe, stamp the full background onto curEl so backdrop-filter
    children can't see prevEl bleeding through */
 .sc.swipe-active{ background-image:var(--app-bg-svg), var(--home-grad) !important;
@@ -602,13 +642,14 @@ body.dark .done-card{ background:rgba(39,174,96,.15); }
 .lq-banner-ico{ font-size:2.2rem; }
 
 /* ── SCORE LIGHTBOX ── */
-.sc-lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9500;
+.sc-lightbox{ position:fixed; inset:0; background:transparent; z-index:9500;
   display:none; align-items:center; justify-content:center; padding:20px; }
-.sc-lightbox.open{ display:flex; animation:pop .2s ease; }
-.sc-lightbox-box{ background:rgba(255,255,255,0.80);backdrop-filter:blur(24px) saturate(165%);-webkit-backdrop-filter:blur(24px) saturate(165%);border:1.5px solid rgba(255,255,255,0.88); border-radius:24px;
+.sc-lightbox.open{ display:flex; }
+.sc-lightbox-box{ background:rgba(255,255,255,0.07);backdrop-filter:blur(28px) saturate(160%) brightness(1.02);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.02);
+  border:1.5px solid rgba(255,255,255,0.55);border-top:1.5px solid rgba(255,255,255,0.55);border-radius:28px;
   max-width:520px; width:100%; max-height:82dvh;
   display:flex; flex-direction:column; overflow:hidden;
-  box-shadow:0 24px 64px rgba(0,0,0,.18),inset 0 1.5px 0 rgba(255,255,255,0.95); }
+  box-shadow:0 24px 64px rgba(0,0,0,.22),inset 0 1.5px 0 rgba(255,255,255,0.6); }
 .sc-lightbox-head{ padding:20px 20px 14px; border-bottom:2px solid var(--border); flex-shrink:0; }
 .sc-lightbox-body{ overflow-y:auto; padding:14px 20px 20px; flex:1;
   -webkit-overflow-scrolling:touch; }
@@ -1093,7 +1134,6 @@ img[data-coin]:active{ transform:scale(.95); }
 .cl-list li{ margin-bottom:2px; }
 
 /* ── PARENT CONTROLS ── */
-.parent-panel-inner{ background:transparent; border-radius:18px; padding:4px 0 0; border:none; }
 .parent-status{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:1rem; color:var(--txt2);
   background:var(--bg2); border-radius:12px; padding:10px 14px;
   border:2px solid var(--border); text-align:center; }
@@ -1227,6 +1267,60 @@ body.dark .set-body p{ color:rgba(200,220,240,0.90); }
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 2px 8px rgba(0,0,0,.06); }
 .set-inp:focus{ border-color:#4a90d9;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 3px rgba(74,144,217,.2); }
+/* backdrop-filter removed from textarea itself (iOS caret-offset bug) — blur lives on .fb-comment-wrap */
+#fb-comment:focus{ outline:none; background:rgba(255,255,255,0.92) !important;
+  transition:background .25s; }
+.fb-comment-wrap:focus-within{
+  border-top:1.5px solid rgba(255,255,255,1) !important;
+  border-left:1.5px solid rgba(255,255,255,0.75) !important;
+  border-right:1.5px solid rgba(100,170,255,0.38) !important;
+  border-bottom:1.5px solid rgba(100,170,255,0.28) !important;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,1),
+    0 0 0 3.5px rgba(74,144,217,0.18),
+    0 6px 28px rgba(74,144,217,0.14),
+    0 1px 6px rgba(0,0,0,0.06) !important;
+  transition: border-color .25s, box-shadow .25s;
+}
+body.dark #fb-comment{ background:rgba(255,255,255,0.08); }
+body.dark #fb-comment:focus{ background:rgba(120,180,255,0.14) !important; }
+body.dark .fb-comment-wrap:focus-within{
+  border-top:1.5px solid rgba(255,255,255,0.55) !important;
+  border-right:1.5px solid rgba(100,170,255,0.30) !important;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.28),
+    0 0 0 3.5px rgba(74,144,217,0.22),
+    0 4px 24px rgba(0,0,0,0.30) !important;
+}
+/* ── Timer drum-roll picker ── */
+.tp-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tp-col-wrap{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+.tp-col-lbl{ font-size:.6rem; color:var(--txt2); letter-spacing:.03em; }
+.tp-drum{ position:relative; width:46px; height:108px; border-radius:9px;
+  background:rgba(255,255,255,0.14); overflow:hidden;
+  border-top:1.5px solid rgba(255,255,255,0.6); border-bottom:1px solid rgba(255,255,255,0.15); }
+.tp-scroll{ overflow-y:scroll; scroll-snap-type:y mandatory; height:108px;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.tp-scroll::-webkit-scrollbar{ display:none; }
+.tp-item{ height:36px; display:flex; align-items:center; justify-content:center;
+  scroll-snap-align:center;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+  font-size:1.1rem; color:var(--txt); user-select:none; -webkit-user-select:none; }
+.tp-pad{ height:36px; scroll-snap-align:none; flex-shrink:0; }
+.tp-sel{ position:absolute; top:36px; left:3px; right:3px; height:36px; border-radius:7px;
+  background:rgba(255,255,255,0.28); pointer-events:none;
+  border-top:1.5px solid rgba(255,255,255,0.7); border-bottom:1px solid rgba(255,255,255,0.2);
+  box-shadow:0 2px 8px rgba(74,144,217,0.12); z-index:2; }
+.tp-fade-t{ position:absolute; top:0; left:0; right:0; height:36px; pointer-events:none; z-index:3;
+  background:linear-gradient(to bottom, var(--tp-fade-c,rgba(232,244,255,0.88)) 10%, transparent); }
+.tp-fade-b{ position:absolute; bottom:0; left:0; right:0; height:36px; pointer-events:none; z-index:3;
+  background:linear-gradient(to top, var(--tp-fade-c,rgba(232,244,255,0.88)) 10%, transparent); }
+body.dark .tp-drum{ background:rgba(255,255,255,0.08); }
+body.dark .tp-sel{ background:rgba(255,255,255,0.14); }
+body.dark{ --tp-fade-c: rgba(30,40,60,0.88); }
+.tp-colon{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+  font-size:1.2rem; color:var(--txt); padding:0 1px; margin-bottom:16px; }
+/* ── end timer drum-roll picker ── */
 .set-inp::placeholder{ color:rgba(100,110,130,.5); font-weight:700; }
 body.dark .set-inp::placeholder{ color:rgba(255,255,255,.45); }
 /* PIN input — dew-on-glass: translucency first, border does the work */
@@ -1475,6 +1569,7 @@ body.dark #spot-card{
   background:transparent;color:var(--txt2,#999);
   cursor:pointer;touch-action:manipulation;
 }
+#spot-card{ transition: top .25s cubic-bezier(0.4,0,0.2,1), left .25s cubic-bezier(0.4,0,0.2,1), opacity .18s ease; }
 
 /* ── AUTH MODAL ── */
 .auth-role-btn{ flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;
@@ -1544,8 +1639,8 @@ body.dark #spot-card{
 <div id="auth-splash" style="
   position:fixed;inset:0;z-index:99999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:var(--bg);
-  transition:opacity .35s ease;
+  background:var(--home-grad);
+  transition:opacity .9s ease;
 ">
   <div style="width:64px;height:64px;margin:0 auto 8px;animation:bob 1.5s ease-in-out infinite;filter:drop-shadow(0 3px 6px rgba(0,80,20,0.18))"><svg viewBox="0 0 310 300" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="si-l1" x1="5%" y1="5%" x2="95%" y2="95%"><stop offset="0%" stop-color="#ffd8a0"/><stop offset="38%" stop-color="#f5a020"/><stop offset="100%" stop-color="#c86c00"/></linearGradient><linearGradient id="si-l2" x1="95%" y1="5%" x2="5%" y2="95%"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="38%" stop-color="#ee9010"/><stop offset="100%" stop-color="#b85e00"/></linearGradient><linearGradient id="si-ls" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3ada6e"/><stop offset="100%" stop-color="#14762e"/></linearGradient><linearGradient id="si-lb" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#aeffc8"/><stop offset="100%" stop-color="#28c45c"/></linearGradient></defs><g stroke-linecap="round" fill="none"><path d="M154 284 Q100 278 72 292" stroke="#16763a" stroke-width="3.0"/><path d="M156 284 Q210 278 238 292" stroke="#16763a" stroke-width="3.0"/><path d="M154 283 Q112 270 92 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M156 283 Q198 270 218 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M154 283 Q128 266 116 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M156 283 Q182 266 194 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M154 282 Q142 266 138 260" stroke="#20a650" stroke-width="3.5"/><path d="M156 282 Q168 266 172 260" stroke="#20a650" stroke-width="3.5"/><path d="M154 283 Q105 276 76 289" stroke="#50de80" stroke-width="1.5" opacity="0.55"/><path d="M156 283 Q205 276 234 289" stroke="#50de80" stroke-width="1.5" opacity="0.55"/><path d="M154 282 Q130 268 118 270" stroke="#50de80" stroke-width="1.4" opacity="0.50"/><path d="M156 282 Q180 268 192 270" stroke="#50de80" stroke-width="1.4" opacity="0.50"/></g><path d="M155 278 Q152 234 154 190 Q156 155 155 118" stroke="url(#si-ls)" stroke-width="5.5" stroke-linecap="round" fill="none"/><path d="M154 194 C136 174,82 152,62 108 C50 78,74 50,104 70 C126 85,144 146,154 194Z" fill="url(#si-l1)"/><ellipse cx="96" cy="110" rx="22" ry="12" fill="rgba(255,255,255,0.26)" transform="rotate(-35 96 110)"/><path d="M153 189 C130 166 88 128 68 100" stroke="rgba(255,255,255,0.42)" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M156 162 C176 142,228 120,248 76 C260 46,236 18,206 38 C184 54,164 112,156 162Z" fill="url(#si-l2)"/><ellipse cx="212" cy="80" rx="21" ry="11" fill="rgba(255,255,255,0.24)" transform="rotate(34 212 80)"/><path d="M157 158 C178 134 210 94 228 68" stroke="rgba(255,255,255,0.38)" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M155 118 C147 100 145 74 155 56 C165 74 163 100 155 118Z" fill="url(#si-lb)"/></svg></div>
   <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:2rem;color:var(--txt);letter-spacing:1px">My Math Roots</div>
@@ -1563,9 +1658,9 @@ body.dark #spot-card{
     <p style="font-size:.82rem;font-weight:800;color:var(--txt2);letter-spacing:.1em;margin:0 0 14px">K-5 REVIEW</p>
 
     <!-- Auth card -->
-    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(22px) saturate(158%) brightness(1.03);-webkit-backdrop-filter:blur(22px) saturate(158%) brightness(1.03);border-radius:28px;padding:18px 22px;width:100%;max-width:400px;border-top:1.5px solid rgba(255,255,255,0.95);border-left:1.5px solid rgba(255,255,255,0.75);border-right:1.5px solid rgba(255,255,255,0.28);border-bottom:1.5px solid rgba(255,255,255,0.18);box-shadow:0 24px 64px rgba(0,0,0,0.14),inset 0 1.5px 0 rgba(255,255,255,0.98);box-sizing:border-box">
+    <div class="login-card" style="background:rgba(255,255,255,0.58);backdrop-filter:blur(22px) saturate(158%) brightness(1.03);-webkit-backdrop-filter:blur(22px) saturate(158%) brightness(1.03);border-radius:28px;padding:18px 22px;width:100%;max-width:400px;border-top:1.5px solid rgba(255,255,255,0.95);border-left:1.5px solid rgba(255,255,255,0.75);border-right:1.5px solid rgba(255,255,255,0.28);border-bottom:1.5px solid rgba(255,255,255,0.18);box-shadow:0 24px 64px rgba(0,0,0,0.14),inset 0 1.5px 0 rgba(255,255,255,0.98);box-sizing:border-box">
       <!-- Social login -->
-      <button type="button" onclick="_lsOAuth('google')"
+      <button type="button" onclick="_lsOAuth('google')" class="ls-google-btn"
         style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:50px;border:2px solid var(--border2);background:var(--bg);cursor:pointer;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:var(--txt);margin-bottom:8px;touch-action:manipulation">
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
         Continue with Google
@@ -1646,7 +1741,7 @@ body.dark #spot-card{
     </div>
 
     <!-- Guest link -->
-    <button type="button" onclick="show('home'); setTimeout(tutCheckAndShow, 1200)"
+    <button type="button" onclick="_continueAsGuest()"
       style="margin-top:20px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;background:none;border:none;color:var(--txt2);cursor:pointer;text-decoration:underline;touch-action:manipulation">
       Continue without an account →
     </button>
@@ -1658,9 +1753,6 @@ body.dark #spot-card{
      HOME
 ════════════════════════════════════════ -->
 <div id="home" class="sc">
-  <div id="home-sync-msg" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(74,144,217,0.92);color:#fff;text-align:center;padding:8px;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;letter-spacing:.3px;">
-    ☁️ Syncing your data…
-  </div>
   <div class="home-in">
     <div class="hero">
       <span class="hero-ico" style="display:block;width:72px;height:72px;margin:0 auto;filter:drop-shadow(0 3px 8px rgba(0,80,20,0.18))"><svg viewBox="0 0 310 300" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="hi-l1" x1="5%" y1="5%" x2="95%" y2="95%"><stop offset="0%" stop-color="#ffd8a0"/><stop offset="38%" stop-color="#f5a020"/><stop offset="100%" stop-color="#c86c00"/></linearGradient><linearGradient id="hi-l2" x1="95%" y1="5%" x2="5%" y2="95%"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="38%" stop-color="#ee9010"/><stop offset="100%" stop-color="#b85e00"/></linearGradient><linearGradient id="hi-ls" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3ada6e"/><stop offset="100%" stop-color="#14762e"/></linearGradient><linearGradient id="hi-lb" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#aeffc8"/><stop offset="100%" stop-color="#28c45c"/></linearGradient></defs><g stroke-linecap="round" fill="none"><path d="M154 284 Q100 278 72 292" stroke="#16763a" stroke-width="3.0"/><path d="M156 284 Q210 278 238 292" stroke="#16763a" stroke-width="3.0"/><path d="M154 283 Q112 270 92 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M156 283 Q198 270 218 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M154 283 Q128 266 116 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M156 283 Q182 266 194 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M154 282 Q142 266 138 260" stroke="#20a650" stroke-width="3.5"/><path d="M156 282 Q168 266 172 260" stroke="#20a650" stroke-width="3.5"/><path d="M154 283 Q105 276 76 289" stroke="#50de80" stroke-width="1.5" opacity="0.55"/><path d="M156 283 Q205 276 234 289" stroke="#50de80" stroke-width="1.5" opacity="0.55"/><path d="M154 282 Q130 268 118 270" stroke="#50de80" stroke-width="1.4" opacity="0.50"/><path d="M156 282 Q180 268 192 270" stroke="#50de80" stroke-width="1.4" opacity="0.50"/></g><path d="M155 278 Q152 234 154 190 Q156 155 155 118" stroke="url(#hi-ls)" stroke-width="5.5" stroke-linecap="round" fill="none"/><path d="M154 194 C136 174,82 152,62 108 C50 78,74 50,104 70 C126 85,144 146,154 194Z" fill="url(#hi-l1)"/><ellipse cx="96" cy="110" rx="22" ry="12" fill="rgba(255,255,255,0.26)" transform="rotate(-35 96 110)"/><path d="M153 189 C130 166 88 128 68 100" stroke="rgba(255,255,255,0.42)" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M156 162 C176 142,228 120,248 76 C260 46,236 18,206 38 C184 54,164 112,156 162Z" fill="url(#hi-l2)"/><ellipse cx="212" cy="80" rx="21" ry="11" fill="rgba(255,255,255,0.24)" transform="rotate(34 212 80)"/><path d="M157 158 C178 134 210 94 228 68" stroke="rgba(255,255,255,0.38)" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M155 118 C147 100 145 74 155 56 C165 74 163 100 155 118Z" fill="url(#hi-lb)"/></svg></span>
@@ -1674,6 +1766,7 @@ body.dark #spot-card{
       <div class="pb"><div class="pbf" id="op-fill" style="width:0%"></div></div>
       <div class="pb-lbl" id="op-lbl">0 lessons completed</div>
     </div>
+    <div style="text-align:center;margin:6px 16px 0"><div id="streak-badge" style="display:none;font-size:1.05rem;color:#e06000;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;letter-spacing:.3px;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid rgba(255,150,0,0.55);box-shadow:0 2px 8px rgba(255,100,0,0.10)"></div></div>
     <div class="carousel-hint">📜 Scroll to browse all 10 units</div>
     <div class="carousel-wrap" id="carousel-wrap">
       <div class="carousel-track" id="ugrid"></div>
@@ -1755,7 +1848,7 @@ body.dark #spot-card{
 </div>
 
 <!-- Quit confirmation modal -->
-<div class="restart-modal" id="quit-confirm-modal" onclick="if(event.target===this)cancelQuit()">
+<div class="restart-modal" id="quit-confirm-modal">
   <div class="restart-modal-box">
     <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Quit Quiz?</h3>
     <p>This will end the quiz immediately.<br>Your progress will be saved as <strong>Quit</strong> in your score history.</p>
@@ -1775,7 +1868,7 @@ body.dark #spot-card{
 </div>
 
 <!-- Restart confirmation modal -->
-<div class="restart-modal" id="restart-confirm-modal" onclick="if(event.target===this)cancelRestart()">
+<div class="restart-modal" id="restart-confirm-modal">
   <div class="restart-modal-box">
     <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg> Start Over?</h3>
     <p>This will restart the quiz from the beginning.<br>Your current progress will be saved as <strong>Abandoned</strong> in your score history.</p>
@@ -1786,13 +1879,25 @@ body.dark #spot-card{
   </div>
 </div>
 
+<!-- Unlock All confirmation modal -->
+<div class="restart-modal" id="unlock-all-confirm-modal" style="display:none">
+  <div class="restart-modal-box">
+    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.93-1"/></svg> Unlock Everything?</h3>
+    <p>This will unlock <strong>all lessons and units</strong> so the student can access any content right away.<br><br>Progress and scores already earned will not be affected.</p>
+    <div class="restart-modal-btns">
+      <button class="restart-confirm-no" onclick="_animateModalClose('unlock-all-confirm-modal',()=>{document.getElementById('unlock-all-confirm-modal').style.display='none'})">Cancel</button>
+      <button class="restart-confirm-yes" style="background:linear-gradient(135deg,#27ae60,#1abc9c);box-shadow:0 4px 0 #1a7a45" onclick="_confirmUnlockAll()">Unlock All</button>
+    </div>
+  </div>
+</div>
+
 <!-- Re-Lock All confirmation modal -->
-<div class="restart-modal" id="relock-confirm-modal" style="display:none" onclick="if(event.target===this)document.getElementById('relock-confirm-modal').style.display='none'">
+<div class="restart-modal" id="relock-confirm-modal" style="display:none">
   <div class="restart-modal-box">
     <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Re-Lock All?</h3>
     <p>This will reset <strong>all progress, scores, and lesson unlocks</strong>. Students will start from the beginning.<br><br>This cannot be undone.</p>
     <div class="restart-modal-btns">
-      <button class="restart-confirm-no" onclick="document.getElementById('relock-confirm-modal').style.display='none'">Cancel</button>
+      <button class="restart-confirm-no" onclick="_animateModalClose('relock-confirm-modal',()=>{document.getElementById('relock-confirm-modal').style.display='none'})">Cancel</button>
       <button class="restart-confirm-yes" style="background:linear-gradient(135deg,#e74c3c,#c0392b)" onclick="_confirmRelockAll()">Re-Lock All</button>
     </div>
   </div>
@@ -5081,6 +5186,9 @@ function safeLoad(k,d){ try{ return JSON.parse(localStorage.getItem(k)||'null')|
 function saveDone(){  localStorage.setItem('wb_done5',   JSON.stringify(DONE)); }
 function saveSc(){    localStorage.setItem('wb_sc5',     JSON.stringify(SCORES)); }
 
+// Streak — consecutive days of lesson activity (guests: localStorage; signed-in: also Supabase)
+let STREAK = safeLoad('wb_streak', { current: 0, longest: 0, lastDate: null });
+
 // ════════════════════════════════════════
 //  SECURITY UTILITIES
 // ════════════════════════════════════════
@@ -5206,18 +5314,22 @@ async function _lsResend(){
 }
 
 // ── PARENT SESSION TIMEOUT ───────────────
-const PARENT_SESSION_MINS = 10;
+const PARENT_SESSION_MINS = 2;
 let _parentTimerInterval = null;
+let _parentSessionTs = 0; // in-memory mirror of PARENT_UNLOCK_KEY timestamp
 
 function _startParentSession(){
   clearInterval(_parentTimerInterval);
   _parentTimerInterval = setInterval(()=>{
     if(!isParentUnlocked()){
       clearInterval(_parentTimerInterval);
+      _parentSessionTs = 0; // clear in-memory flag
       // Session expired — auto-lock and redirect
       const panel = document.getElementById('parent-panel');
       if(panel) panel.style.display = 'none';
       show('settings-screen');
+      const _se2 = document.getElementById('settings-screen');
+      if(_se2 && _se2._savedScrollTop) requestAnimationFrame(()=>{ _se2.scrollTop = _se2._savedScrollTop; });
       showLockToast(_ICO.parentLock + ' Parent session expired — locked.');
     } else {
       _updateParentTimerDisplay();
@@ -5288,9 +5400,17 @@ let _supa      = null;
 let _supaUser  = null;
 let _authLoading = false;
 
-function _dismissSplash(){
+function _dismissSplash(fadeInId){
   const splash = document.getElementById('auth-splash');
-  if(splash){ splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; },370); }
+  if(fadeInId){
+    const el = document.getElementById(fadeInId);
+    if(el){
+      el.style.transition = 'opacity 0.9s ease';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; }));
+      setTimeout(()=>{ el.style.transition=''; el.style.opacity=''; }, 1000);
+    }
+  }
+  if(splash){ splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; },950); }
 }
 
 // ── History guard ──────────────────────────────────────────────────────────
@@ -5317,8 +5437,9 @@ function _installHistoryGuard(){
 function supabaseInit(){
   if(typeof supabase === 'undefined'){
     // CDN failed — dismiss splash and show login so user isn't stuck
-    _dismissSplash();
+    const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
+    _dismissSplash('login-screen');
     return;
   }
   _supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
@@ -5330,25 +5451,77 @@ function supabaseInit(){
     }
   });
 
-  _supa.auth.onAuthStateChange((event, session) => {
+  _supa.auth.onAuthStateChange(async (event, session) => {
     _supaUser = session ? session.user : null;
     updateAccountUI();
     if(event === 'INITIAL_SESSION'){
-      if(_supaUser){ _pullOnLogin(); show('home'); _installHistoryGuard(); setTimeout(tutCheckAndShow, 1200); }
-      else { show('login-screen'); _initOneTap(); }
-      // Dismiss the auth splash now that we know where to go
-      _dismissSplash();
+      if(_supaUser){
+        // Keep splash up — fetch all data first, then reveal fully-loaded home
+        await _pullOnLogin();
+        show('home');
+        _dismissSplash();
+        _installHistoryGuard();
+        setTimeout(tutCheckAndShow, 1500);
+      } else {
+        // Local preview mode: only auto-seed a fake user when ?preview=1 is in the URL.
+        // Without it, show the real login screen so guest UX can be tested accurately.
+        const _isLocal = ['localhost','127.0.0.1'].includes(location.hostname) || /^192\.168\./.test(location.hostname);
+        const _previewMode = _isLocal && new URLSearchParams(location.search).get('preview') === '1';
+        if(_previewMode){
+          const _tsN = parseInt(new URLSearchParams(location.search).get('testStreak')) || 7;
+          _supaUser = { id:'preview', email:'preview@test.com' };
+          STREAK.current = _tsN; STREAK.longest = _tsN + 5; STREAK.lastDate = new Date().toISOString().slice(0,10);
+          const _tsDates = [];
+          for(let i=0;i<_tsN;i++) _tsDates.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
+          localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates));
+          show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
+        } else {
+          const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
+          show('login-screen'); _initOneTap(); if(localStorage.getItem('wb_device_id')) _trackAnonSession();
+          _dismissSplash('login-screen');
+          return;
+        }
+        _dismissSplash();
+      }
     } else if(event === 'SIGNED_IN'){
-      _pullOnLogin();
+      // User just signed in from login screen — show home with local data immediately,
+      // then sync server data silently in the background
       show('home');
+      buildHome();
       _installHistoryGuard();
-      setTimeout(tutCheckAndShow, 1200);
+      setTimeout(tutCheckAndShow, 1500);
+      _pullOnLogin(); // silent background sync, no await
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');
       _initOneTap();
     }
   });
+}
+
+// ── ANONYMOUS SESSION TRACKING ───────────
+async function _trackAnonSession() {
+  if (_supaUser || !_supa) return;
+  const today = new Date().toDateString();
+  if (localStorage.getItem('wb_anon_tracked') === today) return;
+  let did = localStorage.getItem('wb_device_id');
+  if (!did) { did = crypto.randomUUID(); localStorage.setItem('wb_device_id', did); }
+  try {
+    await _supa.rpc('log_anon_session', { p_device_id: did, p_referrer: document.referrer || null });
+    localStorage.setItem('wb_anon_tracked', today);
+  } catch(e) { /* silent */ }
+}
+function _continueAsGuest() {
+  _trackAnonSession();
+  buildHome();
+  show('home');
+  // Lock the screen immediately if install/tutorial hasn't been shown yet,
+  // so the user can't scroll or tap unit cards during the delay.
+  if(!localStorage.getItem('install_seen') || !localStorage.getItem('wb_tutorial_v2')){
+    _onboardingActive = true;
+    document.body.classList.add('tut-active');
+  }
+  setTimeout(tutCheckAndShow, 1500);
 }
 
 // ── LOGIN SCREEN functions ────────────────
@@ -5521,6 +5694,11 @@ async function _lsSubmit(){
       });
     }
     _resetTurnstile(); // always reset after use — token is single-use
+    // Notify on new signup (fire-and-forget)
+    if(!result.error && tab === 'signup'){
+      const _dn = _sanitize(document.getElementById('ls-name')?.value||'', 30) || 'Student';
+      _supa.functions.invoke('notify-new-signup', { body: { email, display_name: _dn } }).catch(()=>{});
+    }
     // Remember email preference
     if(!result.error && tab === 'login'){
       const rem = document.getElementById('ls-remember');
@@ -5550,17 +5728,22 @@ async function _lsSubmit(){
 
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
-  // Show syncing indicator
-  const syncEl = document.getElementById('home-sync-msg');
-  if(syncEl) syncEl.style.display = 'block';
   try{
-    // Run both queries in parallel
-    const [{ data: prog }, { data: remoteScores }] = await Promise.all([
-      _supa.from('student_progress').select('done_json')
-        .eq('user_id', _supaUser.id).maybeSingle(),
-      _supa.from('quiz_scores').select('*')
-        .eq('user_id', _supaUser.id)
-        .order('local_id', { ascending: false }).limit(200)
+    // Wrap all queries in a 5-second timeout so a slow/offline network
+    // never hangs the splash indefinitely.
+    const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
+    // Run all queries in parallel
+    const [{ data: prog }, { data: remoteScores }, { data: profile }] = await Promise.race([
+      Promise.all([
+        _supa.from('student_progress').select('done_json')
+          .eq('user_id', _supaUser.id).maybeSingle(),
+        _supa.from('quiz_scores').select('*')
+          .eq('user_id', _supaUser.id)
+          .order('local_id', { ascending: false }).limit(200),
+        _supa.from('profiles').select('current_streak,longest_streak,last_activity_date')
+          .eq('id', _supaUser.id).maybeSingle()
+      ]),
+      _timeout
     ]);
     // Apply DONE
     if(prog && prog.done_json){
@@ -5586,15 +5769,22 @@ async function _pullOnLogin(){
       if(SCORES.length > 200) SCORES.length = 200;
       localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
     }
+    // Apply streak from server (use whichever record is more recent)
+    if(profile && profile.current_streak != null){
+      const serverDate = profile.last_activity_date || '';
+      if(!STREAK.lastDate || serverDate >= STREAK.lastDate){
+        STREAK.current = profile.current_streak;
+        STREAK.longest = Math.max(profile.longest_streak || 0, STREAK.longest);
+        STREAK.lastDate = serverDate || STREAK.lastDate;
+        localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+      }
+    }
     // Push any local-only data the server didn't have
     _pushDone();
     _pushScores();
     updateSyncLabel();
     buildHome();
   } catch(e){ console.warn('[Supabase] pull error', e); }
-  finally{
-    if(syncEl) syncEl.style.display = 'none';
-  }
 }
 
 async function _pushDone(){
@@ -5605,6 +5795,299 @@ async function _pushDone(){
       { onConflict:'user_id' }
     );
   } catch(e){ console.warn('[Supabase] pushDone error', e); }
+}
+
+function _fireSvg(pfx, w, h){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 38" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle"><defs><radialGradient id="${pfx}g" cx="50%" cy="95%" r="55%"><stop offset="0%" stop-color="#ffb300" stop-opacity=".7"/><stop offset="100%" stop-color="#ff6600" stop-opacity="0"/></radialGradient><linearGradient id="${pfx}o" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0%" stop-color="#ff9500"/><stop offset="55%" stop-color="#ff5a00"/><stop offset="100%" stop-color="#e83200"/></linearGradient><linearGradient id="${pfx}m" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0%" stop-color="#ffcd3c"/><stop offset="100%" stop-color="#ff8c00"/></linearGradient><linearGradient id="${pfx}i" x1="40%" y1="0%" x2="60%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="100%" stop-color="#ffe033"/></linearGradient></defs><ellipse cx="16" cy="36" rx="9" ry="2.5" fill="url(#${pfx}g)"/><path d="M16,36 C9,33 5,27 5,20 C5,13.5 8.5,8.5 12,5.5 C11,9.5 11.5,13 13.5,15.5 C12,10.5 14,3 16,0 C16,0 18,7.5 16.5,13 C19,10.5 19.5,7 19,4.5 C22.5,7.5 27,13.5 27,20 C27,27 23,33 16,36Z" fill="url(#${pfx}o)"/><path d="M16,32 C11,29.5 9,25.5 9,21.5 C9,17.5 11,14.5 13,12.5 C12.5,15.5 13,18 14.5,20 C14,16.5 14.5,13 16,11 C16,11 17.5,15 17,19 C18.5,17 19,14.5 18.5,12 C20.5,14 23,17.5 23,21.5 C23,25.5 21,29.5 16,32Z" fill="url(#${pfx}m)"/><path d="M16,28 C13.5,26 12.5,23.5 12.5,21 C12.5,18.5 14,16.5 15,15 C15,17 15.5,18.5 16,20.5 C16.5,18.5 17,17 16,15 C17.5,16.5 19.5,18.5 19.5,21 C19.5,23.5 18.5,26 16,28Z" fill="url(#${pfx}i)"/></svg>`;
+}
+
+function _showDayDetail(dateStr){
+  const modal = document.getElementById('scal-modal');
+  if(!modal) return;
+  const sheet = modal.querySelector('div');
+  if(!sheet) return;
+
+  const formatted = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const dateLabel = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const dayScores = SCORES.filter(s => s.date === formatted);
+
+  const typeLabel = t => t==='lesson'?'Lesson':t==='unit_quiz'?'Unit Quiz':t==='final'?'Final Test':'Quiz';
+  const typeColor = t => t==='lesson'?'#4a90d9':t==='unit_quiz'?'#27ae60':'#ff7700';
+
+  let items = dayScores.length === 0
+    ? `<div style="text-align:center;padding:28px 16px;color:var(--txt2,#888);font-size:.9rem">No quiz records found for this day.</div>`
+    : dayScores.map(s => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.05);border-radius:14px;margin-bottom:8px">
+        <div style="width:5px;min-width:5px;height:38px;border-radius:3px;background:${s.color||typeColor(s.type)}"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:.88rem;color:var(--txt,#333);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.label||s.qid}</div>
+          <div style="font-size:.75rem;color:var(--txt2,#888);margin-top:2px">${typeLabel(s.type)} &nbsp;·&nbsp; ${s.stars} &nbsp;·&nbsp; ${s.time||''}</div>
+        </div>
+        <div style="font-size:1.15rem;font-weight:900;color:${s.pct===100?'#27ae60':s.pct>=80?'#4a90d9':'#e06000'};font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${s.pct}%</div>
+      </div>`).join('');
+
+  sheet.innerHTML = `
+    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <button onclick="_buildStreakCal()" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:1.2rem;cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center;flex-shrink:0">‹</button>
+      <div>
+        <div style="font-weight:800;font-size:1rem;color:var(--txt,#333)">${dateLabel}</div>
+        <div style="font-size:.75rem;color:var(--txt2,#888);margin-top:1px">${dayScores.length} activit${dayScores.length===1?'y':'ies'} completed</div>
+      </div>
+    </div>
+    ${items}`;
+}
+
+function _renderStreak(){
+  const el = document.getElementById('streak-badge');
+  if(!el) return;
+  if(!_supaUser || !STREAK.current){ el.style.display = 'none'; return; }
+  el.style.display = 'inline-block';
+  el.style.cursor = 'pointer';
+  el.onclick = _openStreakCal;
+  const best = STREAK.longest > STREAK.current ? ` <span style="opacity:.65;font-weight:400">· Best: ${STREAK.longest}</span>` : '';
+  el.innerHTML = `${_fireSvg('sfb',22,30)} <strong>${STREAK.current}-day streak</strong>${best}`;
+}
+
+// ── STREAK CALENDAR ───────────────────────────────────────────────────────────
+let _scDate = new Date();
+
+function _openStreakCal(){
+  _scDate = new Date();
+  let modal = document.getElementById('scal-modal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'scal-modal';
+    Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9999',background:'rgba(0,0,0,.55)',display:'none',alignItems:'center',justifyContent:'center',padding:'20px'});
+    modal.addEventListener('click', e => { if(e.target===modal) _closeStreakCal(); });
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+  _buildStreakCal();
+}
+
+function _closeStreakCal(){
+  _animateModalClose('scal-modal', ()=>{ const m=document.getElementById('scal-modal'); if(m) m.style.display='none'; });
+}
+
+function _streakCalNav(dir){
+  _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth() + dir, 1);
+  _buildStreakCal();
+}
+
+function _buildStreakCal(){
+  const modal = document.getElementById('scal-modal');
+  if(!modal) return;
+
+  const actSet = new Set(safeLoad('wb_act_dates', []));
+  const todayStr = new Date().toISOString().slice(0,10);
+  const y = _scDate.getFullYear(), mo = _scDate.getMonth();
+  const monthLabel = _scDate.toLocaleString('en-US',{month:'long',year:'numeric'});
+  const firstDow = new Date(y, mo, 1).getDay();
+  const daysInMo = new Date(y, mo+1, 0).getDate();
+  const now = new Date();
+  const isCurMo = (y === now.getFullYear() && mo === now.getMonth());
+  const FC = '#ff7700', GC = '#27ae60';
+  const streakStart = STREAK.current > 0
+    ? new Date(Date.now() - (STREAK.current-1)*86400000).toISOString().slice(0,10)
+    : null;
+
+  const pad = n => String(n).padStart(2,'0');
+  let cells = '';
+  for(let i=0;i<firstDow;i++) cells += '<div></div>';
+
+  for(let d=1; d<=daysInMo; d++){
+    const ds = `${y}-${pad(mo+1)}-${pad(d)}`;
+    const isAct = actSet.has(ds);
+    const isToday = ds === todayStr;
+    const inStreak = streakStart && ds >= streakStart && ds <= todayStr;
+    const dow = (firstDow + d - 1) % 7;
+    const prev = d>1 ? `${y}-${pad(mo+1)}-${pad(d-1)}` : null;
+    const next = d<daysInMo ? `${y}-${pad(mo+1)}-${pad(d+1)}` : null;
+    const prevConn = prev && actSet.has(prev) && dow !== 0;
+    const nextConn = next && actSet.has(next) && dow !== 6;
+    const col = inStreak ? FC : GC;
+    const colL = inStreak ? 'rgba(255,119,0,.2)' : 'rgba(39,174,96,.2)';
+    let pipBg='', pipTxt='var(--txt,#333)', pipEx='';
+    if(isAct){ pipBg=`background:${col};`; pipTxt='#fff'; }
+    if(isToday && !isAct){ pipBg=`border:2px solid ${inStreak?col:FC};`; pipTxt=inStreak?col:FC; }
+    else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px ${col};`; }
+    const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    const fw = (isAct||isToday) ? '700' : '400';
+    const clickAttr = isAct ? `onclick="_showDayDetail('${ds}')" style="position:relative;display:flex;align-items:center;justify-content:center;height:40px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:40px"`;
+    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:${fw};color:${pipTxt};${pipBg}${pipEx}">${d}</div></div>`;
+  }
+
+  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--txt2,#999);padding-bottom:6px">${x}</div>`).join('');
+  const streakLine = streakStart
+    ? `<p style="text-align:center;font-size:.8rem;color:var(--txt2,#888);margin:14px 0 0">Streak started <strong style="color:${FC}">${new Date(streakStart+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</strong></p>`
+    : '';
+
+  const isDark = document.body.classList.contains('dark');
+  const _bt = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.95)';
+  const _bl = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.75)';
+  const _br = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.30)';
+  const _bg = isDark
+    ? 'background:#0d1e35;box-shadow:0 -8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
+    : 'background:linear-gradient(145deg,rgba(255,255,255,0.92) 0%,rgba(240,248,255,0.82) 55%,rgba(235,252,245,0.78) 100%);box-shadow:0 -8px 40px rgba(60,120,200,0.18),0 -2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
+
+  modal.innerHTML = `
+  <div style="${_bg};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-top:1.5px solid ${_bt};border-left:1.5px solid ${_bl};border-right:1.5px solid ${_br};border-radius:28px;width:100%;max-width:400px;padding:20px 16px 32px;overflow-y:auto;max-height:88vh">
+    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px">
+        ${_fireSvg('scah',36,48)}
+        <div>
+          <div style="font-size:2.4rem;font-weight:900;color:${FC};line-height:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${STREAK.current}</div>
+          <div style="font-size:.7rem;font-weight:700;color:var(--txt2,#888);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;white-space:nowrap">Day Streak &nbsp;·&nbsp; Best: ${STREAK.longest}</div>
+        </div>
+      </div>
+      <button onclick="_closeStreakCal()" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <button onclick="_streakCalNav(-1)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">‹</button>
+      <span style="font-weight:700;font-size:.95rem;color:var(--txt,#333)">${monthLabel}</span>
+      ${(()=>{ const _n=new Date(); const _isCur=_scDate.getFullYear()===_n.getFullYear()&&_scDate.getMonth()===_n.getMonth(); return _isCur ? `<button style="background:none;border:none;font-size:1.6rem;cursor:default;color:var(--txt,#444);padding:4px 14px;line-height:1;opacity:.25">›</button>` : `<button onclick="_streakCalNav(1)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">›</button>`; })()}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${hdrs}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${cells}</div>
+    ${streakLine}
+  </div>`;
+}
+
+// ── SOFT REGISTRATION GATE ───────────────────────────────────────────────────
+function _checkSoftGate(type){
+  if(_supaUser) return;
+  if(localStorage.getItem('wb_gate_done')) return;
+  const shown = parseInt(localStorage.getItem('wb_gate_shown')||'0');
+  if(shown >= 2) return;
+  if(type === 'lesson'){
+    const c = parseInt(localStorage.getItem('wb_guest_lessons')||'0') + 1;
+    localStorage.setItem('wb_guest_lessons', String(c));
+    if(c === 1){ localStorage.setItem('wb_gate_shown', String(shown + 1)); setTimeout(_showSoftGate, 900); }
+  } else if(type === 'unit'){
+    const c = parseInt(localStorage.getItem('wb_guest_units')||'0') + 1;
+    localStorage.setItem('wb_guest_units', String(c));
+    if(c === 1){ localStorage.setItem('wb_gate_shown', String(shown + 1)); setTimeout(_showSoftGate, 900); }
+  }
+}
+
+function _showSoftGate(){
+  if(document.getElementById('soft-gate-modal')) return;
+  const isDark = document.body.classList.contains('dark');
+  const _bg = isDark
+    ? 'background:#0d1e35;box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
+    : 'background:linear-gradient(145deg,rgba(255,255,255,0.92) 0%,rgba(240,248,255,0.82) 55%,rgba(235,252,245,0.78) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18),0 2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
+  const overlay = document.createElement('div');
+  overlay.id = 'soft-gate-modal';
+  Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'9998',background:'rgba(0,0,0,.52)',display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'});
+  overlay.innerHTML = `<div style="width:100%;max-width:380px;border-radius:24px;padding:28px 24px 22px;${_bg};backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.2rem;margin-bottom:8px">🎉</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.4rem;color:var(--txt,#222);line-height:1.2">Great work finishing that lesson!</div>
+      <div style="font-size:.88rem;color:var(--txt2,#666);margin-top:7px;line-height:1.55">Save your progress so you never lose it.<br>Takes 30 seconds.</div>
+    </div>
+    <div style="margin-bottom:11px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--txt2,#666);display:block;margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase">Your email</label>
+      <input id="sg-email" type="email" placeholder="parent@email.com" autocomplete="email" style="width:100%;box-sizing:border-box;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(120,160,220,0.35);background:rgba(255,255,255,0.65);font-size:.95rem;outline:none;color:var(--txt,#222);font-family:inherit">
+    </div>
+    <div style="margin-bottom:11px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--txt2,#666);display:block;margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase">Child's grade</label>
+      <select id="sg-grade" style="width:100%;box-sizing:border-box;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(120,160,220,0.35);background:rgba(255,255,255,0.65);font-size:.95rem;color:var(--txt,#222);outline:none;font-family:inherit">
+        <option value="">Select grade…</option>
+        <option value="K">Kindergarten</option>
+        <option value="1">1st Grade</option>
+        <option value="2">2nd Grade</option>
+        <option value="3">3rd Grade</option>
+        <option value="4">4th Grade</option>
+        <option value="5">5th Grade</option>
+      </select>
+    </div>
+    <div style="margin-bottom:22px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--txt2,#666);display:block;margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase">How did you hear about us? <span style="font-weight:400;opacity:.65;text-transform:none">(optional)</span></label>
+      <select id="sg-referral" style="width:100%;box-sizing:border-box;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(120,160,220,0.35);background:rgba(255,255,255,0.65);font-size:.95rem;color:var(--txt,#222);outline:none;font-family:inherit">
+        <option value="">Select…</option>
+        <option value="teacher">My child's teacher</option>
+        <option value="friend">Friend or family</option>
+        <option value="social">Social media</option>
+        <option value="search">Google / search</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <button onclick="_submitSoftGate()" style="width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#ff6b00,#e05200);color:#fff;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.08rem;cursor:pointer;margin-bottom:10px;letter-spacing:.3px">Save my progress →</button>
+    <div style="text-align:center">
+      <button onclick="_skipSoftGate()" style="background:none;border:none;color:var(--txt2,#888);font-size:.85rem;cursor:pointer;text-decoration:underline;font-family:inherit">Maybe later</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function _submitSoftGate(){
+  const emailEl = document.getElementById('sg-email');
+  const email = emailEl?.value?.trim();
+  const grade = document.getElementById('sg-grade')?.value;
+  const referral = document.getElementById('sg-referral')?.value;
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    emailEl.style.border = '1.5px solid #e74c3c';
+    emailEl.placeholder = 'Please enter a valid email';
+    emailEl.value = '';
+    emailEl.focus();
+    return;
+  }
+  localStorage.setItem('wb_lead', JSON.stringify({ email, grade, referral, date: new Date().toISOString().slice(0,10) }));
+  localStorage.setItem('wb_gate_done', '1');
+  if(_supa){
+    try{
+      await _supa.from('leads').insert({
+        email,
+        grade: grade || null,
+        referral_source: referral || null,
+        device_id: localStorage.getItem('wb_device_id') || null
+      });
+    } catch(e){ console.warn('[leads]', e); }
+  }
+  const modal = document.getElementById('soft-gate-modal');
+  if(modal){
+    modal.querySelector('div').innerHTML = `<div style="text-align:center;padding:24px 8px">
+      <div style="font-size:2.8rem;margin-bottom:12px">✅</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.35rem;color:var(--txt,#222);margin-bottom:8px">You're all set!</div>
+      <div style="font-size:.88rem;color:var(--txt2,#666);line-height:1.55;margin-bottom:22px">Create a free account to sync progress<br>across devices and track your child's streak.</div>
+      <button onclick="document.getElementById('soft-gate-modal').remove();show('login-screen');" style="width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#ff6b00,#e05200);color:#fff;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;cursor:pointer;margin-bottom:10px">Create free account →</button>
+      <button onclick="document.getElementById('soft-gate-modal').remove();" style="background:none;border:none;color:var(--txt2,#888);font-size:.85rem;cursor:pointer;text-decoration:underline;font-family:inherit">Continue without account</button>
+    </div>`;
+    setTimeout(()=>{ modal.remove(); }, 10000);
+  }
+}
+
+function _skipSoftGate(){
+  document.getElementById('soft-gate-modal')?.remove();
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function _updateStreak(){
+  if(!_supa || !_supaUser) return; // signed-in only
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  if(STREAK.lastDate === today) return; // already counted today
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  STREAK.current = (STREAK.lastDate === yesterday) ? STREAK.current + 1 : 1;
+  if(STREAK.current > STREAK.longest) STREAK.longest = STREAK.current;
+  STREAK.lastDate = today;
+  localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+  // Log this day for the calendar view
+  const actDates = safeLoad('wb_act_dates', []);
+  if(!actDates.includes(today)){
+    actDates.push(today);
+    if(actDates.length > 365) actDates.shift();
+    localStorage.setItem('wb_act_dates', JSON.stringify(actDates));
+  }
+  try{
+    await _supa.from('profiles').upsert(
+      { id: _supaUser.id, current_streak: STREAK.current, longest_streak: STREAK.longest, last_activity_date: today },
+      { onConflict: 'id' }
+    );
+  } catch(e){ console.warn('[Supabase] streak update error', e); }
+  _renderStreak();
 }
 
 async function _pushScores(){
@@ -5669,7 +6152,7 @@ function openAuthModal(){
 }
 
 function closeAuthModal(){
-  document.getElementById('auth-modal').style.display = 'none';
+  _animateModalClose('auth-modal', ()=>{ document.getElementById('auth-modal').style.display='none'; });
 }
 
 function _switchAuthTab(tab){
@@ -5749,6 +6232,7 @@ function _clearUserData(){
   localStorage.removeItem('wb_unit_unlocks');
   localStorage.removeItem('wb_lesson_unlocks');
   localStorage.removeItem('wb_parent_pin');
+  _parentSessionTs = 0;
   localStorage.removeItem('wb_parent_unlock');
   localStorage.removeItem('wb_pin_changed');
   // PIN brute-force lockout counters
@@ -5804,6 +6288,15 @@ function show(id){
   if(id === 'parent-screen' && !isParentUnlocked()){
     console.warn('[Security] Blocked unauthorized access to parent-screen');
     return;
+  }
+  // Reset feedback form whenever navigating away from settings
+  const _curScreen = ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
+  if(_curScreen === 'settings-screen' && id !== 'settings-screen'){
+    _fbRating = 0; _fbCategory = '';
+    _fbSetRating(0);
+    document.querySelectorAll('.fb-cat-btn').forEach(b=>b.classList.remove('active'));
+    const _fbc = document.getElementById('fb-comment'); if(_fbc) _fbc.value = '';
+    const _fbm = document.getElementById('fb-msg'); if(_fbm) _fbm.textContent = '';
   }
   ALL_SCREENS.forEach(s=>document.getElementById(s)?.classList.remove('on'));
   const el = document.getElementById(id);
@@ -5861,6 +6354,7 @@ function isUnitQuizUnlocked(unitIdx){
 const CAR = { idx: 0 };
 
 function buildHome(instant){
+  _renderStreak();
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
     SCORES.some(s=>s.qid==='lq_'+l.id && s.pct===100)
@@ -7798,7 +8292,7 @@ function _renderQ(){
     const correct = past ? past.correct : q.o[q.a];
     const chosen = past ? past.chosen : null;
     nb.style.display = 'block';
-    nb.textContent = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
+    nb.innerHTML = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
     document.getElementById('qcard').innerHTML =
       '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
       '<div class="q-text">'+_escHtml(q.t)+'</div>'+
@@ -7826,7 +8320,7 @@ function _renderQ(){
   const correct = q.o[q.a];
 
   nb.style.display = 'none';
-  nb.textContent = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
+  nb.innerHTML = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
 
   // Use inline onclick with data-index — no addEventListener stacking
   document.getElementById('qcard').innerHTML =
@@ -7993,6 +8487,10 @@ function _finishQuiz(){
     DONE[lid] = true;
     DONE[qz.id] = true;
     saveDone();
+    _updateStreak();
+    _checkSoftGate('lesson');
+  } else if(qz.type === 'unit'){
+    _checkSoftGate('unit');
   }
 
   let emoji, msg, stars;
@@ -8152,14 +8650,14 @@ function restartQuiz(){
 }
 
 function cancelRestart(){
-  document.getElementById('restart-confirm-modal').style.display = 'none';
+  _animateModalClose('restart-confirm-modal', ()=>{ document.getElementById('restart-confirm-modal').style.display='none'; });
 }
 
 function showQuitConfirm(){
   document.getElementById('quit-confirm-modal').style.display = 'flex';
 }
 function cancelQuit(){
-  document.getElementById('quit-confirm-modal').style.display = 'none';
+  _animateModalClose('quit-confirm-modal', ()=>{ document.getElementById('quit-confirm-modal').style.display='none'; });
 }
 
 // ── Scratch Pad ──────────────────────────────────────────
@@ -8178,8 +8676,7 @@ function openScratchPad(){
 }
 
 function closeScratchPad(){
-  const overlay = document.getElementById('scratch-overlay');
-  if(overlay) overlay.style.display = 'none';
+  _animateModalClose('scratch-overlay', ()=>{ const o=document.getElementById('scratch-overlay'); if(o) o.style.display='none'; });
 }
 
 function _initScratchCanvas(){
@@ -8263,7 +8760,7 @@ function setScratchTool(tool){
   document.getElementById('sc-erase-btn').classList.toggle('active', tool==='eraser');
 }
 function confirmQuit(){
-  document.getElementById('quit-confirm-modal').style.display = 'none';
+  _animateModalClose('quit-confirm-modal', ()=>{ document.getElementById('quit-confirm-modal').style.display='none'; });
   const qz = CUR.quiz;
   if(!qz) return;
   // Save quit score entry
@@ -8295,7 +8792,7 @@ function confirmQuit(){
 }
 
 function confirmRestart(){
-  document.getElementById('restart-confirm-modal').style.display = 'none';
+  _animateModalClose('restart-confirm-modal', ()=>{ document.getElementById('restart-confirm-modal').style.display='none'; });
   const qz = CUR.quiz;
   if(!qz) return;
   // Save abandoned score if any questions were answered
@@ -8463,10 +8960,11 @@ function openScLightbox(i){
   document.getElementById('sc-lightbox-body').innerHTML = r.bodyHtml;
   document.getElementById('sc-lightbox-body').scrollTop = 0;
   document.getElementById('sc-lightbox').classList.add('open');
+  _animateModalOpen('sc-lightbox');
 }
 
 function closeScLightbox(){
-  document.getElementById('sc-lightbox').classList.remove('open');
+  _animateModalClose('sc-lightbox', ()=>{ document.getElementById('sc-lightbox').classList.remove('open'); });
 }
 
 function delScore(id){ const i=SCORES.findIndex(s=>s.id===id); if(i>-1){SCORES.splice(i,1);saveSc();_cloudDeleteScore(id);buildHistory();} }
@@ -8647,30 +9145,35 @@ function setSound(mode){
 }
 
 function setTheme(mode){
-  if(mode==='dark'){
-    document.body.classList.add('dark');
-  } else {
-    document.body.classList.remove('dark');
-  }
+  const effectiveDark = mode==='dark' || (mode==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.body.classList.toggle('dark', effectiveDark);
   // Update active button state if settings screen is open
   const lb = document.getElementById('theme-light');
   const db = document.getElementById('theme-dark');
-  if(lb && db){
+  const ab = document.getElementById('theme-auto');
+  if(lb && db && ab){
     lb.classList.toggle('active', mode==='light');
     db.classList.toggle('active', mode==='dark');
+    ab.classList.toggle('active', mode==='auto');
   }
-  localStorage.setItem('wb_theme', mode);
+  if(mode==='auto'){ localStorage.removeItem('wb_theme'); }
+  else { localStorage.setItem('wb_theme', mode); }
 }
 
 function applyStoredTheme(){
-  const mode = localStorage.getItem('wb_theme') || 'light';
+  const mode = localStorage.getItem('wb_theme') || 'auto';
   setTheme(mode);
 }
+
+// Follow system theme changes in real-time when set to Auto
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+  if(!localStorage.getItem('wb_theme')) setTheme('auto');
+});
 
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.30';
+const APP_VERSION = 'v5.31';
 const DEFAULT_PIN = '1234';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
@@ -8715,12 +9218,22 @@ function isLessonIndividuallyUnlocked(unitIdx, lessonIdx){ return !!getLessonUnl
 function getPin(){ return localStorage.getItem(PARENT_PIN_KEY) || DEFAULT_PIN; }
 
 function isParentUnlocked(){
+  const limit = PARENT_SESSION_MINS * 60 * 1000;
+  // Check in-memory first — immune to localStorage async issues
+  if(_parentSessionTs > 0 && (Date.now() - _parentSessionTs) < limit) return true;
   const stored = localStorage.getItem(PARENT_UNLOCK_KEY);
   if(!stored) return false;
-  // Legacy support: old value was 'all'
   if(stored === 'all') return true;
   const ts = parseInt(stored);
-  return !isNaN(ts) && (Date.now() - ts) < PARENT_SESSION_MINS * 60 * 1000;
+  return !isNaN(ts) && (Date.now() - ts) < limit;
+}
+function _setParentSession(){
+  _parentSessionTs = Date.now();
+  localStorage.setItem(PARENT_UNLOCK_KEY, String(_parentSessionTs));
+}
+function _clearParentSession(){
+  _parentSessionTs = 0;
+  localStorage.removeItem(PARENT_UNLOCK_KEY);
 }
 
 const _PIN_FAIL_KEY = 'pin_fail_ts';
@@ -8753,30 +9266,35 @@ async function checkParentPin(){
     // Success — clear fail counter
     localStorage.removeItem(_PIN_FAIL_COUNT_KEY);
     localStorage.removeItem(_PIN_FAIL_KEY);
-    closePinModal();
-    document.getElementById('parent-pin-inp').value = '';
-    playSwooshForward();
-    // Stamp session start time
-    localStorage.setItem(PARENT_UNLOCK_KEY, Date.now().toString());
-    show('parent-screen');
-    document.getElementById('parent-panel').style.display = 'block';
-    updateAccountUI();
-    _startParentSession();
-    // Show first-time PIN change prompt if still using default
-    const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
-    if(isDefault){
-      msg.textContent = '⚠️ You are using the default PIN (1234). Please set a custom PIN below for security!';
-      msg.style.color = '#e67e22';
-      // Auto-open the change PIN form
-      setTimeout(()=>{
-        document.getElementById('pin-change-area').style.display='block';
-        document.getElementById('new-pin-inp').focus();
-      }, 400);
-    } else {
-      msg.textContent = '✅ Parent controls unlocked!';
-      msg.style.color = '#27ae60';
-    }
-    updateParentStatus();
+    // Remove blur listener immediately so it doesn't race with the success animation
+    document.getElementById('parent-pin-inp').removeEventListener('blur', _pinBlurHandler);
+    _animateModalClose('pin-modal', ()=>{
+      closePinModal();
+      playSwooshForward();
+      // Save settings scroll position so we can restore it on back navigation
+      const _settingsEl = document.getElementById('settings-screen');
+      if(_settingsEl) _settingsEl._savedScrollTop = _settingsEl.scrollTop;
+      // Stamp session start time
+      _setParentSession();
+      show('parent-screen');
+      document.getElementById('parent-panel').style.display = 'block';
+      updateAccountUI();
+      _startParentSession();
+      // Show first-time PIN change prompt if still using default
+      const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
+      if(isDefault){
+        msg.textContent = '⚠️ You are using the default PIN (1234). Please set a custom PIN below for security!';
+        msg.style.color = '#e67e22';
+        setTimeout(()=>{
+          document.getElementById('pin-change-area').style.display='block';
+          document.getElementById('new-pin-inp').focus();
+        }, 400);
+      } else {
+        msg.textContent = '✅ Parent controls unlocked!';
+        msg.style.color = '#27ae60';
+      }
+      updateParentStatus();
+    });
   } else {
     // Failed — increment counter and record timestamp
     const newCount = failCount + 1;
@@ -8789,6 +9307,10 @@ async function checkParentPin(){
       msg.innerHTML = `${_ICO.lock} Too many wrong attempts. Locked for 30 seconds.`;
     }
     msg.style.color = '#e74c3c';
+    // Clear the field and restart the poll so the next attempt is detected
+    const _pinInp = document.getElementById('parent-pin-inp');
+    if(_pinInp){ _pinInp.value = ''; _pinInp.focus(); }
+    _startPinPoll();
   }
 }
 
@@ -8814,18 +9336,22 @@ function updateParentStatus(){
 
 function parentUnlockAll(){
   if(!isParentUnlocked()){ showLockToast(_ICO.lock + ' Parent PIN required.'); return; }
-  localStorage.setItem(PARENT_UNLOCK_KEY, Date.now().toString());
+  document.getElementById('unlock-all-confirm-modal').style.display = 'flex';
+}
+function _confirmUnlockAll(){
+  _animateModalClose('unlock-all-confirm-modal', ()=>{ document.getElementById('unlock-all-confirm-modal').style.display='none'; });
+  _setParentSession();
   updateParentStatus();
-  showLockToast('All lessons and units unlocked!');
-  buildHome(); // refresh home screen cards
+  showLockToast('All units, lessons & Final Test unlocked!');
+  buildHome();
 }
 
 function parentLockAll(){
   document.getElementById('relock-confirm-modal').style.display = 'flex';
 }
 function _confirmRelockAll(){
-  document.getElementById('relock-confirm-modal').style.display = 'none';
-  localStorage.removeItem(PARENT_UNLOCK_KEY);
+  _animateModalClose('relock-confirm-modal', ()=>{ document.getElementById('relock-confirm-modal').style.display='none'; });
+  _clearParentSession();
   localStorage.removeItem(UNIT_UNLOCK_KEY);
   localStorage.removeItem(LESSON_UNLOCK_KEY);
   localStorage.removeItem(QUIZ_PAUSE_KEY);
@@ -8860,16 +9386,11 @@ function updateTimerToggleBtn(){
   btn.textContent = on ? '✅ On' : '❌ Off';
   btn.style.background = on ? '#27ae60' : '#e74c3c';
   btn.style.color = '#fff';
-  // Update duration inputs + friendly labels
-  const li = document.getElementById('lesson-timer-inp'), ll = document.getElementById('lesson-timer-lbl');
-  const ui = document.getElementById('unit-timer-inp'),   ul = document.getElementById('unit-timer-lbl');
-  const fi = document.getElementById('final-timer-inp'),  fl = document.getElementById('final-timer-lbl');
-  if(li) li.value = getLessonTimerSecs(); if(ll) ll.textContent = _timerSecsLbl(getLessonTimerSecs());
-  if(ui) ui.value = getUnitTimerSecs();   if(ul) ul.textContent = _timerSecsLbl(getUnitTimerSecs());
-  if(fi) fi.value = getFinalTimerSecs();  if(fl) fl.textContent = _timerSecsLbl(getFinalTimerSecs());
   // Show/hide controls based on timer on/off
   const ctrl = document.getElementById('timer-duration-controls');
   if(ctrl) ctrl.style.display = on ? 'flex' : 'none';
+  // Build / refresh drum-roll pickers
+  if(on) _initTimerPickers();
 }
 
 function toggleQuizTimer(){
@@ -8907,24 +9428,110 @@ function _setTimerDirect(type, rawVal){
   showLockToast(name+' timer set to '+_timerSecsLbl(secs)+'.');
 }
 
+// ── Drum-roll time picker ──────────────────────────────────────────
+const _TP_SEC_STEPS = Array.from({length:60},(_,i)=>i);
+const _TP_ITEM_H = 36;
+
+function _buildTimePicker(containerId, type, maxMins){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+
+  const getSecs = type==='final' ? getFinalTimerSecs : type==='unit' ? getUnitTimerSecs : getLessonTimerSecs;
+  const key = type==='final' ? FINAL_TIMER_KEY : type==='unit' ? UNIT_TIMER_KEY : LESSON_TIMER_KEY;
+  const maxSecs = maxMins * 60;
+
+  const totalSecs = getSecs();
+  const initMins = Math.floor(totalSecs / 60);
+  const initSecIdx = Math.min(59, totalSecs % 60);
+
+  // Build minute items 0..maxMins
+  let minItems = '';
+  for(let i=0;i<=maxMins;i++) minItems += `<div class="tp-item">${i}</div>`;
+  // Build second items (00, 05 … 55)
+  let secItems = _TP_SEC_STEPS.map(s=>`<div class="tp-item">${String(s).padStart(2,'0')}</div>`).join('');
+
+  wrap.innerHTML =
+    `<div class="tp-col-wrap">` +
+      `<div class="tp-drum">` +
+        `<div class="tp-sel"></div>` +
+        `<div class="tp-fade-t"></div>` +
+        `<div class="tp-fade-b"></div>` +
+        `<div class="tp-scroll" id="${containerId}-ms">` +
+          `<div class="tp-pad"></div>${minItems}<div class="tp-pad"></div>` +
+        `</div>` +
+      `</div>` +
+      `<div class="tp-col-lbl">min</div>` +
+    `</div>` +
+    `<div class="tp-colon">:</div>` +
+    `<div class="tp-col-wrap">` +
+      `<div class="tp-drum">` +
+        `<div class="tp-sel"></div>` +
+        `<div class="tp-fade-t"></div>` +
+        `<div class="tp-fade-b"></div>` +
+        `<div class="tp-scroll" id="${containerId}-ss">` +
+          `<div class="tp-pad"></div>${secItems}<div class="tp-pad"></div>` +
+        `</div>` +
+      `</div>` +
+      `<div class="tp-col-lbl">sec</div>` +
+    `</div>`;
+
+  const msEl = document.getElementById(containerId+'-ms');
+  const ssEl = document.getElementById(containerId+'-ss');
+
+  // Set initial scroll positions (no animation)
+  msEl.scrollTop = initMins * _TP_ITEM_H;
+  ssEl.scrollTop = initSecIdx * _TP_ITEM_H;
+
+  // Debounced save
+  let _saveTimer;
+  function _save(){
+    const mins = Math.min(maxMins, Math.max(0, Math.round(msEl.scrollTop / _TP_ITEM_H)));
+    const secIdx = Math.min(_TP_SEC_STEPS.length-1, Math.max(0, Math.round(ssEl.scrollTop / _TP_ITEM_H)));
+    const secs = _TP_SEC_STEPS[secIdx];
+    let total = Math.min(maxSecs, mins*60 + secs);
+    if(total < 1) total = 1;
+    localStorage.setItem(key, String(total));
+    const name = type==='final'?'Final test':type==='unit'?'Unit':'Lesson';
+    showLockToast(name+' timer set to '+_timerSecsLbl(total)+'.');
+  }
+
+  // Attach listeners after a short delay so the init scrollTop assignment
+  // (and any scroll-snap settle) cannot accidentally trigger a save + toast
+  function _onScroll(){ clearTimeout(_saveTimer); _saveTimer = setTimeout(_save, 350); }
+  setTimeout(()=>{
+    msEl.addEventListener('scroll', _onScroll, {passive:true});
+    ssEl.addEventListener('scroll', _onScroll, {passive:true});
+  }, 600);
+}
+
+function _initTimerPickers(){
+  _buildTimePicker('tp-lesson', 'lesson', 60);
+  _buildTimePicker('tp-unit',   'unit',   120);
+  _buildTimePicker('tp-final',  'final',  120);
+  // Setting scrollTop on child drums can cause Safari to scroll the parent
+  // screen into view — re-zero it after paint to counteract
+  requestAnimationFrame(()=>{
+    const ps = document.getElementById('parent-screen');
+    if(ps) ps.scrollTop = 0;
+  });
+}
+// ── end drum-roll picker ───────────────────────────────────────────
+
 async function changePin(){
   const newPin = document.getElementById('new-pin-inp').value.trim();
   const msg = document.getElementById('pin-change-msg');
   if(newPin.length < 4){ msg.textContent='⚠️ PIN must be at least 4 digits'; msg.style.color='#e74c3c'; return; }
-  await _savePin(newPin);
+  try{ await _savePin(newPin); } catch(e){ console.warn('_savePin error',e); }
   localStorage.setItem(PIN_CHANGED_KEY, '1');
   // Hide default PIN notices everywhere
   document.querySelectorAll('#pin-default-hint,#default-pin-notice').forEach(el=>{ if(el) el.style.display='none'; });
   document.getElementById('new-pin-inp').value = '';
-  msg.textContent = '✅ PIN changed!';
-  msg.style.color = '#27ae60';
-  setTimeout(()=>{
-    msg.textContent = '';
-    document.getElementById('pin-change-area').style.display = 'none';
-    // Update the Change PIN button label to confirm
-    const changePinBtn = document.querySelector('[onclick*="pin-change-area"][onclick*="block"]');
-    if(changePinBtn) changePinBtn.innerHTML = _ICO.key + ' Change PIN Again';
-  }, 1500);
+  // Close the area immediately — same as Cancel — then show toast
+  document.getElementById('pin-change-area').style.display = 'none';
+  msg.textContent = '';
+  const changePinBtn = document.querySelector('[onclick*="pin-change-area"][onclick*="block"]');
+  if(changePinBtn) changePinBtn.innerHTML = _ICO.key + ' Change PIN Again';
+  showLockToast('✅ PIN saved!');
 }
 
 async function _pcChangePassword(){
@@ -9068,6 +9675,8 @@ let _fbRating = 0;
 let _fbCategory = '';
 
 function _fbSetRating(v){
+  // Tapping the already-active star (or star 1 when rating is 1) clears the rating
+  if(v === _fbRating) v = 0;
   _fbRating = v;
   document.querySelectorAll('.fb-star').forEach(s => {
     s.textContent = parseInt(s.dataset.v) <= v ? '★' : '☆';
@@ -9076,6 +9685,7 @@ function _fbSetRating(v){
 }
 
 function _fbSetCat(el, cat){
+  if(cat === _fbCategory){ _fbCategory = ''; document.querySelectorAll('.fb-cat-btn').forEach(b => b.classList.remove('active')); return; }
   _fbCategory = cat;
   document.querySelectorAll('.fb-cat-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
@@ -9114,6 +9724,18 @@ async function _submitFeedback(){
 
 function goParentControls(){
   playTap();
+  if(isParentUnlocked()){
+    // Session still active — skip PIN and go straight in
+    const _settingsEl = document.getElementById('settings-screen');
+    if(_settingsEl) _settingsEl._savedScrollTop = _settingsEl.scrollTop;
+    _setParentSession(); // refresh timestamp
+    show('parent-screen');
+    document.getElementById('parent-panel').style.display = 'block';
+    updateAccountUI();
+    _startParentSession();
+    updateParentStatus();
+    return;
+  }
   openPinModal();
 }
 
@@ -9130,6 +9752,151 @@ function _startPinPoll(){
 }
 function _stopPinPoll(){ if(_pinPoll){ clearInterval(_pinPoll); _pinPoll = null; } }
 
+// ── Scroll lock + visual-viewport centering ───────────────────────────────
+// Uses both position:fixed (CSS) and a touchmove trap (JS) because iOS Safari
+// allows background scroll when the keyboard is open even with position:fixed.
+// Also listens to visualViewport so modals stay centred in the visible area
+// above the keyboard — iOS doesn't resize the layout viewport when the
+// software keyboard appears, so fixed overlays must be nudged manually.
+let _scrollLockCount = 0;
+let _scrollLockY = 0;
+const _MODAL_IDS = ['pin-modal','forgot-pin-modal','unit-pin-modal','install-modal','auth-modal'];
+
+function _scrollTrap(e){
+  const box = e.target.closest('.install-box, .pin-box');
+  if(!box){ e.preventDefault(); return; }
+  // Inside the modal box — only pass the event through if a scrollable
+  // ancestor between the touch target and the box can still scroll.
+  // Prevents background-page scroll from leaking out through the modal.
+  let el = e.target;
+  while(el && el !== box){
+    const ov = getComputedStyle(el).overflowY;
+    if((ov === 'auto' || ov === 'scroll') && el.scrollHeight > el.clientHeight) return;
+    el = el.parentElement;
+  }
+  e.preventDefault();
+}
+
+// _animateModalClose — slides the modal box down in sync with the iOS keyboard
+// dismiss animation (~260ms ease-in), then calls the close function.
+// Uses rAF first so any button click that already called close() can cancel us.
+function _animateModalClose(id, closeFn){
+  requestAnimationFrame(()=>{
+    const overlay = document.getElementById(id);
+    // Support both display:none and classList 'open' patterns
+    if(!overlay) return;
+    const isOpen = overlay.classList.contains('open') || getComputedStyle(overlay).display !== 'none';
+    if(!isOpen) return; // already closed by another handler
+    // Find the inner content box — try known classes first, fall back to first child
+    const box = overlay.querySelector(
+      '.pin-box,.install-box,.restart-modal-box,.sc-lightbox-box,.scratch-box,.coin-lightbox-inner'
+    ) || overlay.firstElementChild;
+    if(!box){ closeFn(); return; }
+    const ease = 'cubic-bezier(0.4, 0, 0.6, 1)';
+    const dur  = 300;
+    box.style.transition = `transform ${dur}ms ${ease}, opacity ${dur}ms ${ease}, scale ${dur}ms ${ease}`;
+    box.style.transform  = 'translateY(100%)';
+    box.style.opacity    = '0';
+    box.style.scale      = '0.97';
+    setTimeout(()=>{
+      box.style.transition = '';
+      box.style.transform  = '';
+      box.style.opacity    = '';
+      box.style.scale      = '';
+      closeFn();
+    }, dur);
+  });
+}
+
+// _animateModalOpen — reverse of _animateModalClose.
+// Box slides up from below, fades in, and scales to full size.
+function _animateModalOpen(id){
+  const overlay = document.getElementById(id);
+  if(!overlay) return;
+  const box = overlay.querySelector(
+    '.pin-box,.install-box,.restart-modal-box,.sc-lightbox-box,.scratch-box,.coin-lightbox-inner'
+  ) || overlay.firstElementChild;
+  if(!box) return;
+  const ease = 'cubic-bezier(0, 0, 0.2, 1)'; // ease-out — mirror of dismiss ease-in
+  const dur  = 300;
+  // Backdrop appears instantly — eye follows the box, not the dim
+  // Box starts from dismissed position
+  box.style.transition = 'none';
+  box.style.transform  = 'translateY(100%)';
+  box.style.opacity    = '0';
+  box.style.scale      = '0.97';
+  // Force reflow so starting state is painted before the transition begins
+  box.offsetHeight;
+  // Animate box to resting state
+  box.style.transition = `transform ${dur}ms ${ease}, opacity ${dur}ms ${ease}, scale ${dur}ms ${ease}`;
+  box.style.transform  = 'translateY(0)';
+  box.style.opacity    = '1';
+  box.style.scale      = '1';
+  setTimeout(()=>{
+    box.style.transition = '';
+    box.style.transform  = '';
+    box.style.opacity    = '';
+    box.style.scale      = '';
+  }, dur);
+}
+
+// Backdrop taps are always allowed — dismissing the keyboard now closes the
+// modal with an animation, so no suppress logic needed.
+let _backdropCloseAllowed = true;
+function _suppressBackdropClose(){ /* no-op — kept so open/close callers don't break */ }
+
+function _vpSync(){
+  const vv = window.visualViewport;
+  if(!vv) return;
+  _MODAL_IDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el || getComputedStyle(el).display === 'none') return;
+    el.style.top    = vv.offsetTop + 'px';
+    el.style.height = vv.height + 'px';
+  });
+}
+
+function _vpReset(){
+  _MODAL_IDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.top    = '';
+    el.style.height = '';
+  });
+}
+
+function _lockScroll(){
+  if(++_scrollLockCount > 1) return;
+  _scrollLockY = window.scrollY;
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.top      = `-${_scrollLockY}px`;
+  document.body.style.width    = '100%';
+  document.addEventListener('touchmove', _scrollTrap, { passive: false });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', _vpSync);
+    window.visualViewport.addEventListener('scroll', _vpSync);
+    _vpSync(); // run once immediately in case keyboard is already up
+  }
+}
+
+function _unlockScroll(){
+  if(--_scrollLockCount > 0) return;
+  _scrollLockCount = 0;
+  document.body.style.overflow  = '';
+  document.body.style.position  = '';
+  document.body.style.top       = '';
+  document.body.style.width     = '';
+  window.scrollTo(0, _scrollLockY);
+  document.removeEventListener('touchmove', _scrollTrap);
+  if(window.visualViewport){
+    window.visualViewport.removeEventListener('resize', _vpSync);
+    window.visualViewport.removeEventListener('scroll', _vpSync);
+  }
+  _vpReset();
+}
+
+function _pinBlurHandler(){ _animateModalClose('pin-modal', closePinModal); }
 function openPinModal(){
   const modal = document.getElementById('pin-modal');
   const inp   = document.getElementById('parent-pin-inp');
@@ -9138,23 +9905,30 @@ function openPinModal(){
   document.getElementById('pin-msg').textContent = '';
   _stopPinPoll();
   _startPinPoll();
+  inp.addEventListener('blur', _pinBlurHandler);
   inp.focus();
   requestAnimationFrame(()=>{ inp.focus(); });
+  _lockScroll();
 }
 
 function closePinModal(){
   _stopPinPoll();
+  const inp = document.getElementById('parent-pin-inp');
+  inp.removeEventListener('blur', _pinBlurHandler);
   document.getElementById('pin-modal').style.display = 'none';
+  _unlockScroll();
 }
+
 
 function goSettings(){
   playTap();
   updateAccountUI();
   const cfg = loadSettings();
   document.getElementById('set-student').value = cfg.studentName || '';
-  const mode = localStorage.getItem('wb_theme') || 'light';
+  const mode = localStorage.getItem('wb_theme') || 'auto';
   document.getElementById('theme-light').classList.toggle('active', mode==='light');
   document.getElementById('theme-dark').classList.toggle('active', mode==='dark');
+  document.getElementById('theme-auto').classList.toggle('active', mode==='auto');
   const snd = isSoundEnabled() ? 'on' : 'off';
   document.getElementById('sound-on').classList.toggle('active', snd==='on');
   document.getElementById('sound-off').classList.toggle('active', snd==='off');
@@ -9177,7 +9951,7 @@ function openCoinLightbox(src, label, value){
   lb.style.display = 'flex';
 }
 function closeCoinLightbox(){
-  document.getElementById('coin-lightbox').style.display = 'none';
+  _animateModalClose('coin-lightbox', ()=>{ document.getElementById('coin-lightbox').style.display='none'; });
 }
 // Delegate clicks on any data-coin image
 document.addEventListener('click', e => {
@@ -9220,7 +9994,10 @@ function _startTutorial(){
 }
 
 function tutCheckAndShow(){
-  // On first ever open: show install prompt first; tutorial fires after it's dismissed.
+  // Clear any pre-lock set by _continueAsGuest (will be re-set below if still needed)
+  _onboardingActive = false;
+  document.body.classList.remove('tut-active');
+  // Show install prompt first; tutorial fires after it's dismissed.
   if(!localStorage.getItem('install_seen')){
     _onboardingActive = true;
     document.body.classList.add('tut-active');
@@ -9314,6 +10091,35 @@ function tutNext(){
   }
 }
 
+function tutBack(){
+  if(_tutIdx > 0){ _tutIdx--; _tutRender(); }
+}
+
+// ── Swipe gesture on tutorial card ───────────────────────────
+(function(){
+  let _tx = 0, _ty = 0, _dragging = false;
+  function _onTutTouchStart(e){
+    if(e.touches.length !== 1) return;
+    _tx = e.touches[0].clientX;
+    _ty = e.touches[0].clientY;
+    _dragging = true;
+  }
+  function _onTutTouchEnd(e){
+    if(!_dragging) return;
+    _dragging = false;
+    const dx = e.changedTouches[0].clientX - _tx;
+    const dy = e.changedTouches[0].clientY - _ty;
+    if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // not a horizontal swipe
+    if(dx < 0) tutNext(); else tutBack();
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const card = document.getElementById('tut-card');
+    if(!card) return;
+    card.addEventListener('touchstart', _onTutTouchStart, { passive: true });
+    card.addEventListener('touchend',   _onTutTouchEnd,   { passive: true });
+  });
+})();
+
 function tutSkip(){
   localStorage.setItem('wb_tutorial_v2','1');
   _tutShowing = false;
@@ -9323,7 +10129,8 @@ function tutSkip(){
   document.body.classList.remove('tut-active');
   document.body.style.overflow = '';
   document.body.style.touchAction = '';
-  // Kick off the home spotlight tour immediately after tutorial closes
+  // Hold scroll lock across the gap between tutorial end and spotlight start
+  document.body.classList.add('spot-scroll-lock');
   setTimeout(() => _spotCheckScreen('home'), 350);
 }
 
@@ -9337,6 +10144,12 @@ const SPOT_TOURS = {
       emoji: '📊',
       title: 'Your Progress',
       tip: 'This bar shows how many lessons you\'ve finished across all 10 units. Watch it grow as you learn!'
+    },
+    {
+      sel: '#streak-badge',
+      emoji: '🔥',
+      title: 'Daily Streak',
+      tip: 'Complete a lesson every day to build your streak! Tap the flame to open your streak calendar — see every day you practiced, your current run, and your all-time best. Only visible when signed in.'
     },
     {
       sel: '#ugrid .cs',
@@ -9454,11 +10267,12 @@ let _pendingTimerSecs  = 0;
 let _pendingTimerColor = '';
 
 function _spotCheckScreen(screenId){
-  if(_spotActive || _tutShowing || _onboardingActive) return; // don't start while tutorial overlay or install prompt is open
-  if(!localStorage.getItem('install_seen')) return;   // install prompt hasn't been seen yet
-  if(!localStorage.getItem('wb_tutorial_v2')) return; // main tutorial hasn't been done yet
-  if(!SPOT_TOURS[screenId]) return;
-  if(localStorage.getItem('wb_spot_' + screenId)) return;
+  const _releaseLock = () => document.body.classList.remove('spot-scroll-lock');
+  if(_spotActive || _tutShowing || _onboardingActive){ _releaseLock(); return; }
+  if(!localStorage.getItem('install_seen')){ _releaseLock(); return; }
+  if(!localStorage.getItem('wb_tutorial_v2')){ _releaseLock(); return; }
+  if(!SPOT_TOURS[screenId]){ _releaseLock(); return; }
+  if(localStorage.getItem('wb_spot_' + screenId)){ _releaseLock(); return; }
   _spotScreen  = screenId;
   _spotStepIdx = 0;
   document.body.classList.add('spot-scroll-lock');
@@ -9491,21 +10305,28 @@ function _spotShowStep(){
   const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
   if(!inView){
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // Wait for smooth scroll to finish before rendering the spotlight
+    // Wait for smooth scroll to finish, then snap spotlight directly (no transition)
     setTimeout(() => {
-      _spotActive = true;
-      _spotRender(step, el.getBoundingClientRect());
-    }, 500);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        _spotActive = true;
+        _spotRender(step, el.getBoundingClientRect(), true);
+      }));
+    }, 480);
     return;
   }
 
+  // Use double-rAF so layout is fully settled before measuring the final rect
   _spotActive = true;
-  _spotRender(step, rect);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    _spotRender(step, el.getBoundingClientRect(), false);
+  }));
 }
 
-function _spotRender(step, rect){
+function _spotRender(step, rect, snapInstant){
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  // Ensure card is invisible before we position it (fade-in happens at end)
+  document.getElementById('spot-card').style.opacity = '0';
 
   // Spotlight rectangle — match element dimensions + small padding
   const pad = 10;
@@ -9535,19 +10356,28 @@ function _spotRender(step, rect){
 
   // Update spotlight hole (rect in mask)
   const hole = document.getElementById('spot-hole');
-  hole.setAttribute('x', hx);
-  hole.setAttribute('y', hy);
-  hole.setAttribute('width',  hw);
-  hole.setAttribute('height', hh);
-  hole.setAttribute('rx', rx);
-
-  // Update glowing outline ring
   const ring = document.getElementById('spot-ring');
-  ring.setAttribute('x', hx - 3);
-  ring.setAttribute('y', hy - 3);
-  ring.setAttribute('width',  hw + 6);
-  ring.setAttribute('height', hh + 6);
-  ring.setAttribute('rx', rx + 3);
+  const isFirstShow = document.getElementById('spot-overlay').style.display !== 'block';
+  // Lesson/quiz screens need a snappy transition; nav/home screens get a more relaxed pace
+  const dur = ['lesson-screen','quiz-screen'].includes(_spotScreen) ? '0.25s' : '0.42s';
+  const ease = 'cubic-bezier(0.4,0,0.2,1)';
+  const trVal = `x ${dur} ${ease}, y ${dur} ${ease}, width ${dur} ${ease}, height ${dur} ${ease}`;
+  if(isFirstShow || snapInstant){
+    // Suppress transition: first show or post-scroll — snap directly to final position
+    hole.style.transition = 'none'; ring.style.transition = 'none';
+  } else {
+    hole.style.transition = trVal; ring.style.transition = trVal;
+  }
+  hole.style.x = hx+'px'; hole.style.y = hy+'px';
+  hole.style.width = hw+'px'; hole.style.height = hh+'px';
+  hole.setAttribute('rx', rx);
+  ring.style.x = (hx-3)+'px'; ring.style.y = (hy-3)+'px';
+  ring.style.width = (hw+6)+'px'; ring.style.height = (hh+6)+'px';
+  ring.setAttribute('rx', rx+3);
+  if(isFirstShow || snapInstant){
+    hole.offsetHeight; // force reflow, then apply the correct duration going forward
+    hole.style.transition = trVal; ring.style.transition = trVal;
+  }
 
   // Card content
   document.getElementById('spot-emoji').textContent = step.emoji;
@@ -9583,9 +10413,12 @@ function _spotRender(step, rect){
   }
   // Hard clamp: never off top, never cut off at bottom
   cardTop = Math.max(safeTop, Math.min(cardTop, vh - cardH - safeBot));
+  card.style.transition = `top ${dur} ${ease}, left ${dur} ${ease}, opacity .18s ease`;
   card.style.top = cardTop + 'px';
 
   document.getElementById('spot-overlay').style.display = 'block';
+  // Fade card in (works for both first show and after _spotAdvance fades it out)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ card.style.opacity = '1'; }));
 }
 
 function _spotAdvance(){
@@ -9595,8 +10428,10 @@ function _spotAdvance(){
   if(!steps || _spotStepIdx >= steps.length){
     _spotDone();
   } else {
-    _spotActive = false;
-    _spotShowStep();
+    // Fade card out while hole starts sliding to next target
+    const card = document.getElementById('spot-card');
+    card.style.opacity = '0';
+    setTimeout(()=>{ _spotActive = false; _spotShowStep(); }, 160);
   }
 }
 
@@ -9626,14 +10461,28 @@ if(vEl) vEl.textContent = APP_VERSION;
 supabaseInit();
 // Clear old tutorial flag so users see the improved v2 tutorial
 localStorage.removeItem('wb_tutorial_v1');
-// Safety net: if auth never resolves within 5s, dismiss splash and show login
+// Safety net: if auth/data load never resolves within 8s, force-dismiss splash
 setTimeout(() => {
   const splash = document.getElementById('auth-splash');
   if(splash && splash.style.display !== 'none'){
     _dismissSplash();
-    if(!_supaUser) show('login-screen');
+    const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname) || /^192\.168\./.test(location.hostname);
+    if(_supaUser){
+      // Logged-in user whose data load hung — show home with whatever local data we have
+      show('home'); buildHome(); _installHistoryGuard();
+    } else if(_isLocal2 && new URLSearchParams(location.search).get('preview') === '1'){
+      const _tsN2 = parseInt(new URLSearchParams(location.search).get('testStreak')) || 7;
+      _supaUser = { id:'preview', email:'preview@test.com' };
+      STREAK.current = _tsN2; STREAK.longest = _tsN2 + 5; STREAK.lastDate = new Date().toISOString().slice(0,10);
+      const _tsDates2 = [];
+      for(let i=0;i<_tsN2;i++) _tsDates2.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
+      localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates2));
+      show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
+    } else {
+      show('login-screen');
+    }
   }
-}, 5000);
+}, 8000);
 
 
 
@@ -9657,7 +10506,7 @@ setTimeout(() => {
     'results-screen': { prev:'unit-screen',     back:()=>afterResults() },
     'history-screen': { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
     'settings-screen':{ prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
-    'parent-screen':  { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); } },
+    'parent-screen':  { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); const _se=document.getElementById('settings-screen'); if(_se&&_se._savedScrollTop) requestAnimationFrame(()=>{ _se.scrollTop=_se._savedScrollTop; }); } },
   };
 
   let curEl=null, prevEl=null, entry=null;
@@ -9709,12 +10558,12 @@ setTimeout(() => {
 
   function _isModalOpen(){
     return ['pin-modal','install-modal','forgot-pin-modal','unit-pin-modal','auth-modal']
-      .some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none' && el.style.display!==''; });
+      .some(id=>{ const el=document.getElementById(id); return el && getComputedStyle(el).display!=='none'; });
   }
 
   document.addEventListener('touchstart', e=>{
-    // Block all swipe gestures during install prompt / tutorial onboarding / open modals
-    if(locked || _isModalOpen() || (typeof _onboardingActive!=='undefined' && _onboardingActive)){
+    // Block all swipe gestures during install prompt / tutorial onboarding / spotlight tour / open modals
+    if(locked || _isModalOpen() || (typeof _onboardingActive!=='undefined' && _onboardingActive) || document.body.classList.contains('spot-scroll-lock')){
       if(e.touches[0].clientX < 30) e.preventDefault();
       return;
     }
@@ -9733,7 +10582,7 @@ setTimeout(() => {
   }, {passive:false}); // non-passive so we can preventDefault on edge touches
 
   document.addEventListener('touchmove', e=>{
-    if(locked || !curEl) return;
+    if(locked || !curEl || _isModalOpen() || document.body.classList.contains('spot-scroll-lock')){ if(swiping) _snapBack(); curEl=null; return; }
     const t  = e.touches[0];
     const dx = t.clientX - sx;
     const dy = Math.abs(t.clientY - sy);
@@ -9780,7 +10629,7 @@ setTimeout(() => {
 
   document.addEventListener('touchend', e=>{
     if(swipeAbsorbed){ cleanup(); return; }
-    if(locked || !swiping) return;
+    if(locked || !swiping || _isModalOpen() || document.body.classList.contains('spot-scroll-lock')){ cleanup(); return; }
     const t  = e.changedTouches[0];
     const dx = t.clientX - sx;
     const v  = dx / (Date.now()-t0);
@@ -9903,9 +10752,9 @@ if(sessionStorage.getItem('app-just-updated')){
     const ctx = canvas.getContext('2d');
     // Background gradient matching app
     const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#ddeeff');
-    grad.addColorStop(0.5, '#c8eaff');
-    grad.addColorStop(1, '#cef0da');
+    grad.addColorStop(0, '#f9fcff');
+    grad.addColorStop(0.45, '#eef7ff');
+    grad.addColorStop(1, '#eafaf2');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
     // Sprout SVG — orange petals, green stem
     const sz = Math.round(Math.min(w, h) * 0.30);
@@ -9990,15 +10839,22 @@ function _gen5thGradeProblem(){
 
 let _fpProblem = null;
 
+function _fpBlurHandler(){ _animateModalClose('forgot-pin-modal', closeForgotPin); }
 function openForgotPin(){
   document.getElementById('forgot-pin-modal').style.display='flex';
-  document.getElementById('fp-answer-inp').value='';
+  const finp = document.getElementById('fp-answer-inp');
+  finp.value='';
   document.getElementById('fp-msg').textContent='';
+  finp.addEventListener('blur', _fpBlurHandler);
   refreshForgotProblem();
+  _lockScroll();
 }
 
 function closeForgotPin(){
+  const finp = document.getElementById('fp-answer-inp');
+  finp.removeEventListener('blur', _fpBlurHandler);
   document.getElementById('forgot-pin-modal').style.display='none';
+  _unlockScroll();
 }
 
 function refreshForgotProblem(){
@@ -10030,7 +10886,8 @@ function checkForgotAnswer(){
     const pinHint = document.getElementById('pin-default-hint');
     if(pinHint) pinHint.style.display='block';
     if(isSoundEnabled()) playCorrect();
-    setTimeout(()=>{ closeForgotPin(); }, 2200);
+    document.getElementById('fp-answer-inp').removeEventListener('blur', _fpBlurHandler);
+    setTimeout(()=>{ _animateModalClose('forgot-pin-modal', closeForgotPin); }, 2200);
   } else {
     msg.textContent='❌ Not quite — try again!';
     msg.style.color='#e74c3c';
@@ -10074,12 +10931,14 @@ function openLessonPinUnlock(unitIdx, lessonIdx){
   document.getElementById('upm-icon').innerHTML = l.icon;
   document.getElementById('upm-title').textContent = 'Unlock Lesson '+(lessonIdx+1);
   document.getElementById('upm-sub').textContent = 'Enter your parent PIN to unlock "'+l.title+'" for your student.';
-  document.getElementById('upm-pin-inp').value = '';
+  const linp = document.getElementById('upm-pin-inp');
+  linp.value = '';
+  linp.addEventListener('blur', _upmBlurHandler);
   document.getElementById('upm-msg').textContent = '';
   _upmMode = 'lesson';
   _upmBind();
   document.getElementById('unit-pin-modal').style.display = 'flex';
-  setTimeout(()=>document.getElementById('upm-pin-inp').focus(), 200);
+  setTimeout(()=>linp.focus(), 200);
 }
 
 async function checkLessonPinUnlock(){
@@ -10100,30 +10959,37 @@ async function checkLessonPinUnlock(){
   msg.textContent = '✅ Lesson unlocked!';
   msg.style.color = '#27ae60';
   if(isSoundEnabled()) playCorrect();
+  document.getElementById('upm-pin-inp').removeEventListener('blur', _upmBlurHandler);
   setTimeout(()=>{
-    closeUnitPinModal();
-    openUnit(_lpmUnitIdx); // refresh unit screen
+    _animateModalClose('unit-pin-modal', ()=>{ closeUnitPinModal(); openUnit(_lpmUnitIdx); });
   }, 1200);
 }
 
+function _upmBlurHandler(){ _animateModalClose('unit-pin-modal', closeUnitPinModal); }
 function openUnitPinUnlock(unitIdx){
   _upmUnitIdx = unitIdx;
   const u = UNITS_DATA[unitIdx];
   document.getElementById('upm-icon').innerHTML = u.svg||u.icon;
   document.getElementById('upm-title').textContent = 'Unlock '+u.name;
   document.getElementById('upm-sub').textContent = 'Enter your parent PIN to unlock Unit '+(unitIdx+1)+' for your student.';
-  document.getElementById('upm-pin-inp').value = '';
+  const uinp = document.getElementById('upm-pin-inp');
+  uinp.value = '';
+  uinp.addEventListener('blur', _upmBlurHandler);
+  _lockScroll();
   document.getElementById('upm-msg').textContent = '';
   _upmMode = 'unit';
   _upmBind();
   document.getElementById('unit-pin-modal').style.display = 'flex';
-  setTimeout(()=>document.getElementById('upm-pin-inp').focus(), 200);
+  setTimeout(()=>uinp.focus(), 200);
 }
 
 function closeUnitPinModal(){
   _stopUpmPoll();
+  const uinp = document.getElementById('upm-pin-inp');
+  uinp.removeEventListener('blur', _upmBlurHandler);
   document.getElementById('unit-pin-modal').style.display = 'none';
   _upmUnitIdx = -1;
+  _unlockScroll();
 }
 
 async function checkUnitPinUnlock(){
@@ -10147,7 +11013,10 @@ async function checkUnitPinUnlock(){
   msg.textContent = '✅ Unit unlocked!';
   msg.style.color = '#27ae60';
   if(isSoundEnabled()) playCorrect();
-  setTimeout(()=>{ closeUnitPinModal(); buildHome(); }, 1200);
+  document.getElementById('upm-pin-inp').removeEventListener('blur', _upmBlurHandler);
+  setTimeout(()=>{
+    _animateModalClose('unit-pin-modal', ()=>{ closeUnitPinModal(); buildHome(); });
+  }, 1200);
 }
 
 function switchInstallTab(device){
@@ -10167,7 +11036,7 @@ function switchInstallTab(device){
 }
 
 function closeInstall(){
-  document.getElementById('install-modal').style.display='none';
+  _animateModalClose('install-modal', ()=>{ document.getElementById('install-modal').style.display='none'; });
   const firstTime = !localStorage.getItem('install_seen');
   localStorage.setItem('install_seen','1');
   // If first-open onboarding: fire tutorial immediately after install prompt closes
@@ -10207,6 +11076,9 @@ function closeInstall(){
       <div class="set-body">
         <div class="set-lbl" style="margin-bottom:12px">Choose how the app looks</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="theme-btn" id="theme-auto" onclick="setTheme('auto')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> Auto
+          </button>
           <button class="theme-btn" id="theme-light" onclick="setTheme('light')">
             ☀️ Light Mode
           </button>
@@ -10289,205 +11161,180 @@ function closeInstall(){
     <div class="bar-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg> Parent Controls</div>
   </div>
   <div class="sc-in">
+    <div id="parent-panel" style="display:none">
 
-    <div class="set-section">
-      <div class="set-body">
+      <!-- Access Controls -->
+      <div class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></span> Access Controls</div>
+        <div class="set-body">
+          <div class="parent-status" id="parent-status-lbl"></div>
+          <div id="parent-session-timer" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.8rem;color:var(--txt2);text-align:center;opacity:.75"></div>
+          <button class="parent-btn parent-btn-unlock" onclick="parentUnlockAll()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.93-1"/></svg> Unlock All Lessons &amp; Units
+          </button>
+          <button class="parent-btn parent-btn-lock" onclick="parentLockAll()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Re-Lock All (Reset Progress)
+          </button>
+          <button class="parent-btn" style="background:linear-gradient(135deg,#636e72,#2d3436);color:#fff;" onclick="parentClearScores()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Clear All Score History
+          </button>
+        </div>
+      </div>
 
-        <!-- parent-panel is shown after PIN verified in modal -->
-        <div id="parent-panel" style="display:none">
-          <div class="parent-panel-inner">
-            <div class="parent-status" id="parent-status-lbl"></div>
-            <div id="parent-session-timer" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.8rem;color:var(--txt2);text-align:center;margin-top:6px;opacity:.75"></div>
-
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-              <button class="parent-btn parent-btn-unlock" onclick="parentUnlockAll()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.93-1"/></svg> Unlock All Lessons &amp; Units
-              </button>
-              <button class="parent-btn parent-btn-lock" onclick="parentLockAll()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Re-Lock All (Reset Progress)
-              </button>
-              <button class="parent-btn" style="background:rgba(255,255,255,0.28);color:var(--txt);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)"
-                onclick="parentClearScores()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Clear All Score History
-              </button>
-
-              <!-- Timer settings -->
-              <div style="background:rgba(255,255,255,0.18);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85)">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                  <div>
-                    <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;color:var(--txt)">⏱ Quiz Timer</div>
-                    <div style="font-size:.82rem;color:var(--txt2);margin-top:2px">Set time limits or turn off entirely</div>
-                  </div>
-                  <button id="timer-toggle-btn" type="button" onclick="toggleQuizTimer()"
-                    style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;padding:9px 20px;
-                    border-radius:50px;border:none;cursor:pointer;min-width:80px;
-                    touch-action:manipulation;transition:background .2s,color .2s;">
-                  </button>
-                </div>
-                <div id="timer-duration-controls" style="border-top:1.5px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:10px">
-                  <!-- Lesson timer -->
-                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                    <div style="font-size:.9rem;color:var(--txt)">📝 Lesson Quiz</div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <button type="button" onclick="adjustTimer('lesson',-1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-                        <input type="number" id="lesson-timer-inp" inputmode="numeric" min="1" max="3600"
-                          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;color:var(--txt);width:62px;text-align:center;border:1.5px solid var(--border2);border-radius:8px;background:var(--card-bg);padding:4px 2px;touch-action:manipulation"
-                          onblur="_setTimerDirect('lesson',this.value)" onkeydown="if(event.key==='Enter')this.blur()" onfocus="this.select()">
-                        <span id="lesson-timer-lbl" style="font-size:.7rem;color:var(--txt2);line-height:1">8 min</span>
-                      </div>
-                      <button type="button" onclick="adjustTimer('lesson',1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
-                    </div>
-                  </div>
-                  <!-- Unit timer -->
-                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                    <div style="font-size:.9rem;color:var(--txt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Unit Quiz</div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <button type="button" onclick="adjustTimer('unit',-1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-                        <input type="number" id="unit-timer-inp" inputmode="numeric" min="1" max="7200"
-                          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;color:var(--txt);width:62px;text-align:center;border:1.5px solid var(--border2);border-radius:8px;background:var(--card-bg);padding:4px 2px;touch-action:manipulation"
-                          onblur="_setTimerDirect('unit',this.value)" onkeydown="if(event.key==='Enter')this.blur()" onfocus="this.select()">
-                        <span id="unit-timer-lbl" style="font-size:.7rem;color:var(--txt2);line-height:1">30 min</span>
-                      </div>
-                      <button type="button" onclick="adjustTimer('unit',1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
-                    </div>
-                  </div>
-                  <!-- Final Test timer -->
-                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                    <div style="font-size:.9rem;color:var(--txt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Final Test</div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <button type="button" onclick="adjustTimer('final',-1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">−</button>
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-                        <input type="number" id="final-timer-inp" inputmode="numeric" min="1" max="7200"
-                          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.05rem;color:var(--txt);width:62px;text-align:center;border:1.5px solid var(--border2);border-radius:8px;background:var(--card-bg);padding:4px 2px;touch-action:manipulation"
-                          onblur="_setTimerDirect('final',this.value)" onkeydown="if(event.key==='Enter')this.blur()" onfocus="this.select()">
-                        <span id="final-timer-lbl" style="font-size:.7rem;color:var(--txt2);line-height:1">60 min</span>
-                      </div>
-                      <button type="button" onclick="adjustTimer('final',1)"
-                        style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1.2rem;width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--card-bg);cursor:pointer;touch-action:manipulation">+</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- Quiz Timer -->
+      <div class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico">⏱</span> Quiz Timer</div>
+        <div class="set-body">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div class="set-lbl" style="margin-bottom:0">Set time limits or turn off entirely</div>
+            <button id="timer-toggle-btn" type="button" onclick="toggleQuizTimer()"
+              style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;padding:9px 20px;
+              border-radius:50px;border:none;cursor:pointer;min-width:80px;
+              touch-action:manipulation;transition:background .2s,color .2s;">
+            </button>
+          </div>
+          <div id="timer-duration-controls" style="border-top:1.5px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:10px">
+            <!-- Lesson timer -->
+            <div class="tp-row">
+              <div style="font-size:.9rem;color:var(--txt)">📝 Lesson Quiz</div>
+              <div id="tp-lesson" style="display:flex;align-items:center;gap:4px"></div>
             </div>
-
-            <!-- Reminders -->
-            <div id="push-notif-section" style="margin-top:16px">
-              <div class="set-lbl" style="margin-bottom:8px">🔔 Reminders</div>
-              <div style="background:rgba(255,255,255,0.18);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85)">
-                <p style="font-size:.85rem;color:var(--txt2);margin:0 0 10px">Send a daily nudge to practice math. Works on Android and installed iPhone (iOS 16.4+).</p>
-                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-                  <button id="push-toggle-btn" class="parent-btn" onclick="togglePushNotifications()"
-                    style="background:rgba(255,255,255,0.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--txt);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85);min-width:100px">🔕 Off</button>
-                  <span id="push-toggle-lbl" style="font-size:.85rem;color:var(--txt2)">Tap to get daily reminders</span>
-                </div>
-              </div>
+            <!-- Unit timer -->
+            <div class="tp-row">
+              <div style="font-size:.9rem;color:var(--txt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Unit Quiz</div>
+              <div id="tp-unit" style="display:flex;align-items:center;gap:4px"></div>
             </div>
-
-            <div style="margin-top:16px">
-              <div class="set-lbl" style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg> Change Parent PIN</div>
-              <div id="default-pin-notice" style="font-size:.82rem;color:#e67e22;margin-bottom:8px;display:none">
-                ⚠️ You are using the default PIN (1234). Tap below to set your own PIN.
-              </div>
-              <div id="pin-change-area" style="display:none;background:rgba(255,255,255,0.18);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:14px;margin-top:6px;box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85)">
-                <div style="font-size:.85rem;color:var(--txt2);margin-bottom:10px">Enter a new PIN (at least 4 digits):</div>
-                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                  <input class="set-inp" id="new-pin-inp" type="tel" inputmode="numeric" placeholder="New PIN" maxlength="8"
-                    style="max-width:140px;text-align:center;letter-spacing:4px;font-size:1.4rem;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">
-                  <button class="set-save" style="background:#27ae60;padding:10px 20px;font-size:1rem" onclick="changePin()">✅ Save</button>
-                  <button class="set-save" style="background:#7f8c8d;padding:10px 16px;font-size:1rem" onclick="document.getElementById('pin-change-area').style.display='none'">Cancel</button>
-                </div>
-                <div id="pin-change-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
-              </div>
-              <button class="parent-btn" style="background:rgba(255,255,255,0.22);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);color:var(--txt);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85);margin-top:4px"
-                onclick="document.getElementById('pin-change-area').style.display='block';document.getElementById('new-pin-inp').focus()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg> Change PIN
-              </button>
+            <!-- Final Test timer -->
+            <div class="tp-row">
+              <div style="font-size:.9rem;color:var(--txt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Final Test</div>
+              <div id="tp-final" style="display:flex;align-items:center;gap:4px"></div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <!-- Change Password (email accounts only) -->
-            <div id="pc-change-pw-wrap" style="margin-top:16px;display:none">
-              <div class="set-lbl" style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Change Password</div>
-              <div id="pc-pw-area" style="display:none;background:var(--bg3);border-radius:14px;padding:14px;margin-top:6px">
-                <div style="font-size:.85rem;color:var(--txt2);margin-bottom:10px">Enter a new password (min 8 characters):</div>
-                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                  <input class="set-inp" id="pc-new-pw" type="password" placeholder="New password" autocomplete="new-password"
-                    style="max-width:220px;font-size:1rem">
-                  <button class="set-save" style="background:#27ae60;padding:10px 20px;font-size:1rem" onclick="_pcChangePassword()">✅ Save</button>
-                  <button class="set-save" style="background:#7f8c8d;padding:10px 16px;font-size:1rem" onclick="document.getElementById('pc-pw-area').style.display='none';document.getElementById('pc-new-pw').value=''">Cancel</button>
-                </div>
-                <div id="pc-pw-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
-              </div>
-              <button class="parent-btn" style="background:var(--bg3);color:var(--txt);border:2px solid var(--border2);margin-top:4px"
-                onclick="document.getElementById('pc-pw-area').style.display='block';document.getElementById('pc-new-pw').focus()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Change Password
-              </button>
+      <!-- Reminders -->
+      <div id="push-notif-section" class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico">🔔</span> Reminders</div>
+        <div class="set-body">
+          <p style="font-size:.85rem;margin:0">Send a daily nudge to practice math. Works on Android and installed iPhone (iOS 16.4+).</p>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <button id="push-toggle-btn" class="set-save" onclick="togglePushNotifications()" style="min-width:100px;margin-top:0">🔕 Off</button>
+            <span id="push-toggle-lbl" style="font-size:.85rem;color:var(--txt2)">Tap to get daily reminders</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change PIN -->
+      <div class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg></span> Change Parent PIN</div>
+        <div class="set-body">
+          <div id="default-pin-notice" style="font-size:.82rem;color:#e67e22;display:none">
+            ⚠️ You are using the default PIN (1234). Tap below to set your own PIN.
+          </div>
+          <div id="pin-change-area" style="display:none">
+            <div class="set-lbl" style="margin-bottom:8px">Enter a new PIN (at least 4 digits):</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input class="set-inp" id="new-pin-inp" type="tel" inputmode="numeric" placeholder="New PIN" maxlength="8"
+                style="max-width:140px;text-align:center;letter-spacing:4px;font-size:1.4rem;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">
+              <button class="set-save" style="background:#27ae60;box-shadow:0 4px 0 #1a7a45;padding:10px 20px;font-size:1rem;margin-top:0" onclick="changePin()">✅ Save</button>
+              <button class="set-save" style="background:#7f8c8d;box-shadow:0 4px 0 #555;padding:10px 16px;font-size:1rem;margin-top:0" onclick="document.getElementById('pin-change-area').style.display='none'">Cancel</button>
             </div>
+            <div id="pin-change-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
+          </div>
+          <button class="set-save" style="background:linear-gradient(135deg,#8e44ad,#6c3483);box-shadow:0 4px 0 rgba(0,0,0,.25);margin-top:0"
+            onclick="document.getElementById('pin-change-area').style.display='block';document.getElementById('new-pin-inp').focus()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg> Change PIN
+          </button>
+        </div>
+      </div>
 
-            <!-- Feedback -->
-            <div style="margin-top:20px">
-              <div class="set-lbl" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Send Feedback</div>
-              <div style="background:rgba(255,255,255,0.18);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85)">
-
-                <!-- Star rating -->
-                <div style="margin-bottom:12px">
-                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">How are you enjoying the app?</div>
-                  <div id="fb-stars" style="display:flex;gap:6px">
-                    <button type="button" class="fb-star" data-v="1" onclick="_fbSetRating(1)">☆</button>
-                    <button type="button" class="fb-star" data-v="2" onclick="_fbSetRating(2)">☆</button>
-                    <button type="button" class="fb-star" data-v="3" onclick="_fbSetRating(3)">☆</button>
-                    <button type="button" class="fb-star" data-v="4" onclick="_fbSetRating(4)">☆</button>
-                    <button type="button" class="fb-star" data-v="5" onclick="_fbSetRating(5)">☆</button>
-                  </div>
-                </div>
-
-                <!-- Category -->
-                <div style="margin-bottom:12px">
-                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Category</div>
-                  <div style="display:flex;flex-wrap:wrap;gap:7px" id="fb-cats">
-                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'General')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> General</button>
-                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Bug Report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M8 2l1.88 1.88"/><path d="M14.12 3.88L16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6z"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg> Bug Report</button>
-                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Feature Request')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Feature Request</button>
-                    <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Content Issue')">📝 Content Issue</button>
-                  </div>
-                </div>
-
-                <!-- Comment -->
-                <div style="margin-bottom:12px">
-                  <div style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Comments <span style="opacity:.6">(optional)</span></div>
-                  <textarea id="fb-comment" maxlength="500" rows="3" placeholder="Tell us more…"
-                    style="width:100%;box-sizing:border-box;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
-                      padding:10px 12px;border-radius:10px;
-                      border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);
-                      background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-                      color:var(--txt);resize:vertical;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.85)"></textarea>
-                </div>
-
-                <!-- Status & Submit -->
-                <div id="fb-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;min-height:1.2rem;margin-bottom:8px;color:#27ae60"></div>
-                <button type="button" onclick="_submitFeedback()"
-                  style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;padding:11px 28px;
-                    border-radius:50px;border:none;cursor:pointer;
-                    background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;
-                    box-shadow:0 4px 0 rgba(0,0,0,.12);touch-action:manipulation">
-                  Send Feedback
-                </button>
-              </div>
+      <!-- Change Password (email accounts only) -->
+      <div id="pc-change-pw-wrap" class="set-section" style="display:none">
+        <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span> Change Password</div>
+        <div class="set-body">
+          <div id="pc-pw-area" style="display:none">
+            <div class="set-lbl" style="margin-bottom:8px">Enter a new password (min 8 characters):</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input class="set-inp" id="pc-new-pw" type="password" placeholder="New password" autocomplete="new-password"
+                style="max-width:220px;font-size:1rem">
+              <button class="set-save" style="background:#27ae60;box-shadow:0 4px 0 #1a7a45;padding:10px 20px;font-size:1rem;margin-top:0" onclick="_pcChangePassword()">✅ Save</button>
+              <button class="set-save" style="background:#7f8c8d;box-shadow:0 4px 0 #555;padding:10px 16px;font-size:1rem;margin-top:0" onclick="document.getElementById('pc-pw-area').style.display='none';document.getElementById('pc-new-pw').value=''">Cancel</button>
             </div>
+            <div id="pc-pw-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;margin-top:8px;min-height:1.4rem"></div>
+          </div>
+          <button class="set-save" style="background:linear-gradient(135deg,#8e44ad,#6c3483);box-shadow:0 4px 0 rgba(0,0,0,.25);margin-top:0"
+            onclick="document.getElementById('pc-pw-area').style.display='block';document.getElementById('pc-new-pw').focus()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Change Password
+          </button>
+        </div>
+      </div>
 
-            <!-- Changelog -->
-            <div style="margin-top:20px">
-              <div class="set-lbl" style="margin-bottom:10px">📋 What's New</div>
-  <div style="background:rgba(255,255,255,0.18);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%);border-top:1.5px solid rgba(255,255,255,0.80);border-left:1.5px solid rgba(255,255,255,0.55);border-right:1.5px solid rgba(255,255,255,0.22);border-bottom:1.5px solid rgba(255,255,255,0.14);border-radius:14px;padding:14px 16px;max-height:340px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.85)">
+      <!-- Send Feedback -->
+      <div class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></span> Send Feedback</div>
+        <div class="set-body">
+          <!-- Star rating -->
+          <div class="set-row">
+            <div class="set-lbl">How are you enjoying the app?</div>
+            <div id="fb-stars" style="display:flex;gap:6px">
+              <button type="button" class="fb-star" data-v="1" onclick="_fbSetRating(1)">☆</button>
+              <button type="button" class="fb-star" data-v="2" onclick="_fbSetRating(2)">☆</button>
+              <button type="button" class="fb-star" data-v="3" onclick="_fbSetRating(3)">☆</button>
+              <button type="button" class="fb-star" data-v="4" onclick="_fbSetRating(4)">☆</button>
+              <button type="button" class="fb-star" data-v="5" onclick="_fbSetRating(5)">☆</button>
+            </div>
+          </div>
+          <!-- Category -->
+          <div class="set-row">
+            <div class="set-lbl">Category</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px" id="fb-cats">
+              <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'General')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> General</button>
+              <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Bug Report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M8 2l1.88 1.88"/><path d="M14.12 3.88L16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6z"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg> Bug Report</button>
+              <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Feature Request')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Feature Request</button>
+              <button type="button" class="fb-cat-btn" onclick="_fbSetCat(this,'Content Issue')">📝 Content Issue</button>
+            </div>
+          </div>
+          <!-- Comment -->
+          <div class="set-row">
+            <div class="set-lbl">Comments <span style="font-weight:400;font-size:.85rem;opacity:.7">(optional)</span></div>
+            <div class="fb-comment-wrap" style="position:relative;border-radius:10px">
+              <textarea id="fb-comment" maxlength="500" rows="3" placeholder="Tell us more…"
+                style="width:100%;box-sizing:border-box;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.95rem;
+                  padding:10px 12px;border-radius:10px;border:none;
+                  background:rgba(255,255,255,0.45);
+                  color:var(--txt);resize:vertical;outline:none;display:block;
+                  transition:background .25s"></textarea>
+            </div>
+          </div>
+          <!-- Status & Submit -->
+          <div id="fb-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:.9rem;min-height:1.2rem;color:#27ae60"></div>
+          <button type="button" onclick="_submitFeedback()" class="set-save"
+            style="background:linear-gradient(135deg,#4a90d9,#27ae60);box-shadow:0 4px 0 rgba(0,0,0,.15);margin-top:0">
+            Send Feedback
+          </button>
+        </div>
+      </div>
+
+      <!-- What's New -->
+      <div class="set-section">
+        <div class="set-sec-head"><span class="set-sec-ico">📋</span> What's New</div>
+        <div class="set-body">
+          <div style="max-height:320px;overflow-y:auto">
 
     <div style="margin-bottom:14px">
-      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.30 — Current</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:#4a90d9;margin-bottom:4px">v5.31 — Current</div>
+      <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
+        <li><strong>Auto theme</strong> — The app now follows your iPhone's Light/Dark Mode setting automatically. A new "Auto" button in Settings → Appearance lets you switch back to automatic at any time after manually choosing a theme</li>
+        <li><strong>5-day streak push notification</strong> — When a student hits a 5-day practice streak, they receive a special "🔥 5-Day Streak!" push notification celebrating the milestone</li>
+        <li><strong>Streak-ending warning notification</strong> — If a student had an active streak yesterday but hasn't practiced yet today, the daily reminder changes to a "⚡ Don't break your streak!" alert so they know to act before midnight</li>
+        <li><strong>Parent Controls redesigned</strong> — Every box inside Parent Controls now uses the same card style as the rest of the app — identical appearance in both Light and Dark mode, no more mismatched glass panels</li>
+        <li><strong>Feedback: unclick stars &amp; categories</strong> — Tapping an already-selected star or category now deselects it, so it's easy to change your mind before submitting</li>
+      </ul>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:1rem;color:var(--txt2);margin-bottom:4px">v5.30</div>
       <ul style="margin:0;padding-left:18px;font-size:.85rem;color:var(--txt2);line-height:1.8">
         <li><strong>Major UI overhaul — Parent Controls</strong> — Every card, button, input, and text area inside Parent Controls now uses the app's frosted-glass design language with backdrop blur, asymmetric borders, and soft shadows</li>
         <li><strong>Final Test timer</strong> — Parents can now set a separate time limit for the Final Test (just like Lesson Quiz and Unit Quiz timers), with 1-second precision below one minute</li>
@@ -10769,14 +11616,11 @@ function closeInstall(){
       </ul>
     </div>
 
-  </div>
-            </div>
-
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
 
@@ -10896,7 +11740,7 @@ function closeInstall(){
 </div>
 
 <!-- ── FORGOT PIN MODAL ── -->
-<div class="install-overlay centered" id="forgot-pin-modal" style="display:none;z-index:6000" onclick="if(event.target===this)closeForgotPin()">
+<div class="install-overlay centered" id="forgot-pin-modal" style="display:none;z-index:6000" onclick="if(event.target===this&&_backdropCloseAllowed)closeForgotPin()">
   <div class="install-box pin-box" style="max-width:420px;position:relative">
     <div style="text-align:center;margin-bottom:4px"><span style="font-size:2.4rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></span></div>
     <h2>Reset Your PIN</h2>
@@ -10943,7 +11787,7 @@ function closeInstall(){
 </div>
 
 <!-- ── UNIT PIN UNLOCK MODAL ── -->
-<div class="install-overlay centered" id="unit-pin-modal" style="display:none" onclick="if(event.target===this)closeUnitPinModal()">
+<div class="install-overlay centered" id="unit-pin-modal" style="display:none" onclick="if(event.target===this&&_backdropCloseAllowed)closeUnitPinModal()">
   <div class="install-box pin-box" style="max-width:340px;text-align:center;position:relative">
     <button onclick="closeUnitPinModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:rgba(60,80,100,0.65)">×</button>
     <div style="margin-bottom:6px"><span id="upm-icon" style="font-size:2.2rem;display:inline-flex;width:2.2rem;height:2.2rem;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div>
@@ -10997,7 +11841,7 @@ function closeInstall(){
 </div>
 
 <!-- ── PIN ENTRY MODAL ── -->
-<div class="install-overlay centered" id="pin-modal" style="display:none" onclick="if(event.target===this)closePinModal()">
+<div class="install-overlay centered" id="pin-modal" style="display:none" onclick="if(event.target===this&&_backdropCloseAllowed)closePinModal()">
   <div class="install-box pin-box" style="max-width:340px;text-align:center;position:relative">
     <button onclick="closePinModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:rgba(60,80,100,0.65)">×</button>
     <div style="font-size:2.2rem;margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></div>
