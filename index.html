@@ -5258,15 +5258,16 @@ async function _savePin(pin){
   localStorage.setItem(PARENT_PIN_KEY, hash);
 }
 
-// Verify entered PIN against stored hash (auto-migrates old plain-text PINs)
+// Verify entered PIN against stored hash
 async function _verifyPin(entered){
   const stored = localStorage.getItem(PARENT_PIN_KEY);
   const isHashed = stored && stored.length === 64;
   if(!isHashed){
-    // Legacy plain-text PIN (or no PIN = default 1234) — migrate on correct entry
-    const plainPin = stored || DEFAULT_PIN;
-    if(String(entered) === plainPin){
-      _savePin(plainPin).catch(()=>{}); // migrate in background — don't block on HTTP
+    // No hashed PIN stored — compare against default PIN hash
+    const defaultHash = await _hashPin(DEFAULT_PIN);
+    const enteredHash = await _hashPin(entered);
+    if(enteredHash === defaultHash){
+      _savePin(DEFAULT_PIN).catch(()=>{}); // persist hash for future checks
       return true;
     }
     return false;
@@ -5372,7 +5373,7 @@ async function _initOneTap(){
       use_fedcm_for_prompt: true,
       callback: async ({ credential }) => {
         const { error } = await _supa.auth.signInWithIdToken({ provider:'google', token:credential, nonce:_oneTapNonce });
-        if(error){ const m=document.getElementById('ls-msg'); if(m) m.textContent=error.message; }
+        if(error){ const m=document.getElementById('ls-msg'); if(m) m.textContent=_friendlyError(error); }
       }
     });
   }
@@ -5397,7 +5398,7 @@ async function _lsOAuth(provider){
       options:{ redirectTo: location.origin + '/' }
     });
     if(error){
-      if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ ' + error.message; }
+      if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ ' + _friendlyError(error); }
       if(btn){ btn.disabled=false; btn.style.opacity='1'; btn.innerHTML=origHTML; }
     }
     // No error = browser is redirecting, leave button disabled
@@ -5444,7 +5445,7 @@ async function _lsForgotPassword(){
   });
   if(error){
     msgEl.style.color = '#e74c3c';
-    msgEl.textContent = '⚠️ ' + error.message;
+    msgEl.textContent = '⚠️ ' + _friendlyError(error);
   } else {
     msgEl.style.color = '#27ae60';
     msgEl.textContent = '✅ Reset link sent — check your email!';
@@ -8765,8 +8766,10 @@ async function checkParentPin(){
     // Show first-time PIN change prompt if still using default
     const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
     if(isDefault){
-      msg.textContent = '⚠️ You are using the default PIN (1234). Please set a custom PIN below for security!';
+      msg.textContent = '⚠️ You must set a custom PIN before accessing parent controls.';
       msg.style.color = '#e67e22';
+      // Hide all parent panel content except the PIN change form
+      document.getElementById('parent-panel').style.display = 'none';
       // Auto-open the change PIN form
       setTimeout(()=>{
         document.getElementById('pin-change-area').style.display='block';
@@ -8918,6 +8921,9 @@ async function changePin(){
   document.getElementById('new-pin-inp').value = '';
   msg.textContent = '✅ PIN changed!';
   msg.style.color = '#27ae60';
+  // Reveal parent panel if it was hidden due to default PIN enforcement
+  const parentPanel = document.getElementById('parent-panel');
+  if(parentPanel && parentPanel.style.display === 'none') parentPanel.style.display = 'block';
   setTimeout(()=>{
     msg.textContent = '';
     document.getElementById('pin-change-area').style.display = 'none';
@@ -8934,7 +8940,7 @@ async function _pcChangePassword(){
   if(pw.length < 8){ msg.textContent='⚠️ Password must be at least 8 characters'; msg.style.color='#e74c3c'; return; }
   msg.textContent='Saving…'; msg.style.color='var(--txt2)';
   const { error } = await _supa.auth.updateUser({ password: pw });
-  if(error){ msg.textContent='❌ '+error.message; msg.style.color='#e74c3c'; return; }
+  if(error){ msg.textContent='❌ '+_friendlyError(error); msg.style.color='#e74c3c'; return; }
   inp.value='';
   msg.textContent='✅ Password changed!'; msg.style.color='#27ae60';
   setTimeout(()=>{ msg.textContent=''; document.getElementById('pc-pw-area').style.display='none'; }, 1800);
