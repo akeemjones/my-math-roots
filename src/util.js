@@ -188,37 +188,58 @@ function _updateParentTimerDisplay(){
 }
 
 // ── PIN SECURITY ─────────────────────────
-// Hash a PIN with SHA-256 + app salt so plain text is never stored
-async function _hashPin(pin){
+// Legacy SHA-256 hash — used only for silent migration of pre-v2 stored hashes
+async function _hashPinLegacy(pin){
   const encoder = new TextEncoder();
   const data = encoder.encode(String(pin) + 'mymathroots_pin_salt_2025');
   const hashBuf = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-// Save PIN as a hash
+// PBKDF2 hash with wb_app_secret — 100k iterations, device-specific entropy
+async function _hashPin(pin){
+  const secret = localStorage.getItem('wb_app_secret') || 'fallback';
+  const keyMat = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(String(pin) + secret),
+    { name: 'PBKDF2' }, false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name:'PBKDF2', salt: new TextEncoder().encode('mymathroots_pin_v2'),
+      iterations: 100000, hash: 'SHA-256' },
+    keyMat, 256
+  );
+  return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Save PIN as a PBKDF2 hash; mark version so _verifyPin skips legacy path
 async function _savePin(pin){
   const hash = await _hashPin(pin);
   localStorage.setItem(PARENT_PIN_KEY, hash);
+  localStorage.setItem('wb_pin_v', '2');
 }
 
 // Returns true if a parent PIN has been explicitly set (i.e. a hash is stored)
 function isPinSetup(){ return !!localStorage.getItem(PARENT_PIN_KEY); }
 
-// Verify entered PIN against stored hash
+// Verify entered PIN against stored hash.
+// wb_pin_v='2' → PBKDF2; absent/other → legacy SHA-256 (upgrades silently on success).
 async function _verifyPin(entered){
   const stored = localStorage.getItem(PARENT_PIN_KEY);
-  const isHashed = stored && stored.length === 64;
-  if(!isHashed){
-    // No PIN set or legacy plain-text stored — deny entry; first-setup flow intercepts before this
-    return false;
-  }
+  if(!stored || stored.length !== 64) return false;
+  const ver = localStorage.getItem('wb_pin_v') || '1';
   try {
-    const enteredHash = await _hashPin(entered);
-    return enteredHash === stored;
-  } catch(e) {
-    return false; // crypto.subtle unavailable (non-HTTPS) — deny
-  }
+    if(ver === '2'){
+      return (await _hashPin(entered)) === stored;
+    } else {
+      // Legacy SHA-256 path — migrate to PBKDF2 silently on success
+      const legacyHash = await _hashPinLegacy(entered);
+      if(legacyHash !== stored) return false;
+      const newHash = await _hashPin(entered);
+      localStorage.setItem(PARENT_PIN_KEY, newHash);
+      localStorage.setItem('wb_pin_v', '2');
+      return true;
+    }
+  } catch { return false; }
 }
 
 // ── DEVICE-SCOPED EMAIL ENCRYPTION (SEC-9) ───────────────────────────────────
