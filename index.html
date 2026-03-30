@@ -90,7 +90,7 @@
         <button id="ls-tab-login"  class="auth-tab-btn active" type="button" data-action="_lsSwitchTab" data-arg="login">Sign In</button>
         <button id="ls-tab-signup" class="auth-tab-btn idle"   type="button" data-action="_lsSwitchTab" data-arg="signup">Create Account</button>
       </div>
-      <form onsubmit="return false">
+      <form data-nosubmit>
       <!-- Honeypot — invisible to humans, traps bots. NEVER remove or label this. -->
       <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true" tabindex="-1">
         <input type="text" id="ls-hp" name="website" autocomplete="off" tabindex="-1" value="">
@@ -110,7 +110,7 @@
       </div>
       <!-- Password -->
       <div style="margin-bottom:4px;position:relative">
-        <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 8 characters)" autocomplete="current-password" style="font-size:var(--fs-base);width:100%;box-sizing:border-box;padding-right:44px" onkeydown="if(event.key==='Enter')_lsSubmit()" oninput="_updatePwStrength()">
+        <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 8 characters)" autocomplete="current-password" style="font-size:var(--fs-base);width:100%;box-sizing:border-box;padding-right:44px" data-oninput="_updatePwStrength">
         <button type="button" id="ls-pw-toggle" data-action="_lsTogglePw" tabindex="-1"
           style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:var(--fs-md);padding:4px;line-height:1;-webkit-tap-highlight-color:transparent;color:var(--txt2)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
@@ -383,7 +383,7 @@
       <div class="set-body">
         <div class="set-row">
           <div class="set-lbl">Student Name <small>shown in score history</small></div>
-          <input class="set-inp" id="set-student" type="text" placeholder="e.g. Emma" maxlength="30" oninput="autoSaveSettings()">
+          <input class="set-inp" id="set-student" type="text" placeholder="e.g. Emma" maxlength="30" data-oninput="autoSaveSettings">
         </div>
       </div>
     </div>
@@ -1076,8 +1076,7 @@
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
       <input type="tel" inputmode="numeric" id="fp-answer-inp"
         placeholder="Your answer" maxlength="6"
-        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-        onkeydown="if(event.key==='Enter')checkForgotAnswer()"
+        data-oninput="_numericOnlyAny" data-submit-on="enter" data-submit-action="checkForgotAnswer"
         style="flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-lg);
           padding:12px 14px;border:2.5px solid var(--inp-border);border-radius:14px;
           outline:none;background:var(--bg3);color:var(--txt);text-align:center">
@@ -1116,7 +1115,7 @@
     <div style="margin-bottom:8px;display:flex;justify-content:center">
       <input class="set-inp" type="tel" inputmode="numeric" id="upm-pin-inp"
         placeholder="· · · ·" maxlength="4" autocomplete="off"
-        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"
+        data-oninput="_numericOnly4"
         style="box-sizing:border-box;width:180px;font-size:var(--fs-xl);letter-spacing:10px;text-align:center;padding:14px 10px;">
     </div>
     <div id="upm-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);min-height:1.2rem;margin-bottom:10px;color:#e74c3c"></div>
@@ -1149,7 +1148,7 @@
     </div>
     <!-- Password -->
     <div style="margin-bottom:6px">
-      <input class="set-inp" id="auth-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:var(--fs-base);width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')submitAuth()">
+      <input class="set-inp" id="auth-password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="font-size:var(--fs-base);width:100%;box-sizing:border-box">
     </div>
     <!-- Error/status -->
     <div id="auth-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
@@ -1171,7 +1170,7 @@
       <input class="set-inp" id="parent-pin-inp" type="tel" inputmode="numeric"
         pattern="[0-9]*" placeholder="· · · ·" maxlength="4" autocomplete="off"
         style="box-sizing:border-box;width:180px;font-size:var(--fs-xl);letter-spacing:10px;text-align:center;padding:14px 10px;"
-        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)">
+        data-oninput="_numericOnly4">
     </div>
     <div id="pin-default-hint" style="font-size:var(--fs-sm);color:var(--txt2);font-weight:700;margin-bottom:8px;line-height:1.6">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg> Default PIN is <strong style="color:var(--txt)">1234</strong>

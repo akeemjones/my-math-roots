@@ -1148,6 +1148,8 @@ function _clearUserData(){
   CUR.unitIdx = 0; CUR.lessonIdx = 0; CUR.quiz = null;
   _supaUser = null;
   _carouselInited = false;
+  // Disconnect carousel observer to prevent stale node references after sign-out
+  if(window._carouselObserver){ window._carouselObserver.disconnect(); window._carouselObserver = null; }
   // Clear parent session timer to prevent leaked interval
   if(typeof _parentTimerInterval !== 'undefined') clearInterval(_parentTimerInterval);
 

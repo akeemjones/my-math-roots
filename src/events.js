@@ -67,7 +67,7 @@
     prevQ:                  ()    => prevQ(),
     _pickAnswer:            (a)   => _pickAnswer(Number(a)),
     _practiceWeak:          ()    => _practiceWeak(),
-    fetchAIHint:            (revId, dataJson) => { const {q,chosen,correct} = JSON.parse(dataJson); _fetchAIHint(revId, q, chosen, correct); },
+    fetchAIHint:            (revId, dataJson) => { try{ const {q,chosen,correct} = JSON.parse(dataJson); _fetchAIHint(revId, q, chosen, correct); }catch(e){ if(location.hostname==='localhost') console.warn('[events] fetchAIHint: bad JSON in data-arg2', e); } },
     restartQuiz:            ()    => restartQuiz(),
     cancelRestart:          ()    => cancelRestart(),
     confirmRestart:         ()    => confirmRestart(),
@@ -196,6 +196,16 @@
 
     // ── Login-screen compound: show login-screen and switch to login tab ──────
     _showLoginScreen:       ()    => { show('login-screen'); typeof _lsSwitchTab === 'function' && _lsSwitchTab('login'); },
+
+    // ── Login-screen input handlers ──────────────────────────────────────────
+    // Password strength indicator (signup tab) — delegates to global
+    _updatePwStrength:      ()    => { if(typeof window._updatePwStrength === 'function') window._updatePwStrength(); },
+
+    // ── Input helpers (replaces inline oninput= handlers) ────────────────────
+    // Strip non-numeric chars; cap to 4 digits (PIN fields)
+    _numericOnly4:          (el)  => { if(el) el.value = el.value.replace(/[^0-9]/g,'').slice(0,4); },
+    // Strip non-numeric chars; no length cap (general numeric inputs)
+    _numericOnlyAny:        (el)  => { if(el) el.value = el.value.replace(/[^0-9]/g,''); },
   };
 
   // ── Click dispatcher (capture phase beats stopPropagation on children) ──
@@ -217,25 +227,37 @@
   }, true);
 
   // ── Enter-key submit ──────────────────────────────────────────────────────
-  // Replaces: onkeydown="if(event.key==='Enter')_lsSubmit()"
-  // Activate with: data-submit-on="enter"
+  // Replaces: onkeydown="if(event.key==='Enter')fnName()"
+  // Options:
+  //   data-submit-on="enter"              → calls _lsSubmit() (default / legacy)
+  //   data-submit-on="enter" data-submit-action="actionName" → calls named action
+  //   id="ls-password"                    → calls _lsSubmit() (hard-wired legacy)
+  //   id="auth-password"                  → calls submitAuth() (hard-wired legacy)
   document.addEventListener('keydown', function _keyDispatch(e){
     if(e.key !== 'Enter') return;
     const el = e.target;
-    if(el.id === 'ls-password' || el.dataset.submitOn === 'enter'){
+    if(el.id === 'auth-password'){
+      e.preventDefault();
+      if(typeof submitAuth === 'function') submitAuth();
+    } else if(el.id === 'ls-password' || (el.dataset.submitOn === 'enter' && !el.dataset.submitAction)){
       e.preventDefault();
       if(typeof _lsSubmit === 'function') _lsSubmit();
+    } else if(el.dataset.submitOn === 'enter' && el.dataset.submitAction){
+      e.preventDefault();
+      const fn = _ACTIONS[el.dataset.submitAction] || (typeof window[el.dataset.submitAction] === 'function' ? window[el.dataset.submitAction] : null);
+      if(fn) fn();
     }
   });
 
   // ── Input event dispatch ──────────────────────────────────────────────────
   // Replaces: oninput="fnName()"
   // Activate with: data-oninput="actionName"
+  // The action is called with (el) where el is the input element.
   document.addEventListener('input', function _inputDispatch(e){
     const name = e.target.dataset.oninput;
     if(!name) return;
     const fn = _ACTIONS[name] || (typeof window[name] === 'function' ? window[name] : null);
-    if(fn) fn();
+    if(fn) fn(e.target);
   });
 
   // ── Submit suppression ────────────────────────────────────────────────────
