@@ -176,7 +176,7 @@ setTimeout(() => {
   const splash = document.getElementById('auth-splash');
   if(splash && splash.style.display !== 'none'){
     _dismissSplash();
-    const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname) || /^192\.168\./.test(location.hostname);
+    const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
       // Logged-in user whose data load hung — show home with whatever local data we have
       show('home'); buildHome(); _installHistoryGuard();
