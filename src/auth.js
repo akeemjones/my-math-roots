@@ -996,7 +996,9 @@ async function _updateStreak(){
 async function _pushScores(){
   if(!_supa || !_supaUser || !SCORES.length) return;
   try{
-    const rows = SCORES.map(s => ({
+    // Filter out entries with a _sig that doesn't verify. Entries without _sig pass through (backwards compat).
+    const verifiedScores = SCORES.filter(s => !s._sig || _scoreValid(s));
+    const rows = verifiedScores.map(s => ({
       user_id:_supaUser.id, local_id:s.id,
       qid:s.qid||'', label:s.label||'', type:s.type||'',
       score:s.score||0, total:s.total||0, pct:s.pct||0,
