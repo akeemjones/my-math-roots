@@ -801,7 +801,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=
 // ════════════════════════════════════════
 //  PARENT CONTROLS
 // ════════════════════════════════════════
-const APP_VERSION = 'v5.32';
+const APP_VERSION = 'v5.33';
 const TIMER_KEY = 'wb_quiz_timer';
 const QUIZ_PAUSE_KEY = 'wb_paused_quiz';
 const SOUND_KEY = 'wb_sound';

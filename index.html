@@ -634,7 +634,19 @@
           <div style="max-height:320px;overflow-y:auto">
 
     <div class="mb-14">
-      <div class="cl-version-brand">v5.32 — Current</div>
+      <div class="cl-version-brand">v5.33 — Current</div>
+      <ul class="list-body">
+        <li><strong>Instant offline launch</strong> — The app now opens immediately from your device's cache whenever you're offline or on a slow connection, updating silently in the background</li>
+        <li><strong>PIN protection hardened</strong> — Parent PIN now uses PBKDF2 (100,000 rounds) with a device-unique secret — your PIN is far stronger against brute-force attempts. Existing PINs migrate silently on next login</li>
+        <li><strong>Score integrity</strong> — Quiz scores are now signed with a cryptographic HMAC key, preventing any tampered scores from syncing to the cloud</li>
+        <li><strong>Device-locked unlock codes</strong> — Parent unlock tokens are now device-specific; a code copied from one device cannot unlock another</li>
+        <li><strong>Stable question IDs</strong> — Every question now has a permanent ID (5,073 total). This is the foundation for upcoming spaced-repetition review — the app will remember exactly which questions each student finds hard</li>
+        <li><strong>Security audit — all findings resolved</strong> — A full internal audit identified and fixed every High, Medium, and Low security finding, including removing inline script permissions from the Content Security Policy</li>
+      </ul>
+    </div>
+
+    <div class="mb-14">
+      <div class="cl-version">v5.32</div>
       <ul class="list-body">
         <li><strong>Dark mode polish</strong> — Every popup and modal (timer, access, settings, PIN entry, parent controls) now uses the full frosted-glass dark look — no more white or washed-out boxes in Dark Mode</li>
         <li><strong>Faster repeat visits</strong> — The app's JavaScript is now loaded as a separate cached file. After your first visit the code loads instantly from your device's cache</li>
