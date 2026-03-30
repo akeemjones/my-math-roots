@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Math Roots — Parent Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <header class="db-header">
+    <div class="db-header-title">&#x1F4CA; Parent Dashboard</div>
+    <button class="db-signout-btn" onclick="signOut()">Sign Out</button>
+  </header>
+
+  <main class="db-main" id="db-root">
+    <p class="db-empty" style="margin-top:40px;text-align:center">Loading...</p>
+  </main>
+
+  <script src="dashboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>
