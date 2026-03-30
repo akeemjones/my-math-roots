@@ -881,9 +881,11 @@ function _lockoutSig(count, ts){
   }
   return String(hash);
 }
-// Sign the "Unlock All" token so it can't be forged by writing 'all' to localStorage
+// Sign the "Unlock All" token so it can't be forged by writing 'all' to localStorage.
+// wb_app_secret makes the signature device-specific and unguessable without DevTools access.
 function _signUnlockToken(token){
-  const str = token + ':mymathroots_unlock_v1';
+  const secret = localStorage.getItem('wb_app_secret') || 'fallback';
+  const str = token + ':mymathroots_unlock_v1:' + secret;
   let h = 0;
   for(let i = 0; i < str.length; i++) h = ((h<<5)-h+str.charCodeAt(i))|0;
   return String(h >>> 0);

@@ -166,6 +166,12 @@ if(vEl) vEl.textContent = APP_VERSION;
 if(!localStorage.getItem('wb_app_secret')){
   localStorage.setItem('wb_app_secret', crypto.randomUUID());
 }
+// _signUnlockToken now incorporates wb_app_secret; clear old device-agnostic unlock tokens
+// so parents re-authorize once rather than using pre-computed tokens.
+if(!localStorage.getItem('wb_unlock_migrated_v2')){
+  localStorage.removeItem('wb_parent_unlock');
+  localStorage.setItem('wb_unlock_migrated_v2', '1');
+}
 supabaseInit();
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});
