@@ -875,9 +875,8 @@ function _showSoftGate(){
   const _bg = isDark
     ? 'background:#0d1e35;box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
     : 'background:linear-gradient(145deg,rgba(255,255,255,0.95) 0%,rgba(240,248,255,0.88) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18),0 2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
-  const overlay = document.createElement('div');
-  overlay.id = 'soft-gate-modal';
-  Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'9800',background:'rgba(0,0,0,.52)',display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'});
+  const overlay = _makeNudgeOverlay('soft-gate-modal', false);
+  if(!overlay) return;
   overlay.innerHTML = `<div style="width:100%;max-width:360px;border-radius:24px;padding:28px 24px 22px;${_bg};backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
     <div style="text-align:center;margin-bottom:22px">
       <div style="font-size:2.2rem;margin-bottom:8px">👋</div>
@@ -895,7 +894,6 @@ function _showSoftGate(){
     <button onclick="_guestConsentContinue()" style="width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#ff6b00,#e05200);color:#fff;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);cursor:pointer;margin-bottom:10px;letter-spacing:.3px;touch-action:manipulation">Continue as Guest →</button>
     <button onclick="document.getElementById('soft-gate-modal').remove();show('login-screen');_lsSwitchTab('signup');" style="width:100%;padding:12px;border-radius:14px;border:2px solid #4a90d9;background:transparent;color:#4a90d9;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);cursor:pointer;margin-bottom:6px;touch-action:manipulation">Create a Free Account</button>
   </div>`;
-  document.body.appendChild(overlay);
 }
 
 function _guestConsentContinue(){
