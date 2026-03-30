@@ -830,19 +830,17 @@ function _checkSoftGate(type){
 }
 
 function _showSignupNudge(){
-  if(document.getElementById('signup-nudge-modal')) return;
+  const overlay = _makeNudgeOverlay('signup-nudge-modal', true);
+  if(!overlay) return;
   const isDark = document.body.classList.contains('dark');
   const _bg = isDark
     ? 'background:#0d1e35;box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
     : 'background:linear-gradient(145deg,rgba(255,255,255,0.95) 0%,rgba(240,248,255,0.88) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18),0 2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
-  const overlay = document.createElement('div');
-  overlay.id = 'signup-nudge-modal';
-  Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'9800',background:'rgba(0,0,0,.52)',display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'});
   overlay.innerHTML = `<div style="width:100%;max-width:360px;border-radius:24px;padding:28px 24px 22px;${_bg};backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
     <div style="text-align:center;margin-bottom:20px">
       <div style="font-size:2.4rem;margin-bottom:8px">🌟</div>
-      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-lg);color:var(--txt,#222);line-height:1.2">Great work on that lesson!</div>
-      <div style="font-size:var(--fs-sm);color:var(--txt2,#666);margin-top:10px;line-height:1.6">Your progress isn't saved yet.<br>Create a free account so you never lose it — it only takes 30 seconds!</div>
+      <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-lg);color:var(--txt,#222);line-height:1.2">Save Your Progress!</div>
+      <div style="font-size:var(--fs-sm);color:var(--txt2,#666);margin-top:10px;line-height:1.6">Create a free account to save your scores and unlock all features — it only takes 30 seconds!</div>
     </div>
     <button onclick="document.getElementById('signup-nudge-modal').remove();show('login-screen');_lsSwitchTab('signup');"
       style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);cursor:pointer;margin-bottom:10px;letter-spacing:.3px;touch-action:manipulation">
@@ -855,7 +853,6 @@ function _showSignupNudge(){
       </button>
     </div>
   </div>`;
-  document.body.appendChild(overlay);
 }
 
 // Creates a .nudge-overlay wrapper, appends to body, returns the element.
