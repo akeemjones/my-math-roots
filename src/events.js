@@ -80,7 +80,7 @@
     openScratchPad:         ()    => openScratchPad(),
     closeScratchPad:        ()    => closeScratchPad(),
     clearScratchPad:        ()    => clearScratchPad(),
-    setScratchColor:        (a)   => setScratchColor(a),
+    setScratchColor:        (a, b, el) => setScratchColor(a, el),
     setScratchTool:         (a)   => setScratchTool(a),
 
     // ── Home ────────────────────────────────────────────────────────────────
@@ -166,12 +166,36 @@
     // ── Pin-lockout poll ─────────────────────────────────────────────────────
     _upmCheck:              ()    => typeof _upmCheck === 'function' && _upmCheck(),
     checkLessonPin:         ()    => typeof checkLessonPinUnlock === 'function' && checkLessonPinUnlock(),
+
+    // ── Auth (sign-out / parent auth) ────────────────────────────────────────
+    _signOut:               ()    => typeof _signOut === 'function' && _signOut(),
+    _closeParentAuth:       ()    => typeof _closeParentAuth === 'function' && _closeParentAuth(),
+
+    // ── Parent controls – settings screen ───────────────────────────────────
+    togglePushNotifications:()    => typeof togglePushNotifications === 'function' && togglePushNotifications(),
+    toggleQuizTimer:        ()    => typeof toggleQuizTimer === 'function' && toggleQuizTimer(),
+    _pcChangePassword:      ()    => typeof _pcChangePassword === 'function' && _pcChangePassword(),
+    _pcShowPwArea:          ()    => { const el=document.getElementById('pc-pw-area'); if(el){ el.style.display='block'; document.getElementById('pc-new-pw')?.focus(); } },
+    _pcHidePwArea:          ()    => { const el=document.getElementById('pc-pw-area'); if(el) el.style.display='none'; const inp=document.getElementById('pc-new-pw'); if(inp) inp.value=''; },
+
+    // ── Parent screen navigation ──────────────────────────────────────────────
+    _goParentScreenSettings:()    => { typeof playSwooshBack === 'function' && playSwooshBack(); show('settings-screen'); },
+
+    // ── Feedback ─────────────────────────────────────────────────────────────
+    _fbSetRating:           (a)   => typeof _fbSetRating === 'function' && _fbSetRating(Number(a)),
+    _fbSetCat:              (a, b, el) => typeof _fbSetCat === 'function' && _fbSetCat(el, a),
+    _submitFeedback:        ()    => typeof _submitFeedback === 'function' && _submitFeedback(),
+
+    // ── Login-screen compound: show login-screen and switch to login tab ──────
+    _showLoginScreen:       ()    => { show('login-screen'); typeof _lsSwitchTab === 'function' && _lsSwitchTab('login'); },
   };
 
   // ── Click dispatcher (capture phase beats stopPropagation on children) ──
   document.addEventListener('click', function _clickDispatch(e){
     const el = e.target.closest('[data-action]');
     if(!el) return;
+    // data-self-only: only fire when the click target IS the element (backdrop-close pattern)
+    if('selfOnly' in el.dataset && e.target !== el) return;
     const action = el.dataset.action;
     const fn = _ACTIONS[action];
     if(!fn){
@@ -181,7 +205,7 @@
     }
     const arg  = el.dataset.arg  !== undefined ? el.dataset.arg  : null;
     const arg2 = el.dataset.arg2 !== undefined ? el.dataset.arg2 : null;
-    fn(arg, arg2);
+    fn(arg, arg2, el);
   }, true);
 
   // ── Enter-key submit ──────────────────────────────────────────────────────
