@@ -96,6 +96,17 @@ async function build(){
     }
   }
 
+  // ── Copy dashboard/ subdirectory ──
+  const dashSrc = path.join(__dirname, 'dashboard');
+  const dashDst = path.join(DIST, 'dashboard');
+  if(fs.existsSync(dashSrc)){
+    if(!fs.existsSync(dashDst)) fs.mkdirSync(dashDst, { recursive: true });
+    for(const file of fs.readdirSync(dashSrc)){
+      fs.copyFileSync(path.join(dashSrc, file), path.join(dashDst, file));
+      console.log(`📋 Copied:  dashboard/${file}`);
+    }
+  }
+
   console.log('\n🚀 Build complete → dist/');
 }
 
