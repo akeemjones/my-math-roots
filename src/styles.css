@@ -437,7 +437,8 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 
 /* All cards get smooth transform transition */
 .cs{ transition:transform .25s ease, opacity .25s ease; transform-origin:center;
-  backface-visibility:hidden; }
+  backface-visibility:hidden; transform:scale(0.88); opacity:0.80; }
+.cs.cs-focused{ transform:scale(1.0); opacity:1.0; }
 /* will-change applied only during active scroll via JS — avoids permanent GPU layer promotion */
 .cs.carousel-animating{ will-change:transform, opacity; transition:none; }
 /* hover transform moved to @media (hover:hover) block */
