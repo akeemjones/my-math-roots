@@ -652,7 +652,7 @@ function _guidedRemediation(qz, pct, u){
   </div>`;
 }
 
-function _finishQuiz(){
+async function _finishQuiz(){
   _clearTimer();
   _clearPausedQuiz(CUR.quiz ? CUR.quiz.id : ''); // Clear pause — quiz is done
   // Safety guard — if called with no active quiz, bail out
@@ -690,7 +690,7 @@ function _finishQuiz(){
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
   if(_supaUser || autoEntry.qid === 'lq_u1l1'){
-    if(_supaUser) autoEntry._sig = _scoreSig(autoEntry);
+    if(_supaUser) autoEntry._sig = await _scoreSig(autoEntry);
     SCORES.unshift(autoEntry);
     if(SCORES.length>200) SCORES.pop();
     saveSc();
@@ -997,7 +997,7 @@ function setScratchTool(tool){
   document.getElementById('sc-pen-btn').classList.toggle('active', tool==='pen');
   document.getElementById('sc-erase-btn').classList.toggle('active', tool==='eraser');
 }
-function confirmQuit(){
+async function confirmQuit(){
   _animateModalClose('quit-confirm-modal', ()=>{ document.getElementById('quit-confirm-modal').style.display='none'; });
   const qz = CUR.quiz;
   if(!qz) return;
@@ -1017,7 +1017,7 @@ function confirmQuit(){
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
   if(_supaUser || quitEntry.qid === 'lq_u1l1'){
-    if(_supaUser) quitEntry._sig = _scoreSig(quitEntry);
+    if(_supaUser) quitEntry._sig = await _scoreSig(quitEntry);
     SCORES.unshift(quitEntry);
     if(SCORES.length > 200) SCORES.pop();
     saveSc();
@@ -1032,7 +1032,7 @@ function confirmQuit(){
   else goUnit();
 }
 
-function confirmRestart(){
+async function confirmRestart(){
   _animateModalClose('restart-confirm-modal', ()=>{ document.getElementById('restart-confirm-modal').style.display='none'; });
   const qz = CUR.quiz;
   if(!qz) return;
@@ -1053,7 +1053,7 @@ function confirmRestart(){
       time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
     };
     if(_supaUser || abandonedEntry.qid === 'lq_u1l1'){
-      if(_supaUser) abandonedEntry._sig = _scoreSig(abandonedEntry);
+      if(_supaUser) abandonedEntry._sig = await _scoreSig(abandonedEntry);
       SCORES.unshift(abandonedEntry);
       if(SCORES.length > 200) SCORES.pop();
       saveSc();

@@ -305,18 +305,22 @@ async function _migrateEmailStorage(){
   } catch { /* silently ignore — migration is best-effort */ }
 }
 
-// SEC-2: Score signing — prevents tampered localStorage scores from reaching Supabase
-function _scoreSig(entry){
+// SEC-2: Score signing — prevents tampered localStorage scores from reaching Supabase.
+// Returns a 64-char hex HMAC-SHA256 signature keyed by wb_app_secret (device-unique).
+async function _scoreSig(entry){
   const secret = localStorage.getItem('wb_app_secret') || 'fallback';
-  const str = (entry.qid||'') + ':' + (entry.pct||0) + ':' + (entry.id||0) + ':' + secret;
-  let hash = 0;
-  for(let i = 0; i < str.length; i++){
-    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
-  }
-  return String(hash);
+  const msg = (entry.qid||'') + ':' + (entry.pct||0) + ':' + (entry.id||0);
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(msg));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-function _scoreValid(entry){
+async function _scoreValid(entry){
   if(!entry._sig) return false;
-  return entry._sig === _scoreSig(entry);
+  // Reject legacy DJB2 sigs (short numeric strings) — cleared at boot by _clearLegacySigs
+  if(!/^[0-9a-f]{64}$/.test(entry._sig)) return false;
+  return entry._sig === await _scoreSig(entry);
 }

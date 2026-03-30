@@ -997,7 +997,9 @@ async function _pushScores(){
   if(!_supa || !_supaUser || !SCORES.length) return;
   try{
     // Filter out entries with a _sig that doesn't verify. Entries without _sig pass through (backwards compat).
-    const verifiedScores = SCORES.filter(s => !s._sig || _scoreValid(s));
+    // _scoreValid is async (HMAC-SHA256), so use Promise.all + map instead of .filter().
+    const sigChecks = await Promise.all(SCORES.map(s => s._sig ? _scoreValid(s) : Promise.resolve(true)));
+    const verifiedScores = SCORES.filter((_, i) => sigChecks[i]);
     const rows = verifiedScores.map(s => ({
       user_id:_supaUser.id, local_id:s.id,
       qid:s.qid||'', label:s.label||'', type:s.type||'',

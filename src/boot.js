@@ -172,6 +172,28 @@ if(!localStorage.getItem('wb_unlock_migrated_v2')){
   localStorage.removeItem('wb_parent_unlock');
   localStorage.setItem('wb_unlock_migrated_v2', '1');
 }
+// SEC-2 hardening: clear legacy DJB2 score sigs (short numeric strings).
+// They pass through the !s._sig backward-compat path in _pushScores and
+// will be re-signed with HMAC-SHA256 next time the quiz completes.
+(function _clearLegacySigs(){
+  if(localStorage.getItem('wb_sig_migrated_v2')) return;
+  try{
+    const raw = localStorage.getItem('wb_sc5');
+    if(raw){
+      const scores = JSON.parse(raw);
+      let changed = false;
+      scores.forEach(s => {
+        if(s._sig && !/^[0-9a-f]{64}$/.test(s._sig)){ delete s._sig; changed = true; }
+      });
+      if(changed) localStorage.setItem('wb_sc5', JSON.stringify(scores));
+    }
+    // Also patch the in-memory SCORES array if already loaded
+    if(typeof SCORES !== 'undefined'){
+      SCORES.forEach(s => { if(s._sig && !/^[0-9a-f]{64}$/.test(s._sig)) delete s._sig; });
+    }
+  } catch {}
+  localStorage.setItem('wb_sig_migrated_v2', '1');
+})();
 supabaseInit();
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});
