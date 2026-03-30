@@ -11,8 +11,10 @@ const _APP_GLOBALS = [
   '_sr','_shuffle','_sanitize','_escHtml','_validEmail','_friendlyError','_rateLimit',
   '_appErrors','_logError','_pwStrength','_updatePwStrength','_lsLastSignupEmail','_lsResend',
   'PARENT_SESSION_MINS','_parentTimerInterval','_parentSessionTs',
-  '_startParentSession','_updateParentTimerDisplay','_hashPin','_savePin','_verifyPin',
+  '_startParentSession','_updateParentTimerDisplay',
+  '_hashPinLegacy','_hashPin','_savePin','isPinSetup','_verifyPin',
   '_getDeviceKey','_encryptStr','_decryptStr','_migrateEmailStorage',
+  '_scoreSig','_scoreValid','_qId',
   // state.js
   'DONE','SCORES','safeLoad','saveDone','saveSc','STREAK',
   'MASTERY','saveMastery','_qKey','_updateMastery',
@@ -194,6 +196,19 @@ if(!localStorage.getItem('wb_unlock_migrated_v2')){
   } catch {}
   localStorage.setItem('wb_sig_migrated_v2', '1');
 })();
+
+// MASTERY key migration: text-hash → stable question IDs (wb_migrated_qids_v1)
+// Adds nextReview:null to all entries; key re-mapping is done lazily in _updateMastery.
+if(!localStorage.getItem('wb_migrated_qids_v1')){
+  try{
+    Object.keys(MASTERY).forEach(function(k){
+      if(MASTERY[k] && !('nextReview' in MASTERY[k])) MASTERY[k].nextReview = null;
+    });
+    saveMastery();
+  } catch {}
+  localStorage.setItem('wb_migrated_qids_v1', '1');
+}
+
 supabaseInit();
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});

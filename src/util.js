@@ -324,3 +324,7 @@ async function _scoreValid(entry){
   if(!/^[0-9a-f]{64}$/.test(entry._sig)) return false;
   return entry._sig === await _scoreSig(entry);
 }
+
+// Stable question identity: prefer the injected `id` field; fall back to text hash for
+// questions that pre-date the stable-ID migration (guests on old cached data).
+function _qId(q){ return (q && q.id) ? q.id : _qKey(q ? q.t : ''); }

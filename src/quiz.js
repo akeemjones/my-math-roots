@@ -246,7 +246,7 @@ function _masteryWeightedSample(bank, n){
   const now = Date.now();
   const DAY = 86400000;
   const pool = bank.map(function(q){
-    const m = MASTERY[_qKey(q.t)];
+    const m = MASTERY[_qId(q)];
     let w;
     if(!m || m.attempts === 0){
       w = 1.5; // never seen — moderate priority
@@ -506,7 +506,7 @@ function _pickAnswer(btnIdx){
       if(!isOk) _fetchAIExplanation(revId, q.t, chosen, correct);
     }
 
-    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs});
+    qz.answers.push({id:q.id, t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs});
 
     const nb = document.getElementById('next-btn');
     if(nb){
@@ -586,7 +586,7 @@ function _practiceWeak(){
     if(u && u._loaded){
       const allQ = u.lessons.flatMap(function(l){ return l.qBank || []; });
       allQ.forEach(function(q){
-        const m = MASTERY[_qKey(q.t)];
+        const m = MASTERY[_qId(q)];
         if(m && m.attempts >= 2 && (m.correct / m.attempts) < 0.6){
           if(!weakBank.some(function(w){ return w.t === q.t; })) weakBank.push(q);
         }
