@@ -16,6 +16,38 @@ function _lsSetRole(role) {
   if (btnParent)  btnParent.classList.toggle('active',  role === 'parent');
 }
 
+var _lsCardIdx = 0;
+
+function _lsCarouselGo(idx) {
+  idx = parseInt(idx, 10) || 0;
+  var track = document.getElementById('ls-carousel-track');
+  if (track) track.style.transform = 'translateX(' + (-50 * idx) + '%)';
+  // Move shared form to the active card's mount point
+  var form = document.getElementById('ls-form-shared');
+  var mount = document.getElementById('ls-mount-' + idx);
+  if (form && mount) mount.appendChild(form);
+  // Update dot indicators
+  document.querySelectorAll('.ls-dot').forEach(function(dot, i) {
+    dot.classList.toggle('active', i === idx);
+  });
+  _lsCardIdx = idx;
+  _lsSetRole(idx === 0 ? 'student' : 'parent');
+}
+
+function _lsInitCarousel() {
+  var track = document.getElementById('ls-carousel-track');
+  if (!track || track._carouselInited) return;
+  track._carouselInited = true;
+  var startX = 0;
+  track.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  track.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) _lsCarouselGo(dx < 0 ? 1 : 0);
+  }, { passive: true });
+}
+
 function _dismissSplash(fadeInId){
   const splash = document.getElementById('auth-splash');
   if(fadeInId){
@@ -66,6 +98,7 @@ function supabaseInit(){
     // CDN failed or credentials not set — dismiss splash and show login so user isn't stuck
     const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
+    _lsInitCarousel();
     _dismissSplash('login-screen');
     return;
   }
@@ -109,7 +142,7 @@ function supabaseInit(){
           show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
-          show('login-screen'); _initOneTap();
+          show('login-screen'); _initOneTap(); _lsInitCarousel();
           _dismissSplash('login-screen');
           return;
         }

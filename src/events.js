@@ -40,6 +40,7 @@
     _lsOAuth:               (a)   => _lsOAuth(a),
     _lsSwitchTab:           (a)   => _lsSwitchTab(a),
     _lsSetRole:             (a)   => _lsSetRole(a),
+    _lsCarouselGo:          (a)   => _lsCarouselGo(parseInt(a, 10)),
     _lsSubmit:              ()    => _lsSubmit(),
     _lsTogglePw:            ()    => _lsTogglePw(),
     _lsResend:              ()    => _lsResend(),

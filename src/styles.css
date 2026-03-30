@@ -2159,8 +2159,15 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   margin:0 auto;
 }
 
-/* Role selector */
-.ls-role-row{display:flex;gap:8px;margin-bottom:14px}
-.ls-role-btn{flex:1;padding:10px 8px;border:2px solid #e0e0e0;border-radius:12px;background:#f8f9fa;color:#546e7a;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
-.ls-role-btn.active{border-color:#1565C0;background:#e3f2fd;color:#1565C0}
+/* ── Login carousel ── */
+.ls-carousel-outer{width:100%;max-width:400px;overflow:hidden;border-radius:28px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 4px 16px rgba(0,0,0,0.1)}
+.ls-carousel-track{display:flex;width:200%;transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;align-items:flex-start}
+.ls-card{width:50%;background:#fff;padding:22px 24px;box-sizing:border-box}
+.ls-card-role-hd{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border2,#e0e0e0)}
+.ls-card-role-icon{font-size:2rem;line-height:1;margin-bottom:6px}
+.ls-card-role-title{font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-xl);color:var(--txt);font-weight:700}
+.ls-card-role-sub{font-size:var(--fs-xs);color:var(--txt2);margin-top:3px}
+.ls-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:12px}
+.ls-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,.45);cursor:pointer;padding:0;transition:all .2s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.ls-dot.active{width:24px;border-radius:4px;background:#fff}
 
