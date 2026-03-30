@@ -162,6 +162,10 @@ buildHome();
 // Set version display
 const vEl = document.getElementById('app-version');
 if(vEl) vEl.textContent = APP_VERSION;
+// SEC-6/SEC-2: Generate per-device secret used for lockout and score signing
+if(!localStorage.getItem('wb_app_secret')){
+  localStorage.setItem('wb_app_secret', crypto.randomUUID());
+}
 supabaseInit();
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});
@@ -172,7 +176,7 @@ setTimeout(() => {
   const splash = document.getElementById('auth-splash');
   if(splash && splash.style.display !== 'none'){
     _dismissSplash();
-    const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname) || /^192\.168\./.test(location.hostname);
+    const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
       // Logged-in user whose data load hung — show home with whatever local data we have
       show('home'); buildHome(); _installHistoryGuard();

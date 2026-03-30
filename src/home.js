@@ -321,73 +321,28 @@ function initCarousel(){
   const track = document.getElementById('ugrid');
   if(!wrap || !track) return;
 
-  let _rafPending = false;
-  function updateFocus(){
-    const slides = track.querySelectorAll('.cs');
-    if(!slides.length) return;
-    // Batch ALL reads first, then ALL writes — avoids layout thrashing
-    const wrapRect = wrap.getBoundingClientRect();
-    const focusY = wrapRect.top + wrapRect.height * 0.35;  // spotlight near top of carousel
-    const falloff = wrapRect.height * 0.65;               // distance over which effect ramps to max
-    const updates = Array.from(slides).map(slide => {
-      const rect = slide.getBoundingClientRect();
-      const slideCY = rect.top + rect.height / 2;
-      const dist = Math.abs(slideCY - focusY);
-      const t = Math.min(dist / falloff, 1);
-      return {
-        slide,
-        scale:   (1.0 - t * 0.12).toFixed(3),  // max 12% shrink
-        opacity: (1.0 - t * 0.20).toFixed(3),   // max 20% fade
-      };
-    });
-    // All writes in one pass — no interleaved reads
-    updates.forEach(({ slide, scale, opacity }) => {
-      if(slide.dataset.lastScale !== scale){
-        slide.style.transform = `scale(${scale})`;
-        slide.dataset.lastScale = scale;
-      }
-      if(slide.dataset.lastOpacity !== opacity){
-        slide.style.opacity = opacity;
-        slide.dataset.lastOpacity = opacity;
-      }
-    });
-    _rafPending = false;
+  // Disconnect any previous observer (guard against repeated buildHome() calls)
+  if(window._carouselObserver) window._carouselObserver.disconnect();
+  // Remove old scroll listener if present
+  if(wrap._carouselScrollHandler){
+    wrap.removeEventListener('scroll', wrap._carouselScrollHandler);
+    wrap._carouselScrollHandler = null;
   }
 
-  let _scrollEndTimer = null;
-  function scheduleUpdate(){
-    if(!_rafPending){
-      _rafPending = true;
-      // Promote GPU layers only while scrolling
-      track.querySelectorAll('.cs').forEach(s => s.classList.add('carousel-animating'));
-      requestAnimationFrame(updateFocus);
-    }
-    // Remove GPU promotion 200ms after scroll stops
-    clearTimeout(_scrollEndTimer);
-    _scrollEndTimer = setTimeout(()=>{
-      if(!track.parentElement) return;
-      track.querySelectorAll('.cs').forEach(s => s.classList.remove('carousel-animating'));
-    }, 200);
-  }
+  const slides = track.querySelectorAll('.cs');
+  window._carouselObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      entry.target.classList.toggle('cs-focused', entry.isIntersecting);
+    });
+  }, { root: wrap, threshold: 0.6 });
 
-  // Remove previous listener to prevent stacking on repeated buildHome() calls
-  if(wrap._carouselScrollHandler) wrap.removeEventListener('scroll', wrap._carouselScrollHandler);
-  wrap._carouselScrollHandler = scheduleUpdate;
-  wrap.addEventListener('scroll', scheduleUpdate, {passive:true});
-  // Initial call after cards render
-  requestAnimationFrame(() => requestAnimationFrame(updateFocus));
+  slides.forEach(slide => window._carouselObserver.observe(slide));
 }
 
 function carouselGoTo(idx, smooth=true){
   CAR.idx=idx;
-  const wrap=document.getElementById('carousel-wrap');
-  const track=document.getElementById('ugrid');
-  if(!wrap||!track) return;
-  const slides=track.querySelectorAll('.cs');
-  if(!slides[idx]) return;
-  let top=0;
-  for(let i=0;i<idx;i++) top+=slides[i].offsetHeight+8;
-  wrap.scrollTo({top:Math.max(0,top-8), behavior:smooth?'smooth':'instant'});
+  const slide = document.querySelectorAll('#ugrid .cs')[idx];
+  if(slide) slide.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'nearest' });
 }
 
 let _skipNextHomeBuild=false;

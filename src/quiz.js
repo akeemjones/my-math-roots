@@ -690,6 +690,7 @@ function _finishQuiz(){
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
   if(_supaUser || autoEntry.qid === 'lq_u1l1'){
+    if(_supaUser) autoEntry._sig = _scoreSig(autoEntry);
     SCORES.unshift(autoEntry);
     if(SCORES.length>200) SCORES.pop();
     saveSc();
@@ -1016,6 +1017,7 @@ function confirmQuit(){
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
   if(_supaUser || quitEntry.qid === 'lq_u1l1'){
+    if(_supaUser) quitEntry._sig = _scoreSig(quitEntry);
     SCORES.unshift(quitEntry);
     if(SCORES.length > 200) SCORES.pop();
     saveSc();
@@ -1051,6 +1053,7 @@ function confirmRestart(){
       time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
     };
     if(_supaUser || abandonedEntry.qid === 'lq_u1l1'){
+      if(_supaUser) abandonedEntry._sig = _scoreSig(abandonedEntry);
       SCORES.unshift(abandonedEntry);
       if(SCORES.length > 200) SCORES.pop();
       saveSc();
