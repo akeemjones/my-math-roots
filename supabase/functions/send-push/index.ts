@@ -1,200 +1,114 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import webPush from 'npm:web-push';
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_URL        = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY')!;
-const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!;
-const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:developer@mymathroots.app';
+const VAPID_PUBLIC_KEY    = Deno.env.get('VAPID_PUBLIC_KEY')!;
+const VAPID_PRIVATE_KEY   = Deno.env.get('VAPID_PRIVATE_KEY')!;
+const VAPID_SUBJECT       = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:developer@mymathroots.app';
 
-// ── VAPID signing helpers ────────────────────────────────────────────────────
-function b64urlToUint8(b64: string): Uint8Array {
-  const pad = '='.repeat((4 - b64.length % 4) % 4);
-  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
-  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-}
+webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-function uint8ToB64url(buf: Uint8Array): string {
-  return btoa(String.fromCharCode(...buf)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-async function makeVapidJwt(audience: string): Promise<string> {
-  const header = { typ: 'JWT', alg: 'ES256' };
-  const payload = {
-    aud: audience,
-    exp: Math.floor(Date.now() / 1000) + 12 * 3600,
-    sub: VAPID_SUBJECT,
-  };
-  const encode = (obj: unknown) => uint8ToB64url(new TextEncoder().encode(JSON.stringify(obj)));
-  const unsigned = `${encode(header)}.${encode(payload)}`;
-
-  // Import private key
-  const privKey = await crypto.subtle.importKey(
-    'pkcs8',
-    (() => {
-      // Reconstruct PKCS8 from raw 32-byte scalar
-      const raw = b64urlToUint8(VAPID_PRIVATE_KEY);
-      const header = new Uint8Array([0x30,0x41,0x02,0x01,0x00,0x30,0x13,0x06,0x07,0x2a,0x86,0x48,0xce,0x3d,0x02,0x01,0x06,0x08,0x2a,0x86,0x48,0xce,0x3d,0x03,0x01,0x07,0x04,0x27,0x30,0x25,0x02,0x01,0x01,0x04,0x20]);
-      const der = new Uint8Array(header.length + raw.length);
-      der.set(header); der.set(raw, header.length);
-      return der.buffer;
-    })(),
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    false,
-    ['sign']
-  );
-
-  const sig = await crypto.subtle.sign(
-    { name: 'ECDSA', hash: 'SHA-256' },
-    privKey,
-    new TextEncoder().encode(unsigned)
-  );
-
-  return `${unsigned}.${uint8ToB64url(new Uint8Array(sig))}`;
-}
-
-// ── Web Push encryption (RFC 8291 / RFC 8188) ────────────────────────────────
-async function encryptPushPayload(subscription: {
-  endpoint: string; p256dh: string; auth: string;
-}, payload: string): Promise<{ ciphertext: Uint8Array; salt: Uint8Array; serverPublicKey: Uint8Array }> {
-  const recipientPublicKey = b64urlToUint8(subscription.p256dh);
-  const authSecret = b64urlToUint8(subscription.auth);
-
-  // Generate server ephemeral key pair
-  const serverKeyPair = await crypto.subtle.generateKey(
-    { name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveKey', 'deriveBits']
-  );
-  const serverPublicKeyRaw = new Uint8Array(await crypto.subtle.exportKey('raw', serverKeyPair.publicKey));
-
-  // Import recipient public key
-  const recipientKey = await crypto.subtle.importKey(
-    'raw', recipientPublicKey, { name: 'ECDH', namedCurve: 'P-256' }, false, []
-  );
-
-  // ECDH shared secret
-  const sharedSecret = new Uint8Array(await crypto.subtle.deriveBits(
-    { name: 'ECDH', public: recipientKey }, serverKeyPair.privateKey, 256
-  ));
-
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-
-  // HKDF extract + expand (RFC 8291)
-  const concat = (...arrs: Uint8Array[]) => {
-    const out = new Uint8Array(arrs.reduce((n, a) => n + a.length, 0));
-    let i = 0; for(const a of arrs){ out.set(a, i); i += a.length; } return out;
-  };
-
-  const baseKey = await crypto.subtle.importKey('raw', sharedSecret, 'HKDF', false, ['deriveBits']);
-  const authInfo = new TextEncoder().encode('WebPush: info\x00');
-  const prk = new Uint8Array(await crypto.subtle.deriveBits(
-    { name: 'HKDF', hash: 'SHA-256', salt: authSecret, info: concat(authInfo, recipientPublicKey, serverPublicKeyRaw) },
-    baseKey, 256
-  ));
-
-  const prkKey = await crypto.subtle.importKey('raw', prk, 'HKDF', false, ['deriveBits']);
-  const keyInfo = new TextEncoder().encode('Content-Encoding: aes128gcm\x00');
-  const nonceInfo = new TextEncoder().encode('Content-Encoding: nonce\x00');
-
-  const contentKey = new Uint8Array(await crypto.subtle.deriveBits(
-    { name: 'HKDF', hash: 'SHA-256', salt, info: keyInfo }, prkKey, 128
-  ));
-  const nonce = new Uint8Array(await crypto.subtle.deriveBits(
-    { name: 'HKDF', hash: 'SHA-256', salt, info: nonceInfo }, prkKey, 96
-  ));
-
-  const aesKey = await crypto.subtle.importKey('raw', contentKey, 'AES-GCM', false, ['encrypt']);
-  const plaintext = new TextEncoder().encode(payload);
-  const padded = concat(plaintext, new Uint8Array([2])); // padding delimiter
-
-  const ciphertextBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce }, aesKey, padded);
-
-  return { ciphertext: new Uint8Array(ciphertextBuf), salt, serverPublicKey: serverPublicKeyRaw };
-}
-
-async function sendWebPush(subscription: { endpoint: string; p256dh: string; auth: string }, message: object): Promise<Response> {
-  const payloadStr = JSON.stringify(message);
-  const { ciphertext, salt, serverPublicKey } = await encryptPushPayload(subscription, payloadStr);
-
-  // Build aes128gcm content-encoding header (RFC 8188)
-  const recordSize = new Uint8Array(4);
-  new DataView(recordSize.buffer).setUint32(0, 4096, false);
-  const keyIdLen = new Uint8Array([serverPublicKey.length]);
-  const body = new Uint8Array([...salt, ...recordSize, ...keyIdLen, ...serverPublicKey, ...ciphertext]);
-
-  const url = new URL(subscription.endpoint);
-  const audience = `${url.protocol}//${url.host}`;
-  const jwt = await makeVapidJwt(audience);
-
-  return fetch(subscription.endpoint, {
-    method: 'POST',
-    headers: {
-      'Authorization': `vapid t=${jwt},k=${VAPID_PUBLIC_KEY}`,
-      'Content-Type': 'application/octet-stream',
-      'Content-Encoding': 'aes128gcm',
-      'TTL': '86400',
-    },
-    body,
-  });
-}
-
-// ── Message catalogue ────────────────────────────────────────────────────────
-const MESSAGES = [
-  { title: '🌱 Math time!', body: "Your sprout is waiting. Do a lesson today!" },
-  { title: '📚 Keep growing!', body: "Just a few minutes of math makes a big difference." },
-  { title: '⭐ You\'re on a streak!', body: "Keep it going — open My Math Roots and practice today." },
-  { title: '🎯 Challenge yourself!', body: "Ready for a quiz? Pick up where you left off." },
-  { title: '🌟 Practice makes perfect!', body: "A short lesson today keeps the rust away!" },
+// ── Message catalogue ─────────────────────────────────────────────────────────
+const DAILY_MESSAGES = [
+  { title: '🌱 Math time!',            body: "Your sprout is waiting. Do a lesson today!" },
+  { title: '📚 Keep growing!',          body: "Just a few minutes of math makes a big difference." },
+  { title: '🎯 Challenge yourself!',    body: "Ready for a quiz? Pick up where you left off." },
+  { title: '🌟 Practice makes perfect!',body: "A short lesson today keeps the rust away!" },
 ];
 
-// ── Handler ──────────────────────────────────────────────────────────────────
+const STREAK_WARNING = {
+  title: '⚡ Don\'t break your streak!',
+  body:  "Do a lesson today to keep your streak alive!",
+};
+
+const STREAK_5_DAY = {
+  title: '🔥 5-Day Streak!',
+  body:  "Amazing — 5 days in a row! Keep that momentum going!",
+};
+
+// ── Handler ───────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
-  // Allow cron invocations (no auth header) and manual calls with service key
   const authHeader = req.headers.get('Authorization');
-  const isCron = req.headers.get('x-supabase-cron') === 'true';
+  const isCron     = req.headers.get('x-supabase-cron') === 'true';
   if (!isCron && authHeader !== `Bearer ${SUPABASE_SERVICE_KEY}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-  // Fetch all subscriptions (no user filter — send to everyone)
+  // Today / yesterday in UTC YYYY-MM-DD
+  const now       = new Date();
+  const today     = now.toISOString().slice(0, 10);
+  const yesterday = new Date(now.getTime() - 86_400_000).toISOString().slice(0, 10);
+
+  // Fetch every push subscription (include user_id for streak lookup)
   const { data: subs, error } = await supa
     .from('push_subscriptions')
-    .select('id, endpoint, p256dh, auth');
+    .select('id, endpoint, p256dh, auth, user_id');
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   if (!subs || subs.length === 0) return new Response(JSON.stringify({ sent: 0 }), { status: 200 });
 
-  const msg = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
-  const payload = { ...msg, url: '/', tag: 'mmr-daily' };
+  // Bulk-fetch streak profiles for every subscriber who has an account
+  const userIds = [...new Set(subs.map(s => s.user_id).filter(Boolean))];
+  const profileMap: Record<string, { current_streak: number; last_activity_date: string | null }> = {};
+  if (userIds.length > 0) {
+    const { data: profiles } = await supa
+      .from('profiles')
+      .select('id, current_streak, last_activity_date')
+      .in('id', userIds);
+    if (profiles) {
+      for (const p of profiles) profileMap[p.id] = p;
+    }
+  }
 
   let sent = 0, failed = 0;
   const staleIds: string[] = [];
+  const results: unknown[] = [];
 
   await Promise.allSettled(subs.map(async (sub) => {
-    try {
-      const res = await sendWebPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload);
-      if (res.status === 201 || res.status === 200) {
-        sent++;
-      } else if (res.status === 404 || res.status === 410) {
-        // Subscription expired — remove it
-        staleIds.push(sub.id);
-        failed++;
+    const profile = sub.user_id ? profileMap[sub.user_id] : null;
+
+    // Decide which message to send
+    let msg: { title: string; body: string };
+    if (profile) {
+      const streak   = profile.current_streak ?? 0;
+      const lastDate = profile.last_activity_date ?? '';
+      if (lastDate === today && streak === 5) {
+        // They just hit their 5-day milestone today
+        msg = STREAK_5_DAY;
+      } else if (lastDate === yesterday && streak > 0) {
+        // They were on a streak but haven't practiced yet today
+        msg = STREAK_WARNING;
       } else {
-        failed++;
-        console.warn(`Push failed for ${sub.id}: ${res.status}`);
+        msg = DAILY_MESSAGES[Math.floor(Math.random() * DAILY_MESSAGES.length)];
       }
-    } catch (e) {
+    } else {
+      // Guest subscriber — send a random daily reminder
+      msg = DAILY_MESSAGES[Math.floor(Math.random() * DAILY_MESSAGES.length)];
+    }
+
+    const payload      = JSON.stringify({ ...msg, url: '/', tag: 'mmr-daily' });
+    const subscription = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
+
+    try {
+      const result = await webPush.sendNotification(subscription, payload);
+      sent++;
+      results.push({ id: sub.id, status: result.statusCode });
+    } catch (e: any) {
+      if (e.statusCode === 404 || e.statusCode === 410) staleIds.push(sub.id);
       failed++;
-      console.error(`Push error for ${sub.id}:`, e);
+      results.push({ id: sub.id, status: e.statusCode, body: e.body, error: String(e.message ?? e) });
     }
   }));
 
-  // Clean up stale subscriptions
   if (staleIds.length > 0) {
     await supa.from('push_subscriptions').delete().in('id', staleIds);
   }
 
-  return new Response(JSON.stringify({ sent, failed, stale_removed: staleIds.length }), {
-    status: 200, headers: { 'Content-Type': 'application/json' }
-  });
+  return new Response(
+    JSON.stringify({ sent, failed, stale_removed: staleIds.length, results }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } },
+  );
 });
