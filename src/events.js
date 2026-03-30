@@ -93,10 +93,18 @@
 
     // ── Unit / lesson ────────────────────────────────────────────────────────
     openLesson:             (a,b) => openLesson(Number(a), Number(b)),
-    morePractice:           ()    => morePractice(),
+    morePractice:           (a,b) => morePractice(Number(a), Number(b)),
     revealPQ:               (a)   => revealPQ(Number(a)),
     togglePQ:               (a)   => togglePQ(Number(a)),
-    refreshExamples:        ()    => refreshExamples(),
+    refreshExamples:        (a,b) => refreshExamples(Number(a), Number(b)),
+    startLessonQuiz:        (a,b) => startLessonQuiz(Number(a), Number(b)),
+    startUnitQuiz:          (a)   => startUnitQuiz(Number(a)),
+    _closeLockedSheet:      ()    => _closeLockedSheet(),
+    _closeLockedSheetThenLesson: (a,b) => { _closeLockedSheet(); openLesson(Number(a), Number(b)); },
+    advanceCarryAnim:       ()    => typeof advanceCarryAnim === 'function' && advanceCarryAnim(),
+    advanceBorrowAnim:      ()    => typeof advanceBorrowAnim === 'function' && advanceBorrowAnim(),
+    callBlockAdv:           (a)   => typeof window[a+'_adv'] === 'function' && window[a+'_adv'](),
+    _pickPracticeAns:       (a,b) => _pickPracticeAns(a, Number(b)),
 
     // ── Results ─────────────────────────────────────────────────────────────
     buildRevSection:        ()    => typeof buildRevSection === 'function' && buildRevSection(),
@@ -107,7 +115,7 @@
     closeScLightbox:        ()    => closeScLightbox(),
     delScore:               (a)   => delScore(Number(a)),
     clearAll:               ()    => clearAll(),
-    setFilt:                (a)   => setFilt(a),
+    setFilt:                (a, b, el) => setFilt(a, el),
     openCoinLightbox:       (a)   => openCoinLightbox(a),
     closeCoinLightbox:      ()    => closeCoinLightbox(),
 
