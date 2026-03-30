@@ -23,10 +23,9 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
     # Content Security Policy — only allow trusted sources
-    # unsafe-inline required because app is a single-file PWA with inline scripts/styles
     Content-Security-Policy = """
       default-src 'self';
-      script-src 'self' 'unsafe-inline'
+      script-src 'self'
         https://cdn.jsdelivr.net
         https://accounts.google.com
         https://challenges.cloudflare.com;
