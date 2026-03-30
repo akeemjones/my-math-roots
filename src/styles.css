@@ -2149,3 +2149,8 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   margin:0 auto;
 }
 
+/* Role selector */
+.ls-role-row{display:flex;gap:8px;margin-bottom:14px}
+.ls-role-btn{flex:1;padding:10px 8px;border:2px solid #e0e0e0;border-radius:12px;background:#f8f9fa;color:#546e7a;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+.ls-role-btn.active{border-color:#1565C0;background:#e3f2fd;color:#1565C0}
+

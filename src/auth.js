@@ -8,6 +8,14 @@ let _supa      = null;
 let _supaUser  = null;
 let _authLoading = false;
 
+function _lsSetRole(role) {
+  localStorage.setItem('mmr_user_role', role);
+  var btnStudent = document.getElementById('ls-role-student');
+  var btnParent  = document.getElementById('ls-role-parent');
+  if (btnStudent) btnStudent.classList.toggle('active', role === 'student');
+  if (btnParent)  btnParent.classList.toggle('active',  role === 'parent');
+}
+
 function _dismissSplash(fadeInId){
   const splash = document.getElementById('auth-splash');
   if(fadeInId){
@@ -77,6 +85,11 @@ function supabaseInit(){
       if(_supaUser){
         // Keep splash up — fetch all data first, then reveal fully-loaded home
         await _pullOnLogin();
+        var _role1 = localStorage.getItem('mmr_user_role');
+        if (_role1 === 'parent') {
+          window.location.href = '/dashboard/dashboard.html';
+          return;
+        }
         show('home');
         _dismissSplash();
         _installHistoryGuard();
@@ -105,6 +118,11 @@ function supabaseInit(){
     } else if(event === 'SIGNED_IN'){
       // User just signed in from login screen — show home with local data immediately,
       // then sync server data silently in the background
+      var _role2 = localStorage.getItem('mmr_user_role');
+      if (_role2 === 'parent') {
+        window.location.href = '/dashboard/dashboard.html';
+        return;
+      }
       show('home');
       buildHome();
       _installHistoryGuard();

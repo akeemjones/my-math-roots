@@ -85,6 +85,16 @@
         <span style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:var(--txt2)">or</span>
         <div style="flex:1;height:1px;background:var(--border2)"></div>
       </div>
+      <!-- Role selector -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:.82rem;color:#78909c;text-align:center;margin-bottom:8px">I am a:</div>
+        <div class="ls-role-row">
+          <button id="ls-role-student" class="ls-role-btn active" type="button"
+                  data-action="_lsSetRole" data-arg="student">&#x1F393; Student</button>
+          <button id="ls-role-parent" class="ls-role-btn" type="button"
+                  data-action="_lsSetRole" data-arg="parent">&#x1F9D1;&#x200D;&#x1F4BB; Parent / Teacher</button>
+        </div>
+      </div>
       <!-- Tab switcher -->
       <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:14px;overflow:hidden">
         <button id="ls-tab-login"  class="auth-tab-btn active" type="button" data-action="_lsSwitchTab" data-arg="login">Sign In</button>
