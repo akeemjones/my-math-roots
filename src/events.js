@@ -97,9 +97,6 @@
     revealPQ:               (a)   => revealPQ(Number(a)),
     togglePQ:               (a)   => togglePQ(Number(a)),
     refreshExamples:        ()    => refreshExamples(),
-    playCarryAnim:          (a, b, el) => typeof playCarryAnim === 'function' && playCarryAnim(el),
-    playBorrowAnim:         (a, b, el) => typeof playBorrowAnim === 'function' && playBorrowAnim(el),
-    play3dRegroup:          (a, b, el) => typeof play3dRegroup === 'function' && play3dRegroup(el, JSON.parse(a), JSON.parse(b)),
 
     // ── Results ─────────────────────────────────────────────────────────────
     buildRevSection:        ()    => typeof buildRevSection === 'function' && buildRevSection(),

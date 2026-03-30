@@ -282,7 +282,7 @@ function openProgressReport(){
       const qAvg = _quizAvgQSecs(s);
       const hasQTime = s.answers && s.answers.some(function(a){ return a.timeSecs != null; });
       h += '<div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.03);border-radius:10px;padding:8px 10px;cursor:pointer"'
-         +   ' onclick="openPrReview('+s.id+')" role="button">'
+         +   ' data-action="openPrReview" data-arg="'+s.id+'" role="button">'
          + '<div style="width:6px;height:36px;border-radius:3px;background:'+color+';flex-shrink:0"></div>'
          + '<div style="flex:1;min-width:0">'
          +   '<div style="font-size:var(--fs-sm);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+dispLabel+'</div>'
@@ -370,7 +370,7 @@ function _renderPRFooter(){
   if(!el) return;
   el.innerHTML =
     '<div style="text-align:center">'
-    + '<button class="ai-report-gen-btn" onclick="generateAIReport()">📋 Generate Report</button>'
+    + '<button class="ai-report-gen-btn" data-action="generateAIReport">📋 Generate Report</button>'
     + '<div style="font-size:var(--fs-xs);color:var(--txt2);margin-top:6px">Powered by Gemini</div>'
     + '</div>';
 }
@@ -484,8 +484,8 @@ function _showPRError(msg){
   if(titleEl) titleEl.textContent = '📊 Progress Report';
   if(footerEl) footerEl.innerHTML =
     '<div style="display:flex;gap:10px">'
-    + '<button class="ai-report-back-btn" onclick="_backToProgressStats()">← Back to Stats</button>'
-    + '<button class="ai-report-pdf-btn"  onclick="generateAIReport()">↺ Try Again</button>'
+    + '<button class="ai-report-back-btn" data-action="_backToProgressStats">← Back to Stats</button>'
+    + '<button class="ai-report-pdf-btn"  data-action="generateAIReport">↺ Try Again</button>'
     + '</div>';
 }
 
@@ -517,8 +517,8 @@ function _renderAIReportView(text){
   if(titleEl) titleEl.textContent = '📋 Progress Report';
   if(footerEl) footerEl.innerHTML =
     '<div style="display:flex;gap:10px">'
-    + '<button class="ai-report-back-btn" onclick="_backToProgressStats()">← Back to Stats</button>'
-    + '<button class="ai-report-pdf-btn"  onclick="downloadReportPDF()">💾 Download PDF</button>'
+    + '<button class="ai-report-back-btn" data-action="_backToProgressStats">← Back to Stats</button>'
+    + '<button class="ai-report-pdf-btn"  data-action="downloadReportPDF">💾 Download PDF</button>'
     + '</div>';
 }
 
@@ -607,7 +607,7 @@ function downloadReportPDF(){
     + '@media print{.no-print{display:none}body{padding:20px}}\n'
     + '</style>\n</head>\n<body>\n'
     + '<div class="no-print">\n'
-    + '  <button onclick="window.print()">💾 Save as PDF</button>\n'
+    + '  <button data-action="windowPrint">💾 Save as PDF</button>\n'
     + '  <p>In the print dialog, choose <strong>Save as PDF</strong> as the destination</p>\n'
     + '</div>\n'
     + '<div class="rpt-header">\n'

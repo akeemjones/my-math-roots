@@ -435,7 +435,7 @@ function _renderQ(){
     '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+(q.s?'<div class="q-visual">'+q.s+'</div>':'')+
     '<div class="agrid" role="group" aria-label="Answer choices">'+
       opts.map((opt,i)=>
-        '<button class="abtn" type="button" onclick="_pickAnswer('+i+')" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>'
+        '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>'
       ).join('')+
     '</div>'+
     '<div class="reveal" id="qreveal" role="status" aria-live="polite" aria-atomic="true"></div>';
@@ -500,7 +500,7 @@ function _pickAnswer(btnIdx){
         (!isOk ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
         '<div class="rev-exp" id="'+revId+'-exp">' + _ICO.lightbulb + ' '+_escHtml(q.e)+'</div>'+
         (!isOk ? '<div class="rev-tip">'+_escHtml(nudge)+'</div>' : '')+
-        (!isOk ? '<div class="ai-hint-wrap" id="'+revId+'-hw"><button class="ai-hint-btn" onclick="_fetchAIHint(\''+revId+'\','+_escHtml(JSON.stringify(q.t))+','+_escHtml(JSON.stringify(chosen))+','+_escHtml(JSON.stringify(correct))+')">💡 Get a Hint</button></div>' : '');
+        (!isOk ? '<div class="ai-hint-wrap" id="'+revId+'-hw"><button class="ai-hint-btn" data-action="fetchAIHint" data-arg="'+_escHtml(revId)+'" data-arg2=\''+_escHtml(JSON.stringify({q:q.t,chosen,correct})).replace(/\'/g,"&#39;")+'\'>💡 Get a Hint</button></div>' : '');
 
       // Auto-fire personalized explanation on wrong answer
       if(!isOk) _fetchAIExplanation(revId, q.t, chosen, correct);
@@ -611,7 +611,7 @@ function _guidedRemediation(qz, pct, u){
     const l = u.lessons[CUR.lessonIdx];
     heading = `📖 Recommended Review`;
     body = `Re-read <strong>${l ? l.icon+' '+l.title : 'this lesson'}</strong> — focus on the Key Ideas and Worked Examples, then try again.`;
-    btnHtml = l ? `<button class="rem-btn" onclick="openLesson(${CUR.unitIdx},${CUR.lessonIdx})">Go Back to ${_escHtml(l.title)}</button>` : '';
+    btnHtml = l ? `<button class="rem-btn" data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${CUR.lessonIdx}">Go Back to ${_escHtml(l.title)}</button>` : '';
 
   } else if(qz.type === 'unit'){
     // Find the lesson in this unit with the lowest quiz score
@@ -625,7 +625,7 @@ function _guidedRemediation(qz, pct, u){
       heading = `📖 Focus Area`;
       const label = weakLesson.lPct > 0 ? `(your best: ${weakLesson.lPct}%)` : '(not yet passed)';
       body = `Your weakest lesson is <strong>${weakLesson.l.icon} ${weakLesson.l.title}</strong> ${label}. Review it before retrying the unit quiz.`;
-      btnHtml = `<button class="rem-btn" onclick="openLesson(${CUR.unitIdx},${weakLesson.li})">Review ${_escHtml(weakLesson.l.title)}</button>`;
+      btnHtml = `<button class="rem-btn" data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${weakLesson.li}">Review ${_escHtml(weakLesson.l.title)}</button>`;
     }
 
   } else if(qz.type === 'final'){
@@ -640,7 +640,7 @@ function _guidedRemediation(qz, pct, u){
       heading = `📖 Focus Area`;
       const label = weakUnit.uPct > 0 ? `(your best: ${weakUnit.uPct}%)` : '(not yet passed)';
       body = `Your weakest unit is <strong>${weakUnit.uu.name}</strong> ${label}. Review it to boost your Final Test score.`;
-      btnHtml = `<button class="rem-btn" onclick="openUnit(${weakUnit.ui})">Review ${_escHtml(weakUnit.uu.name)}</button>`;
+      btnHtml = `<button class="rem-btn" data-action="openUnit" data-arg="${weakUnit.ui}">Review ${_escHtml(weakUnit.uu.name)}</button>`;
     }
   }
 
@@ -806,12 +806,12 @@ function _finishQuiz(){
     if(pct>=80 && nextIdx < u.lessons.length){
       const nl = u.lessons[nextIdx];
       nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
-        onclick="openLesson(${CUR.unitIdx},${nextIdx})">
+        data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${nextIdx}">
         Next Lesson: ${nl.icon} ${nl.title} →
       </button>`;
     } else if(pct>=80 && nextIdx >= u.lessons.length){
       nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
-        onclick="goUnit()">
+        data-action="goUnit">
         📝 Go to Unit Quiz →
       </button>`;
     }
@@ -819,7 +819,7 @@ function _finishQuiz(){
     const nextUnitIdx = CUR.unitIdx + 1;
     if(nextUnitIdx < UNITS_DATA.length){
       nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${UNITS_DATA[nextUnitIdx].color},${UNITS_DATA[nextUnitIdx].color}aa)"
-        onclick="openUnit(${nextUnitIdx})">
+        data-action="openUnit" data-arg="${nextUnitIdx}">
         Next Unit: <span style="display:inline-block;width:1.2em;height:1.2em;vertical-align:middle">${UNITS_DATA[nextUnitIdx].svg||UNITS_DATA[nextUnitIdx].icon}</span> ${UNITS_DATA[nextUnitIdx].name} →
       </button>`;
     }
@@ -827,13 +827,13 @@ function _finishQuiz(){
 
   const backLabel = qz.type === 'final' ? 'Back to Home' : 'Back to Unit';
   const weakBtn = (pct < 80 && wrong.length > 0)
-    ? `<button class="rbtn" style="background:linear-gradient(135deg,#e67e22,#d35400)" onclick="_practiceWeak()">Practice Weak Topics (${wrong.length} question${wrong.length===1?'':'s'}) →</button>`
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#e67e22,#d35400)" data-action="_practiceWeak">Practice Weak Topics (${wrong.length} question${wrong.length===1?'':'s'}) →</button>`
     : '';
   elBtns.innerHTML = `
     ${nextBtn}
     ${weakBtn}
-    <button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)" onclick="retryQuiz()">Try Again ${_ICO.refresh}</button>
-    <button class="rbtn" style="background:linear-gradient(135deg,#7f8c8d,#636e72)" onclick="afterResults()">${backLabel}</button>`;
+    <button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)" data-action="retryQuiz">Try Again ${_ICO.refresh}</button>
+    <button class="rbtn" style="background:linear-gradient(135deg,#7f8c8d,#636e72)" data-action="afterResults">${backLabel}</button>`;
 
   CUR.pendingScore = {qid:qz.id, label:qz.label, type:qz.type, score:qz.score, total, pct, stars,
     unitIdx:CUR.unitIdx, color:u.color,
@@ -851,7 +851,7 @@ function _finishQuiz(){
 function buildRevSection(title, items, color, collapsed){
   const id = 'rs-'+Math.random().toString(36).slice(2,7);
   return `<div class="rev-section">
-    <div class="rev-sec-head" style="color:${color}" onclick="toggleRS('${id}')">
+    <div class="rev-sec-head" style="color:${color}" data-action="toggleRS" data-arg="${id}">
       ${title} (${items.length}) <span id="arr-${id}">${collapsed?'▸':'▾'}</span>
     </div>
     <div id="${id}" style="${collapsed?'display:none':''}">

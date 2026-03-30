@@ -50,17 +50,17 @@ function buildHome(instant){
       slide.style.marginBottom = '8px';
       slide.innerHTML = `<div class="cs-lock-card"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
         <div class="cs-lock-ico"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</div>
-        <div class="cs-lock-info" onclick="showLockToast('Finish Unit ${i} with 80%+ to unlock!', true)">
+        <div class="cs-lock-info" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true">
           <div class="cs-lock-label">Unit ${i+1}</div>
           <div class="cs-lock-name">${u.name}</div>
         </div>
-        <button type="button" class="cs-pin-unlock-btn" onclick="openUnitPinUnlock(${i})" title="Parent unlock"${_sr('aria-label="Parent unlock Unit '+(i+1)+'"')}>${_ICO.lock}</button>
+        <button type="button" class="cs-pin-unlock-btn" data-action="openUnitPinUnlock" data-arg="${i}" title="Parent unlock"${_sr('aria-label="Parent unlock Unit '+(i+1)+'"')}>${_ICO.lock}</button>
       </div>`;
     } else if(isCurrent){
       slide.className = 'cs cs-active';
       slide.style.setProperty('--uc', u.color);
       slide.style.marginBottom = '12px';
-      slide.innerHTML = `<div class="cs-card" style="background:var(--card-bg);cursor:pointer" onclick="openUnit(${i})"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', current, '+dL+' of '+u.lessons.length+' lessons done"')}>
+      slide.innerHTML = `<div class="cs-card" style="background:var(--card-bg);cursor:pointer" data-action="openUnit" data-arg="${i}"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', current, '+dL+' of '+u.lessons.length+' lessons done"')}>
         <div class="cs-label">Unit ${i+1} · Current</div>
         <span class="cs-icon"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</span>
         <div class="cs-name">${u.name}</div>
@@ -74,7 +74,7 @@ function buildHome(instant){
       slide.className = 'cs cs-done';
       slide.style.setProperty('--uc', u.color);
       slide.style.marginBottom = '10px';
-      slide.innerHTML = `<div class="cs-card" onclick="openUnit(${i})" style="background:var(--card-bg);cursor:pointer"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', '+dL+' of '+u.lessons.length+' done'+(uqDone?', unit quiz passed':'')+'"')}>
+      slide.innerHTML = `<div class="cs-card" data-action="openUnit" data-arg="${i}" style="background:var(--card-bg);cursor:pointer"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', '+dL+' of '+u.lessons.length+' done'+(uqDone?', unit quiz passed':'')+'"')}>
         <div class="cs-label" style="color:${u.color}">Unit ${i+1}${uqDone?' · ✅':''}</div>
         <span class="cs-icon"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</span>
         <div class="cs-name">${u.name}</div>
@@ -102,16 +102,16 @@ function buildHome(instant){
         ? ' · ⏱ '+Math.floor(ftSecsLeft/60)+':'+String(ftSecsLeft%60).padStart(2,'0')+' left' : '';
       ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer">
         <div class="cs-label">${_ICO.trophy} Final Test</div>
-        <div class="resume-banner" style="margin:4px 0 0" onclick="resumeQuiz('final_test')">
+        <div class="resume-banner" style="margin:4px 0 0" data-action="resumeQuiz" data-arg="final_test">
           <div>
             <div class="resume-banner-h">⏸ Final Test In Progress</div>
             <div class="resume-banner-sub">Question ${pausedFT.idx+1} of ${pausedFT.questions.length} · ${pausedFT.score} correct so far${timeStr}</div>
           </div>
-          <button type="button" class="resume-btn" onclick="resumeQuiz('final_test')">▶ Resume</button>
+          <button type="button" class="resume-btn" data-action="resumeQuiz" data-arg="final_test">▶ Resume</button>
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" onclick="startFinalTest()">
+      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" data-action="startFinalTest">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
@@ -124,7 +124,7 @@ function buildHome(instant){
   } else {
     ftSlide.className = 'cs cs-locked-slide';
     ftSlide.style.marginBottom = '8px';
-    ftSlide.innerHTML = `<div class="cs-lock-card" onclick="showLockToast('Unlock all units to take the Final Test!', true)">
+    ftSlide.innerHTML = `<div class="cs-lock-card" data-action="showLockToast" data-arg="Unlock all units to take the Final Test!" data-arg2="true">
       <div class="cs-lock-ico">${_ICO.graduation}</div>
       <div class="cs-lock-info">
         <div class="cs-lock-label">Final Test</div>
@@ -202,16 +202,16 @@ function refreshHomeState(){
         slide.style.removeProperty('--uc'); slide.style.marginBottom = '8px';
         slide.innerHTML = `<div class="cs-lock-card"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
           <div class="cs-lock-ico"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</div>
-          <div class="cs-lock-info" onclick="showLockToast('Finish Unit ${i} with 80%+ to unlock!', true)">
+          <div class="cs-lock-info" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true">
             <div class="cs-lock-label">Unit ${i+1}</div>
             <div class="cs-lock-name">${u.name}</div>
           </div>
-          <button type="button" class="cs-pin-unlock-btn" onclick="openUnitPinUnlock(${i})"
+          <button type="button" class="cs-pin-unlock-btn" data-action="openUnitPinUnlock" data-arg="${i}"
             title="Parent unlock"${_sr('aria-label="Parent unlock Unit '+(i+1)+'"')}>${_ICO.lock}</button>
         </div>`;
       } else if(newState === 'active'){
         slide.style.setProperty('--uc', u.color); slide.style.marginBottom = '12px';
-        slide.innerHTML = `<div class="cs-card" style="background:var(--card-bg);cursor:pointer" onclick="openUnit(${i})"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', current, '+dL+' of '+u.lessons.length+' lessons done"')}>
+        slide.innerHTML = `<div class="cs-card" style="background:var(--card-bg);cursor:pointer" data-action="openUnit" data-arg="${i}"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', current, '+dL+' of '+u.lessons.length+' lessons done"')}>
           <div class="cs-label">Unit ${i+1} · Current</div>
           <span class="cs-icon"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</span>
           <div class="cs-name">${u.name}</div>
@@ -221,7 +221,7 @@ function refreshHomeState(){
         </div>`;
       } else {
         slide.style.setProperty('--uc', u.color); slide.style.marginBottom = '10px';
-        slide.innerHTML = `<div class="cs-card" onclick="openUnit(${i})" style="background:var(--card-bg);cursor:pointer"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', '+dL+' of '+u.lessons.length+' done'+(uqDone?', unit quiz passed':'')+'"')}>
+        slide.innerHTML = `<div class="cs-card" data-action="openUnit" data-arg="${i}" style="background:var(--card-bg);cursor:pointer"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', '+dL+' of '+u.lessons.length+' done'+(uqDone?', unit quiz passed':'')+'"')}>
           <div class="cs-label" style="color:${u.color}">Unit ${i+1}${uqDone?' · ✅':''}</div>
           <span class="cs-icon"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</span>
           <div class="cs-name">${u.name}</div>
@@ -264,7 +264,7 @@ function refreshHomeState(){
     const ftBestScore = SCORES.filter(s=>s.qid==='final_test').sort((a,b)=>b.pct-a.pct)[0];
     const ftScoreLine = ftBestScore ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}` : '50 questions · All units';
     if(ftNewState === 'locked'){
-      ftSlide.innerHTML = `<div class="cs-lock-card" onclick="showLockToast('Unlock all units to take the Final Test!', true)">
+      ftSlide.innerHTML = `<div class="cs-lock-card" data-action="showLockToast" data-arg="Unlock all units to take the Final Test!" data-arg2="true">
         <div class="cs-lock-ico">${_ICO.graduation}</div>
         <div class="cs-lock-info"><div class="cs-lock-label">Final Test</div><div class="cs-lock-name">50 Questions · All Units</div></div>
         <div style="font-size:var(--fs-lg);flex-shrink:0">${_ICO.lock}</div>
@@ -275,16 +275,16 @@ function refreshHomeState(){
         ? ' · ⏱ '+Math.floor(ftSecsLeft/60)+':'+String(ftSecsLeft%60).padStart(2,'0')+' left' : '';
       ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer">
         <div class="cs-label">${_ICO.trophy} Final Test</div>
-        <div class="resume-banner" style="margin:4px 0 0" onclick="resumeQuiz('final_test')">
+        <div class="resume-banner" style="margin:4px 0 0" data-action="resumeQuiz" data-arg="final_test">
           <div>
             <div class="resume-banner-h">⏸ Final Test In Progress</div>
             <div class="resume-banner-sub">Question ${pausedFT.idx+1} of ${pausedFT.questions.length} · ${pausedFT.score} correct so far${timeStr}</div>
           </div>
-          <button type="button" class="resume-btn" onclick="resumeQuiz('final_test')">▶ Resume</button>
+          <button type="button" class="resume-btn" data-action="resumeQuiz" data-arg="final_test">▶ Resume</button>
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" onclick="startFinalTest()">
+      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" data-action="startFinalTest">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
