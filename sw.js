@@ -63,16 +63,19 @@ self.addEventListener('fetch', e => {
 
   if(!isLocal && !isFont) return;
 
-  // Network-first for the main HTML document
+  // Stale-While-Revalidate for the main HTML document:
+  // Serve cached version immediately (instant open), then update cache in background.
   const isDoc = url.pathname === '/' || url.pathname === '/index.html';
   if(isDoc){
     e.respondWith(
-      fetch(e.request).then(fresh => {
-        if(fresh && fresh.status === 200){
-          caches.open(CACHE).then(cache => cache.put(e.request, fresh.clone()));
-        }
-        return fresh;
-      }).catch(() => caches.match(e.request).then(c => c || new Response('Offline', { status: 503 })))
+      caches.open(CACHE).then(async cache => {
+        const cached = await cache.match(e.request);
+        const fetchPromise = fetch(e.request).then(fresh => {
+          if(fresh && fresh.status === 200) cache.put(e.request, fresh.clone());
+          return fresh;
+        }).catch(() => null);
+        return cached || fetchPromise || new Response('Offline', { status: 503 });
+      })
     );
     return;
   }
