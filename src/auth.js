@@ -367,6 +367,90 @@ async function _lsSubmit(){
   }
 }
 
+// Pure cloud-merge function — extracted from _pullOnLogin for testability.
+// Takes a snapshot of local state and cloud data; returns merged state.
+// Does NOT mutate inputs. Caller applies result to globals.
+// Keep in sync with tests/mergeCloudData-helpers.js.
+function _mergeCloudData(local, cloud){
+  const done     = { ...local.done };
+  const scores   = [...local.scores];
+  const streak   = { ...local.streak };
+  const mastery  = JSON.parse(JSON.stringify(local.mastery));
+  const appTime  = JSON.parse(JSON.stringify(local.appTime));
+
+  const { prog, remoteScores, profile } = cloud;
+
+  // DONE — union merge
+  if(prog && prog.done_json && typeof prog.done_json === 'object' && !Array.isArray(prog.done_json)){
+    for(const [k,v] of Object.entries(prog.done_json)){
+      if(typeof k === 'string' && k.length < 100
+         && k !== '__proto__' && k !== 'constructor' && k !== 'prototype'){
+        done[k] = !!v;
+      }
+    }
+  }
+
+  // SCORES — append-only dedup
+  if(Array.isArray(remoteScores) && remoteScores.length){
+    const localIds = new Set(scores.map(s => s.id));
+    const incoming = remoteScores
+      .filter(r => r && typeof r.local_id === 'number' && typeof r.qid === 'string'
+        && typeof r.score === 'number' && typeof r.total === 'number'
+        && typeof r.pct === 'number' && r.pct >= 0 && r.pct <= 100
+        && !localIds.has(r.local_id))
+      .map(r => ({
+        qid:r.qid, label:String(r.label||''), type:String(r.type||''),
+        score:r.score, total:r.total, pct:r.pct, stars:String(r.stars||''),
+        unitIdx:typeof r.unit_idx==='number'?r.unit_idx:0, color:String(r.color||''),
+        name:String(r.student_name||''), id:r.local_id,
+        timeTaken:typeof r.time_taken==='number'?r.time_taken:0,
+        answers:Array.isArray(r.answers)?r.answers:[],
+        date:String(r.date_str||''), time:String(r.time_str||''),
+        quit:!!r.quit, abandoned:!!r.abandoned
+      }));
+    scores.push(...incoming);
+    scores.sort((a,b) => b.id - a.id);
+    if(scores.length > 200) scores.length = 200;
+  }
+
+  // STREAK — last-writer-wins
+  if(profile && typeof profile.current_streak === 'number' && profile.current_streak >= 0){
+    const serverDate = typeof profile.last_activity_date === 'string' ? profile.last_activity_date : '';
+    const serverLongest = typeof profile.longest_streak === 'number' ? profile.longest_streak : 0;
+    if(!streak.lastDate || serverDate >= streak.lastDate){
+      streak.current = profile.current_streak;
+      streak.longest = Math.max(serverLongest, streak.longest);
+      streak.lastDate = serverDate || streak.lastDate;
+    }
+  }
+
+  // MASTERY — higher-attempts-wins
+  if(prog && prog.mastery_json && typeof prog.mastery_json === 'object'){
+    for(const [k, cm] of Object.entries(prog.mastery_json)){
+      if(!cm || typeof cm.attempts !== 'number') continue;
+      const lm = mastery[k];
+      if(!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && cm.correct > (lm.correct||0))){
+        mastery[k] = { attempts:cm.attempts, correct:cm.correct||0, lastSeen:cm.lastSeen||0 };
+      }
+    }
+  }
+
+  // APP_TIME — max per field/day
+  if(prog && prog.apptime_json && typeof prog.apptime_json === 'object'){
+    const ct = prog.apptime_json;
+    if(typeof ct.totalSecs === 'number' && ct.totalSecs > (appTime.totalSecs||0)) appTime.totalSecs = ct.totalSecs;
+    if(typeof ct.sessions === 'number' && ct.sessions > (appTime.sessions||0)) appTime.sessions = ct.sessions;
+    if(ct.dailySecs && typeof ct.dailySecs === 'object'){
+      appTime.dailySecs = appTime.dailySecs || {};
+      for(const [d, s] of Object.entries(ct.dailySecs)){
+        if(typeof s === 'number' && s > (appTime.dailySecs[d]||0)) appTime.dailySecs[d] = s;
+      }
+    }
+  }
+
+  return { done, scores, streak, mastery, appTime };
+}
+
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
   // Skip sync if we already pulled within the last 5 minutes (handles page refreshes
@@ -406,86 +490,23 @@ async function _pullOnLogin(){
     //            uses Math.max() so it can never decrease.
     // ───────────────────────────────────────────────────────────────
 
-    // DONE — union merge (cloud into local, then push back)
-    // Validate: must be a plain object with string keys and boolean-ish values
-    if(prog && prog.done_json && typeof prog.done_json === 'object' && !Array.isArray(prog.done_json)){
-      const safe = {};
-      for(const [k,v] of Object.entries(prog.done_json)){
-        if(typeof k === 'string' && k.length < 100 && k !== '__proto__' && k !== 'constructor' && k !== 'prototype') safe[k] = !!v;
-      }
-      Object.assign(DONE, safe);
-      localStorage.setItem('wb_done5', JSON.stringify(DONE));
-    }
-    // SCORES — append-only dedup by local_id (both sides preserved)
-    // Validate: each score must have required fields with correct types
-    if(Array.isArray(remoteScores) && remoteScores.length){
-      const localIds = new Set(SCORES.map(s => s.id));
-      const incoming = remoteScores
-        .filter(r => r && typeof r.local_id === 'number' && typeof r.qid === 'string'
-          && typeof r.score === 'number' && typeof r.total === 'number'
-          && typeof r.pct === 'number' && r.pct >= 0 && r.pct <= 100
-          && !localIds.has(r.local_id))
-        .map(r => ({
-          qid:r.qid, label:String(r.label||''), type:String(r.type||''),
-          score:r.score, total:r.total, pct:r.pct, stars:String(r.stars||''),
-          unitIdx:typeof r.unit_idx==='number'?r.unit_idx:0, color:String(r.color||''),
-          name:String(r.student_name||''), id:r.local_id,
-          timeTaken:typeof r.time_taken==='number'?r.time_taken:0,
-          answers:Array.isArray(r.answers)?r.answers:[],
-          date:String(r.date_str||''), time:String(r.time_str||''),
-          quit:!!r.quit, abandoned:!!r.abandoned
-        }));
-      SCORES.push(...incoming);
-      SCORES.sort((a,b) => b.id - a.id);
-      if(SCORES.length > 200) SCORES.length = 200;
-      localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
-    }
-    // STREAK — last-writer-wins by date, longest never decreases
-    // Validate: streak fields must be numbers, date must be string
-    if(profile && typeof profile.current_streak === 'number' && profile.current_streak >= 0){
-      const serverDate = typeof profile.last_activity_date === 'string' ? profile.last_activity_date : '';
-      const serverLongest = typeof profile.longest_streak === 'number' ? profile.longest_streak : 0;
-      if(!STREAK.lastDate || serverDate >= STREAK.lastDate){
-        STREAK.current = profile.current_streak;
-        STREAK.longest = Math.max(serverLongest, STREAK.longest);
-        STREAK.lastDate = serverDate || STREAK.lastDate;
-        localStorage.setItem('wb_streak', JSON.stringify(STREAK));
-      }
-    }
-    // MASTERY — per-key merge: higher attempts wins; ties go to higher correct count
-    if(prog && prog.mastery_json && typeof prog.mastery_json === 'object' && typeof MASTERY !== 'undefined'){
-      let masteryChanged = false;
-      for(const [k, cm] of Object.entries(prog.mastery_json)){
-        if(!cm || typeof cm.attempts !== 'number') continue;
-        const lm = MASTERY[k];
-        if(!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && cm.correct > lm.correct)){
-          MASTERY[k] = { attempts:cm.attempts, correct:cm.correct||0, lastSeen:cm.lastSeen||0 };
-          masteryChanged = true;
-        }
-      }
-      if(masteryChanged && typeof saveMastery === 'function') saveMastery();
-    }
-
-    // APP_TIME — take max totalSecs/sessions; merge dailySecs by max per day
-    if(prog && prog.apptime_json && typeof prog.apptime_json === 'object' && typeof APP_TIME !== 'undefined'){
-      const ct = prog.apptime_json;
-      let appChanged = false;
-      if(typeof ct.totalSecs === 'number' && ct.totalSecs > (APP_TIME.totalSecs||0)){
-        APP_TIME.totalSecs = ct.totalSecs; appChanged = true;
-      }
-      if(typeof ct.sessions === 'number' && ct.sessions > (APP_TIME.sessions||0)){
-        APP_TIME.sessions = ct.sessions; appChanged = true;
-      }
-      if(ct.dailySecs && typeof ct.dailySecs === 'object'){
-        APP_TIME.dailySecs = APP_TIME.dailySecs || {};
-        for(const [d, s] of Object.entries(ct.dailySecs)){
-          if(typeof s === 'number' && s > (APP_TIME.dailySecs[d]||0)){
-            APP_TIME.dailySecs[d] = s; appChanged = true;
-          }
-        }
-      }
-      if(appChanged && typeof saveAppTime === 'function') saveAppTime();
-    }
+    // Merge cloud state into local using the pure _mergeCloudData function.
+    const merged = _mergeCloudData(
+      { done: DONE, scores: SCORES, streak: STREAK,
+        mastery: typeof MASTERY !== 'undefined' ? MASTERY : {},
+        appTime: typeof APP_TIME !== 'undefined' ? APP_TIME : { totalSecs:0, sessions:0, dailySecs:{} } },
+      { prog, remoteScores, profile }
+    );
+    Object.assign(DONE, merged.done);
+    SCORES.length = 0; SCORES.push(...merged.scores);
+    Object.assign(STREAK, merged.streak);
+    if(typeof MASTERY !== 'undefined') Object.assign(MASTERY, merged.mastery);
+    if(typeof APP_TIME !== 'undefined') Object.assign(APP_TIME, merged.appTime);
+    localStorage.setItem('wb_done5', JSON.stringify(DONE));
+    localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
+    localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+    if(typeof saveMastery === 'function') saveMastery();
+    if(typeof saveAppTime === 'function') saveAppTime();
 
     // Push local-only data back to cloud so both sides converge
     _pushDone();
