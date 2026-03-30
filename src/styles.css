@@ -304,6 +304,16 @@ button{ -webkit-appearance:none; font-family:inherit;
      background-image:var(--app-bg-svg), var(--home-grad);
      background-size:420px 420px, 100% 100%; background-repeat:repeat, no-repeat;
      z-index:var(--z-screen); overscroll-behavior:contain; }
+/* Login screen: vibrant gradient so white card/title have proper contrast */
+#login-screen{
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1d7a49 100%);
+  background-size:420px 420px, 100% 100%;
+  background-repeat:repeat, no-repeat;
+  overflow-y:auto;
+}
+body.dark #login-screen{
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#0d2a5a 0%,#0a3320 100%);
+}
 /* Lock all interaction on screens while tutorial/onboarding overlay is up */
 body.tut-active .sc,
 body.tut-active .carousel-wrap{ pointer-events:none !important; overflow:hidden !important; }

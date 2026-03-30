@@ -62,8 +62,8 @@ function _installHistoryGuard(){
 }
 
 function supabaseInit(){
-  if(typeof supabase === 'undefined'){
-    // CDN failed — dismiss splash and show login so user isn't stuck
+  if(typeof supabase === 'undefined' || !SUPA_URL || !SUPA_KEY){
+    // CDN failed or credentials not set — dismiss splash and show login so user isn't stuck
     const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
     _dismissSplash('login-screen');
