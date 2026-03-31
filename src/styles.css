@@ -2175,3 +2175,26 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 #login-screen .ls-google-btn{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.28)!important;color:#fff!important}
 #login-screen .auth-tab-btn.idle{color:rgba(255,255,255,.72)}
 
+
+/* ── Student card: avatar picker ── */
+.ls-avatar-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.ls-avatar-item{display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ls-avatar-selected > div:first-child{opacity:1!important}
+
+/* ── Student card: PIN dots ── */
+.ls-pin-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.ls-pin-dot-filled{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,0.7)}
+.ls-pin-dot-empty{background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.35)}
+
+/* ── Student card: PIN keypad ── */
+.ls-pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ls-pin-key{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:13px 0;text-align:center;color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .1s}
+.ls-pin-key:active{background:rgba(255,255,255,0.22)}
+.ls-pin-key-back{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);font-size:1rem}
+
+/* ── PIN shake animation (wrong PIN) ── */
+@keyframes ls-pin-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.ls-pin-shake{animation:ls-pin-shake .4s ease}
+
+/* ── Family code input uppercase styling ── */
+#ls-family-code-inp{text-transform:uppercase;letter-spacing:.15em;text-align:center;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif}
