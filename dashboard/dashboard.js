@@ -27,6 +27,45 @@ function getCategoryFromId(qId) {
   return { key: key, label: _CATEGORY_LABELS[key] || key };
 }
 
+// ── Settings parsers (pure, testable) ────────────────────────────────────
+
+function _parseUnlockSettings(raw) {
+  if (!raw || typeof raw !== 'object') raw = {};
+  return {
+    freeMode: raw.freeMode === true,
+    units:    Array.isArray(raw.units) ? raw.units.slice() : [],
+    lessons:  (raw.lessons && typeof raw.lessons === 'object') ? Object.assign({}, raw.lessons) : {},
+  };
+}
+
+function _parseTimerSettings(raw) {
+  if (!raw || typeof raw !== 'object') raw = {};
+  return {
+    enabled:    raw.enabled !== false,
+    lessonSecs: typeof raw.lessonSecs === 'number' ? raw.lessonSecs : 300,
+    unitSecs:   typeof raw.unitSecs   === 'number' ? raw.unitSecs   : 600,
+    finalSecs:  typeof raw.finalSecs  === 'number' ? raw.finalSecs  : 3600,
+  };
+}
+
+function _parseA11ySettings(raw) {
+  if (!raw || typeof raw !== 'object') raw = {};
+  return {
+    largeText:    raw.largeText    === true,
+    highContrast: raw.highContrast === true,
+  };
+}
+
+function _isUnitUnlockedInDraft(draft, unitIdx) {
+  if (draft.freeMode) return true;
+  return draft.units.indexOf(unitIdx) !== -1;
+}
+
+function _isLessonUnlockedInDraft(draft, unitIdx, lessonIdx) {
+  if (draft.freeMode) return true;
+  return !!draft.lessons[unitIdx + '_' + lessonIdx];
+}
+
 // ── Pure data functions (testable — all take data as args) ────────────────
 
 function _computeOverallStats(scores, streak, appTime) {
@@ -1426,5 +1465,9 @@ if (typeof module !== 'undefined') {
     _computeWeakAreas,
     _computeActivityData,
     _computeReviewQueue,
+    _parseUnlockSettings,
+    _parseTimerSettings,
+    _isUnitUnlockedInDraft,
+    _isLessonUnlockedInDraft,
   };
 }

@@ -7,6 +7,10 @@ const {
   _computeWeakAreas,
   _computeActivityData,
   _computeReviewQueue,
+  _parseUnlockSettings,
+  _parseTimerSettings,
+  _isUnitUnlockedInDraft,
+  _isLessonUnlockedInDraft,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -234,5 +238,80 @@ describe('_computeReviewQueue', () => {
     };
     const r = _computeReviewQueue(mastery, {});
     expect(r[0].key).toBe('b');
+  });
+});
+
+// ── _parseUnlockSettings ──────────────────────────────────────────────────
+describe('_parseUnlockSettings', () => {
+  test('returns defaults for empty object', () => {
+    const r = _parseUnlockSettings({});
+    expect(r.freeMode).toBe(false);
+    expect(r.units).toEqual([]);
+    expect(r.lessons).toEqual({});
+  });
+
+  test('returns defaults for null/undefined', () => {
+    expect(_parseUnlockSettings(null).freeMode).toBe(false);
+    expect(_parseUnlockSettings(undefined).units).toEqual([]);
+  });
+
+  test('parses freeMode, units, lessons from valid object', () => {
+    const r = _parseUnlockSettings({ freeMode: true, units: [0,2], lessons: { '1_2': true } });
+    expect(r.freeMode).toBe(true);
+    expect(r.units).toEqual([0, 2]);
+    expect(r.lessons['1_2']).toBe(true);
+  });
+});
+
+// ── _parseTimerSettings ───────────────────────────────────────────────────
+describe('_parseTimerSettings', () => {
+  test('returns defaults for empty object', () => {
+    const r = _parseTimerSettings({});
+    expect(r.enabled).toBe(true);
+    expect(r.lessonSecs).toBe(300);
+    expect(r.unitSecs).toBe(600);
+    expect(r.finalSecs).toBe(3600);
+  });
+
+  test('uses provided values when present', () => {
+    const r = _parseTimerSettings({ enabled: false, lessonSecs: 120, unitSecs: 300, finalSecs: 1800 });
+    expect(r.enabled).toBe(false);
+    expect(r.lessonSecs).toBe(120);
+    expect(r.unitSecs).toBe(300);
+    expect(r.finalSecs).toBe(1800);
+  });
+
+  test('returns defaults for null/undefined', () => {
+    expect(_parseTimerSettings(null).enabled).toBe(true);
+  });
+});
+
+// ── _isUnitUnlockedInDraft ────────────────────────────────────────────────
+describe('_isUnitUnlockedInDraft', () => {
+  test('returns true when freeMode is on', () => {
+    expect(_isUnitUnlockedInDraft({ freeMode: true, units: [], lessons: {} }, 5)).toBe(true);
+  });
+
+  test('returns true when unitIdx is in units array', () => {
+    expect(_isUnitUnlockedInDraft({ freeMode: false, units: [0, 2, 4], lessons: {} }, 2)).toBe(true);
+  });
+
+  test('returns false when unitIdx not in units array and freeMode off', () => {
+    expect(_isUnitUnlockedInDraft({ freeMode: false, units: [0, 1], lessons: {} }, 3)).toBe(false);
+  });
+});
+
+// ── _isLessonUnlockedInDraft ──────────────────────────────────────────────
+describe('_isLessonUnlockedInDraft', () => {
+  test('returns true when freeMode is on', () => {
+    expect(_isLessonUnlockedInDraft({ freeMode: true, units: [], lessons: {} }, 0, 3)).toBe(true);
+  });
+
+  test('returns true when lesson key exists in lessons', () => {
+    expect(_isLessonUnlockedInDraft({ freeMode: false, units: [], lessons: { '2_1': true } }, 2, 1)).toBe(true);
+  });
+
+  test('returns false when lesson key absent', () => {
+    expect(_isLessonUnlockedInDraft({ freeMode: false, units: [], lessons: {} }, 2, 1)).toBe(false);
   });
 });
