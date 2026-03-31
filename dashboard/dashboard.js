@@ -1162,14 +1162,337 @@ function _renderUnlockSection() {
     + '</section>';
 }
 
-// ── Stubs for sections added in Tasks 5–8 ────────────────────────────────
-function _renderTimerSection()     { return ''; }
-function _renderA11ySection()      { return ''; }
-function _renderPinSection()       { return ''; }
-function _renderRemindersSection() { return ''; }
-function _renderPasswordSection()  { return ''; }
-function _renderFeedbackSection()  { return ''; }
-function _renderChangelogSection() { return ''; }
+// ── Timer Settings section ────────────────────────────────────────────────
+
+async function _dbSaveTimer() {
+  var msg = document.getElementById('db-timer-msg');
+  if (!_supaDb) { if (msg) msg.textContent = 'Not connected.'; return; }
+  try {
+    var result = await _supaDb.rpc('update_timer_settings', {
+      p_student_id: _activeId,
+      p_settings:   _timerDraft,
+    });
+    if (result.error) throw result.error;
+    if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Saved!'; }
+    setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
+  } catch(e) {
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = '❌ Save failed.'; }
+  }
+}
+
+function _dbAdjustTimer(type, delta) {
+  var key = type === 'final' ? 'finalSecs' : type === 'unit' ? 'unitSecs' : 'lessonSecs';
+  var cur = _timerDraft[key];
+  var newV;
+  if (delta > 0) { newV = cur < 60 ? Math.min(60, cur + 1) : cur + 60; }
+  else            { newV = cur <= 60 ? Math.max(1, cur - 1) : cur - 60; }
+  _timerDraft[key] = Math.min(7200, Math.max(1, newV));
+  var el = document.getElementById('db-timer-' + type + '-val');
+  if (el) el.textContent = _dbTimerLbl(_timerDraft[key]);
+}
+
+function _dbTimerLbl(s) {
+  if (s < 60) return s + ' sec';
+  var m = Math.floor(s / 60), r = s % 60;
+  return r ? m + 'm ' + r + 's' : m + (m === 1 ? ' min' : ' mins');
+}
+
+function _dbToggleTimer() {
+  _timerDraft.enabled = !_timerDraft.enabled;
+  var el = document.getElementById('db-timer-toggle-btn');
+  if (el) {
+    el.textContent = _timerDraft.enabled ? 'ON' : 'OFF';
+    el.className = 'db-toggle-btn' + (_timerDraft.enabled ? ' db-toggle-on' : '');
+  }
+  var controls = document.getElementById('db-timer-controls');
+  if (controls) controls.style.display = _timerDraft.enabled ? '' : 'none';
+}
+
+function _timerRow(type, label, secs) {
+  return '<div class="db-timer-row">'
+    + '<span class="db-timer-lbl">' + label + '</span>'
+    + '<div class="db-timer-adj">'
+    + '<button class="db-adj-btn" onclick="_dbAdjustTimer(\'' + type + '\',-1)">−</button>'
+    + '<span id="db-timer-' + type + '-val" class="db-timer-val">' + _dbTimerLbl(secs) + '</span>'
+    + '<button class="db-adj-btn" onclick="_dbAdjustTimer(\'' + type + '\',1)">+</button>'
+    + '</div></div>';
+}
+
+function _renderTimerSection() {
+  var isMock = (_activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2');
+  var inner = isMock
+    ? '<p class="db-empty">Timer settings require a connected student profile.</p>'
+    : '<div class="db-toggle-row">'
+        + '<div><strong>⏱ Quiz Timer</strong></div>'
+        + '<button id="db-timer-toggle-btn" class="db-toggle-btn' + (_timerDraft.enabled ? ' db-toggle-on' : '') + '" onclick="_dbToggleTimer()">'
+        + (_timerDraft.enabled ? 'ON' : 'OFF') + '</button>'
+        + '</div>'
+        + '<div id="db-timer-controls" style="' + (_timerDraft.enabled ? '' : 'display:none') + '">'
+        + _timerRow('lesson', 'Lesson Quiz', _timerDraft.lessonSecs)
+        + _timerRow('unit',   'Unit Quiz',   _timerDraft.unitSecs)
+        + _timerRow('final',  'Final Test',  _timerDraft.finalSecs)
+        + '</div>'
+        + '<div id="db-timer-msg" class="db-ctrl-msg"></div>'
+        + '<div class="db-ctrl-btns">'
+        + '<button class="db-ctrl-save" onclick="_dbSaveTimer()">Save Timer Settings</button>'
+        + '</div>';
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">⏱ Quiz Timer</h2>'
+    + inner + '</section>';
+}
+
+// ── Accessibility section ─────────────────────────────────────────────────
+
+async function _dbSaveA11y() {
+  var msg = document.getElementById('db-a11y-msg');
+  if (!_supaDb) { if (msg) msg.textContent = 'Not connected.'; return; }
+  try {
+    var result = await _supaDb.rpc('update_a11y_settings', {
+      p_student_id: _activeId,
+      p_settings:   _a11yDraft,
+    });
+    if (result.error) throw result.error;
+    if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Saved!'; }
+    setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
+  } catch(e) {
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = '❌ Save failed.'; }
+  }
+}
+
+function _dbToggleA11y(key) {
+  _a11yDraft[key] = !_a11yDraft[key];
+  var btn = document.getElementById('db-a11y-' + key + '-btn');
+  if (btn) {
+    btn.textContent = _a11yDraft[key] ? 'ON' : 'OFF';
+    btn.className = 'db-toggle-btn' + (_a11yDraft[key] ? ' db-toggle-on' : '');
+  }
+}
+
+function _renderA11ySection() {
+  var isMock = (_activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2');
+  var inner = isMock
+    ? '<p class="db-empty">Accessibility settings require a connected student profile.</p>'
+    : '<div class="db-toggle-row">'
+        + '<div><strong>Aa Large Text</strong><br><span class="db-toggle-sub">Increases font size for the student</span></div>'
+        + '<button id="db-a11y-largeText-btn" class="db-toggle-btn' + (_a11yDraft.largeText ? ' db-toggle-on' : '') + '" onclick="_dbToggleA11y(\'largeText\')">'
+        + (_a11yDraft.largeText ? 'ON' : 'OFF') + '</button>'
+        + '</div>'
+        + '<div class="db-toggle-row">'
+        + '<div><strong>◑ High Contrast</strong><br><span class="db-toggle-sub">Increases color contrast for readability</span></div>'
+        + '<button id="db-a11y-highContrast-btn" class="db-toggle-btn' + (_a11yDraft.highContrast ? ' db-toggle-on' : '') + '" onclick="_dbToggleA11y(\'highContrast\')">'
+        + (_a11yDraft.highContrast ? 'ON' : 'OFF') + '</button>'
+        + '</div>'
+        + '<div id="db-a11y-msg" class="db-ctrl-msg"></div>'
+        + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSaveA11y()">Save Accessibility</button></div>';
+  return '<section class="db-section"><h2 class="db-sec-h">♿ Accessibility</h2>' + inner + '</section>';
+}
+
+// ── Change PIN section ────────────────────────────────────────────────────
+
+async function _dbHashPin(pin) {
+  var enc  = new TextEncoder();
+  var key  = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits']);
+  var salt = enc.encode('mymathroots_pin_v2');
+  var bits = await crypto.subtle.deriveBits(
+    { name:'PBKDF2', hash:'SHA-256', salt:salt, iterations:100000 }, key, 256
+  );
+  return Array.from(new Uint8Array(bits)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+
+async function _dbSavePin() {
+  var inp1 = document.getElementById('db-pin-inp1');
+  var inp2 = document.getElementById('db-pin-inp2');
+  var msg  = document.getElementById('db-pin-msg');
+  var newPin = inp1.value.trim();
+  if (newPin.length < 4) { msg.style.color='#c62828'; msg.textContent='PIN must be at least 4 digits.'; return; }
+  if (newPin !== inp2.value.trim()) { msg.style.color='#c62828'; msg.textContent='PINs do not match.'; return; }
+  if (!_supaDb) { msg.textContent='Not connected.'; return; }
+  msg.style.color='#546e7a'; msg.textContent='Saving…';
+  try {
+    var hash = await _dbHashPin(newPin);
+    var result = await _supaDb.rpc('update_pin_hash', { p_hash: hash });
+    if (result.error) throw result.error;
+    inp1.value = ''; inp2.value = '';
+    msg.style.color='#2e7d32'; msg.textContent='✅ PIN updated — takes effect on next device sync.';
+    setTimeout(function(){ msg.textContent=''; }, 4000);
+  } catch(e) {
+    msg.style.color='#c62828'; msg.textContent='❌ Save failed — check connection.';
+  }
+}
+
+function _renderPinSection() {
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">🔑 Change Parent PIN</h2>'
+    + '<p class="db-sec-body">Your PIN is used as the local escape hatch on student devices. Changes sync to all devices on next sign-in.</p>'
+    + '<div class="db-form-row"><label class="db-form-lbl">New PIN</label>'
+    + '<input id="db-pin-inp1" type="password" inputmode="numeric" class="db-form-inp" placeholder="New PIN (min 4 digits)"></div>'
+    + '<div class="db-form-row"><label class="db-form-lbl">Confirm PIN</label>'
+    + '<input id="db-pin-inp2" type="password" inputmode="numeric" class="db-form-inp" placeholder="Repeat PIN"></div>'
+    + '<div id="db-pin-msg" class="db-ctrl-msg"></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSavePin()">Update PIN</button></div>'
+    + '</section>';
+}
+
+// ── Reminders section ─────────────────────────────────────────────────────
+
+function _renderRemindersSection() {
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">🔔 Reminders</h2>'
+    + '<p class="db-sec-body">Daily practice reminders for this device. Requires browser permission.</p>'
+    + '<div class="db-toggle-row">'
+    + '<div><strong>Push Notifications</strong><br><span class="db-toggle-sub">Applies to this device only</span></div>'
+    + '<button id="db-push-btn" class="db-toggle-btn" onclick="_dbTogglePush()">Check…</button>'
+    + '</div>'
+    + '<div id="db-push-msg" class="db-ctrl-msg"></div>'
+    + '</section>';
+}
+
+function _dbInitPushBtn() {
+  var btn = document.getElementById('db-push-btn');
+  if (!btn || !('PushManager' in window)) {
+    if (btn) btn.textContent = 'Not supported';
+    return;
+  }
+  if (Notification && Notification.permission === 'granted') {
+    btn.textContent = 'ON'; btn.classList.add('db-toggle-on');
+  } else {
+    btn.textContent = 'OFF';
+  }
+}
+
+async function _dbTogglePush() {
+  var btn = document.getElementById('db-push-btn');
+  var msg = document.getElementById('db-push-msg');
+  if (!('Notification' in window)) {
+    if (msg) msg.textContent = 'Push notifications not supported on this browser.';
+    return;
+  }
+  var perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    if (btn) { btn.textContent = 'ON'; btn.classList.add('db-toggle-on'); }
+    if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Notifications enabled for this device.'; }
+  } else {
+    if (btn) { btn.textContent = 'OFF'; btn.classList.remove('db-toggle-on'); }
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = 'Permission denied — check browser settings.'; }
+  }
+  setTimeout(function() { if (msg) msg.textContent = ''; }, 3000);
+}
+
+// ── Change Password section ───────────────────────────────────────────────
+
+async function _dbSavePassword() {
+  var inp = document.getElementById('db-pw-inp');
+  var msg = document.getElementById('db-pw-msg');
+  var pw  = inp.value;
+  if (pw.length < 8) { msg.style.color='#c62828'; msg.textContent='Password must be at least 8 characters.'; return; }
+  if (!_supaDb) { msg.textContent='Not connected.'; return; }
+  msg.style.color='#546e7a'; msg.textContent='Saving…';
+  var result = await _supaDb.auth.updateUser({ password: pw });
+  if (result.error) { msg.style.color='#c62828'; msg.textContent='❌ ' + result.error.message; return; }
+  inp.value = '';
+  msg.style.color = '#2e7d32'; msg.textContent = '✅ Password changed!';
+  setTimeout(function(){ msg.textContent=''; }, 2000);
+}
+
+function _renderPasswordSection() {
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">🔒 Change Password</h2>'
+    + '<div class="db-form-row"><label class="db-form-lbl">New Password</label>'
+    + '<input id="db-pw-inp" type="password" class="db-form-inp" placeholder="Min 8 characters" autocomplete="new-password"></div>'
+    + '<div id="db-pw-msg" class="db-ctrl-msg"></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSavePassword()">Change Password</button></div>'
+    + '</section>';
+}
+
+// ── Feedback section ──────────────────────────────────────────────────────
+
+function _dbSetFbRating(v) {
+  if (v === _dbFbRating) v = 0;
+  _dbFbRating = v;
+  for (var i = 1; i <= 5; i++) {
+    var s = document.getElementById('db-fb-star-' + i);
+    if (s) { s.textContent = i <= v ? '★' : '☆'; s.style.color = i <= v ? '#f1c40f' : ''; }
+  }
+}
+
+function _dbSetFbCat(cat) {
+  if (cat === _dbFbCategory) { _dbFbCategory = ''; }
+  else { _dbFbCategory = cat; }
+  document.querySelectorAll('.db-fb-cat').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.cat === _dbFbCategory);
+  });
+}
+
+async function _dbSubmitFeedback() {
+  var msg = document.getElementById('db-fb-msg');
+  if (!_dbFbRating) { msg.style.color='#c62828'; msg.textContent='Please select a star rating.'; return; }
+  if (!_dbFbCategory) { msg.style.color='#c62828'; msg.textContent='Please select a category.'; return; }
+  if (!_supaDb) { msg.textContent='Not connected.'; return; }
+  var comment = (document.getElementById('db-fb-comment').value || '').slice(0, 500);
+  msg.style.color='#546e7a'; msg.textContent='Sending…';
+  try {
+    var user = (await _supaDb.auth.getUser()).data.user;
+    var result = await _supaDb.from('feedback').insert({
+      rating: _dbFbRating, category: _dbFbCategory,
+      comment: comment || null,
+      user_id: user ? user.id : null,
+    });
+    if (result.error) throw result.error;
+    _dbFbRating = 0; _dbFbCategory = '';
+    document.getElementById('db-fb-comment').value = '';
+    document.querySelectorAll('.db-fb-star').forEach(function(s){ s.textContent='☆'; s.style.color=''; });
+    document.querySelectorAll('.db-fb-cat').forEach(function(b){ b.classList.remove('active'); });
+    msg.style.color='#2e7d32'; msg.textContent='✅ Thank you for your feedback!';
+    setTimeout(function(){ msg.textContent=''; }, 3000);
+  } catch(e) {
+    msg.style.color='#c62828'; msg.textContent='❌ Could not send — check connection.';
+  }
+}
+
+function _renderFeedbackSection() {
+  var stars = '';
+  for (var i = 1; i <= 5; i++) {
+    stars += '<button id="db-fb-star-' + i + '" class="db-fb-star" onclick="_dbSetFbRating(' + i + ')">☆</button>';
+  }
+  var cats = ['General','Bug Report','Feature Request','Content Issue'];
+  var catBtns = cats.map(function(c) {
+    return '<button class="db-fb-cat" data-cat="' + _esc(c) + '" onclick="_dbSetFbCat(\'' + _esc(c) + '\')">' + _esc(c) + '</button>';
+  }).join('');
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">💬 Send Feedback</h2>'
+    + '<div class="db-fb-stars">' + stars + '</div>'
+    + '<div class="db-fb-cats">' + catBtns + '</div>'
+    + '<textarea id="db-fb-comment" class="db-fb-comment" maxlength="500" rows="3" placeholder="Comments (optional)"></textarea>'
+    + '<div id="db-fb-msg" class="db-ctrl-msg"></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSubmitFeedback()">Send Feedback</button></div>'
+    + '</section>';
+}
+
+// ── Changelog section ─────────────────────────────────────────────────────
+
+function _renderChangelogSection() {
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">📋 What\'s New</h2>'
+    + '<div style="max-height:320px;overflow-y:auto">'
+    + _changelogHtml()
+    + '</div></section>';
+}
+
+function _changelogHtml() {
+  return '<div class="mb-14"><div class="cl-version-brand">v5.33 — Current</div><ul class="list-body">'
+    + '<li><strong>Parent Dashboard</strong> — All parent controls moved to the dashboard for remote management</li>'
+    + '<li><strong>Balanced Final Test</strong> — 50-question final test with guaranteed 5 questions per unit</li>'
+    + '</ul></div>'
+    + '<div class="mb-14"><div class="cl-version">v5.32</div><ul class="list-body">'
+    + '<li><strong>Security hardening</strong> — PBKDF2 PIN hashing, HMAC-SHA256 score signing, SWR service worker</li>'
+    + '<li><strong>Stable question IDs</strong> — 5,073 unique IDs injected across all 10 units</li>'
+    + '<li><strong>Student Profiles</strong> — Multi-student support with family code and PIN login</li>'
+    + '</ul></div>'
+    + '<div class="mb-14"><div class="cl-version">v5.22</div><ul class="list-body">'
+    + '<li><strong>Self-hosted fonts</strong> — Boogaloo + Nunito base64 woff2 inline</li>'
+    + '<li><strong>Google Sign-In</strong> — Fixed Client Secret and CSP</li>'
+    + '</ul></div>';
+}
 
 function renderDashboard() {
   var root = document.getElementById('db-root');
