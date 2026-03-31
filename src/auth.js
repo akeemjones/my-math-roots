@@ -32,6 +32,9 @@ function _lsCarouselGo(idx) {
   });
   _lsCardIdx = idx;
   _lsSetRole(idx === 0 ? 'student' : 'parent');
+  // Hide guest button on Parent/Teacher card — dashboard requires an account
+  var guestBtn = document.getElementById('ls-guest-btn');
+  if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
 }
 
 function _lsInitCarousel() {
