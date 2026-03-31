@@ -92,7 +92,98 @@
             <div class="ls-card-role-title">Parent / Teacher</div>
             <div class="ls-card-role-sub">View progress &amp; manage settings</div>
           </div>
-          <div id="ls-mount-1"></div>
+          <div id="ls-mount-1">
+          <div id="ls-form-shared">
+          <!-- Social login -->
+          <button type="button" data-action="_lsOAuth" data-arg="google" class="ls-google-btn"
+            style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:50px;border:2px solid var(--border2);background:var(--bg);cursor:pointer;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);color:var(--txt);margin-bottom:8px;touch-action:manipulation">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+            Continue with Google
+          </button>
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="flex:1;height:1px;background:var(--border2)"></div>
+            <span style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:var(--txt2)">or</span>
+            <div style="flex:1;height:1px;background:var(--border2)"></div>
+          </div>
+          <!-- Tab switcher -->
+          <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:14px;overflow:hidden">
+            <button id="ls-tab-login"  class="auth-tab-btn active" type="button" data-action="_lsSwitchTab" data-arg="login">Sign In</button>
+            <button id="ls-tab-signup" class="auth-tab-btn idle"   type="button" data-action="_lsSwitchTab" data-arg="signup">Create Account</button>
+          </div>
+          <form onsubmit="return false">
+          <!-- Honeypot — invisible to humans, traps bots. NEVER remove or label this. -->
+          <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true" tabindex="-1">
+            <input type="text" id="ls-hp" name="website" autocomplete="off" tabindex="-1" value="">
+          </div>
+          <!-- Name (signup only) -->
+          <div id="ls-name-row" style="display:none;margin-bottom:12px">
+            <input class="set-inp" id="ls-name" type="text" placeholder="Your name (e.g. Emma) *" maxlength="30" style="font-size:var(--fs-base);width:100%;box-sizing:border-box">
+          </div>
+          <!-- Email -->
+          <div style="margin-bottom:6px">
+            <input class="set-inp" id="ls-email" type="email" placeholder="Email address" autocomplete="email" inputmode="email" style="font-size:var(--fs-base);width:100%;box-sizing:border-box">
+          </div>
+          <!-- Remember email -->
+          <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+            <input type="checkbox" id="ls-remember" style="width:16px;height:16px;accent-color:#4a90d9;cursor:pointer;flex-shrink:0">
+            <label for="ls-remember" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:var(--txt2);cursor:pointer;user-select:none">Remember my email</label>
+          </div>
+          <!-- Password -->
+          <div style="margin-bottom:4px;position:relative">
+            <input class="set-inp" id="ls-password" type="password" placeholder="Password (min 8 characters)" autocomplete="current-password" style="font-size:var(--fs-base);width:100%;box-sizing:border-box;padding-right:44px" onkeydown="if(event.key==='Enter')_lsSubmit()" oninput="_updatePwStrength()">
+            <button type="button" id="ls-pw-toggle" data-action="_lsTogglePw" tabindex="-1"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:var(--fs-md);padding:4px;line-height:1;-webkit-tap-highlight-color:transparent;color:var(--txt2)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <!-- Password strength bar — only shown on signup tab -->
+          <div id="ls-pw-strength" style="display:none;margin-bottom:6px;padding:0 2px">
+            <div style="height:5px;border-radius:50px;background:var(--border2);overflow:hidden">
+              <div id="ls-pw-bar" style="height:100%;width:0;border-radius:50px;transition:width .25s,background .25s"></div>
+            </div>
+            <div id="ls-pw-label" style="font-size:var(--fs-xs);margin-top:2px;text-align:right"></div>
+          </div>
+          <!-- Resend confirmation email — shown after successful signup -->
+          <div id="ls-resend-row" style="display:none;text-align:center;margin-bottom:6px">
+            <button type="button" data-action="_lsResend"
+              style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+              Resend confirmation email
+            </button>
+          </div>
+          <!-- Forgot password — only visible on Sign In tab -->
+          <div id="ls-forgot-row" style="text-align:left;margin-bottom:6px">
+            <button type="button" data-action="_lsForgotPassword"
+              style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:#4a90d9;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;-webkit-tap-highlight-color:transparent">
+              Forgot password?
+            </button>
+          </div>
+          <!-- Parental consent (signup only) -->
+          <div id="ls-consent-row" style="display:none;margin-bottom:12px">
+            <label id="ls-consent-label" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:var(--fs-sm);color:var(--txt,#222);line-height:1.45;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(120,160,220,0.25);background:rgba(255,255,255,0.45)">
+              <input type="checkbox" id="ls-consent" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer;accent-color:#4a90d9">
+              <span>I am a parent or guardian of the child using this app</span>
+            </label>
+            <div style="margin-top:7px;font-size:var(--fs-xs);color:var(--txt2,#888);text-align:center">By creating an account, you agree to our <a href="./privacy.html" target="_blank" rel="noopener" style="color:#3b82f6;text-decoration:underline">Privacy Policy</a> and <a href="./terms.html" target="_blank" rel="noopener" style="color:#3b82f6;text-decoration:underline">Terms of Service</a>.</div>
+          </div>
+          <!-- Cloudflare Turnstile CAPTCHA -->
+          <div id="ls-turnstile" style="margin-bottom:10px;display:flex;justify-content:center">
+            <div class="cf-turnstile"
+              data-sitekey="0x4AAAAAACvY03hPN2AAZUGO"
+              data-theme="auto"
+              data-size="normal"
+              data-callback="_onTurnstileSuccess"
+              data-expired-callback="_onTurnstileExpired">
+            </div>
+          </div>
+          <!-- Error/status -->
+          <div id="ls-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);min-height:1.4rem;margin-bottom:10px;text-align:center;color:#e74c3c"></div>
+          <!-- Submit -->
+          <button id="ls-submit-btn" data-action="_lsSubmit"
+            style="width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);padding:15px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#4a90d9,#27ae60);color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);touch-action:manipulation">
+            Sign In
+          </button>
+          </form>
+          </div><!-- #ls-form-shared -->
+          </div><!-- #ls-mount-1 -->
         </div><!-- #ls-card-1 -->
 
       </div><!-- .ls-carousel-track -->
