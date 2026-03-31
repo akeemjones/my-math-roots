@@ -812,35 +812,88 @@ const FINAL_TIMER_KEY  = 'wb_final_timer_secs';
 const PIN_CHANGED_KEY  = 'wb_pin_changed';
 
 function getLessonTimerSecs(){
+  var tc = _readTimerCache();
+  if (tc && typeof tc.lessonSecs === 'number') return tc.lessonSecs;
   const v = localStorage.getItem(LESSON_TIMER_KEY);
   if(v) return parseInt(v);
   const old = localStorage.getItem('wb_lesson_timer_mins');
   return old ? parseInt(old)*60 : 480;
 }
 function getUnitTimerSecs(){
+  var tc = _readTimerCache();
+  if (tc && typeof tc.unitSecs === 'number') return tc.unitSecs;
   const v = localStorage.getItem(UNIT_TIMER_KEY);
   if(v) return parseInt(v);
   const old = localStorage.getItem('wb_unit_timer_mins');
   return old ? parseInt(old)*60 : 1800;
 }
-function getFinalTimerSecs(){ return parseInt(localStorage.getItem(FINAL_TIMER_KEY)||'3600'); }
+function getFinalTimerSecs(){
+  var tc = _readTimerCache();
+  if (tc && typeof tc.finalSecs === 'number') return tc.finalSecs;
+  return parseInt(localStorage.getItem(FINAL_TIMER_KEY)||'3600');
+}
 // Legacy minute getters (used by display/toast)
 function getLessonTimerMins(){ return Math.round(getLessonTimerSecs()/60); }
 function getUnitTimerMins(){   return Math.round(getUnitTimerSecs()/60); }
 function _timerSecsLbl(s){ if(s<60) return s+' sec'; const m=Math.floor(s/60),r=s%60; return r?m+'m '+r+'s':m+(m===1?' minute':' min'); }
-function isTimerEnabled(){ return localStorage.getItem(TIMER_KEY) !== 'off'; }
+function isTimerEnabled(){
+  var tc = _readTimerCache();
+  if (tc && typeof tc.enabled === 'boolean') return tc.enabled;
+  return localStorage.getItem(TIMER_KEY) !== 'off';
+}
 const PARENT_PIN_KEY = 'wb_parent_pin';
 const PARENT_UNLOCK_KEY = 'wb_parent_unlock';
 const UNIT_UNLOCK_KEY    = 'wb_unit_unlocks';    // JSON array of individually unlocked unit indices
 const LESSON_UNLOCK_KEY = 'wb_lesson_unlocks'; // JSON object {unitIdx_lessonIdx: true}
 
+// ── Supabase-synced cache helpers ─────────────────────────────────────────
+function _studentIdForCache() {
+  return localStorage.getItem('mmr_active_student_id') || 'local';
+}
+
+function _readUnlockCache() {
+  var sid = _studentIdForCache();
+  if (sid === 'local') return null;
+  try {
+    var raw = localStorage.getItem('wb_unlock_' + sid);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function _readTimerCache() {
+  var sid = _studentIdForCache();
+  if (sid === 'local') return null;
+  try {
+    var raw = localStorage.getItem('wb_timer_' + sid);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 function getUnitUnlocks(){ return safeLoadSigned(UNIT_UNLOCK_KEY, []); }
 function saveUnitUnlocks(arr){ saveSigned(UNIT_UNLOCK_KEY, arr); }
-function isUnitIndividuallyUnlocked(idx){ return getUnitUnlocks().includes(idx); }
-
 function getLessonUnlocks(){ return safeLoadSigned(LESSON_UNLOCK_KEY, {}); }
 function saveLessonUnlocks(obj){ saveSigned(LESSON_UNLOCK_KEY, obj); }
-function isLessonIndividuallyUnlocked(unitIdx, lessonIdx){ return !!getLessonUnlocks()[unitIdx+'_'+lessonIdx]; }
+
+function isUnitIndividuallyUnlocked(idx){
+  var cache = _readUnlockCache();
+  if (cache) {
+    if (cache.freeMode === true) return true;
+    return Array.isArray(cache.units) && cache.units.indexOf(idx) !== -1;
+  }
+  // Fallback to legacy signed key
+  return getUnitUnlocks().includes(idx);
+}
+
+function isLessonIndividuallyUnlocked(unitIdx, lessonIdx){
+  var cache = _readUnlockCache();
+  if (cache) {
+    if (cache.freeMode === true) return true;
+    return !!(cache.lessons && cache.lessons[unitIdx+'_'+lessonIdx]);
+  }
+  // Fallback to legacy signed key
+  return !!getLessonUnlocks()[unitIdx+'_'+lessonIdx];
+}
 
 function isParentUnlocked(){
   const limit = PARENT_SESSION_MINS * 60 * 1000;
@@ -1789,6 +1842,16 @@ async function checkLessonPinUnlock(){
     return;
   }
   if(_lpmUnitIdx < 0 || _lpmLessonIdx < 0) return;
+  // Write to new unlock cache (local 24h override)
+  var _sid2 = _studentIdForCache();
+  var _cacheKey2 = 'wb_unlock_' + _sid2;
+  var _cache2 = {};
+  try { var _cr2 = localStorage.getItem(_cacheKey2); if(_cr2) _cache2 = JSON.parse(_cr2); } catch(e){}
+  if (!_cache2.lessons) _cache2.lessons = {};
+  _cache2.lessons[_lpmUnitIdx+'_'+_lpmLessonIdx] = true;
+  _cache2._localOverrideExpiry = Date.now() + 86400000; // 24h
+  localStorage.setItem(_cacheKey2, JSON.stringify(_cache2));
+  // Also write legacy key as fallback
   const unlocks = getLessonUnlocks();
   unlocks[_lpmUnitIdx+'_'+_lpmLessonIdx] = true;
   saveLessonUnlocks(unlocks);
@@ -1841,7 +1904,16 @@ async function checkUnitPinUnlock(){
     return;
   }
   if(_upmUnitIdx < 0) return;
-  // Save individual unit unlock
+  // Write to new unlock cache (local 24h override)
+  var _sid = _studentIdForCache();
+  var _cacheKey = 'wb_unlock_' + _sid;
+  var _cache = {};
+  try { var _cr = localStorage.getItem(_cacheKey); if(_cr) _cache = JSON.parse(_cr); } catch(e){}
+  if (!Array.isArray(_cache.units)) _cache.units = [];
+  if (_cache.units.indexOf(_upmUnitIdx) === -1) _cache.units.push(_upmUnitIdx);
+  _cache._localOverrideExpiry = Date.now() + 86400000; // 24h
+  localStorage.setItem(_cacheKey, JSON.stringify(_cache));
+  // Also write legacy key as fallback
   const unlocks = getUnitUnlocks();
   if(!unlocks.includes(_upmUnitIdx)){
     unlocks.push(_upmUnitIdx);
