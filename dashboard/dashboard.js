@@ -877,6 +877,10 @@ function downloadReportPDF() {
 
 var _students    = {};
 var _activeId    = 'local';
+var _supaDb = null;
+var _managedProfiles = [];
+var _pinResetStudentId = null;
+var _pinResetBuffer = [];
 
 function _unitNames() {
   // Fallback labels for 10 units
@@ -926,6 +930,7 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
+    _renderManageProfiles() +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderRootSystem(scores, _unitNames()) +
     _renderOverview(stats) +
@@ -952,11 +957,449 @@ function signOut() {
   window.location.href = '../index.html';
 }
 
+// ── Manage Profiles ───────────────────────────────────────────────────────
+
+async function _fetchManagedProfiles() {
+  if (typeof _supaDb === 'undefined' || !_supaDb) return;
+  try {
+    var result = await _supaDb
+      .from('student_profiles')
+      .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at')
+      .order('created_at', { ascending: true });
+    if (result.error) throw result.error;
+    _managedProfiles = result.data || [];
+    localStorage.setItem('mmr_family_profiles',
+      JSON.stringify(_managedProfiles.map(function(p) {
+        return { id: p.id, display_name: p.display_name, age: p.age,
+          avatar_emoji: p.avatar_emoji, avatar_color_from: p.avatar_color_from,
+          avatar_color_to: p.avatar_color_to, username: p.username, pin_hash: '' };
+      }))
+    );
+  } catch(e) {
+    try { _managedProfiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]'); }
+    catch(e2) { _managedProfiles = []; }
+  }
+}
+
+function _renderManageProfiles() {
+  if (!_managedProfiles.length) {
+    return '<section class="db-section db-profiles-section" id="db-manage-profiles-section">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      + '<h2 class="db-sec-h" style="margin:0">&#x1F464; Manage Profiles</h2>'
+      + '<button class="db-add-student-btn" onclick="openAddStudentSheet()">+ Add Student</button>'
+      + '</div>'
+      + '<p class="db-empty">No student profiles yet. Add your first student above.</p>'
+      + '</section>';
+  }
+
+  var rows = _managedProfiles.map(function(p) {
+    var lastActive = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Never';
+    return '<div class="db-profile-row">'
+      + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _esc(p.avatar_color_from) + ',' + _esc(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-weight:700;font-size:.88rem;color:#263238">' + _esc(p.display_name) + (p.age ? ' <span style="font-weight:400;color:#90a4ae;font-size:.75rem">Age ' + _esc(String(p.age)) + '</span>' : '') + '</div>'
+      + '<div style="font-size:.72rem;color:#90a4ae">Last active ' + _esc(lastActive) + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:6px;flex-shrink:0">'
+      + '<button class="db-profile-edit-btn" onclick="openEditProfileSheet(\'' + _esc(p.id) + '\')">Edit</button>'
+      + '<button class="db-profile-pin-btn" onclick="openPinResetSheet(\'' + _esc(p.id) + '\')">PIN</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  return '<section class="db-section db-profiles-section" id="db-manage-profiles-section">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<h2 class="db-sec-h" style="margin:0">&#x1F464; Manage Profiles</h2>'
+    + '<button class="db-add-student-btn" onclick="openAddStudentSheet()">+ Add Student</button>'
+    + '</div>'
+    + '<div class="db-profiles-list">' + rows + '</div>'
+    + '</section>';
+}
+
+function openPinResetSheet(studentId) {
+  _pinResetStudentId = studentId;
+  _pinResetBuffer = [];
+  var profile = _managedProfiles.find(function(p) { return p.id === studentId; });
+  if (!profile) return;
+
+  var modal = document.getElementById('db-pin-reset-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'db-pin-reset-modal';
+    modal.className = 'db-review-modal';
+    modal.innerHTML = '<div class="db-review-sheet" id="db-pin-reset-sheet">'
+      + '<div class="db-review-head" id="db-pin-reset-head"></div>'
+      + '<div class="db-review-body" id="db-pin-reset-body"></div>'
+      + '</div>';
+    modal.addEventListener('click', function(e) { if (e.target === modal) closePinResetSheet(); });
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('db-pin-reset-head').innerHTML =
+    '<button class="db-review-close" onclick="closePinResetSheet()">&#x2715;</button>'
+    + '<div class="db-review-title">Reset PIN for ' + _esc(profile.display_name) + '</div>'
+    + '<div class="db-review-meta">Enter a new 4-digit PIN</div>';
+
+  _lsDbRenderPinDots();
+
+  var keys = '';
+  ['1','2','3','4','5','6','7','8','9'].forEach(function(d) {
+    keys += '<button class="db-pin-key" onclick="dbPinKey(\'' + d + '\')">' + d + '</button>';
+  });
+  keys += '<div></div>'
+    + '<button class="db-pin-key" onclick="dbPinKey(\'0\')">0</button>'
+    + '<button class="db-pin-key db-pin-key-back" onclick="dbPinBack()">&#x232B;</button>';
+
+  document.getElementById('db-pin-reset-body').innerHTML =
+    '<div id="db-pin-reset-dots" style="display:flex;gap:10px;justify-content:center;margin:16px 0 12px"></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:0 2px">' + keys + '</div>'
+    + '<div id="db-pin-reset-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
+    + '<button id="db-pin-save-btn" onclick="dbPinSave()" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Save New PIN</button>';
+
+  _lsDbRenderPinDots();
+  modal.classList.add('open');
+}
+
+function _lsDbRenderPinDots() {
+  var dotsEl = document.getElementById('db-pin-reset-dots');
+  if (!dotsEl) return;
+  var html = '';
+  for (var i = 0; i < 4; i++) {
+    html += i < _pinResetBuffer.length
+      ? '<div style="width:16px;height:16px;border-radius:50%;background:#1565C0;box-shadow:0 0 6px rgba(21,101,192,.5)"></div>'
+      : '<div style="width:16px;height:16px;border-radius:50%;background:#f0f4f8;border:2px solid #e0e0e0"></div>';
+  }
+  dotsEl.innerHTML = html;
+}
+
+function dbPinKey(digit) {
+  if (_pinResetBuffer.length >= 4) return;
+  _pinResetBuffer.push(String(digit));
+  _lsDbRenderPinDots();
+  if (_pinResetBuffer.length === 4) {
+    var btn = document.getElementById('db-pin-save-btn');
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+  }
+}
+
+function dbPinBack() {
+  if (!_pinResetBuffer.length) return;
+  _pinResetBuffer.pop();
+  _lsDbRenderPinDots();
+  var btn = document.getElementById('db-pin-save-btn');
+  if (btn && _pinResetBuffer.length < 4) { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+}
+
+async function dbPinSave() {
+  var msg = document.getElementById('db-pin-reset-msg');
+  if (_pinResetBuffer.length < 4) return;
+  if (!_supaDb || !_pinResetStudentId) { if (msg) msg.textContent = 'Not connected.'; return; }
+
+  var btn = document.getElementById('db-pin-save-btn');
+  if (btn) btn.textContent = 'Saving...';
+
+  try {
+    var encoder = new TextEncoder();
+    var data = encoder.encode(_pinResetBuffer.join('') + 'mymathroots_pin_salt_2025');
+    var keyMaterial = await crypto.subtle.importKey('raw', data, 'PBKDF2', false, ['deriveBits']);
+    var salt = encoder.encode('mymathroots_pin_salt_2025');
+    var derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, 256);
+    var newHash = Array.from(new Uint8Array(derived)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+
+    var result = await Promise.race([
+      _supaDb.from('student_profiles').update({ pin_hash: newHash, updated_at: new Date().toISOString() }).eq('id', _pinResetStudentId),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    if (result.error) throw result.error;
+
+    var profile = _managedProfiles.find(function(p) { return p.id === _pinResetStudentId; });
+    var profileName = profile ? profile.display_name : 'student';
+
+    closePinResetSheet();
+    var toast = document.createElement('div');
+    toast.textContent = 'PIN updated for ' + profileName;
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#263238;color:#fff;padding:10px 20px;border-radius:50px;font-size:.85rem;z-index:9999;white-space:nowrap';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  } catch(e) {
+    if (msg) msg.textContent = 'Error saving PIN. Try again.';
+    if (btn) btn.textContent = 'Save New PIN';
+  }
+}
+
+function closePinResetSheet() {
+  var modal = document.getElementById('db-pin-reset-modal');
+  if (modal) modal.classList.remove('open');
+  _pinResetBuffer = [];
+}
+
+function openEditProfileSheet(studentId) {
+  var profile = _managedProfiles.find(function(p) { return p.id === studentId; });
+  if (!profile) return;
+
+  var modal = document.getElementById('db-edit-profile-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'db-edit-profile-modal';
+    modal.className = 'db-review-modal';
+    modal.innerHTML = '<div class="db-review-sheet" id="db-edit-profile-sheet">'
+      + '<div class="db-review-head" id="db-edit-profile-head"></div>'
+      + '<div class="db-review-body" id="db-edit-profile-body"></div>'
+      + '</div>';
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeEditProfileSheet(); });
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('db-edit-profile-head').innerHTML =
+    '<button class="db-review-close" onclick="closeEditProfileSheet()">&#x2715;</button>'
+    + '<div class="db-review-title">Edit Profile</div>';
+
+  var AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
+  var AVATAR_COLORS = {'🦁':'#f59e0b,#f97316','🦋':'#8b5cf6,#ec4899','🐉':'#06b6d4,#3b82f6','🦊':'#ef4444,#f97316','🐬':'#10b981,#0ea5e9','🌟':'#f59e0b,#eab308'};
+
+  document.getElementById('db-edit-profile-body').innerHTML =
+    '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Name</label>'
+    + '<input id="db-edit-name" type="text" maxlength="20" value="' + _esc(profile.display_name) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Age (optional)</label>'
+    + '<input id="db-edit-age" type="number" min="4" max="18" value="' + _esc(String(profile.age || '')) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Avatar</label>'
+    + '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">'
+    + AVATAR_EMOJIS.map(function(e) {
+        var colors = AVATAR_COLORS[e] || '#f59e0b,#f97316';
+        var isSelected = e === profile.avatar_emoji;
+        return '<div id="db-av-' + e.codePointAt(0) + '" onclick="dbEditSelectEmoji(\'' + _esc(e) + '\')"'
+          + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (isSelected ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box">' + e + '</div>';
+      }).join('')
+    + '</div>'
+    + '<div id="db-edit-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
+    + '<button onclick="dbEditSave(\'' + _esc(studentId) + '\')" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Save Changes</button>';
+
+  modal.classList.add('open');
+}
+
+var _dbEditSelectedEmoji = null;
+
+function dbEditSelectEmoji(emoji) {
+  _dbEditSelectedEmoji = emoji;
+  ['🦁','🦋','🐉','🦊','🐬','🌟'].forEach(function(e) {
+    var el = document.getElementById('db-av-' + e.codePointAt(0));
+    if (el) el.style.border = e === emoji ? '3px solid #1565C0' : '3px solid transparent';
+  });
+}
+
+async function dbEditSave(studentId) {
+  var msg = document.getElementById('db-edit-msg');
+  var nameInp = document.getElementById('db-edit-name');
+  var ageInp  = document.getElementById('db-edit-age');
+  if (!nameInp || !msg) return;
+
+  var name = nameInp.value.trim();
+  if (!name) { msg.textContent = 'Name is required.'; return; }
+  if (!_supaDb) { msg.textContent = 'Not connected.'; return; }
+
+  var profile = _managedProfiles.find(function(p) { return p.id === studentId; });
+  var emoji = _dbEditSelectedEmoji || (profile ? profile.avatar_emoji : '🦁');
+  var AVATAR_COLORS = {'🦁':['#f59e0b','#f97316'],'🦋':['#8b5cf6','#ec4899'],'🐉':['#06b6d4','#3b82f6'],'🦊':['#ef4444','#f97316'],'🐬':['#10b981','#0ea5e9'],'🌟':['#f59e0b','#eab308']};
+  var colors = AVATAR_COLORS[emoji] || ['#f59e0b','#f97316'];
+  var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
+
+  try {
+    var result = await Promise.race([
+      _supaDb.from('student_profiles').update({
+        display_name: name, age: ageVal,
+        avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
+        updated_at: new Date().toISOString(),
+      }).eq('id', studentId),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    if (result.error) throw result.error;
+
+    await _fetchManagedProfiles();
+    closeEditProfileSheet();
+    _reRenderManageProfiles();
+  } catch(e) {
+    if (msg) msg.textContent = 'Error saving. Try again.';
+  }
+}
+
+function closeEditProfileSheet() {
+  var modal = document.getElementById('db-edit-profile-modal');
+  if (modal) modal.classList.remove('open');
+  _dbEditSelectedEmoji = null;
+}
+
+function openAddStudentSheet() {
+  var modal = document.getElementById('db-add-student-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'db-add-student-modal';
+    modal.className = 'db-review-modal';
+    modal.innerHTML = '<div class="db-review-sheet">'
+      + '<div class="db-review-head"><button class="db-review-close" onclick="closeAddStudentSheet()">&#x2715;</button>'
+      + '<div class="db-review-title">Add Student</div></div>'
+      + '<div class="db-review-body" id="db-add-student-body"></div>'
+      + '</div>';
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeAddStudentSheet(); });
+    document.body.appendChild(modal);
+  }
+
+  window._dbAddPinBuffer = [];
+  window._dbAddSelectedEmoji = '🦁';
+  var AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
+  var AVATAR_COLORS = {'🦁':'#f59e0b,#f97316','🦋':'#8b5cf6,#ec4899','🐉':'#06b6d4,#3b82f6','🦊':'#ef4444,#f97316','🐬':'#10b981,#0ea5e9','🌟':'#f59e0b,#eab308'};
+
+  document.getElementById('db-add-student-body').innerHTML =
+    '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Student Name *</label>'
+    + '<input id="db-add-name" type="text" maxlength="20" placeholder="e.g. Maya" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Age (optional)</label>'
+    + '<input id="db-add-age" type="number" min="4" max="18" placeholder="e.g. 9" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Avatar</label>'
+    + '<div id="db-add-avatars" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">'
+    + AVATAR_EMOJIS.map(function(e) {
+        var colors = AVATAR_COLORS[e] || '#f59e0b,#f97316';
+        return '<div id="db-addav-' + e.codePointAt(0) + '"'
+          + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (e === '🦁' ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box" onclick="dbAddSelectEmoji(\'' + _esc(e) + '\')">' + e + '</div>';
+      }).join('')
+    + '</div>'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Create a 4-digit PIN</label>'
+    + '<div id="db-add-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">'
+    + '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.18)"></div>'.repeat(4)
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'
+    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button onclick="dbAddPinKey(\'' + d + '\')" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">' + d + '</button>'; }).join('')
+    + '<div></div>'
+    + '<button onclick="dbAddPinKey(\'0\')" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">0</button>'
+    + '<button onclick="dbAddPinBack()" style="background:#fce4ec;border:1px solid #ffcdd2;border-radius:10px;padding:12px 0;font-size:1rem;color:#c62828;cursor:pointer">&#x232B;</button>'
+    + '</div>'
+    + '<div id="db-add-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
+    + '<button id="db-add-save-btn" onclick="dbAddSave()" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Add Student</button>';
+
+  modal.classList.add('open');
+}
+
+function dbAddSelectEmoji(emoji) {
+  window._dbAddSelectedEmoji = emoji;
+  ['🦁','🦋','🐉','🦊','🐬','🌟'].forEach(function(e) {
+    var el = document.getElementById('db-addav-' + e.codePointAt(0));
+    if (el) el.style.border = e === emoji ? '3px solid #1565C0' : '3px solid transparent';
+  });
+}
+
+function dbAddPinKey(digit) {
+  if ((window._dbAddPinBuffer || []).length >= 4) return;
+  window._dbAddPinBuffer = (window._dbAddPinBuffer || []).concat([String(digit)]);
+  var dotsEl = document.getElementById('db-add-dots');
+  if (dotsEl) {
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      html += i < window._dbAddPinBuffer.length
+        ? '<div style="width:14px;height:14px;border-radius:50%;background:#1565C0;box-shadow:0 0 6px rgba(21,101,192,.5)"></div>'
+        : '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.18)"></div>';
+    }
+    dotsEl.innerHTML = html;
+  }
+  if (window._dbAddPinBuffer.length === 4) {
+    var btn = document.getElementById('db-add-save-btn');
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+  }
+}
+
+function dbAddPinBack() {
+  window._dbAddPinBuffer = (window._dbAddPinBuffer || []).slice(0, -1);
+  var dotsEl = document.getElementById('db-add-dots');
+  if (dotsEl) {
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      html += i < window._dbAddPinBuffer.length
+        ? '<div style="width:14px;height:14px;border-radius:50%;background:#1565C0;box-shadow:0 0 6px rgba(21,101,192,.5)"></div>'
+        : '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.18)"></div>';
+    }
+    dotsEl.innerHTML = html;
+  }
+  var btn = document.getElementById('db-add-save-btn');
+  if (btn && window._dbAddPinBuffer.length < 4) { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+}
+
+async function dbAddSave() {
+  var msg = document.getElementById('db-add-msg');
+  var nameInp = document.getElementById('db-add-name');
+  var ageInp  = document.getElementById('db-add-age');
+  if (!nameInp || !msg) return;
+  var name = nameInp.value.trim();
+  if (!name) { msg.textContent = 'Name is required.'; return; }
+  if ((window._dbAddPinBuffer || []).length < 4) { msg.textContent = 'Enter a 4-digit PIN.'; return; }
+  if (!_supaDb) { msg.textContent = 'Not connected.'; return; }
+
+  var btn = document.getElementById('db-add-save-btn');
+  if (btn) btn.textContent = 'Saving...';
+
+  try {
+    var encoder = new TextEncoder();
+    var pinData = encoder.encode(window._dbAddPinBuffer.join('') + 'mymathroots_pin_salt_2025');
+    var keyMaterial = await crypto.subtle.importKey('raw', pinData, 'PBKDF2', false, ['deriveBits']);
+    var salt = encoder.encode('mymathroots_pin_salt_2025');
+    var derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, 256);
+    var pinHash = Array.from(new Uint8Array(derived)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+
+    var emoji = window._dbAddSelectedEmoji || '🦁';
+    var AVATAR_COLORS = {'🦁':['#f59e0b','#f97316'],'🦋':['#8b5cf6','#ec4899'],'🐉':['#06b6d4','#3b82f6'],'🦊':['#ef4444','#f97316'],'🐬':['#10b981','#0ea5e9'],'🌟':['#f59e0b','#eab308']};
+    var colors = AVATAR_COLORS[emoji] || ['#f59e0b','#f97316'];
+    var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
+    var username = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 20) || 'student';
+
+    // Get parent_id from Supabase session
+    var sessionResult = await _supaDb.auth.getUser();
+    var parentId = sessionResult && sessionResult.data && sessionResult.data.user ? sessionResult.data.user.id : null;
+
+    var result = await Promise.race([
+      _supaDb.from('student_profiles').insert({
+        parent_id: parentId,
+        username: username, display_name: name, age: ageVal,
+        avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
+        pin_hash: pinHash,
+      }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    if (result.error) throw result.error;
+
+    await _fetchManagedProfiles();
+    closeAddStudentSheet();
+    _reRenderManageProfiles();
+  } catch(e) {
+    if (msg) msg.textContent = e.message && e.message.includes('unique') ? 'A student with that name already exists.' : 'Error saving. Try again.';
+    if (btn) btn.textContent = 'Add Student';
+  }
+}
+
+function closeAddStudentSheet() {
+  var modal = document.getElementById('db-add-student-modal');
+  if (modal) modal.classList.remove('open');
+  window._dbAddPinBuffer = [];
+  window._dbAddSelectedEmoji = '🦁';
+}
+
+function _reRenderManageProfiles() {
+  var el = document.getElementById('db-manage-profiles-section');
+  if (el) el.outerHTML = _renderManageProfiles();
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────
 
 function initDashboard() {
   if (!_checkAccess()) return;
+  var _SUPA_URL = '%%SUPA_URL%%';
+  var _SUPA_KEY = '%%SUPA_KEY%%';
+  if (typeof supabase !== 'undefined' && _SUPA_URL && !_SUPA_URL.includes('%%')) {
+    window._supaDb = supabase.createClient(_SUPA_URL, _SUPA_KEY);
+    _supaDb = window._supaDb;
+  }
   _students = getAllStudents();
+  if (_supaDb) {
+    _fetchManagedProfiles().then(function() {
+      var profilesSection = document.getElementById('db-manage-profiles-section');
+      if (profilesSection) profilesSection.outerHTML = _renderManageProfiles();
+    });
+  }
   renderDashboard();
 }
 
