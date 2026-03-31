@@ -1483,8 +1483,10 @@ async function _pushScores(){
   try{
     // Filter out entries with a _sig that doesn't verify. Entries without _sig pass through (backwards compat).
     const verifiedScores = SCORES.filter(s => !s._sig || _scoreValid(s));
+    const _activeStudentId = localStorage.getItem('mmr_active_student_id') || null;
     const rows = verifiedScores.map(s => ({
       user_id:_supaUser.id, local_id:s.id,
+      student_id: _activeStudentId,
       qid:s.qid||'', label:s.label||'', type:s.type||'',
       score:s.score||0, total:s.total||0, pct:s.pct||0,
       stars:s.stars||'', unit_idx:s.unitIdx??null, color:s.color||null,
