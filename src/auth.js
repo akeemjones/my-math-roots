@@ -18,6 +18,428 @@ function _lsSetRole(role) {
 
 var _lsCardIdx = 0;
 
+// ── Student login state ──────────────────────────────────────────────────
+var _lsFamilyProfiles = null;   // cached Array<profile> from mmr_family_profiles
+var _lsSelectedStudentId = null; // id of avatar currently highlighted
+var _lsPinBuffer = [];           // digits entered so far (max 4)
+var _STU_FAIL_KEY   = 'mmr_stud_fail_ts';
+var _STU_FAIL_COUNT = 'mmr_stud_fail_count';
+var _STU_MAX_FAILS  = 5;
+var _STU_LOCK_MS    = 30000;
+
+// ── Parent onboarding state ──────────────────────────────────────────────
+var _obPinBuffer = [];
+var _obSelectedEmoji = '🦁';
+var _AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
+var _AVATAR_COLORS = {
+  '🦁': { from: '#f59e0b', to: '#f97316' },
+  '🦋': { from: '#8b5cf6', to: '#ec4899' },
+  '🐉': { from: '#06b6d4', to: '#3b82f6' },
+  '🦊': { from: '#ef4444', to: '#f97316' },
+  '🐬': { from: '#10b981', to: '#0ea5e9' },
+  '🌟': { from: '#f59e0b', to: '#eab308' },
+};
+
+function _validateFamilyCode(code) {
+  if (code == null || code === '') return false;
+  return /^MMR-[A-Z0-9]{4}$/i.test(String(code));
+}
+
+function _lsEsc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function _lsValidColor(val) {
+  if (typeof val !== 'string') return '#f59e0b';
+  return /^#[0-9a-fA-F]{3,6}$/.test(val.trim()) ? val.trim() : '#f59e0b';
+}
+
+function _buildAvatarHtml(profiles, selectedId) {
+  if (!profiles || !profiles.length) return '';
+  return profiles.map(function(p) {
+    var isSelected = p.id === selectedId;
+    var ringStyle = isSelected
+      ? 'border:2.5px solid rgba(255,255,255,0.85);box-shadow:0 0 0 3px rgba(245,158,11,0.45),0 4px 12px rgba(0,0,0,0.3);opacity:1'
+      : 'border:2.5px solid rgba(255,255,255,0.25);box-shadow:0 4px 12px rgba(0,0,0,0.3);opacity:0.7';
+    return '<div class="ls-avatar-item' + (isSelected ? ' ls-avatar-selected' : '') + '"'
+      + ' data-action="_lsSelectAvatar" data-arg="' + _lsEsc(p.id) + '"'
+      + ' data-id="' + _lsEsc(p.id) + '">'
+      + '<div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,'
+      + _lsValidColor(p.avatar_color_from) + ',' + _lsValidColor(p.avatar_color_to)
+      + ');display:flex;align-items:center;justify-content:center;font-size:1.5rem;' + ringStyle + '">'
+      + _lsEsc(p.avatar_emoji) + '</div>'
+      + '<div style="font-size:.72rem;color:' + (isSelected ? '#fff' : 'rgba(255,255,255,0.65)') + ';font-weight:'
+      + (isSelected ? '700' : '600') + ';margin-top:5px">' + _lsEsc(p.display_name) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
+  if (!profiles || !profiles.length) {
+    return '<div style="padding:4px 0">'
+      + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:10px">Enter your family code</div>'
+      + '<input id="ls-family-code-inp" type="text" class="set-inp" placeholder="MMR-0000"'
+      + ' maxlength="8" style="width:100%;text-align:center;letter-spacing:.15em;text-transform:uppercase;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;margin-bottom:12px">'
+      + '<div id="ls-family-code-msg" style="font-size:.78rem;color:#f87171;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
+      + '<button data-action="_lsFamilyCodeSetup" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);cursor:pointer;letter-spacing:.3px;touch-action:manipulation">Link This Device</button>'
+      + '</div>';
+  }
+  var buf = Array.isArray(pinBuffer) ? pinBuffer : [];
+  var selected = profiles.find(function(p) { return p.id === selectedId; }) || profiles[0];
+  var selId = selected ? selected.id : null;
+  var selName = selected ? _lsEsc(selected.display_name) : '';
+  var dots = '';
+  for (var i = 0; i < 4; i++) {
+    dots += i < buf.length
+      ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
+      : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+  }
+  var keys = '';
+  ['1','2','3','4','5','6','7','8','9'].forEach(function(d) {
+    keys += '<button class="ls-pin-key" data-action="_lsPinKey" data-arg="' + d + '">' + d + '</button>';
+  });
+  keys += '<div></div>';
+  keys += '<button class="ls-pin-key" data-action="_lsPinKey" data-arg="0">0</button>';
+  keys += '<button class="ls-pin-key ls-pin-key-back" data-action="_lsPinBackspace">&#x232B;</button>';
+  return '<div style="margin-bottom:14px">'
+    + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;text-align:center;margin-bottom:10px">Who\'s playing?</div>'
+    + '<div class="ls-avatar-row">' + _buildAvatarHtml(profiles, selId) + '</div>'
+    + '</div>'
+    + '<div style="border-top:1px solid rgba(255,255,255,0.14);padding-top:14px">'
+    + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">' + selName + '\'s PIN</div>'
+    + '<div id="ls-pin-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">' + dots + '</div>'
+    + '<div id="ls-pin-msg" style="font-size:.75rem;color:#f87171;text-align:center;min-height:1.1rem;margin-bottom:6px"></div>'
+    + '<div class="ls-pin-keypad" id="ls-pin-keypad">' + keys + '</div>'
+    + '<div style="margin-top:12px;text-align:center;font-size:.68rem;color:rgba(255,255,255,0.35)">'
+    + 'New device? <span data-action="_lsClearFamilyCache" style="color:rgba(255,210,80,0.85);text-decoration:underline;cursor:pointer">Enter family code &#x2192;</span>'
+    + '</div>'
+    + '</div>';
+}
+
+function _lsRenderStudentCard() {
+  var body = document.getElementById('ls-student-body');
+  if (!body) return;
+  if (!_lsFamilyProfiles) {
+    try {
+      var raw = localStorage.getItem('mmr_family_profiles');
+      _lsFamilyProfiles = raw ? JSON.parse(raw) : [];
+    } catch(e) { _lsFamilyProfiles = []; }
+  }
+  if (!_lsSelectedStudentId && _lsFamilyProfiles && _lsFamilyProfiles.length) {
+    var last = localStorage.getItem('mmr_last_student_id');
+    _lsSelectedStudentId = last || _lsFamilyProfiles[0].id;
+  }
+  body.innerHTML = _buildStudentCardHtml(_lsFamilyProfiles, _lsSelectedStudentId, _lsPinBuffer);
+}
+
+async function _lsFamilyCodeSetup() {
+  var inp = document.getElementById('ls-family-code-inp');
+  var msg = document.getElementById('ls-family-code-msg');
+  if (!inp || !msg) return;
+  var code = inp.value.trim().toUpperCase();
+  if (!_validateFamilyCode(code)) {
+    msg.textContent = 'Enter a valid family code (e.g. MMR-4829)';
+    return;
+  }
+  msg.textContent = '';
+  inp.disabled = true;
+
+  if (!_supa) { msg.textContent = 'No connection — please try again.'; inp.disabled = false; return; }
+
+  try {
+    var timeout = new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); });
+    var result = await Promise.race([
+      _supa.rpc('get_profiles_by_family_code', { p_family_code: code }),
+      timeout
+    ]);
+    if (result.error) throw result.error;
+    var profiles = result.data || [];
+    if (!profiles.length) {
+      msg.textContent = 'Family code not found — check with your parent.';
+      inp.disabled = false;
+      return;
+    }
+    localStorage.setItem('mmr_family_profiles', JSON.stringify(profiles));
+    _lsFamilyProfiles = profiles;
+    _lsSelectedStudentId = profiles[0].id;
+    _lsPinBuffer = [];
+    _lsRenderStudentCard();
+  } catch(e) {
+    msg.textContent = 'Could not connect — check your internet and try again.';
+    inp.disabled = false;
+  }
+}
+
+function _lsSelectAvatar(studentId) {
+  _lsSelectedStudentId = studentId;
+  _lsPinBuffer = [];
+  _lsRenderStudentCard();
+}
+
+function _lsPinKey(digit) {
+  if (_lsPinBuffer.length >= 4) return;
+  _lsPinBuffer.push(String(digit));
+  var dots = document.getElementById('ls-pin-dots');
+  if (dots) {
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      html += i < _lsPinBuffer.length
+        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
+        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+    }
+    dots.innerHTML = html;
+  }
+  if (_lsPinBuffer.length === 4) _lsStudentLogin();
+}
+
+function _lsPinBackspace() {
+  if (!_lsPinBuffer.length) return;
+  _lsPinBuffer.pop();
+  var dots = document.getElementById('ls-pin-dots');
+  if (dots) {
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      html += i < _lsPinBuffer.length
+        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
+        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+    }
+    dots.innerHTML = html;
+  }
+}
+
+async function _lsStudentLogin() {
+  var msg = document.getElementById('ls-pin-msg');
+
+  var failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
+  var failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
+  if (failCount >= _STU_MAX_FAILS) {
+    var elapsed = Date.now() - failTs;
+    if (elapsed < _STU_LOCK_MS) {
+      var secs = Math.ceil((_STU_LOCK_MS - elapsed) / 1000);
+      if (msg) msg.textContent = 'Too many attempts. Try again in ' + secs + 's.';
+      _lsPinBuffer = [];
+      return;
+    }
+    localStorage.removeItem(_STU_FAIL_COUNT);
+    localStorage.removeItem(_STU_FAIL_KEY);
+    failCount = 0;
+  }
+
+  var profile = _lsFamilyProfiles && _lsFamilyProfiles.find(function(p) { return p.id === _lsSelectedStudentId; });
+  if (!profile) { _lsPinBuffer = []; return; }
+
+  var entered = _lsPinBuffer.join('');
+  var enteredHash = await _hashPin(entered);
+
+  if (enteredHash === profile.pin_hash) {
+    localStorage.removeItem(_STU_FAIL_COUNT);
+    localStorage.removeItem(_STU_FAIL_KEY);
+    localStorage.setItem('mmr_active_student_id', profile.id);
+    localStorage.setItem('mmr_last_student_id', profile.id);
+    localStorage.setItem('mmr_user_role', 'student');
+    _lsPinBuffer = [];
+    show('home');
+    buildHome();
+    _installHistoryGuard();
+    setTimeout(tutCheckAndShow, 1500);
+  } else {
+    var newCount = failCount + 1;
+    localStorage.setItem(_STU_FAIL_COUNT, String(newCount));
+    localStorage.setItem(_STU_FAIL_KEY, String(Date.now()));
+    _lsPinBuffer = [];
+    if (msg) {
+      var remaining = _STU_MAX_FAILS - newCount;
+      msg.textContent = remaining > 0
+        ? 'Wrong PIN. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' left.'
+        : 'Locked for 30 seconds.';
+    }
+    var dotsEl = document.getElementById('ls-pin-dots');
+    if (dotsEl) {
+      dotsEl.classList.add('ls-pin-shake');
+      setTimeout(function() { dotsEl.classList.remove('ls-pin-shake'); }, 450);
+      var emptyDots = '';
+      for (var i = 0; i < 4; i++) emptyDots += '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+      setTimeout(function() { if (dotsEl) dotsEl.innerHTML = emptyDots; }, 450);
+    }
+  }
+}
+
+function _lsClearFamilyCache() {
+  localStorage.removeItem('mmr_family_profiles');
+  localStorage.removeItem('mmr_last_student_id');
+  _lsFamilyProfiles = [];
+  _lsSelectedStudentId = null;
+  _lsPinBuffer = [];
+  _lsRenderStudentCard();
+}
+
+async function _lsCheckOnboarding() {
+  if (!_supa || !_supaUser) return;
+  var role = localStorage.getItem('mmr_user_role');
+  if (role !== 'parent') return;
+  try {
+    var result = await Promise.race([
+      _supa.from('student_profiles').select('id', { count: 'exact', head: true }).eq('parent_id', _supaUser.id),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 5000); })
+    ]);
+    if (result.error) return;
+    var count = result.count || 0;
+    if (count === 0) _lsShowOnboarding();
+  } catch(e) { /* silently skip if offline */ }
+}
+
+function _lsShowOnboarding() {
+  var existing = document.getElementById('ls-onboard-modal');
+  if (existing) return;
+  _obPinBuffer = [];
+  _obSelectedEmoji = '🦁';
+
+  var modal = document.createElement('div');
+  modal.id = 'ls-onboard-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
+
+  modal.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.4);max-height:90vh;overflow-y:auto">'
+    + '<div id="ls-onboard-step1">'
+    + '<h2 style="font-family:\'Boogaloo\',sans-serif;font-size:1.3rem;color:#263238;margin-bottom:4px;text-align:center">Set up your first student profile</h2>'
+    + '<p style="font-size:.82rem;color:#90a4ae;text-align:center;margin-bottom:16px">You can add more students later from the dashboard.</p>'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Student Name *</label>'
+    + '<input id="ls-ob-name" type="text" maxlength="20" placeholder="e.g. Cameron" class="set-inp" style="width:100%;box-sizing:border-box;margin-bottom:12px;font-size:.95rem">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Age (optional)</label>'
+    + '<input id="ls-ob-age" type="number" min="4" max="18" placeholder="e.g. 7" class="set-inp" style="width:100%;box-sizing:border-box;margin-bottom:12px;font-size:.95rem">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Pick an avatar</label>'
+    + '<div id="ls-ob-avatars" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">'
+    + _AVATAR_EMOJIS.map(function(e) {
+        var c = _AVATAR_COLORS[e];
+        return '<div data-action="_lsObSelectEmoji" data-arg="' + _lsEsc(e) + '"'
+          + ' id="ls-ob-av-' + e.codePointAt(0) + '"'
+          + ' style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,' + c.from + ',' + c.to + ');display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;border:' + (e === '🦁' ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box">' + e + '</div>';
+      }).join('')
+    + '</div>'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Create a 4-digit PIN</label>'
+    + '<div id="ls-ob-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">'
+    + '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.12);border:1.5px solid rgba(0,0,0,0.18)"></div>'.repeat(4)
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="ls-ob-keypad">'
+    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button data-action="_lsObPinKey" data-arg="' + d + '" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;color:#263238;cursor:pointer">' + d + '</button>'; }).join('')
+    + '<div></div>'
+    + '<button data-action="_lsObPinKey" data-arg="0" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;color:#263238;cursor:pointer">0</button>'
+    + '<button data-action="_lsObPinBack" style="background:#fce4ec;border:1px solid #ffcdd2;border-radius:10px;padding:12px 0;font-size:1rem;color:#c62828;cursor:pointer">&#x232B;</button>'
+    + '</div>'
+    + '<div id="ls-ob-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:8px"></div>'
+    + '<button id="ls-ob-save-btn" data-action="_lsObSave" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#1565C0,#0d47a1);color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Create Profile</button>'
+    + '</div>'
+    + '<div id="ls-onboard-step2" style="display:none;text-align:center">'
+    + '<div style="font-size:2.5rem;margin-bottom:8px">&#x1F3E0;</div>'
+    + '<h2 style="font-family:\'Boogaloo\',sans-serif;font-size:1.3rem;color:#263238;margin-bottom:4px">Your family code</h2>'
+    + '<div id="ls-ob-family-code" style="font-family:\'Boogaloo\',sans-serif;font-size:2rem;color:#1565C0;letter-spacing:.15em;padding:12px;background:#e3f2fd;border-radius:14px;margin:14px 0"></div>'
+    + '<p style="font-size:.82rem;color:#90a4ae;margin-bottom:20px">Enter this code once on your child\'s device to link it.</p>'
+    + '<button data-action="_lsObDone" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#1565C0,#0d47a1);color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Done</button>'
+    + '</div>'
+    + '</div>';
+
+  document.body.appendChild(modal);
+}
+
+function _lsObSelectEmoji(emoji) {
+  _obSelectedEmoji = emoji;
+  _AVATAR_EMOJIS.forEach(function(e) {
+    var el = document.getElementById('ls-ob-av-' + e.codePointAt(0));
+    if (el) el.style.border = e === emoji ? '3px solid #1565C0' : '3px solid transparent';
+  });
+}
+
+function _lsObPinKey(digit) {
+  if (_obPinBuffer.length >= 4) return;
+  _obPinBuffer.push(String(digit));
+  _lsObUpdateDots();
+  if (_obPinBuffer.length === 4) {
+    var btn = document.getElementById('ls-ob-save-btn');
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+  }
+}
+
+function _lsObPinBack() {
+  if (!_obPinBuffer.length) return;
+  _obPinBuffer.pop();
+  _lsObUpdateDots();
+  var btn = document.getElementById('ls-ob-save-btn');
+  if (btn && _obPinBuffer.length < 4) { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+}
+
+function _lsObUpdateDots() {
+  var dotsEl = document.getElementById('ls-ob-dots');
+  if (!dotsEl) return;
+  var html = '';
+  for (var i = 0; i < 4; i++) {
+    html += i < _obPinBuffer.length
+      ? '<div style="width:14px;height:14px;border-radius:50%;background:#1565C0;box-shadow:0 0 6px rgba(21,101,192,0.5)"></div>'
+      : '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.12);border:1.5px solid rgba(0,0,0,0.18)"></div>';
+  }
+  dotsEl.innerHTML = html;
+}
+
+async function _lsObSave() {
+  var msg = document.getElementById('ls-ob-msg');
+  var nameInp = document.getElementById('ls-ob-name');
+  var ageInp  = document.getElementById('ls-ob-age');
+  if (!nameInp || !msg) return;
+
+  var name = nameInp.value.trim();
+  if (!name) { msg.textContent = 'Please enter a student name.'; return; }
+  if (_obPinBuffer.length < 4) { msg.textContent = 'Please enter a 4-digit PIN.'; return; }
+  if (!_supa || !_supaUser) { msg.textContent = 'Not signed in.'; return; }
+
+  msg.textContent = '';
+  var saveBtn = document.getElementById('ls-ob-save-btn');
+  if (saveBtn) { saveBtn.textContent = 'Saving...'; saveBtn.style.pointerEvents = 'none'; }
+
+  try {
+    var pinHash = await _hashPin(_obPinBuffer.join(''));
+    var avatarColors = _AVATAR_COLORS[_obSelectedEmoji] || { from: '#f59e0b', to: '#f97316' };
+    var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
+    var username = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 20) || 'student';
+
+    var insertResult = await Promise.race([
+      _supa.from('student_profiles').insert({
+        parent_id: _supaUser.id,
+        username: username,
+        display_name: name,
+        age: ageVal,
+        avatar_emoji: _obSelectedEmoji,
+        avatar_color_from: avatarColors.from,
+        avatar_color_to: avatarColors.to,
+        pin_hash: pinHash,
+      }).select('id').single(),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    if (insertResult.error) throw insertResult.error;
+
+    var codeResult = await Promise.race([
+      _supa.rpc('ensure_family_code', { p_parent_id: _supaUser.id }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    var familyCode = (codeResult && codeResult.data) ? codeResult.data : 'MMR-????';
+
+    var step1 = document.getElementById('ls-onboard-step1');
+    var step2 = document.getElementById('ls-onboard-step2');
+    var codeEl = document.getElementById('ls-ob-family-code');
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'block';
+    if (codeEl) codeEl.textContent = familyCode;
+  } catch(e) {
+    if (msg) msg.textContent = e.message && e.message.includes('unique') ? 'A student with that name already exists.' : 'Error saving profile. Please try again.';
+    if (saveBtn) { saveBtn.textContent = 'Create Profile'; saveBtn.style.pointerEvents = ''; }
+  }
+}
+
+function _lsObDone() {
+  var modal = document.getElementById('ls-onboard-modal');
+  if (modal) modal.remove();
+  window.location.href = '/dashboard/dashboard.html';
+}
+
 function _lsCarouselGo(idx) {
   idx = parseInt(idx, 10) || 0;
   var track = document.getElementById('ls-carousel-track');
@@ -32,6 +454,7 @@ function _lsCarouselGo(idx) {
   });
   _lsCardIdx = idx;
   _lsSetRole(idx === 0 ? 'student' : 'parent');
+  if (idx === 0) _lsRenderStudentCard();
   // Hide guest button on Parent/Teacher card — dashboard requires an account
   var guestBtn = document.getElementById('ls-guest-btn');
   if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
@@ -102,6 +525,7 @@ function supabaseInit(){
     const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
     _lsInitCarousel();
+    _lsRenderStudentCard();
     _dismissSplash('login-screen');
     return;
   }
@@ -146,6 +570,7 @@ function supabaseInit(){
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
+          _lsRenderStudentCard();
           _dismissSplash('login-screen');
           return;
         }
@@ -548,6 +973,7 @@ async function _pullOnLogin(){
     _pushAppTime();
     updateSyncLabel();
     buildHome();
+    await _lsCheckOnboarding();
   } catch(e){ console.warn('[Supabase] pull error', e); }
 }
 
@@ -1224,6 +1650,14 @@ function _clearUserData(){
   // Legacy anonymous-tracking identifiers (removed for COPPA compliance)
   localStorage.removeItem('wb_device_id');
   localStorage.removeItem('wb_anon_tracked');
+  localStorage.removeItem('mmr_family_profiles');
+  localStorage.removeItem('mmr_active_student_id');
+  localStorage.removeItem('mmr_last_student_id');
+  localStorage.removeItem(_STU_FAIL_KEY);
+  localStorage.removeItem(_STU_FAIL_COUNT);
+  _lsFamilyProfiles = null;
+  _lsSelectedStudentId = null;
+  _lsPinBuffer = [];
 
   // Update UI to reflect logged-out state
   updateAccountUI();
