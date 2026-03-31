@@ -245,10 +245,24 @@ async function _lsStudentLogin() {
     localStorage.setItem('mmr_last_student_id', profile.id);
     localStorage.setItem('mmr_user_role', 'student');
     _lsPinBuffer = [];
+
+    // Reload in-memory progress from localStorage (may have been cleared by
+    // a prior parent sign-out via _clearUserData).
+    var freshDone = safeLoad('wb_done5', {});
+    Object.keys(DONE).forEach(function(k) { delete DONE[k]; });
+    Object.assign(DONE, freshDone);
+    var freshScores = safeLoadSigned('wb_sc5', []);
+    SCORES.length = 0;
+    freshScores.forEach(function(s) { SCORES.push(s); });
+
     show('home');
     buildHome();
     _installHistoryGuard();
     setTimeout(tutCheckAndShow, 1500);
+
+    // Fire-and-forget: pull fresh unlock/timer/a11y settings from Supabase,
+    // then rebuild home so the new lock state is reflected immediately.
+    _syncStudentSettings(profile.id).then(function() { buildHome(); });
   } else {
     var newCount = failCount + 1;
     localStorage.setItem(_STU_FAIL_COUNT, String(newCount));
@@ -1667,9 +1681,8 @@ function _clearUserData(){
   if(typeof _parentTimerInterval !== 'undefined') clearInterval(_parentTimerInterval);
 
   // ── Wipe user-specific localStorage ──────────────────────────
-  // Progress & scores (synced to Supabase — reloaded on next login)
-  localStorage.removeItem('wb_sc5');
-  localStorage.removeItem('wb_done5');
+  // Progress & scores live in localStorage — preserved across parent sign-out
+  // so the next student PIN login finds them intact.
   // Paused quiz state
   localStorage.removeItem('wb_paused_quiz');
   // Parent-managed unlocks and PIN
