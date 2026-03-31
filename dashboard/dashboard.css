@@ -307,3 +307,83 @@ body {
 }
 .db-pin-key:active { background: #e3f2fd; }
 .db-pin-key-back { background: #fce4ec; border-color: #ffcdd2; color: #c62828; }
+
+/* ══════════════════════════════════════════
+   Parent Controls Sections — added 2026-03-31
+   ══════════════════════════════════════════ */
+
+/* ── Shared control styles ── */
+.db-sec-body        { font-size:.85rem; color:#546e7a; margin-bottom:10px; }
+.db-ctrl-msg        { font-size:.82rem; min-height:1.2rem; margin:6px 0; text-align:center; }
+.db-ctrl-btns       { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.db-ctrl-save       { flex:1; background:linear-gradient(135deg,#1565C0,#0d47a1); color:#fff; border:none;
+                       border-radius:12px; padding:10px 16px; font-size:.9rem; font-weight:700; cursor:pointer;
+                       box-shadow:0 3px 0 rgba(0,0,0,.15); min-width:120px; }
+.db-ctrl-relock     { background:#e3f2fd; color:#1565C0; border:none; border-radius:12px;
+                       padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
+.db-ctrl-reset      { background:#fce4ec; color:#c62828; border:none; border-radius:12px;
+                       padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
+
+/* ── Toggle button ── */
+.db-toggle-row      { display:flex; justify-content:space-between; align-items:center;
+                       padding:10px 0; border-bottom:1px solid #f0f0f0; }
+.db-toggle-row:last-of-type { border-bottom:none; }
+.db-toggle-sub      { font-size:.75rem; color:#90a4ae; }
+.db-toggle-btn      { background:#cfd8dc; color:#fff; border:none; border-radius:20px;
+                       padding:6px 14px; font-size:.8rem; font-weight:700; cursor:pointer;
+                       min-width:48px; transition:background .15s; }
+.db-toggle-btn.db-toggle-on { background:#43a047; }
+.db-toggle-sm       { padding:4px 10px; font-size:.72rem; }
+
+/* ── Unit card grid ── */
+.db-unit-grid       { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
+.db-unit-card       { background:#f5f5f5; border-radius:12px; padding:10px; border:2px solid transparent; }
+.db-unit-card.db-unit-unlocked { background:#e8f5e9; border-color:#a5d6a7; }
+.db-unit-card-top   { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.db-unit-num        { font-size:.72rem; color:#90a4ae; font-weight:700; text-transform:uppercase; }
+.db-unit-name       { font-size:.82rem; font-weight:600; color:#37474f; margin-bottom:6px; }
+.db-unit-lessons-link { background:none; border:none; font-size:.75rem; color:#1565C0;
+                         text-decoration:underline; cursor:pointer; padding:0; }
+
+/* ── Lesson drawer ── */
+.db-lesson-drawer   { grid-column:1 / -1; background:#fff; border:1px solid #e0e0e0;
+                       border-radius:0 0 12px 12px; padding:8px 12px; margin-top:-4px; }
+.db-lesson-row      { display:flex; justify-content:space-between; align-items:center;
+                       padding:6px 0; border-bottom:1px solid #f5f5f5; }
+.db-lesson-row:last-child { border-bottom:none; }
+.db-lesson-name     { font-size:.82rem; color:#37474f; }
+
+/* ── Timer section ── */
+.db-timer-row       { display:flex; justify-content:space-between; align-items:center;
+                       padding:8px 0; border-bottom:1px solid #f0f0f0; }
+.db-timer-lbl       { font-size:.85rem; font-weight:600; color:#37474f; }
+.db-timer-adj       { display:flex; align-items:center; gap:10px; }
+.db-timer-val       { font-size:.9rem; font-weight:700; color:#1565C0; min-width:60px; text-align:center; }
+.db-adj-btn         { background:#e3f2fd; color:#1565C0; border:none; border-radius:50%;
+                       width:28px; height:28px; font-size:1rem; font-weight:700; cursor:pointer; }
+
+/* ── Form inputs ── */
+.db-form-row        { margin-bottom:10px; }
+.db-form-lbl        { display:block; font-size:.78rem; color:#546e7a; margin-bottom:4px; font-weight:600; }
+.db-form-inp        { width:100%; padding:10px 12px; border:1px solid #cfd8dc; border-radius:10px;
+                       font-size:.9rem; background:#f8f9fa; color:#263238; box-sizing:border-box; }
+
+/* ── Feedback ── */
+.db-fb-stars        { display:flex; gap:6px; justify-content:center; margin-bottom:10px; }
+.db-fb-star         { background:none; border:none; font-size:1.6rem; cursor:pointer; padding:0; }
+.db-fb-cats         { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-bottom:10px; }
+.db-fb-cat          { background:#f0f4f8; border:1px solid #cfd8dc; border-radius:20px;
+                       padding:5px 12px; font-size:.78rem; cursor:pointer; color:#37474f; }
+.db-fb-cat.active   { background:#e3f2fd; border-color:#1565C0; color:#1565C0; font-weight:700; }
+.db-fb-comment      { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #cfd8dc;
+                       border-radius:10px; font-size:.85rem; resize:vertical; background:#f8f9fa; color:#263238; }
+
+/* ── Changelog ── */
+.mb-14              { margin-bottom:14px; }
+.cl-version-brand   { font-weight:800; font-size:.82rem; color:#1565C0; margin-bottom:4px; }
+.cl-version         { font-weight:700; font-size:.78rem; color:#546e7a; margin-bottom:4px; }
+.list-body          { padding-left:16px; margin:0; }
+.list-body li       { font-size:.78rem; color:#37474f; line-height:1.5; margin-bottom:4px; }
+
+/* ── Lock hint on locked cards ── */
+.cs-lock-hint       { display:inline-block; font-size:1rem; cursor:default; user-select:none; }
