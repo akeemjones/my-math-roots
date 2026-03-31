@@ -927,6 +927,74 @@ var _managedProfiles = [];
 var _pinResetStudentId = null;
 var _pinResetBuffer = [];
 
+// ── Units metadata (for Access Controls lesson drawer) ────────────────────
+var _UNITS_META = [
+  { name: 'Basic Fact Strategies',    lessons: ['Count Up & Count Back','Doubles!','Make a 10','Number Families'] },
+  { name: 'Place Value',              lessons: ['Big Numbers','Different Ways to Write Numbers','Bigger or Smaller?','Skip Counting'] },
+  { name: 'Add & Subtract to 200',    lessons: ['Adding Bigger Numbers','Taking Away Bigger Numbers','Add Three Numbers','Math Stories'] },
+  { name: 'Add & Subtract to 1,000',  lessons: ['Adding Really Big Numbers','Taking Away Really Big Numbers','Close Enough Counts!'] },
+  { name: 'Money & Financial Literacy', lessons: ['All About Coins','Count Your Coins','Dollars and Cents','Save, Spend and Give'] },
+  { name: 'Data Analysis',            lessons: ['Tally Marks','Bar Graphs','Picture Graphs','Line Plots'] },
+  { name: 'Measurement & Time',       lessons: ['How Long Is It?','What Time Is It?','Hot, Cold and Full'] },
+  { name: 'Fractions',                lessons: ['What is a Fraction?','Halves, Fourths and Eighths','Which Piece is Bigger?'] },
+  { name: 'Geometry',                 lessons: ['Flat Shapes','Solid Shapes','Mirror Shapes'] },
+  { name: 'Multiplication & Division', lessons: ['Equal Groups','Adding the Same Number','Sharing Equally'] },
+];
+
+// ── Parent controls draft state ───────────────────────────────────────────
+var _unlockDraft      = _parseUnlockSettings({});
+var _unlockDirty      = false;
+var _activeDrawerUnit = -1;
+var _timerDraft       = _parseTimerSettings({});
+var _a11yDraft        = _parseA11ySettings({});
+var _dbFbRating       = 0;
+var _dbFbCategory     = '';
+
+// ── Settings load functions ───────────────────────────────────────────────
+
+async function _loadUnlockSettings(studentId) {
+  if (!_supaDb || !studentId || studentId === 'local'
+      || studentId === 'mock_1' || studentId === 'mock_2') {
+    _unlockDraft = _parseUnlockSettings({});
+    return;
+  }
+  try {
+    var result = await _supaDb.rpc('get_unlock_settings', { p_student_id: studentId });
+    _unlockDraft = _parseUnlockSettings(result.data || {});
+  } catch(e) {
+    _unlockDraft = _parseUnlockSettings({});
+  }
+  _unlockDirty = false;
+}
+
+async function _loadTimerSettings(studentId) {
+  if (!_supaDb || !studentId || studentId === 'local'
+      || studentId === 'mock_1' || studentId === 'mock_2') {
+    _timerDraft = _parseTimerSettings({});
+    return;
+  }
+  try {
+    var result = await _supaDb.rpc('get_timer_settings', { p_student_id: studentId });
+    _timerDraft = _parseTimerSettings(result.data || {});
+  } catch(e) {
+    _timerDraft = _parseTimerSettings({});
+  }
+}
+
+async function _loadA11ySettings(studentId) {
+  if (!_supaDb || !studentId || studentId === 'local'
+      || studentId === 'mock_1' || studentId === 'mock_2') {
+    _a11yDraft = _parseA11ySettings({});
+    return;
+  }
+  try {
+    var result = await _supaDb.rpc('get_a11y_settings', { p_student_id: studentId });
+    _a11yDraft = _parseA11ySettings(result.data || {});
+  } catch(e) {
+    _a11yDraft = _parseA11ySettings({});
+  }
+}
+
 function _unitNames() {
   // Fallback labels for 10 units
   return [
@@ -993,8 +1061,17 @@ function renderDashboard() {
 }
 
 function switchStudent(id) {
+  if (_unlockDirty) {
+    if (!confirm('You have unsaved unlock changes. Discard them?')) return;
+  }
   _activeId = id;
-  renderDashboard();
+  _unlockDirty = false;
+  _activeDrawerUnit = -1;
+  Promise.all([
+    _loadUnlockSettings(id),
+    _loadTimerSettings(id),
+    _loadA11ySettings(id),
+  ]).then(function() { renderDashboard(); });
 }
 
 function signOut() {
@@ -1453,7 +1530,11 @@ function initDashboard() {
       if (profilesSection) profilesSection.outerHTML = _renderManageProfiles();
     });
   }
-  renderDashboard();
+  Promise.all([
+    _loadUnlockSettings(_activeId),
+    _loadTimerSettings(_activeId),
+    _loadA11ySettings(_activeId),
+  ]).then(function() { renderDashboard(); });
 }
 
 // ── Jest bridge ───────────────────────────────────────────────────────────
