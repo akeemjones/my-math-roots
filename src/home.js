@@ -111,7 +111,7 @@ function buildHome(instant){
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card">
+      ftSlide.innerHTML = `<div class="cs-card" style="cursor:default">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
@@ -285,7 +285,7 @@ function refreshHomeState(){
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card">
+      ftSlide.innerHTML = `<div class="cs-card" style="cursor:default">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
@@ -298,6 +298,8 @@ function refreshHomeState(){
     }
   } else if(ftNewState === 'available'){
     // Same available state — update score line only
+    // Guard: if the two-button layout isn't rendered (stale DOM), force a full redraw
+    if(!ftSlide.querySelector('[data-action="startFinalTestBalanced"]')){ buildHome(); return; }
     const ftBestScore = SCORES.filter(s=>s.qid==='final_test'||s.qid==='final_test_balanced').sort((a,b)=>b.pct-a.pct)[0];
     const ftScoreLine = ftBestScore ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}` : '50 questions · All units';
     const stat = ftSlide.querySelector('.cs-stat');
