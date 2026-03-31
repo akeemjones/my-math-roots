@@ -224,6 +224,41 @@ function _checkAccess() {
   return true;
 }
 
+// ── Time/quiz helpers ─────────────────────────────────────────────────────
+
+function _parseSecs(t) {
+  if (!t) return 0;
+  var p = String(t).split(':');
+  return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0);
+}
+
+function _fmtSecs(s) {
+  if (!s) return '—';
+  var m = Math.floor(s / 60), sec = Math.round(s % 60);
+  return m + 'm ' + String(sec).padStart(2, '0') + 's';
+}
+
+function _quizAvgQSecs(s) {
+  if (!s.answers) return 0;
+  var sum = 0, n = 0;
+  s.answers.forEach(function(a) { if (a.timeSecs != null && a.timeSecs < 300) { sum += a.timeSecs; n++; } });
+  return n > 0 ? Math.round(sum / n) : 0;
+}
+
+function _buildQTextMap(scores) {
+  var map = {};
+  scores.forEach(function(s) {
+    if (s.answers) s.answers.forEach(function(a) {
+      if (a.t) {
+        // Use a simple hash: length + first chars as key approximation
+        var k = String(a.t).length + '_' + String(a.t).slice(0, 12);
+        if (!map[k]) map[k] = a.t;
+      }
+    });
+  });
+  return map;
+}
+
 // ── Render helpers (return HTML strings) ─────────────────────────────────
 
 function _esc(s) {
@@ -331,6 +366,116 @@ function _renderReview(review) {
     + items + '</section>';
 }
 
+function _renderTime(scores, appTime) {
+  var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  var withTime  = completed.filter(function(s) { return s.timeTaken && _parseSecs(s.timeTaken) > 0; });
+  var weekSecs  = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    weekSecs += ((appTime.dailySecs || {})[d] || 0);
+  }
+  var avgSessionSecs = appTime.sessions > 0 ? Math.round(appTime.totalSecs / appTime.sessions) : 0;
+  var timeByType = {};
+  withTime.forEach(function(s) {
+    var tp = s.type || 'lesson';
+    if (!timeByType[tp]) timeByType[tp] = { sum: 0, n: 0 };
+    timeByType[tp].sum += _parseSecs(s.timeTaken);
+    timeByType[tp].n++;
+  });
+  function avgTime(type) { var t = timeByType[type]; return t && t.n ? Math.round(t.sum / t.n) : 0; }
+  var qSum = 0, qCount = 0;
+  completed.forEach(function(s) {
+    if (s.answers) s.answers.forEach(function(a) {
+      if (a.timeSecs != null && a.timeSecs < 300) { qSum += a.timeSecs; qCount++; }
+    });
+  });
+  var avgQSecs = qCount > 0 ? Math.round(qSum / qCount) : 0;
+  var hasAny = appTime.totalSecs > 0 || withTime.length > 0;
+  if (!hasAny) return '';
+
+  var col = '#673ab7';
+  var rows = '';
+  function row(lbl, val) {
+    return '<div class="db-time-row"><span class="db-time-lbl">' + lbl + '</span>'
+      + '<span class="db-time-val">' + val + '</span></div>';
+  }
+  if (appTime.totalSecs > 0) {
+    rows += row('This week in app', _fmtSecs(weekSecs));
+    rows += row('Total time in app', _fmtSecs(appTime.totalSecs));
+    rows += row('Avg session length', _fmtSecs(avgSessionSecs));
+  }
+  if (withTime.length > 0) {
+    rows += '<div class="db-time-sep"></div>';
+    var la = avgTime('lesson'), ua = avgTime('unit'), fa = avgTime('final');
+    if (la) rows += row('Avg lesson quiz time', _fmtSecs(la));
+    if (ua) rows += row('Avg unit test time', _fmtSecs(ua));
+    if (fa) rows += row('Avg final test time', _fmtSecs(fa));
+  }
+  if (avgQSecs > 0) {
+    rows += '<div class="db-time-sep"></div>';
+    rows += row('Avg time per question', avgQSecs + 's');
+  }
+  return '<section class="db-section"><h2 class="db-sec-h">&#x23F1; Time</h2>'
+    + '<div class="db-time-box">' + rows + '</div></section>';
+}
+
+function _renderRecentQuizzes(scores) {
+  var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  if (!completed.length) return '';
+  var recent = completed.slice(0, 10);
+  var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
+  var COLORS = ['#6c5ce7','#0984e3','#00b894','#e17055','#fdcb6e','#a29bfe','#fd79a8','#55efc4','#74b9ff','#fab1a0'];
+  var items = recent.map(function(s, idx) {
+    var pctColor = s.pct >= 80 ? '#2e7d32' : s.pct >= 60 ? '#e65100' : '#c62828';
+    var tLabel   = typeLabel[s.type] || s.type || '';
+    var dispLabel = _esc(s.label || tLabel);
+    var qAvg     = _quizAvgQSecs(s);
+    var hasQTime = s.answers && s.answers.some(function(a) { return a.timeSecs != null; });
+    var color    = s.color || COLORS[idx % COLORS.length];
+    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '');
+    return '<div class="db-quiz-row">'
+      + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
+      + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
+      + '<div class="db-quiz-sub">' + sub + '</div></div>'
+      + '<div class="db-quiz-score" style="color:' + pctColor + '">' + s.pct + '%'
+      + '<div class="db-quiz-frac">' + (s.score||0) + '/' + (s.total||0) + '</div></div>'
+      + '</div>';
+  }).join('');
+  return '<section class="db-section"><h2 class="db-sec-h">&#x1F4CB; Recent Quizzes</h2>'
+    + '<div class="db-quiz-list">' + items + '</div></section>';
+}
+
+function _renderPracticeSpotlight(mastery, scores) {
+  // Question-level weaknesses: < 60% accuracy, >= 2 attempts
+  var qTextMap = _buildQTextMap(scores);
+  var weak = Object.keys(mastery)
+    .map(function(k) { return { k: k, m: mastery[k] }; })
+    .filter(function(e) { return e.m.attempts >= 2 && (e.m.correct / e.m.attempts) < 0.6; })
+    .sort(function(a, b) { return (a.m.correct / a.m.attempts) - (b.m.correct / b.m.attempts); })
+    .slice(0, 5);
+
+  if (!weak.length) return '';
+
+  var items = weak.map(function(e) {
+    var acc  = Math.round((e.m.correct / e.m.attempts) * 100);
+    var kLen = e.k.split('_')[0];
+    // Try to find matching qText by key length prefix
+    var qText = '';
+    Object.keys(qTextMap).forEach(function(mk) {
+      if (!qText && mk.startsWith(kLen + '_')) qText = qTextMap[mk];
+    });
+    if (!qText) qText = e.k; // fallback to raw key
+    var short = qText.length > 90 ? qText.slice(0, 87) + '…' : qText;
+    return '<div class="db-practice-item">'
+      + '<div class="db-practice-txt">' + _esc(short) + '</div>'
+      + '<div class="db-practice-sub">' + acc + '% correct &bull; ' + e.m.attempts + ' attempts</div>'
+      + '</div>';
+  }).join('');
+
+  return '<section class="db-section"><h2 class="db-sec-h">&#x1F4DD; Needs More Practice</h2>'
+    + '<div class="db-practice-list">' + items + '</div></section>';
+}
+
 function _renderActivity(activity) {
   var max = 0;
   activity.forEach(function(d){ if(d.quizCount > max) max = d.quizCount; });
@@ -346,6 +491,168 @@ function _renderActivity(activity) {
   }).join('');
   return '<section class="db-section"><h2 class="db-sec-h">&#x1F4C5; Activity — Last 7 Days</h2>'
     + '<div class="db-act-chart">'+bars+'</div></section>';
+}
+
+// ── AI Report ─────────────────────────────────────────────────────────────
+
+var _prStatsHtml  = '';
+var _prReportText = '';
+
+function _buildDashboardPayload(scores, appTime, streak, days) {
+  var cutoff  = Date.now() - days * 86400000;
+  var period  = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.id && s.id > cutoff; });
+  var avg     = period.length > 0 ? Math.round(period.reduce(function(a,s){return a+s.pct;},0)/period.length) : 0;
+  var weekSecs = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
+    weekSecs += ((appTime.dailySecs||{})[d]||0);
+  }
+  var unitNames = ['Basic Fact Strategies','Place Value','Addition & Subtraction','Subtraction','Multiplication','Division','Fractions','Decimals','Geometry','Measurement'];
+  var unitMap = {};
+  period.forEach(function(s) {
+    if (s.unitIdx == null) return;
+    var k = s.unitIdx;
+    if (!unitMap[k]) unitMap[k] = { name: unitNames[k]||('Unit '+(k+1)), rows:[] };
+    unitMap[k].rows.push({ pct: s.pct, id: s.id });
+  });
+  var units = Object.values(unitMap).map(function(u) {
+    var rows = u.rows.slice().sort(function(a,b){return a.id-b.id;});
+    var uAvg = Math.round(rows.reduce(function(a,r){return a+r.pct;},0)/rows.length);
+    var trend = null;
+    if (rows.length >= 3) {
+      var diff = rows[rows.length-1].pct - rows[0].pct;
+      trend = diff > 8 ? 'improving (+'+diff+'%)' : diff < -8 ? 'declining ('+diff+'%)' : 'stable';
+    }
+    return { name: u.name, attempts: rows.length, avgPct: uAvg, trend: trend };
+  }).sort(function(a,b){return b.attempts-a.attempts;});
+  var strengths  = units.filter(function(u){return u.avgPct>=80;}).map(function(u){return u.name+' (avg '+u.avgPct+'%)';});
+  var weaknesses = units.filter(function(u){return u.avgPct<70&&u.attempts>=2;}).map(function(u){return u.name+' (avg '+u.avgPct+'%'+(u.trend?', '+u.trend:'')+')';});
+  return {
+    period: 'Last '+days+' days',
+    totalAttempts: period.length,
+    overallAvg: avg,
+    streak: (streak&&streak.current)||0,
+    timeThisWeek: weekSecs>0 ? Math.round(weekSecs/60)+' min' : 'not tracked',
+    units: units,
+    strengths:  strengths.length  ? strengths  : ['No units at 80%+ yet'],
+    weaknesses: weaknesses.length ? weaknesses : ['No major weaknesses identified'],
+  };
+}
+
+async function generateAIReport() {
+  var footerEl = document.getElementById('db-ai-footer');
+  var bodyEl   = document.getElementById('db-root');
+  if (!footerEl) return;
+  var student   = _students[_activeId];
+  if (!student) return;
+  var name      = student.name || 'Student';
+  _prStatsHtml  = bodyEl ? bodyEl.innerHTML : '';
+
+  // Show loading
+  if (bodyEl) bodyEl.innerHTML = '<div class="db-ai-loading"><div class="db-ai-spinner"></div>'
+    + '<div class="db-ai-loading-txt">Analysing ' + _esc(name) + '\'s progress…</div>'
+    + '<div class="db-ai-loading-sub">This takes about 5 seconds</div></div>';
+  footerEl.innerHTML = '';
+
+  var payload = _buildDashboardPayload(student.SCORES||[], student.APP_TIME||{totalSecs:0,sessions:0,dailySecs:{}}, student.STREAK||{current:0}, 30);
+
+  try {
+    var resp = await fetch('/.netlify/functions/gemini-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentName: name, reportData: payload })
+    });
+    if (!resp.ok) throw new Error('Server error ' + resp.status);
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    _prReportText = data.report;
+    _renderAIReportView(data.report, name);
+  } catch(e) {
+    if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
+      + '<div style="font-size:2rem;margin-bottom:14px">⚠️</div>'
+      + '<div style="color:#37474f">Couldn\'t generate the report.</div>'
+      + '<div style="font-size:.85rem;color:#90a4ae;margin-top:6px">' + _esc(e.message||'Check your connection.') + '</div></div>';
+    if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
+      + '<button class="db-ai-back-btn" onclick="backToStats()">← Back to Stats</button>'
+      + '<button class="db-ai-pdf-btn" onclick="generateAIReport()">↺ Try Again</button></div>';
+  }
+}
+
+function _renderAIReportView(text, name) {
+  var colours = ['#1565C0','#2e7d32','#e65100','#673ab7','#00838f','#b71c1c'];
+  var parts   = text.split(/^## /m).filter(Boolean);
+  var html    = '<div class="db-ai-sections">';
+  parts.forEach(function(part, idx) {
+    var nl  = part.indexOf('\n');
+    var hdr = nl > -1 ? part.slice(0, nl).trim() : part.trim();
+    var bod = nl > -1 ? part.slice(nl+1).trim()  : '';
+    var col = colours[idx % colours.length];
+    html += '<div class="db-ai-section" style="border-left:3px solid '+col+'">'
+      + '<div class="db-ai-section-title" style="color:'+col+'">'+_esc(hdr)+'</div>'
+      + '<div class="db-ai-section-body">'+bod.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'
+      + '</div>';
+  });
+  html += '</div>';
+
+  var bodyEl   = document.getElementById('db-root');
+  var footerEl = document.getElementById('db-ai-footer');
+  var hdrTitle = document.querySelector('.db-header-title');
+  if (bodyEl)   { bodyEl.innerHTML = html; bodyEl.scrollTop = 0; }
+  if (hdrTitle) hdrTitle.textContent = '📋 AI Report — ' + name;
+  if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
+    + '<button class="db-ai-back-btn" onclick="backToStats()">← Back to Stats</button>'
+    + '<button class="db-ai-pdf-btn" onclick="downloadReportPDF()">💾 Download PDF</button></div>';
+}
+
+function backToStats() {
+  var bodyEl   = document.getElementById('db-root');
+  var hdrTitle = document.querySelector('.db-header-title');
+  var footerEl = document.getElementById('db-ai-footer');
+  if (bodyEl && _prStatsHtml) { bodyEl.innerHTML = _prStatsHtml; bodyEl.scrollTop = 0; }
+  if (hdrTitle) hdrTitle.textContent = '📊 Parent Dashboard';
+  if (footerEl) footerEl.innerHTML = _genReportFooter();
+}
+
+function _genReportFooter() {
+  return '<div style="text-align:center">'
+    + '<button class="db-ai-gen-btn" onclick="generateAIReport()">📋 Generate AI Report</button>'
+    + '<div class="db-ai-powered">Powered by Gemini</div></div>';
+}
+
+function downloadReportPDF() {
+  if (!_prReportText) return;
+  var student  = _students[_activeId];
+  var name     = student ? student.name : 'Student';
+  var colours  = ['#1565C0','#2e7d32','#e65100','#673ab7','#00838f','#b71c1c'];
+  var date     = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var parts    = _prReportText.split(/^## /m).filter(Boolean);
+  var sections = '';
+  parts.forEach(function(part, idx) {
+    var nl  = part.indexOf('\n');
+    var hdr = nl > -1 ? part.slice(0, nl).trim() : part.trim();
+    var bod = nl > -1 ? part.slice(nl+1).trim()  : '';
+    var col = colours[idx % colours.length];
+    sections += '<div style="margin-bottom:22px;page-break-inside:avoid;padding-left:14px;border-left:4px solid '+col+'">'
+      + '<div style="font-size:1rem;font-weight:700;color:'+col+';margin-bottom:8px;font-family:Georgia,serif">'+hdr+'</div>'
+      + '<div style="font-size:.9rem;line-height:1.9;color:#333">'+bod.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div></div>';
+  });
+  var doc = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>My Math Roots — Progress Report: '+name+'</title>'
+    + '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif;max-width:780px;margin:0 auto;padding:40px 32px;color:#222}'
+    + '.np{text-align:center;margin-bottom:30px;padding:16px;background:#f5f8ff;border-radius:10px;border:1px solid #dce8ff}'
+    + '.np button{background:#1565C0;color:#fff;border:none;padding:11px 30px;border-radius:8px;font-size:.9rem;cursor:pointer}'
+    + '.np p{font-size:.78rem;color:#888;margin-top:8px}'
+    + '.hd{text-align:center;padding-bottom:22px;margin-bottom:30px;border-bottom:2px solid #1565C0}'
+    + '@media print{.np{display:none}}</style></head><body>'
+    + '<div class="np"><button onclick="window.print()">💾 Save as PDF</button>'
+    + '<p>In the print dialog, choose <strong>Save as PDF</strong></p></div>'
+    + '<div class="hd"><div style="font-size:1.2rem;font-weight:700;color:#1565C0">🌱 My Math Roots</div>'
+    + '<div style="font-size:1rem;color:#444;margin-top:6px">Progress Report — '+name+'</div>'
+    + '<div style="font-size:.78rem;color:#999;margin-top:4px">Generated '+date+'</div></div>'
+    + sections
+    + '<div style="text-align:center;font-size:.75rem;color:#bbb;margin-top:40px;padding-top:16px;border-top:1px solid #eee">My Math Roots — mymathroots.com</div>'
+    + '</body></html>';
+  var win = window.open('', '_blank');
+  if (win) { win.document.write(doc); win.document.close(); }
 }
 
 // ── App state ─────────────────────────────────────────────────────────────
@@ -391,14 +698,28 @@ function renderDashboard() {
   var activity = _computeActivityData(scores, 7);
   var review   = _computeReviewQueue(mastery, qTextMap);
 
+  _prStatsHtml  = '';
+  _prReportText = '';
+
+  // Reset header title in case we came back from AI report
+  var hdrTitle = document.querySelector('.db-header-title');
+  if (hdrTitle) hdrTitle.textContent = '📊 Parent Dashboard';
+
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
     _renderOverview(stats) +
+    _renderTime(scores, appTime) +
+    _renderRecentQuizzes(scores) +
     _renderSkills(skills) +
     _renderWeak(weak) +
+    _renderPracticeSpotlight(mastery, scores) +
     _renderReview(review) +
     _renderActivity(activity);
+
+  // Render AI report footer
+  var footerEl = document.getElementById('db-ai-footer');
+  if (footerEl) footerEl.innerHTML = _genReportFooter();
 }
 
 function switchStudent(id) {
