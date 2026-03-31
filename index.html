@@ -986,5 +986,33 @@
 })();
 </script>
 
+<script>
+// ── Daily reminder check ───────────────────────────────────────────────────
+// Fires a browser Notification if the saved reminder time has passed today
+// and hasn't already fired today. Runs once on page load (no background push).
+(function(){
+  if (!('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
+  try {
+    var r = JSON.parse(localStorage.getItem('wb_reminders') || '{}');
+    if (!r.enabled || !r.time) return;
+    var today = new Date().toISOString().slice(0, 10);
+    if (r.lastShown === today) return;
+    var parts = r.time.split(':');
+    var now   = new Date();
+    var due   = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                         parseInt(parts[0], 10), parseInt(parts[1], 10));
+    if (now >= due) {
+      localStorage.setItem('wb_reminders', JSON.stringify(Object.assign(r, { lastShown: today })));
+      new Notification('My Math Roots 📐', {
+        body: 'Time for today\'s math practice!',
+        icon: '/icon-192.png',
+        tag:  'mmr-daily',
+      });
+    }
+  } catch(e) {}
+})();
+</script>
+
 </body>
 </html>

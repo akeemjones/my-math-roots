@@ -308,6 +308,19 @@ function _esc(s) {
     .replace(/"/g,'&quot;');
 }
 
+function _showDbToast(msg, isError) {
+  var toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);'
+    + 'padding:10px 20px;border-radius:50px;font-size:.85rem;z-index:9999;white-space:nowrap;'
+    + 'box-shadow:0 4px 12px rgba(0,0,0,.2);pointer-events:none;'
+    + (isError
+        ? 'background:#c62828;color:#fff;'
+        : 'background:#263238;color:#fff;');
+  document.body.appendChild(toast);
+  setTimeout(function() { toast.remove(); }, 3500);
+}
+
 function _dbValidColor(val) {
   if (typeof val !== 'string') return '#f59e0b';
   var v = val.trim();
@@ -321,7 +334,7 @@ function _renderStudentSelector(students, activeId) {
   }).join('');
   return '<div class="db-selector-wrap">'
     + '<label class="db-selector-label">Viewing:</label>'
-    + '<select class="db-selector" id="db-student-select" onchange="switchStudent(this.value)">'
+    + '<select class="db-selector" id="db-student-select">'
     + opts + '</select>'
     + '</div>';
 }
@@ -621,7 +634,7 @@ function _renderRecentQuizzes(scores) {
     var color    = s.color || COLORS[idx % COLORS.length];
     var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
       + ' &bull; <span style="color:' + color + '">View details →</span>';
-    return '<div class="db-quiz-row" onclick="openQuizReview(' + JSON.stringify(idx) + ')" role="button" tabindex="0">'
+    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + idx + '" role="button" tabindex="0">'
       + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
       + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
       + '<div class="db-quiz-sub">' + sub + '</div></div>'
@@ -690,7 +703,7 @@ function openQuizReview(idx) {
   }
 
   document.getElementById('db-review-head').innerHTML =
-    '<button class="db-review-close" onclick="closeQuizReview()">&#x2715;</button>'
+    '<button class="db-review-close" data-action="closeQuizReview">&#x2715;</button>'
     + '<div class="db-review-title">' + dispLabel + '</div>'
     + '<div class="db-review-meta">' + _esc(s.date || '') + (s.date ? ' &bull; ' : '') + tLabel
       + (s.timeTaken ? ' &bull; &#x23F1; ' + _esc(s.timeTaken) + ' mins' : '') + '</div>'
@@ -836,8 +849,8 @@ async function generateAIReport() {
       + '<div style="color:#37474f">Couldn\'t generate the report.</div>'
       + '<div style="font-size:.85rem;color:#90a4ae;margin-top:6px">' + _esc(e.message||'Check your connection.') + '</div></div>';
     if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
-      + '<button class="db-ai-back-btn" onclick="backToStats()">← Back to Stats</button>'
-      + '<button class="db-ai-pdf-btn" onclick="generateAIReport()">↺ Try Again</button></div>';
+      + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button>'
+      + '<button class="db-ai-pdf-btn" data-action="generateAIReport">↺ Try Again</button></div>';
   }
 }
 
@@ -863,8 +876,8 @@ function _renderAIReportView(text, name) {
   if (bodyEl)   { bodyEl.innerHTML = html; bodyEl.scrollTop = 0; }
   if (hdrTitle) hdrTitle.textContent = '📋 AI Report — ' + name;
   if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
-    + '<button class="db-ai-back-btn" onclick="backToStats()">← Back to Stats</button>'
-    + '<button class="db-ai-pdf-btn" onclick="downloadReportPDF()">💾 Download PDF</button></div>';
+    + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button>'
+    + '<button class="db-ai-pdf-btn" data-action="downloadReportPDF">💾 Download PDF</button></div>';
 }
 
 function backToStats() {
@@ -878,7 +891,7 @@ function backToStats() {
 
 function _genReportFooter() {
   return '<div style="text-align:center">'
-    + '<button class="db-ai-gen-btn" onclick="generateAIReport()">📋 Generate AI Report</button>'
+    + '<button class="db-ai-gen-btn" data-action="generateAIReport">📋 Generate AI Report</button>'
     + '<div class="db-ai-powered">Powered by Gemini</div></div>';
 }
 
@@ -906,7 +919,7 @@ function downloadReportPDF() {
     + '.np p{font-size:.78rem;color:#888;margin-top:8px}'
     + '.hd{text-align:center;padding-bottom:22px;margin-bottom:30px;border-bottom:2px solid #1565C0}'
     + '@media print{.np{display:none}}</style></head><body>'
-    + '<div class="np"><button onclick="window.print()">💾 Save as PDF</button>'
+    + '<div class="np"><button data-action="windowPrint">💾 Save as PDF</button>'
     + '<p>In the print dialog, choose <strong>Save as PDF</strong></p></div>'
     + '<div class="hd"><div style="font-size:1.2rem;font-weight:700;color:#1565C0"><svg width="20" height="20" viewBox="0 0 310 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:5px"><defs><linearGradient id="rp-l1" x1="5%" y1="5%" x2="95%" y2="95%"><stop offset="0%" stop-color="#ffd8a0"/><stop offset="38%" stop-color="#f5a020"/><stop offset="100%" stop-color="#c86c00"/></linearGradient><linearGradient id="rp-l2" x1="95%" y1="5%" x2="5%" y2="95%"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="38%" stop-color="#ee9010"/><stop offset="100%" stop-color="#b85e00"/></linearGradient><linearGradient id="rp-ls" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3ada6e"/><stop offset="100%" stop-color="#14762e"/></linearGradient><linearGradient id="rp-lb" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#aeffc8"/><stop offset="100%" stop-color="#28c45c"/></linearGradient></defs><g stroke-linecap="round" fill="none"><path d="M154 284 Q100 278 72 292" stroke="#16763a" stroke-width="3"/><path d="M156 284 Q210 278 238 292" stroke="#16763a" stroke-width="3"/><path d="M154 283 Q112 270 92 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M156 283 Q198 270 218 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M154 283 Q128 266 116 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M156 283 Q182 266 194 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M154 282 Q142 266 138 260" stroke="#20a650" stroke-width="3.5"/><path d="M156 282 Q168 266 172 260" stroke="#20a650" stroke-width="3.5"/></g><path d="M155 278 Q152 234 154 190 Q156 155 155 118" stroke="url(#rp-ls)" stroke-width="5.5" stroke-linecap="round" fill="none"/><path d="M154 194 C136 174,82 152,62 108 C50 78,74 50,104 70 C126 85,144 146,154 194Z" fill="url(#rp-l1)"/><path d="M156 162 C176 142,228 120,248 76 C260 46,236 18,206 38 C184 54,164 112,156 162Z" fill="url(#rp-l2)"/><path d="M155 118 C147 100 145 74 155 56 C165 74 163 100 155 118Z" fill="url(#rp-lb)"/></svg>My Math Roots</div>'
     + '<div style="font-size:1rem;color:#444;margin-top:6px">Progress Report — '+name+'</div>'
@@ -963,6 +976,7 @@ async function _loadUnlockSettings(studentId) {
     _unlockDraft = _parseUnlockSettings(result.data || {});
   } catch(e) {
     _unlockDraft = _parseUnlockSettings({});
+    _showDbToast('⚠️ Could not load unlock settings — showing defaults', true);
   }
   _unlockDirty = false;
 }
@@ -978,6 +992,7 @@ async function _loadTimerSettings(studentId) {
     _timerDraft = _parseTimerSettings(result.data || {});
   } catch(e) {
     _timerDraft = _parseTimerSettings({});
+    _showDbToast('⚠️ Could not load timer settings — showing defaults', true);
   }
 }
 
@@ -992,6 +1007,7 @@ async function _loadA11ySettings(studentId) {
     _a11yDraft = _parseA11ySettings(result.data || {});
   } catch(e) {
     _a11yDraft = _parseA11ySettings({});
+    _showDbToast('⚠️ Could not load accessibility settings — showing defaults', true);
   }
 }
 
@@ -1109,7 +1125,7 @@ function _renderUnlockInner() {
   html += '<div class="db-toggle-row">'
     + '<div><strong>🌟 Free Mode</strong><br>'
     + '<span class="db-toggle-sub">Unlock all units and lessons at once</span></div>'
-    + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" onclick="_dbToggleFreeMode()">'
+    + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" data-action="_dbToggleFreeMode">'
     + (fm ? 'ON' : 'OFF') + '</button>'
     + '</div>';
 
@@ -1120,11 +1136,11 @@ function _renderUnlockInner() {
     html += '<div class="db-unit-card' + (unlocked ? ' db-unit-unlocked' : '') + '">'
       + '<div class="db-unit-card-top">'
       + '<span class="db-unit-num">Unit ' + (i+1) + '</span>'
-      + '<button class="db-toggle-btn db-toggle-sm' + (unlocked ? ' db-toggle-on' : '') + '" onclick="_dbToggleUnitUnlock(' + i + ')">'
+      + '<button class="db-toggle-btn db-toggle-sm' + (unlocked ? ' db-toggle-on' : '') + '" data-action="_dbToggleUnitUnlock" data-arg="' + i + '">'
       + (unlocked ? 'ON' : 'OFF') + '</button>'
       + '</div>'
       + '<div class="db-unit-name">' + _esc(u.name) + '</div>'
-      + '<button class="db-unit-lessons-link" onclick="_dbToggleLessonDrawer(' + i + ')">'
+      + '<button class="db-unit-lessons-link" data-action="_dbToggleLessonDrawer" data-arg="' + i + '">'
       + 'Manage lessons ' + (_activeDrawerUnit === i ? '▲' : '▼') + '</button>'
       + '</div>';
 
@@ -1135,7 +1151,7 @@ function _renderUnlockInner() {
         var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li);
         html += '<div class="db-lesson-row">'
           + '<span class="db-lesson-name">' + _esc(lName) + '</span>'
-          + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" onclick="_dbToggleLessonUnlock(' + i + ',' + li + ')">'
+          + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" data-action="_dbToggleLessonUnlock" data-arg="' + i + '" data-arg2="' + li + '">'
           + (lu ? 'ON' : 'OFF') + '</button>'
           + '</div>';
       });
@@ -1147,9 +1163,9 @@ function _renderUnlockInner() {
   // Save + Relock + Full Reset
   html += '<div id="db-unlock-msg" class="db-ctrl-msg"></div>'
     + '<div class="db-ctrl-btns">'
-    + '<button id="db-unlock-save-btn" class="db-ctrl-save" onclick="_dbSaveUnlock()">Save Changes</button>'
-    + '<button class="db-ctrl-relock" onclick="_dbRelockAll()">🔒 Re-lock All</button>'
-    + '<button class="db-ctrl-reset" onclick="_dbFullReset()">🗑 Full Reset</button>'
+    + '<button id="db-unlock-save-btn" class="db-ctrl-save" data-action="_dbSaveUnlock">Save Changes</button>'
+    + '<button class="db-ctrl-relock" data-action="_dbRelockAll">🔒 Re-lock All</button>'
+    + '<button class="db-ctrl-reset" data-action="_dbFullReset">🗑 Full Reset</button>'
     + '</div>';
 
   return html;
@@ -1212,9 +1228,9 @@ function _timerRow(type, label, secs) {
   return '<div class="db-timer-row">'
     + '<span class="db-timer-lbl">' + label + '</span>'
     + '<div class="db-timer-adj">'
-    + '<button class="db-adj-btn" onclick="_dbAdjustTimer(\'' + type + '\',-1)">−</button>'
+    + '<button class="db-adj-btn" data-action="_dbAdjustTimer" data-arg="' + type + '" data-arg2="-1">−</button>'
     + '<span id="db-timer-' + type + '-val" class="db-timer-val">' + _dbTimerLbl(secs) + '</span>'
-    + '<button class="db-adj-btn" onclick="_dbAdjustTimer(\'' + type + '\',1)">+</button>'
+    + '<button class="db-adj-btn" data-action="_dbAdjustTimer" data-arg="' + type + '" data-arg2="1">+</button>'
     + '</div></div>';
 }
 
@@ -1224,7 +1240,7 @@ function _renderTimerSection() {
     ? '<p class="db-empty">Timer settings require a connected student profile.</p>'
     : '<div class="db-toggle-row">'
         + '<div><strong>⏱ Quiz Timer</strong></div>'
-        + '<button id="db-timer-toggle-btn" class="db-toggle-btn' + (_timerDraft.enabled ? ' db-toggle-on' : '') + '" onclick="_dbToggleTimer()">'
+        + '<button id="db-timer-toggle-btn" class="db-toggle-btn' + (_timerDraft.enabled ? ' db-toggle-on' : '') + '" data-action="_dbToggleTimer">'
         + (_timerDraft.enabled ? 'ON' : 'OFF') + '</button>'
         + '</div>'
         + '<div id="db-timer-controls" style="' + (_timerDraft.enabled ? '' : 'display:none') + '">'
@@ -1234,7 +1250,7 @@ function _renderTimerSection() {
         + '</div>'
         + '<div id="db-timer-msg" class="db-ctrl-msg"></div>'
         + '<div class="db-ctrl-btns">'
-        + '<button class="db-ctrl-save" onclick="_dbSaveTimer()">Save Timer Settings</button>'
+        + '<button class="db-ctrl-save" data-action="_dbSaveTimer">Save Timer Settings</button>'
         + '</div>';
   return '<section class="db-section">'
     + '<h2 class="db-sec-h">⏱ Quiz Timer</h2>'
@@ -1274,16 +1290,16 @@ function _renderA11ySection() {
     ? '<p class="db-empty">Accessibility settings require a connected student profile.</p>'
     : '<div class="db-toggle-row">'
         + '<div><strong>Aa Large Text</strong><br><span class="db-toggle-sub">Increases font size for the student</span></div>'
-        + '<button id="db-a11y-largeText-btn" class="db-toggle-btn' + (_a11yDraft.largeText ? ' db-toggle-on' : '') + '" onclick="_dbToggleA11y(\'largeText\')">'
+        + '<button id="db-a11y-largeText-btn" class="db-toggle-btn' + (_a11yDraft.largeText ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="largeText">'
         + (_a11yDraft.largeText ? 'ON' : 'OFF') + '</button>'
         + '</div>'
         + '<div class="db-toggle-row">'
         + '<div><strong>◑ High Contrast</strong><br><span class="db-toggle-sub">Increases color contrast for readability</span></div>'
-        + '<button id="db-a11y-highContrast-btn" class="db-toggle-btn' + (_a11yDraft.highContrast ? ' db-toggle-on' : '') + '" onclick="_dbToggleA11y(\'highContrast\')">'
+        + '<button id="db-a11y-highContrast-btn" class="db-toggle-btn' + (_a11yDraft.highContrast ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="highContrast">'
         + (_a11yDraft.highContrast ? 'ON' : 'OFF') + '</button>'
         + '</div>'
         + '<div id="db-a11y-msg" class="db-ctrl-msg"></div>'
-        + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSaveA11y()">Save Accessibility</button></div>';
+        + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSaveA11y">Save Accessibility</button></div>';
   return '<section class="db-section"><h2 class="db-sec-h">♿ Accessibility</h2>' + inner + '</section>';
 }
 
@@ -1329,19 +1345,40 @@ function _renderPinSection() {
     + '<div class="db-form-row"><label class="db-form-lbl">Confirm PIN</label>'
     + '<input id="db-pin-inp2" type="password" inputmode="numeric" class="db-form-inp" placeholder="Repeat PIN"></div>'
     + '<div id="db-pin-msg" class="db-ctrl-msg"></div>'
-    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSavePin()">Update PIN</button></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSavePin">Update PIN</button></div>'
     + '</section>';
 }
 
 // ── Reminders section ─────────────────────────────────────────────────────
 
+var _REMINDERS_KEY = 'wb_reminders';
+
+function _loadReminders() {
+  try { return JSON.parse(localStorage.getItem(_REMINDERS_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function _saveReminders(obj) {
+  localStorage.setItem(_REMINDERS_KEY, JSON.stringify(obj));
+}
+
 function _renderRemindersSection() {
+  var r   = _loadReminders();
+  var on  = r.enabled === true;
+  var t   = r.time || '15:30';
+  var sup = 'Notification' in window;
   return '<section class="db-section">'
     + '<h2 class="db-sec-h">🔔 Reminders</h2>'
-    + '<p class="db-sec-body">Daily practice reminders for this device. Requires browser permission.</p>'
+    + '<p class="db-sec-body">Daily practice reminders shown when this device\'s browser is open.</p>'
+    + (sup ? '' : '<p style="color:#c62828;font-size:.82rem;margin-bottom:8px">⚠️ Notifications not supported on this browser.</p>')
     + '<div class="db-toggle-row">'
-    + '<div><strong>Push Notifications</strong><br><span class="db-toggle-sub">Applies to this device only</span></div>'
-    + '<button id="db-push-btn" class="db-toggle-btn" onclick="_dbTogglePush()">Check…</button>'
+    + '<div><strong>Daily reminder</strong><br><span class="db-toggle-sub">Asks ' + t + ' each day</span></div>'
+    + '<button id="db-push-btn" class="db-toggle-btn' + (on ? ' db-toggle-on' : '') + '" data-action="_dbTogglePush">'
+    + (on ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div id="db-push-time-row" style="' + (on ? '' : 'display:none') + '">'
+    + '<div class="db-form-row" style="margin-top:10px"><label class="db-form-lbl">Reminder time</label>'
+    + '<input id="db-push-time" type="time" class="db-form-inp" value="' + t + '" style="max-width:140px"></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSaveReminderTime">Save Time</button></div>'
     + '</div>'
     + '<div id="db-push-msg" class="db-ctrl-msg"></div>'
     + '</section>';
@@ -1349,12 +1386,20 @@ function _renderRemindersSection() {
 
 function _dbInitPushBtn() {
   var btn = document.getElementById('db-push-btn');
-  if (!btn || !('PushManager' in window)) {
-    if (btn) btn.textContent = 'Not supported';
+  if (!btn) return;
+  if (!('Notification' in window)) {
+    btn.textContent = 'Not supported'; btn.disabled = true;
     return;
   }
-  if (Notification && Notification.permission === 'granted') {
+  var r = _loadReminders();
+  if (r.enabled && Notification.permission === 'granted') {
     btn.textContent = 'ON'; btn.classList.add('db-toggle-on');
+  } else if (r.enabled && Notification.permission !== 'granted') {
+    // Permission was revoked — clear saved state
+    _saveReminders(Object.assign(r, { enabled: false }));
+    btn.textContent = 'OFF'; btn.classList.remove('db-toggle-on');
+    var tr = document.getElementById('db-push-time-row');
+    if (tr) tr.style.display = 'none';
   } else {
     btn.textContent = 'OFF';
   }
@@ -1363,19 +1408,50 @@ function _dbInitPushBtn() {
 async function _dbTogglePush() {
   var btn = document.getElementById('db-push-btn');
   var msg = document.getElementById('db-push-msg');
+  var tr  = document.getElementById('db-push-time-row');
   if (!('Notification' in window)) {
-    if (msg) msg.textContent = 'Push notifications not supported on this browser.';
+    if (msg) { msg.style.color='#c62828'; msg.textContent='Not supported on this browser.'; }
     return;
   }
-  var perm = await Notification.requestPermission();
-  if (perm === 'granted') {
-    if (btn) { btn.textContent = 'ON'; btn.classList.add('db-toggle-on'); }
-    if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Notifications enabled for this device.'; }
-  } else {
+  var r  = _loadReminders();
+  var on = r.enabled === true && Notification.permission === 'granted';
+  if (on) {
+    // Turn off
+    _saveReminders(Object.assign(r, { enabled: false }));
     if (btn) { btn.textContent = 'OFF'; btn.classList.remove('db-toggle-on'); }
-    if (msg) { msg.style.color = '#c62828'; msg.textContent = 'Permission denied — check browser settings.'; }
+    if (tr)  tr.style.display = 'none';
+    if (msg) { msg.style.color='#546e7a'; msg.textContent='Reminders disabled.'; }
+    setTimeout(function() { if (msg) msg.textContent=''; }, 2000);
+  } else {
+    // Turn on — request permission first
+    if (msg) { msg.style.color='#546e7a'; msg.textContent='Requesting permission…'; }
+    var perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      var t = r.time || '15:30';
+      _saveReminders(Object.assign(r, { enabled: true, time: t }));
+      if (btn) { btn.textContent = 'ON'; btn.classList.add('db-toggle-on'); }
+      if (tr)  tr.style.display = '';
+      if (msg) { msg.style.color='#2e7d32'; msg.textContent='✅ Reminders on — will show at ' + t + ' when browser is open.'; }
+    } else {
+      if (btn) { btn.textContent = 'OFF'; btn.classList.remove('db-toggle-on'); }
+      if (msg) { msg.style.color='#c62828'; msg.textContent='Permission denied — enable in browser settings.'; }
+    }
+    setTimeout(function() { if (msg) msg.textContent=''; }, 4000);
   }
-  setTimeout(function() { if (msg) msg.textContent = ''; }, 3000);
+}
+
+function _dbSaveReminderTime() {
+  var inp = document.getElementById('db-push-time');
+  var msg = document.getElementById('db-push-msg');
+  if (!inp) return;
+  var t = inp.value || '15:30';
+  var r = _loadReminders();
+  _saveReminders(Object.assign(r, { time: t }));
+  // Update the subtitle in toggle row
+  var sub = document.querySelector('#db-push-btn')?.previousElementSibling?.querySelector('.db-toggle-sub');
+  if (sub) sub.textContent = 'Asks ' + t + ' each day';
+  if (msg) { msg.style.color='#2e7d32'; msg.textContent='✅ Reminder time saved.'; }
+  setTimeout(function() { if (msg) msg.textContent=''; }, 2000);
 }
 
 // ── Change Password section ───────────────────────────────────────────────
@@ -1400,7 +1476,7 @@ function _renderPasswordSection() {
     + '<div class="db-form-row"><label class="db-form-lbl">New Password</label>'
     + '<input id="db-pw-inp" type="password" class="db-form-inp" placeholder="Min 8 characters" autocomplete="new-password"></div>'
     + '<div id="db-pw-msg" class="db-ctrl-msg"></div>'
-    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSavePassword()">Change Password</button></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSavePassword">Change Password</button></div>'
     + '</section>';
 }
 
@@ -1452,11 +1528,11 @@ async function _dbSubmitFeedback() {
 function _renderFeedbackSection() {
   var stars = '';
   for (var i = 1; i <= 5; i++) {
-    stars += '<button id="db-fb-star-' + i + '" class="db-fb-star" onclick="_dbSetFbRating(' + i + ')">☆</button>';
+    stars += '<button id="db-fb-star-' + i + '" class="db-fb-star" data-action="_dbSetFbRating" data-arg="' + i + '">☆</button>';
   }
   var cats = ['General','Bug Report','Feature Request','Content Issue'];
   var catBtns = cats.map(function(c) {
-    return '<button class="db-fb-cat" data-cat="' + _esc(c) + '" onclick="_dbSetFbCat(\'' + _esc(c) + '\')">' + _esc(c) + '</button>';
+    return '<button class="db-fb-cat" data-cat="' + _esc(c) + '" data-action="_dbSetFbCat" data-arg="' + _esc(c) + '">' + _esc(c) + '</button>';
   }).join('');
   return '<section class="db-section">'
     + '<h2 class="db-sec-h">💬 Send Feedback</h2>'
@@ -1464,7 +1540,7 @@ function _renderFeedbackSection() {
     + '<div class="db-fb-cats">' + catBtns + '</div>'
     + '<textarea id="db-fb-comment" class="db-fb-comment" maxlength="500" rows="3" placeholder="Comments (optional)"></textarea>'
     + '<div id="db-fb-msg" class="db-ctrl-msg"></div>'
-    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" onclick="_dbSubmitFeedback()">Send Feedback</button></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSubmitFeedback">Send Feedback</button></div>'
     + '</section>';
 }
 
@@ -1609,7 +1685,7 @@ function _renderManageProfiles() {
     return '<section class="db-section db-profiles-section" id="db-manage-profiles-section">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       + '<h2 class="db-sec-h" style="margin:0">&#x1F464; Manage Profiles</h2>'
-      + '<button class="db-add-student-btn" onclick="openAddStudentSheet()">+ Add Student</button>'
+      + '<button class="db-add-student-btn" data-action="openAddStudentSheet">+ Add Student</button>'
       + '</div>'
       + '<p class="db-empty">No student profiles yet. Add your first student above.</p>'
       + '</section>';
@@ -1624,8 +1700,8 @@ function _renderManageProfiles() {
       + '<div style="font-size:.72rem;color:#90a4ae">Last active ' + _esc(lastActive) + '</div>'
       + '</div>'
       + '<div style="display:flex;gap:6px;flex-shrink:0">'
-      + '<button class="db-profile-edit-btn" onclick="openEditProfileSheet(\'' + _esc(p.id) + '\')">Edit</button>'
-      + '<button class="db-profile-pin-btn" onclick="openPinResetSheet(\'' + _esc(p.id) + '\')">PIN</button>'
+      + '<button class="db-profile-edit-btn" data-action="openEditProfileSheet" data-arg="' + _esc(p.id) + '">Edit</button>'
+      + '<button class="db-profile-pin-btn" data-action="openPinResetSheet" data-arg="' + _esc(p.id) + '">PIN</button>'
       + '</div>'
       + '</div>';
   }).join('');
@@ -1633,7 +1709,7 @@ function _renderManageProfiles() {
   return '<section class="db-section db-profiles-section" id="db-manage-profiles-section">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
     + '<h2 class="db-sec-h" style="margin:0">&#x1F464; Manage Profiles</h2>'
-    + '<button class="db-add-student-btn" onclick="openAddStudentSheet()">+ Add Student</button>'
+    + '<button class="db-add-student-btn" data-action="openAddStudentSheet">+ Add Student</button>'
     + '</div>'
     + '<div class="db-profiles-list">' + rows + '</div>'
     + '</section>';
@@ -1659,23 +1735,23 @@ function openPinResetSheet(studentId) {
   }
 
   document.getElementById('db-pin-reset-head').innerHTML =
-    '<button class="db-review-close" onclick="closePinResetSheet()">&#x2715;</button>'
+    '<button class="db-review-close" data-action="closePinResetSheet">&#x2715;</button>'
     + '<div class="db-review-title">Reset PIN for ' + _esc(profile.display_name) + '</div>'
     + '<div class="db-review-meta">Enter a new 4-digit PIN</div>';
 
   var keys = '';
   ['1','2','3','4','5','6','7','8','9'].forEach(function(d) {
-    keys += '<button class="db-pin-key" onclick="dbPinKey(\'' + d + '\')">' + d + '</button>';
+    keys += '<button class="db-pin-key" data-action="dbPinKey" data-arg="' + d + '">' + d + '</button>';
   });
   keys += '<div></div>'
-    + '<button class="db-pin-key" onclick="dbPinKey(\'0\')">0</button>'
-    + '<button class="db-pin-key db-pin-key-back" onclick="dbPinBack()">&#x232B;</button>';
+    + '<button class="db-pin-key" data-action="dbPinKey" data-arg="0">0</button>'
+    + '<button class="db-pin-key db-pin-key-back" data-action="dbPinBack">&#x232B;</button>';
 
   document.getElementById('db-pin-reset-body').innerHTML =
     '<div id="db-pin-reset-dots" style="display:flex;gap:10px;justify-content:center;margin:16px 0 12px"></div>'
     + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:0 2px">' + keys + '</div>'
     + '<div id="db-pin-reset-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
-    + '<button id="db-pin-save-btn" onclick="dbPinSave()" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Save New PIN</button>';
+    + '<button id="db-pin-save-btn" data-action="dbPinSave" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Save New PIN</button>';
 
   _lsDbRenderPinDots();
   modal.classList.add('open');
@@ -1773,7 +1849,7 @@ function openEditProfileSheet(studentId) {
   }
 
   document.getElementById('db-edit-profile-head').innerHTML =
-    '<button class="db-review-close" onclick="closeEditProfileSheet()">&#x2715;</button>'
+    '<button class="db-review-close" data-action="closeEditProfileSheet">&#x2715;</button>'
     + '<div class="db-review-title">Edit Profile</div>';
 
   var AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
@@ -1789,12 +1865,12 @@ function openEditProfileSheet(studentId) {
     + AVATAR_EMOJIS.map(function(e) {
         var colors = AVATAR_COLORS[e] || '#f59e0b,#f97316';
         var isSelected = e === profile.avatar_emoji;
-        return '<div id="db-av-' + e.codePointAt(0) + '" onclick="dbEditSelectEmoji(\'' + _esc(e) + '\')"'
+        return '<div id="db-av-' + e.codePointAt(0) + '" data-action="dbEditSelectEmoji" data-arg="' + _esc(e) + '"''
           + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (isSelected ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box">' + e + '</div>';
       }).join('')
     + '</div>'
     + '<div id="db-edit-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
-    + '<button onclick="dbEditSave(\'' + _esc(studentId) + '\')" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Save Changes</button>';
+    + '<button data-action="dbEditSave" data-arg="' + _esc(studentId) + '"' style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Save Changes</button>';
 
   modal.classList.add('open');
 }
@@ -1857,7 +1933,7 @@ function openAddStudentSheet() {
     modal.id = 'db-add-student-modal';
     modal.className = 'db-review-modal';
     modal.innerHTML = '<div class="db-review-sheet">'
-      + '<div class="db-review-head"><button class="db-review-close" onclick="closeAddStudentSheet()">&#x2715;</button>'
+      + '<div class="db-review-head"><button class="db-review-close" data-action="closeAddStudentSheet">&#x2715;</button>'
       + '<div class="db-review-title">Add Student</div></div>'
       + '<div class="db-review-body" id="db-add-student-body"></div>'
       + '</div>';
@@ -1880,7 +1956,8 @@ function openAddStudentSheet() {
     + AVATAR_EMOJIS.map(function(e) {
         var colors = AVATAR_COLORS[e] || '#f59e0b,#f97316';
         return '<div id="db-addav-' + e.codePointAt(0) + '"'
-          + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (e === '🦁' ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box" onclick="dbAddSelectEmoji(\'' + _esc(e) + '\')">' + e + '</div>';
+          + ' data-action="dbAddSelectEmoji" data-arg="' + _esc(e) + '"'
+          + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (e === '🦁' ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box">' + e + '</div>';
       }).join('')
     + '</div>'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Create a 4-digit PIN</label>'
@@ -1888,13 +1965,13 @@ function openAddStudentSheet() {
     + '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.18)"></div>'.repeat(4)
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'
-    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button onclick="dbAddPinKey(\'' + d + '\')" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">' + d + '</button>'; }).join('')
+    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button data-action="dbAddPinKey" data-arg="' + d + '"' style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">' + d + '</button>'; }).join('')
     + '<div></div>'
-    + '<button onclick="dbAddPinKey(\'0\')" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">0</button>'
-    + '<button onclick="dbAddPinBack()" style="background:#fce4ec;border:1px solid #ffcdd2;border-radius:10px;padding:12px 0;font-size:1rem;color:#c62828;cursor:pointer">&#x232B;</button>'
+    + '<button data-action="dbAddPinKey" data-arg="0" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">0</button>'
+    + '<button data-action="dbAddPinBack" style="background:#fce4ec;border:1px solid #ffcdd2;border-radius:10px;padding:12px 0;font-size:1rem;color:#c62828;cursor:pointer">&#x232B;</button>'
     + '</div>'
     + '<div id="db-add-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
-    + '<button id="db-add-save-btn" onclick="dbAddSave()" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Add Student</button>';
+    + '<button id="db-add-save-btn" data-action="dbAddSave" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer;opacity:0.5;pointer-events:none">Add Student</button>';
 
   modal.classList.add('open');
 }
@@ -2033,6 +2110,72 @@ function initDashboard() {
     _loadTimerSettings(_activeId),
     _loadA11ySettings(_activeId),
   ]).then(function() { renderDashboard(); });
+}
+
+// ── Dashboard event dispatcher ────────────────────────────────────────────
+// Replaces all onclick= attributes; keeps dashboard CSP-compliant.
+// data-action="fnName"  data-arg="val"  data-arg2="val2"
+if (typeof document !== 'undefined') {
+  var _DB_ACTIONS = {
+    signOut:                 function()     { signOut(); },
+    openQuizReview:          function(a)    { openQuizReview(Number(a)); },
+    closeQuizReview:         function()     { closeQuizReview(); },
+    backToStats:             function()     { backToStats(); },
+    generateAIReport:        function()     { generateAIReport(); },
+    downloadReportPDF:       function()     { downloadReportPDF(); },
+    windowPrint:             function()     { window.print(); },
+    _dbToggleFreeMode:       function()     { _dbToggleFreeMode(); },
+    _dbToggleUnitUnlock:     function(a)    { _dbToggleUnitUnlock(Number(a)); },
+    _dbToggleLessonDrawer:   function(a)    { _dbToggleLessonDrawer(Number(a)); },
+    _dbToggleLessonUnlock:   function(a,b)  { _dbToggleLessonUnlock(Number(a), Number(b)); },
+    _dbSaveUnlock:           function()     { _dbSaveUnlock(); },
+    _dbRelockAll:            function()     { _dbRelockAll(); },
+    _dbFullReset:            function()     { _dbFullReset(); },
+    _dbAdjustTimer:          function(a,b)  { _dbAdjustTimer(a, Number(b)); },
+    _dbToggleTimer:          function()     { _dbToggleTimer(); },
+    _dbSaveTimer:            function()     { _dbSaveTimer(); },
+    _dbToggleA11y:           function(a)    { _dbToggleA11y(a); },
+    _dbSaveA11y:             function()     { _dbSaveA11y(); },
+    _dbSavePin:              function()     { _dbSavePin(); },
+    _dbTogglePush:           function()     { _dbTogglePush(); },
+    _dbSaveReminderTime:     function()     { _dbSaveReminderTime(); },
+    _dbSavePassword:         function()     { _dbSavePassword(); },
+    _dbSetFbRating:          function(a)    { _dbSetFbRating(Number(a)); },
+    _dbSetFbCat:             function(a)    { _dbSetFbCat(a); },
+    _dbSubmitFeedback:       function()     { _dbSubmitFeedback(); },
+    openAddStudentSheet:     function()     { openAddStudentSheet(); },
+    openEditProfileSheet:    function(a)    { openEditProfileSheet(a); },
+    openPinResetSheet:       function(a)    { openPinResetSheet(a); },
+    closePinResetSheet:      function()     { closePinResetSheet(); },
+    closeEditProfileSheet:   function()     { closeEditProfileSheet(); },
+    closeAddStudentSheet:    function()     { closeAddStudentSheet(); },
+    dbPinKey:                function(a)    { dbPinKey(a); },
+    dbPinBack:               function()     { dbPinBack(); },
+    dbPinSave:               function()     { dbPinSave(); },
+    dbAddPinKey:             function(a)    { dbAddPinKey(a); },
+    dbAddPinBack:            function()     { dbAddPinBack(); },
+    dbAddSave:               function()     { dbAddSave(); },
+    dbEditSelectEmoji:       function(a)    { dbEditSelectEmoji(a); },
+    dbEditSave:              function(a)    { dbEditSave(a); },
+    dbAddSelectEmoji:        function(a)    { dbAddSelectEmoji(a); },
+  };
+
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('[data-action]');
+    if (!el) return;
+    var fn = _DB_ACTIONS[el.dataset.action];
+    if (!fn) return;
+    var arg  = el.dataset.arg  !== undefined ? el.dataset.arg  : null;
+    var arg2 = el.dataset.arg2 !== undefined ? el.dataset.arg2 : null;
+    fn(arg, arg2, el);
+  }, true);
+
+  // Student selector change
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'db-student-select') {
+      switchStudent(e.target.value);
+    }
+  });
 }
 
 // ── Jest bridge ───────────────────────────────────────────────────────────
