@@ -54,7 +54,7 @@ function buildHome(instant){
           <div class="cs-lock-label">Unit ${i+1}</div>
           <div class="cs-lock-name">${u.name}</div>
         </div>
-        <button type="button" class="cs-pin-unlock-btn" data-action="openUnitPinUnlock" data-arg="${i}" title="Parent unlock"${_sr('aria-label="Parent unlock Unit '+(i+1)+'"')}>${_ICO.lock}</button>
+        <span class="cs-lock-hint" data-locked-unit="${i}">${_ICO.lock}</span>
       </div>`;
     } else if(isCurrent){
       slide.className = 'cs cs-active';
@@ -207,8 +207,7 @@ function refreshHomeState(){
             <div class="cs-lock-label">Unit ${i+1}</div>
             <div class="cs-lock-name">${u.name}</div>
           </div>
-          <button type="button" class="cs-pin-unlock-btn" data-action="openUnitPinUnlock" data-arg="${i}"
-            title="Parent unlock"${_sr('aria-label="Parent unlock Unit '+(i+1)+'"')}>${_ICO.lock}</button>
+          <span class="cs-lock-hint" data-locked-unit="${i}">${_ICO.lock}</span>
         </div>`;
       } else if(newState === 'active'){
         slide.style.setProperty('--uc', u.color); slide.style.marginBottom = '12px';

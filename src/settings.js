@@ -1418,50 +1418,6 @@ async function _submitFeedback(){
 let _pinModalMode = 'change';
 let _pinModalCallback = null;
 
-function goParentControls(){
-  playTap();
-  if(isParentUnlocked()){
-    // Session still active — skip PIN and go straight in
-    const _settingsEl = document.getElementById('settings-screen');
-    if(_settingsEl) _settingsEl._savedScrollTop = _settingsEl.scrollTop;
-    _setParentSession(); // refresh timestamp
-    show('parent-screen');
-    document.getElementById('parent-panel').style.display = 'block';
-    updateAccountUI();
-    _startParentSession();
-    updateParentStatus();
-    return;
-  }
-  // If no PIN has ever been set, guide the parent through first-time setup
-  if(!isPinSetup()){ _openFirstTimePinSetup(); return; }
-  _openParentAuth();
-}
-
-function _openFirstTimePinSetup(){
-  _pinModalMode = 'setup';
-  _pinModalCallback = function(){
-    _setParentSession();
-    show('parent-screen');
-    document.getElementById('parent-panel').style.display = 'block';
-    updateAccountUI();
-    _startParentSession();
-    updateParentStatus();
-  };
-  // Reuse the existing pin-modal — retitle it for first-time setup
-  const _pmTitle = document.querySelector('#pin-modal .modal-title');
-  if(_pmTitle && !_pmTitle.dataset.origHtml){
-    _pmTitle.dataset.origHtml = _pmTitle.innerHTML;
-    _pmTitle.innerHTML = '🔑 Create Your Parent PIN';
-  }
-  document.getElementById('new-pin-inp').value = '';
-  document.getElementById('pin-change-msg').textContent = '';
-  const m = document.getElementById('pin-modal');
-  m.style.display = 'flex';
-  _animateModalOpen('pin-modal');
-  _lockScroll();
-  history.pushState({mmrModal:'pin-modal'}, '');
-  setTimeout(()=>document.getElementById('new-pin-inp').focus(), 200);
-}
 
 let _pinPoll = null;
 function _startPinPoll(){

@@ -105,8 +105,7 @@ function openUnit(idx){
           <div class="lcard-desc">${lqPct > 0 ? `Score 80%+ to unlock → Your best: ${lqPct}%` : `Score 80%+ on Lesson ${i+1} quiz to unlock`}</div>
         </div>
         <div class="lcard-badges">
-          <button type="button" class="lcard-pin-btn" onclick="event.stopPropagation();openLessonPinUnlock(${idx},${i})"
-            title="Parent unlock"${_sr('aria-label="Parent unlock Lesson '+(i+1)+'"')}>${_ICO.lock}</button>
+          <span class="cs-lock-hint" data-locked-lesson="${idx}_${i}">${_ICO.lock}</span>
         </div>`;
       card.onclick = () => _showLockedSheet(idx, i);
     }

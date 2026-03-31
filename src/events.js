@@ -126,7 +126,6 @@
 
     // ── Settings ────────────────────────────────────────────────────────────
     goSettings:             ()    => goSettings(),
-    goParentControls:       ()    => goParentControls(),
     openProgressReport:     ()    => openProgressReport(),
     closeProgressReport:    ()    => closeProgressReport(),
     openPrReview:           (a)   => openPrReview(a),
