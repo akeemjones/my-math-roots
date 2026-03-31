@@ -432,8 +432,9 @@ function _renderRecentQuizzes(scores) {
     var qAvg     = _quizAvgQSecs(s);
     var hasQTime = s.answers && s.answers.some(function(a) { return a.timeSecs != null; });
     var color    = s.color || COLORS[idx % COLORS.length];
-    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '');
-    return '<div class="db-quiz-row">'
+    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
+      + ' &bull; <span style="color:' + color + '">View details →</span>';
+    return '<div class="db-quiz-row" onclick="openQuizReview(' + JSON.stringify(idx) + ')" role="button" tabindex="0">'
       + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
       + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
       + '<div class="db-quiz-sub">' + sub + '</div></div>'
@@ -443,6 +444,81 @@ function _renderRecentQuizzes(scores) {
   }).join('');
   return '<section class="db-section"><h2 class="db-sec-h">&#x1F4CB; Recent Quizzes</h2>'
     + '<div class="db-quiz-list">' + items + '</div></section>';
+}
+
+// ── Quiz review modal ─────────────────────────────────────────────────────
+
+function openQuizReview(idx) {
+  var student   = _students[_activeId];
+  if (!student) return;
+  var completed = (student.SCORES || []).filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  var s = completed[idx];
+  if (!s) return;
+
+  var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
+  var tLabel    = typeLabel[s.type] || s.type || '';
+  var dispLabel = _esc(s.label || tLabel);
+  var pctColor  = s.pct >= 80 ? '#2e7d32' : s.pct >= 60 ? '#e65100' : '#c62828';
+
+  var bodyHtml = '';
+  if (s.answers && s.answers.length) {
+    var wrong = s.answers.filter(function(a) { return !a.ok; });
+    var right  = s.answers.filter(function(a) { return  a.ok; });
+    if (wrong.length) {
+      bodyHtml += '<div class="db-rev-sec" style="color:#c62828">&#x274C; Incorrect (' + wrong.length + ')</div>';
+      bodyHtml += wrong.map(function(a) {
+        return '<div class="db-rev-item db-rev-wrong">'
+          + '<div class="db-rev-q">' + _esc(a.t || '') + '</div>'
+          + '<div class="db-rev-your">Your answer: <span style="color:#c62828">' + _esc(a.chosen || '') + '</span></div>'
+          + '<div class="db-rev-correct">&#x2705; Correct: <span style="color:#2e7d32">' + _esc(a.correct || '') + '</span></div>'
+          + (a.timeSecs != null ? '<div class="db-rev-time">&#x23F1; ' + a.timeSecs + 's</div>' : '')
+          + '</div>';
+      }).join('');
+    }
+    if (right.length) {
+      bodyHtml += '<div class="db-rev-sec" style="color:#2e7d32">&#x2705; Correct (' + right.length + ')</div>';
+      bodyHtml += right.map(function(a) {
+        return '<div class="db-rev-item db-rev-right">'
+          + '<div class="db-rev-q">' + _esc(a.t || '') + '</div>'
+          + '<div class="db-rev-correct" style="color:#2e7d32">&#x2705; ' + _esc(a.correct || '') + '</div>'
+          + (a.timeSecs != null ? '<div class="db-rev-time">&#x23F1; ' + a.timeSecs + 's</div>' : '')
+          + '</div>';
+      }).join('');
+    }
+  } else {
+    bodyHtml = '<div class="db-rev-empty">No question detail available for this attempt.</div>';
+  }
+
+  var modal = document.getElementById('db-review-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'db-review-modal';
+    modal.className = 'db-review-modal';
+    modal.innerHTML = '<div class="db-review-sheet" id="db-review-sheet">'
+      + '<div class="db-review-head" id="db-review-head"></div>'
+      + '<div class="db-review-body" id="db-review-body"></div>'
+      + '</div>';
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeQuizReview(); });
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('db-review-head').innerHTML =
+    '<button class="db-review-close" onclick="closeQuizReview()">&#x2715;</button>'
+    + '<div class="db-review-title">' + dispLabel + '</div>'
+    + '<div class="db-review-meta">' + _esc(s.date || '') + (s.date ? ' &bull; ' : '') + tLabel
+      + (s.timeTaken ? ' &bull; &#x23F1; ' + _esc(s.timeTaken) + ' mins' : '') + '</div>'
+    + '<div class="db-review-score" style="color:' + pctColor + '">' + s.pct + '%'
+      + ' <span class="db-review-frac">' + (s.score||0) + '/' + (s.total||0) + '</span></div>';
+
+  var bodyEl = document.getElementById('db-review-body');
+  bodyEl.innerHTML = bodyHtml;
+  bodyEl.scrollTop = 0;
+  modal.classList.add('open');
+}
+
+function closeQuizReview() {
+  var modal = document.getElementById('db-review-modal');
+  if (modal) modal.classList.remove('open');
 }
 
 function _renderPracticeSpotlight(mastery, scores) {
