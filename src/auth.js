@@ -53,7 +53,8 @@ function _lsEsc(s) {
 
 function _lsValidColor(val) {
   if (typeof val !== 'string') return '#f59e0b';
-  return /^#[0-9a-fA-F]{3,6}$/.test(val.trim()) ? val.trim() : '#f59e0b';
+  var v = val.trim();
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v) ? v : '#f59e0b';
 }
 
 function _buildAvatarHtml(profiles, selectedId) {
@@ -179,6 +180,10 @@ function _lsSelectAvatar(studentId) {
 }
 
 function _lsPinKey(digit) {
+  // Silently ignore input while locked out
+  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
+  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
+  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
   if (_lsPinBuffer.length >= 4) return;
   _lsPinBuffer.push(String(digit));
   var dots = document.getElementById('ls-pin-dots');
