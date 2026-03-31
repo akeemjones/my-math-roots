@@ -304,6 +304,127 @@ function _renderOverview(stats) {
     + '</section>';
 }
 
+function _renderWeeklySnapshot(scores, appTime, streak) {
+  // Time this week
+  var weekSecs = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    weekSecs += ((appTime.dailySecs || {})[d] || 0);
+  }
+  var weekMins = Math.round(weekSecs / 60);
+  var timeStr = weekMins >= 60
+    ? Math.floor(weekMins/60) + 'h ' + String(weekMins % 60).padStart(2,'0') + 'm'
+    : weekMins + 'm';
+
+  // Lessons completed this week (type=lesson, date within 7 days)
+  var cutoff = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  var weekLessons = scores.filter(function(s) {
+    return s.type === 'lesson' && s.pct != null && s.total > 0 && s.date && s.date >= cutoff;
+  }).length;
+
+  // Streak display — dot row (up to 7)
+  var cur = (streak && streak.current) || 0;
+  var streakIcons = '';
+  var dots = Math.min(cur, 7);
+  for (var j = 0; j < 7; j++) {
+    streakIcons += '<span class="ws-dot' + (j < dots ? ' ws-dot-lit' : '') + '"></span>';
+  }
+  if (cur > 7) streakIcons += '<span class="ws-streak-more">+' + (cur - 7) + '</span>';
+
+  return '<section class="db-section ws-section">'
+    + '<h2 class="db-sec-h">&#x1F4C6; This Week</h2>'
+    + '<div class="ws-grid">'
+
+    // Time spent
+    + '<div class="ws-widget ws-widget-time">'
+    + '<div class="ws-widget-icon">⏱</div>'
+    + '<div class="ws-widget-val">' + (weekMins > 0 ? timeStr : '—') + '</div>'
+    + '<div class="ws-widget-lbl">Time Practiced</div>'
+    + '</div>'
+
+    // Streak
+    + '<div class="ws-widget">'
+    + '<div class="ws-widget-icon">🔥</div>'
+    + '<div class="ws-widget-val">' + cur + ' day' + (cur !== 1 ? 's' : '') + '</div>'
+    + '<div class="ws-streak-row">' + streakIcons + '</div>'
+    + '<div class="ws-widget-lbl">Streak</div>'
+    + '</div>'
+
+    // Lessons
+    + '<div class="ws-widget ws-widget-lessons">'
+    + '<div class="ws-widget-icon">📖</div>'
+    + '<div class="ws-widget-val">' + weekLessons + '</div>'
+    + '<div class="ws-widget-lbl">Lessons This Week</div>'
+    + '</div>'
+
+    + '</div>'
+    + '</section>';
+}
+
+function _renderRootSystem(scores, unitNames) {
+  // Per-unit: best pct, attempt count, whether unit quiz was passed (>=80)
+  var unitMap = {};
+  scores.forEach(function(s) {
+    if (s.unitIdx == null || s.pct == null || s.total <= 0) return;
+    var k = s.unitIdx;
+    if (!unitMap[k]) unitMap[k] = { sumPct: 0, count: 0, best: 0 };
+    unitMap[k].sumPct += s.pct;
+    unitMap[k].count++;
+    if (s.pct > unitMap[k].best) unitMap[k].best = s.pct;
+  });
+
+  // Find the highest unit with any attempt (current progress frontier)
+  var maxTouched = -1;
+  Object.keys(unitMap).forEach(function(k) { var n = parseInt(k,10); if (n > maxTouched) maxTouched = n; });
+
+  var nodes = unitNames.map(function(name, idx) {
+    var data = unitMap[idx];
+    if (!data) return { name: name, idx: idx, state: 'locked', avg: 0 };
+    var avg = Math.round(data.sumPct / data.count);
+    var state = avg >= 80 ? 'mastered' : avg >= 60 ? 'growing' : 'struggling';
+    return { name: name, idx: idx, state: state, avg: avg };
+  });
+
+  var stateColor = { mastered: '#2e7d32', growing: '#f57f17', struggling: '#c62828', locked: '#cfd8dc' };
+  var stateIcon  = { mastered: '🌳', growing: '🌿', struggling: '🌱', locked: '🪨' };
+  var stateLbl   = { mastered: 'Mastered', growing: 'In Progress', struggling: 'Needs Work', locked: 'Not Started' };
+
+  // Build SVG step-tracker: vertical spine with 10 nodes, alternating left/right labels
+  var nodeHTML = nodes.map(function(n, i) {
+    var col  = stateColor[n.state];
+    var icon = stateIcon[n.state];
+    var lbl  = stateLbl[n.state];
+    var isRight = i % 2 === 0;
+    var pct  = n.avg > 0 ? ' &bull; ' + n.avg + '%' : '';
+    return '<div class="rs-row' + (isRight ? ' rs-row-right' : ' rs-row-left') + '">'
+      + (isRight ? '' : '<div class="rs-label rs-label-left"><div class="rs-lbl-name">' + _esc(n.name) + '</div><div class="rs-lbl-sub" style="color:' + col + '">' + lbl + pct + '</div></div>')
+      + '<div class="rs-node-col">'
+      + '<div class="rs-node' + (n.state === 'locked' ? ' rs-node-locked' : '') + '" style="border-color:' + col + ';background:' + (n.state === 'locked' ? '#f5f5f5' : col + '18') + '">'
+      + '<span class="rs-node-num" style="color:' + col + '">' + (i + 1) + '</span>'
+      + '<span class="rs-node-icon">' + icon + '</span>'
+      + '</div>'
+      + (i < nodes.length - 1 ? '<div class="rs-spine' + (n.state !== 'locked' ? ' rs-spine-active" style="background:' + col + '"' : '"') + '></div>' : '')
+      + '</div>'
+      + (isRight ? '<div class="rs-label rs-label-right"><div class="rs-lbl-name">' + _esc(n.name) + '</div><div class="rs-lbl-sub" style="color:' + col + '">' + lbl + pct + '</div></div>' : '')
+      + '</div>';
+  }).join('');
+
+  var mastered = nodes.filter(function(n){ return n.state === 'mastered'; }).length;
+  var touched  = nodes.filter(function(n){ return n.state !== 'locked'; }).length;
+
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">&#x1F331; The Root System</h2>'
+    + '<div class="rs-legend">'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#2e7d32"></span>Mastered</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#f57f17"></span>In Progress</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#c62828"></span>Needs Work</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#cfd8dc"></span>Not Started</span>'
+    + '</div>'
+    + '<div class="rs-summary">' + mastered + ' of 10 units mastered &bull; ' + touched + ' started</div>'
+    + '<div class="rs-track">' + nodeHTML + '</div>'
+    + '</section>';
+}
+
 function _renderSkills(skills) {
   if (!skills.length) {
     return '<section class="db-section"><h2 class="db-sec-h">Skills by Unit</h2>'
@@ -784,6 +905,8 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
+    _renderWeeklySnapshot(scores, appTime, streak) +
+    _renderRootSystem(scores, _unitNames()) +
     _renderOverview(stats) +
     _renderTime(scores, appTime) +
     _renderRecentQuizzes(scores) +

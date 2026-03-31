@@ -154,6 +154,37 @@ body {
 .db-act-n        { font-size: 9px; color: #546e7a; line-height: 1.3; min-height: 12px; }
 .db-act-day      { font-size: 9px; color: #90a4ae; }
 
+/* ── Weekly Snapshot ── */
+.ws-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.ws-widget { background: rgba(0,0,0,.03); border-radius: 16px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.ws-widget-icon { font-size: 1.3rem; line-height: 1; margin-bottom: 4px; }
+.ws-widget-val  { font-family: 'Boogaloo', 'Arial Rounded MT Bold', system-ui, sans-serif; font-size: 1.4rem; color: #263238; line-height: 1.1; }
+.ws-widget-lbl  { font-size: .7rem; color: #90a4ae; margin-top: 4px; }
+.ws-streak-row  { display: flex; justify-content: center; gap: 3px; margin: 4px 0 2px; }
+.ws-dot         { width: 10px; height: 10px; border-radius: 50%; background: #e0e0e0; }
+.ws-dot-lit     { background: #f57f17; }
+.ws-streak-more { font-size: .72rem; color: #f57f17; font-weight: 700; align-self: center; }
+
+/* ── Root System ── */
+.rs-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.rs-leg-item { display: flex; align-items: center; gap: 5px; font-size: .75rem; color: #546e7a; }
+.rs-leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.rs-summary  { font-size: .8rem; color: #90a4ae; margin-bottom: 14px; }
+.rs-track    { display: flex; flex-direction: column; align-items: center; }
+.rs-row { display: flex; align-items: flex-start; width: 100%; gap: 10px; }
+.rs-row-right .rs-label { text-align: left; }
+.rs-row-left  .rs-label { text-align: right; }
+.rs-node-col  { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.rs-node      { width: 52px; height: 52px; border-radius: 50%; border: 3px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; flex-shrink: 0; }
+.rs-node-locked { opacity: .55; }
+.rs-node-num  { font-family: 'Boogaloo', 'Arial Rounded MT Bold', system-ui, sans-serif; font-size: .75rem; line-height: 1; }
+.rs-node-icon { font-size: .9rem; line-height: 1; }
+.rs-spine     { width: 3px; height: 24px; background: #e0e0e0; border-radius: 2px; }
+.rs-spine-active { }
+.rs-label     { flex: 1; padding-top: 6px; min-width: 0; }
+.rs-lbl-name  { font-size: .82rem; font-weight: 700; color: #37474f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-lbl-sub   { font-size: .72rem; margin-top: 2px; }
+
 /* ── Time breakdown ── */
 .db-time-box  { background: rgba(103,58,183,.06); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
 .db-time-row  { display: flex; justify-content: space-between; align-items: center; }
