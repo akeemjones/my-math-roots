@@ -254,13 +254,24 @@ async function build(){
   }
 
   // ── Copy dashboard/ subdirectory ──
+  // .js files get credential placeholder replacement; all others are copied verbatim.
   const dashSrc = path.join(ROOT, 'dashboard');
   const dashDst = path.join(DIST, 'dashboard');
   if(fs.existsSync(dashSrc)){
     if(!fs.existsSync(dashDst)) fs.mkdirSync(dashDst, { recursive: true });
     for(const file of fs.readdirSync(dashSrc)){
-      fs.copyFileSync(path.join(dashSrc, file), path.join(dashDst, file));
-      console.log(`📋 Copied:  dashboard/${file}`);
+      if(file.endsWith('.js')){
+        let content = fs.readFileSync(path.join(dashSrc, file), 'utf8');
+        content = content
+          .replace(/%%SUPA_URL%%/g, process.env.SUPA_URL || '')
+          .replace(/%%SUPA_KEY%%/g, process.env.SUPA_KEY || '')
+          .replace(/%%GOOGLE_CLIENT_ID%%/g, process.env.GOOGLE_CLIENT_ID || '');
+        fs.writeFileSync(path.join(dashDst, file), content, 'utf8');
+        console.log(`📋 Injected credentials: dashboard/${file}`);
+      } else {
+        fs.copyFileSync(path.join(dashSrc, file), path.join(dashDst, file));
+        console.log(`📋 Copied:  dashboard/${file}`);
+      }
     }
   }
 
