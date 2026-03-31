@@ -187,7 +187,11 @@
         </div><!-- #ls-card-1 -->
 
       </div><!-- .ls-carousel-track -->
-        <!-- Hidden mount for shared form when student card is active — do not remove -->
+        <!-- Parking spot: ls-form-shared is moved here (via JS) when the student card is
+             active, keeping it out of the DOM flow but still alive for auth state.
+             Must stay OUTSIDE ls-carousel-track or it will render as a ghost slide.
+             Both display:none AND aria-hidden are intentional: display:none prevents
+             tab-focus leaking into the hidden form inputs. -->
         <div id="ls-mount-0" style="display:none" aria-hidden="true"></div>
     </div><!-- .ls-carousel-outer -->
 
