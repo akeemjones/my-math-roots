@@ -29,21 +29,19 @@ CREATE POLICY "parent_owns_profiles" ON student_profiles
 -- 2. Add family_code to profiles (one per parent account)
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS family_code TEXT UNIQUE;
 
--- Allow anon to look up parent_id by family_code (device linking)
--- Only projects id + family_code — no other fields exposed
-CREATE POLICY "anon_family_code_lookup" ON profiles
-  FOR SELECT TO anon
-  USING (true);
+-- Restrict anon access to only (id, family_code) via a view — never expose full profiles row
+CREATE OR REPLACE VIEW public.family_code_lookup AS
+  SELECT id, family_code FROM profiles;
 
--- Allow anon to SELECT from student_profiles via JOIN on family_code
--- (the app queries: SELECT sp.* FROM student_profiles sp JOIN profiles p ON p.id=sp.parent_id WHERE p.family_code=$1)
--- RLS on student_profiles blocks anon SELECT by default; we need a special policy for device setup:
-CREATE POLICY "anon_device_setup_read" ON student_profiles
-  FOR SELECT TO anon
-  USING (true);
+GRANT SELECT ON public.family_code_lookup TO anon;
+GRANT SELECT ON public.family_code_lookup TO authenticated;
+
+-- Device setup is handled safely by get_profiles_by_family_code SECURITY DEFINER RPC (Task 9)
+-- No broad anon RLS policy needed on student_profiles
 
 -- 3. Add student_id to student_progress (quiz_scores table in this codebase)
-ALTER TABLE quiz_scores ADD COLUMN IF NOT EXISTS student_id UUID REFERENCES student_profiles(id);
+-- ON DELETE SET NULL preserves historical scores when a student profile is deleted
+ALTER TABLE quiz_scores ADD COLUMN IF NOT EXISTS student_id UUID REFERENCES student_profiles(id) ON DELETE SET NULL;
 
 -- Index for fast per-student queries
 CREATE INDEX IF NOT EXISTS idx_quiz_scores_student_id ON quiz_scores(student_id);
