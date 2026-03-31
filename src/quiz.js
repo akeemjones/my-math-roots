@@ -709,6 +709,8 @@ function _finishQuiz(){
       }
       if(!SCORES.some(s=>s.qid===unit.id+'_uq'&&s.pct>=80)) return false;
     }
+    // Only the mastery-mode final test (qid='final_test') counts for full completion.
+    // The balanced test (qid='final_test_balanced') is a supplementary mode.
     return SCORES.some(s=>s.qid==='final_test'&&s.pct>=80);
   }
 
@@ -1068,6 +1070,7 @@ function confirmRestart(){
     const l = u.lessons[CUR.lessonIdx];
     bank = l.qBank || l.quiz;
   } else if(qz.type === 'final'){
+    if(qz.id === 'final_test_balanced'){ startFinalTestBalanced(); return; }
     bank = UNITS_DATA.flatMap(u => u.unitQuiz || u.testBank || []);
   } else {
     const u = UNITS_DATA[CUR.unitIdx];
@@ -1082,7 +1085,7 @@ function afterResults(){
   else goUnit();
 }
 function startFinalTest(){
-  const btn = document.querySelector('[onclick*="startFinalTest"]');
+  const btn = document.querySelector('[data-action="startFinalTest"]');
   if(btn) btn.textContent = 'Loading…';
   Promise.all(UNITS_DATA.map(function(_, i){ return _loadUnit(i); }))
     .then(function(){
@@ -1121,7 +1124,7 @@ function startFinalTestBalanced(){
       _runQuiz([], 'final_test_balanced', `${_ICO.graduation} Final Test — Balanced`, 'final', null, allQs);
     })
     .catch(function(){
-      if(btn) btn.textContent = 'Balanced →';
+      if(btn) btn.textContent = '⚖️ Balanced';
       alert('Could not load quiz data. Check your connection.');
     });
 }
