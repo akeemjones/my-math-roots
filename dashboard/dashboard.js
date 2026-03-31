@@ -269,6 +269,12 @@ function _esc(s) {
     .replace(/"/g,'&quot;');
 }
 
+function _dbValidColor(val) {
+  if (typeof val !== 'string') return '#f59e0b';
+  var v = val.trim();
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v) ? v : '#f59e0b';
+}
+
 function _renderStudentSelector(students, activeId) {
   var opts = Object.values(students).map(function(s) {
     return '<option value="' + _esc(s.id) + '"' + (s.id === activeId ? ' selected' : '') + '>'
@@ -962,10 +968,13 @@ function signOut() {
 async function _fetchManagedProfiles() {
   if (typeof _supaDb === 'undefined' || !_supaDb) return;
   try {
-    var result = await _supaDb
-      .from('student_profiles')
-      .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at')
-      .order('created_at', { ascending: true });
+    var result = await Promise.race([
+      _supaDb
+        .from('student_profiles')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at')
+        .order('created_at', { ascending: true }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
     if (result.error) throw result.error;
     _managedProfiles = result.data || [];
     localStorage.setItem('mmr_family_profiles',
@@ -995,7 +1004,7 @@ function _renderManageProfiles() {
   var rows = _managedProfiles.map(function(p) {
     var lastActive = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Never';
     return '<div class="db-profile-row">'
-      + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _esc(p.avatar_color_from) + ',' + _esc(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
+      + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _dbValidColor(p.avatar_color_from) + ',' + _dbValidColor(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
       + '<div style="flex:1;min-width:0">'
       + '<div style="font-weight:700;font-size:.88rem;color:#263238">' + _esc(p.display_name) + (p.age ? ' <span style="font-weight:400;color:#90a4ae;font-size:.75rem">Age ' + _esc(String(p.age)) + '</span>' : '') + '</div>'
       + '<div style="font-size:.72rem;color:#90a4ae">Last active ' + _esc(lastActive) + '</div>'
@@ -1039,8 +1048,6 @@ function openPinResetSheet(studentId) {
     '<button class="db-review-close" onclick="closePinResetSheet()">&#x2715;</button>'
     + '<div class="db-review-title">Reset PIN for ' + _esc(profile.display_name) + '</div>'
     + '<div class="db-review-meta">Enter a new 4-digit PIN</div>';
-
-  _lsDbRenderPinDots();
 
   var keys = '';
   ['1','2','3','4','5','6','7','8','9'].forEach(function(d) {
@@ -1131,6 +1138,7 @@ function closePinResetSheet() {
   var modal = document.getElementById('db-pin-reset-modal');
   if (modal) modal.classList.remove('open');
   _pinResetBuffer = [];
+  _pinResetStudentId = null;
 }
 
 function openEditProfileSheet(studentId) {
@@ -1350,6 +1358,12 @@ async function dbAddSave() {
     // Get parent_id from Supabase session
     var sessionResult = await _supaDb.auth.getUser();
     var parentId = sessionResult && sessionResult.data && sessionResult.data.user ? sessionResult.data.user.id : null;
+
+    if (!parentId) {
+      if (msg) msg.textContent = 'Session expired — please sign out and sign in again.';
+      if (btn) btn.textContent = 'Add Student';
+      return;
+    }
 
     var result = await Promise.race([
       _supaDb.from('student_profiles').insert({
