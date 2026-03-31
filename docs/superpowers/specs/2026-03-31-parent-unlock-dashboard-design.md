@@ -1,13 +1,13 @@
-# Parent Unlock Controls — Dashboard Migration Design
+# Parent Controls — Full Dashboard Migration Design
 
 **Date:** 2026-03-31
-**Status:** Approved
+**Status:** Approved (expanded scope 2026-03-31)
 
 ---
 
 ## Goal
 
-Move parent unit/lesson unlock controls out of the learning app (`index.html`) and into the Parent Dashboard. Parents manage unlock state remotely via the dashboard (internet-connected). The learning app becomes read-only with respect to unlock state, staying clean for students.
+Move **all** parent controls out of the learning app (`index.html / #parent-screen`) and into the Parent Dashboard. The learning app becomes fully student-facing — no parent controls visible anywhere in the UI. Parents manage everything remotely via the dashboard.
 
 ---
 
@@ -17,181 +17,276 @@ Three-layer system:
 
 | Layer | Role |
 |-------|------|
-| **Supabase** | Source of truth — `unlock_settings JSONB` column on `student_profiles` |
-| **Dashboard** (`dashboard.js`) | Writer — authenticated parent reads/writes via RPCs |
-| **Learning app** (`index.html`) | Reader + cache — fetches on auth, caches to localStorage |
+| **Supabase** | Source of truth for per-student settings (unlock, timer, a11y) and parent-level settings (PIN hash) |
+| **Dashboard** (`dashboard.js`) | Writer — authenticated parent reads/writes all settings via RPCs |
+| **Learning app** (`index.html`) | Reader + cache — fetches on auth, caches to localStorage, reads cache at runtime |
 
-### Data Shape
+### Per-student settings (stored on `student_profiles`)
 
 ```json
 {
-  "freeMode": false,
-  "units": [0, 1, 2],
-  "lessons": { "0_1": true, "0_2": true }
+  "unlock_settings": { "freeMode": false, "units": [0,1,2], "lessons": { "0_1": true } },
+  "timer_settings":  { "enabled": true, "lessonSecs": 300, "unitSecs": 600, "finalSecs": 3600 },
+  "a11y_settings":   { "largeText": false, "highContrast": false }
 }
 ```
 
-- `freeMode: true` overrides all locks globally
-- `units`: array of unlocked unit indices (beyond normal sequential progression)
-- `lessons`: object keyed `"{unitIdx}_{lessonIdx}"`, value `true`
+Each is stored as a separate JSONB column on `student_profiles`. All sync via the same fire-and-forget pattern on auth.
 
-### Unlock settings are per student profile
+### Parent-level settings (stored on `profiles`)
 
-Each `student_profiles` row has its own `unlock_settings`. Switching the student selector in the dashboard loads that student's settings independently.
+- `pin_hash TEXT` — PBKDF2 hash of parent PIN (replaces device-local `wb_parent_pin`). Allows parent to change PIN from dashboard and have it take effect on all devices.
+
+### Push notifications
+
+Push subscriptions are device-local — they cannot be enabled on the student's device from a remote dashboard. The Reminders toggle in the dashboard applies to the device currently viewing the dashboard. This is a UI-only move; the underlying push logic stays the same.
+
+---
+
+## What Moves to Dashboard
+
+| Section (current parent-screen) | Dashboard section | Sync mechanism |
+|----------------------------------|-------------------|----------------|
+| Access Controls (unlock/relock/free mode) | Access Controls | `unlock_settings` JSONB on `student_profiles` |
+| Quiz Timer | Timer Settings | `timer_settings` JSONB on `student_profiles` |
+| Change Parent PIN | Change PIN | `pin_hash` on `profiles` via RPC |
+| Reminders (push notifications) | Reminders | Device-local (same logic, moved to dashboard UI) |
+| Change Password | Change Password | Existing Supabase `auth.updateUser` |
+| Send Feedback | Feedback | No change to logic, moved to dashboard |
+| What's New / Changelog | What's New | Static HTML, moved to dashboard |
+| Progress Report button | Removed | Dashboard analytics already covers this |
+| Accessibility | Accessibility | `a11y_settings` JSONB on `student_profiles` |
 
 ---
 
 ## Section 1 — Supabase Migration
 
-**File:** `supabase/migrations/20260331_unlock_settings.sql`
+**File:** `supabase/migrations/20260331_parent_controls.sql`
 
-### New column
+### New columns on `student_profiles`
 
 ```sql
 ALTER TABLE student_profiles
-  ADD COLUMN IF NOT EXISTS unlock_settings JSONB NOT NULL DEFAULT '{}';
+  ADD COLUMN IF NOT EXISTS unlock_settings JSONB NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS timer_settings  JSONB NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS a11y_settings   JSONB NOT NULL DEFAULT '{}';
 ```
 
-### Read RPC — `get_unlock_settings(student_id)`
-
-- SECURITY DEFINER, callable by `anon` and `authenticated`
-- Mirrors the existing `get_profiles_by_family_code` pattern
-- Returns the JSONB blob for the given student ID
+### New column on `profiles`
 
 ```sql
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS pin_hash TEXT;
+```
+
+### Read RPCs (SECURITY DEFINER, anon + authenticated)
+
+```sql
+-- Unlock settings
 CREATE OR REPLACE FUNCTION get_unlock_settings(p_student_id UUID)
-RETURNS JSONB
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT COALESCE(unlock_settings, '{}')
-  FROM student_profiles
-  WHERE id = p_student_id;
+RETURNS JSONB LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT COALESCE(unlock_settings, '{}') FROM student_profiles WHERE id = p_student_id;
 $$;
+GRANT EXECUTE ON FUNCTION get_unlock_settings(UUID) TO anon, authenticated;
 
-GRANT EXECUTE ON FUNCTION get_unlock_settings(UUID) TO anon;
-GRANT EXECUTE ON FUNCTION get_unlock_settings(UUID) TO authenticated;
+-- Timer settings
+CREATE OR REPLACE FUNCTION get_timer_settings(p_student_id UUID)
+RETURNS JSONB LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT COALESCE(timer_settings, '{}') FROM student_profiles WHERE id = p_student_id;
+$$;
+GRANT EXECUTE ON FUNCTION get_timer_settings(UUID) TO anon, authenticated;
+
+-- A11y settings
+CREATE OR REPLACE FUNCTION get_a11y_settings(p_student_id UUID)
+RETURNS JSONB LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT COALESCE(a11y_settings, '{}') FROM student_profiles WHERE id = p_student_id;
+$$;
+GRANT EXECUTE ON FUNCTION get_a11y_settings(UUID) TO anon, authenticated;
+
+-- PIN hash (parent reads their own)
+CREATE OR REPLACE FUNCTION get_pin_hash(p_parent_id UUID)
+RETURNS TEXT LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT pin_hash FROM profiles WHERE id = p_parent_id;
+$$;
+GRANT EXECUTE ON FUNCTION get_pin_hash(UUID) TO authenticated;
 ```
 
-### Write RPC — `update_unlock_settings(student_id, settings)`
-
-- Authenticated only
-- Server-side ownership check: only the student's `parent_id` can write
-- Raises `not_owner` if the caller does not own the profile
+### Write RPCs (authenticated only, ownership-checked)
 
 ```sql
+-- Unlock settings
 CREATE OR REPLACE FUNCTION update_unlock_settings(p_student_id UUID, p_settings JSONB)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  UPDATE student_profiles
-  SET unlock_settings = p_settings,
-      updated_at = now()
-  WHERE id = p_student_id
-    AND parent_id = auth.uid();
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'not_owner';
-  END IF;
-END;
-$$;
-
+  UPDATE student_profiles SET unlock_settings = p_settings, updated_at = now()
+  WHERE id = p_student_id AND parent_id = auth.uid();
+  IF NOT FOUND THEN RAISE EXCEPTION 'not_owner'; END IF;
+END; $$;
 GRANT EXECUTE ON FUNCTION update_unlock_settings(UUID, JSONB) TO authenticated;
+
+-- Timer settings
+CREATE OR REPLACE FUNCTION update_timer_settings(p_student_id UUID, p_settings JSONB)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  UPDATE student_profiles SET timer_settings = p_settings, updated_at = now()
+  WHERE id = p_student_id AND parent_id = auth.uid();
+  IF NOT FOUND THEN RAISE EXCEPTION 'not_owner'; END IF;
+END; $$;
+GRANT EXECUTE ON FUNCTION update_timer_settings(UUID, JSONB) TO authenticated;
+
+-- A11y settings
+CREATE OR REPLACE FUNCTION update_a11y_settings(p_student_id UUID, p_settings JSONB)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  UPDATE student_profiles SET a11y_settings = p_settings, updated_at = now()
+  WHERE id = p_student_id AND parent_id = auth.uid();
+  IF NOT FOUND THEN RAISE EXCEPTION 'not_owner'; END IF;
+END; $$;
+GRANT EXECUTE ON FUNCTION update_a11y_settings(UUID, JSONB) TO authenticated;
+
+-- PIN hash (parent updates their own)
+CREATE OR REPLACE FUNCTION update_pin_hash(p_hash TEXT)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  UPDATE profiles SET pin_hash = p_hash WHERE id = auth.uid();
+END; $$;
+GRANT EXECUTE ON FUNCTION update_pin_hash(TEXT) TO authenticated;
 ```
 
 ---
 
-## Section 2 — Dashboard Changes (`dashboard/dashboard.js` + `dashboard.css`)
+## Section 2 — Dashboard Sections
 
-### New section: "Unlock Settings"
+All sections appended after existing analytics. Refreshes on student selector change (per-student sections only).
 
-Appended after existing analytics sections. Refreshes when the student selector changes.
+### 2a — Access Controls (per student)
 
-### Layout: Unit Cards + Lesson Drawer
+Combined unlock + relock. Layout: Unit Cards + Lesson Drawer (approved design).
 
-**Free Mode toggle** — pinned at top of section. When ON:
-- All units/lessons treated as unlocked by the learning app
-- Unit cards render but are visually dimmed with a "Free Mode active" badge
-- Individual unit/lesson toggles disabled (greyed out)
+- **Free Mode toggle** — top of section. ON disables all other toggles (greyed out).
+- **Unit card grid** — 2 columns, 10 cards. Each: unit name, locked/unlocked badge, "Manage lessons →" link.
+- **Lesson drawer** — inline expansion below card row, toggle per lesson.
+- **Re-lock All button** — red destructive button at bottom. Shows confirmation prompt before clearing all unit/lesson unlocks (sets `units: [], lessons: {}, freeMode: false`).
+- **Full Reset button** — clears all progress (SCORES, MASTERY, STREAK) from Supabase for the student. Separate confirmation. Does not affect unlock settings.
+- **Save Changes button** — batches all unlock mutations; writes via `update_unlock_settings` RPC.
 
-**Unit grid** — 2-column card grid, one card per unit (10 units). Each card shows:
-- Unit name and number
-- Locked / Unlocked badge
-- "Manage lessons →" link
+### 2b — Timer Settings (per student)
 
-**Lesson drawer** — tapping "Manage lessons →" expands an inline drawer below the card row listing that unit's lessons as toggle rows. No modal — in-page expansion.
+- Toggle: Quiz Timer on/off (`enabled` field)
+- Three duration pickers: Lesson Quiz, Unit Quiz, Final Test
+- Uses drum-roll picker style matching existing app (or simpler +/- buttons — dashboard doesn't need the drum picker)
+- Dashboard uses +/- buttons with typed-value fallback (simpler than drum picker)
+- Auto-saves on change (no Save button needed — each change fires `update_timer_settings`)
 
-**Save button** — single "Save Changes" button at the bottom of the section. Changes are batched in a `_unlockDraft` object. Nothing writes to Supabase until Save is tapped.
+### 2c — Accessibility (per student)
 
-**Unsaved changes guard** — if the student selector changes with unsaved changes, a brief warning appears: "You have unsaved changes."
+- Large Text toggle → `largeText` bool
+- High Contrast toggle → `highContrast` bool
+- Auto-saves on change via `update_a11y_settings`
 
-**Save flow:**
-1. Call `supabase.rpc('update_unlock_settings', { p_student_id, p_settings: _unlockDraft })`
-2. On success: commit draft, show "Saved ✓" toast
-3. On error: show "Save failed — check connection" toast, keep draft
+### 2d — Change Parent PIN (parent account level)
 
-### New functions in `dashboard.js`
+- Two inputs: New PIN + Confirm PIN (min 4 digits)
+- Hashes with PBKDF2 (100k iterations, same as existing `_savePin` function) in dashboard JS
+- Submits hash via `update_pin_hash` RPC
+- On success: shows "PIN updated ✓" — takes effect on all devices on next sync
 
-| Function | Purpose |
-|----------|---------|
-| `_loadUnlockSettings(studentId)` | Fetch from Supabase, populate `_unlockDraft` |
-| `_renderUnlockSection()` | Returns HTML for the full unlock section |
-| `_renderUnitCards()` | Returns HTML for the unit card grid |
-| `_renderLessonDrawer(unitIdx)` | Returns HTML for the lesson drawer of a unit |
-| `_saveUnlockSettings()` | Calls `update_unlock_settings` RPC, handles result |
-| `_toggleUnitUnlock(unitIdx)` | Mutates `_unlockDraft.units` array |
-| `_toggleLessonUnlock(unitIdx, lessonIdx)` | Mutates `_unlockDraft.lessons` object |
-| `_toggleFreeMode()` | Mutates `_unlockDraft.freeMode` |
+### 2e — Reminders (device-local, dashboard device)
+
+- Push notification toggle (on/off)
+- Calls existing `togglePushNotifications` logic (moved to `dashboard.js`)
+- Note in UI: "Reminders apply to this device"
+
+### 2f — Change Password (parent account level)
+
+- Password input + save button
+- Calls `supabase.auth.updateUser({ password })` directly — same as existing `_pcChangePassword`
+
+### 2g — Send Feedback (parent account level)
+
+- Star rating (1–5), category chips, comment textarea, submit button
+- Same `_submitFeedback` logic as existing (moved to `dashboard.js`)
+
+### 2h — What's New / Changelog
+
+- Static scrollable list of version entries
+- Copied from `index.html` — no logic required
 
 ---
 
 ## Section 3 — Learning App Changes
 
-### Cache key
+### Cache keys (localStorage)
 
-`wb_unlock_{studentId}` — localStorage key storing the JSONB unlock settings for the active student. Written on sync, read on every lock check.
+| Key | Content | Written by |
+|-----|---------|-----------|
+| `wb_unlock_{studentId}` | unlock_settings JSONB | Sync on auth |
+| `wb_timer_{studentId}` | timer_settings JSONB | Sync on auth |
+| `wb_a11y_{studentId}` | a11y_settings JSONB | Sync on auth |
+| `wb_pin_synced` | `1` once PIN synced from Supabase | Sync on auth |
 
 ### Sync trigger
 
-On auth state change (sign-in or student profile selection), the app calls `get_unlock_settings(studentId)` and writes the result to `wb_unlock_{studentId}`. Fire-and-forget — does not block app load. On failure (offline), the cached value is used silently.
+On auth / student profile selection, fire-and-forget batch:
+```javascript
+async function _syncStudentSettings(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return;
+  const [unlock, timer, a11y] = await Promise.all([
+    _supa.rpc('get_unlock_settings', { p_student_id: studentId }),
+    _supa.rpc('get_timer_settings',  { p_student_id: studentId }),
+    _supa.rpc('get_a11y_settings',   { p_student_id: studentId }),
+  ]);
+  if (unlock.data) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(unlock.data));
+  if (timer.data)  localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(timer.data));
+  if (a11y.data)   localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(a11y.data));
+}
+```
 
-### Lock check functions
+Also sync PIN hash on parent auth:
+```javascript
+async function _syncPinHash() {
+  if (!_supa || !_supaUser) return;
+  const { data } = await _supa.rpc('get_pin_hash', { p_parent_id: _supaUser.id });
+  if (data) localStorage.setItem('wb_parent_pin', data); // replaces local hash
+}
+```
 
-`isUnitIndividuallyUnlocked(idx)` — updated to read from `wb_unlock_{studentId}`:
+### Lock check updates (`src/settings.js`)
+
+`isUnitIndividuallyUnlocked(idx)` — reads `wb_unlock_{studentId}`:
 1. Parse cache; if `freeMode: true` → return `true`
-2. Check `units` array contains `idx` → return result
-3. If cache absent → return `false`
+2. Check `units` array contains `idx`
+3. Fallback: if cache absent, read old `wb_unit_unlocks` signed blob (one-time migration)
 
-New `isLessonUnlocked(unitIdx, lessonIdx)` — same pattern, checks `lessons["{unitIdx}_{lessonIdx}"]`.
+`isLessonIndividuallyUnlocked(unitIdx, lessonIdx)` — reads `wb_unlock_{studentId}`:
+1. Parse cache; if `freeMode: true` → return `true`
+2. Check `lessons["{unitIdx}_{lessonIdx}"]`
+3. Fallback: old `wb_lesson_unlocks` signed blob
+
+Timer reads updated to read from `wb_timer_{studentId}` first, fallback to existing localStorage keys.
+
+A11y reads updated to read from `wb_a11y_{studentId}` first, fallback to existing keys.
 
 ### One-time migration
 
-On first load with the new code, if `wb_unlock_{studentId}` is absent but `wb_unit_unlocks` or `wb_lesson_unlocks` exist (old signed blobs):
-1. Parse and import the old unlock state into the new JSONB format
-2. Write to `wb_unlock_{studentId}`
-3. Remove old keys `wb_unit_unlocks` and `wb_lesson_unlocks`
+On first load, if new cache keys absent but old keys present:
+- `wb_unit_unlocks` + `wb_lesson_unlocks` → import into `wb_unlock_{studentId}`, delete old keys
+- `wb_timer_*` keys → import into `wb_timer_{studentId}`, delete old keys
+- `wb_parent_pin` (PBKDF2 hash) → keep as-is (Supabase sync overwrites it after first dashboard login)
 
 ### Locked item UI
 
-Locked units/lessons show:
-- Lock icon
-- Label: "Ask a parent to unlock this"
-- No PIN prompt visible in normal flow
+Locked units/lessons show lock icon + "Ask a parent to unlock this." Long-press (600ms) on a locked card reveals the PIN modal. On correct PIN, writes to `wb_unlock_{studentId}` local cache only (24-hour local override, not synced to Supabase).
 
-**Hidden PIN escape hatch:** A 600ms long-press on a locked unit/lesson card reveals the existing PIN entry modal. On correct PIN:
-- Writes unlock state to `wb_unlock_{studentId}` local cache only (not Supabase)
-- Grants a **24-hour local override** for that item
-- Does not sync back to dashboard
+### Removed from learning app
 
-### Removed from learning side
-
-- Parent controls section removed from settings screen entirely (no pointer, no greyed entry)
-- Parent settings gear/menu item removed from main navigation
-- PIN modal no longer reachable from any menu or button — only via long-press on a locked item
+- `#parent-screen` div and all its contents — removed from `index.html`
+- "Open Parent Controls" button in `#settings-screen` — removed
+- `parent-auth-modal` dialog — **kept** (used by long-press PIN escape hatch)
+- `unit-pin-modal` dialog — **kept** (used by long-press PIN escape hatch)
+- `goParentControls()` function — removed from `src/settings.js`
+- `_openParentAuth()` function — kept (used by long-press trigger)
+- Parent controls entry in settings screen — removed entirely (no pointer left behind)
 
 ---
 
@@ -199,11 +294,12 @@ Locked units/lessons show:
 
 | Action | File | Change |
 |--------|------|--------|
-| CREATE | `supabase/migrations/20260331_unlock_settings.sql` | Column + 2 RPCs |
-| MODIFY | `dashboard/dashboard.js` | New unlock section + 8 new functions |
-| MODIFY | `dashboard/dashboard.css` | Unit card grid + lesson drawer styles |
-| MODIFY | `src/settings.js` | Update `isUnitIndividuallyUnlocked`, add `isLessonUnlocked`, add sync call; remove parent controls section |
-| MODIFY | `index.html` | Remove parent PIN modal from prominent flow; add long-press handler on locked cards |
+| CREATE | `supabase/migrations/20260331_parent_controls.sql` | 3 columns + 8 RPCs |
+| MODIFY | `dashboard/dashboard.js` | 8 new sections + supporting functions |
+| MODIFY | `dashboard/dashboard.css` | Styles for all 8 new sections |
+| MODIFY | `src/settings.js` | Update lock checks + sync + remove parent screen functions |
+| MODIFY | `src/auth.js` | Add `_syncStudentSettings` + `_syncPinHash` calls on auth |
+| MODIFY | `index.html` | Remove `#parent-screen` + parent controls button; add long-press handlers |
 
 ---
 
@@ -211,18 +307,21 @@ Locked units/lessons show:
 
 | Scenario | Behavior |
 |----------|---------|
-| Student has no profile (local-only device) | `studentId = 'local'`; `get_unlock_settings` not called; lock checks fall back to old `wb_unit_unlocks` or return locked |
-| Dashboard save fails mid-flight | Draft preserved; toast shown; user can retry |
-| Student switches while draft unsaved | Warning shown; draft NOT discarded until user confirms |
-| Free Mode ON + individual lesson locked | Free Mode wins — lesson accessible |
-| Long-press PIN unlock + Supabase has it locked | Local 24h override wins until next sync |
-| Next sync after local override | Supabase value overwrites local cache; local override lost |
+| Local-only student (no Supabase profile) | Skip Supabase sync; use old localStorage keys as-is |
+| Dashboard save fails | Draft preserved; toast shown; retry available |
+| Student selector switches with unsaved Access Controls | Warning shown; draft preserved until confirmed |
+| Free Mode ON + individual lesson locked | Free Mode wins |
+| Long-press PIN unlock | Writes local cache only; 24h override; lost on next Supabase sync |
+| Parent changes PIN on dashboard | `pin_hash` updated in Supabase; syncs to device on next auth |
+| Push notification toggle in dashboard | Applies to the device running the dashboard only |
+| Full Reset confirmation | Clears SCORES/MASTERY/STREAK from Supabase for student; does not clear unlock settings |
 
 ---
 
 ## Out of Scope
 
-- Syncing the local PIN override back to Supabase (PIN is intentionally local-only)
+- Syncing local PIN overrides back to Supabase
 - Unlock history / audit log
-- Time-based unlocks (e.g., "unlock Unit 3 on Monday")
-- Teacher multi-class management (separate future feature)
+- Time-based unlocks
+- Teacher multi-class management
+- Remote push notification management (enable notifications on student's device from parent device)
