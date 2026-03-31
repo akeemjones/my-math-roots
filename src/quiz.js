@@ -284,9 +284,10 @@ function _masteryWeightedSample(bank, n){
 //   unit   (25 Qs):  8 easy + 10 medium + 7 hard
 //   final  (50 Qs): 15 easy + 20 medium + 15 hard
 const _DIFF_TARGETS = {
-  lesson: { e:3, m:3, h:2 },
-  unit:   { e:8, m:10, h:7 },
-  final:  { e:15, m:20, h:15 },
+  lesson:   { e:3, m:3, h:2 },
+  unit:     { e:8, m:10, h:7 },
+  final:    { e:15, m:20, h:15 },
+  balanced: { e:1, m:2, h:2 },
 };
 
 function _weightedSample(bank, n, quizType){
@@ -341,13 +342,13 @@ function _weightedSample(bank, n, quizType){
   return result;
 }
 
-function _runQuiz(bank, qid, label, type, unitIdx){
-  if(!bank || bank.length === 0){ alert('No questions found for this quiz.'); return; }
+function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
+  if(!_prebuiltQs && (!bank || bank.length === 0)){ alert('No questions found for this quiz.'); return; }
   CUR.unitIdx = unitIdx != null ? unitIdx : null;
   const u = unitIdx != null ? UNITS_DATA[unitIdx] : null;
   const color = u ? u.color : '#6c5ce7';
   const n = type==='final' ? 50 : type==='unit' ? 25 : 8;
-  const qs = _weightedSample(bank, n, type);
+  const qs = _prebuiltQs || _weightedSample(bank, n, type);
 
   CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type };
   _quizStartedAt = Date.now();
@@ -569,7 +570,7 @@ function retryQuiz(){
   const qz = CUR.quiz;
   if(!qz) return;
   if(qz.type==='lesson') startLessonQuiz(CUR.unitIdx, CUR.lessonIdx);
-  else if(qz.type==='final') startFinalTest();
+  else if(qz.type==='final') qz.id === 'final_test_balanced' ? startFinalTestBalanced() : startFinalTest();
   else startUnitQuiz(CUR.unitIdx);
 }
 
@@ -1093,6 +1094,29 @@ function startFinalTest(){
     .catch(function(){
       if(btn) btn.textContent = 'Start Final Test →';
       alert('Could not load all units. Check your connection.');
+    });
+}
+function startFinalTestBalanced(){
+  Promise.all(UNITS_DATA.map(function(_, i){ return _loadUnit(i); }))
+    .then(function(){
+      const allQs = [];
+      UNITS_DATA.forEach(function(u){
+        const bank = u.unitQuiz || u.testBank || [];
+        if(!bank.length) return;
+        const sample = _weightedSample(bank, Math.min(5, bank.length), 'balanced');
+        sample.forEach(function(q){ allQs.push(q); });
+      });
+      if(!allQs.length){ alert('No questions available for the Final Test.'); return; }
+      // Fisher-Yates shuffle
+      for(let i = allQs.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = allQs[i]; allQs[i] = allQs[j]; allQs[j] = tmp;
+      }
+      playSwooshForward();
+      _runQuiz([], 'final_test_balanced', `${_ICO.graduation} Final Test — Balanced`, 'final', null, allQs);
+    })
+    .catch(function(){
+      alert('Could not load quiz data. Check your connection.');
     });
 }
 
