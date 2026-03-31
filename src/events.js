@@ -100,6 +100,7 @@
     openUnitPinUnlock:      (a)   => openUnitPinUnlock(Number(a)),
     resumeQuiz:             (a)   => resumeQuiz(a),
     startFinalTest:         ()    => startFinalTest(),
+    startFinalTestBalanced: ()    => startFinalTestBalanced(),
     // showLockToast: second arg is boolean — coerce string "true"/"false"
     showLockToast:          (a,b) => showLockToast(a, b === 'true'),
 

@@ -92,7 +92,7 @@ function buildHome(instant){
     ftSlide.className = 'cs cs-active';
     ftSlide.style.setProperty('--uc', '#6c5ce7');
     ftSlide.style.marginBottom = '12px';
-    const ftBestScore = SCORES.filter(s=>s.qid==='final_test').sort((a,b)=>b.pct-a.pct)[0];
+    const ftBestScore = SCORES.filter(s=>s.qid==='final_test'||s.qid==='final_test_balanced').sort((a,b)=>b.pct-a.pct)[0];
     const ftScoreLine = ftBestScore
       ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}`
       : '50 questions · All units';
@@ -111,13 +111,14 @@ function buildHome(instant){
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" data-action="startFinalTest">
+      ftSlide.innerHTML = `<div class="cs-card">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
         <div class="cs-stat">${ftScoreLine}</div>
-        <div class="cs-enter-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)">
-          Start Final Test →
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button type="button" class="cs-enter-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);flex:1;font-size:.82em" data-action="startFinalTest">🎯 Mastery</button>
+          <button type="button" class="cs-enter-btn" style="background:linear-gradient(135deg,#00b894,#00cec9);flex:1;font-size:.82em" data-action="startFinalTestBalanced">⚖️ Balanced</button>
         </div>
       </div>`;
     }
@@ -261,7 +262,7 @@ function refreshHomeState(){
     ftSlide.className = 'cs ' + (ftNewState === 'locked' ? 'cs-locked-slide' : 'cs-active');
     ftSlide.style.marginBottom = ftNewState === 'locked' ? '8px' : '12px';
     if(ftNewState !== 'locked') ftSlide.style.setProperty('--uc','#6c5ce7');
-    const ftBestScore = SCORES.filter(s=>s.qid==='final_test').sort((a,b)=>b.pct-a.pct)[0];
+    const ftBestScore = SCORES.filter(s=>s.qid==='final_test'||s.qid==='final_test_balanced').sort((a,b)=>b.pct-a.pct)[0];
     const ftScoreLine = ftBestScore ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}` : '50 questions · All units';
     if(ftNewState === 'locked'){
       ftSlide.innerHTML = `<div class="cs-lock-card" data-action="showLockToast" data-arg="Unlock all units to take the Final Test!" data-arg2="true">
@@ -284,17 +285,20 @@ function refreshHomeState(){
         </div>
       </div>`;
     } else {
-      ftSlide.innerHTML = `<div class="cs-card" style="cursor:pointer" data-action="startFinalTest">
+      ftSlide.innerHTML = `<div class="cs-card">
         <div class="cs-label">${_ICO.trophy} All Units Unlocked!</div>
         <span class="cs-icon">${_ICO.graduation}</span>
         <div class="cs-name">Final Test</div>
         <div class="cs-stat">${ftScoreLine}</div>
-        <div class="cs-enter-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)">Start Final Test →</div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button type="button" class="cs-enter-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);flex:1;font-size:.82em" data-action="startFinalTest">🎯 Mastery</button>
+          <button type="button" class="cs-enter-btn" style="background:linear-gradient(135deg,#00b894,#00cec9);flex:1;font-size:.82em" data-action="startFinalTestBalanced">⚖️ Balanced</button>
+        </div>
       </div>`;
     }
   } else if(ftNewState === 'available'){
     // Same available state — update score line only
-    const ftBestScore = SCORES.filter(s=>s.qid==='final_test').sort((a,b)=>b.pct-a.pct)[0];
+    const ftBestScore = SCORES.filter(s=>s.qid==='final_test'||s.qid==='final_test_balanced').sort((a,b)=>b.pct-a.pct)[0];
     const ftScoreLine = ftBestScore ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}` : '50 questions · All units';
     const stat = ftSlide.querySelector('.cs-stat');
     if(stat) stat.textContent = ftScoreLine;
