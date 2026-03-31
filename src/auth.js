@@ -555,6 +555,9 @@ function supabaseInit(){
           window.location.href = '/dashboard/dashboard.html';
           return;
         }
+        var _syncSid = localStorage.getItem('mmr_active_student_id');
+        _syncStudentSettings(_syncSid); // fire-and-forget
+        _syncPinHash();                 // fire-and-forget
         show('home');
         _dismissSplash();
         _installHistoryGuard();
@@ -589,6 +592,9 @@ function supabaseInit(){
         window.location.href = '/dashboard/dashboard.html';
         return;
       }
+      var _syncSid2 = localStorage.getItem('mmr_active_student_id');
+      _syncStudentSettings(_syncSid2); // fire-and-forget
+      _syncPinHash();                  // fire-and-forget
       show('home');
       buildHome();
       _installHistoryGuard();
@@ -849,6 +855,28 @@ async function _lsSubmit(){
     _lsLoading = false;
     btn.textContent = origTxt;
   }
+}
+
+async function _syncStudentSettings(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return;
+  try {
+    var results = await Promise.all([
+      _supa.rpc('get_unlock_settings', { p_student_id: studentId }),
+      _supa.rpc('get_timer_settings',  { p_student_id: studentId }),
+      _supa.rpc('get_a11y_settings',   { p_student_id: studentId }),
+    ]);
+    if (results[0].data) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(results[0].data));
+    if (results[1].data) localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(results[1].data));
+    if (results[2].data) localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(results[2].data));
+  } catch(e) { /* offline — use cached values */ }
+}
+
+async function _syncPinHash() {
+  if (!_supa || !_supaUser) return;
+  try {
+    var result = await _supa.rpc('get_pin_hash', { p_parent_id: _supaUser.id });
+    if (result.data) localStorage.setItem('wb_parent_pin', result.data);
+  } catch(e) { /* offline — keep existing local hash */ }
 }
 
 async function _pullOnLogin(){
