@@ -1865,12 +1865,12 @@ function openEditProfileSheet(studentId) {
     + AVATAR_EMOJIS.map(function(e) {
         var colors = AVATAR_COLORS[e] || '#f59e0b,#f97316';
         var isSelected = e === profile.avatar_emoji;
-        return '<div id="db-av-' + e.codePointAt(0) + '" data-action="dbEditSelectEmoji" data-arg="' + _esc(e) + '"''
+        return '<div id="db-av-' + e.codePointAt(0) + '" data-action="dbEditSelectEmoji" data-arg="' + _esc(e) + '"'
           + ' style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,' + colors + ');display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:' + (isSelected ? '3px solid #1565C0' : '3px solid transparent') + ';box-sizing:border-box">' + e + '</div>';
       }).join('')
     + '</div>'
     + '<div id="db-edit-msg" style="font-size:.78rem;color:#e74c3c;text-align:center;min-height:1.1rem;margin-bottom:10px"></div>'
-    + '<button data-action="dbEditSave" data-arg="' + _esc(studentId) + '"' style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Save Changes</button>';
+    + '<button data-action="dbEditSave" data-arg="' + _esc(studentId) + '" style="width:100%;padding:12px;border-radius:50px;border:none;background:#1565C0;color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:1rem;cursor:pointer">Save Changes</button>';
 
   modal.classList.add('open');
 }
@@ -1965,7 +1965,7 @@ function openAddStudentSheet() {
     + '<div style="width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.18)"></div>'.repeat(4)
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'
-    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button data-action="dbAddPinKey" data-arg="' + d + '"' style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">' + d + '</button>'; }).join('')
+    + ['1','2','3','4','5','6','7','8','9'].map(function(d){ return '<button data-action="dbAddPinKey" data-arg="' + d + '" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">' + d + '</button>'; }).join('')
     + '<div></div>'
     + '<button data-action="dbAddPinKey" data-arg="0" style="background:#f0f4f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 0;font-size:1.15rem;font-weight:700;cursor:pointer">0</button>'
     + '<button data-action="dbAddPinBack" style="background:#fce4ec;border:1px solid #ffcdd2;border-radius:10px;padding:12px 0;font-size:1rem;color:#c62828;cursor:pointer">&#x232B;</button>'
