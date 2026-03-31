@@ -45,3 +45,50 @@ ALTER TABLE quiz_scores ADD COLUMN IF NOT EXISTS student_id UUID REFERENCES stud
 
 -- Index for fast per-student queries
 CREATE INDEX IF NOT EXISTS idx_quiz_scores_student_id ON quiz_scores(student_id);
+
+-- ── RPC: get student profiles by family code (called by anon/child devices) ──
+CREATE OR REPLACE FUNCTION get_profiles_by_family_code(p_family_code TEXT)
+RETURNS TABLE (
+  id                UUID,
+  username          TEXT,
+  display_name      TEXT,
+  age               INTEGER,
+  avatar_emoji      TEXT,
+  avatar_color_from TEXT,
+  avatar_color_to   TEXT,
+  pin_hash          TEXT
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT sp.id, sp.username, sp.display_name, sp.age,
+         sp.avatar_emoji, sp.avatar_color_from, sp.avatar_color_to, sp.pin_hash
+  FROM student_profiles sp
+  JOIN profiles p ON p.id = sp.parent_id
+  WHERE p.family_code = upper(p_family_code);
+$$;
+
+GRANT EXECUTE ON FUNCTION get_profiles_by_family_code(TEXT) TO anon;
+GRANT EXECUTE ON FUNCTION get_profiles_by_family_code(TEXT) TO authenticated;
+
+-- ── RPC: generate family_code for a parent if not set ──
+CREATE OR REPLACE FUNCTION ensure_family_code(p_parent_id UUID)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_code TEXT;
+BEGIN
+  SELECT family_code INTO v_code FROM profiles WHERE id = p_parent_id;
+  IF v_code IS NULL THEN
+    v_code := 'MMR-' || upper(substring(gen_random_uuid()::text, 1, 4));
+    UPDATE profiles SET family_code = v_code WHERE id = p_parent_id;
+  END IF;
+  RETURN v_code;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION ensure_family_code(UUID) TO authenticated;
