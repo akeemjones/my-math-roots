@@ -280,9 +280,10 @@ function _masteryWeightedSample(bank, n){
 // Falls back to flat mastery sampling when no d-field is present (backward compat).
 //
 // Draw targets by quiz type:
-//   lesson  (8 Qs):  3 easy + 3 medium + 2 hard
-//   unit   (25 Qs):  8 easy + 10 medium + 7 hard
-//   final  (50 Qs): 15 easy + 20 medium + 15 hard
+//   lesson   (8 Qs):  3 easy + 3 medium + 2 hard
+//   unit    (25 Qs):  8 easy + 10 medium + 7 hard
+//   final   (50 Qs): 15 easy + 20 medium + 15 hard
+//   balanced (5/unit): 1 easy + 2 medium + 2 hard (guaranteed per-unit coverage)
 const _DIFF_TARGETS = {
   lesson:   { e:3, m:3, h:2 },
   unit:     { e:8, m:10, h:7 },
@@ -1096,13 +1097,17 @@ function startFinalTest(){
       alert('Could not load all units. Check your connection.');
     });
 }
+
 function startFinalTestBalanced(){
+  const btn = document.querySelector('[data-action="startFinalTestBalanced"]');
+  if(btn) btn.textContent = 'Loading…';
   Promise.all(UNITS_DATA.map(function(_, i){ return _loadUnit(i); }))
     .then(function(){
+      if(btn) btn.textContent = 'Balanced →';
       const allQs = [];
       UNITS_DATA.forEach(function(u){
         const bank = u.unitQuiz || u.testBank || [];
-        if(!bank.length) return;
+        if(!bank.length){ console.warn('[MMR] No bank for unit:', u.name || u.id); return; }
         const sample = _weightedSample(bank, Math.min(5, bank.length), 'balanced');
         sample.forEach(function(q){ allQs.push(q); });
       });
@@ -1116,6 +1121,7 @@ function startFinalTestBalanced(){
       _runQuiz([], 'final_test_balanced', `${_ICO.graduation} Final Test — Balanced`, 'final', null, allQs);
     })
     .catch(function(){
+      if(btn) btn.textContent = 'Balanced →';
       alert('Could not load quiz data. Check your connection.');
     });
 }
