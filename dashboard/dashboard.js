@@ -1004,6 +1004,173 @@ function _unitNames() {
   ];
 }
 
+// ── Access Controls — mutation helpers ───────────────────────────────────
+
+function _dbToggleFreeMode() {
+  _unlockDraft.freeMode = !_unlockDraft.freeMode;
+  _unlockDirty = true;
+  _reRenderUnlock();
+}
+
+function _dbToggleUnitUnlock(unitIdx) {
+  var idx = _unlockDraft.units.indexOf(unitIdx);
+  if (idx === -1) { _unlockDraft.units.push(unitIdx); }
+  else { _unlockDraft.units.splice(idx, 1); }
+  _unlockDirty = true;
+  _reRenderUnlock();
+}
+
+function _dbToggleLessonUnlock(unitIdx, lessonIdx) {
+  var key = unitIdx + '_' + lessonIdx;
+  if (_unlockDraft.lessons[key]) { delete _unlockDraft.lessons[key]; }
+  else { _unlockDraft.lessons[key] = true; }
+  _unlockDirty = true;
+  _reRenderUnlock();
+}
+
+function _dbToggleLessonDrawer(unitIdx) {
+  _activeDrawerUnit = (_activeDrawerUnit === unitIdx) ? -1 : unitIdx;
+  _reRenderUnlock();
+}
+
+function _reRenderUnlock() {
+  var wrap = document.getElementById('db-unlock-wrap');
+  if (wrap) wrap.innerHTML = _renderUnlockInner();
+}
+
+async function _dbSaveUnlock() {
+  var btn  = document.getElementById('db-unlock-save-btn');
+  var msg  = document.getElementById('db-unlock-msg');
+  if (!_supaDb) { if (msg) msg.textContent = 'Not connected.'; return; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    var result = await _supaDb.rpc('update_unlock_settings', {
+      p_student_id: _activeId,
+      p_settings:   _unlockDraft,
+    });
+    if (result.error) throw result.error;
+    _unlockDirty = false;
+    if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Saved!'; }
+    setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
+  } catch(e) {
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = '❌ Save failed — check connection.'; }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Save Changes'; }
+}
+
+async function _dbRelockAll() {
+  if (!confirm('Remove all unit and lesson unlocks for this student?')) return;
+  _unlockDraft = _parseUnlockSettings({ freeMode: false, units: [], lessons: {} });
+  _unlockDirty = false;
+  _activeDrawerUnit = -1;
+  if (!_supaDb) { _reRenderUnlock(); return; }
+  try {
+    await _supaDb.rpc('update_unlock_settings', {
+      p_student_id: _activeId,
+      p_settings:   _unlockDraft,
+    });
+    var msg = document.getElementById('db-unlock-msg');
+    if (msg) { msg.style.color = '#37474f'; msg.textContent = '🔒 All locks restored.'; }
+    setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
+  } catch(e) { /* silently ignore — draft was already reset */ }
+  _reRenderUnlock();
+}
+
+async function _dbFullReset() {
+  if (!confirm('DELETE all quiz scores, mastery data, and streak for this student? This cannot be undone.')) return;
+  if (!_supaDb) return;
+  try {
+    await Promise.all([
+      _supaDb.from('quiz_scores').delete().eq('student_id', _activeId),
+      _supaDb.from('user_mastery').delete().eq('student_id', _activeId),
+      _supaDb.from('profiles').update({ current_streak: 0, longest_streak: 0 })
+        .eq('id', _activeId),
+    ]);
+    var msg = document.getElementById('db-unlock-msg');
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = '🗑 Student data cleared.'; }
+    setTimeout(function() { if (msg) msg.textContent = ''; }, 3000);
+  } catch(e) {
+    var msg2 = document.getElementById('db-unlock-msg');
+    if (msg2) { msg2.style.color = '#c62828'; msg2.textContent = '❌ Reset failed.'; }
+  }
+}
+
+// ── Access Controls — render ──────────────────────────────────────────────
+
+function _renderUnlockInner() {
+  var isMock = (_activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2');
+  if (isMock) {
+    return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
+  }
+  var fm = _unlockDraft.freeMode;
+  var html = '';
+
+  // Free Mode toggle
+  html += '<div class="db-toggle-row">'
+    + '<div><strong>🌟 Free Mode</strong><br>'
+    + '<span class="db-toggle-sub">Unlock all units and lessons at once</span></div>'
+    + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" onclick="_dbToggleFreeMode()">'
+    + (fm ? 'ON' : 'OFF') + '</button>'
+    + '</div>';
+
+  // Unit cards grid
+  html += '<div class="db-unit-grid"' + (fm ? ' style="opacity:.5;pointer-events:none"' : '') + '>';
+  _UNITS_META.forEach(function(u, i) {
+    var unlocked = _isUnitUnlockedInDraft(_unlockDraft, i);
+    html += '<div class="db-unit-card' + (unlocked ? ' db-unit-unlocked' : '') + '">'
+      + '<div class="db-unit-card-top">'
+      + '<span class="db-unit-num">Unit ' + (i+1) + '</span>'
+      + '<button class="db-toggle-btn db-toggle-sm' + (unlocked ? ' db-toggle-on' : '') + '" onclick="_dbToggleUnitUnlock(' + i + ')">'
+      + (unlocked ? 'ON' : 'OFF') + '</button>'
+      + '</div>'
+      + '<div class="db-unit-name">' + _esc(u.name) + '</div>'
+      + '<button class="db-unit-lessons-link" onclick="_dbToggleLessonDrawer(' + i + ')">'
+      + 'Manage lessons ' + (_activeDrawerUnit === i ? '▲' : '▼') + '</button>'
+      + '</div>';
+
+    // Lesson drawer — spans full grid width after card row
+    if (_activeDrawerUnit === i) {
+      html += '</div><div class="db-lesson-drawer">';
+      u.lessons.forEach(function(lName, li) {
+        var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li);
+        html += '<div class="db-lesson-row">'
+          + '<span class="db-lesson-name">' + _esc(lName) + '</span>'
+          + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" onclick="_dbToggleLessonUnlock(' + i + ',' + li + ')">'
+          + (lu ? 'ON' : 'OFF') + '</button>'
+          + '</div>';
+      });
+      html += '</div><div class="db-unit-grid" style="margin-top:0">';
+    }
+  });
+  html += '</div>'; // close db-unit-grid
+
+  // Save + Relock + Full Reset
+  html += '<div id="db-unlock-msg" class="db-ctrl-msg"></div>'
+    + '<div class="db-ctrl-btns">'
+    + '<button id="db-unlock-save-btn" class="db-ctrl-save" onclick="_dbSaveUnlock()">Save Changes</button>'
+    + '<button class="db-ctrl-relock" onclick="_dbRelockAll()">🔒 Re-lock All</button>'
+    + '<button class="db-ctrl-reset" onclick="_dbFullReset()">🗑 Full Reset</button>'
+    + '</div>';
+
+  return html;
+}
+
+function _renderUnlockSection() {
+  return '<section class="db-section" id="db-unlock-section">'
+    + '<h2 class="db-sec-h">🔓 Access Controls</h2>'
+    + '<div id="db-unlock-wrap">' + _renderUnlockInner() + '</div>'
+    + '</section>';
+}
+
+// ── Stubs for sections added in Tasks 5–8 ────────────────────────────────
+function _renderTimerSection()     { return ''; }
+function _renderA11ySection()      { return ''; }
+function _renderPinSection()       { return ''; }
+function _renderRemindersSection() { return ''; }
+function _renderPasswordSection()  { return ''; }
+function _renderFeedbackSection()  { return ''; }
+function _renderChangelogSection() { return ''; }
+
 function renderDashboard() {
   var root = document.getElementById('db-root');
   if (!root) return;
@@ -1053,7 +1220,15 @@ function renderDashboard() {
     _renderWeak(weak) +
     _renderPracticeSpotlight(mastery, scores) +
     _renderReview(review) +
-    _renderActivity(activity);
+    _renderActivity(activity) +
+    _renderUnlockSection() +
+    _renderTimerSection() +
+    _renderA11ySection() +
+    _renderPinSection() +
+    _renderRemindersSection() +
+    _renderPasswordSection() +
+    _renderFeedbackSection() +
+    _renderChangelogSection();
 
   // Render AI report footer
   var footerEl = document.getElementById('db-ai-footer');
