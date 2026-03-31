@@ -2160,7 +2160,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 }
 
 /* ── Login carousel ── */
-.ls-carousel-outer{width:100%;max-width:400px;border-radius:28px;overflow:hidden;background:rgba(8,18,40,0.52);border-top:1.5px solid rgba(255,255,255,0.18);border-left:1px solid rgba(255,255,255,0.12);border-right:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.05);box-shadow:0 24px 64px rgba(0,0,0,0.55),0 4px 16px rgba(0,0,0,0.3),inset 0 1.5px 0 rgba(255,255,255,0.15);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.ls-carousel-outer{width:100%;max-width:400px;border-radius:28px;overflow:hidden;background:rgba(255,255,255,0.13);border-top:1.5px solid rgba(255,255,255,0.40);border-left:1px solid rgba(255,255,255,0.22);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.08);box-shadow:0 24px 64px rgba(0,0,0,0.45),0 4px 16px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.30);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
 .ls-carousel-track{display:flex;width:200%;transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;align-items:flex-start}
 .ls-card{width:50%;background:transparent;padding:22px 24px;box-sizing:border-box}
 .ls-card-role-hd{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.16)}
