@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v5.30.0-release';
+const CACHE = 'math-workbook-v6.0.0-release';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
