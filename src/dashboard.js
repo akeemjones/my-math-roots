@@ -1635,7 +1635,7 @@ function _changelogHtml() {
     + '<li><strong>Premium Swipe Login</strong> — The login screen now has a smooth, finger-following swipe carousel to choose between Student and Parent sign-in — no more tap-only switching.</li>'
     + '<li><strong>Security Overhaul</strong> — PIN checking is now done entirely on the server with automatic lockout after failed attempts. Student quiz data is isolated per profile. All AI endpoints have rate limiting, input sanitization, and strict CORS.</li>'
     + '</ul></div>'
-    + '<div class="mb-14"><div class="cl-version">v5.32 — v5.27</div><ul class="list-body">'
+    + '<div class="mb-14"><div class="cl-version">v5.33 — v5.27</div><ul class="list-body">'
     + '<li><strong>Glass UI</strong> — Complete visual overhaul with frosted-glass cards, transparent header, gradient buttons, and a new app icon across all screens.</li>'
     + '<li><strong>Dark Mode</strong> — Full dark mode support with auto-detection from system settings. Toggle manually in Settings → Appearance.</li>'
     + '<li><strong>Push Notifications</strong> — Opt-in daily practice reminders and streak celebration alerts ("5-day streak! 🔥").</li>'

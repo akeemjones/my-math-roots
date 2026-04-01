@@ -97,23 +97,20 @@ function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
       ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
       : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
   }
-  var keys = '';
-  ['1','2','3','4','5','6','7','8','9'].forEach(function(d) {
-    keys += '<button class="ls-pin-key" data-action="_lsPinKey" data-arg="' + d + '">' + d + '</button>';
-  });
-  keys += '<div></div>';
-  keys += '<button class="ls-pin-key" data-action="_lsPinKey" data-arg="0">0</button>';
-  keys += '<button class="ls-pin-key ls-pin-key-back" data-action="_lsPinBackspace">&#x232B;</button>';
   return '<div style="margin-bottom:14px">'
     + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;text-align:center;margin-bottom:10px">Who\'s playing?</div>'
     + '<div class="ls-avatar-row">' + _buildAvatarHtml(profiles, selId) + '</div>'
     + '</div>'
     + '<div style="border-top:1px solid rgba(255,255,255,0.14);padding-top:14px">'
     + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">' + selName + '\'s PIN</div>'
-    + '<div id="ls-pin-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">' + dots + '</div>'
+    + '<div style="position:relative;cursor:pointer;padding-bottom:2px">'
+    + '<div id="ls-pin-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">' + dots + '</div>'
+    + '<input type="tel" id="ls-pin-native" inputmode="numeric" pattern="[0-9]*" maxlength="4"'
+    + ' autocomplete="one-time-code" data-oninput="_lsPinNativeInput"'
+    + ' style="position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px;cursor:pointer;border:none;outline:none;background:transparent">'
+    + '</div>'
     + '<div id="ls-pin-msg" style="font-size:.75rem;color:#f87171;text-align:center;min-height:1.1rem;margin-bottom:6px"></div>'
-    + '<div class="ls-pin-keypad" id="ls-pin-keypad">' + keys + '</div>'
-    + '<div style="margin-top:12px;text-align:center;font-size:.68rem;color:rgba(255,255,255,0.35)">'
+    + '<div style="margin-top:8px;text-align:center;font-size:.68rem;color:rgba(255,255,255,0.35)">'
     + 'New device? <span data-action="_lsClearFamilyCache" style="color:rgba(255,210,80,0.85);text-decoration:underline;cursor:pointer">Enter family code &#x2192;</span>'
     + '</div>'
     + '</div>';
@@ -133,6 +130,28 @@ function _lsRenderStudentCard() {
     _lsSelectedStudentId = last || _lsFamilyProfiles[0].id;
   }
   body.innerHTML = _buildStudentCardHtml(_lsFamilyProfiles, _lsSelectedStudentId, _lsPinBuffer);
+  // Wire up auto-dash formatter for family code input (State A only)
+  var _fcInp = document.getElementById('ls-family-code-inp');
+  if (_fcInp) {
+    _fcInp.addEventListener('input', function() {
+      var pos = this.selectionStart;
+      // Strip everything except alphanumeric, uppercase
+      var raw = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      // Auto-insert dash after position 3 (MMR|XXXX → MMR-XXXX)
+      var formatted = raw.length > 3 ? raw.slice(0, 3) + '-' + raw.slice(3, 7) : raw;
+      if (this.value !== formatted) {
+        var diff = formatted.length - this.value.length;
+        this.value = formatted;
+        // Keep cursor in sensible position (jump over the auto-inserted dash)
+        this.setSelectionRange(pos + diff, pos + diff);
+      }
+    });
+  }
+  // Auto-focus the native numpad input (small delay for iOS keyboard)
+  if(_lsFamilyProfiles && _lsFamilyProfiles.length){
+    var _nativeInp = document.getElementById('ls-pin-native');
+    if(_nativeInp) setTimeout(function(){ _nativeInp.focus(); }, 60);
+  }
 }
 
 async function _lsFamilyCodeSetup() {
@@ -214,40 +233,120 @@ function _lsPinBackspace() {
   }
 }
 
+// Handles input from the native numpad on the login screen
+function _lsPinNativeInput() {
+  // Ignore while locked out
+  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
+  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
+  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
+
+  var inp = document.getElementById('ls-pin-native');
+  if (!inp) return;
+  // Keep only digits, max 4
+  var val = inp.value.replace(/\D/g, '').slice(0, 4);
+  inp.value    = val;
+  _lsPinBuffer = val.split('');
+
+  // Update dot indicators
+  var dots = document.getElementById('ls-pin-dots');
+  if (dots) {
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      html += i < _lsPinBuffer.length
+        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
+        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+    }
+    dots.innerHTML = html;
+  }
+
+  if (_lsPinBuffer.length === 4) {
+    inp.value = ''; // clear so it is ready for a retry
+    _lsStudentLogin();
+  }
+}
+
+// Shake pin dots and clear input — shared by login and profile-switcher
+function _lsShakePinDots(dotContainerId) {
+  var id  = dotContainerId || 'ls-pin-dots';
+  var el  = document.getElementById(id);
+  var inp = document.getElementById('ls-pin-native');
+  if (inp) inp.value = '';
+  if (el) {
+    el.classList.add('ls-pin-shake');
+    var emptyDots = '';
+    for (var i = 0; i < 4; i++) emptyDots += '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
+    setTimeout(function() {
+      el.classList.remove('ls-pin-shake');
+      if (el) el.innerHTML = emptyDots;
+    }, 450);
+  }
+}
+
 async function _lsStudentLogin() {
   var msg = document.getElementById('ls-pin-msg');
-
-  var failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
-  var failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
-  if (failCount >= _STU_MAX_FAILS) {
-    var elapsed = Date.now() - failTs;
-    if (elapsed < _STU_LOCK_MS) {
-      var secs = Math.ceil((_STU_LOCK_MS - elapsed) / 1000);
-      if (msg) msg.textContent = 'Too many attempts. Try again in ' + secs + 's.';
-      _lsPinBuffer = [];
-      return;
-    }
-    localStorage.removeItem(_STU_FAIL_COUNT);
-    localStorage.removeItem(_STU_FAIL_KEY);
-    failCount = 0;
-  }
 
   var profile = _lsFamilyProfiles && _lsFamilyProfiles.find(function(p) { return p.id === _lsSelectedStudentId; });
   if (!profile) { _lsPinBuffer = []; return; }
 
   var entered = _lsPinBuffer.join('');
+  _lsPinBuffer = [];
+
+  // Hash client-side so raw PIN never leaves device, then verify server-side
   var enteredHash = await _hashPin(entered);
 
-  if (enteredHash === profile.pin_hash) {
+  if (!_supa) {
+    if (msg) msg.textContent = 'No connection — check your internet.';
+    return;
+  }
+
+  // Disable native input during network call to prevent double-submission
+  var nativeInp = document.getElementById('ls-pin-native');
+  if (nativeInp) { nativeInp.disabled = true; nativeInp.value = ''; }
+
+  try {
+    var result = await Promise.race([
+      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin_hash: enteredHash }),
+      new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 8000); })
+    ]);
+
+    if (nativeInp) nativeInp.disabled = false;
+    if (result.error) throw result.error;
+
+    var vr = result.data;
+
+    // ── Locked out ───────────────────────────────────────────────────────
+    if (vr && vr.locked_until) {
+      var secsLeft = Math.ceil((vr.locked_until - Date.now()) / 1000);
+      if (secsLeft > 0) {
+        if (msg) msg.textContent = 'Too many attempts. Try again in ' + secsLeft + 's.';
+        _lsShakePinDots('ls-pin-dots');
+        return;
+      }
+    }
+
+    // ── Wrong PIN ────────────────────────────────────────────────────────
+    if (!vr || !vr.ok) {
+      var left = (vr && vr.attempts_left != null) ? vr.attempts_left : null;
+      if (msg) {
+        msg.textContent = (left === 0)
+          ? 'Locked for 5 minutes.'
+          : (left != null && left > 0)
+            ? 'Wrong PIN. ' + left + ' attempt' + (left === 1 ? '' : 's') + ' left.'
+            : 'Wrong PIN — try again.';
+      }
+      _lsShakePinDots('ls-pin-dots');
+      return;
+    }
+
+    // ── SUCCESS ──────────────────────────────────────────────────────────
+    // Clean up old localStorage lockout keys
     localStorage.removeItem(_STU_FAIL_COUNT);
     localStorage.removeItem(_STU_FAIL_KEY);
     localStorage.setItem('mmr_active_student_id', profile.id);
-    localStorage.setItem('mmr_last_student_id', profile.id);
+    localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
-    _lsPinBuffer = [];
 
-    // Reload in-memory progress from localStorage (may have been cleared by
-    // a prior parent sign-out via _clearUserData).
+    // Reload in-memory progress
     var freshDone = safeLoad('wb_done5', {});
     Object.keys(DONE).forEach(function(k) { delete DONE[k]; });
     Object.assign(DONE, freshDone);
@@ -257,31 +356,17 @@ async function _lsStudentLogin() {
 
     show('home');
     buildHome();
+    if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
     _installHistoryGuard();
     setTimeout(tutCheckAndShow, 1500);
 
-    // Fire-and-forget: pull fresh unlock/timer/a11y settings from Supabase,
-    // then rebuild home so the new lock state is reflected immediately.
     _syncStudentSettings(profile.id).then(function() { buildHome(); });
-  } else {
-    var newCount = failCount + 1;
-    localStorage.setItem(_STU_FAIL_COUNT, String(newCount));
-    localStorage.setItem(_STU_FAIL_KEY, String(Date.now()));
-    _lsPinBuffer = [];
-    if (msg) {
-      var remaining = _STU_MAX_FAILS - newCount;
-      msg.textContent = remaining > 0
-        ? 'Wrong PIN. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' left.'
-        : 'Locked for 30 seconds.';
-    }
-    var dotsEl = document.getElementById('ls-pin-dots');
-    if (dotsEl) {
-      dotsEl.classList.add('ls-pin-shake');
-      setTimeout(function() { dotsEl.classList.remove('ls-pin-shake'); }, 450);
-      var emptyDots = '';
-      for (var i = 0; i < 4; i++) emptyDots += '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-      setTimeout(function() { if (dotsEl) dotsEl.innerHTML = emptyDots; }, 450);
-    }
+    _pullStudentProgress(profile.id);
+    _startUnlockSync(profile.id);
+
+  } catch (e) {
+    if (nativeInp) nativeInp.disabled = false;
+    if (msg) msg.textContent = 'Connection error — check your internet.';
   }
 }
 
@@ -456,7 +541,7 @@ async function _lsObSave() {
 function _lsObDone() {
   var modal = document.getElementById('ls-onboard-modal');
   if (modal) modal.remove();
-  window.location.href = '/dashboard/dashboard.html';
+  show('dashboard-screen'); _dbInit();
 }
 
 function _lsCarouselGo(idx) {
@@ -483,13 +568,68 @@ function _lsInitCarousel() {
   var track = document.getElementById('ls-carousel-track');
   if (!track || track._carouselInited) return;
   track._carouselInited = true;
-  var startX = 0;
+
+  var _startX = 0, _startY = 0, _startT = 0;
+  var _intentSet = false, _isHoriz = false, _outerW = 0;
+  var _EASE = 'cubic-bezier(0.4,0,0.2,1)';
+
   track.addEventListener('touchstart', function(e) {
-    startX = e.touches[0].clientX;
+    _startX    = e.touches[0].clientX;
+    _startY    = e.touches[0].clientY;
+    _startT    = Date.now();
+    _intentSet = false;
+    _isHoriz   = false;
+    _outerW    = (track.parentElement || document.body).offsetWidth || window.innerWidth;
+    track.style.transition = 'none';
   }, { passive: true });
+
+  track.addEventListener('touchmove', function(e) {
+    var dx = e.touches[0].clientX - _startX;
+    var dy = e.touches[0].clientY - _startY;
+    if (!_intentSet && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      _intentSet = true;
+      _isHoriz   = Math.abs(dx) > Math.abs(dy);
+    }
+    if (!_isHoriz) return;
+    // Follow finger in pixels, clamped so you can't over-drag past either card
+    var currentPx = _lsCardIdx * (-_outerW);
+    var newPx     = Math.max(-_outerW, Math.min(0, currentPx + dx));
+    track.style.transform = 'translateX(' + newPx + 'px)';
+  }, { passive: true });
+
+  function _snapTo(targetIdx, duration) {
+    track.style.transition = 'transform ' + (duration || 0.28) + 's ' + _EASE;
+    track.style.transform  = 'translateX(' + (targetIdx * -50) + '%)';
+  }
+
   track.addEventListener('touchend', function(e) {
-    var dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) _lsCarouselGo(dx < 0 ? 1 : 0);
+    if (!_intentSet || !_isHoriz) {
+      // Pure tap or vertical — restore position without animation quirks
+      _snapTo(_lsCardIdx, 0.28);
+      return;
+    }
+    var dx        = e.changedTouches[0].clientX - _startX;
+    var gestureMs = Math.max(1, Date.now() - _startT);
+    var velocity  = Math.abs(dx) / gestureMs;          // px/ms
+    var isFast    = velocity > 0.3 && Math.abs(dx) > 20;
+    var committed = Math.abs(dx) >= _outerW * 0.5 || isFast;
+
+    var targetIdx = _lsCardIdx;
+    if (committed) {
+      if (dx < 0 && _lsCardIdx < 1) targetIdx = 1;
+      else if (dx > 0 && _lsCardIdx > 0) targetIdx = 0;
+    }
+
+    _snapTo(targetIdx, 0.28);
+
+    if (targetIdx !== _lsCardIdx) {
+      var _t = targetIdx;
+      setTimeout(function() { _lsCarouselGo(_t); }, 280);
+    }
+  }, { passive: true });
+
+  track.addEventListener('touchcancel', function() {
+    _snapTo(_lsCardIdx, 0.28);
   }, { passive: true });
 }
 
@@ -564,18 +704,11 @@ function supabaseInit(){
       if(_supaUser){
         // Keep splash up — fetch all data first, then reveal fully-loaded home
         await _pullOnLogin();
-        var _role1 = localStorage.getItem('mmr_user_role');
-        if (_role1 === 'parent') {
-          window.location.href = '/dashboard/dashboard.html';
-          return;
-        }
-        var _syncSid = localStorage.getItem('mmr_active_student_id');
-        _syncStudentSettings(_syncSid); // fire-and-forget
-        _syncPinHash();                 // fire-and-forget
-        show('home');
+        // Any live Supabase session belongs to a parent — students use PIN only
+        localStorage.setItem('mmr_user_role', 'parent');
+        show('dashboard-screen'); _dbInit();
         _dismissSplash();
-        _installHistoryGuard();
-        setTimeout(tutCheckAndShow, 1500);
+        return;
       } else {
         // Local preview mode: only auto-seed a fake user when ?preview=1 is in the URL.
         // Without it, show the real login screen so guest UX can be tested accurately.
@@ -599,21 +732,10 @@ function supabaseInit(){
         _dismissSplash();
       }
     } else if(event === 'SIGNED_IN'){
-      // User just signed in from login screen — show home with local data immediately,
-      // then sync server data silently in the background
-      var _role2 = localStorage.getItem('mmr_user_role');
-      if (_role2 === 'parent') {
-        window.location.href = '/dashboard/dashboard.html';
-        return;
-      }
-      var _syncSid2 = localStorage.getItem('mmr_active_student_id');
-      _syncStudentSettings(_syncSid2); // fire-and-forget
-      _syncPinHash();                  // fire-and-forget
-      show('home');
-      buildHome();
-      _installHistoryGuard();
-      setTimeout(tutCheckAndShow, 1500);
-      _pullOnLogin(); // silent background sync, no await
+      // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
+      await _pullOnLogin();
+      localStorage.setItem('mmr_user_role', 'parent');
+      show('dashboard-screen'); _dbInit();
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');
@@ -695,6 +817,8 @@ async function _lsOAuth(provider){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ Not connected. Please wait and try again.'; }
     return;
   }
+  // Mark as parent BEFORE the OAuth redirect — this key survives the page reload
+  localStorage.setItem('mmr_user_role', 'parent');
   // Show loading state on the button
   const btn = [...document.querySelectorAll('#login-screen button')].find(b => (b.getAttribute('onclick')||'').includes(`_lsOAuth('${provider}')`));
   const origHTML = btn ? btn.innerHTML : '';
@@ -888,12 +1012,153 @@ async function _syncStudentSettings(studentId) {
   } catch(e) { /* offline — use cached values */ }
 }
 
+// ── Unlock settings live sync ──────────────────────────────────────────────
+// Polls Supabase every 3 minutes while a student is active, AND re-checks
+// whenever the user switches back to the tab/app. This means parent changes
+// made on another device (phone, tablet, computer) reach the student without
+// requiring a sign-out. If unlock state changed, home screen is re-rendered.
+var _unlockSyncTimer   = null;
+var _unlockVisListener = null;
+
+function _stopUnlockSync() {
+  if (_unlockSyncTimer)   { clearInterval(_unlockSyncTimer); _unlockSyncTimer = null; }
+  if (_unlockVisListener) { document.removeEventListener('visibilitychange', _unlockVisListener); _unlockVisListener = null; }
+}
+
+async function _refreshUnlockSettings(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return;
+  var cachedStr = localStorage.getItem('wb_unlock_' + studentId);
+  try {
+    var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId });
+    if (result.error || !result.data) return;
+    var freshStr = JSON.stringify(result.data);
+    if (freshStr === cachedStr) return; // nothing changed
+    localStorage.setItem('wb_unlock_' + studentId, freshStr);
+    // Re-render home screen if it is currently visible so new unlocks appear instantly
+    if (document.getElementById('home') &&
+        document.getElementById('home').classList.contains('on') &&
+        typeof buildHome === 'function') {
+      buildHome();
+    }
+  } catch(e) { /* offline — keep cached */ }
+}
+
+function _startUnlockSync(studentId) {
+  _stopUnlockSync();
+  if (!studentId || studentId === 'local') return;
+
+  // Poll every 3 minutes
+  _unlockSyncTimer = setInterval(function() {
+    var currentId = localStorage.getItem('mmr_active_student_id');
+    if (currentId === studentId) {
+      _refreshUnlockSettings(studentId);
+    } else {
+      _stopUnlockSync(); // student switched — stop this timer
+    }
+  }, 3 * 60 * 1000);
+
+  // Also refresh immediately when user switches back to the app/tab
+  _unlockVisListener = function() {
+    if (document.visibilityState !== 'visible') return;
+    var currentId = localStorage.getItem('mmr_active_student_id');
+    if (currentId === studentId) {
+      _refreshUnlockSettings(studentId);
+    } else {
+      _stopUnlockSync();
+    }
+  };
+  document.addEventListener('visibilitychange', _unlockVisListener);
+}
+
 async function _syncPinHash() {
   if (!_supa || !_supaUser) return;
   try {
     var result = await _supa.rpc('get_pin_hash', { p_parent_id: _supaUser.id });
     if (result.data) localStorage.setItem('wb_parent_pin', result.data);
   } catch(e) { /* offline — keep existing local hash */ }
+}
+
+// Pull progress + quiz scores from Supabase for a student who logged in via PIN,
+// without requiring an active parent Supabase session.  Uses the SECURITY DEFINER
+// RPC so it works with only the anon key.  Results are merged into DONE / SCORES
+// (same logic as _pullOnLogin) and home is rebuilt once data arrives.
+async function _pullStudentProgress(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return;
+  try {
+    var result = await _supa.rpc('get_student_progress_by_pin', { p_student_id: studentId });
+    if (result.error || !result.data) return;
+    var data = result.data;
+    var changed = false;
+
+    // Merge done_json
+    var doneJson = data.progress && data.progress.done_json;
+    if (doneJson && typeof doneJson === 'object' && !Array.isArray(doneJson)) {
+      var safe = {};
+      var keys = Object.keys(doneJson);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var k = keys[ki];
+        if (typeof k === 'string' && k.length < 100 && k !== '__proto__' && k !== 'constructor' && k !== 'prototype') {
+          safe[k] = !!doneJson[k];
+        }
+      }
+      Object.assign(DONE, safe);
+      localStorage.setItem('wb_done5', JSON.stringify(DONE));
+      changed = true;
+    }
+
+    // Merge mastery_json
+    var masteryJson = data.progress && data.progress.mastery_json;
+    if (masteryJson && typeof masteryJson === 'object' && typeof MASTERY !== 'undefined') {
+      var mkeys = Object.keys(masteryJson);
+      for (var mi = 0; mi < mkeys.length; mi++) {
+        var mk = mkeys[mi];
+        var cm = masteryJson[mk];
+        if (!cm || typeof cm.attempts !== 'number') continue;
+        var lm = MASTERY[mk];
+        if (!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && (cm.correct || 0) > (lm.correct || 0))) {
+          MASTERY[mk] = { attempts: cm.attempts, correct: cm.correct || 0, lastSeen: cm.lastSeen || 0 };
+          changed = true;
+        }
+      }
+      if (changed && typeof saveMastery === 'function') saveMastery();
+    }
+
+    // Merge scores (append-only by local_id)
+    var remoteScores = data.scores;
+    if (Array.isArray(remoteScores) && remoteScores.length) {
+      var localIds = new Set(SCORES.map(function(s) { return s.id; }));
+      var incoming = remoteScores
+        .filter(function(r) {
+          return r && typeof r.local_id === 'number' && typeof r.qid === 'string'
+            && typeof r.score === 'number' && typeof r.total === 'number'
+            && typeof r.pct === 'number' && r.pct >= 0 && r.pct <= 100
+            && !localIds.has(r.local_id);
+        })
+        .map(function(r) {
+          return {
+            qid: r.qid, label: String(r.label || ''), type: String(r.type || ''),
+            score: r.score, total: r.total, pct: r.pct, stars: String(r.stars || ''),
+            unitIdx: typeof r.unit_idx === 'number' ? r.unit_idx : 0,
+            color: String(r.color || ''),
+            name: String(r.student_name || ''), id: r.local_id,
+            timeTaken: typeof r.time_taken === 'number' ? r.time_taken : 0,
+            answers: Array.isArray(r.answers) ? r.answers : [],
+            date: String(r.date_str || ''), time: String(r.time_str || ''),
+            quit: !!r.quit, abandoned: !!r.abandoned
+          };
+        });
+      if (incoming.length) {
+        SCORES.push.apply(SCORES, incoming);
+        SCORES.sort(function(a, b) { return b.id - a.id; });
+        if (SCORES.length > 200) SCORES.length = 200;
+        localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
+        changed = true;
+      }
+    }
+
+    // Rebuild home to reflect the newly-loaded progress
+    if (changed && typeof buildHome === 'function') buildHome();
+  } catch(e) { /* offline — progress stays as-is */ }
 }
 
 async function _pullOnLogin(){
@@ -1682,6 +1947,8 @@ function _clearUserData(){
   _carouselInited = false;
   // Clear parent session timer to prevent leaked interval
   if(typeof _parentTimerInterval !== 'undefined') clearInterval(_parentTimerInterval);
+  // Stop unlock live-sync so it doesn't fire after sign-out
+  _stopUnlockSync();
 
   // ── Wipe user-specific localStorage ──────────────────────────
   // Progress & scores live in localStorage — preserved across parent sign-out
@@ -1723,10 +1990,13 @@ async function supaSignOut(){
 }
 
 function updateAccountUI(){
+  // "Logged in" means either a Supabase session (parent) OR a PIN student session
+  const _role      = localStorage.getItem('mmr_user_role');
+  const isLoggedIn = !!_supaUser || _role === 'student';
   const nudge = document.getElementById('guest-account-nudge');
-  if(nudge) nudge.style.display = _supaUser ? 'none' : 'block';
+  if(nudge) nudge.style.display = isLoggedIn ? 'none' : 'block';
   const signout = document.getElementById('signout-btn-wrap');
-  if(signout) signout.style.display = _supaUser ? 'block' : 'none';
+  if(signout) signout.style.display = isLoggedIn ? 'block' : 'none';
   // Show Change Password only for email/password accounts (not Google OAuth)
   const pwWrap = document.getElementById('pc-change-pw-wrap');
   if(pwWrap){
@@ -1736,6 +2006,17 @@ function updateAccountUI(){
 }
 
 async function _signOut(){
+  const _soRole = localStorage.getItem('mmr_user_role');
+  // Student PIN session: no Supabase session, just clear role and return to login
+  if(_soRole === 'student'){
+    localStorage.removeItem('mmr_user_role');
+    localStorage.removeItem('mmr_active_student_id');
+    localStorage.removeItem('mmr_last_student_id');
+    show('login-screen');
+    _lsInitCarousel();
+    _lsRenderStudentCard();
+    return;
+  }
   if(!_supa) return;
   await _supa.auth.signOut();
   // onAuthStateChange SIGNED_OUT will redirect to login-screen

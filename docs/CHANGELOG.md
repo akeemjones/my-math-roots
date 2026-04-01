@@ -6,7 +6,7 @@ Technical change log for developers. For the user-facing changelog see Settings 
 
 ---
 
-## v6.0 — 2026-04-01 *(Staging Release)*
+## v6.0 — 2026-04-01 *(Staging Release — bumped from v5.33)*
 
 ### Summary
 Transformative release adding student profile authentication, a full standalone parent dashboard, Gemini AI hints and progress reports, a premium login carousel, a new balanced final test mode, and a comprehensive security hardening sprint covering Netlify Functions, Supabase RLS, and all client-server data flows.
@@ -255,7 +255,12 @@ Distributed across U5–U10 connecting prior units; each question marked with `s
 
 ---
 
-## v5.32 — 2026-03-28
+## v5.33 — 2026-03-28 *(last production release before v6.0)*
+
+### Stable Question IDs
+- All quiz questions across all 10 units assigned stable `u{N}-{cat}-{NNN}` IDs (e.g. `u3-add-001`). Previously questions had no stable key, making spaced-repetition tracking fragile across updates.
+- `MASTERY` localStorage migrated on first run: old keys mapped to new format so no student data is lost.
+- Build system refactored: `build.js` now stitches `src/*.js` files into `dist/app.js` as a separate cacheable bundle; `dashboard/` directory copied to `dist/dashboard/` with credential injection.
 
 ### Dark Mode Modal Polish
 - **All modal types now render correctly in dark mode.** Root cause: several modals had hardcoded `#id > div { !important }` rules with higher specificity (0,2,1) than the `.modal-card` class rule, preventing the CSS custom property approach from applying. Fixed by adding matching `body.dark #id > div { !important }` overrides.
