@@ -6,7 +6,7 @@ Technical change log for developers. For the user-facing changelog see Settings 
 
 ---
 
-## v6.0 — 2026-04-01 *(Staging Release — bumped from v5.33)*
+## v6.0 — 2026-04-01 *(Staging Release — bumped from v5.34)*
 
 ### Summary
 Transformative release adding student profile authentication, a full standalone parent dashboard, Gemini AI hints and progress reports, a premium login carousel, a new balanced final test mode, and a comprehensive security hardening sprint covering Netlify Functions, Supabase RLS, and all client-server data flows.
@@ -255,7 +255,7 @@ Distributed across U5–U10 connecting prior units; each question marked with `s
 
 ---
 
-## v5.33 — 2026-03-28 *(last production release before v6.0)*
+## v5.34 — 2026-03-28 *(last production release before v6.0)*
 
 ### Stable Question IDs
 - All quiz questions across all 10 units assigned stable `u{N}-{cat}-{NNN}` IDs (e.g. `u3-add-001`). Previously questions had no stable key, making spaced-repetition tracking fragile across updates.
