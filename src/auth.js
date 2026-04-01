@@ -617,7 +617,10 @@ function supabaseInit(){
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');
+      _lsInitCarousel();
+      _lsRenderStudentCard();
       _initOneTap();
+      _dismissSplash('login-screen');
     }
   });
 }

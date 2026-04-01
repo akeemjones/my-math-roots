@@ -190,6 +190,8 @@ setTimeout(() => {
       show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
     } else {
       show('login-screen');
+      _lsInitCarousel();
+      _lsRenderStudentCard();
     }
   }
 }, 8000);
