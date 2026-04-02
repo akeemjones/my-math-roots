@@ -11,14 +11,12 @@
    * Tooltip: lesson title + accuracy % (if seen).
    */
 
-  import { unitsData, done, mastery } from '$lib/stores';
+  import { unitsData, done, scores } from '$lib/stores';
 
   function lessonState(lessonId: string): 'pass' | 'attempt' | 'untouched' {
-    if ($done[lessonId]) return 'pass';
-    // Check if any question in this lesson has been seen
-    // We can't directly link mastery keys to lessons, so we use the done map
-    // and also check if there's a quiz score for this lesson's quiz id (lq_*)
-    if ($done[`lq_${lessonId}`]) return 'pass';
+    if ($done[lessonId] || $done[`lq_${lessonId}`]) return 'pass';
+    // Attempted = has a score entry for this lesson's quiz but not yet passed
+    if ($scores.some(s => s.qid === lessonId || s.qid === `lq_${lessonId}`)) return 'attempt';
     return 'untouched';
   }
 
