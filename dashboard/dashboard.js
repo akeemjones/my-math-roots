@@ -255,8 +255,11 @@ function saveStudentData(studentId, data) {
 // ── Access control ────────────────────────────────────────────────────────
 
 function _checkAccess() {
+  // localStorage role is a UX hint only — real gate is the Supabase session below.
+  // We do a quick redirect for clearly-logged-out guests, but the async session
+  // check is the authoritative gate.
   var role = localStorage.getItem('mmr_user_role');
-  if (role !== 'parent') {
+  if (!role || role === 'student') {
     window.location.href = '../index.html';
     return false;
   }
@@ -774,22 +777,43 @@ function _renderActivity(activity) {
 var _prStatsHtml  = '';
 var _prReportText = '';
 
-function _buildDashboardPayload(scores, appTime, streak, days) {
-  var cutoff  = Date.now() - days * 86400000;
-  var period  = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.id && s.id > cutoff; });
-  var avg     = period.length > 0 ? Math.round(period.reduce(function(a,s){return a+s.pct;},0)/period.length) : 0;
+function _buildDashboardPayload(scores, appTime, streak, mastery, days) {
+  var cutoff = Date.now() - days * 86400000;
+  var period = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.id && s.id > cutoff; });
+  var avg    = period.length > 0 ? Math.round(period.reduce(function(a,s){return a+s.pct;},0)/period.length) : 0;
+
+  // Time data
   var weekSecs = 0;
   for (var i = 0; i < 7; i++) {
-    var d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
-    weekSecs += ((appTime.dailySecs||{})[d]||0);
+    var wd = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
+    weekSecs += ((appTime.dailySecs||{})[wd]||0);
   }
+  var avgSessionSecs = appTime.sessions > 0 ? Math.round((appTime.totalSecs||0) / appTime.sessions) : 0;
+
+  // Active days in period
+  var activeDaysSet = {};
+  period.forEach(function(s){ if(s.date) activeDaysSet[s.date] = true; });
+  var activeDays = Object.keys(activeDaysSet).length;
+
+  // Daily activity last 14 days (only days with activity)
+  var activityMap = {};
+  scores.forEach(function(s){ if(s.pct!=null&&s.total>0&&s.date) activityMap[s.date]=(activityMap[s.date]||0)+1; });
+  var recentActivity = [];
+  for (var j = 0; j < 14; j++) {
+    var ad = new Date(Date.now()-j*86400000).toISOString().slice(0,10);
+    if(activityMap[ad]) recentActivity.push({ date: ad, quizzes: activityMap[ad] });
+  }
+
+  // Unit breakdown with raw correct/total counts and mastery label
   var unitNames = ['Basic Fact Strategies','Place Value','Addition & Subtraction','Subtraction','Multiplication','Division','Fractions','Decimals','Geometry','Measurement'];
   var unitMap = {};
   period.forEach(function(s) {
     if (s.unitIdx == null) return;
     var k = s.unitIdx;
-    if (!unitMap[k]) unitMap[k] = { name: unitNames[k]||('Unit '+(k+1)), rows:[] };
-    unitMap[k].rows.push({ pct: s.pct, id: s.id });
+    if (!unitMap[k]) unitMap[k] = { name: unitNames[k]||('Unit '+(k+1)), rows:[], correct:0, total:0 };
+    unitMap[k].rows.push({ pct: s.pct, id: s.id, type: s.type });
+    unitMap[k].correct += (s.score||0);
+    unitMap[k].total   += (s.total||0);
   });
   var units = Object.values(unitMap).map(function(u) {
     var rows = u.rows.slice().sort(function(a,b){return a.id-b.id;});
@@ -799,20 +823,90 @@ function _buildDashboardPayload(scores, appTime, streak, days) {
       var diff = rows[rows.length-1].pct - rows[0].pct;
       trend = diff > 8 ? 'improving (+'+diff+'%)' : diff < -8 ? 'declining ('+diff+'%)' : 'stable';
     }
-    return { name: u.name, attempts: rows.length, avgPct: uAvg, trend: trend };
+    return {
+      name: u.name,
+      attempts: rows.length,
+      avgPct: uAvg,
+      correctOfTotal: u.correct+'/'+u.total+' questions correct',
+      trend: trend,
+      mastery: uAvg >= 80 ? 'mastered' : uAvg >= 60 ? 'developing' : 'needs work'
+    };
   }).sort(function(a,b){return b.attempts-a.attempts;});
-  var strengths  = units.filter(function(u){return u.avgPct>=80;}).map(function(u){return u.name+' (avg '+u.avgPct+'%)';});
-  var weaknesses = units.filter(function(u){return u.avgPct<70&&u.attempts>=2;}).map(function(u){return u.name+' (avg '+u.avgPct+'%'+(u.trend?', '+u.trend:'')+')';});
+
+  var strengths  = units.filter(function(u){return u.avgPct>=80;}).map(function(u){return u.name+' (avg '+u.avgPct+'%, '+u.attempts+' quizzes)';});
+  var weaknesses = units.filter(function(u){return u.avgPct<70&&u.attempts>=2;}).map(function(u){return u.name+' (avg '+u.avgPct+'%'+(u.trend?', '+u.trend:'')+', '+u.attempts+' quizzes)';});
+
+  // Quiz type breakdown
+  var typeMap = {};
+  period.forEach(function(s){
+    var t = s.type||'lesson';
+    if(!typeMap[t]) typeMap[t]={count:0,sumPct:0};
+    typeMap[t].count++; typeMap[t].sumPct+=s.pct;
+  });
+  var quizTypeBreakdown = Object.keys(typeMap).map(function(t){
+    return { type:t, count:typeMap[t].count, avgPct:Math.round(typeMap[t].sumPct/typeMap[t].count) };
+  });
+
+  // Avg secs per question from answer timings
+  var qSum=0, qCount=0;
+  period.forEach(function(s){
+    if(s.answers) s.answers.forEach(function(a){
+      if(a.timeSecs!=null&&a.timeSecs<300){ qSum+=a.timeSecs; qCount++; }
+    });
+  });
+
+  // Mastery stats (spaced repetition data)
+  var masteryStats = null;
+  if (mastery && Object.keys(mastery).length > 0) {
+    var mKeys = Object.keys(mastery);
+    var mastered  = mKeys.filter(function(k){ var m=mastery[k]; return m.attempts>=3 && m.correct/m.attempts>=0.8; }).length;
+    var needsWork = mKeys.filter(function(k){ var m=mastery[k]; return m.attempts>=2 && m.correct/m.attempts<0.6; }).length;
+    masteryStats = { totalQsPracticed: mKeys.length, mastered: mastered, needsWork: needsWork };
+  }
+
+  // Recent quizzes (last 8)
+  var recentQuizzes = period.slice(0, 8).map(function(s){
+    return { label: s.label||s.type||'Quiz', date: s.date||null, type: s.type||null, pct: s.pct, score: (s.score||0)+'/'+s.total };
+  });
+
   return {
+    reportDate: new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),
     period: 'Last '+days+' days',
     totalAttempts: period.length,
     overallAvg: avg,
-    streak: (streak&&streak.current)||0,
-    timeThisWeek: weekSecs>0 ? Math.round(weekSecs/60)+' min' : 'not tracked',
+    streak: { current: (streak&&streak.current)||0, longest: (streak&&streak.longest)||0 },
+    activeDaysInPeriod: activeDays,
+    timeInApp: {
+      thisWeek:          weekSecs>0    ? Math.round(weekSecs/60)+' min'        : 'not tracked',
+      total:             (appTime.totalSecs||0)>0 ? Math.round(appTime.totalSecs/60)+' min' : 'not tracked',
+      avgSessionMins:    avgSessionSecs>0 ? Math.round(avgSessionSecs/60)+' min' : null,
+      avgSecsPerQuestion: qCount>0 ? Math.round(qSum/qCount) : null,
+      sessions:          appTime.sessions||0
+    },
+    recentActivity: recentActivity,
     units: units,
     strengths:  strengths.length  ? strengths  : ['No units at 80%+ yet'],
-    weaknesses: weaknesses.length ? weaknesses : ['No major weaknesses identified'],
+    weaknesses: weaknesses.length ? weaknesses : ['No weak areas identified'],
+    quizTypeBreakdown: quizTypeBreakdown,
+    recentQuizzes: recentQuizzes,
+    masteryStats: masteryStats,
   };
+}
+
+var _REPORT_COOL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+
+function _reportCooldownKey() { return 'mmr_report_ts_' + (_activeId || 'default'); }
+
+function _reportNextAvailable() {
+  // Prefer Supabase value from _managedProfiles — synced across devices
+  var profile = _managedProfiles.find(function(p){ return p.id === _activeId; });
+  if (profile && profile.report_last_generated) {
+    var ts = new Date(profile.report_last_generated).getTime();
+    if (ts) return ts + _REPORT_COOL_MS;
+  }
+  // Fall back to localStorage (demo/local mode, or before Supabase profile loads)
+  var last = parseInt(localStorage.getItem(_reportCooldownKey()) || '0', 10);
+  return last ? last + _REPORT_COOL_MS : 0;
 }
 
 async function generateAIReport() {
@@ -822,6 +916,15 @@ async function generateAIReport() {
   var student   = _students[_activeId];
   if (!student) return;
   var name      = student.name || 'Student';
+
+  // Enforce 2-week cooldown
+  var nextAvail = _reportNextAvailable();
+  if (nextAvail && Date.now() < nextAvail) {
+    var nextDate = new Date(nextAvail).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    if (footerEl) footerEl.innerHTML = _genReportFooter();
+    return;
+  }
+
   _prStatsHtml  = bodyEl ? bodyEl.innerHTML : '';
 
   // Show loading
@@ -830,7 +933,7 @@ async function generateAIReport() {
     + '<div class="db-ai-loading-sub">This takes about 5 seconds</div></div>';
   footerEl.innerHTML = '';
 
-  var payload = _buildDashboardPayload(student.SCORES||[], student.APP_TIME||{totalSecs:0,sessions:0,dailySecs:{}}, student.STREAK||{current:0}, 30);
+  var payload = _buildDashboardPayload(student.SCORES||[], student.APP_TIME||{totalSecs:0,sessions:0,dailySecs:{}}, student.STREAK||{current:0,longest:0}, student.MASTERY||{}, 30);
 
   try {
     var resp = await fetch('/.netlify/functions/gemini-report', {
@@ -842,6 +945,17 @@ async function generateAIReport() {
     var data = await resp.json();
     if (data.error) throw new Error(data.error);
     _prReportText = data.report;
+    // Record successful generation — localStorage for speed, Supabase for cross-device sync
+    var _nowIso = new Date().toISOString();
+    localStorage.setItem(_reportCooldownKey(), String(Date.now()));
+    if (typeof _supaDb !== 'undefined' && _supaDb && _activeId !== 'local') {
+      _supaDb.from('student_profiles')
+        .update({ report_last_generated: _nowIso })
+        .eq('id', _activeId);
+      // Update in-memory profile so the footer re-renders correctly without a refetch
+      var _mp = _managedProfiles.find(function(p){ return p.id === _activeId; });
+      if (_mp) _mp.report_last_generated = _nowIso;
+    }
     _renderAIReportView(data.report, name);
   } catch(e) {
     if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
@@ -890,6 +1004,14 @@ function backToStats() {
 }
 
 function _genReportFooter() {
+  var nextAvail = _reportNextAvailable();
+  var onCooldown = nextAvail && Date.now() < nextAvail;
+  if (onCooldown) {
+    var nextDate = new Date(nextAvail).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    return '<div style="text-align:center">'
+      + '<button class="db-ai-gen-btn" disabled style="opacity:0.45;cursor:not-allowed">📋 Generate AI Report</button>'
+      + '<div class="db-ai-powered">Next report available ' + nextDate + '</div></div>';
+  }
   return '<div style="text-align:center">'
     + '<button class="db-ai-gen-btn" data-action="generateAIReport">📋 Generate AI Report</button>'
     + '<div class="db-ai-powered">Powered by Gemini</div></div>';
@@ -927,8 +1049,12 @@ function downloadReportPDF() {
     + sections
     + '<div style="text-align:center;font-size:.75rem;color:#bbb;margin-top:40px;padding-top:16px;border-top:1px solid #eee">My Math Roots — mymathroots.com</div>'
     + '</body></html>';
-  var win = window.open('', '_blank');
-  if (win) { win.document.write(doc); win.document.close(); }
+  // Use Blob URL instead of document.write — avoids CSP bypass in new window
+  var blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
+  var blobUrl = URL.createObjectURL(blob);
+  var win = window.open(blobUrl, '_blank');
+  // Revoke after a short delay to free memory once the browser has loaded it
+  if (win) { setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 10000); }
 }
 
 // ── App state ─────────────────────────────────────────────────────────────
@@ -937,6 +1063,7 @@ var _students    = {};
 var _activeId    = 'local';
 var _supaDb = null;
 var _managedProfiles = [];
+var _parentFamilyCode = null;
 var _pinResetStudentId = null;
 var _pinResetBuffer = [];
 
@@ -1092,22 +1219,32 @@ async function _dbRelockAll() {
   _reRenderUnlock();
 }
 
+// Friendly error messages — never expose raw Supabase internals to the UI
+function _dbFriendlyError(e) {
+  if (!e) return 'An error occurred.';
+  var m = (e.message || '').toLowerCase();
+  if (m.includes('not_owner'))          return 'Permission denied.';
+  if (m.includes('jwt') || m.includes('auth')) return 'Session expired — please sign in again.';
+  if (m.includes('network') || m.includes('fetch') || m.includes('failed to fetch')) return 'Connection error — check your internet.';
+  if (m.includes('timeout'))            return 'Request timed out — try again.';
+  if (m.includes('unique') || m.includes('duplicate')) return 'That value is already taken.';
+  return 'Something went wrong — please try again.';
+}
+
 async function _dbFullReset() {
-  if (!confirm('DELETE all quiz scores, mastery data, and streak for this student? This cannot be undone.')) return;
-  if (!_supaDb) return;
+  if (!confirm('DELETE all quiz scores and mastery data for this student? This cannot be undone.')) return;
+  if (!_supaDb || !_activeId || _activeId === 'local') return;
+  var msg = document.getElementById('db-unlock-msg');
   try {
-    await Promise.all([
-      _supaDb.from('quiz_scores').delete().eq('student_id', _activeId),
-      _supaDb.from('user_mastery').delete().eq('student_id', _activeId),
-      _supaDb.from('profiles').update({ current_streak: 0, longest_streak: 0 })
-        .eq('id', _activeId),
+    var result = await Promise.race([
+      _supaDb.rpc('reset_student_data', { p_student_id: _activeId }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
-    var msg = document.getElementById('db-unlock-msg');
+    if (result.error) throw result.error;
     if (msg) { msg.style.color = '#c62828'; msg.textContent = '🗑 Student data cleared.'; }
     setTimeout(function() { if (msg) msg.textContent = ''; }, 3000);
   } catch(e) {
-    var msg2 = document.getElementById('db-unlock-msg');
-    if (msg2) { msg2.style.color = '#c62828'; msg2.textContent = '❌ Reset failed.'; }
+    if (msg) { msg.style.color = '#c62828'; msg.textContent = '❌ ' + _dbFriendlyError(e); }
   }
 }
 
@@ -1649,7 +1786,14 @@ function switchStudent(id) {
 }
 
 function signOut() {
-  localStorage.removeItem('mmr_user_role');
+  // Nuclear clear — wipes all sessions, all student profiles, all local progress.
+  // Ensures no profile data leaks across sessions regardless of who was logged in.
+  localStorage.clear();
+  sessionStorage.clear();
+  // Best-effort graceful Supabase sign-out (fire-and-forget)
+  if (typeof _supaDb !== 'undefined' && _supaDb) {
+    _supaDb.auth.signOut().catch(function(){});
+  }
   window.location.href = '../index.html';
 }
 
@@ -1661,7 +1805,7 @@ async function _fetchManagedProfiles() {
     var result = await Promise.race([
       _supaDb
         .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated')
         .order('created_at', { ascending: true }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
@@ -1706,11 +1850,19 @@ function _renderManageProfiles() {
       + '</div>';
   }).join('');
 
+  var familyCodeHtml = _parentFamilyCode
+    ? '<div style="margin-bottom:10px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:.8rem;color:#2e7d32">'
+      + '&#x1F511; <strong>Family Code:</strong> <span style="font-family:monospace;letter-spacing:1px">' + _esc(_parentFamilyCode) + '</span>'
+      + '<span style="color:#66bb6a;margin-left:8px">— share this with your child\'s device to link profiles</span>'
+      + '</div>'
+    : '';
+
   return '<section class="db-section db-profiles-section" id="db-manage-profiles-section">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
     + '<h2 class="db-sec-h" style="margin:0">&#x1F464; Manage Profiles</h2>'
     + '<button class="db-add-student-btn" data-action="openAddStudentSheet">+ Add Student</button>'
     + '</div>'
+    + familyCodeHtml
     + '<div class="db-profiles-list">' + rows + '</div>'
     + '</section>';
 }
@@ -1797,11 +1949,8 @@ async function dbPinSave() {
 
   try {
     var encoder = new TextEncoder();
-    var data = encoder.encode(_pinResetBuffer.join('') + 'mymathroots_pin_salt_2025');
-    var keyMaterial = await crypto.subtle.importKey('raw', data, 'PBKDF2', false, ['deriveBits']);
-    var salt = encoder.encode('mymathroots_pin_salt_2025');
-    var derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, 256);
-    var newHash = Array.from(new Uint8Array(derived)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    var hashBuf = await crypto.subtle.digest('SHA-256', encoder.encode(_pinResetBuffer.join('') + 'mymathroots_pin_salt_2025'));
+    var newHash = Array.from(new Uint8Array(hashBuf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 
     var result = await Promise.race([
       _supaDb.from('student_profiles').update({ pin_hash: newHash, updated_at: new Date().toISOString() }).eq('id', _pinResetStudentId),
@@ -2034,11 +2183,8 @@ async function dbAddSave() {
 
   try {
     var encoder = new TextEncoder();
-    var pinData = encoder.encode(window._dbAddPinBuffer.join('') + 'mymathroots_pin_salt_2025');
-    var keyMaterial = await crypto.subtle.importKey('raw', pinData, 'PBKDF2', false, ['deriveBits']);
-    var salt = encoder.encode('mymathroots_pin_salt_2025');
-    var derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, 256);
-    var pinHash = Array.from(new Uint8Array(derived)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    var pinHashBuf = await crypto.subtle.digest('SHA-256', encoder.encode(window._dbAddPinBuffer.join('') + 'mymathroots_pin_salt_2025'));
+    var pinHash = Array.from(new Uint8Array(pinHashBuf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 
     var emoji = window._dbAddSelectedEmoji || '🦁';
     var AVATAR_COLORS = {'🦁':['#f59e0b','#f97316'],'🦋':['#8b5cf6','#ec4899'],'🐉':['#06b6d4','#3b82f6'],'🦊':['#ef4444','#f97316'],'🐬':['#10b981','#0ea5e9'],'🌟':['#f59e0b','#eab308']};
@@ -2092,6 +2238,11 @@ function _reRenderManageProfiles() {
 
 function initDashboard() {
   if (!_checkAccess()) return;
+  // Prevent iOS swipe-back to splash screen
+  history.pushState(null, '', window.location.href);
+  window.addEventListener('popstate', function() {
+    history.pushState(null, '', window.location.href);
+  });
   var _SUPA_URL = '%%SUPA_URL%%';
   var _SUPA_KEY = '%%SUPA_KEY%%';
   if (typeof supabase !== 'undefined' && _SUPA_URL && !_SUPA_URL.includes('%%')) {
@@ -2100,9 +2251,27 @@ function initDashboard() {
   }
   _students = getAllStudents();
   if (_supaDb) {
-    _fetchManagedProfiles().then(function() {
-      var profilesSection = document.getElementById('db-manage-profiles-section');
-      if (profilesSection) profilesSection.outerHTML = _renderManageProfiles();
+    // Authoritative session gate — localStorage role is just a UX hint.
+    // If there is no valid Supabase session, redirect immediately.
+    _supaDb.auth.getSession().then(function(sessionResult) {
+      var session = sessionResult.data && sessionResult.data.session;
+      if (!session) {
+        localStorage.removeItem('mmr_user_role');
+        window.location.href = '../index.html';
+        return;
+      }
+      var userId = session.user.id;
+      Promise.all([
+        _supaDb.from('profiles').select('family_code').eq('id', userId).single(),
+        _fetchManagedProfiles()
+      ]).then(function(results) {
+        var fcResult = results[0];
+        if (!fcResult.error && fcResult.data) {
+          _parentFamilyCode = fcResult.data.family_code || null;
+        }
+        var profilesSection = document.getElementById('db-manage-profiles-section');
+        if (profilesSection) profilesSection.outerHTML = _renderManageProfiles();
+      });
     });
   }
   Promise.all([

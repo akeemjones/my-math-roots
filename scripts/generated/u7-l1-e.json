@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A pencil is about how many inches long?",
+    "o": ["7 inches", "70 inches", "1 inch", "100 inches"],
+    "a": 0,
+    "e": "A pencil is about 7 inches long. 70 or 100 inches would be way too big!",
+    "d": "e"
+  },
+  {
+    "t": "A crayon is about how many inches long?",
+    "o": ["30 inches", "4 inches", "40 inches", "1 foot"],
+    "a": 1,
+    "e": "A crayon is about 4 inches long. It fits in your hand, so it is small!",
+    "d": "e"
+  },
+  {
+    "t": "A paper clip is about how many inches long?",
+    "o": ["1 inch", "10 inches", "5 inches", "12 inches"],
+    "a": 0,
+    "e": "A paper clip is tiny! It is about 1 inch long.",
+    "d": "e"
+  },
+  {
+    "t": "A ruler is how many inches long?",
+    "o": ["6 inches", "10 inches", "12 inches", "20 inches"],
+    "a": 2,
+    "e": "A ruler is 12 inches long. That is the same as 1 foot!",
+    "d": "e"
+  },
+  {
+    "t": "Your shoe is about how many inches long?",
+    "o": ["2 inches", "8 inches", "30 inches", "50 inches"],
+    "a": 1,
+    "e": "Your shoe is about 8 inches long. That is a little less than a ruler!",
+    "d": "e"
+  },
+  {
+    "t": "A door is about how many feet tall?",
+    "o": ["2 feet", "7 feet", "20 feet", "70 feet"],
+    "a": 1,
+    "e": "A door is about 7 feet tall. That is taller than most grown-ups!",
+    "d": "e"
+  },
+  {
+    "t": "A spoon is about how many inches long?",
+    "o": ["6 inches", "60 inches", "1 inch", "30 inches"],
+    "a": 0,
+    "e": "A spoon is about 6 inches long. It fits in your hand!",
+    "d": "e"
+  },
+  {
+    "t": "A baseball bat is about how many feet long?",
+    "o": ["1 foot", "10 feet", "3 feet", "30 feet"],
+    "a": 2,
+    "e": "A baseball bat is about 3 feet long. That is the same as 36 inches!",
+    "d": "e"
+  },
+  {
+    "t": "A bed is about how many feet long?",
+    "o": ["1 foot", "6 feet", "60 feet", "100 feet"],
+    "a": 1,
+    "e": "A bed is about 6 feet long. That is big enough for a grown-up to sleep on!",
+    "d": "e"
+  },
+  {
+    "t": "A new eraser is about how many inches long?",
+    "o": ["2 inches", "12 inches", "20 inches", "8 inches"],
+    "a": 0,
+    "e": "A new eraser is about 2 inches long. It is very small!",
+    "d": "e"
+  },
+  {
+    "t": "A fork is about how many inches long?",
+    "o": ["1 inch", "50 inches", "7 inches", "30 inches"],
+    "a": 2,
+    "e": "A fork is about 7 inches long. It fits in your hand when you eat!",
+    "d": "e"
+  },
+  {
+    "t": "A banana is about how many inches long?",
+    "o": ["1 inch", "30 inches", "8 inches", "20 inches"],
+    "a": 2,
+    "e": "A banana is about 8 inches long. It is a little shorter than a ruler!",
+    "d": "e"
+  },
+  {
+    "t": "A marker is about how many inches long?",
+    "o": ["5 inches", "50 inches", "1 inch", "25 inches"],
+    "a": 0,
+    "e": "A marker is about 5 inches long. It is a little bigger than a crayon!",
+    "d": "e"
+  },
+  {
+    "t": "A desk is about how many feet wide?",
+    "o": ["4 feet", "40 feet", "1 foot", "20 feet"],
+    "a": 0,
+    "e": "A desk is about 4 feet wide. That is about as long as two rulers!",
+    "d": "e"
+  },
+  {
+    "t": "A lunchbox is about how many inches long?",
+    "o": ["1 inch", "50 inches", "10 inches", "30 inches"],
+    "a": 2,
+    "e": "A lunchbox is about 10 inches long. It is a little shorter than a ruler!",
+    "d": "e"
+  },
+  {
+    "t": "A toothbrush is about how many inches long?",
+    "o": ["7 inches", "1 inch", "20 inches", "70 inches"],
+    "a": 0,
+    "e": "A toothbrush is about 7 inches long. It fits in your hand when you brush!",
+    "d": "e"
+  },
+  {
+    "t": "A car is about how many feet long?",
+    "o": ["2 feet", "15 feet", "100 feet", "50 feet"],
+    "a": 1,
+    "e": "A car is about 15 feet long. That is a lot bigger than you!",
+    "d": "e"
+  },
+  {
+    "t": "Your finger is about how many inches long?",
+    "o": ["10 inches", "50 inches", "3 inches", "30 inches"],
+    "a": 2,
+    "e": "Your finger is about 3 inches long. It is small, so the number is small too!",
+    "d": "e"
+  },
+  {
+    "t": "A key is about how many inches long?",
+    "o": ["10 inches", "3 inches", "30 inches", "12 inches"],
+    "a": 1,
+    "e": "A key is about 3 inches long. It is small enough to fit in your pocket!",
+    "d": "e"
+  },
+  {
+    "t": "A book is about how many inches tall?",
+    "o": ["1 inch", "10 inches", "100 inches", "50 inches"],
+    "a": 1,
+    "e": "A book is about 10 inches tall. That is a little less than a ruler!",
+    "d": "e"
+  }
+]

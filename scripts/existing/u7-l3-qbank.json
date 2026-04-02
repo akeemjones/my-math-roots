@@ -1,0 +1,362 @@
+[
+  {
+    "t": "At what temperature in degrees Fahrenheit does water freeze?",
+    "o": [
+      "32",
+      "0",
+      "100",
+      "212"
+    ],
+    "a": 0,
+    "e": "32°F.",
+    "d": "e"
+  },
+  {
+    "t": "It is 35°F outside. What should you wear?",
+    "o": [
+      "Shorts",
+      "T-shirt",
+      "Swimsuit",
+      "Heavy coat"
+    ],
+    "a": 3,
+    "e": "35°F is very cold.",
+    "d": "m"
+  },
+  {
+    "t": "2 cups is equal to how many pints?",
+    "o": [
+      "1 pint",
+      "2 pints",
+      "1 quart",
+      "1 gallon"
+    ],
+    "a": 0,
+    "e": "2 cups=1 pint.",
+    "d": "e"
+  },
+  {
+    "t": "4 quarts is equal to how many gallons?",
+    "o": [
+      "1 gallon",
+      "2 pints",
+      "2 gallons",
+      "4 cups"
+    ],
+    "a": 0,
+    "e": "4 quarts=1 gallon.",
+    "d": "e"
+  },
+  {
+    "t": "16 ounces is equal to how many pounds?",
+    "o": [
+      "1 pound",
+      "2 pounds",
+      "half pound",
+      "1 gallon"
+    ],
+    "a": 0,
+    "e": "16 oz=1 lb.",
+    "d": "e"
+  },
+  {
+    "t": "The temperature went from 65°F to 78°F. How many degrees warmer did it get?",
+    "o": [
+      "10",
+      "12",
+      "15",
+      "13"
+    ],
+    "a": 3,
+    "e": "78-65=13°.",
+    "d": "m"
+  },
+  {
+    "t": "At what temperature in degrees Fahrenheit does water boil?",
+    "o": [
+      "100",
+      "150",
+      "200",
+      "212"
+    ],
+    "a": 3,
+    "e": "212°F.",
+    "d": "e"
+  },
+  {
+    "t": "It is 90°F outside. What should you wear?",
+    "o": [
+      "Heavy coat",
+      "Rain boots",
+      "Snow boots",
+      "Light clothes"
+    ],
+    "a": 3,
+    "e": "90°F is hot!",
+    "d": "m"
+  },
+  {
+    "t": "2 pints is equal to how many quarts?",
+    "o": [
+      "1 quart",
+      "2 quarts",
+      "1 gallon",
+      "4 cups"
+    ],
+    "a": 0,
+    "e": "2 pints=1 quart.",
+    "d": "e"
+  },
+  {
+    "t": "Which holds more liquid: a cup or a quart?",
+    "o": [
+      "Cup",
+      "Quart",
+      "Equal",
+      "Depends"
+    ],
+    "a": 1,
+    "e": "Quart > cup. 4 cups=1 quart.",
+    "d": "m"
+  },
+  {
+    "t": "What is the normal human body temperature in degrees Fahrenheit?",
+    "o": [
+      "32°F",
+      "70°F",
+      "98.6°F",
+      "212°F"
+    ],
+    "a": 2,
+    "e": "98.6°F.",
+    "d": "m"
+  },
+  {
+    "t": "4 cups is equal to how many quarts?",
+    "o": [
+      "1 pint",
+      "1 gallon",
+      "2 pints",
+      "1 quart"
+    ],
+    "a": 3,
+    "e": "4 cups=2 pints=1 quart.",
+    "d": "h"
+  },
+  {
+    "t": "Is a gallon bigger than a quart?",
+    "o": [
+      "True",
+      "False",
+      "Same",
+      "Depends"
+    ],
+    "a": 0,
+    "e": "1 gallon=4 quarts. True!",
+    "d": "m"
+  },
+  {
+    "t": "What is the freezing temperature on the Fahrenheit scale?",
+    "o": [
+      "0°F",
+      "16°F",
+      "32°F",
+      "100°F"
+    ],
+    "a": 2,
+    "e": "32°F.",
+    "d": "e"
+  },
+  {
+    "t": "It is 55°F outside. What season is it most likely?",
+    "o": [
+      "Summer",
+      "Winter",
+      "Spring or Fall",
+      "Very hot day"
+    ],
+    "a": 2,
+    "e": "55°F is mild — spring or fall.",
+    "d": "m"
+  },
+  {
+    "t": "How many pints are in 1 quart?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "2 pints=1 quart.",
+    "d": "e"
+  },
+  {
+    "t": "Very heavy objects are best measured in which unit?",
+    "o": [
+      "Cups",
+      "Inches",
+      "Pounds",
+      "Degrees"
+    ],
+    "a": 2,
+    "e": "Weight in pounds.",
+    "d": "m"
+  },
+  {
+    "t": "The temperature went from 70°F to 55°F. How many degrees colder did it get?",
+    "o": [
+      "10°",
+      "12°",
+      "15°",
+      "20°"
+    ],
+    "a": 2,
+    "e": "70-55=15°.",
+    "d": "m"
+  },
+  {
+    "t": "How many ounces are in 1 pound?",
+    "o": [
+      "8",
+      "12",
+      "16",
+      "20"
+    ],
+    "a": 2,
+    "e": "16 oz=1 lb.",
+    "d": "e"
+  },
+  {
+    "t": "Which holds more liquid: a cup or a pint?",
+    "o": [
+      "Cup",
+      "Equal",
+      "Depends",
+      "Pint"
+    ],
+    "a": 3,
+    "e": "2 cups=1 pint. Pint is bigger.",
+    "d": "m"
+  },
+  {
+    "t": "When does the temperature on a thermometer go up?",
+    "o": [
+      "It gets colder",
+      "It gets warmer",
+      "It rains",
+      "It is dark"
+    ],
+    "a": 1,
+    "e": "Temperature rises when it gets warmer.",
+    "d": "e"
+  },
+  {
+    "t": "Light objects are best measured in which unit?",
+    "o": [
+      "Pounds",
+      "Gallons",
+      "Ounces",
+      "Feet"
+    ],
+    "a": 2,
+    "e": "Light things in ounces.",
+    "d": "e"
+  },
+  {
+    "t": "4 gallons is equal to how many quarts?",
+    "o": [
+      "4",
+      "8",
+      "12",
+      "16"
+    ],
+    "a": 3,
+    "e": "4 gallons × 4 quarts = 16 quarts.",
+    "d": "h"
+  },
+  {
+    "t": "It is snowing outside. What is the temperature most likely?",
+    "o": [
+      "50°F",
+      "75°F",
+      "32°F or below",
+      "100°F"
+    ],
+    "a": 2,
+    "e": "Snow forms below 32°F.",
+    "d": "h"
+  },
+  {
+    "t": "About how much does an apple weigh?",
+    "o": [
+      "1 ounce",
+      "1 pound",
+      "1 gallon",
+      "1 cup"
+    ],
+    "a": 1,
+    "e": "An apple ≈ 1 pound.",
+    "d": "m"
+  },
+  {
+    "t": "About how much does a pencil weigh?",
+    "o": [
+      "1 ounce",
+      "1 pound",
+      "1 ton",
+      "10 lbs"
+    ],
+    "a": 0,
+    "e": "A pencil ≈ 1 ounce.",
+    "d": "e"
+  },
+  {
+    "t": "Which of these temperatures is the coldest: 45°F, 32°F, 60°F, or 15°F?",
+    "o": [
+      "45°F",
+      "32°F",
+      "60°F",
+      "15°F"
+    ],
+    "a": 3,
+    "e": "15°F is coldest.",
+    "d": "m"
+  },
+  {
+    "t": "How many gallons are in 8 quarts?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "8÷4=2 gallons.",
+    "d": "h"
+  },
+  {
+    "t": "8 pints is equal to how many quarts?",
+    "o": [
+      "2",
+      "4",
+      "6",
+      "8"
+    ],
+    "a": 1,
+    "e": "8÷2=4 quarts.",
+    "d": "h"
+  },
+  {
+    "t": "What temperature scale is used in the United States?",
+    "o": [
+      "Celsius",
+      "Fahrenheit",
+      "Kelvin",
+      "Both"
+    ],
+    "a": 1,
+    "e": "USA uses Fahrenheit.",
+    "d": "e"
+  }
+]

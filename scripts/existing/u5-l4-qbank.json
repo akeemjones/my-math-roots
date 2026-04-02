@@ -1,0 +1,362 @@
+[
+  {
+    "t": "Are shoes a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "You need shoes every day to protect your feet.",
+    "d": "e"
+  },
+  {
+    "t": "Is a video game a need or a want?",
+    "o": [
+      "Need",
+      "Both",
+      "Neither",
+      "Want"
+    ],
+    "a": 3,
+    "e": "Video games are fun but not necessary to survive.",
+    "d": "e"
+  },
+  {
+    "t": "Is food a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Food is necessary to survive. It is always a need.",
+    "d": "e"
+  },
+  {
+    "t": "Is candy a need or a want?",
+    "o": [
+      "Need",
+      "Both",
+      "Neither",
+      "Want"
+    ],
+    "a": 3,
+    "e": "Candy is a want. It tastes good but you do not need it to survive.",
+    "d": "e"
+  },
+  {
+    "t": "You save $2 every week. How much will you have after 4 weeks?",
+    "o": [
+      "$8",
+      "$4",
+      "$6",
+      "$10"
+    ],
+    "a": 0,
+    "e": "$2 × 4 weeks = $8 saved.",
+    "d": "m"
+  },
+  {
+    "t": "What does SAVING money mean?",
+    "o": [
+      "Giving it away",
+      "Spending it now",
+      "Losing it",
+      "Keeping it for later"
+    ],
+    "a": 3,
+    "e": "Saving means setting money aside to use later.",
+    "d": "e"
+  },
+  {
+    "t": "Is shelter (a home) a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Shelter is a need. Everyone needs a safe place to live.",
+    "d": "e"
+  },
+  {
+    "t": "Is a toy car a need or a want?",
+    "o": [
+      "Need",
+      "Both",
+      "Neither",
+      "Want"
+    ],
+    "a": 3,
+    "e": "A toy car is a want. It is fun but not needed to survive.",
+    "d": "e"
+  },
+  {
+    "t": "Is water a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Water is a need. Your body must have water to survive.",
+    "d": "e"
+  },
+  {
+    "t": "What does SPENDING money mean?",
+    "o": [
+      "Keeping money",
+      "Using money to buy things",
+      "Giving money freely",
+      "Saving for later"
+    ],
+    "a": 1,
+    "e": "Spending means using your money to buy something.",
+    "d": "e"
+  },
+  {
+    "t": "You save $5 every week. How much will you have after 3 weeks?",
+    "o": [
+      "$15",
+      "$10",
+      "$12",
+      "$20"
+    ],
+    "a": 0,
+    "e": "$5 × 3 weeks = $15 saved.",
+    "d": "m"
+  },
+  {
+    "t": "Ana has $10. A toy costs $7 and a book costs $4. Can she buy both?",
+    "o": [
+      "Yes",
+      "Maybe",
+      "Need more info",
+      "No"
+    ],
+    "a": 3,
+    "e": "$7 + $4 = $11, which is more than $10. Ana cannot buy both.",
+    "d": "h"
+  },
+  {
+    "t": "What does GIVING money mean?",
+    "o": [
+      "Saving for yourself",
+      "Using it to buy wants",
+      "Investing in stocks",
+      "Sharing money with others"
+    ],
+    "a": 3,
+    "e": "Giving means sharing your money with others or donating to help people in need.",
+    "d": "e"
+  },
+  {
+    "t": "Is clothing a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Basic clothing is a need. You need clothes to stay warm and protected.",
+    "d": "e"
+  },
+  {
+    "t": "Is medicine a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Medicine when you are sick is a need. It helps you get healthy.",
+    "d": "e"
+  },
+  {
+    "t": "Why is saving money a good idea?",
+    "o": [
+      "To bury it in the ground",
+      "To give it all away immediately",
+      "Because money spoils",
+      "To have money later for bigger things"
+    ],
+    "a": 3,
+    "e": "Saving money lets you afford bigger things later that you cannot buy all at once.",
+    "d": "e"
+  },
+  {
+    "t": "Tom saves $3 every week. How much will he have after 6 weeks?",
+    "o": [
+      "$12",
+      "$15",
+      "$18",
+      "$21"
+    ],
+    "a": 2,
+    "e": "$3 × 6 weeks = $18 saved.",
+    "d": "m"
+  },
+  {
+    "t": "What is the best order for making money decisions?",
+    "o": [
+      "Pay for wants first, then needs",
+      "Pay for needs first, then wants",
+      "Spend all of it right away",
+      "Never save anything"
+    ],
+    "a": 1,
+    "e": "Always cover your needs first, then think about wants.",
+    "d": "e"
+  },
+  {
+    "t": "Is a movie ticket a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 1,
+    "e": "A movie ticket is a want. Movies are fun entertainment but not necessary to survive.",
+    "d": "e"
+  },
+  {
+    "t": "What is a budget?",
+    "o": [
+      "A type of coin",
+      "A plan for spending and saving",
+      "A savings account",
+      "A type of bank"
+    ],
+    "a": 1,
+    "e": "A budget is a plan for how you will use your money each week or month.",
+    "d": "e"
+  },
+  {
+    "t": "You have $20 saved. A bike costs $45. How much more money do you need?",
+    "o": [
+      "$15",
+      "$20",
+      "$25",
+      "$30"
+    ],
+    "a": 2,
+    "e": "$45 − $20 = $25 more needed.",
+    "d": "m"
+  },
+  {
+    "t": "Is healthy food a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Food is always a need. Your body needs food to live and grow.",
+    "d": "e"
+  },
+  {
+    "t": "Is the internet a need or a want for kids?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 1,
+    "e": "The internet can be helpful, but it is generally a want for kids.",
+    "d": "e"
+  },
+  {
+    "t": "You earn $8 and spend $5. How much money do you have left?",
+    "o": [
+      "$2",
+      "$3",
+      "$4",
+      "$5"
+    ],
+    "a": 1,
+    "e": "$8 − $5 = $3 saved.",
+    "d": "m"
+  },
+  {
+    "t": "You earn $10 as an allowance. What is the best choice?",
+    "o": [
+      "Spend it all right away",
+      "Save half and spend half",
+      "Give it all away",
+      "Lose it"
+    ],
+    "a": 1,
+    "e": "Saving some while spending some is a smart, balanced approach.",
+    "d": "m"
+  },
+  {
+    "t": "Is a new bike a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 1,
+    "e": "A new bike is usually a want, unless you need it to get to school.",
+    "d": "e"
+  },
+  {
+    "t": "You save $4 every week. How much will you have after 5 weeks?",
+    "o": [
+      "$16",
+      "$18",
+      "$20",
+      "$22"
+    ],
+    "a": 2,
+    "e": "$4 × 5 weeks = $20 saved.",
+    "d": "m"
+  },
+  {
+    "t": "Which of these is an example of giving?",
+    "o": [
+      "Buying toys for yourself",
+      "Saving money at a bank",
+      "Donating food to a food bank",
+      "Spending money at a store"
+    ],
+    "a": 2,
+    "e": "Donating to a food bank means sharing with others who need it.",
+    "d": "e"
+  },
+  {
+    "t": "Is fresh fruit a need or a want?",
+    "o": [
+      "Need",
+      "Want",
+      "Both",
+      "Neither"
+    ],
+    "a": 0,
+    "e": "Fresh fruit is food, and food is always a need.",
+    "d": "e"
+  },
+  {
+    "t": "You have $15 saved and you spend $9. How much do you have left?",
+    "o": [
+      "$4",
+      "$5",
+      "$6",
+      "$7"
+    ],
+    "a": 2,
+    "e": "$15 − $9 = $6 left.",
+    "d": "m"
+  }
+]

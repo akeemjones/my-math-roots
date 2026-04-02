@@ -17,8 +17,6 @@ export interface StudentProfile {
   avatar_color_from: string;
   /** Gradient end colour (hex) for the avatar background. */
   avatar_color_to: string;
-  /** Hashed 4-digit PIN — never sent to client in v6+. */
-  pin_hash: string;
   /** Optional family sync code, e.g. "MMR-0000". */
   family_code?: string;
   /** Supabase auth UID of the parent who owns this profile. */
@@ -44,7 +42,11 @@ export interface A11yPrefs {
 
 /** App-level settings — stored across several wb_* localStorage keys. */
 export interface AppSettings {
-  theme: 'light' | 'dark';
+  theme: 'auto' | 'light' | 'dark';
+  /** Sound effects: quiz sounds and navigation sounds. */
+  sound: 'on' | 'off';
+  /** Guest-mode student name, shown in score history. */
+  studentName: string;
   /** Lesson quiz timer in minutes (0 = no timer). */
   lessonTimerMins: number;
   /** Unit quiz timer in minutes (0 = no timer). */
@@ -57,6 +59,8 @@ export interface AppSettings {
   visitCount: number;
   /** True once the onboarding tutorial has been dismissed. */
   tutorialDone: boolean;
+  /** Internal migration version — used to upgrade persisted settings across releases. */
+  _v?: number;
 }
 
 export const DEFAULT_A11Y_PREFS: A11yPrefs = {
@@ -69,11 +73,14 @@ export const DEFAULT_A11Y_PREFS: A11yPrefs = {
 };
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  theme: 'light',
-  lessonTimerMins: 0,
-  unitTimerMins: 0,
-  finalTimerMins: 0,
+  theme: 'auto',
+  sound: 'on',
+  studentName: '',
+  lessonTimerMins: 8,
+  unitTimerMins: 30,
+  finalTimerMins: 60,
   freeMode: false,
   visitCount: 0,
   tutorialDone: false,
+  _v: 1,
 };

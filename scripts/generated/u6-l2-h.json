@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A pictograph shows each star = 2 students. Cats has 4 stars, Dogs has 6 stars, Birds has 3 stars. How many students voted in all? If the class has 30 students, how many did NOT vote?",
+    "o": ["26 voted, 4 did not", "26 voted, 6 did not", "24 voted, 6 did not", "22 voted, 8 did not"],
+    "a": 0,
+    "e": "Cats=8, Dogs=12, Birds=6. Total=26. 30-26=4 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. The cat row has 3 stars. Sam says that means 8 students chose cats. What did Sam do wrong?",
+    "o": ["Sam added 5 + 3 instead of multiplying", "Sam subtracted 5 - 3", "Sam counted the stars wrong", "Sam is correct"],
+    "a": 0,
+    "e": "Each star = 5 students. 3 stars = 3 x 5 = 15. Sam added 5 + 3 = 8 instead of multiplying. That is wrong.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Red has 5 stars, Blue has 3 stars, Green has ???. There were 22 votes total. How many votes did green get?",
+    "o": ["4", "6", "8", "14"],
+    "a": 1,
+    "e": "Red = 10, Blue = 6. That is 16. Total = 22. 22 - 16 = 6 votes for green.",
+    "d": "h"
+  },
+  {
+    "t": "Could you make a pictograph with a key of each star = 3 for this data: Cats=9, Dogs=6, Fish=4? Why or why not?",
+    "o": ["Yes, because all numbers are big enough", "No, because 4 does not divide evenly by 3", "Yes, because 3 goes into every number", "No, because 9 is too large"],
+    "a": 1,
+    "e": "Cats: 9 / 3 = 3 stars. Dogs: 6 / 3 = 2 stars. Fish: 4 / 3 = 1 star with 1 left over. You cannot show 4 evenly with a key of 3.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 kids. Soccer has 4 stars and Baseball has 2 stars. Emma says soccer got 10 more kids than baseball. Is she right?",
+    "o": ["Yes, 20 - 10 = 10", "No, the difference is 5", "No, the difference is 2", "No, the difference is 15"],
+    "a": 0,
+    "e": "Soccer = 20, Baseball = 10. 20 - 10 = 10. Yes, Emma is right!",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. Art has 7 stars, Music has 4 stars, Drama has 5 stars. Do music and drama together have more students than art?",
+    "o": ["Yes, 18 is more than 14", "No, 14 is more than 18", "They are the same", "No, 16 is more than 14"],
+    "a": 0,
+    "e": "Art = 14. Music = 8, Drama = 10. Music + Drama = 18. 18 is more than 14. Yes!",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 votes. Bikes has 3 stars, Scooters has 2 stars, Skateboards has 4 stars. How many kids voted in all? What if 5 more kids vote for scooters -- how many stars would scooters have then?",
+    "o": ["45 total, scooters would have 3 stars", "35 total, scooters would have 3 stars", "45 total, scooters would have 7 stars", "35 total, scooters would have 7 stars"],
+    "a": 0,
+    "e": "Bikes=15, Scooters=10, Skateboards=20. Total=45. Scooters would have 10+5=15 kids. 15/5=3 stars.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. Dogs has 6 stars, Cats has 8 stars, Fish has 2 stars. Jake looks at the stars and says cats got 8 students. What mistake did Jake make?",
+    "o": ["Jake forgot to multiply by 2", "Jake counted the stars wrong", "Jake looked at the wrong row", "Jake is correct"],
+    "a": 0,
+    "e": "Cats has 8 stars. Each star = 2. So cats = 8 x 2 = 16 students. Jake just counted stars instead of multiplying by the key.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. Chocolate has 4 stars, Vanilla has 3 stars. If the teacher wants to add a strawberry row with 10 students, how many stars should she draw?",
+    "o": ["1 star", "2 stars", "5 stars", "10 stars"],
+    "a": 1,
+    "e": "Each star = 5 students. 10 students / 5 = 2 stars for strawberry.",
+    "d": "h"
+  },
+  {
+    "t": "Could you make a pictograph with a key of each star = 2 for this data: Lions=8, Tigers=6, Bears=5? Why or why not?",
+    "o": ["Yes, all numbers work with 2", "No, because 5 does not divide evenly by 2", "No, because 6 is too small", "Yes, because 2 goes into every number"],
+    "a": 1,
+    "e": "Lions: 8/2=4 stars. Tigers: 6/2=3 stars. Bears: 5/2=2 stars with 1 left over. 5 is odd, so it does not work with key=2.",
+    "d": "h"
+  },
+  {
+    "t": "Two classes made pictographs about favorite fruits. Class A uses each star = 2. Class B uses each star = 5. Class A shows apples with 6 stars. Class B shows apples with 2 stars. Which class had more students pick apples?",
+    "o": ["Class A with 12 students", "Class B with 10 students", "They are the same", "Cannot tell without more info"],
+    "a": 0,
+    "e": "Class A: 6 x 2 = 12. Class B: 2 x 5 = 10. Class A had more with 12 students.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Summer has 8 stars, Winter has 3 stars, Spring has 5 stars, Fall has 4 stars. Which two seasons together got exactly 16 votes?",
+    "o": ["Summer and Winter", "Spring and Fall", "Winter and Spring", "Summer and Fall"],
+    "a": 2,
+    "e": "Summer=16, Winter=6, Spring=10, Fall=8. Winter + Spring = 6 + 10 = 16. Those two together got exactly 16 votes.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. Carrots has 2 stars, Corn has 4 stars, Peas has ???. There were 45 students total. How many stars should the peas row have?",
+    "o": ["3 stars", "5 stars", "7 stars", "9 stars"],
+    "a": 0,
+    "e": "Carrots=10, Corn=20. That is 30. Total=45. 45-30=15 for peas. 15/5=3 stars.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. Puppies has 9 stars, Kittens has 6 stars. Mia says puppies got 12 more students than kittens. What should Mia check?",
+    "o": ["She should multiply first: 18 - 12 = 6, not 12", "She subtracted the stars: 9 - 6 = 3", "She is correct", "She should add instead"],
+    "a": 0,
+    "e": "Puppies = 9 x 2 = 18. Kittens = 6 x 2 = 12. 18 - 12 = 6 more students, not 12. Mia should multiply first, then subtract.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 votes. Math has 3 stars, Reading has 5 stars. If 10 students switch from reading to math, how many stars would each row have?",
+    "o": ["Math=5 stars, Reading=3 stars", "Math=4 stars, Reading=4 stars", "Math=13 stars, Reading=15 stars", "Math=25 stars, Reading=15 stars"],
+    "a": 0,
+    "e": "Math = 15, Reading = 25. Move 10: Math = 15+10 = 25. Reading = 25-10 = 15. 25/5 = 5 stars. 15/5 = 3 stars.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 kids. Hiking has 4 stars, Camping has 7 stars, Fishing has 3 stars. How many kids did the two least popular activities combined?",
+    "o": ["7", "14", "22", "28"],
+    "a": 1,
+    "e": "Hiking = 8 (least), Fishing = 6 (second least). 8 + 6 = 14 kids combined.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. Bikes has 6 stars and Cars has 3 stars. Noah says the difference is 3 students. What did Noah do wrong?",
+    "o": ["He subtracted stars instead of students: 6-3=3 stars, but the real difference is 15", "He added instead of subtracted", "He is correct", "He read the wrong rows"],
+    "a": 0,
+    "e": "Bikes = 30, Cars = 15. Difference = 30-15 = 15 students. Noah subtracted the stars (6-3=3) instead of the actual students.",
+    "d": "h"
+  },
+  {
+    "t": "Can you make a pictograph with each star = 5 for: Roses=15, Tulips=10, Daisies=7? Why or why not?",
+    "o": ["Yes, because all numbers are bigger than 5", "No, because 7 does not divide evenly by 5", "Yes, because 5 goes into 15 and 10", "No, because 15 is too big"],
+    "a": 1,
+    "e": "Roses: 15/5=3 stars. Tulips: 10/5=2 stars. Daisies: 7/5=1 star with 2 left over. 7 does not work with key=5.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Vanilla has 5 stars, Chocolate has 8 stars, Mint has 4 stars. There are 40 students in the class. How many did NOT vote?",
+    "o": ["4", "6", "8", "10"],
+    "a": 2,
+    "e": "Vanilla=10, Chocolate=16, Mint=8. Total = 10+16+8 = 34. 40-34 = 6 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. Monkeys has 4 stars, Penguins has 2 stars, Pandas has 3 stars. If you changed the key to each star = 10, how many stars would monkeys need?",
+    "o": ["2 stars", "4 stars", "8 stars", "20 stars"],
+    "a": 0,
+    "e": "Monkeys = 4 x 5 = 20 students. With key = 10: 20 / 10 = 2 stars.",
+    "d": "h"
+  }
+]

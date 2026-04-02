@@ -179,6 +179,16 @@
     _upmCheck:              ()    => typeof _upmCheck === 'function' && _upmCheck(),
     checkLessonPin:         ()    => typeof checkLessonPinUnlock === 'function' && checkLessonPinUnlock(),
 
+    // ── Profile switcher ─────────────────────────────────────────────────────
+    openProfileSwitcher:    ()    => typeof openProfileSwitcher  === 'function' && openProfileSwitcher(),
+    closeProfileSwitcher:   ()    => typeof closeProfileSwitcher === 'function' && closeProfileSwitcher(),
+    psSelectProfile:        (a)   => typeof psSelectProfile      === 'function' && psSelectProfile(a),
+    psPinInput:             ()    => typeof psPinInput           === 'function' && psPinInput(),
+    psPinFocus:             ()    => typeof psPinFocus           === 'function' && psPinFocus(),
+    psBackToList:           ()    => typeof psBackToList         === 'function' && psBackToList(),
+    // Login-screen native pin input
+    _lsPinNativeInput:      ()    => typeof _lsPinNativeInput    === 'function' && _lsPinNativeInput(),
+
     // ── Auth (sign-out / parent auth) ────────────────────────────────────────
     _signOut:               ()    => typeof _signOut === 'function' && _signOut(),
     _closeParentAuth:       ()    => typeof _closeParentAuth === 'function' && _closeParentAuth(),

@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Count the money: 1 dime and 2 pennies.",
+    "o": ["3¢", "12¢", "21¢", "20¢"],
+    "a": 1,
+    "e": "Start with the dime: 10¢. Count the pennies: 11, 12. Total = 12¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 3 nickels.",
+    "o": ["3¢", "10¢", "15¢", "30¢"],
+    "a": 2,
+    "e": "Count by 5s: 5, 10, 15. Three nickels = 15¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 2 dimes.",
+    "o": ["2¢", "12¢", "20¢", "25¢"],
+    "a": 2,
+    "e": "Count by 10s: 10, 20. Two dimes = 20¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 nickel and 3 pennies.",
+    "o": ["4¢", "8¢", "13¢", "35¢"],
+    "a": 1,
+    "e": "Start with the nickel: 5¢. Count the pennies: 6, 7, 8. Total = 8¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 4 dimes.",
+    "o": ["4¢", "14¢", "40¢", "44¢"],
+    "a": 2,
+    "e": "Count by 10s: 10, 20, 30, 40. Four dimes = 40¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 quarter.",
+    "o": ["1¢", "5¢", "10¢", "25¢"],
+    "a": 3,
+    "e": "One quarter = 25¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 5 nickels.",
+    "o": ["5¢", "15¢", "25¢", "50¢"],
+    "a": 2,
+    "e": "Count by 5s: 5, 10, 15, 20, 25. Five nickels = 25¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 dime and 1 nickel.",
+    "o": ["6¢", "11¢", "15¢", "20¢"],
+    "a": 2,
+    "e": "Dime = 10¢. Nickel = 5¢. Total: 10 + 5 = 15¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 7 pennies.",
+    "o": ["7¢", "17¢", "70¢", "10¢"],
+    "a": 0,
+    "e": "Each penny is 1¢. Count: 1, 2, 3, 4, 5, 6, 7. Seven pennies = 7¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 2 nickels and 1 penny.",
+    "o": ["3¢", "6¢", "11¢", "21¢"],
+    "a": 2,
+    "e": "Nickels: 5, 10. Penny: 11. Total = 11¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 quarter and 1 penny.",
+    "o": ["2¢", "11¢", "26¢", "30¢"],
+    "a": 2,
+    "e": "Quarter = 25¢. Penny = 1¢. Total: 25 + 1 = 26¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 3 dimes and 1 penny.",
+    "o": ["4¢", "13¢", "30¢", "31¢"],
+    "a": 3,
+    "e": "Dimes: 10, 20, 30. Penny: 31. Total = 31¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 6 nickels.",
+    "o": ["6¢", "25¢", "30¢", "35¢"],
+    "a": 2,
+    "e": "Count by 5s: 5, 10, 15, 20, 25, 30. Six nickels = 30¢.",
+    "d": "e"
+  },
+  {
+    "t": "How do you count a group of dimes?",
+    "o": ["Count by 1s", "Count by 5s", "Count by 10s", "Count by 25s"],
+    "a": 2,
+    "e": "Since each dime is worth 10¢, the fastest way to count dimes is to count by 10s.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 2 dimes and 1 penny.",
+    "o": ["3¢", "12¢", "21¢", "22¢"],
+    "a": 2,
+    "e": "Dimes: 10, 20. Penny: 21. Total = 21¢.",
+    "d": "e"
+  },
+  {
+    "t": "How do you count a group of nickels?",
+    "o": ["Count by 1s", "Count by 5s", "Count by 10s", "Count by 25s"],
+    "a": 1,
+    "e": "Since each nickel is worth 5¢, the fastest way to count nickels is to count by 5s.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 dime and 4 pennies.",
+    "o": ["5¢", "14¢", "41¢", "50¢"],
+    "a": 1,
+    "e": "Dime: 10. Pennies: 11, 12, 13, 14. Total = 14¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 2 quarters.",
+    "o": ["2¢", "20¢", "50¢", "75¢"],
+    "a": 2,
+    "e": "Count by 25s: 25, 50. Two quarters = 50¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 nickel and 1 penny.",
+    "o": ["2¢", "6¢", "10¢", "15¢"],
+    "a": 1,
+    "e": "Nickel = 5¢. Penny = 1¢. Total: 5 + 1 = 6¢.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 5 dimes.",
+    "o": ["5¢", "15¢", "50¢", "55¢"],
+    "a": 2,
+    "e": "Count by 10s: 10, 20, 30, 40, 50. Five dimes = 50¢.",
+    "d": "e"
+  }
+]

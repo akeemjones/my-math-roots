@@ -1,0 +1,1202 @@
+[
+  {
+    "t": "In 347, what is the HUNDREDS digit?",
+    "o": [
+      "3",
+      "4",
+      "7",
+      "34"
+    ],
+    "a": 0,
+    "e": "347: 3 is hundreds, 4 is tens, 7 is ones.",
+    "d": "e"
+  },
+  {
+    "t": "In 562, what is the TENS digit?",
+    "o": [
+      "2",
+      "5",
+      "6",
+      "56"
+    ],
+    "a": 2,
+    "e": "562: 5 is hundreds, 6 is tens, 2 is ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 4 in 347?",
+    "o": [
+      "4",
+      "40",
+      "400",
+      "4000"
+    ],
+    "a": 1,
+    "e": "4 is in the tens place = 40.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 5 in 562?",
+    "o": [
+      "5",
+      "50",
+      "500",
+      "5000"
+    ],
+    "a": 2,
+    "e": "5 is in hundreds place = 500.",
+    "d": "m"
+  },
+  {
+    "t": "What is 3 hundreds + 4 tens + 7 ones?",
+    "o": [
+      "347",
+      "374",
+      "437",
+      "473"
+    ],
+    "a": 0,
+    "e": "300+40+7=347.",
+    "d": "m"
+  },
+  {
+    "t": "What is 5 hundreds + 6 tens + 2 ones?",
+    "o": [
+      "526",
+      "625",
+      "652",
+      "562"
+    ],
+    "a": 3,
+    "e": "500+60+2=562.",
+    "d": "m"
+  },
+  {
+    "t": "In 809, what digit is in the TENS place?",
+    "o": [
+      "0",
+      "8",
+      "9",
+      "80"
+    ],
+    "a": 0,
+    "e": "809: 8 hundreds, 0 tens, 9 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 9 in 903?",
+    "o": [
+      "9",
+      "90",
+      "900",
+      "9000"
+    ],
+    "a": 2,
+    "e": "9 is in hundreds place = 900.",
+    "d": "m"
+  },
+  {
+    "t": "What digit is in the tens place in 450?",
+    "o": [
+      "4",
+      "0",
+      "45",
+      "5"
+    ],
+    "a": 3,
+    "e": "450: 4 hundreds, 5 tens, 0 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the ones digit in 738?",
+    "o": [
+      "3",
+      "7",
+      "8",
+      "73"
+    ],
+    "a": 2,
+    "e": "738: 7 hundreds, 3 tens, 8 ones.",
+    "d": "e"
+  },
+  {
+    "t": "In 206, what is in the tens place?",
+    "o": [
+      "0",
+      "2",
+      "6",
+      "20"
+    ],
+    "a": 0,
+    "e": "206: 2 hundreds, 0 tens, 6 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 7 in 735?",
+    "o": [
+      "7",
+      "70",
+      "700",
+      "7000"
+    ],
+    "a": 2,
+    "e": "7 is in hundreds place = 700.",
+    "d": "m"
+  },
+  {
+    "t": "What is 8 hundreds + 0 tens + 5 ones?",
+    "o": [
+      "850",
+      "508",
+      "580",
+      "805"
+    ],
+    "a": 3,
+    "e": "800+0+5=805.",
+    "d": "m"
+  },
+  {
+    "t": "In 614, what is the tens digit?",
+    "o": [
+      "4",
+      "6",
+      "61",
+      "1"
+    ],
+    "a": 3,
+    "e": "614: 6 hundreds, 1 ten, 4 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 3 in 370?",
+    "o": [
+      "3",
+      "30",
+      "300",
+      "3000"
+    ],
+    "a": 2,
+    "e": "3 is in hundreds place = 300.",
+    "d": "m"
+  },
+  {
+    "t": "In 528, how many hundreds?",
+    "o": [
+      "2",
+      "5",
+      "8",
+      "52"
+    ],
+    "a": 1,
+    "e": "528: 5 hundreds, 2 tens, 8 ones.",
+    "d": "e"
+  },
+  {
+    "t": "Which number has 4 hundreds, 3 tens, 6 ones?",
+    "o": [
+      "346",
+      "364",
+      "436",
+      "634"
+    ],
+    "a": 2,
+    "e": "400+30+6=436.",
+    "d": "m"
+  },
+  {
+    "t": "In 901, which place has a zero?",
+    "o": [
+      "Ones",
+      "Tens",
+      "Hundreds",
+      "All places"
+    ],
+    "a": 1,
+    "e": "901: 9 hundreds, 0 tens, 1 one.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 6 in 164?",
+    "o": [
+      "6",
+      "600",
+      "160",
+      "60"
+    ],
+    "a": 3,
+    "e": "6 is in tens place = 60.",
+    "d": "m"
+  },
+  {
+    "t": "In 777, all three digits are the same. What is the value of the hundreds digit?",
+    "o": [
+      "7",
+      "70",
+      "700",
+      "7000"
+    ],
+    "a": 2,
+    "e": "7 in hundreds place = 700.",
+    "d": "m"
+  },
+  {
+    "t": "Which digit is in the ONES place in 493?",
+    "o": [
+      "3",
+      "4",
+      "9",
+      "49"
+    ],
+    "a": 0,
+    "e": "493: 4 hundreds, 9 tens, 3 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is 7 hundreds + 2 tens + 0 ones?",
+    "o": [
+      "702",
+      "720",
+      "270",
+      "207"
+    ],
+    "a": 1,
+    "e": "700+20+0=720.",
+    "d": "m"
+  },
+  {
+    "t": "In 315, what is the value of the 3?",
+    "o": [
+      "3",
+      "30",
+      "300",
+      "3000"
+    ],
+    "a": 2,
+    "e": "3 is in hundreds place = 300.",
+    "d": "m"
+  },
+  {
+    "t": "In 615, what is the value of 1?",
+    "o": [
+      "1",
+      "100",
+      "1000",
+      "10"
+    ],
+    "a": 3,
+    "e": "1 is in tens place = 10.",
+    "d": "m"
+  },
+  {
+    "t": "Which number has 0 in the tens place?",
+    "o": [
+      "305",
+      "350",
+      "253",
+      "530"
+    ],
+    "a": 0,
+    "e": "305: 3 hundreds, 0 tens, 5 ones.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 8 in 284?",
+    "o": [
+      "8",
+      "80",
+      "800",
+      "8000"
+    ],
+    "a": 1,
+    "e": "8 is in tens place = 80.",
+    "d": "m"
+  },
+  {
+    "t": "In 799, what digit is in hundreds place?",
+    "o": [
+      "9",
+      "99",
+      "79",
+      "7"
+    ],
+    "a": 3,
+    "e": "799: 7 hundreds, 9 tens, 9 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is 4 hundreds + 0 tens + 4 ones?",
+    "o": [
+      "404",
+      "440",
+      "400",
+      "44"
+    ],
+    "a": 0,
+    "e": "400+0+4=404.",
+    "d": "m"
+  },
+  {
+    "t": "In 863, how many tens are there?",
+    "o": [
+      "3",
+      "6",
+      "8",
+      "63"
+    ],
+    "a": 1,
+    "e": "863: 8 hundreds, 6 tens, 3 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 5 in 857?",
+    "o": [
+      "5",
+      "50",
+      "500",
+      "5000"
+    ],
+    "a": 1,
+    "e": "5 is in tens place = 50.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 352?",
+    "o": [
+      "300+50+2",
+      "300+5+2",
+      "30+50+2",
+      "350+2"
+    ],
+    "a": 0,
+    "e": "3H+5T+2O=300+50+2.",
+    "d": "m"
+  },
+  {
+    "t": "What is 200 + 40 + 7?",
+    "o": [
+      "247",
+      "274",
+      "427",
+      "742"
+    ],
+    "a": 0,
+    "e": "2H+4T+7O=247.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 806?",
+    "o": [
+      "800+6",
+      "80+6",
+      "8+0+6",
+      "800+0+6"
+    ],
+    "a": 3,
+    "e": "8H+0T+6O=800+0+6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 500 + 30 + 1?",
+    "o": [
+      "531",
+      "513",
+      "315",
+      "135"
+    ],
+    "a": 0,
+    "e": "5H+3T+1O=531.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 425?",
+    "o": [
+      "four hundred twenty-five",
+      "four twenty-five",
+      "four hundred fifty-two",
+      "four hundred two"
+    ],
+    "a": 0,
+    "e": "400+20+5=four hundred twenty-five.",
+    "d": "m"
+  },
+  {
+    "t": "What is 400 + 0 + 9?",
+    "o": [
+      "490",
+      "904",
+      "940",
+      "409"
+    ],
+    "a": 3,
+    "e": "4H+0T+9O=409.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 671?",
+    "o": [
+      "600+71",
+      "600+7+1",
+      "600+70+1",
+      "67+1"
+    ],
+    "a": 2,
+    "e": "6H+7T+1O=600+70+1.",
+    "d": "m"
+  },
+  {
+    "t": "What is 300 + 80 + 0?",
+    "o": [
+      "308",
+      "830",
+      "803",
+      "380"
+    ],
+    "a": 3,
+    "e": "3H+8T+0O=380.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 250?",
+    "o": [
+      "two hundred five",
+      "two hundred fifty",
+      "two fifty",
+      "two hundred fifteen"
+    ],
+    "a": 1,
+    "e": "200+50=two hundred fifty.",
+    "d": "m"
+  },
+  {
+    "t": "What is 700 + 60 + 4?",
+    "o": [
+      "746",
+      "674",
+      "467",
+      "764"
+    ],
+    "a": 3,
+    "e": "7H+6T+4O=764.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 103?",
+    "o": [
+      "100+3",
+      "100+0+3",
+      "10+3",
+      "1+0+3"
+    ],
+    "a": 1,
+    "e": "1H+0T+3O=100+0+3.",
+    "d": "m"
+  },
+  {
+    "t": "What is 900 + 0 + 0?",
+    "o": [
+      "9",
+      "90",
+      "900",
+      "9000"
+    ],
+    "a": 2,
+    "e": "9H+0T+0O=900.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of 600 + 50 + 8?",
+    "o": [
+      "568",
+      "658",
+      "685",
+      "865"
+    ],
+    "a": 1,
+    "e": "600+50+8=658.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 317?",
+    "o": [
+      "thirty-one seven",
+      "three hundred seventy-one",
+      "three hundred seventeen",
+      "thirty-seventeen"
+    ],
+    "a": 2,
+    "e": "300+10+7=three hundred seventeen.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 480?",
+    "o": [
+      "400+80",
+      "400+8+0",
+      "400+80+0",
+      "48+0"
+    ],
+    "a": 2,
+    "e": "4H+8T+0O=400+80+0.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 + 20 + 3?",
+    "o": [
+      "123",
+      "132",
+      "213",
+      "321"
+    ],
+    "a": 0,
+    "e": "1H+2T+3O=123.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of five hundred sixty-two?",
+    "o": [
+      "526",
+      "562",
+      "625",
+      "652"
+    ],
+    "a": 1,
+    "e": "500+60+2=562.",
+    "d": "m"
+  },
+  {
+    "t": "What is 200 + 90 + 5?",
+    "o": [
+      "259",
+      "295",
+      "529",
+      "952"
+    ],
+    "a": 1,
+    "e": "2H+9T+5O=295.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 900?",
+    "o": [
+      "9+0+0",
+      "90+0",
+      "900+0+0",
+      "9+00+0"
+    ],
+    "a": 2,
+    "e": "9H+0T+0O=900+0+0.",
+    "d": "m"
+  },
+  {
+    "t": "What is 400 + 60 + 0?",
+    "o": [
+      "406",
+      "460",
+      "604",
+      "640"
+    ],
+    "a": 1,
+    "e": "4H+6T+0O=460.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 708?",
+    "o": [
+      "seventy-eight",
+      "seven hundred eighty",
+      "seven hundred eight",
+      "seventy hundred eight"
+    ],
+    "a": 2,
+    "e": "700+8=seven hundred eight.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 535?",
+    "o": [
+      "500+35",
+      "500+3+5",
+      "500+30+5",
+      "530+5"
+    ],
+    "a": 2,
+    "e": "5H+3T+5O=500+30+5.",
+    "d": "m"
+  },
+  {
+    "t": "What is 800 + 70 + 0?",
+    "o": [
+      "807",
+      "870",
+      "780",
+      "708"
+    ],
+    "a": 1,
+    "e": "8H+7T+0O=870.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of three hundred forty?",
+    "o": [
+      "304",
+      "430",
+      "403",
+      "340"
+    ],
+    "a": 3,
+    "e": "300+40=340.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 + 0 + 7?",
+    "o": [
+      "107",
+      "170",
+      "710",
+      "701"
+    ],
+    "a": 0,
+    "e": "1H+0T+7O=107.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 999?",
+    "o": [
+      "900+9+9",
+      "900+99",
+      "900+90+9",
+      "9+90+900"
+    ],
+    "a": 2,
+    "e": "9H+9T+9O=900+90+9.",
+    "d": "m"
+  },
+  {
+    "t": "What is 600 + 0 + 3?",
+    "o": [
+      "603",
+      "630",
+      "360",
+      "306"
+    ],
+    "a": 0,
+    "e": "6H+0T+3O=603.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 840?",
+    "o": [
+      "eighty-four",
+      "eight hundred four",
+      "eight hundred forty",
+      "eight four zero"
+    ],
+    "a": 2,
+    "e": "800+40=eight hundred forty.",
+    "d": "m"
+  },
+  {
+    "t": "What is 300 + 50 + 0?",
+    "o": [
+      "305",
+      "530",
+      "503",
+      "350"
+    ],
+    "a": 3,
+    "e": "3H+5T+0O=350.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 762?",
+    "o": [
+      "700+6+2",
+      "70+60+2",
+      "762",
+      "700+60+2"
+    ],
+    "a": 3,
+    "e": "7H+6T+2O=700+60+2.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 527 ___ 572",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Both numbers have 5 hundreds — those are equal! Look at the tens: 527 has 2 tens and 572 has 7 tens. Since 2 is less than 7, use the < symbol.",
+    "d": "m"
+  },
+  {
+    "t": "Which is greater: 384 or 438?",
+    "o": [
+      "384",
+      "438",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 1,
+    "e": "Hundreds: 3<4, so 438 is greater.",
+    "d": "m"
+  },
+  {
+    "t": "Is this true or false? 650 > 605",
+    "o": [
+      "True",
+      "False",
+      "Maybe",
+      "Cannot tell"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 5>0. TRUE.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from least to greatest: 312, 132, 231",
+    "o": [
+      "132,231,312",
+      "312,132,231",
+      "231,132,312",
+      "132,312,231"
+    ],
+    "a": 0,
+    "e": "Hundreds: 1<2<3.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 760 ___ 760",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 2,
+    "e": "Same number = equal.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 523?",
+    "o": [
+      "524",
+      "533",
+      "613",
+      "623"
+    ],
+    "a": 3,
+    "e": "523+100=623.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 199 ___ 200",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "199 is one less than 200.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the greatest? 456, 546, or 465?",
+    "o": [
+      "456",
+      "465",
+      "546",
+      "Equal"
+    ],
+    "a": 2,
+    "e": "Hundreds: 5>4, so 546 is greatest.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 less than 350?",
+    "o": [
+      "349",
+      "340",
+      "360",
+      "351"
+    ],
+    "a": 1,
+    "e": "350-10=340.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 408 ___ 480",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 0<8.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from greatest to least: 528, 258, 825",
+    "o": [
+      "825,528,258",
+      "528,258,825",
+      "258,528,825",
+      "825,258,528"
+    ],
+    "a": 0,
+    "e": "Hundreds: 8>5>2.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 less than 756?",
+    "o": [
+      "646",
+      "656",
+      "756",
+      "856"
+    ],
+    "a": 1,
+    "e": "756-100=656.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 900 ___ 90",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "900 has 9 hundreds. 90 has 0 hundreds. 900>90.",
+    "d": "m"
+  },
+  {
+    "t": "Which is less: 742 or 724?",
+    "o": [
+      "742",
+      "724",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 1,
+    "e": "Hundreds equal, tens: 2<4. 724 is less.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 more than 690?",
+    "o": [
+      "600",
+      "691",
+      "700",
+      "790"
+    ],
+    "a": 2,
+    "e": "690+10=700.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 335 ___ 353",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 3<5.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is in the middle when ordered least to greatest? 410, 401, 140",
+    "o": [
+      "140",
+      "401",
+      "410",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Hundreds: 1<4=4. Then tens: 0<1. So 140 < 401 < 410. Middle is 401.",
+    "d": "m"
+  },
+  {
+    "t": "What is 1 more than 399?",
+    "o": [
+      "300",
+      "389",
+      "398",
+      "400"
+    ],
+    "a": 3,
+    "e": "399+1=400.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 807 ___ 780",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "807: 8H,0T,7O. 780: 7H,8T,0O. Hundreds: 8>7, so 807>780.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the least? 605, 506, or 650?",
+    "o": [
+      "605",
+      "506",
+      "650",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Hundreds: 5<6=6. Then tens: 0<0. Ones: 506: 5H,0T,6O vs 605: 6H,0T,5O. 5 hundreds < 6 hundreds. 506 is least.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 500 ___ 499",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "500 > 499.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 899?",
+    "o": [
+      "800",
+      "900",
+      "989",
+      "999"
+    ],
+    "a": 3,
+    "e": "899+100=999.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 234 ___ 243",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 3<4.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from least to greatest: 901, 190, 910",
+    "o": [
+      "190,901,910",
+      "901,910,190",
+      "910,901,190",
+      "190,910,901"
+    ],
+    "a": 0,
+    "e": "Hundreds: 1<9=9. Then tens: 0<1. So 190<901<910.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 less than 400?",
+    "o": [
+      "300",
+      "390",
+      "410",
+      "490"
+    ],
+    "a": 1,
+    "e": "400-10=390.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 673 ___ 637",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "Hundreds equal, tens: 7>3.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the greatest? 289, 298, or 928?",
+    "o": [
+      "289",
+      "298",
+      "928",
+      "Equal"
+    ],
+    "a": 2,
+    "e": "Hundreds: 9>2. 928 is greatest.",
+    "d": "m"
+  },
+  {
+    "t": "What is 1 less than 700?",
+    "o": [
+      "600",
+      "699",
+      "701",
+      "709"
+    ],
+    "a": 1,
+    "e": "700-1=699.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 415 ___ 415",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 2,
+    "e": "Same number.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 450?",
+    "o": [
+      "350",
+      "451",
+      "540",
+      "550"
+    ],
+    "a": 3,
+    "e": "450+100=550.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 2s: 14, 16, ___",
+    "o": [
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "a": 1,
+    "e": "16+2=18.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 5s: 25, 30, ___",
+    "o": [
+      "32",
+      "33",
+      "34",
+      "35"
+    ],
+    "a": 3,
+    "e": "30+5=35.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 10s: 40, 50, ___",
+    "o": [
+      "60",
+      "55",
+      "58",
+      "65"
+    ],
+    "a": 0,
+    "e": "50+10=60.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 100s: 200, 300, ___",
+    "o": [
+      "400",
+      "350",
+      "380",
+      "500"
+    ],
+    "a": 0,
+    "e": "300+100=400.",
+    "d": "e"
+  },
+  {
+    "t": "What is the counting rule? 6, 12, 18, 24...",
+    "o": [
+      "Add 4",
+      "Add 5",
+      "Add 6",
+      "Add 7"
+    ],
+    "a": 2,
+    "e": "Each number increases by 6.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 2s: 20, 22, 24, ___",
+    "o": [
+      "25",
+      "26",
+      "27",
+      "28"
+    ],
+    "a": 1,
+    "e": "24+2=26.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 5s: 40, 45, 50, ___",
+    "o": [
+      "55",
+      "52",
+      "54",
+      "60"
+    ],
+    "a": 0,
+    "e": "50+5=55.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 10s: 70, 80, 90, ___",
+    "o": [
+      "95",
+      "105",
+      "110",
+      "100"
+    ],
+    "a": 3,
+    "e": "90+10=100.",
+    "d": "e"
+  },
+  {
+    "t": "What number comes next? Skip count by 100s: 500, 600, 700, ___",
+    "o": [
+      "800",
+      "750",
+      "780",
+      "900"
+    ],
+    "a": 0,
+    "e": "700+100=800.",
+    "d": "e"
+  },
+  {
+    "t": "What is the counting rule? 4, 8, 12, 16...",
+    "o": [
+      "Add 4",
+      "Add 2",
+      "Add 3",
+      "Add 5"
+    ],
+    "a": 0,
+    "e": "Each number increases by 4.",
+    "d": "m"
+  }
+]

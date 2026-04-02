@@ -1,0 +1,22 @@
+[
+  {"t":"Jada has 8 crayons. She gets 3 more. How many crayons does she have now?","o":["10","12","11","5"],"a":2,"e":"Count up 3 from 8: 9, 10, 11. Jada has 11 crayons.","d":"m"},
+  {"t":"__ + 3 = 7. What is the missing number?","o":["3","10","5","4"],"a":3,"e":"Think: what plus 3 equals 7? Count back 3 from 7: 6, 5, 4. The missing number is 4.","d":"m"},
+  {"t":"Which way helps you solve 9 + 3?","o":["Count back 3 from 9","Skip count by 5s","Count up 3 from 9","Subtract 3 from 9"],"a":2,"e":"To add, count up from the bigger number. Start at 9 and count up 3: 10, 11, 12.","d":"m"},
+  {"t":"Leo had 12 grapes. He ate 3. How many grapes are left?","o":["8","15","10","9"],"a":3,"e":"Count back 3 from 12: 11, 10, 9. Leo has 9 grapes left.","d":"m"},
+  {"t":"Count up 4 from 7. What number do you reach?","o":["12","10","3","11"],"a":3,"e":"Start at 7, count up: 8, 9, 10, 11. You reach 11.","d":"e"},
+  {"t":"9 - __ = 6. What is the missing number?","o":["2","15","4","3"],"a":3,"e":"Think: 9 minus what gives 6? Count back from 9 to 6: 8, 7, 6. That is 3 steps. The answer is 3.","d":"m"},
+  {"t":"A frog is on lily pad 5. It jumps forward 4 pads. Which pad does it land on?","o":["10","1","8","9"],"a":3,"e":"Count up 4 from 5: 6, 7, 8, 9. The frog lands on pad 9.","d":"m"},
+  {"t":"Which number sentence can you solve by counting back 2?","o":["5 + 2","7 - 2","3 + 3","2 + 2"],"a":1,"e":"Counting back is for subtraction. 7 - 2 means count back 2 from 7: 6, 5.","d":"m"},
+  {"t":"There are 11 birds on a fence. 4 fly away. How many are left?","o":["8","6","15","7"],"a":3,"e":"Count back 4 from 11: 10, 9, 8, 7. There are 7 birds left.","d":"m"},
+  {"t":"6 + __ = 9. What is the missing number?","o":["2","4","15","3"],"a":3,"e":"Count up from 6 to 9: 7, 8, 9. That is 3 steps. The missing number is 3.","d":"m"},
+  {"t":"Kai has 7 toy cars. His friend gives him some more. Now Kai has 10. How many did his friend give him?","o":["2","4","17","3"],"a":3,"e":"Count up from 7 to 10: 8, 9, 10. His friend gave him 3 cars.","d":"m"},
+  {"t":"Which is the best way to solve 11 - 3?","o":["Count up 3 from 11","Count back 3 from 11","Add 3 to 11","Skip count by 3s"],"a":1,"e":"To subtract, count back. Start at 11, count back 3: 10, 9, 8.","d":"m"},
+  {"t":"__ - 2 = 8. What is the missing number?","o":["6","11","9","10"],"a":3,"e":"Think: what minus 2 equals 8? Count up 2 from 8: 9, 10. The missing number is 10.","d":"m"},
+  {"t":"A bunny hops 3 spaces from 6 on a number line. Where does it land?","o":["3","10","8","9"],"a":3,"e":"Count up 3 from 6: 7, 8, 9. The bunny lands on 9.","d":"m"},
+  {"t":"There are 14 apples. 4 are eaten. How many are left?","o":["11","10","18","9"],"a":1,"e":"Count back 4 from 14: 13, 12, 11, 10. There are 10 apples left.","d":"m"},
+  {"t":"Which problem can be solved by counting up from 8?","o":["8 - 3","3 - 8","8 + 2","2 - 8"],"a":2,"e":"Count up is for adding. For 8 + 2, start at 8 and count up 2: 9, 10.","d":"m"},
+  {"t":"Maya picks 6 flowers. Then she picks 5 more. How many flowers does she have?","o":["12","1","10","11"],"a":3,"e":"Count up 5 from 6: 7, 8, 9, 10, 11. Maya has 11 flowers.","d":"m"},
+  {"t":"7 + __ = 11. What is the missing number?","o":["3","5","18","4"],"a":3,"e":"Count up from 7 to 11: 8, 9, 10, 11. That is 4 steps. The missing number is 4.","d":"m"},
+  {"t":"Start at 15. Count back 3. What number do you land on?","o":["11","18","13","12"],"a":3,"e":"Count back from 15: 14, 13, 12. You land on 12.","d":"e"},
+  {"t":"A dog has 9 treats. It eats some. Now it has 6. How many did it eat?","o":["4","2","15","3"],"a":3,"e":"Count back from 9 to 6: 8, 7, 6. That is 3 steps. The dog ate 3 treats.","d":"m"}
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "t": "What digit is in the hundreds place of 847?",
+    "o": ["4", "7", "8", "84"],
+    "a": 2,
+    "e": "The hundreds place is the first digit on the left. In 847, that digit is 8.",
+    "d": "e"
+  },
+  {
+    "t": "How do you write 362 in expanded form?",
+    "o": ["300 + 60 + 2", "3 + 6 + 2", "360 + 2", "36 + 2"],
+    "a": 0,
+    "e": "362 = 300 + 60 + 2. Each digit is shown as its full value.",
+    "d": "m"
+  },
+  {
+    "t": "Which is greater: 519 or 591?",
+    "o": ["519", "591", "They are equal", "You cannot tell"],
+    "a": 1,
+    "e": "Both have 5 hundreds. Compare tens: 519 has 1 ten, 591 has 9 tens. Since 1 < 9, 519 < 591.",
+    "d": "e"
+  },
+  {
+    "t": "Count by 10s: 460, 470, 480, ___",
+    "o": ["481", "485", "490", "500"],
+    "a": 2,
+    "e": "Add 10 each time: 480 + 10 = 490.",
+    "d": "e"
+  },
+  {
+    "t": "What is the standard form of five hundred nine?",
+    "o": ["590", "509", "59", "5,009"],
+    "a": 1,
+    "e": "Five hundred nine = 509. There are 0 tens, so a 0 goes in the tens place.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 723?",
+    "o": ["733", "823", "724", "623"],
+    "a": 1,
+    "e": "723 + 100 = 823. Only the hundreds digit changes: 7 becomes 8.",
+    "d": "e"
+  },
+  {
+    "t": "How many tens are in 60?",
+    "o": ["0", "6", "60", "600"],
+    "a": 1,
+    "e": "60 has 6 tens. Each ten is worth 10, and 6 x 10 = 60.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 300 ___ 299",
+    "o": [">", "<", "=", "+"],
+    "a": 0,
+    "e": "300 has 3 hundreds and 299 has 2 hundreds. 3 > 2, so 300 > 299.",
+    "d": "e"
+  },
+  {
+    "t": "Count by 5s: 85, 90, 95, ___",
+    "o": ["96", "100", "105", "110"],
+    "a": 1,
+    "e": "Add 5 each time: 95 + 5 = 100.",
+    "d": "e"
+  },
+  {
+    "t": "Ben has 4 hundreds blocks and 6 ones blocks. What number did he make?",
+    "o": ["46", "406", "460", "604"],
+    "a": 1,
+    "e": "4 hundreds = 400, 0 tens = 0, 6 ones = 6. The number is 406.",
+    "d": "e"
+  }
+]

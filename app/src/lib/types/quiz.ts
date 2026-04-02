@@ -87,6 +87,14 @@ export interface ScoreEntry {
   timeTaken: string;
   /** Full answer log. */
   answers: QuizAnswer[];
+  /** Student display name at time of quiz. */
+  name: string;
+  /** Student profile UUID — used to filter scores per-student in the dashboard. */
+  studentId?: string;
+  /** Set when quiz was abandoned via Restart. */
+  abandoned?: true;
+  /** Set when quiz was quit mid-way. */
+  quit?: true;
   /** HMAC signature for tamper detection (present when signed in). */
   _sig?: string;
 }

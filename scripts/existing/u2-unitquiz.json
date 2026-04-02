@@ -1,0 +1,362 @@
+[
+  {
+    "t": "In 347, what digit is in the tens place?",
+    "o": [
+      "3",
+      "4",
+      "7",
+      "34"
+    ],
+    "a": 1,
+    "e": "3 hundreds, 4 tens, 7 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 5 in 562?",
+    "o": [
+      "5",
+      "50",
+      "500",
+      "5000"
+    ],
+    "a": 2,
+    "e": "5 is in hundreds place = 500.",
+    "d": "m"
+  },
+  {
+    "t": "What is 6 hundreds + 2 tens + 5 ones?",
+    "o": [
+      "265",
+      "526",
+      "625",
+      "652"
+    ],
+    "a": 2,
+    "e": "600+20+5=625.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 483?",
+    "o": [
+      "400+8+3",
+      "40+80+3",
+      "400+80+3",
+      "48+3"
+    ],
+    "a": 2,
+    "e": "4H+8T+3O = 400+80+3.",
+    "d": "m"
+  },
+  {
+    "t": "What is 200 + 30 + 7?",
+    "o": [
+      "237",
+      "327",
+      "273",
+      "372"
+    ],
+    "a": 0,
+    "e": "2H+3T+7O=237.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 527 ___ 572",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Both numbers have 5 hundreds — those are equal! Look at the tens: 527 has 2 tens and 572 has 7 tens. Since 2 is less than 7, use the < symbol.",
+    "d": "m"
+  },
+  {
+    "t": "What is 327 rounded to the nearest hundred?",
+    "o": [
+      "200",
+      "330",
+      "400",
+      "300"
+    ],
+    "a": 3,
+    "e": "Tens digit 2 < 5, round down to 300.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 5s: 35, 40, 45, ___",
+    "o": [
+      "48",
+      "52",
+      "55",
+      "50"
+    ],
+    "a": 3,
+    "e": "45+5=50.",
+    "d": "e"
+  },
+  {
+    "t": "What is the word form of 204?",
+    "o": [
+      "twenty-four",
+      "two hundred forty",
+      "twenty hundred four",
+      "two hundred four"
+    ],
+    "a": 3,
+    "e": "200+4=two hundred four.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 10s: 70, 80, 90, ___",
+    "o": [
+      "95",
+      "105",
+      "110",
+      "100"
+    ],
+    "a": 3,
+    "e": "90+10=100.",
+    "d": "e"
+  },
+  {
+    "t": "What is 400 + 60 + 9?",
+    "o": [
+      "469",
+      "496",
+      "649",
+      "946"
+    ],
+    "a": 0,
+    "e": "4H+6T+9O=469.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 less than 756?",
+    "o": [
+      "646",
+      "656",
+      "756",
+      "856"
+    ],
+    "a": 1,
+    "e": "756-100=656.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from least to greatest: 342, 234, 423",
+    "o": [
+      "234,342,423",
+      "342,234,423",
+      "423,342,234",
+      "234,423,342"
+    ],
+    "a": 0,
+    "e": "H: 2<3<4, so 234<342<423.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 0 in 908?",
+    "o": [
+      "0",
+      "10",
+      "90",
+      "900"
+    ],
+    "a": 0,
+    "e": "0 is in the tens place. Zero tens = 0.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 2s: 18, 20, 22, ___",
+    "o": [
+      "23",
+      "25",
+      "26",
+      "24"
+    ],
+    "a": 3,
+    "e": "22+2=24.",
+    "d": "e"
+  },
+  {
+    "t": "What is 700 + 0 + 3?",
+    "o": [
+      "73",
+      "703",
+      "730",
+      "7003"
+    ],
+    "a": 1,
+    "e": "7H+0T+3O=703.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 more than 482?",
+    "o": [
+      "472",
+      "483",
+      "492",
+      "582"
+    ],
+    "a": 2,
+    "e": "482+10=492.",
+    "d": "m"
+  },
+  {
+    "t": "What is 562 rounded to the nearest ten?",
+    "o": [
+      "562",
+      "560",
+      "570",
+      "600"
+    ],
+    "a": 1,
+    "e": "Ones=2 (<5), round down to 560.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 100s: 400, 500, 600, ___",
+    "o": [
+      "650",
+      "690",
+      "700",
+      "800"
+    ],
+    "a": 2,
+    "e": "600+100=700.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 899 ___ 901",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "H: 8<9. So 899<901.",
+    "d": "m"
+  },
+  {
+    "t": "Which digit is in the hundreds place of 735?",
+    "o": [
+      "3",
+      "5",
+      "7",
+      "73"
+    ],
+    "a": 2,
+    "e": "7 is in hundreds place.",
+    "d": "e"
+  },
+  {
+    "t": "Which number comes between 349 and 351?",
+    "o": [
+      "348",
+      "350",
+      "352",
+      "300"
+    ],
+    "a": 1,
+    "e": "349,350,351.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 519?",
+    "o": [
+      "five hundred ninety-one",
+      "five hundred nineteen",
+      "fifty nineteen",
+      "five nineteen"
+    ],
+    "a": 1,
+    "e": "500+19=five hundred nineteen.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of 200 + 40 + 7?",
+    "o": [
+      "247",
+      "274",
+      "427",
+      "742"
+    ],
+    "a": 0,
+    "e": "2H+4T+7O=247.",
+    "d": "m"
+  },
+  {
+    "t": "What number comes next? Skip count by 5s: 95, 100, 105, ___",
+    "o": [
+      "108",
+      "112",
+      "115",
+      "110"
+    ],
+    "a": 3,
+    "e": "105+5=110.",
+    "d": "e"
+  },
+  {
+    "t": "What is 100 more than 623?",
+    "o": [
+      "523",
+      "633",
+      "713",
+      "723"
+    ],
+    "a": 3,
+    "e": "623+100=723.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 less than 390?",
+    "o": [
+      "380",
+      "381",
+      "389",
+      "400"
+    ],
+    "a": 0,
+    "e": "390-10=380.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from greatest to least: 528, 825, 258",
+    "o": [
+      "825,528,258",
+      "528,825,258",
+      "258,528,825",
+      "258,825,528"
+    ],
+    "a": 0,
+    "e": "H: 8>5>2, so 825>528>258.",
+    "d": "m"
+  },
+  {
+    "t": "What is 300 + 70 + 0?",
+    "o": [
+      "307",
+      "370",
+      "3070",
+      "37"
+    ],
+    "a": 1,
+    "e": "3H+7T+0O=370.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 760 ___ 760",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 2,
+    "e": "Same number=equal.",
+    "d": "m"
+  }
+]

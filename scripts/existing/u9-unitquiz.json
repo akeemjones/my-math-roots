@@ -1,0 +1,362 @@
+[
+  {
+    "t": "How many sides does a hexagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,20.5 60.1,49.5 35.0,64.0 9.9,49.5 9.9,20.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 2,
+    "e": "6 sides.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has no sides and no corners at all?",
+    "o": [
+      "Triangle",
+      "Square",
+      "Circle",
+      "Pentagon"
+    ],
+    "a": 2,
+    "e": "Circle.",
+    "d": "e"
+  },
+  {
+    "t": "How many faces does a cube have?<svg width=\"88\" height=\"78\" viewBox=\"0 0 88 78\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"44,4 77,22 44,40 11,22\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"11,22 44,40 44,68 11,50\" fill=\"#a569bd\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"44,40 77,22 77,50 44,68\" fill=\"#8e44ad\" stroke=\"#6c3483\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 2,
+    "e": "6 faces.",
+    "d": "e"
+  },
+  {
+    "t": "A soup can is shaped like which 3D shape?<svg width=\"72\" height=\"82\" viewBox=\"0 0 72 82\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><rect x=\"9\" y=\"24\" width=\"54\" height=\"44\" fill=\"#aed6f1\" stroke=\"#2980b9\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"68\" rx=\"27\" ry=\"10\" fill=\"#85c1e9\" stroke=\"#2980b9\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"24\" rx=\"27\" ry=\"10\" fill=\"#d6eaf8\" stroke=\"#2980b9\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "Cube",
+      "Sphere",
+      "Cone",
+      "Cylinder"
+    ],
+    "a": 3,
+    "e": "Cylinder.",
+    "d": "e"
+  },
+  {
+    "t": "An ice cream cone is shaped like which 3D shape?<svg width=\"72\" height=\"82\" viewBox=\"0 0 72 82\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"36,4 7,70 65,70\" fill=\"#f9e79f\" stroke=\"#f39c12\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"70\" rx=\"29\" ry=\"9\" fill=\"#f7dc6f\" stroke=\"#f39c12\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "Cube",
+      "Sphere",
+      "Cone",
+      "Cylinder"
+    ],
+    "a": 2,
+    "e": "Cone.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has all 4 sides the same length?",
+    "o": [
+      "Rectangle",
+      "Rhombus",
+      "Square",
+      "Trapezoid"
+    ],
+    "a": 2,
+    "e": "Square=all 4 sides equal.",
+    "d": "m"
+  },
+  {
+    "t": "How many sides does an octagon have?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "An octagon has 8 sides and 8 corners.",
+    "d": "e"
+  },
+  {
+    "t": "A ball is shaped like which 3D shape?<svg width=\"72\" height=\"72\" viewBox=\"0 0 72 72\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><circle cx=\"36\" cy=\"36\" r=\"30\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"36\" rx=\"30\" ry=\"10\" fill=\"none\" stroke=\"#8e44ad\" stroke-width=\"1.5\" opacity=\"0.5\"/><ellipse cx=\"36\" cy=\"36\" rx=\"10\" ry=\"30\" fill=\"none\" stroke=\"#8e44ad\" stroke-width=\"1.5\" opacity=\"0.5\"/></svg>",
+    "o": [
+      "Cube",
+      "Sphere",
+      "Cone",
+      "Pyramid"
+    ],
+    "a": 1,
+    "e": "Sphere.",
+    "d": "e"
+  },
+  {
+    "t": "How many sides does a pentagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 62.6,26.0 52.0,58.5 18.0,58.5 7.4,26.0\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 1,
+    "e": "5 sides.",
+    "d": "e"
+  },
+  {
+    "t": "How many edges does a cube have?<svg width=\"88\" height=\"78\" viewBox=\"0 0 88 78\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"44,4 77,22 44,40 11,22\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"11,22 44,40 44,68 11,50\" fill=\"#a569bd\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"44,40 77,22 77,50 44,68\" fill=\"#8e44ad\" stroke=\"#6c3483\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "8",
+      "10",
+      "12",
+      "14"
+    ],
+    "a": 2,
+    "e": "12 edges.",
+    "d": "h"
+  },
+  {
+    "t": "A shape with 3 sides and 3 corners is called a?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,49.5 9.9,49.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Square",
+      "Triangle",
+      "Pentagon",
+      "Hexagon"
+    ],
+    "a": 1,
+    "e": "Triangle.",
+    "d": "e"
+  },
+  {
+    "t": "How many lines of symmetry does a square have?<svg width=\"82\" height=\"82\" viewBox=\"0 0 82 82\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><rect x=\"11\" y=\"11\" width=\"60\" height=\"60\" fill=\"#fde8d8\" stroke=\"#e67e22\" stroke-width=\"2\"/><line x1=\"41\" y1=\"4\" x2=\"41\" y2=\"78\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/><line x1=\"4\" y1=\"41\" x2=\"78\" y2=\"41\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/><line x1=\"7\" y1=\"7\" x2=\"75\" y2=\"75\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/><line x1=\"75\" y1=\"7\" x2=\"7\" y2=\"75\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 3,
+    "e": "4 lines.",
+    "d": "m"
+  },
+  {
+    "t": "How many faces does a square pyramid have?<svg width=\"82\" height=\"76\" viewBox=\"0 0 82 76\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"41,4 9,63 73,63\" fill=\"#aed6f1\" stroke=\"#2980b9\" stroke-width=\"2\"/><polygon points=\"9,63 41,63 41,4\" fill=\"#7fb3d3\" stroke=\"#2980b9\" stroke-width=\"2\"/><polygon points=\"9,63 73,63 73,70 9,70\" fill=\"#5d8aa8\" stroke=\"#2980b9\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 2,
+    "e": "5 faces.",
+    "d": "h"
+  },
+  {
+    "t": "Which 3D shape has zero edges?",
+    "o": [
+      "Cube",
+      "Sphere",
+      "Cone",
+      "Cylinder"
+    ],
+    "a": 1,
+    "e": "Sphere.",
+    "d": "h"
+  },
+  {
+    "t": "How many sides does a rectangle have?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "4 sides.",
+    "d": "e"
+  },
+  {
+    "t": "How many lines of symmetry does a circle have?<svg width=\"68\" height=\"68\" viewBox=\"0 0 68 68\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><line x1=\"65.0\" y1=\"34.0\" x2=\"3.0\" y2=\"34.0\" stroke=\"#e74c3c\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" opacity=\"0.7\"/><line x1=\"55.9\" y1=\"55.9\" x2=\"12.1\" y2=\"12.1\" stroke=\"#e74c3c\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" opacity=\"0.7\"/><line x1=\"34.0\" y1=\"65.0\" x2=\"34.0\" y2=\"3.0\" stroke=\"#e74c3c\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" opacity=\"0.7\"/><line x1=\"12.1\" y1=\"55.9\" x2=\"55.9\" y2=\"12.1\" stroke=\"#e74c3c\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" opacity=\"0.7\"/><circle cx=\"34\" cy=\"34\" r=\"29\" fill=\"#dff0f8\" stroke=\"#2980b9\" stroke-width=\"2.5\"/><text x=\"34\" y=\"39\" text-anchor=\"middle\" font-size=\"11\" fill=\"#2980b9\" font-weight=\"bold\">∞</text></svg>",
+    "o": [
+      "1",
+      "4",
+      "8",
+      "Unlimited"
+    ],
+    "a": 3,
+    "e": "Unlimited.",
+    "d": "h"
+  },
+  {
+    "t": "How many vertices does a cube have?<svg width=\"88\" height=\"78\" viewBox=\"0 0 88 78\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"44,4 77,22 44,40 11,22\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"11,22 44,40 44,68 11,50\" fill=\"#a569bd\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"44,40 77,22 77,50 44,68\" fill=\"#8e44ad\" stroke=\"#6c3483\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "4",
+      "6",
+      "8",
+      "12"
+    ],
+    "a": 2,
+    "e": "8 vertices.",
+    "d": "h"
+  },
+  {
+    "t": "A cereal box is shaped like which 3D shape?",
+    "o": [
+      "Cube",
+      "Sphere",
+      "Cylinder",
+      "Rectangular prism"
+    ],
+    "a": 3,
+    "e": "Rectangular prism.",
+    "d": "e"
+  },
+  {
+    "t": "How many corners does a hexagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,20.5 60.1,49.5 35.0,64.0 9.9,49.5 9.9,20.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 2,
+    "e": "6 corners.",
+    "d": "e"
+  },
+  {
+    "t": "How many lines of symmetry does a rectangle have?<svg width=\"108\" height=\"66\" viewBox=\"0 0 108 66\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><rect x=\"7\" y=\"10\" width=\"94\" height=\"46\" fill=\"#fde8d8\" stroke=\"#e67e22\" stroke-width=\"2\"/><line x1=\"54\" y1=\"4\" x2=\"54\" y2=\"62\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/><line x1=\"2\" y1=\"33\" x2=\"106\" y2=\"33\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"5,3\"/></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "2 lines.",
+    "d": "m"
+  },
+  {
+    "t": "How many vertices does a cone have?<svg width=\"72\" height=\"82\" viewBox=\"0 0 72 82\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"36,4 7,70 65,70\" fill=\"#f9e79f\" stroke=\"#f39c12\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"70\" rx=\"29\" ry=\"9\" fill=\"#f7dc6f\" stroke=\"#f39c12\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "a": 1,
+    "e": "1 vertex (tip).",
+    "d": "h"
+  },
+  {
+    "t": "How many sides does a rhombus have?",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 1,
+    "e": "4 sides.",
+    "d": "m"
+  },
+  {
+    "t": "A dice is shaped like which 3D shape?<svg width=\"88\" height=\"78\" viewBox=\"0 0 88 78\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"44,4 77,22 44,40 11,22\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"11,22 44,40 44,68 11,50\" fill=\"#a569bd\" stroke=\"#6c3483\" stroke-width=\"2\"/><polygon points=\"44,40 77,22 77,50 44,68\" fill=\"#8e44ad\" stroke=\"#6c3483\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "Sphere",
+      "Cone",
+      "Cube",
+      "Cylinder"
+    ],
+    "a": 2,
+    "e": "Cube.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has 5 sides and 5 corners?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 62.6,26.0 52.0,58.5 18.0,58.5 7.4,26.0\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Pentagon",
+      "Hexagon",
+      "Square",
+      "Octagon"
+    ],
+    "a": 0,
+    "e": "Pentagon.",
+    "d": "e"
+  },
+  {
+    "t": "How many edges does a cylinder have?<svg width=\"72\" height=\"82\" viewBox=\"0 0 72 82\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><rect x=\"9\" y=\"24\" width=\"54\" height=\"44\" fill=\"#aed6f1\" stroke=\"#2980b9\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"68\" rx=\"27\" ry=\"10\" fill=\"#85c1e9\" stroke=\"#2980b9\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"24\" rx=\"27\" ry=\"10\" fill=\"#d6eaf8\" stroke=\"#2980b9\" stroke-width=\"2\"/></svg>",
+    "o": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "a": 2,
+    "e": "2 circular edges.",
+    "d": "h"
+  },
+  {
+    "t": "Which of these letters has a vertical line of symmetry?",
+    "o": [
+      "B",
+      "C",
+      "D",
+      "A"
+    ],
+    "a": 3,
+    "e": "A has a vertical line of symmetry.",
+    "d": "m"
+  },
+  {
+    "t": "How many vertices does a triangle have?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 1,
+    "e": "3 vertices.",
+    "d": "e"
+  },
+  {
+    "t": "Which of the following is a 3D shape?",
+    "o": [
+      "Triangle",
+      "Circle",
+      "Square",
+      "Sphere"
+    ],
+    "a": 3,
+    "e": "Sphere is 3D.",
+    "d": "m"
+  },
+  {
+    "t": "What is a flat, 2-dimensional shape called?",
+    "o": [
+      "3D",
+      "Solid",
+      "2D",
+      "Volume"
+    ],
+    "a": 2,
+    "e": "2D=flat.",
+    "d": "e"
+  },
+  {
+    "t": "How many curved faces does a sphere have?<svg width=\"72\" height=\"72\" viewBox=\"0 0 72 72\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><circle cx=\"36\" cy=\"36\" r=\"30\" fill=\"#d7bde2\" stroke=\"#6c3483\" stroke-width=\"2\"/><ellipse cx=\"36\" cy=\"36\" rx=\"30\" ry=\"10\" fill=\"none\" stroke=\"#8e44ad\" stroke-width=\"1.5\" opacity=\"0.5\"/><ellipse cx=\"36\" cy=\"36\" rx=\"10\" ry=\"30\" fill=\"none\" stroke=\"#8e44ad\" stroke-width=\"1.5\" opacity=\"0.5\"/></svg>",
+    "o": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "a": 1,
+    "e": "1 curved face.",
+    "d": "h"
+  }
+]

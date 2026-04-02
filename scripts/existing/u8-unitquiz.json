@@ -1,0 +1,362 @@
+[
+  {
+    "t": "A pizza has 4 equal slices and 1 slice is eaten. What fraction was eaten?",
+    "o": [
+      "1/2",
+      "1/3",
+      "1/4",
+      "1/8"
+    ],
+    "a": 2,
+    "e": "1 of 4 equal slices=1/4.",
+    "d": "e"
+  },
+  {
+    "t": "Which fraction is larger: 1/2 or 1/4?",
+    "o": [
+      "1/2",
+      "1/4",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 0,
+    "e": "1/2>1/4. Half is bigger.",
+    "d": "e"
+  },
+  {
+    "t": "What is the bottom number of a fraction called?",
+    "o": [
+      "Numerator",
+      "Denominator",
+      "Whole",
+      "Part"
+    ],
+    "a": 1,
+    "e": "Denominator=total parts.",
+    "d": "e"
+  },
+  {
+    "t": "What does 4/4 equal?",
+    "o": [
+      "One half",
+      "1 whole",
+      "Zero parts",
+      "2 wholes"
+    ],
+    "a": 1,
+    "e": "All parts=1 whole.",
+    "d": "m"
+  },
+  {
+    "t": "A ribbon is cut into 8 equal pieces and 3 are used. What fraction of the ribbon is that?",
+    "o": [
+      "3/5",
+      "5/8",
+      "3/8",
+      "8/3"
+    ],
+    "a": 2,
+    "e": "3 of 8=3/8.",
+    "d": "m"
+  },
+  {
+    "t": "Which fraction is smaller: 1/4 or 1/8?",
+    "o": [
+      "1/4",
+      "1/8",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 1,
+    "e": "More pieces=smaller each. 1/8<1/4.",
+    "d": "e"
+  },
+  {
+    "t": "What does the fraction 1/2 mean?",
+    "o": [
+      "1 of 4",
+      "1 of 2",
+      "2 of 1",
+      "2 of 2"
+    ],
+    "a": 1,
+    "e": "1 out of 2 equal parts.",
+    "d": "e"
+  },
+  {
+    "t": "A shape has 4 equal parts and 2 parts are shaded. What fraction is shaded?",
+    "o": [
+      "1/4",
+      "1/2",
+      "3/4",
+      "2/6"
+    ],
+    "a": 1,
+    "e": "2 of 4=2/4=1/2.",
+    "d": "m"
+  },
+  {
+    "t": "Which list orders 1/4, 1/8, and 1/2 from least to greatest?",
+    "o": [
+      "1/8,1/4,1/2",
+      "1/2,1/4,1/8",
+      "1/4,1/8,1/2",
+      "1/8,1/2,1/4"
+    ],
+    "a": 0,
+    "e": "Smallest piece first.",
+    "d": "m"
+  },
+  {
+    "t": "What is the top number of a fraction called?",
+    "o": [
+      "Denominator",
+      "Numerator",
+      "Whole",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Numerator=parts you have.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol correctly compares 5/8 and 3/8?",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "x"
+    ],
+    "a": 1,
+    "e": "Same denom,5>3,so 5/8>3/8.",
+    "d": "m"
+  },
+  {
+    "t": "A square is cut into 2 equal parts. What fraction does each part represent?",
+    "o": [
+      "1/4",
+      "1/3",
+      "1/2",
+      "2/1"
+    ],
+    "a": 2,
+    "e": "2 equal parts=each is 1/2.",
+    "d": "e"
+  },
+  {
+    "t": "How many fourths are in one whole?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "8"
+    ],
+    "a": 2,
+    "e": "4/4=1 whole.",
+    "d": "m"
+  },
+  {
+    "t": "For a shape to show fractions, all parts must be what?",
+    "o": [
+      "Any size",
+      "Equal size",
+      "Different",
+      "3+"
+    ],
+    "a": 1,
+    "e": "Parts must always be equal.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol correctly compares 1/4 and 1/2?",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "x"
+    ],
+    "a": 0,
+    "e": "1/4<1/2. Larger denom=smaller piece.",
+    "d": "m"
+  },
+  {
+    "t": "A pie has 8 equal slices and 2 slices are eaten. What fraction was eaten?",
+    "o": [
+      "2/10",
+      "1/4",
+      "2/8",
+      "8/2"
+    ],
+    "a": 2,
+    "e": "2 of 8=2/8.",
+    "d": "m"
+  },
+  {
+    "t": "What does the fraction 3/4 mean?",
+    "o": [
+      "3 whole objects",
+      "3 of 4 equal parts",
+      "4 of 3 equal parts",
+      "3 plus 4 parts"
+    ],
+    "a": 1,
+    "e": "Numerator 3, denom 4.",
+    "d": "e"
+  },
+  {
+    "t": "How many eighths are in one whole?",
+    "o": [
+      "2",
+      "4",
+      "6",
+      "8"
+    ],
+    "a": 3,
+    "e": "8/8=1 whole.",
+    "d": "m"
+  },
+  {
+    "t": "Which fraction below is equal to 1/2?",
+    "o": [
+      "2/8",
+      "2/4",
+      "3/8",
+      "3/4"
+    ],
+    "a": 1,
+    "e": "2/4=1/2.",
+    "d": "m"
+  },
+  {
+    "t": "A sandwich is cut in half. What fraction does each piece represent?",
+    "o": [
+      "1/4",
+      "1/3",
+      "1/2",
+      "2/2"
+    ],
+    "a": 2,
+    "e": "Cut in half=1/2 each.",
+    "d": "e"
+  },
+  {
+    "t": "Which number sentence correctly compares 5/8 and 7/8?",
+    "o": [
+      "5/8>7/8",
+      "5/8<7/8",
+      "5/8=7/8",
+      "Cannot"
+    ],
+    "a": 1,
+    "e": "Same denom,5<7.",
+    "d": "m"
+  },
+  {
+    "t": "A rectangle has 8 equal parts and 5 are shaded. What fraction is NOT shaded?",
+    "o": [
+      "5/8",
+      "3/8",
+      "5/3",
+      "3/5"
+    ],
+    "a": 1,
+    "e": "8−5=3 parts not shaded. 3 out of 8 = 3/8.",
+    "d": "h"
+  },
+  {
+    "t": "Which symbol correctly compares 1/8 and 1/4?",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "x"
+    ],
+    "a": 0,
+    "e": "1/8<1/4.",
+    "d": "m"
+  },
+  {
+    "t": "A whole is divided into 4 equal pieces. What fraction does each piece represent?",
+    "o": [
+      "1/2",
+      "1/3",
+      "1/4",
+      "1/8"
+    ],
+    "a": 2,
+    "e": "4 pieces=each is 1/4.",
+    "d": "e"
+  },
+  {
+    "t": "Which is the greatest fraction: 1/2, 3/8, or 1/4?",
+    "o": [
+      "1/4",
+      "3/8",
+      "1/2",
+      "All equal"
+    ],
+    "a": 2,
+    "e": "1/2=4/8>3/8.",
+    "d": "m"
+  },
+  {
+    "t": "When the numerator equals the denominator, the fraction equals what?",
+    "o": [
+      "Zero parts",
+      "One half",
+      "1 whole",
+      "2 wholes"
+    ],
+    "a": 2,
+    "e": "All parts present=1 whole.",
+    "d": "m"
+  },
+  {
+    "t": "A shape has 8 equal parts and 3 are colored. What fraction is colored?",
+    "o": [
+      "3/5",
+      "3/8",
+      "8/3",
+      "5/8"
+    ],
+    "a": 1,
+    "e": "3 of 8=3/8.",
+    "d": "e"
+  },
+  {
+    "t": "A circle is cut into 3 parts — two large and one small. Can this show a valid fraction?",
+    "o": [
+      "Yes, because there are 3 parts",
+      "No, all parts must be equal size",
+      "Yes, the small piece is 1/3",
+      "Yes, any three parts make thirds"
+    ],
+    "a": 1,
+    "e": "Fractions require all parts to be equal in size.",
+    "d": "h"
+  },
+  {
+    "t": "Which fraction is larger: 3/4 or 3/8?",
+    "o": [
+      "3/4",
+      "3/8",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 0,
+    "e": "Same numerator,smaller denom=bigger piece.3/4>3/8.",
+    "d": "h"
+  },
+  {
+    "t": "Which number sentence correctly compares 7/8 and 5/8?",
+    "o": [
+      "7/8>5/8",
+      "7/8<5/8",
+      "Equal",
+      "Cannot"
+    ],
+    "a": 0,
+    "e": "Same denom,7>5.",
+    "d": "m"
+  }
+]

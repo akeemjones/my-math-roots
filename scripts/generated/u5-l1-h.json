@@ -1,0 +1,242 @@
+[
+  {
+    "t": "Deshawn says 2 dimes and 1 nickel = 30¢. Is he correct?",
+    "o": [
+      "Yes, that is correct",
+      "No, it is 25¢",
+      "No, it is 35¢",
+      "No, it is 20¢"
+    ],
+    "a": 1,
+    "e": "2 dimes = 10 + 10 = 20¢. 1 nickel = 5¢. Total: 20 + 5 = 25¢, not 30¢. Deshawn made an error.",
+    "d": "h"
+  },
+  {
+    "t": "Which costs more: 7 nickels or 3 dimes and 1 penny?",
+    "o": [
+      "7 nickels",
+      "3 dimes and 1 penny",
+      "They are equal",
+      "Not enough info"
+    ],
+    "a": 0,
+    "e": "7 nickels = 5 × 7 = 35¢. 3 dimes + 1 penny = 30 + 1 = 31¢. 35¢ > 31¢, so 7 nickels are more.",
+    "d": "m"
+  },
+  {
+    "t": "You need exactly 36¢. You have only dimes, nickels, and pennies. Which set of coins works?",
+    "o": [
+      "3 dimes, 1 nickel, 1 penny",
+      "3 dimes, 1 nickel",
+      "2 dimes, 3 nickels, 1 penny",
+      "Both A and C"
+    ],
+    "a": 3,
+    "e": "A: 30 + 5 + 1 = 36¢. B: 30 + 5 = 35¢ (wrong). C: 20 + 15 + 1 = 36¢. Both A and C equal 36¢.",
+    "d": "h"
+  },
+  {
+    "t": "Mia has 2 quarters and 3 dimes. Jayden has 7 dimes and 1 nickel. Who has more money?",
+    "o": [
+      "Mia",
+      "Jayden",
+      "They have the same",
+      "Not enough info"
+    ],
+    "a": 0,
+    "e": "Mia: 25 + 25 + 10 + 10 + 10 = 80¢. Jayden: 70 + 5 = 75¢. 80¢ > 75¢, so Mia has more.",
+    "d": "m"
+  },
+  {
+    "t": "Priya says 4 quarters = $1.00. Kai says 10 dimes = $1.00. Who is right?",
+    "o": [
+      "Only Priya",
+      "Only Kai",
+      "Both are right",
+      "Neither is right"
+    ],
+    "a": 2,
+    "e": "4 quarters = 25 × 4 = 100¢ = $1.00. 10 dimes = 10 × 10 = 100¢ = $1.00. Both are correct!",
+    "d": "m"
+  },
+  {
+    "t": "You buy a sticker for 45¢ and pay with 3 quarters. How much change do you get back?",
+    "o": [
+      "20¢",
+      "25¢",
+      "30¢",
+      "35¢"
+    ],
+    "a": 2,
+    "e": "3 quarters = 75¢. Change = 75 - 45 = 30¢. You get 30¢ back.",
+    "d": "h"
+  },
+  {
+    "t": "Sam has 3 dimes. He finds 2 more nickels on the ground. Now how much does he have in all?",
+    "o": [
+      "32¢",
+      "35¢",
+      "40¢",
+      "50¢"
+    ],
+    "a": 2,
+    "e": "Step 1: 3 dimes = 30¢. Step 2: 2 nickels = 10¢. Step 3: 30 + 10 = 40¢ in all.",
+    "d": "m"
+  },
+  {
+    "t": "Li says that 5 nickels = 2 dimes + 1 nickel. Is she correct?",
+    "o": [
+      "Yes, both equal 25¢",
+      "No, 5 nickels is more",
+      "No, 2 dimes + 1 nickel is more",
+      "No, 5 nickels = 20¢"
+    ],
+    "a": 0,
+    "e": "5 nickels = 5 × 5 = 25¢. 2 dimes + 1 nickel = 20 + 5 = 25¢. They are equal, so Li is correct!",
+    "d": "m"
+  },
+  {
+    "t": "You have 4 quarters. You give away 1 quarter and 2 dimes. How much do you have left?",
+    "o": [
+      "45¢",
+      "55¢",
+      "75¢",
+      "80¢"
+    ],
+    "a": 1,
+    "e": "Start: 4 quarters = 100¢. You give away 25 + 20 = 45¢. Left: 100 - 45 = 55¢.",
+    "d": "h"
+  },
+  {
+    "t": "Which way uses the FEWEST coins to make 35¢?",
+    "o": [
+      "1 quarter and 1 dime",
+      "3 dimes and 1 nickel",
+      "7 nickels",
+      "1 quarter, 1 nickel, 5 pennies"
+    ],
+    "a": 0,
+    "e": "A: 2 coins. B: 4 coins. C: 7 coins. D: 7 coins. 1 quarter + 1 dime uses only 2 coins — the fewest!",
+    "d": "h"
+  },
+  {
+    "t": "Amara has 65¢. She spends 1 quarter. How much does she have left?",
+    "o": [
+      "35¢",
+      "40¢",
+      "45¢",
+      "50¢"
+    ],
+    "a": 1,
+    "e": "Amara starts with 65¢ and spends 25¢. 65 - 25 = 40¢ remaining.",
+    "d": "m"
+  },
+  {
+    "t": "Carlos says 1 quarter + 3 dimes + 1 nickel = 55¢. Is he right?",
+    "o": [
+      "Yes, that is correct",
+      "No, it is 50¢",
+      "No, it is 60¢",
+      "No, it is 65¢"
+    ],
+    "a": 2,
+    "e": "25 + 10 + 10 + 10 + 5 = 60¢, not 55¢. Carlos added incorrectly.",
+    "d": "h"
+  },
+  {
+    "t": "You need exactly 47¢. Which set of coins works?",
+    "o": [
+      "1 quarter, 2 dimes, 2 pennies",
+      "1 quarter, 1 dime, 2 nickels",
+      "4 dimes, 1 nickel, 2 pennies",
+      "Both A and C"
+    ],
+    "a": 3,
+    "e": "A: 25 + 20 + 2 = 47¢. B: 25 + 10 + 10 = 45¢ (wrong). C: 40 + 5 + 2 = 47¢. Both A and C work!",
+    "d": "h"
+  },
+  {
+    "t": "A toy costs 80¢. You pay with $1.00. What coins could you get as change?",
+    "o": [
+      "2 dimes",
+      "1 dime and 2 nickels",
+      "4 nickels",
+      "All of the above"
+    ],
+    "a": 3,
+    "e": "Change = $1.00 - 80¢ = 20¢. 2 dimes = 20¢. 1 dime + 2 nickels = 20¢. 4 nickels = 20¢. All work!",
+    "d": "h"
+  },
+  {
+    "t": "Nia has 2 quarters, 1 dime, and 4 pennies. Olivia has 5 dimes and 3 nickels. Who has more?",
+    "o": [
+      "Nia",
+      "Olivia",
+      "They have the same amount",
+      "Not enough info"
+    ],
+    "a": 1,
+    "e": "Nia: 25 + 25 + 10 + 4 = 64¢. Olivia: 50 + 15 = 65¢. 65¢ > 64¢, so Olivia has 1¢ more.",
+    "d": "m"
+  },
+  {
+    "t": "You buy an eraser for 15¢ and a pencil for 30¢. You pay with 3 quarters. How much change?",
+    "o": [
+      "15¢",
+      "20¢",
+      "25¢",
+      "30¢"
+    ],
+    "a": 3,
+    "e": "Step 1: Total cost = 15 + 30 = 45¢. Step 2: 3 quarters = 75¢. Step 3: Change = 75 - 45 = 30¢.",
+    "d": "h"
+  },
+  {
+    "t": "Which strategy finds the total of 2 quarters, 1 dime, and 3 pennies FASTEST?",
+    "o": [
+      "Count all coins by 1s",
+      "Start with quarters, then dimes, then pennies",
+      "Start with pennies, then dimes, then quarters",
+      "Add only the quarters"
+    ],
+    "a": 1,
+    "e": "Start with the biggest coins first! Quarters: 25, 50. Dime: 60. Pennies: 61, 62, 63. Total = 63¢.",
+    "d": "m"
+  },
+  {
+    "t": "Zara wants to make 50¢ with exactly 5 coins. Which set works?",
+    "o": [
+      "2 quarters",
+      "5 dimes",
+      "1 quarter and 3 dimes",
+      "5 nickels"
+    ],
+    "a": 1,
+    "e": "A: 2 coins (not 5). B: 5 dimes = 50¢ with exactly 5 coins! C: 4 coins (not 5). D: 5 nickels = 25¢ (not 50¢). B is correct.",
+    "d": "h"
+  },
+  {
+    "t": "Aiden has 90¢ in dimes only. How many dimes does he have?",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 2,
+    "e": "Each dime = 10¢. To find the number of dimes: 90 ÷ 10 = 9 dimes.",
+    "d": "m"
+  },
+  {
+    "t": "You have 3 quarters and 1 dime. You buy a snack for 60¢. How much is left?",
+    "o": [
+      "15¢",
+      "20¢",
+      "25¢",
+      "30¢"
+    ],
+    "a": 2,
+    "e": "Step 1: 3 quarters + 1 dime = 75 + 10 = 85¢. Step 2: 85 - 60 = 25¢ left.",
+    "d": "h"
+  }
+]

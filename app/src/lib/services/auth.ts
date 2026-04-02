@@ -69,9 +69,22 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
 
 /**
  * Sign out the current parent session.
+ * Clears all student-scoped localStorage data to prevent data leaking
+ * to the next family that signs in on this device.
  */
 export async function signOut(): Promise<{ error: string | null }> {
   const { error } = await supabase.auth.signOut();
+
+  // Clear all student/progress data from localStorage
+  const keysToRemove = [
+    'wb_sc5_v2', 'wb_mastery', 'wb_streak', 'wb_done5',
+    'wb_apptime', 'wb_act_dates', 'wb_a11y', 'wb_settings_v2',
+    'mmr_family_profiles', 'mmr_active_student', 'mmr_guest_mode',
+  ];
+  for (const key of keysToRemove) {
+    try { localStorage.removeItem(key); } catch { /* SSR guard */ }
+  }
+
   return { error: error?.message ?? null };
 }
 
@@ -96,9 +109,13 @@ export async function getAuthUser(): Promise<AuthUser | null> {
  * Falls back to a direct table query if the RPC is unavailable.
  */
 export async function getStudentProfiles(): Promise<ProfilesResult> {
+  const user = (await supabase.auth.getUser()).data.user;
+  if (!user) return { profiles: [], error: 'Not authenticated' };
+
   const { data, error } = await supabase
     .from('student_profiles')
-    .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, pin_hash, family_code, parent_id, created_at')
+    .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, family_code, parent_id, created_at')
+    .eq('parent_id', user.id)
     .order('created_at', { ascending: true });
 
   if (error) return { profiles: [], error: error.message };
@@ -110,7 +127,6 @@ export async function getStudentProfiles(): Promise<ProfilesResult> {
     avatar_emoji: row.avatar_emoji,
     avatar_color_from: row.avatar_color_from,
     avatar_color_to: row.avatar_color_to,
-    pin_hash: row.pin_hash,
     family_code: row.family_code,
     parent_id: row.parent_id,
   }));
@@ -149,7 +165,6 @@ export async function createStudentProfile(params: {
       avatar_emoji: data.avatar_emoji,
       avatar_color_from: data.avatar_color_from,
       avatar_color_to: data.avatar_color_to,
-      pin_hash: data.pin_hash,
       family_code: data.family_code,
     },
     error: null,

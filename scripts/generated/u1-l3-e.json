@@ -1,0 +1,22 @@
+[
+  {"t":"What number goes with 9 to make 10?","o":["2","0","3","1"],"a":3,"e":"9 + 1 = 10. The number 1 goes with 9 to make 10.","d":"e"},
+  {"t":"What number goes with 8 to make 10?","o":["3","1","2","4"],"a":2,"e":"8 + 2 = 10. The number 2 goes with 8 to make 10.","d":"e"},
+  {"t":"What number goes with 7 to make 10?","o":["4","2","3","1"],"a":2,"e":"7 + 3 = 10. The number 3 goes with 7 to make 10.","d":"e"},
+  {"t":"What number goes with 6 to make 10?","o":["3","5","4","6"],"a":2,"e":"6 + 4 = 10. The number 4 goes with 6 to make 10.","d":"e"},
+  {"t":"What number goes with 5 to make 10?","o":["4","6","5","3"],"a":2,"e":"5 + 5 = 10. The number 5 goes with 5 to make 10.","d":"e"},
+  {"t":"What is 10 + 3?","o":["12","14","13","11"],"a":2,"e":"When you add to 10, just put the number after the 1. 10 + 3 = 13.","d":"e"},
+  {"t":"What is 10 + 5?","o":["14","16","50","15"],"a":3,"e":"10 + 5 = 15. Adding to 10 is easy!","d":"e"},
+  {"t":"What is 10 + 7?","o":["18","17","16","71"],"a":1,"e":"10 + 7 = 17.","d":"e"},
+  {"t":"What is 10 + 1?","o":["12","9","10","11"],"a":3,"e":"10 + 1 = 11.","d":"e"},
+  {"t":"What is 10 + 9?","o":["20","18","91","19"],"a":3,"e":"10 + 9 = 19.","d":"e"},
+  {"t":"What number goes with 4 to make 10?","o":["5","7","4","6"],"a":3,"e":"4 + 6 = 10. The number 6 goes with 4.","d":"e"},
+  {"t":"What number goes with 3 to make 10?","o":["6","8","7","5"],"a":2,"e":"3 + 7 = 10. The number 7 goes with 3.","d":"e"},
+  {"t":"What number goes with 2 to make 10?","o":["7","9","6","8"],"a":3,"e":"2 + 8 = 10. The number 8 goes with 2.","d":"e"},
+  {"t":"What number goes with 1 to make 10?","o":["8","10","9","7"],"a":2,"e":"1 + 9 = 10. The number 9 goes with 1.","d":"e"},
+  {"t":"What is 10 + 2?","o":["11","20","13","12"],"a":3,"e":"10 + 2 = 12.","d":"e"},
+  {"t":"What is 10 + 4?","o":["40","13","14","15"],"a":2,"e":"10 + 4 = 14.","d":"e"},
+  {"t":"What is 10 + 6?","o":["60","17","15","16"],"a":3,"e":"10 + 6 = 16.","d":"e"},
+  {"t":"What is 10 + 8?","o":["80","19","17","18"],"a":3,"e":"10 + 8 = 18.","d":"e"},
+  {"t":"What number goes with 10 to make 10?","o":["1","10","0","5"],"a":2,"e":"10 + 0 = 10. You need 0 more to make 10.","d":"e"},
+  {"t":"What is 10 + 0?","o":["0","11","1","10"],"a":3,"e":"10 + 0 = 10. Adding zero changes nothing.","d":"e"}
+]

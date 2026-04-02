@@ -1,0 +1,362 @@
+[
+  {
+    "t": "How many tally marks are shown? <svg width=\"65\" height=\"30\" viewBox=\"0 0 65 30\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><line x1=\"5\" y1=\"3\" x2=\"5\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"13\" y1=\"3\" x2=\"13\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"21\" y1=\"3\" x2=\"21\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"29\" y1=\"3\" x2=\"29\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"3\" y1=\"27\" x2=\"29\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"45\" y1=\"3\" x2=\"45\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"53\" y1=\"3\" x2=\"53\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>",
+    "o": [
+      "5",
+      "6",
+      "8",
+      "7"
+    ],
+    "a": 3,
+    "e": "One crossed group (5) plus 2 more = 7.",
+    "d": "e"
+  },
+  {
+    "t": "How many tally marks are shown? <svg width=\"81\" height=\"30\" viewBox=\"0 0 81 30\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><line x1=\"5\" y1=\"3\" x2=\"5\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"13\" y1=\"3\" x2=\"13\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"21\" y1=\"3\" x2=\"21\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"29\" y1=\"3\" x2=\"29\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"3\" y1=\"27\" x2=\"29\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"45\" y1=\"3\" x2=\"45\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"53\" y1=\"3\" x2=\"53\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"61\" y1=\"3\" x2=\"61\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"69\" y1=\"3\" x2=\"69\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>",
+    "o": [
+      "9",
+      "8",
+      "10",
+      "11"
+    ],
+    "a": 0,
+    "e": "One crossed group (5) plus 4 more = 9.",
+    "d": "e"
+  },
+  {
+    "t": "How many tally marks are shown? <svg width=\"105\" height=\"30\" viewBox=\"0 0 105 30\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><line x1=\"5\" y1=\"3\" x2=\"5\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"13\" y1=\"3\" x2=\"13\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"21\" y1=\"3\" x2=\"21\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"29\" y1=\"3\" x2=\"29\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"3\" y1=\"27\" x2=\"29\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"45\" y1=\"3\" x2=\"45\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"53\" y1=\"3\" x2=\"53\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"61\" y1=\"3\" x2=\"61\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"69\" y1=\"3\" x2=\"69\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"43\" y1=\"27\" x2=\"69\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"85\" y1=\"3\" x2=\"85\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"93\" y1=\"3\" x2=\"93\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>",
+    "o": [
+      "10",
+      "11",
+      "13",
+      "12"
+    ],
+    "a": 3,
+    "e": "Two crossed groups (10) plus 2 more = 12.",
+    "d": "m"
+  },
+  {
+    "t": "In a tally chart, what does a crossed group of 5 equal?",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 2,
+    "e": "4 marks + 1 diagonal = group of 5.",
+    "d": "m"
+  },
+  {
+    "t": "A tally chart shows Spring:7, Summer:9, Fall:5, Winter:3. Total?",
+    "o": [
+      "24",
+      "22",
+      "26",
+      "28"
+    ],
+    "a": 0,
+    "e": "7+9+5+3=24.",
+    "d": "m"
+  },
+  {
+    "t": "Tally chart: Spring:7,Summer:9,Fall:5,Winter:3. Least popular?",
+    "o": [
+      "Spring",
+      "Summer",
+      "Fall",
+      "Winter"
+    ],
+    "a": 3,
+    "e": "Winter had only 3.",
+    "d": "m"
+  },
+  {
+    "t": "Which group has more tally marks? <svg width=\"280\" height=\"70\" viewBox=\"0 0 280 70\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"6\" y=\"12\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Dogs:</text><line x1=\"50\" y1=\"3\" x2=\"50\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"58\" y1=\"3\" x2=\"58\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"66\" y1=\"3\" x2=\"66\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"74\" y1=\"3\" x2=\"74\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"48\" y1=\"27\" x2=\"74\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"90\" y1=\"3\" x2=\"90\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"98\" y1=\"3\" x2=\"98\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><text x=\"6\" y=\"46\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Cats:</text><line x1=\"50\" y1=\"37\" x2=\"50\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"58\" y1=\"37\" x2=\"58\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"66\" y1=\"37\" x2=\"66\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"74\" y1=\"37\" x2=\"74\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"48\" y1=\"61\" x2=\"74\" y2=\"37\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>",
+    "o": [
+      "Dogs with 7",
+      "Cats with 5",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 0,
+    "e": "Dogs:7, Cats:5. Dogs have more.",
+    "d": "m"
+  },
+  {
+    "t": "How many more marks does the top row have? <svg width=\"280\" height=\"70\" viewBox=\"0 0 280 70\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"6\" y=\"12\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Boys:</text><line x1=\"50\" y1=\"3\" x2=\"50\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"58\" y1=\"3\" x2=\"58\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"66\" y1=\"3\" x2=\"66\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"74\" y1=\"3\" x2=\"74\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"48\" y1=\"27\" x2=\"74\" y2=\"3\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"90\" y1=\"3\" x2=\"90\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"98\" y1=\"3\" x2=\"98\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"106\" y1=\"3\" x2=\"106\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"114\" y1=\"3\" x2=\"114\" y2=\"27\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><text x=\"6\" y=\"46\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Girls:</text><line x1=\"50\" y1=\"37\" x2=\"50\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"58\" y1=\"37\" x2=\"58\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"66\" y1=\"37\" x2=\"66\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"74\" y1=\"37\" x2=\"74\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"48\" y1=\"61\" x2=\"74\" y2=\"37\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><line x1=\"90\" y1=\"37\" x2=\"90\" y2=\"61\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>",
+    "o": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "a": 0,
+    "e": "Boys:9, Girls:6. 9−6=3.",
+    "d": "m"
+  },
+  {
+    "t": "Which pet is most popular? <svg width=\"520\" height=\"312\" viewBox=\"0 0 220 130\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"110\" y=\"12\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Favorite Pets Survey</text><line x1=\"30\" y1=\"18\" x2=\"30\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"108\" x2=\"215\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><text x=\"26\" y=\"111\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">0</text><line x1=\"28\" y1=\"108\" x2=\"32\" y2=\"108\" stroke=\"#999\" stroke-width=\"1\"/><text x=\"26\" y=\"91\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">2</text><line x1=\"28\" y1=\"88\" x2=\"32\" y2=\"88\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"88\" x2=\"215\" y2=\"88\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"71\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">4</text><line x1=\"28\" y1=\"68\" x2=\"32\" y2=\"68\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"68\" x2=\"215\" y2=\"68\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"51\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">6</text><line x1=\"28\" y1=\"48\" x2=\"32\" y2=\"48\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"48\" x2=\"215\" y2=\"48\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"31\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">8</text><line x1=\"28\" y1=\"28\" x2=\"32\" y2=\"28\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"28\" x2=\"215\" y2=\"28\" stroke=\"#eee\" stroke-width=\"0.5\"/><rect x=\"35\" y=\"28\" width=\"40\" height=\"80\" fill=\"#e74c3c\" rx=\"2\"/><text x=\"55\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">8</text><text x=\"55\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Dog</text><rect x=\"80\" y=\"48\" width=\"40\" height=\"60\" fill=\"#e67e22\" rx=\"2\"/><text x=\"100\" y=\"46\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">6</text><text x=\"100\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Cat</text><rect x=\"125\" y=\"18\" width=\"40\" height=\"90\" fill=\"#27ae60\" rx=\"2\"/><text x=\"145\" y=\"16\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">9</text><text x=\"145\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Fish</text><rect x=\"170\" y=\"68\" width=\"40\" height=\"40\" fill=\"#8e44ad\" rx=\"2\"/><text x=\"190\" y=\"66\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">4</text><text x=\"190\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Bunny</text></svg>",
+    "o": [
+      "Dog",
+      "Cat",
+      "Bunny",
+      "Fish"
+    ],
+    "a": 3,
+    "e": "Fish has the tallest bar (9).",
+    "d": "e"
+  },
+  {
+    "t": "How many more chose Dog than Bunny? <svg width=\"520\" height=\"312\" viewBox=\"0 0 220 130\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"110\" y=\"12\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Favorite Pets Survey</text><line x1=\"30\" y1=\"18\" x2=\"30\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"108\" x2=\"215\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><text x=\"26\" y=\"111\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">0</text><line x1=\"28\" y1=\"108\" x2=\"32\" y2=\"108\" stroke=\"#999\" stroke-width=\"1\"/><text x=\"26\" y=\"91\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">2</text><line x1=\"28\" y1=\"88\" x2=\"32\" y2=\"88\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"88\" x2=\"215\" y2=\"88\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"71\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">4</text><line x1=\"28\" y1=\"68\" x2=\"32\" y2=\"68\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"68\" x2=\"215\" y2=\"68\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"51\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">6</text><line x1=\"28\" y1=\"48\" x2=\"32\" y2=\"48\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"48\" x2=\"215\" y2=\"48\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"31\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">8</text><line x1=\"28\" y1=\"28\" x2=\"32\" y2=\"28\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"28\" x2=\"215\" y2=\"28\" stroke=\"#eee\" stroke-width=\"0.5\"/><rect x=\"35\" y=\"28\" width=\"40\" height=\"80\" fill=\"#e74c3c\" rx=\"2\"/><text x=\"55\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">8</text><text x=\"55\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Dog</text><rect x=\"80\" y=\"48\" width=\"40\" height=\"60\" fill=\"#e67e22\" rx=\"2\"/><text x=\"100\" y=\"46\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">6</text><text x=\"100\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Cat</text><rect x=\"125\" y=\"18\" width=\"40\" height=\"90\" fill=\"#27ae60\" rx=\"2\"/><text x=\"145\" y=\"16\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">9</text><text x=\"145\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Fish</text><rect x=\"170\" y=\"68\" width=\"40\" height=\"40\" fill=\"#8e44ad\" rx=\"2\"/><text x=\"190\" y=\"66\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">4</text><text x=\"190\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Bunny</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "5",
+      "4"
+    ],
+    "a": 3,
+    "e": "Dog:8, Bunny:4. 8−4=4 more.",
+    "d": "m"
+  },
+  {
+    "t": "How many students in total? <svg width=\"520\" height=\"312\" viewBox=\"0 0 220 130\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"110\" y=\"12\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Favorite Pets Survey</text><line x1=\"30\" y1=\"18\" x2=\"30\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"108\" x2=\"215\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><text x=\"26\" y=\"111\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">0</text><line x1=\"28\" y1=\"108\" x2=\"32\" y2=\"108\" stroke=\"#999\" stroke-width=\"1\"/><text x=\"26\" y=\"91\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">2</text><line x1=\"28\" y1=\"88\" x2=\"32\" y2=\"88\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"88\" x2=\"215\" y2=\"88\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"71\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">4</text><line x1=\"28\" y1=\"68\" x2=\"32\" y2=\"68\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"68\" x2=\"215\" y2=\"68\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"51\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">6</text><line x1=\"28\" y1=\"48\" x2=\"32\" y2=\"48\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"48\" x2=\"215\" y2=\"48\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"31\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">8</text><line x1=\"28\" y1=\"28\" x2=\"32\" y2=\"28\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"28\" x2=\"215\" y2=\"28\" stroke=\"#eee\" stroke-width=\"0.5\"/><rect x=\"35\" y=\"28\" width=\"40\" height=\"80\" fill=\"#e74c3c\" rx=\"2\"/><text x=\"55\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">8</text><text x=\"55\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Dog</text><rect x=\"80\" y=\"48\" width=\"40\" height=\"60\" fill=\"#e67e22\" rx=\"2\"/><text x=\"100\" y=\"46\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">6</text><text x=\"100\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Cat</text><rect x=\"125\" y=\"18\" width=\"40\" height=\"90\" fill=\"#27ae60\" rx=\"2\"/><text x=\"145\" y=\"16\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">9</text><text x=\"145\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Fish</text><rect x=\"170\" y=\"68\" width=\"40\" height=\"40\" fill=\"#8e44ad\" rx=\"2\"/><text x=\"190\" y=\"66\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">4</text><text x=\"190\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Bunny</text></svg>",
+    "o": [
+      "27",
+      "25",
+      "29",
+      "31"
+    ],
+    "a": 0,
+    "e": "8+6+9+4=27.",
+    "d": "m"
+  },
+  {
+    "t": "Which sport is most popular? <svg width=\"520\" height=\"312\" viewBox=\"0 0 220 130\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"110\" y=\"12\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Favorite Sports</text><line x1=\"30\" y1=\"18\" x2=\"30\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"108\" x2=\"215\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><text x=\"26\" y=\"111\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">0</text><line x1=\"28\" y1=\"108\" x2=\"32\" y2=\"108\" stroke=\"#999\" stroke-width=\"1\"/><text x=\"26\" y=\"89\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">2</text><line x1=\"28\" y1=\"86\" x2=\"32\" y2=\"86\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"86\" x2=\"215\" y2=\"86\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"66\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">4</text><line x1=\"28\" y1=\"63\" x2=\"32\" y2=\"63\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"63\" x2=\"215\" y2=\"63\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"44\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">6</text><line x1=\"28\" y1=\"41\" x2=\"32\" y2=\"41\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"41\" x2=\"215\" y2=\"41\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"21\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">8</text><line x1=\"28\" y1=\"18\" x2=\"32\" y2=\"18\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"18\" x2=\"215\" y2=\"18\" stroke=\"#eee\" stroke-width=\"0.5\"/><rect x=\"35\" y=\"52\" width=\"40\" height=\"56\" fill=\"#e74c3c\" rx=\"2\"/><text x=\"55\" y=\"50\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">5</text><text x=\"55\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Soccer</text><rect x=\"80\" y=\"18\" width=\"40\" height=\"90\" fill=\"#e67e22\" rx=\"2\"/><text x=\"100\" y=\"16\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">8</text><text x=\"100\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">B-Ball</text><rect x=\"125\" y=\"30\" width=\"40\" height=\"78\" fill=\"#27ae60\" rx=\"2\"/><text x=\"145\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">7</text><text x=\"145\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Swim</text><rect x=\"170\" y=\"75\" width=\"40\" height=\"33\" fill=\"#3498db\" rx=\"2\"/><text x=\"190\" y=\"73\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">3</text><text x=\"190\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Tennis</text></svg>",
+    "o": [
+      "B-Ball",
+      "Soccer",
+      "Swim",
+      "Tennis"
+    ],
+    "a": 0,
+    "e": "Basketball bar reaches 8.",
+    "d": "e"
+  },
+  {
+    "t": "In a bar graph, what does a taller bar mean?",
+    "o": [
+      "More data",
+      "Less data",
+      "Same data",
+      "No data"
+    ],
+    "a": 0,
+    "e": "Taller bar = more data.",
+    "d": "m"
+  },
+  {
+    "t": "A bar graph shows Red:7, Blue:5, Green:9. Most popular?",
+    "o": [
+      "Red",
+      "Blue",
+      "Equal",
+      "Green"
+    ],
+    "a": 3,
+    "e": "Green has 9.",
+    "d": "m"
+  },
+  {
+    "t": "Bar graph scale counts by 2s. A bar at the 3rd line has what value?",
+    "o": [
+      "4",
+      "6",
+      "8",
+      "10"
+    ],
+    "a": 1,
+    "e": "3 × 2 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "Which fruit is most popular? <svg width=\"520\" height=\"312\" viewBox=\"0 0 220 130\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"110\" y=\"12\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Favorite Fruits</text><line x1=\"30\" y1=\"18\" x2=\"30\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"108\" x2=\"215\" y2=\"108\" stroke=\"#999\" stroke-width=\"1.5\"/><text x=\"26\" y=\"111\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">0</text><line x1=\"28\" y1=\"108\" x2=\"32\" y2=\"108\" stroke=\"#999\" stroke-width=\"1\"/><text x=\"26\" y=\"91\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">2</text><line x1=\"28\" y1=\"88\" x2=\"32\" y2=\"88\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"88\" x2=\"215\" y2=\"88\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"71\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">4</text><line x1=\"28\" y1=\"68\" x2=\"32\" y2=\"68\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"68\" x2=\"215\" y2=\"68\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"51\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">6</text><line x1=\"28\" y1=\"48\" x2=\"32\" y2=\"48\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"48\" x2=\"215\" y2=\"48\" stroke=\"#eee\" stroke-width=\"0.5\"/><text x=\"26\" y=\"31\" text-anchor=\"end\" font-size=\"7\" fill=\"#666\">8</text><line x1=\"28\" y1=\"28\" x2=\"32\" y2=\"28\" stroke=\"#999\" stroke-width=\"1\"/><line x1=\"30\" y1=\"28\" x2=\"215\" y2=\"28\" stroke=\"#eee\" stroke-width=\"0.5\"/><rect x=\"35\" y=\"48\" width=\"40\" height=\"60\" fill=\"#e74c3c\" rx=\"2\"/><text x=\"55\" y=\"46\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">6</text><text x=\"55\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Apple</text><rect x=\"80\" y=\"68\" width=\"40\" height=\"40\" fill=\"#f39c12\" rx=\"2\"/><text x=\"100\" y=\"66\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">4</text><text x=\"100\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Banana</text><rect x=\"125\" y=\"18\" width=\"40\" height=\"90\" fill=\"#e67e22\" rx=\"2\"/><text x=\"145\" y=\"16\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">9</text><text x=\"145\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Orange</text><rect x=\"170\" y=\"88\" width=\"40\" height=\"20\" fill=\"#8e44ad\" rx=\"2\"/><text x=\"190\" y=\"86\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">2</text><text x=\"190\" y=\"117\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\">Grape</text></svg>",
+    "o": [
+      "Apple",
+      "Banana",
+      "Grape",
+      "Orange"
+    ],
+    "a": 3,
+    "e": "Orange has 9 — most popular.",
+    "d": "e"
+  },
+  {
+    "t": "Key: 📖=2 books. How many books did Sofia read? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "4",
+      "6",
+      "10",
+      "8"
+    ],
+    "a": 3,
+    "e": "Sofia: 4×2=8 books.",
+    "d": "m"
+  },
+  {
+    "t": "Who read the most books? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "Emma",
+      "Liam",
+      "Sofia",
+      "Noah"
+    ],
+    "a": 2,
+    "e": "Sofia has 4 pictures.",
+    "d": "m"
+  },
+  {
+    "t": "Key: 📖=2. Total books by all? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "18",
+      "20",
+      "22",
+      "24"
+    ],
+    "a": 1,
+    "e": "10×2=20 books.",
+    "d": "m"
+  },
+  {
+    "t": "Key: ⭐=3. How many stars did Cora earn? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "9",
+      "12",
+      "15",
+      "18"
+    ],
+    "a": 2,
+    "e": "5×3=15 stars.",
+    "d": "m"
+  },
+  {
+    "t": "What does the KEY in a pictograph tell you?",
+    "o": [
+      "The graph heading",
+      "What each picture equals",
+      "How tall bars should be",
+      "The chart direction"
+    ],
+    "a": 1,
+    "e": "Key = value of each picture.",
+    "d": "m"
+  },
+  {
+    "t": "1 picture = 5. There are 4 pictures. Total?",
+    "o": [
+      "15",
+      "20",
+      "25",
+      "30"
+    ],
+    "a": 1,
+    "e": "4×5=20.",
+    "d": "m"
+  },
+  {
+    "t": "Key: ⭐=2. How many stickers does Leo have? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Mia</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Kai</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Zoe</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Leo</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "8",
+      "10",
+      "12",
+      "14"
+    ],
+    "a": 2,
+    "e": "6×2=12 stickers.",
+    "d": "m"
+  },
+  {
+    "t": "How many students have 2 pets? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "Stack above 2 has 4 × marks.",
+    "d": "e"
+  },
+  {
+    "t": "Which number of pets is most common? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "Tallest stack is above 2.",
+    "d": "e"
+  },
+  {
+    "t": "How many students were surveyed in total? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "a": 2,
+    "e": "2+4+3+1=10.",
+    "d": "m"
+  },
+  {
+    "t": "How many students read exactly 3 hours? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "Stack above 3 has 4 × marks.",
+    "d": "e"
+  },
+  {
+    "t": "What does each × on a line plot represent?",
+    "o": [
+      "One tally mark",
+      "One data point",
+      "A graph label",
+      "A bar height"
+    ],
+    "a": 1,
+    "e": "Each × = one data point.",
+    "d": "m"
+  },
+  {
+    "t": "What is the purpose of a bar graph, tally chart, or line plot?",
+    "o": [
+      "To draw pictures of numbers",
+      "To organize and display data",
+      "To practice writing numbers",
+      "To show only the biggest value"
+    ],
+    "a": 1,
+    "e": "All data displays help organize and show information clearly.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot: 2:×, 3:×××, 4:××. Total data points?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "1+3+2=6.",
+    "d": "m"
+  }
+]

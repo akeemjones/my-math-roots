@@ -55,15 +55,14 @@ RETURNS TABLE (
   age               INTEGER,
   avatar_emoji      TEXT,
   avatar_color_from TEXT,
-  avatar_color_to   TEXT,
-  pin_hash          TEXT
+  avatar_color_to   TEXT
 )
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT sp.id, sp.username, sp.display_name, sp.age,
-         sp.avatar_emoji, sp.avatar_color_from, sp.avatar_color_to, sp.pin_hash
+         sp.avatar_emoji, sp.avatar_color_from, sp.avatar_color_to
   FROM student_profiles sp
   JOIN profiles p ON p.id = sp.parent_id
   WHERE p.family_code = upper(p_family_code);

@@ -15,6 +15,11 @@
   function toggleSettings(key: keyof typeof $settings) {
     settings.update(v => ({ ...v, [key]: !v[key] }));
   }
+
+  function setTimer(key: 'lessonTimerMins' | 'unitTimerMins' | 'finalTimerMins', val: number) {
+    const clamped = Math.max(0, Math.min(120, Math.round(val)));
+    settings.update(v => ({ ...v, [key]: clamped }));
+  }
 </script>
 
 <div class="settings-card">
@@ -95,6 +100,66 @@
           <span class="toggle-knob"></span>
         </button>
       </label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Quiz Timer section -->
+  <div class="settings-section">
+    <h3 class="settings-heading">Quiz Timers <span class="timer-note">(0 = no timer)</span></h3>
+
+    <div class="timer-list">
+      <div class="timer-row">
+        <div class="toggle-info">
+          <span class="toggle-label">Lesson Quiz</span>
+          <span class="toggle-desc">Minutes per lesson quiz (default: 8)</span>
+        </div>
+        <div class="timer-input-wrap">
+          <input
+            type="number"
+            class="timer-input"
+            min="0" max="120"
+            value={$settings.lessonTimerMins ?? 8}
+            oninput={(e) => setTimer('lessonTimerMins', Number((e.target as HTMLInputElement).value))}
+          />
+          <span class="timer-unit">min</span>
+        </div>
+      </div>
+
+      <div class="timer-row">
+        <div class="toggle-info">
+          <span class="toggle-label">Unit Quiz</span>
+          <span class="toggle-desc">Minutes per unit quiz (default: 30)</span>
+        </div>
+        <div class="timer-input-wrap">
+          <input
+            type="number"
+            class="timer-input"
+            min="0" max="120"
+            value={$settings.unitTimerMins ?? 30}
+            oninput={(e) => setTimer('unitTimerMins', Number((e.target as HTMLInputElement).value))}
+          />
+          <span class="timer-unit">min</span>
+        </div>
+      </div>
+
+      <div class="timer-row" style="border-bottom:none">
+        <div class="toggle-info">
+          <span class="toggle-label">Final Test</span>
+          <span class="toggle-desc">Minutes for the final test (default: 60)</span>
+        </div>
+        <div class="timer-input-wrap">
+          <input
+            type="number"
+            class="timer-input"
+            min="0" max="120"
+            value={$settings.finalTimerMins ?? 60}
+            oninput={(e) => setTimer('finalTimerMins', Number((e.target as HTMLInputElement).value))}
+          />
+          <span class="timer-unit">min</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -237,6 +302,62 @@
 
   .toggle-btn.on .toggle-knob {
     transform: translateX(1.1rem);
+  }
+
+  /* Timer controls */
+  .timer-note {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #636e72);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .timer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border, #dfe6e9);
+  }
+
+  .timer-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .timer-input {
+    width: 56px;
+    padding: 6px 8px;
+    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid var(--color-border, #dfe6e9);
+    border-radius: 8px;
+    background: #f8f9fa;
+    color: var(--color-text, #2d3436);
+    outline: none;
+  }
+
+  .timer-input:focus {
+    border-color: #4a90d9;
+    background: #fff;
+  }
+
+  .timer-unit {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #636e72);
+    font-weight: 600;
   }
 
   /* Free mode warning note */

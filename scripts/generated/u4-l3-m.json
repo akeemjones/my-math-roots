@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A student wrote: 83 - 47 = 44. Use addition to check. Is this correct?",
+    "o": ["No, 44 + 47 = 91, not 83. The answer should be 36.", "Yes, 44 + 47 = 83", "No, the answer should be 46", "Yes, 83 - 47 = 44"],
+    "a": 0,
+    "e": "Check: 44 + 47 = 91, not 83. The subtraction is wrong. Correct: 83 - 47 = 36. Check: 36 + 47 = 83.",
+    "d": "m"
+  },
+  {
+    "t": "Which addition problem correctly checks 125 - 58 = 67?",
+    "o": ["67 + 58 = 125", "125 + 58 = 183", "67 + 125 = 192", "58 + 58 = 116"],
+    "a": 0,
+    "e": "To check subtraction, add the answer to the number you subtracted: 67 + 58 = 125. This matches, so the subtraction is correct.",
+    "d": "m"
+  },
+  {
+    "t": "Sam says 92 - 47 = 55. Kim says the answer is 45. Who is right? Use addition to check.",
+    "o": ["Sam, because 55 + 47 = 102", "Kim, because 45 + 47 = 92", "Sam, because 55 is bigger", "Neither is correct"],
+    "a": 1,
+    "e": "Check Sam: 55 + 47 = 102, not 92. Wrong! Check Kim: 45 + 47 = 92. Correct! Kim's answer of 45 is right.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 39 = 47. What is the missing number? Use addition to find it.",
+    "o": ["76", "86", "96", "8"],
+    "a": 1,
+    "e": "To find the missing number, add: 47 + 39 = 86. Check: 86 - 39 = 47. The missing number is 86.",
+    "d": "m"
+  },
+  {
+    "t": "A student checked their work: 38 + 54 = 92. What subtraction problem were they checking?",
+    "o": ["92 - 54 = 38", "92 - 38 = 64", "54 - 38 = 16", "92 + 54 = 146"],
+    "a": 0,
+    "e": "If the check is 38 + 54 = 92, then the original subtraction was 92 - 54 = 38 (or 92 - 38 = 54). The answer showing is 92 - 54 = 38.",
+    "d": "m"
+  },
+  {
+    "t": "True or false: If 67 + 45 = 112, then 112 - 45 = 67.",
+    "o": ["True, addition and subtraction are inverse operations", "False, the numbers are too big", "True, but only without regrouping", "False, subtraction does not relate to addition"],
+    "a": 0,
+    "e": "This is true! Addition and subtraction are inverse (opposite) operations. If adding gives you a sum, then subtracting one addend from the sum gives the other addend.",
+    "d": "m"
+  },
+  {
+    "t": "Mia solves 134 - 67 = 67. She checks: 67 + 67 = 134. Is her subtraction correct?",
+    "o": ["Yes, her check proves it", "No, 67 + 67 = 144", "No, 134 - 67 = 77", "Yes, but the check is wrong"],
+    "a": 0,
+    "e": "Check: 67 + 67 = 134. This matches the starting number, so Mia's subtraction 134 - 67 = 67 is correct.",
+    "d": "m"
+  },
+  {
+    "t": "A teacher wrote: 95 - 48 = 47. Three students checked differently. Which check is correct?",
+    "o": ["47 + 48 = 95", "95 + 48 = 143", "48 - 47 = 1", "95 - 47 = 48"],
+    "a": 0,
+    "e": "The correct check adds the answer to the subtracted number: 47 + 48 = 95. Option D (95 - 47 = 48) also works as a related fact, but the standard check is addition.",
+    "d": "m"
+  },
+  {
+    "t": "David solves 81 - 36 = 55. His check: 55 + 36 = 91. What should David do?",
+    "o": ["Redo the problem because 91 does not equal 81", "Nothing, the answer is correct", "Check again because 55 + 36 = 81", "Use a different checking method"],
+    "a": 0,
+    "e": "55 + 36 = 91, not 81. The check reveals an error. David should redo: 81 - 36 = 45. Check: 45 + 36 = 81.",
+    "d": "m"
+  },
+  {
+    "t": "Which pair of number sentences shows related facts?",
+    "o": ["73 - 28 = 45 and 45 + 28 = 73", "73 - 28 = 45 and 73 + 28 = 101", "73 - 28 = 45 and 45 - 28 = 17", "73 - 28 = 45 and 28 + 45 = 83"],
+    "a": 0,
+    "e": "73 - 28 = 45 and 45 + 28 = 73 are related facts (a fact family). They use the same three numbers and show how addition and subtraction are inverses.",
+    "d": "m"
+  },
+  {
+    "t": "If you know 56 + 37 = 93, which subtraction fact is also true?",
+    "o": ["93 - 37 = 56", "93 - 37 = 66", "56 - 37 = 19", "93 + 37 = 130"],
+    "a": 0,
+    "e": "Since 56 + 37 = 93, we know 93 - 37 = 56. These are inverse operations using the same three numbers.",
+    "d": "m"
+  },
+  {
+    "t": "A student says 'I do not need to check my work if I am careful.' Is this good advice?",
+    "o": ["No, everyone makes mistakes and checking catches errors", "Yes, careful work is always correct", "No, but only check hard problems", "Yes, checking wastes time"],
+    "a": 0,
+    "e": "Even careful students make mistakes! Checking with addition is quick and catches errors before they become problems. Good mathematicians always check their work.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 64 = 58. Find the missing number and check your answer.",
+    "o": ["112", "122", "132", "6"],
+    "a": 1,
+    "e": "Add to find the missing number: 58 + 64 = 122. Check: 122 - 64 = 58. The missing number is 122.",
+    "d": "m"
+  },
+  {
+    "t": "What are ALL the fact family members for 43 + 29 = 72?",
+    "o": ["43 + 29 = 72, 29 + 43 = 72, 72 - 29 = 43, 72 - 43 = 29", "Only 72 - 29 = 43", "43 + 29 = 72 and 72 - 29 = 43 only", "There is no fact family"],
+    "a": 0,
+    "e": "A fact family has 4 related facts using the same numbers: 43 + 29 = 72, 29 + 43 = 72, 72 - 29 = 43, 72 - 43 = 29.",
+    "d": "m"
+  },
+  {
+    "t": "Rosa solved 143 - 85 = 58. She checks: 58 + 85 = 143. Is Rosa correct?",
+    "o": ["Yes, her check matches so her subtraction is correct", "No, 58 + 85 = 133", "No, 143 - 85 = 68", "Yes, but the check is wrong"],
+    "a": 0,
+    "e": "58 + 85 = 143. The check matches the original number, so Rosa's answer is correct.",
+    "d": "m"
+  },
+  {
+    "t": "A student solved 110 - 73 = 47. Check this answer.",
+    "o": ["Wrong: 47 + 73 = 120, not 110", "Correct: 47 + 73 = 110", "Wrong: 47 + 73 = 110", "Correct: the answer is 47"],
+    "a": 0,
+    "e": "Check: 47 + 73 = 120, not 110. The answer is wrong. Correct: 110 - 73 = 37. Check: 37 + 73 = 110.",
+    "d": "m"
+  },
+  {
+    "t": "Which strategy helps you check 86 - 49?",
+    "o": ["Find the answer and add it to 49 to see if you get 86", "Subtract 49 from 86 twice", "Add 86 + 49 = 135", "Multiply 86 by 49"],
+    "a": 0,
+    "e": "Solve: 86 - 49 = 37. Check by adding the answer to the subtracted number: 37 + 49 = 86. Since it matches, the subtraction is correct.",
+    "d": "m"
+  },
+  {
+    "t": "Ben wrote 72 - 38 = 44. His check: 44 + 38 = 82. What does the check tell Ben?",
+    "o": ["His answer is wrong because 82 does not equal 72", "His answer is right because 82 is close to 72", "His check is wrong", "Nothing useful"],
+    "a": 0,
+    "e": "44 + 38 = 82, which does not equal the starting number 72. This tells Ben his answer is wrong. Correct: 72 - 38 = 34. Check: 34 + 38 = 72.",
+    "d": "m"
+  },
+  {
+    "t": "If 150 - 83 = 67, which of these is also true?",
+    "o": ["67 + 83 = 150", "150 + 83 = 233", "83 - 67 = 16", "67 - 83 = 150"],
+    "a": 0,
+    "e": "Since 150 - 83 = 67, the inverse is 67 + 83 = 150. These use the same three numbers in a fact family relationship.",
+    "d": "m"
+  },
+  {
+    "t": "Ana and Ben both solved 95 - 37. Ana got 58, Ben got 68. Use addition to find who is correct.",
+    "o": ["Ana, because 58 + 37 = 95", "Ben, because 68 + 37 = 95", "Both are correct", "Neither is correct"],
+    "a": 0,
+    "e": "Check Ana: 58 + 37 = 95. Correct! Check Ben: 68 + 37 = 105, not 95. Wrong! Ana's answer of 58 is correct.",
+    "d": "m"
+  }
+]

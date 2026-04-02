@@ -44,3 +44,10 @@ export const isSignedIn = derived(authUser, ($u) => $u !== null);
 
 /** True when a student has been selected (PIN entered). */
 export const isStudentActive = derived(activeStudent, ($s) => $s !== null);
+
+/**
+ * Guest mode — set when the user clicks "Continue without an account".
+ * Bypasses auth guard so the app is usable without a Supabase session.
+ * Cleared automatically when a parent/teacher signs in.
+ */
+export const guestMode = persisted<boolean>('mmr_guest_mode', false);

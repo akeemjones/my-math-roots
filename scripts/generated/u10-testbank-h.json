@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A garden has 3 rows of vegetables with 6 in each row. A rabbit eats 4 vegetables. How many are left?",
+    "o": ["12", "14", "16", "18"],
+    "a": 1,
+    "e": "Total: 6+6+6 = 18 vegetables. After the rabbit: 18 - 4 = 14 vegetables left.",
+    "d": "h"
+  },
+  {
+    "t": "Mia says 4 groups of 5 is 25. Is Mia correct? What is the right answer?",
+    "o": ["Yes, 25 is correct", "No, the answer is 15", "No, the answer is 20", "No, the answer is 24"],
+    "a": 2,
+    "e": "4 groups of 5 = 5+5+5+5 = 20. Mia said 25, which is wrong (that would be 5 groups of 5).",
+    "d": "h"
+  },
+  {
+    "t": "There are 6 bags. Some have 2 toys and some have 5 toys. There are 21 toys total. How many bags have 5 toys?",
+    "o": ["1", "2", "3", "4"],
+    "a": 2,
+    "e": "Try 3 bags of 5 and 3 bags of 2: 5+5+5+2+2+2 = 21. So 3 bags have 5 toys.",
+    "d": "h"
+  },
+  {
+    "t": "Tom has 18 trading cards. He can put them in equal stacks. Which is NOT a way he could stack them?",
+    "o": ["2 stacks of 9", "3 stacks of 6", "4 stacks of 5", "6 stacks of 3"],
+    "a": 2,
+    "e": "2x9=18, 3x6=18, 6x3=18 all work. But 4x5=20, not 18. So 4 stacks of 5 doesn't work.",
+    "d": "h"
+  },
+  {
+    "t": "A teacher shares 22 stickers among 5 students equally. How many does each get, and how many are left?",
+    "o": ["4 each, 2 left", "5 each, 0 left", "4 each, 0 left", "3 each, 7 left"],
+    "a": 0,
+    "e": "4+4+4+4+4 = 20. That leaves 22-20 = 2 stickers remaining. Each gets 4 with 2 left over.",
+    "d": "h"
+  },
+  {
+    "t": "Alex writes 5+5+5 = 5 groups of 3. Find his mistake.",
+    "o": ["It should be 3 groups of 5, not 5 groups of 3", "It should be 5 groups of 5", "The total is wrong", "Alex is correct"],
+    "a": 0,
+    "e": "5+5+5 means 5 appears 3 times. That is 3 groups of 5 = 15, not 5 groups of 3.",
+    "d": "h"
+  },
+  {
+    "t": "A pet store has 4 tanks with 5 fish each. Someone buys 2 fish from one tank. Later, 3 new fish are added to another tank. How many fish are there now?",
+    "o": ["19", "20", "21", "23"],
+    "a": 2,
+    "e": "Start: 5+5+5+5 = 20 fish. Buy 2: 20-2 = 18. Add 3: 18+3 = 21 fish now.",
+    "d": "h"
+  },
+  {
+    "t": "Which gives a bigger result: 5 groups of 3, or 3 groups of 5?",
+    "o": ["5 groups of 3 is bigger", "3 groups of 5 is bigger", "They are the same (both 15)", "Cannot tell"],
+    "a": 2,
+    "e": "5 groups of 3 = 3+3+3+3+3 = 15. 3 groups of 5 = 5+5+5 = 15. They are the same!",
+    "d": "h"
+  },
+  {
+    "t": "You have 24 cookies. You eat 4, then share the rest equally among 4 friends. How many does each friend get?",
+    "o": ["4", "5", "6", "7"],
+    "a": 1,
+    "e": "After eating: 24 - 4 = 20 cookies left. Share 20 among 4: 5+5+5+5 = 20. Each gets 5.",
+    "d": "h"
+  },
+  {
+    "t": "Zoe says she can split 15 evenly into groups of 4 with none left over. Is she right?",
+    "o": ["Yes, she makes 3 groups", "Yes, she makes 4 groups", "No, she gets 3 groups with 3 left over", "No, she gets 4 groups with 1 left over"],
+    "a": 2,
+    "e": "4+4+4 = 12, leaving 15-12 = 3 leftover. 15 does not split evenly into groups of 4.",
+    "d": "h"
+  },
+  {
+    "t": "Ben earns 3 coins each chore. He does 5 chores, then spends 8 coins. How many coins does he have?",
+    "o": ["5", "7", "8", "10"],
+    "a": 1,
+    "e": "Earned: 3+3+3+3+3 = 15 coins. After spending: 15-8 = 7 coins left.",
+    "d": "h"
+  },
+  {
+    "t": "A number is added to itself 4 times and the total is 20. What is the number?",
+    "o": ["4", "5", "6", "10"],
+    "a": 1,
+    "e": "__+__+__+__ = 20. Try 5: 5+5+5+5 = 20. The number is 5.",
+    "d": "h"
+  },
+  {
+    "t": "Three students each solve a problem differently. Anna says 3 groups of 6 = 18. Bella says 6 groups of 3 = 18. Carlos says 9 groups of 2 = 18. Who is correct?",
+    "o": ["Only Anna", "Only Bella", "Anna and Bella only", "All three are correct"],
+    "a": 3,
+    "e": "3x6=18, 6x3=18, 9x2=18. All three are correct!",
+    "d": "h"
+  },
+  {
+    "t": "A class of 20 students forms groups. If groups have 3 students each, how many full groups form and how many students are left?",
+    "o": ["5 groups, 5 left", "6 groups, 2 left", "7 groups, 0 left", "6 groups, 0 left"],
+    "a": 1,
+    "e": "3+3+3+3+3+3 = 18 (6 full groups). 20-18 = 2 students left over.",
+    "d": "h"
+  },
+  {
+    "t": "Emma has between 20 and 30 stickers. She can share them equally among 5 friends with none left over AND among 3 friends with none left over. How many stickers does she have?",
+    "o": ["20", "24", "25", "30"],
+    "a": 3,
+    "e": "Must be divisible by both 5 and 3 and between 20-30. 30/5=6, 30/3=10. Only 30 works.",
+    "d": "h"
+  },
+  {
+    "t": "A store display has 2 rows of 5 toys on top and 3 rows of 4 toys on the bottom. A customer buys 3 toys. How many are left?",
+    "o": ["17", "19", "20", "22"],
+    "a": 1,
+    "e": "Top: 5+5 = 10. Bottom: 4+4+4 = 12. Total: 22. After buying 3: 22-3 = 19 toys left.",
+    "d": "h"
+  },
+  {
+    "t": "Jada has 5 bags. Some hold 3 marbles and some hold 6 marbles. She has 21 marbles total. How many bags hold 6 marbles?",
+    "o": ["1", "2", "3", "4"],
+    "a": 1,
+    "e": "Try 2 bags of 6 and 3 bags of 3: 6+6+3+3+3 = 21. So 2 bags hold 6 marbles.",
+    "d": "h"
+  },
+  {
+    "t": "Marcus puts 20 books on shelves with 4 on each shelf. He says there are 6 shelves. What is his mistake?",
+    "o": ["He needs 4 shelves", "He needs 5 shelves", "He needs 7 shelves", "He is correct"],
+    "a": 1,
+    "e": "4+4+4+4+4 = 20. That is 5 shelves, not 6. Marcus counted one too many.",
+    "d": "h"
+  },
+  {
+    "t": "A farm has 3 pens with 4 chickens each and 2 pens with 6 chickens each. How many chickens total?",
+    "o": ["18", "20", "24", "26"],
+    "a": 2,
+    "e": "3 pens of 4: 4+4+4 = 12. 2 pens of 6: 6+6 = 12. Total: 12+12 = 24 chickens.",
+    "d": "h"
+  },
+  {
+    "t": "A secret number can be made by adding 2s together AND by adding 3s together. The number is less than 15. What are the TWO possible numbers?",
+    "o": ["6 and 12", "4 and 9", "8 and 10", "6 and 10"],
+    "a": 0,
+    "e": "Multiples of 2: 2,4,6,8,10,12,14. Multiples of 3: 3,6,9,12. Both: 6 and 12 (under 15).",
+    "d": "h"
+  }
+]

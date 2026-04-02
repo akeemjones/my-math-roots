@@ -16,7 +16,7 @@ export const lessons: LessonContent[] = [
         "c": "#e67e22",
         "tag": "No Regrouping",
         "p": "23 + 45 = ?",
-        "s": "<table class=\"col-math\"><tr><td></td><td>2</td><td>3</td></tr><tr class=\"cm-bottom\"><td class=\"cm-op\">+</td><td>4</td><td>5</td></tr><tr class=\"cm-line\"><td colspan=\"3\"><hr></td></tr><tr class=\"cm-result\"><td></td><td>6</td><td>8</td></tr></table><br>Ones: 3 + 5 = 8<br>Tens: 2 + 4 = 6",
+        "s": "<table class=\"col-math\"><tr><td></td><td>2</td><td>3</td></tr><tr class=\"cm-bottom\"><td class=\"cm-op\">+</td><td>4</td><td>5</td></tr><tr class=\"cm-line\"><td colspan=\"3\"><hr></td></tr><tr class=\"cm-result\"><td></td><td>6</td><td>8</td></tr></table><br>Ones: 3 + 5 = 8<br>Tens: 2 + 4 = 6<br><br><button data-action=\"playCarryAnim\" data-arg=\"[2,3]\" data-arg2=\"[4,5]\" class=\"cca-btn\" style=\"background:#e67e22\">🎬 Watch Step by Step</button>",
         "a": "23 + 45 = 68 ✅"
       },
       {
@@ -30,7 +30,7 @@ export const lessons: LessonContent[] = [
         "c": "#e67e22",
         "tag": "With Regrouping",
         "p": "58 + 27 = ?",
-        "s": "<table class=\"col-math\"><tr class=\"cm-regroup\"><td></td><td>1</td><td></td></tr><tr><td></td><td>5</td><td>8</td></tr><tr class=\"cm-bottom\"><td class=\"cm-op\">+</td><td>2</td><td>7</td></tr><tr class=\"cm-line\"><td colspan=\"3\"><hr></td></tr><tr class=\"cm-result\"><td></td><td>8</td><td>5</td></tr></table><br>Ones: 8 + 7 = 15 → write <b>5</b>, regroup <b>1</b> ten<br>Tens: 5 + 2 + 1(carried) = <b>8</b>",
+        "s": "<table class=\"col-math\"><tr class=\"cm-regroup\"><td></td><td>1</td><td></td></tr><tr><td></td><td>5</td><td>8</td></tr><tr class=\"cm-bottom\"><td class=\"cm-op\">+</td><td>2</td><td>7</td></tr><tr class=\"cm-line\"><td colspan=\"3\"><hr></td></tr><tr class=\"cm-result\"><td></td><td>8</td><td>5</td></tr></table><br>Ones: 8 + 7 = 15 → write <b>5</b>, regroup <b>1</b> ten<br>Tens: 5 + 2 + 1(carried) = <b>8</b><br><br><button data-action=\"playCarryAnim\" data-arg=\"[5,8]\" data-arg2=\"[2,7]\" class=\"cca-btn\" style=\"background:#e67e22\">🎬 Watch Step by Step</button>",
         "a": "58 + 27 = 85 ✅"
       }
     ],

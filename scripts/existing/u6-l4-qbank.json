@@ -1,0 +1,362 @@
+[
+  {
+    "t": "Use the line plot below. How many students have 2 pets? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "5",
+      "4"
+    ],
+    "a": 3,
+    "e": "The stack above 2 has 4 × marks.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. Which number of pets is most common? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "2",
+      "1",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "The tallest stack is above 2 (4 marks).",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. How many students have 4 pets? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "The stack above 4 has just 1 × mark.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. Which number of pets is least common? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 3,
+    "e": "The stack above 4 has only 1 mark — the fewest.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. How many students have 1 or 3 pets? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "5",
+      "4",
+      "6",
+      "7"
+    ],
+    "a": 0,
+    "e": "1 pet: 2, 3 pets: 3. 2 + 3 = 5 students.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. How many students were surveyed in total? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "8",
+      "9",
+      "11",
+      "10"
+    ],
+    "a": 3,
+    "e": "2 + 4 + 3 + 1 = 10 students.",
+    "d": "m"
+  },
+  {
+    "t": "Use the line plot below. How many more students have 2 pets than 4 pets? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Pets in Class</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Number of Pets</text></svg>",
+    "o": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "a": 0,
+    "e": "2 pets: 4, 4 pets: 1. 4 − 1 = 3 more.",
+    "d": "m"
+  },
+  {
+    "t": "Use the line plot below. How many hours did most students read? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "4",
+      "3"
+    ],
+    "a": 3,
+    "e": "The tallest stack is above 3 (4 marks).",
+    "d": "m"
+  },
+  {
+    "t": "Use the line plot below. How many students read exactly 3 hours? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "5",
+      "4"
+    ],
+    "a": 3,
+    "e": "The stack above 3 has 4 × marks.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. How many students read 4 or 5 hours? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "a": 0,
+    "e": "4 hours: 2, 5 hours: 1. 2 + 1 = 3 students.",
+    "d": "e"
+  },
+  {
+    "t": "Use the line plot below. How many students were surveyed in total? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "8",
+      "9",
+      "11",
+      "10"
+    ],
+    "a": 3,
+    "e": "1 + 2 + 4 + 2 + 1 = 10 students.",
+    "d": "m"
+  },
+  {
+    "t": "Use the line plot below. How many more students read 3 hours than 1 hour? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours of Reading</text></svg>",
+    "o": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "a": 0,
+    "e": "3 hours: 4, 1 hour: 1. 4 − 1 = 3 more.",
+    "d": "m"
+  },
+  {
+    "t": "What does each × on a line plot represent? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Example Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "One tally mark",
+      "One data point",
+      "A graph label",
+      "A bar height"
+    ],
+    "a": 1,
+    "e": "Each × stands for one data point.",
+    "d": "m"
+  },
+  {
+    "t": "In a line plot, where is the number line? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Number Line Example</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"179\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Numbers (bottom axis)</text></svg>",
+    "o": [
+      "On the left",
+      "Across the bottom",
+      "At the top",
+      "In the middle"
+    ],
+    "a": 1,
+    "e": "The number line runs horizontally across the bottom.",
+    "d": "m"
+  },
+  {
+    "t": "What does the tallest stack of × marks in a line plot tell you? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Tallest Stack = Most Common</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"24\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "The least common",
+      "The total count",
+      "The most common value",
+      "The smallest number"
+    ],
+    "a": 2,
+    "e": "The tallest stack shows the most common value.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows 2:×, 3:×××, 4:××. Total data points? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "1 + 3 + 2 = 6 data points.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows 5:××, 6:×, 7:×××. Which value has the most marks? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">6</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">7</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "5",
+      "6",
+      "7",
+      "Equal"
+    ],
+    "a": 2,
+    "e": "Value 7 has 3 marks — the most.",
+    "d": "e"
+  },
+  {
+    "t": "A line plot shows 1:×, 2:××, 3:××××, 4:×. How many more at 3 than 1? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "a": 0,
+    "e": "Value 3: 4, Value 1: 1. 4 − 1 = 3 more.",
+    "d": "m"
+  },
+  {
+    "t": "What is the first step when reading a line plot? <svg width=\"240\" height=\"108\" viewBox=\"0 0 240 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"120\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Reading Hours</text><line x1=\"12\" y1=\"86\" x2=\"232\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"70\" y1=\"83\" x2=\"70\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"70\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"70\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"120\" y1=\"83\" x2=\"120\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"120\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"120\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"170\" y1=\"83\" x2=\"170\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"170\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"170\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"170\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"220\" y1=\"83\" x2=\"220\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"220\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"220\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"120\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours</text></svg>",
+    "o": [
+      "Count all marks",
+      "Read the title",
+      "Look at tallest stack",
+      "Subtract smallest"
+    ],
+    "a": 1,
+    "e": "Read the title first to know what data is shown.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot: Monday: 3 marks, Tuesday: 5 marks, Wednesday: 2 marks. Total? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Days</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">Mon</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">Tue</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"24\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">Wed</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Day</text></svg>",
+    "o": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "a": 2,
+    "e": "3 + 5 + 2 = 10 total marks.",
+    "d": "m"
+  },
+  {
+    "t": "Values 1–4: value 1=2, value 2=4, value 3=3, value 4=1. Least common? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 3,
+    "e": "Value 4 has only 1 mark — the fewest.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows scores: 8,8,9,9,9,10. How many × marks are above 9? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Test Scores</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">8</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">9</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">10</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Score</text></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 2,
+    "e": "The number 9 appears 3 times.",
+    "d": "m"
+  },
+  {
+    "t": "In a line plot, value 5 has no × marks. What does that mean? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">6</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "5 is most common",
+      "No one chose 5",
+      "5 is missing",
+      "Key is 5"
+    ],
+    "a": 1,
+    "e": "No marks means nobody recorded that value.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows Apples: 4 marks, Bananas: 6 marks, Grapes: 2 marks. Most popular? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Fruit Survey</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"7\" fill=\"#333\">Appl</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">Ban</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"37\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"24\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">Grp</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Fruit</text></svg>",
+    "o": [
+      "Apples",
+      "Bananas",
+      "Grapes",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Bananas have 6 marks — the most.",
+    "d": "m"
+  },
+  {
+    "t": "How is a line plot different from a bar graph? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "Bar graphs use numbers",
+      "Line plots use × marks on a number line",
+      "Bar graphs are bigger",
+      "Line plots use pictures"
+    ],
+    "a": 1,
+    "e": "Line plots place × marks on a number line; bar graphs use bars.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows 6 marks total. 2 are above 3. How many above other numbers? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"179\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "6 − 2 = 4 marks above other numbers.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows test scores. Most marks are above 90. What can you conclude? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Test Scores</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">88</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">90</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">92</text><text x=\"165\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Score</text></svg>",
+    "o": [
+      "Most got below 90",
+      "Most got exactly 90",
+      "Most skipped",
+      "90 is lowest"
+    ],
+    "a": 1,
+    "e": "Most marks above 90 means 90 was the most common score.",
+    "d": "h"
+  },
+  {
+    "t": "A line plot: homework time 1:××, 2:×××, 3:×××, 4:×. Which times are tied? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Homework Time</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">1</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"20\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Hours</text></svg>",
+    "o": [
+      "1 and 4",
+      "2 and 3",
+      "1 and 2",
+      "3 and 4"
+    ],
+    "a": 1,
+    "e": "Values 2 and 3 each have 3 marks — tied for most.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot shows 3 marks above 7. What does that tell us? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"20\" y1=\"83\" x2=\"20\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"20\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">5</text><text x=\"20\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"73\" y1=\"83\" x2=\"73\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"73\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">6</text><text x=\"73\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"73\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"126\" y1=\"83\" x2=\"126\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"126\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">7</text><text x=\"126\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"126\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"179\" y1=\"83\" x2=\"179\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"179\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">8</text><text x=\"179\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "7 people surveyed",
+      "7 is most common",
+      "3 people chose 7",
+      "7 is the total"
+    ],
+    "a": 2,
+    "e": "3 marks above 7 means 3 data points have the value 7.",
+    "d": "m"
+  },
+  {
+    "t": "A line plot has values 2, 3, 4. Value 4 has no marks. What does the line plot show? <svg width=\"400\" height=\"216\" viewBox=\"0 0 200 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><text x=\"100\" y=\"11\" text-anchor=\"middle\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Line Plot</text><line x1=\"12\" y1=\"86\" x2=\"192\" y2=\"86\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"35\" y1=\"83\" x2=\"35\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"35\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">2</text><text x=\"35\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"35\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"100\" y1=\"83\" x2=\"100\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"100\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">3</text><text x=\"100\" y=\"76\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><text x=\"100\" y=\"50\" text-anchor=\"middle\" font-size=\"12\" fill=\"#229954\" font-weight=\"bold\">×</text><line x1=\"165\" y1=\"83\" x2=\"165\" y2=\"89\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"165\" y=\"99\" text-anchor=\"middle\" font-size=\"9\" fill=\"#333\">4</text><text x=\"100\" y=\"106\" text-anchor=\"middle\" font-size=\"7\" fill=\"#888\">Value</text></svg>",
+    "o": [
+      "Only data with marks is shown",
+      "4 was most common",
+      "4 is the key",
+      "All values must have marks"
+    ],
+    "a": 0,
+    "e": "Line plots only show × marks where data exists; empty spots mean no one chose that value.",
+    "d": "m"
+  }
+]

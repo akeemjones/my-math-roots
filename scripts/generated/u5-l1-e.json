@@ -1,0 +1,142 @@
+[
+  {
+    "t": "How much is a penny worth?",
+    "o": ["1¢", "5¢", "10¢", "25¢"],
+    "a": 0,
+    "e": "A penny is the smallest coin. It is worth 1¢.",
+    "d": "e"
+  },
+  {
+    "t": "How much is a nickel worth?",
+    "o": ["1¢", "10¢", "5¢", "25¢"],
+    "a": 2,
+    "e": "A nickel is worth 5¢. It is bigger than a penny but worth less than a dime.",
+    "d": "e"
+  },
+  {
+    "t": "How much is a dime worth?",
+    "o": ["5¢", "25¢", "1¢", "10¢"],
+    "a": 3,
+    "e": "A dime is worth 10¢. Even though it is small, it is worth more than a nickel!",
+    "d": "e"
+  },
+  {
+    "t": "How much is a quarter worth?",
+    "o": ["50¢", "25¢", "10¢", "5¢"],
+    "a": 1,
+    "e": "A quarter is worth 25¢. It is the largest common coin and worth the most.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth 5¢?",
+    "o": ["Penny", "Dime", "Nickel", "Quarter"],
+    "a": 2,
+    "e": "A nickel is the coin worth 5¢. It is larger than a dime but worth less.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth 10¢?",
+    "o": ["Quarter", "Penny", "Nickel", "Dime"],
+    "a": 3,
+    "e": "A dime is worth 10¢. It is the smallest silver-colored coin.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth the MOST?",
+    "o": ["Penny", "Nickel", "Dime", "Quarter"],
+    "a": 3,
+    "e": "A quarter is worth 25¢, which is more than a dime (10¢), nickel (5¢), or penny (1¢).",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth the LEAST?",
+    "o": ["Dime", "Penny", "Nickel", "Quarter"],
+    "a": 1,
+    "e": "A penny is worth only 1¢. That is less than any other coin.",
+    "d": "e"
+  },
+  {
+    "t": "2 nickels = ___ ¢",
+    "o": ["2¢", "5¢", "10¢", "15¢"],
+    "a": 2,
+    "e": "Each nickel is worth 5¢. Count by 5s: 5, 10. So 2 nickels = 10¢.",
+    "d": "e"
+  },
+  {
+    "t": "3 pennies = ___ ¢",
+    "o": ["3¢", "5¢", "10¢", "1¢"],
+    "a": 0,
+    "e": "Each penny is worth 1¢. Count by 1s: 1, 2, 3. So 3 pennies = 3¢.",
+    "d": "e"
+  },
+  {
+    "t": "2 dimes = ___ ¢",
+    "o": ["10¢", "15¢", "20¢", "25¢"],
+    "a": 2,
+    "e": "Each dime is worth 10¢. Count by 10s: 10, 20. So 2 dimes = 20¢.",
+    "d": "e"
+  },
+  {
+    "t": "5 pennies = ___ ¢",
+    "o": ["10¢", "1¢", "5¢", "25¢"],
+    "a": 2,
+    "e": "Each penny is worth 1¢. Count 5 of them: 1, 2, 3, 4, 5. So 5 pennies = 5¢.",
+    "d": "e"
+  },
+  {
+    "t": "True or false: A dime is worth more than a nickel.",
+    "o": ["True", "False", "They are equal", "It depends"],
+    "a": 0,
+    "e": "True! A dime is worth 10¢ and a nickel is worth 5¢. 10¢ > 5¢.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is copper-colored and worth 1¢?",
+    "o": ["Nickel", "Dime", "Quarter", "Penny"],
+    "a": 3,
+    "e": "The penny is the copper-colored coin worth 1¢. All the other coins are silver-colored.",
+    "d": "e"
+  },
+  {
+    "t": "3 dimes = ___ ¢",
+    "o": ["3¢", "13¢", "30¢", "35¢"],
+    "a": 2,
+    "e": "Each dime is worth 10¢. Count by 10s: 10, 20, 30. So 3 dimes = 30¢.",
+    "d": "e"
+  },
+  {
+    "t": "4 nickels = ___ ¢",
+    "o": ["4¢", "15¢", "20¢", "25¢"],
+    "a": 2,
+    "e": "Each nickel is worth 5¢. Count by 5s: 5, 10, 15, 20. So 4 nickels = 20¢.",
+    "d": "e"
+  },
+  {
+    "t": "How many cents is 1 quarter?",
+    "o": ["5¢", "10¢", "20¢", "25¢"],
+    "a": 3,
+    "e": "One quarter equals 25¢. Think of it as a quarter of a dollar (100¢ ÷ 4 = 25¢).",
+    "d": "e"
+  },
+  {
+    "t": "Put these coins in order from LEAST to MOST value: penny, quarter, dime, nickel.",
+    "o": ["Penny, nickel, dime, quarter", "Quarter, dime, nickel, penny", "Penny, dime, nickel, quarter", "Nickel, penny, dime, quarter"],
+    "a": 0,
+    "e": "From least to most: penny (1¢), nickel (5¢), dime (10¢), quarter (25¢).",
+    "d": "e"
+  },
+  {
+    "t": "2 quarters = ___ ¢",
+    "o": ["25¢", "35¢", "45¢", "50¢"],
+    "a": 3,
+    "e": "Each quarter is worth 25¢. Count by 25s: 25, 50. So 2 quarters = 50¢.",
+    "d": "e"
+  },
+  {
+    "t": "10 pennies have the same value as which coin?",
+    "o": ["Nickel", "Dime", "Quarter", "Half dollar"],
+    "a": 1,
+    "e": "10 pennies = 10¢. A dime is also worth 10¢. So 10 pennies = 1 dime!",
+    "d": "e"
+  }
+]

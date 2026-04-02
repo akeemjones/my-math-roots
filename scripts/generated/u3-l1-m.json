@@ -1,0 +1,142 @@
+[
+  {
+    "t": "47 + 35 = ? Use regrouping to solve.",
+    "o": ["72", "82", "81", "92"],
+    "a": 1,
+    "e": "Add the ones: 7 + 5 = 12. Write 2, regroup 1 ten. Add the tens: 4 + 3 + 1 = 8. Answer: 82.",
+    "d": "m"
+  },
+  {
+    "t": "Maria has 45 stickers. She gets 28 more. How many stickers does Maria have now?",
+    "o": ["63", "73", "83", "62"],
+    "a": 1,
+    "e": "Add 45 + 28. Ones: 5 + 8 = 13. Regroup 1 ten. Tens: 4 + 2 + 1 = 7. Answer: 73.",
+    "d": "m"
+  },
+  {
+    "t": "Which problem needs regrouping? A) 34 + 25  B) 47 + 38  C) 51 + 23  D) 62 + 15",
+    "o": ["34 + 25", "47 + 38", "51 + 23", "62 + 15"],
+    "a": 1,
+    "e": "47 + 38: the ones are 7 + 8 = 15, which is more than 9, so you must regroup. The other problems have ones that add to 9 or less.",
+    "d": "m"
+  },
+  {
+    "t": "__ + 36 = 73. What is the missing number?",
+    "o": ["47", "37", "27", "43"],
+    "a": 1,
+    "e": "Think: what plus 36 equals 73? Subtract: 73 - 36 = 37. Check: 37 + 36 = 73.",
+    "d": "m"
+  },
+  {
+    "t": "58 + 67 = ?",
+    "o": ["115", "135", "125", "105"],
+    "a": 2,
+    "e": "Add the ones: 8 + 7 = 15. Write 5, regroup 1 ten. Add the tens: 5 + 6 + 1 = 12. Answer: 125.",
+    "d": "m"
+  },
+  {
+    "t": "A box has 76 crayons. Another box has 49 crayons. How many crayons altogether?",
+    "o": ["115", "135", "125", "145"],
+    "a": 2,
+    "e": "Add 76 + 49. Ones: 6 + 9 = 15. Regroup 1 ten. Tens: 7 + 4 + 1 = 12. Answer: 125.",
+    "d": "m"
+  },
+  {
+    "t": "__ + 55 = 112. What is the missing number?",
+    "o": ["67", "47", "57", "77"],
+    "a": 2,
+    "e": "Think: what plus 55 equals 112? Subtract: 112 - 55 = 57. Check: 57 + 55 = 112.",
+    "d": "m"
+  },
+  {
+    "t": "64 + 78 = ?",
+    "o": ["132", "152", "142", "122"],
+    "a": 2,
+    "e": "Add the ones: 4 + 8 = 12. Write 2, regroup 1 ten. Add the tens: 6 + 7 + 1 = 14. Answer: 142.",
+    "d": "m"
+  },
+  {
+    "t": "Which strategy helps solve 89 + 46?",
+    "o": ["Count back from 89", "Break apart: 89 + 40 + 6", "Subtract 46 from 89", "Round 89 down to 80"],
+    "a": 1,
+    "e": "Break apart 46 into 40 + 6. Add 89 + 40 = 129, then 129 + 6 = 135. Breaking apart makes adding easier.",
+    "d": "m"
+  },
+  {
+    "t": "There are 53 kids on a bus. At the next stop, 39 more get on. How many kids are on the bus?",
+    "o": ["82", "92", "102", "72"],
+    "a": 1,
+    "e": "Add 53 + 39. Ones: 3 + 9 = 12. Regroup 1 ten. Tens: 5 + 3 + 1 = 9. Answer: 92.",
+    "d": "m"
+  },
+  {
+    "t": "Which answer is correct for 86 + 37?",
+    "o": ["113", "133", "123", "103"],
+    "a": 2,
+    "e": "Add the ones: 6 + 7 = 13. Regroup 1 ten. Add the tens: 8 + 3 + 1 = 12. Answer: 123.",
+    "d": "m"
+  },
+  {
+    "t": "29 + __ = 81. What is the missing number?",
+    "o": ["62", "52", "42", "58"],
+    "a": 1,
+    "e": "Think: 29 + what = 81? Subtract: 81 - 29 = 52. Check: 29 + 52 = 81.",
+    "d": "m"
+  },
+  {
+    "t": "Which problem does NOT need regrouping? A) 56 + 27  B) 43 + 52  C) 68 + 45  D) 79 + 14",
+    "o": ["56 + 27", "43 + 52", "68 + 45", "79 + 14"],
+    "a": 1,
+    "e": "43 + 52: the ones are 3 + 2 = 5, no regrouping needed. All other problems have ones that add above 9.",
+    "d": "m"
+  },
+  {
+    "t": "A farm has 67 chickens and 85 ducks. How many birds does the farm have?",
+    "o": ["142", "162", "152", "132"],
+    "a": 2,
+    "e": "Add 67 + 85. Ones: 7 + 5 = 12. Regroup 1 ten. Tens: 6 + 8 + 1 = 15. Answer: 152.",
+    "d": "m"
+  },
+  {
+    "t": "73 + 48 = ?",
+    "o": ["111", "131", "121", "101"],
+    "a": 2,
+    "e": "Add the ones: 3 + 8 = 11. Write 1, regroup 1 ten. Add the tens: 7 + 4 + 1 = 12. Answer: 121.",
+    "d": "m"
+  },
+  {
+    "t": "Jada had some stickers. She got 44 more and now has 91. How many did she start with?",
+    "o": ["57", "47", "37", "53"],
+    "a": 1,
+    "e": "Think: __ + 44 = 91. Subtract: 91 - 44 = 47. Jada started with 47 stickers.",
+    "d": "m"
+  },
+  {
+    "t": "55 + 86 = ?",
+    "o": ["131", "151", "141", "121"],
+    "a": 2,
+    "e": "Add the ones: 5 + 6 = 11. Regroup 1 ten. Tens: 5 + 8 + 1 = 14. Answer: 141.",
+    "d": "m"
+  },
+  {
+    "t": "Which is greater: 65 + 48 or 59 + 57?",
+    "o": ["65 + 48", "59 + 57", "They are equal", "Cannot tell"],
+    "a": 1,
+    "e": "65 + 48 = 113 and 59 + 57 = 116. Since 116 > 113, 59 + 57 is greater.",
+    "d": "m"
+  },
+  {
+    "t": "A library has 94 fiction books and 68 nonfiction books. How many books in all?",
+    "o": ["152", "172", "162", "142"],
+    "a": 2,
+    "e": "Add 94 + 68. Ones: 4 + 8 = 12. Regroup 1 ten. Tens: 9 + 6 + 1 = 16. Answer: 162.",
+    "d": "m"
+  },
+  {
+    "t": "38 + 95 = ?",
+    "o": ["123", "143", "133", "113"],
+    "a": 2,
+    "e": "Add the ones: 8 + 5 = 13. Regroup 1 ten. Tens: 3 + 9 + 1 = 13. Answer: 133.",
+    "d": "m"
+  }
+]

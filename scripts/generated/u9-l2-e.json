@@ -1,0 +1,142 @@
+[
+  {
+    "t": "What shape is a ball?",
+    "o": ["Cube", "Cone", "Sphere", "Cylinder"],
+    "a": 2,
+    "e": "A ball is shaped like a sphere -- it is perfectly round in every direction.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape does a soup can look like?",
+    "o": ["Sphere", "Cone", "Cube", "Cylinder"],
+    "a": 3,
+    "e": "A soup can is shaped like a cylinder -- it has 2 flat circular faces and 1 curved surface.",
+    "d": "e"
+  },
+  {
+    "t": "How many faces does a cube have?",
+    "o": ["4", "6", "8", "12"],
+    "a": 1,
+    "e": "A cube has 6 faces. Think of a dice -- top, bottom, front, back, left, right.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape looks like an ice cream cone?",
+    "o": ["Cylinder", "Sphere", "Cone", "Rectangular prism"],
+    "a": 2,
+    "e": "An ice cream cone is shaped like a cone -- it has a point at one end and a circle at the other.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape does a cereal box look like?",
+    "o": ["Cube", "Cone", "Rectangular prism", "Sphere"],
+    "a": 2,
+    "e": "A cereal box is a rectangular prism -- it has 6 flat rectangular faces.",
+    "d": "e"
+  },
+  {
+    "t": "How many flat faces does a sphere have?",
+    "o": ["0", "1", "2", "6"],
+    "a": 0,
+    "e": "A sphere has 0 flat faces. It is completely curved all around, like a ball.",
+    "d": "e"
+  },
+  {
+    "t": "Which 3D shape can roll AND slide?",
+    "o": ["Cube", "Cylinder", "Rectangular prism", "Triangular prism"],
+    "a": 1,
+    "e": "A cylinder can roll (on its curved side) and slide (on its flat faces).",
+    "d": "e"
+  },
+  {
+    "t": "How many vertices (corners) does a cube have?",
+    "o": ["4", "6", "8", "12"],
+    "a": 2,
+    "e": "A cube has 8 vertices (corners). Think of 4 corners on top and 4 corners on bottom.",
+    "d": "e"
+  },
+  {
+    "t": "What shape are all 6 faces of a cube?",
+    "o": ["Rectangles", "Triangles", "Squares", "Circles"],
+    "a": 2,
+    "e": "All 6 faces of a cube are squares. Each face is the same size.",
+    "d": "e"
+  },
+  {
+    "t": "Which solid shape has NO edges and NO vertices?",
+    "o": ["Cube", "Cone", "Sphere", "Rectangular prism"],
+    "a": 2,
+    "e": "A sphere has no edges and no vertices. It is completely smooth and round.",
+    "d": "e"
+  },
+  {
+    "t": "How many edges does a cube have?",
+    "o": ["6", "8", "10", "12"],
+    "a": 3,
+    "e": "A cube has 12 edges -- the lines where two faces meet.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape does a basketball look like?",
+    "o": ["Cylinder", "Cube", "Sphere", "Cone"],
+    "a": 2,
+    "e": "A basketball is shaped like a sphere -- round in every direction.",
+    "d": "e"
+  },
+  {
+    "t": "A cone has how many flat faces?",
+    "o": ["0", "1", "2", "3"],
+    "a": 1,
+    "e": "A cone has 1 flat face (the circular base) and 1 curved surface that goes up to a point.",
+    "d": "e"
+  },
+  {
+    "t": "Which 3D shape can only roll (not slide on a flat face)?",
+    "o": ["Cube", "Cylinder", "Sphere", "Rectangular prism"],
+    "a": 2,
+    "e": "A sphere can only roll because it has no flat faces to slide on.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape does a party hat look like?",
+    "o": ["Sphere", "Cylinder", "Cone", "Cube"],
+    "a": 2,
+    "e": "A party hat is shaped like a cone -- wide at the bottom and pointed at the top.",
+    "d": "e"
+  },
+  {
+    "t": "A rectangular prism has how many faces?",
+    "o": ["4", "5", "6", "8"],
+    "a": 2,
+    "e": "A rectangular prism has 6 faces, just like a cube. But its faces can be rectangles of different sizes.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has a point (apex) at the top?",
+    "o": ["Cube", "Cylinder", "Sphere", "Cone"],
+    "a": 3,
+    "e": "A cone has a point (called the apex) at the top and a flat circular base.",
+    "d": "e"
+  },
+  {
+    "t": "What 3D shape does a tissue box look like?",
+    "o": ["Cube", "Rectangular prism", "Cylinder", "Cone"],
+    "a": 1,
+    "e": "A tissue box is shaped like a rectangular prism -- it has 6 rectangular faces.",
+    "d": "e"
+  },
+  {
+    "t": "How many flat faces does a cylinder have?",
+    "o": ["0", "1", "2", "3"],
+    "a": 2,
+    "e": "A cylinder has 2 flat circular faces -- one on the top and one on the bottom.",
+    "d": "e"
+  },
+  {
+    "t": "True or false: A cube can stack on top of another cube.",
+    "o": ["True", "False", "Only if they are the same size", "Only small cubes"],
+    "a": 0,
+    "e": "True! Cubes have flat faces, so they stack easily. Flat faces let shapes sit on top of each other.",
+    "d": "e"
+  }
+]

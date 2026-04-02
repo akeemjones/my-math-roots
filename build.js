@@ -75,7 +75,7 @@ async function build(){
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
     'data/shared.js','util.js','state.js','auth.js','nav.js','home.js','unit.js',
-    'quiz.js','settings.js','ui.js','tour.js','events.js','boot.js'
+    'quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
     name: f,
@@ -253,27 +253,7 @@ async function build(){
     console.log(`📋 Copied:  data/u${n}.js`);
   }
 
-  // ── Copy dashboard/ subdirectory ──
-  // .js files get credential placeholder replacement; all others are copied verbatim.
-  const dashSrc = path.join(ROOT, 'dashboard');
-  const dashDst = path.join(DIST, 'dashboard');
-  if(fs.existsSync(dashSrc)){
-    if(!fs.existsSync(dashDst)) fs.mkdirSync(dashDst, { recursive: true });
-    for(const file of fs.readdirSync(dashSrc)){
-      if(file.endsWith('.js')){
-        let content = fs.readFileSync(path.join(dashSrc, file), 'utf8');
-        content = content
-          .replace(/%%SUPA_URL%%/g, process.env.SUPA_URL || '')
-          .replace(/%%SUPA_KEY%%/g, process.env.SUPA_KEY || '')
-          .replace(/%%GOOGLE_CLIENT_ID%%/g, process.env.GOOGLE_CLIENT_ID || '');
-        fs.writeFileSync(path.join(dashDst, file), content, 'utf8');
-        console.log(`📋 Injected credentials: dashboard/${file}`);
-      } else {
-        fs.copyFileSync(path.join(dashSrc, file), path.join(dashDst, file));
-        console.log(`📋 Copied:  dashboard/${file}`);
-      }
-    }
-  }
+  // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed
 
   console.log('\n🚀 Build complete → dist/');
 }

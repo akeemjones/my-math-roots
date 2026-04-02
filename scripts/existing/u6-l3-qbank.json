@@ -1,0 +1,362 @@
+[
+  {
+    "t": "Use the pictograph below. Key: 📖=2 books. How many books did Sofia read? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "8",
+      "4",
+      "6",
+      "10"
+    ],
+    "a": 0,
+    "e": "Sofia has 4 pictures. 4 × 2 = 8 books.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Who read the most books? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "Emma",
+      "Liam",
+      "Sofia",
+      "Noah"
+    ],
+    "a": 2,
+    "e": "Sofia has 4 pictures — the most.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: 📖=2 books. How many books did Noah read? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "2",
+      "1",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "Noah has 1 picture. 1 × 2 = 2 books.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: 📖=2 books. How many more did Emma read than Liam? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "Emma: 3×2=6, Liam: 2×2=4. 6 − 4 = 2 more.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: 📖=2 books. Total books by all students? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "18",
+      "20",
+      "22",
+      "24"
+    ],
+    "a": 1,
+    "e": "Total pictures: 3+2+4+1=10. 10 × 2 = 20 books.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Who read the fewest books? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Emma</text><text x=\"55\" y=\"33\" font-size=\"14\">📖📖📖</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"55\" y=\"51\" font-size=\"14\">📖📖</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sofia</text><text x=\"55\" y=\"69\" font-size=\"14\">📖📖📖📖</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Noah</text><text x=\"55\" y=\"87\" font-size=\"14\">📖</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "Emma",
+      "Liam",
+      "Sofia",
+      "Noah"
+    ],
+    "a": 3,
+    "e": "Noah has 1 picture — the fewest.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=3 stars. How many stars did Cora earn? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "15",
+      "9",
+      "12",
+      "18"
+    ],
+    "a": 0,
+    "e": "Cora has 5 pictures. 5 × 3 = 15 stars.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Who earned the most stars? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "Ava",
+      "Ben",
+      "Cora",
+      "Dan"
+    ],
+    "a": 2,
+    "e": "Cora has 5 pictures — the most.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=3 stars. How many stars did Ben earn? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 3,
+    "e": "Ben has 2 pictures. 2 × 3 = 6 stars.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=3. How many more stars did Ava earn than Ben? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "3",
+      "6",
+      "9",
+      "12"
+    ],
+    "a": 1,
+    "e": "Ava: 4×3=12, Ben: 2×3=6. 12 − 6 = 6 more.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=3. Total stars earned by all? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ava</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Ben</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Cora</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Dan</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "36",
+      "40",
+      "42",
+      "45"
+    ],
+    "a": 2,
+    "e": "Total pictures: 4+2+5+3=14. 14 × 3 = 42 stars.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=2 stickers. How many stickers does Leo have? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Mia</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Kai</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Zoe</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Leo</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "12",
+      "8",
+      "10",
+      "14"
+    ],
+    "a": 0,
+    "e": "Leo has 6 pictures. 6 × 2 = 12 stickers.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Who has the most stickers? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Mia</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Kai</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Zoe</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Leo</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "Mia",
+      "Kai",
+      "Zoe",
+      "Leo"
+    ],
+    "a": 3,
+    "e": "Leo has 6 pictures — the most.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=2. How many stickers does Zoe have? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Mia</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Kai</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Zoe</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Leo</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "4",
+      "2",
+      "6",
+      "8"
+    ],
+    "a": 0,
+    "e": "Zoe has 2 pictures. 2 × 2 = 4 stickers.",
+    "d": "m"
+  },
+  {
+    "t": "Use the pictograph below. Key: ⭐=2. How many more stickers does Leo have than Mia? <svg width=\"500\" height=\"258\" viewBox=\"0 0 210 108\" style=\"display:block;margin:8px auto;border-radius:8px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"202\" height=\"14\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"12\" font-size=\"7\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"16\" x2=\"206\" y2=\"16\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"6\" y=\"31\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Mia</text><text x=\"55\" y=\"33\" font-size=\"14\">⭐⭐⭐</text><line x1=\"4\" y1=\"37\" x2=\"206\" y2=\"37\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"49\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Kai</text><text x=\"55\" y=\"51\" font-size=\"14\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"55\" x2=\"206\" y2=\"55\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"67\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Zoe</text><text x=\"55\" y=\"69\" font-size=\"14\">⭐⭐</text><line x1=\"4\" y1=\"73\" x2=\"206\" y2=\"73\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"6\" y=\"85\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Leo</text><text x=\"55\" y=\"87\" font-size=\"14\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"104\" x2=\"206\" y2=\"104\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "7",
+      "6"
+    ],
+    "a": 3,
+    "e": "Leo: 6×2=12, Mia: 3×2=6. 12 − 6 = 6 more.",
+    "d": "m"
+  },
+  {
+    "t": "What does the KEY in a pictograph tell you? <svg width=\"660\" height=\"150\" viewBox=\"0 0 220 52\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"6\" width=\"212\" height=\"18\" fill=\"#e8f4ff\" rx=\"4\"/><text x=\"8\" y=\"19\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2 books</text><text x=\"8\" y=\"40\" font-size=\"7\" fill=\"#666\">Always check the key before counting!</text></svg>",
+    "o": [
+      "The graph heading",
+      "What each picture equals",
+      "How tall bars should be",
+      "The chart direction"
+    ],
+    "a": 1,
+    "e": "The key tells you how much each picture symbol is worth.",
+    "d": "m"
+  },
+  {
+    "t": "What is the first step when reading a pictograph? <svg width=\"660\" height=\"150\" viewBox=\"0 0 220 52\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"6\" width=\"212\" height=\"18\" fill=\"#e8f4ff\" rx=\"4\"/><text x=\"8\" y=\"19\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2 books</text><text x=\"8\" y=\"40\" font-size=\"7\" fill=\"#666\">Always check the key before counting!</text></svg>",
+    "o": [
+      "Count all pictures",
+      "Check the KEY",
+      "Read the title",
+      "Subtract bars"
+    ],
+    "a": 1,
+    "e": "Always check the key so you know what each picture is worth.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph where 1 picture = 5, Liam has 2 pictures. How many? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 5</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Liam</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "10",
+      "5",
+      "8",
+      "12"
+    ],
+    "a": 0,
+    "e": "2 pictures × 5 = 10.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph, 1 picture = 3. There are 4 pictures. What is the total? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Row</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "a": 3,
+    "e": "4 × 3 = 12.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph, 1 picture = 10. There are 5 pictures. What is the total? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 10</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Row</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "40",
+      "50",
+      "60",
+      "70"
+    ],
+    "a": 1,
+    "e": "5 × 10 = 50.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph, 1 picture = 2. There are 6 pictures. Total? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Row</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "12",
+      "8",
+      "10",
+      "14"
+    ],
+    "a": 0,
+    "e": "6 × 2 = 12.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph where 1 picture = 2, how many pictures to show 8? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Need 8</text><text x=\"65\" y=\"47\" font-size=\"16\">📖📖📖📖</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "8 ÷ 2 = 4 pictures.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph where 1 picture = 4, how many pictures to show 24? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 4</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Need 24</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "24 ÷ 4 = 6 pictures.",
+    "d": "m"
+  },
+  {
+    "t": "A pictograph shows April: 6 pictures. Key: 1 picture = 5 inches of rain. How much? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: 🌧️ = 5 in</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">April</text><text x=\"65\" y=\"47\" font-size=\"16\">🌧️🌧️🌧️🌧️🌧️🌧️</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "20",
+      "25",
+      "35",
+      "30"
+    ],
+    "a": 3,
+    "e": "6 × 5 = 30 inches.",
+    "d": "m"
+  },
+  {
+    "t": "A pictograph shows Sunday: 4 pictures, Monday: 2 pictures. Key = 3. Total? <svg width=\"560\" height=\"192\" viewBox=\"0 0 280 96\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 3</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"38\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Sunday</text><text x=\"65\" y=\"42\" font-size=\"16\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"56\" x2=\"276\" y2=\"56\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"8\" y=\"76\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Monday</text><text x=\"65\" y=\"80\" font-size=\"16\">⭐⭐</text><line x1=\"4\" y1=\"88\" x2=\"276\" y2=\"88\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "18",
+      "12",
+      "16",
+      "20"
+    ],
+    "a": 0,
+    "e": "(4+2) × 3 = 18.",
+    "d": "m"
+  },
+  {
+    "t": "A pictograph shows Apples: 5, Oranges: 3. Key = 2. How many more apples? <svg width=\"560\" height=\"192\" viewBox=\"0 0 280 96\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: 🍎 = 2</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"38\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Apples</text><text x=\"65\" y=\"42\" font-size=\"16\">🍎🍎🍎🍎🍎</text><line x1=\"4\" y1=\"56\" x2=\"276\" y2=\"56\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"8\" y=\"76\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Oranges</text><text x=\"65\" y=\"80\" font-size=\"16\">🍎🍎🍎</text><line x1=\"4\" y1=\"88\" x2=\"276\" y2=\"88\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "2",
+      "3",
+      "5",
+      "4"
+    ],
+    "a": 3,
+    "e": "Apples: 10, Oranges: 6. 10 − 6 = 4 more.",
+    "d": "m"
+  },
+  {
+    "t": "Why do pictographs use pictures instead of numbers? <svg width=\"660\" height=\"150\" viewBox=\"0 0 220 52\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"6\" width=\"212\" height=\"18\" fill=\"#e8f4ff\" rx=\"4\"/><text x=\"8\" y=\"19\" font-size=\"9\" fill=\"#333\" font-weight=\"bold\">Key: 📖 = 2 books</text><text x=\"8\" y=\"40\" font-size=\"7\" fill=\"#666\">Always check the key before counting!</text></svg>",
+    "o": [
+      "Looks prettier",
+      "Each picture represents data quickly",
+      "Required by law",
+      "Easier to write"
+    ],
+    "a": 1,
+    "e": "Pictures make data easy to see and compare at a glance.",
+    "d": "m"
+  },
+  {
+    "t": "In a pictograph, the key shows 1 picture = 4. A row has 3 pictures. Value? <svg width=\"560\" height=\"144\" viewBox=\"0 0 280 72\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 4</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"43\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Row</text><text x=\"65\" y=\"47\" font-size=\"16\">⭐⭐⭐</text><line x1=\"4\" y1=\"62\" x2=\"276\" y2=\"62\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "8",
+      "10",
+      "12",
+      "16"
+    ],
+    "a": 2,
+    "e": "3 × 4 = 12.",
+    "d": "m"
+  },
+  {
+    "t": "A pictograph shows Class A: 4 pictures, Class B: 3 pictures. Key = 2. Total? <svg width=\"560\" height=\"192\" viewBox=\"0 0 280 96\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"38\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Class A</text><text x=\"65\" y=\"42\" font-size=\"16\">⭐⭐⭐⭐</text><line x1=\"4\" y1=\"56\" x2=\"276\" y2=\"56\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"8\" y=\"76\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Class B</text><text x=\"65\" y=\"80\" font-size=\"16\">⭐⭐⭐</text><line x1=\"4\" y1=\"88\" x2=\"276\" y2=\"88\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "12",
+      "14",
+      "16",
+      "18"
+    ],
+    "a": 1,
+    "e": "(4+3) × 2 = 14.",
+    "d": "m"
+  },
+  {
+    "t": "A pictograph shows Red: 3 pictures, Blue: 5 pictures. Key = 2. More for Blue? <svg width=\"560\" height=\"192\" viewBox=\"0 0 280 96\" style=\"display:block;margin:6px auto;border-radius:6px;background:#f9f9f9\"><rect x=\"4\" y=\"2\" width=\"272\" height=\"15\" fill=\"#e8f4ff\" rx=\"3\"/><text x=\"8\" y=\"13\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Key: ⭐ = 2</text><line x1=\"4\" y1=\"17\" x2=\"276\" y2=\"17\" stroke=\"#ddd\" stroke-width=\"1\"/><text x=\"8\" y=\"38\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Red</text><text x=\"65\" y=\"42\" font-size=\"16\">⭐⭐⭐</text><line x1=\"4\" y1=\"56\" x2=\"276\" y2=\"56\" stroke=\"#eee\" stroke-width=\"1\"/><text x=\"8\" y=\"76\" font-size=\"8\" fill=\"#333\" font-weight=\"bold\">Blue</text><text x=\"65\" y=\"80\" font-size=\"16\">⭐⭐⭐⭐⭐</text><line x1=\"4\" y1=\"88\" x2=\"276\" y2=\"88\" stroke=\"#ddd\" stroke-width=\"1\"/></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "Blue: 10, Red: 6. 10 − 6 = 4 more.",
+    "d": "m"
+  }
+]

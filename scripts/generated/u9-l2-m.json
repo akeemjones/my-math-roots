@@ -1,0 +1,142 @@
+[
+  {
+    "t": "How many more edges does a rectangular prism have than a triangular prism?",
+    "o": ["2", "3", "4", "6"],
+    "a": 1,
+    "e": "A rectangular prism has 12 edges. A triangular prism has 9 edges. 12 - 9 = 3 more edges.",
+    "d": "m"
+  },
+  {
+    "t": "A shape has 6 faces, 8 vertices, and 12 edges. All faces are the same size. What is it?",
+    "o": ["Rectangular prism", "Cube", "Triangular prism", "Cylinder"],
+    "a": 1,
+    "e": "A cube has 6 equal square faces, 8 vertices, and 12 edges. A rectangular prism also has 6 faces, 8 vertices, and 12 edges, but its faces are not all the same size.",
+    "d": "m"
+  },
+  {
+    "t": "Which 3D shape has triangular faces? Choose the best answer.",
+    "o": ["Cube", "Cylinder", "Triangular prism", "Sphere"],
+    "a": 2,
+    "e": "A triangular prism has 2 triangular faces (on the ends) and 3 rectangular faces (on the sides).",
+    "d": "m"
+  },
+  {
+    "t": "What 2D shape would you see if you traced the bottom of a cylinder?",
+    "o": ["Square", "Triangle", "Circle", "Rectangle"],
+    "a": 2,
+    "e": "The base of a cylinder is a circle. If you set it down and traced around the bottom, you would draw a circle.",
+    "d": "m"
+  },
+  {
+    "t": "Which solid can slide but NOT roll?",
+    "o": ["Sphere", "Cylinder", "Cube", "Cone"],
+    "a": 2,
+    "e": "A cube has only flat faces, so it can slide but cannot roll. You need a curved surface to roll.",
+    "d": "m"
+  },
+  {
+    "t": "How many faces does a triangular prism have?",
+    "o": ["3", "4", "5", "6"],
+    "a": 2,
+    "e": "A triangular prism has 5 faces: 2 triangles on the ends and 3 rectangles on the sides.",
+    "d": "m"
+  },
+  {
+    "t": "Amy says a cone has 2 vertices. Is she correct?",
+    "o": ["Yes, one on top and one on bottom", "No, a cone has 1 vertex (the point)", "No, a cone has 0 vertices", "Yes, just like a cylinder"],
+    "a": 1,
+    "e": "A cone has just 1 vertex -- the pointy tip at the top. The circular base has no corners.",
+    "d": "m"
+  },
+  {
+    "t": "If you trace all the faces of a cube, what shapes do you draw?",
+    "o": ["6 circles", "6 squares", "4 squares and 2 rectangles", "6 triangles"],
+    "a": 1,
+    "e": "A cube has 6 faces and each face is a square. So you would draw 6 squares.",
+    "d": "m"
+  },
+  {
+    "t": "Which has MORE vertices: a cube or a triangular prism?",
+    "o": ["Cube (8 vs 6)", "Triangular prism (6 vs 8)", "They are equal", "Neither has vertices"],
+    "a": 0,
+    "e": "A cube has 8 vertices and a triangular prism has 6 vertices. The cube has 2 more.",
+    "d": "m"
+  },
+  {
+    "t": "What 2D shape do you see if you look straight at one end of a triangular prism?",
+    "o": ["Square", "Circle", "Triangle", "Rectangle"],
+    "a": 2,
+    "e": "The end faces of a triangular prism are triangles. Looking straight at one end, you see a triangle.",
+    "d": "m"
+  },
+  {
+    "t": "How are a cube and a rectangular prism ALIKE?",
+    "o": ["Both have 6 faces, 8 vertices, 12 edges", "Both have all square faces", "Both can roll", "Both have curved surfaces"],
+    "a": 0,
+    "e": "Both a cube and a rectangular prism have 6 faces, 8 vertices, and 12 edges. The difference is a cube's faces are all squares.",
+    "d": "m"
+  },
+  {
+    "t": "Which solid shape has exactly 1 curved surface and 0 flat faces?",
+    "o": ["Cone", "Cylinder", "Sphere", "Cube"],
+    "a": 2,
+    "e": "A sphere has 1 curved surface and no flat faces at all. A cone has 1 flat face and a cylinder has 2.",
+    "d": "m"
+  },
+  {
+    "t": "How many edges does a triangular prism have?",
+    "o": ["6", "8", "9", "12"],
+    "a": 2,
+    "e": "A triangular prism has 9 edges: 3 on each triangular face (6 total) plus 3 edges connecting them.",
+    "d": "m"
+  },
+  {
+    "t": "A ___ has 5 faces, 6 vertices, and 9 edges.",
+    "o": ["Cube", "Rectangular prism", "Triangular prism", "Cone"],
+    "a": 2,
+    "e": "A triangular prism has 5 faces, 6 vertices, and 9 edges.",
+    "d": "m"
+  },
+  {
+    "t": "Which 3D shape could you make by rolling a rectangle into a tube and adding 2 circle caps?",
+    "o": ["Cone", "Cube", "Cylinder", "Sphere"],
+    "a": 2,
+    "e": "Rolling a rectangle into a tube gives a curved surface. Adding 2 circle caps on the ends makes a cylinder.",
+    "d": "m"
+  },
+  {
+    "t": "How are a cone and a cylinder DIFFERENT?",
+    "o": ["A cone has 1 flat face; a cylinder has 2", "A cone has more edges", "A cylinder has no curved surface", "They are exactly the same"],
+    "a": 0,
+    "e": "A cone has 1 flat circular face and comes to a point. A cylinder has 2 flat circular faces and no point.",
+    "d": "m"
+  },
+  {
+    "t": "Which of these real objects is shaped most like a rectangular prism?",
+    "o": ["A basketball", "A brick", "A funnel", "A marble"],
+    "a": 1,
+    "e": "A brick is shaped like a rectangular prism -- it has 6 flat rectangular faces.",
+    "d": "m"
+  },
+  {
+    "t": "Sort from fewest faces to most: sphere, triangular prism, cube.",
+    "o": ["Sphere, triangular prism, cube", "Cube, triangular prism, sphere", "Triangular prism, sphere, cube", "Sphere, cube, triangular prism"],
+    "a": 0,
+    "e": "Sphere has 0 flat faces, triangular prism has 5, cube has 6. Order: sphere, triangular prism, cube.",
+    "d": "m"
+  },
+  {
+    "t": "What flat shape do you see if you look at the top of a cylinder?",
+    "o": ["Square", "Triangle", "Rectangle", "Circle"],
+    "a": 3,
+    "e": "The top face of a cylinder is a circle. Looking straight down, you see a circle.",
+    "d": "m"
+  },
+  {
+    "t": "If you stack 3 cubes in a tower, how many faces can you see from the outside? (Not counting the bottom or hidden faces.)",
+    "o": ["12", "13", "14", "18"],
+    "a": 1,
+    "e": "Each cube shows 4 side faces (4 x 3 = 12). The top cube shows its top face too (12 + 1 = 13). The touching faces and the bottom are hidden.",
+    "d": "m"
+  }
+]

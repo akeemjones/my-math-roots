@@ -1,0 +1,362 @@
+[
+  {
+    "t": "What is the expanded form of 352?",
+    "o": [
+      "300+50+2",
+      "300+5+2",
+      "30+50+2",
+      "350+2"
+    ],
+    "a": 0,
+    "e": "3H+5T+2O=300+50+2.",
+    "d": "m"
+  },
+  {
+    "t": "What is 200 + 40 + 7?",
+    "o": [
+      "247",
+      "274",
+      "427",
+      "742"
+    ],
+    "a": 0,
+    "e": "2H+4T+7O=247.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 806?",
+    "o": [
+      "800+6",
+      "80+6",
+      "8+0+6",
+      "800+0+6"
+    ],
+    "a": 3,
+    "e": "8H+0T+6O=800+0+6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 500 + 30 + 1?",
+    "o": [
+      "531",
+      "513",
+      "315",
+      "135"
+    ],
+    "a": 0,
+    "e": "5H+3T+1O=531.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 425?",
+    "o": [
+      "four hundred twenty-five",
+      "four twenty-five",
+      "four hundred fifty-two",
+      "four hundred two"
+    ],
+    "a": 0,
+    "e": "400+20+5=four hundred twenty-five.",
+    "d": "m"
+  },
+  {
+    "t": "What is 400 + 0 + 9?",
+    "o": [
+      "490",
+      "904",
+      "940",
+      "409"
+    ],
+    "a": 3,
+    "e": "4H+0T+9O=409.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 671?",
+    "o": [
+      "600+71",
+      "600+7+1",
+      "600+70+1",
+      "67+1"
+    ],
+    "a": 2,
+    "e": "6H+7T+1O=600+70+1.",
+    "d": "m"
+  },
+  {
+    "t": "What is 300 + 80 + 0?",
+    "o": [
+      "308",
+      "830",
+      "803",
+      "380"
+    ],
+    "a": 3,
+    "e": "3H+8T+0O=380.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 250?",
+    "o": [
+      "two hundred five",
+      "two hundred fifty",
+      "two fifty",
+      "two hundred fifteen"
+    ],
+    "a": 1,
+    "e": "200+50=two hundred fifty.",
+    "d": "m"
+  },
+  {
+    "t": "What is 700 + 60 + 4?",
+    "o": [
+      "746",
+      "674",
+      "467",
+      "764"
+    ],
+    "a": 3,
+    "e": "7H+6T+4O=764.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 103?",
+    "o": [
+      "100+3",
+      "100+0+3",
+      "10+3",
+      "1+0+3"
+    ],
+    "a": 1,
+    "e": "1H+0T+3O=100+0+3.",
+    "d": "m"
+  },
+  {
+    "t": "What is 900 + 0 + 0?",
+    "o": [
+      "9",
+      "90",
+      "900",
+      "9000"
+    ],
+    "a": 2,
+    "e": "9H+0T+0O=900.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of 600 + 50 + 8?",
+    "o": [
+      "568",
+      "658",
+      "685",
+      "865"
+    ],
+    "a": 1,
+    "e": "600+50+8=658.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 317?",
+    "o": [
+      "thirty-one seven",
+      "three hundred seventy-one",
+      "three hundred seventeen",
+      "thirty-seventeen"
+    ],
+    "a": 2,
+    "e": "300+10+7=three hundred seventeen.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 480?",
+    "o": [
+      "400+80",
+      "400+8+0",
+      "400+80+0",
+      "48+0"
+    ],
+    "a": 2,
+    "e": "4H+8T+0O=400+80+0.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 + 20 + 3?",
+    "o": [
+      "123",
+      "132",
+      "213",
+      "321"
+    ],
+    "a": 0,
+    "e": "1H+2T+3O=123.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of five hundred sixty-two?",
+    "o": [
+      "526",
+      "562",
+      "625",
+      "652"
+    ],
+    "a": 1,
+    "e": "500+60+2=562.",
+    "d": "m"
+  },
+  {
+    "t": "What is 200 + 90 + 5?",
+    "o": [
+      "259",
+      "295",
+      "529",
+      "952"
+    ],
+    "a": 1,
+    "e": "2H+9T+5O=295.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 900?",
+    "o": [
+      "9+0+0",
+      "90+0",
+      "900+0+0",
+      "9+00+0"
+    ],
+    "a": 2,
+    "e": "9H+0T+0O=900+0+0.",
+    "d": "m"
+  },
+  {
+    "t": "What is 400 + 60 + 0?",
+    "o": [
+      "406",
+      "460",
+      "604",
+      "640"
+    ],
+    "a": 1,
+    "e": "4H+6T+0O=460.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 708?",
+    "o": [
+      "seventy-eight",
+      "seven hundred eighty",
+      "seven hundred eight",
+      "seventy hundred eight"
+    ],
+    "a": 2,
+    "e": "700+8=seven hundred eight.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 535?",
+    "o": [
+      "500+35",
+      "500+3+5",
+      "500+30+5",
+      "530+5"
+    ],
+    "a": 2,
+    "e": "5H+3T+5O=500+30+5.",
+    "d": "m"
+  },
+  {
+    "t": "What is 800 + 70 + 0?",
+    "o": [
+      "807",
+      "870",
+      "780",
+      "708"
+    ],
+    "a": 1,
+    "e": "8H+7T+0O=870.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of three hundred forty?",
+    "o": [
+      "304",
+      "430",
+      "403",
+      "340"
+    ],
+    "a": 3,
+    "e": "300+40=340.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 + 0 + 7?",
+    "o": [
+      "107",
+      "170",
+      "710",
+      "701"
+    ],
+    "a": 0,
+    "e": "1H+0T+7O=107.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 999?",
+    "o": [
+      "900+9+9",
+      "900+99",
+      "900+90+9",
+      "9+90+900"
+    ],
+    "a": 2,
+    "e": "9H+9T+9O=900+90+9.",
+    "d": "m"
+  },
+  {
+    "t": "What is 600 + 0 + 3?",
+    "o": [
+      "603",
+      "630",
+      "360",
+      "306"
+    ],
+    "a": 0,
+    "e": "6H+0T+3O=603.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 840?",
+    "o": [
+      "eighty-four",
+      "eight hundred four",
+      "eight hundred forty",
+      "eight four zero"
+    ],
+    "a": 2,
+    "e": "800+40=eight hundred forty.",
+    "d": "m"
+  },
+  {
+    "t": "What is 300 + 50 + 0?",
+    "o": [
+      "305",
+      "530",
+      "503",
+      "350"
+    ],
+    "a": 3,
+    "e": "3H+5T+0O=350.",
+    "d": "m"
+  },
+  {
+    "t": "What is the expanded form of 762?",
+    "o": [
+      "700+6+2",
+      "70+60+2",
+      "762",
+      "700+60+2"
+    ],
+    "a": 3,
+    "e": "7H+6T+2O=700+60+2.",
+    "d": "m"
+  }
+]

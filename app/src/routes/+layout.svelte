@@ -19,15 +19,39 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { supabase } from '$lib/supabase';
-  import { authUser, activeStudent, familyProfiles, settings } from '$lib/stores';
+  import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode } from '$lib/stores';
+  import { mountSwipeBack } from '$lib/services/swipe';
+  import { isTutorialDone } from '$lib/services/tour';
+  import { pullStudentData, pushStudentData } from '$lib/services/sync';
+
+  // Show cog on student-facing screens (hidden on settings, login, dashboard, parent)
+  const showCog = $derived(
+    $page.url.pathname === '/' ||
+    $page.url.pathname.startsWith('/unit/') ||
+    $page.url.pathname.startsWith('/lesson/') ||
+    $page.url.pathname.startsWith('/quiz/') ||
+    $page.url.pathname === '/history'
+  );
   import { getStudentProfiles } from '$lib/services/auth';
   import { initPwa, pwaUpdateAvailable, applyUpdate } from '$lib/pwa';
+  import ProfilePicker from '$lib/components/auth/ProfilePicker.svelte';
+  import TutorialOverlay from '$lib/components/tour/TutorialOverlay.svelte';
+  import SpotlightTour from '$lib/components/tour/SpotlightTour.svelte';
   import type { AuthUser } from '$lib/types';
+
+  let spotlightReady = $state(false);
+  function onTutorialDone() {
+    // Small delay so home screen can render before spotlight tour starts
+    document.body.classList.add('spot-scroll-lock');
+    setTimeout(() => {
+      document.body.classList.remove('spot-scroll-lock');
+      spotlightReady = true;
+    }, 350);
+  }
 
   let { children } = $props();
 
-  const PUBLIC_ROUTES = ['/login'];
-  const SELECT_ROUTE = '/select';
+  const PUBLIC_ROUTES = ['/login', '/settings', '/history', '/privacy', '/terms', '/dashboard'];
 
   onMount(() => {
     // Populate unitsData store with the 10 curriculum shells
@@ -35,6 +59,12 @@
 
     // Wire up PWA update detection
     initPwa();
+
+    // Mount iOS-style swipe-back gesture
+    const cleanupSwipe = mountSwipeBack();
+
+    // If tutorial already done, enable spotlight tours immediately
+    if (isTutorialDone()) spotlightReady = true;
 
     // Restore existing session on first load
     supabase.auth.getSession().then(async ({ data }) => {
@@ -62,8 +92,11 @@
         } satisfies AuthUser);
 
         if (event === 'SIGNED_IN') {
+          guestMode.set(false);
           const { profiles } = await getStudentProfiles();
           familyProfiles.set(profiles);
+          // Parent just authenticated — send straight to the dashboard
+          goto('/dashboard');
         }
       } else {
         authUser.set(null);
@@ -71,32 +104,77 @@
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => { subscription.unsubscribe(); cleanupSwipe(); };
   });
 
   // Reactive guard: redirect when auth state changes
   $effect(() => {
     const currentPath = $page.url.pathname;
     const isPublic = PUBLIC_ROUTES.includes(currentPath);
-    const isSelect = currentPath === SELECT_ROUTE;
 
+    // Guest mode bypasses both guards — user clicked "Continue without an account"
+    if ($guestMode) return;
+
+    // Not signed in and not on a public route → go to login
     if (!$authUser && !isPublic) {
       goto('/login', { replaceState: true });
-      return;
     }
+    // Signed in but no student → ProfilePicker overlay is rendered below (no redirect needed)
+  });
 
-    if ($authUser && !$activeStudent && !isSelect && !isPublic) {
-      goto('/select', { replaceState: true });
+  // Pull student data from Supabase when active student changes
+  let lastPulledId: string | null = null;
+  $effect(() => {
+    const sid = $activeStudentId;
+    if (sid && sid !== lastPulledId && $authUser) {
+      lastPulledId = sid;
+      pullStudentData(sid).catch(() => {});
     }
+  });
+
+  // Push student data to Supabase when app is backgrounded/closed
+  $effect(() => {
+    if (!$activeStudentId || !$authUser) return;
+    const handleVisChange = () => {
+      if (document.visibilityState === 'hidden') {
+        pushStudentData().catch(() => {});
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisChange);
+    return () => document.removeEventListener('visibilitychange', handleVisChange);
   });
 
   // Dark mode: sync body.dark class to settings store
   $effect(() => {
-    document.body.classList.toggle('dark', $settings.theme === 'dark');
+    const theme = $settings.theme;
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    } else if (theme === 'light') {
+      document.body.classList.remove('dark');
+    } else {
+      // 'auto' — follow system preference
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      document.body.classList.toggle('dark', mq.matches);
+      const handler = (e: MediaQueryListEvent) => document.body.classList.toggle('dark', e.matches);
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    }
   });
 </script>
 
 {@render children()}
+
+<!-- Global cog button — fixed position, visible on all screens (matches legacy) -->
+{#if showCog}
+  <button type="button" class="cog-btn" aria-label="Settings" onclick={() => goto('/settings')}>
+    <span class="cog-ico">⚙️</span>
+  </button>
+{/if}
+
+<!-- Profile Picker overlay — shown when signed in but no student is selected -->
+{#if $authUser && !$activeStudent && !$guestMode && !$page.url.pathname.startsWith('/dashboard')}
+  <ProfilePicker />
+{/if}
 
 <!-- PWA update banner — shown when a new SW version is waiting -->
 {#if $pwaUpdateAvailable}
@@ -114,6 +192,14 @@
       ✕
     </button>
   </div>
+{/if}
+
+<!-- Tutorial overlay (first launch only) -->
+<TutorialOverlay onDone={onTutorialDone} />
+
+<!-- Spotlight tour (per-screen, after tutorial is complete) -->
+{#if spotlightReady}
+  <SpotlightTour />
 {/if}
 
 <style>

@@ -1,0 +1,362 @@
+[
+  {
+    "t": "Tom had 45 stickers and got 38 more. How many does he have in all?",
+    "o": [
+      "83",
+      "56",
+      "93",
+      "40"
+    ],
+    "a": 0,
+    "e": "\"Got more\" = ADD. 45+38=83.",
+    "d": "h"
+  },
+  {
+    "t": "There were 92 birds in a tree and 47 flew away. How many are left?",
+    "o": [
+      "45",
+      "25",
+      "55",
+      "10"
+    ],
+    "a": 0,
+    "e": "\"Flew away\" = SUBTRACT. 92-47=45.",
+    "d": "h"
+  },
+  {
+    "t": "Sam has 67 cards and Ana has 85. How many more cards does Ana have?",
+    "o": [
+      "18",
+      "8",
+      "30",
+      "50"
+    ],
+    "a": 0,
+    "e": "\"How many more\" = SUBTRACT. 85-67=18.",
+    "d": "h"
+  },
+  {
+    "t": "What does the word \"altogether\" tell you to do?",
+    "o": [
+      "Subtract",
+      "Multiply",
+      "Add",
+      "Divide"
+    ],
+    "a": 2,
+    "e": "Words like altogether = ADD.",
+    "d": "m"
+  },
+  {
+    "t": "Lily had 143 coins and gave away 68. How many coins does she have left?",
+    "o": [
+      "75",
+      "55",
+      "85",
+      "30"
+    ],
+    "a": 0,
+    "e": "\"Gave away\" = SUBTRACT. 143-68=75.",
+    "d": "h"
+  },
+  {
+    "t": "There are 56 red apples and 78 green apples. How many apples are there in all?",
+    "o": [
+      "134",
+      "104",
+      "144",
+      "90"
+    ],
+    "a": 0,
+    "e": "\"Total\" = ADD. 56+78=134.",
+    "d": "h"
+  },
+  {
+    "t": "There are 165 crayons and 78 are broken. How many good crayons are there?",
+    "o": [
+      "87",
+      "97",
+      "50",
+      "130"
+    ],
+    "a": 0,
+    "e": "\"Broken\" = SUBTRACT. 165-78=87.",
+    "d": "h"
+  },
+  {
+    "t": "What does the phrase \"how many left\" tell you to do?",
+    "o": [
+      "Subtract",
+      "Add",
+      "Multiply",
+      "Count up"
+    ],
+    "a": 0,
+    "e": "\"Left\" = what remains after subtracting.",
+    "d": "m"
+  },
+  {
+    "t": "There are 82 students in one class and 59 in another. How many students are there combined?",
+    "o": [
+      "120",
+      "151",
+      "141",
+      "100"
+    ],
+    "a": 2,
+    "e": "\"Combined\" = ADD. 82+59=141.",
+    "d": "h"
+  },
+  {
+    "t": "What is the first step when solving a word problem?",
+    "o": [
+      "Guess the answer",
+      "Write numbers first",
+      "Read carefully",
+      "Add everything"
+    ],
+    "a": 2,
+    "e": "Always read the problem carefully first!",
+    "d": "m"
+  },
+  {
+    "t": "The park had 175 people and 89 left. How many people are still at the park?",
+    "o": [
+      "76",
+      "50",
+      "86",
+      "130"
+    ],
+    "a": 2,
+    "e": "\"Left\" = SUBTRACT. 175-89=86.",
+    "d": "h"
+  },
+  {
+    "t": "What does the phrase \"in all\" mean in a math story?",
+    "o": [
+      "Subtract",
+      "Divide",
+      "Add",
+      "None"
+    ],
+    "a": 2,
+    "e": "\"In all\" is like \"total\" — it means ADD.",
+    "d": "m"
+  },
+  {
+    "t": "The store had 136 apples and sold 78. How many apples are left?",
+    "o": [
+      "38",
+      "68",
+      "58",
+      "20"
+    ],
+    "a": 2,
+    "e": "\"Sold\" = SUBTRACT. 136-78=58.",
+    "d": "h"
+  },
+  {
+    "t": "There are 63 boys and 74 girls at school. How many students are there altogether?",
+    "o": [
+      "107",
+      "147",
+      "90",
+      "137"
+    ],
+    "a": 3,
+    "e": "Boys + girls = ADD. 63+74=137.",
+    "d": "h"
+  },
+  {
+    "t": "What does the word \"difference\" mean in a math problem?",
+    "o": [
+      "Add two numbers",
+      "Multiply",
+      "Count on",
+      "Subtract to find gap"
+    ],
+    "a": 3,
+    "e": "\"Difference\" always means SUBTRACT.",
+    "d": "m"
+  },
+  {
+    "t": "Mia has 95 stickers and gives 47 away. How many stickers does she have left?",
+    "o": [
+      "38",
+      "20",
+      "80",
+      "48"
+    ],
+    "a": 3,
+    "e": "\"Gives\" = SUBTRACT. 95-47=48.",
+    "d": "h"
+  },
+  {
+    "t": "There are 74 pencils and 58 more pencils. How many are there altogether?",
+    "o": [
+      "102",
+      "142",
+      "90",
+      "132"
+    ],
+    "a": 3,
+    "e": "\"Altogether\" = ADD. 74+58=132.",
+    "d": "h"
+  },
+  {
+    "t": "The school had 183 books and 96 were checked out. How many books are still there?",
+    "o": [
+      "97",
+      "50",
+      "130",
+      "87"
+    ],
+    "a": 3,
+    "e": "\"Checked out\" = SUBTRACT. 183-96=87.",
+    "d": "h"
+  },
+  {
+    "t": "Which word tells you to SUBTRACT in a math story?",
+    "o": [
+      "total",
+      "altogether",
+      "in all",
+      "fewer"
+    ],
+    "a": 3,
+    "e": "\"Fewer\" means less — SUBTRACT to find how many fewer.",
+    "d": "m"
+  },
+  {
+    "t": "There are 27 girls, 38 boys, and 15 teachers. How many people are there in all?",
+    "o": [
+      "45",
+      "90",
+      "55",
+      "80"
+    ],
+    "a": 3,
+    "e": "27+38+15=80 people in all.",
+    "d": "h"
+  },
+  {
+    "t": "A book has 152 pages and Maria has read 67 pages. How many pages are left?",
+    "o": [
+      "75",
+      "55",
+      "120",
+      "85"
+    ],
+    "a": 3,
+    "e": "152-67=85.",
+    "d": "h"
+  },
+  {
+    "t": "Sam scored 86 points and Ben scored 74 points. How many more points did Sam score?",
+    "o": [
+      "10",
+      "12",
+      "14",
+      "16"
+    ],
+    "a": 1,
+    "e": "\"How many more\" = SUBTRACT. 86-74=12.",
+    "d": "h"
+  },
+  {
+    "t": "Which word tells you to ADD in a math story?",
+    "o": [
+      "left",
+      "fewer",
+      "combined",
+      "gave away"
+    ],
+    "a": 2,
+    "e": "\"Combined\" means put together = ADD.",
+    "d": "m"
+  },
+  {
+    "t": "There are 125 students and 46 more joined. How many students are there in all?",
+    "o": [
+      "151",
+      "171",
+      "181",
+      "120"
+    ],
+    "a": 1,
+    "e": "125+46=171.",
+    "d": "h"
+  },
+  {
+    "t": "There are 200 apples and 87 were sold. How many apples are remaining?",
+    "o": [
+      "93",
+      "113",
+      "123",
+      "80"
+    ],
+    "a": 1,
+    "e": "200-87=113.",
+    "d": "h"
+  },
+  {
+    "t": "Which word means SUBTRACT?",
+    "o": [
+      "total",
+      "sum",
+      "difference",
+      "combined"
+    ],
+    "a": 2,
+    "e": "\"Difference\" = subtract.",
+    "d": "m"
+  },
+  {
+    "t": "A bag had 134 grapes and 58 were eaten. How many grapes are left?",
+    "o": [
+      "56",
+      "76",
+      "86",
+      "30"
+    ],
+    "a": 1,
+    "e": "134-58=76.",
+    "d": "h"
+  },
+  {
+    "t": "There are 43 red balloons and 59 blue balloons. How many balloons are there in all?",
+    "o": [
+      "82",
+      "102",
+      "112",
+      "70"
+    ],
+    "a": 1,
+    "e": "43+59=102.",
+    "d": "h"
+  },
+  {
+    "t": "There were 175 people at a game and 88 left early. How many people are still at the game?",
+    "o": [
+      "97",
+      "87",
+      "50",
+      "130"
+    ],
+    "a": 1,
+    "e": "175-88=87.",
+    "d": "h"
+  },
+  {
+    "t": "Jen had 95 cards, gave away 38, then got 27 more. How many cards does she have now?",
+    "o": [
+      "64",
+      "84",
+      "94",
+      "50"
+    ],
+    "a": 1,
+    "e": "95-38=57, 57+27=84.",
+    "d": "h"
+  }
+]

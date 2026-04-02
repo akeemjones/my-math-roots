@@ -1,0 +1,142 @@
+[
+  {
+    "t": "What is 156 - 83?",
+    "o": ["63", "73", "83", "72"],
+    "a": 1,
+    "e": "Subtract ones: 6 - 3 = 3. Subtract tens: 15 - 8 = 7 (regroup from hundreds). The answer is 73.",
+    "d": "m"
+  },
+  {
+    "t": "Ben had 94 trading cards. He gave away 51. How many cards does Ben have now?",
+    "o": ["53", "33", "43", "45"],
+    "a": 2,
+    "e": "This is a subtraction problem. 94 - 51: Subtract ones: 4 - 1 = 3. Subtract tens: 9 - 5 = 4. Ben has 43 cards left.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 32 = 45. What is the missing number?",
+    "o": ["67", "77", "87", "13"],
+    "a": 1,
+    "e": "To find the missing number, add the two known numbers: 45 + 32 = 77. Check: 77 - 32 = 45. The missing number is 77.",
+    "d": "m"
+  },
+  {
+    "t": "Which subtraction problem does NOT need regrouping?",
+    "o": ["73 - 48", "85 - 37", "96 - 42", "61 - 29"],
+    "a": 2,
+    "e": "Check the ones place of each problem. In 96 - 42, the ones digit 6 is greater than 2, so no regrouping is needed. All the others have a smaller top ones digit.",
+    "d": "m"
+  },
+  {
+    "t": "A library has 87 books on a shelf. Students check out 34 books. How many books are still on the shelf?",
+    "o": ["43", "63", "53", "54"],
+    "a": 2,
+    "e": "Subtract ones: 7 - 4 = 3. Subtract tens: 8 - 3 = 5. There are 53 books still on the shelf.",
+    "d": "m"
+  },
+  {
+    "t": "What is 134 - 61?",
+    "o": ["63", "73", "83", "72"],
+    "a": 1,
+    "e": "Subtract ones: 4 - 1 = 3. Subtract tens: 13 - 6 = 7. The answer is 73.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 47 = 28. What is the missing number?",
+    "o": ["65", "75", "85", "19"],
+    "a": 1,
+    "e": "Add the two known numbers to find the missing number: 28 + 47 = 75. Check: 75 - 47 = 28. The missing number is 75.",
+    "d": "m"
+  },
+  {
+    "t": "There are 72 birds in a park. 39 birds fly away. Which number sentence shows how many birds are left?",
+    "o": ["72 + 39 = ?", "72 - 39 = ?", "39 - 72 = ?", "39 + 72 = ?"],
+    "a": 1,
+    "e": "When birds fly away, the total goes down. This is subtraction. We start with 72 and take away 39, so the correct sentence is 72 - 39 = ?",
+    "d": "m"
+  },
+  {
+    "t": "Which problem needs regrouping?",
+    "o": ["87 - 43", "79 - 56", "65 - 38", "98 - 64"],
+    "a": 2,
+    "e": "Check the ones digits. In 65 - 38, the ones digit 5 is less than 8, so you must regroup 1 ten as 10 ones before subtracting.",
+    "d": "m"
+  },
+  {
+    "t": "A farmer has 95 eggs. He sells 52 eggs at the market. How many eggs does he have left?",
+    "o": ["33", "53", "43", "42"],
+    "a": 2,
+    "e": "Subtract ones: 5 - 2 = 3. Subtract tens: 9 - 5 = 4. The farmer has 43 eggs left.",
+    "d": "m"
+  },
+  {
+    "t": "What is 148 - 75?",
+    "o": ["63", "73", "83", "72"],
+    "a": 1,
+    "e": "Subtract ones: 8 - 5 = 3. Subtract tens: 14 - 7 = 7. The answer is 73.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 56 = 39. What is the missing number?",
+    "o": ["85", "95", "75", "17"],
+    "a": 1,
+    "e": "Add the two known numbers: 39 + 56 = 95. Check: 95 - 56 = 39. The missing number is 95.",
+    "d": "m"
+  },
+  {
+    "t": "Sam has 68 marbles. He has 25 more marbles than Jill. How many marbles does Jill have?",
+    "o": ["93", "33", "43", "53"],
+    "a": 2,
+    "e": "Sam has MORE than Jill, so subtract to find Jill's amount: 68 - 25 = 43. Jill has 43 marbles.",
+    "d": "m"
+  },
+  {
+    "t": "Look at these problems. Which one has the GREATEST difference?",
+    "o": ["89 - 45", "76 - 28", "97 - 41", "83 - 39"],
+    "a": 2,
+    "e": "Calculate each: 89 - 45 = 44, 76 - 28 = 48, 97 - 41 = 56, 83 - 39 = 44. The greatest difference is 56 from 97 - 41.",
+    "d": "m"
+  },
+  {
+    "t": "A box holds 86 crayons. Mrs. Lee takes out some crayons. Now there are 53 crayons. How many did she take out?",
+    "o": ["23", "43", "33", "32"],
+    "a": 2,
+    "e": "Find how many were taken: 86 - 53 = 33. Subtract ones: 6 - 3 = 3. Subtract tens: 8 - 5 = 3. Mrs. Lee took out 33 crayons.",
+    "d": "m"
+  },
+  {
+    "t": "What is 125 - 54?",
+    "o": ["61", "71", "81", "79"],
+    "a": 1,
+    "e": "Subtract ones: 5 - 4 = 1. Subtract tens: 12 - 5 = 7. The answer is 71.",
+    "d": "m"
+  },
+  {
+    "t": "Which strategy helps you subtract 99 from a number?",
+    "o": ["Add 99 instead", "Subtract 100, then add 1", "Subtract 90, then subtract 10", "Count up by 10s"],
+    "a": 1,
+    "e": "Subtracting 99 is the same as subtracting 100 and then adding 1 back. This makes the mental math easier because 100 is a friendly number.",
+    "d": "m"
+  },
+  {
+    "t": "A garden has 74 flowers. Some are red and 38 are yellow. How many flowers are red?",
+    "o": ["46", "26", "36", "34"],
+    "a": 2,
+    "e": "Subtract to find the red flowers: 74 - 38 = 36. Regroup: 14 - 8 = 6 ones, 6 - 3 = 3 tens. There are 36 red flowers.",
+    "d": "m"
+  },
+  {
+    "t": "__ - 29 = 54. What is the missing number?",
+    "o": ["73", "83", "93", "25"],
+    "a": 1,
+    "e": "Add the two known numbers: 54 + 29 = 83. Check: 83 - 29 = 54. The missing number is 83.",
+    "d": "m"
+  },
+  {
+    "t": "Which problem has a difference LESS than 30?",
+    "o": ["89 - 54", "76 - 51", "93 - 48", "67 - 29"],
+    "a": 1,
+    "e": "Calculate each: 89 - 54 = 35, 76 - 51 = 25, 93 - 48 = 45, 67 - 29 = 38. Only 76 - 51 = 25 is less than 30.",
+    "d": "m"
+  }
+]

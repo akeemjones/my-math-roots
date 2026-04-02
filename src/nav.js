@@ -1,7 +1,7 @@
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
-const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen'];
+const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen'];
 function show(id){
   // Guard: parent-screen requires a valid parent session
   if(id === 'parent-screen' && !isParentUnlocked()){
@@ -28,7 +28,12 @@ function show(id){
   }
   // Hide the settings cog when inside settings, show everywhere else
   const cog = document.querySelector('.cog-btn');
-  if(cog) cog.style.display = (id === 'settings-screen' || id === 'login-screen' || id === 'parent-screen') ? 'none' : '';
+  if(cog) cog.style.display = (id === 'settings-screen' || id === 'login-screen' || id === 'parent-screen' || id === 'dashboard-screen') ? 'none' : '';
+  // Profile button only appears on the home (hero) screen
+  const prof = document.getElementById('prof-btn');
+  if(prof) prof.style.display = (id === 'home') ? '' : 'none';
+  // Update profile button emoji/visibility when landing on home
+  if(id === 'home' && typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   // Pre-fill remembered email on login screen — SEC-9: read from encrypted store
   if(id === 'login-screen'){
     const emailInp = document.getElementById('ls-email');
@@ -149,7 +154,7 @@ function isUnitQuizUnlocked(unitIdx){
   }
 
   function _isModalOpen(){
-    return ['parent-auth-modal','pin-modal','install-modal','forgot-pin-modal','unit-pin-modal','auth-modal','access-modal','timer-modal','a11y-modal','scal-modal','progress-report-modal']
+    return ['parent-auth-modal','pin-modal','install-modal','forgot-pin-modal','unit-pin-modal','auth-modal','access-modal','timer-modal','a11y-modal','scal-modal','progress-report-modal','profile-switch-modal']
       .some(id=>{ const el=document.getElementById(id); return el && getComputedStyle(el).display!=='none'; });
   }
 
@@ -168,6 +173,7 @@ function isUnitQuizUnlocked(unitIdx){
       'forgot-pin-modal':  ()=>{ if(typeof closeForgotPin==='function')   closeForgotPin(); },
       'unit-pin-modal':    ()=>{ if(typeof closeUnitPinModal==='function') closeUnitPinModal(); },
       'auth-modal':        ()=>{ if(typeof closeAuthModal==='function')   closeAuthModal(); },
+      'profile-switch-modal': ()=>{ if(typeof closeProfileSwitcher==='function') closeProfileSwitcher(); },
     };
     if(id && closeMap[id]){ closeMap[id](); }
   });

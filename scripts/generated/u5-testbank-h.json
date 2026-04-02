@@ -1,0 +1,242 @@
+[
+  {
+    "t": "You have $1.00. You buy a pencil for 35¢ and an eraser for 20¢. How much change do you get?",
+    "o": [
+      "35¢",
+      "40¢",
+      "45¢",
+      "55¢"
+    ],
+    "a": 2,
+    "e": "Step 1: Total cost = 35 + 20 = 55¢. Step 2: Change = 100 - 55 = 45¢.",
+    "d": "h"
+  },
+  {
+    "t": "Amy says 3 quarters and 2 dimes = 85¢. Is she correct?",
+    "o": [
+      "Yes, 85¢ is correct",
+      "No, it is 90¢",
+      "No, it is 95¢",
+      "No, it is 70¢"
+    ],
+    "a": 2,
+    "e": "3 quarters = 75¢. 2 dimes = 20¢. Total: 75 + 20 = 95¢, not 85¢. Amy's answer was 10¢ too low.",
+    "d": "h"
+  },
+  {
+    "t": "Which costs more: 6 nickels or 2 dimes and 1 nickel?",
+    "o": [
+      "6 nickels",
+      "2 dimes and 1 nickel",
+      "They cost the same",
+      "Not enough info"
+    ],
+    "a": 0,
+    "e": "6 nickels = 30¢. 2 dimes + 1 nickel = 25¢. 30¢ > 25¢, so 6 nickels are worth more.",
+    "d": "m"
+  },
+  {
+    "t": "You need exactly 67¢. You only have quarters, dimes, and pennies. Which set works?",
+    "o": [
+      "2 quarters, 1 dime, 7 pennies",
+      "2 quarters, 2 dimes",
+      "3 quarters",
+      "2 quarters, 1 dime, 2 pennies"
+    ],
+    "a": 0,
+    "e": "A: 50 + 10 + 7 = 67¢. B: 70¢ (wrong). C: 75¢ (wrong). D: 62¢ (wrong). Only A makes exactly 67¢.",
+    "d": "h"
+  },
+  {
+    "t": "Mia has $0.87. She needs $1.00. How much more does she need?",
+    "o": [
+      "3¢",
+      "13¢",
+      "23¢",
+      "87¢"
+    ],
+    "a": 1,
+    "e": "$1.00 = 100¢. She has 87¢. More needed: 100 - 87 = 13¢.",
+    "d": "h"
+  },
+  {
+    "t": "Eli says $0.06 is more than $0.60. Is he correct?",
+    "o": [
+      "Yes",
+      "No, $0.60 is more",
+      "They are equal",
+      "Cannot compare"
+    ],
+    "a": 1,
+    "e": "$0.06 = 6¢. $0.60 = 60¢. Since 60¢ > 6¢, $0.60 is more. Eli confused 6 cents with 60 cents.",
+    "d": "h"
+  },
+  {
+    "t": "You buy a folder for $0.65 and a pen for 30¢. What is the total?",
+    "o": [
+      "$0.35",
+      "$0.85",
+      "$0.95",
+      "$9.50"
+    ],
+    "a": 2,
+    "e": "Convert to cents: 65 + 30 = 95¢ = $0.95.",
+    "d": "m"
+  },
+  {
+    "t": "Chen has 3 quarters, 2 dimes, and 3 pennies. Ravi has 8 dimes and 3 nickels. Who has more?",
+    "o": [
+      "Chen",
+      "Ravi",
+      "They have the same",
+      "Not enough info"
+    ],
+    "a": 0,
+    "e": "Chen: 75 + 20 + 3 = 98¢. Ravi: 80 + 15 = 95¢. 98¢ > 95¢, so Chen has more.",
+    "d": "m"
+  },
+  {
+    "t": "A snack costs 90¢. You pay with $1.00. The clerk gives 2 nickels as change. Is that right?",
+    "o": [
+      "Yes, that is 10¢ change",
+      "No, change should be 5¢",
+      "No, change should be 20¢",
+      "No, change should be 15¢"
+    ],
+    "a": 0,
+    "e": "Change = 100 - 90 = 10¢. 2 nickels = 10¢. Yes, that is correct!",
+    "d": "h"
+  },
+  {
+    "t": "Which way uses the FEWEST coins to make 76¢?",
+    "o": [
+      "3 quarters and 1 penny",
+      "7 dimes, 1 nickel, 1 penny",
+      "2 quarters, 2 dimes, 1 nickel, 1 penny",
+      "15 nickels and 1 penny"
+    ],
+    "a": 0,
+    "e": "A: 4 coins. B: 9 coins. C: 6 coins. D: 16 coins. 3 quarters + 1 penny = 76¢ with only 4 coins!",
+    "d": "h"
+  },
+  {
+    "t": "Marcus earned $0.40 on Monday and 35¢ on Tuesday. He spent $0.50. How much left?",
+    "o": [
+      "$0.15",
+      "$0.25",
+      "$0.35",
+      "$0.75"
+    ],
+    "a": 1,
+    "e": "Step 1: Earned = 40 + 35 = 75¢. Step 2: Spent 50¢. Step 3: 75 - 50 = 25¢ = $0.25.",
+    "d": "h"
+  },
+  {
+    "t": "A book costs $1.25. You have 3 quarters, 4 dimes, and 2 nickels. Do you have enough?",
+    "o": [
+      "No, you have $1.05",
+      "No, you have $1.15",
+      "Yes, you have exactly $1.25",
+      "Yes, you have more than $1.25"
+    ],
+    "a": 2,
+    "e": "3 quarters = 75¢. 4 dimes = 40¢. 2 nickels = 10¢. Total: 75 + 40 + 10 = 125¢ = $1.25. Exactly enough!",
+    "d": "h"
+  },
+  {
+    "t": "Layla says counting up from the price to what you paid finds the change. Price: 73¢. Paid: $1.00. Count up to find the change.",
+    "o": [
+      "17¢",
+      "23¢",
+      "27¢",
+      "37¢"
+    ],
+    "a": 2,
+    "e": "Count up from 73: 73 + 7 = 80 (pennies), 80 + 20 = 100 (dimes). That is 7 + 20 = 27¢ change.",
+    "d": "h"
+  },
+  {
+    "t": "Rosa says 2 quarters + 2 dimes + 2 nickels = 90¢. Find her mistake.",
+    "o": [
+      "She added quarters wrong",
+      "She added nickels wrong",
+      "The correct total is 80¢",
+      "There is no mistake"
+    ],
+    "a": 2,
+    "e": "2 quarters = 50¢. 2 dimes = 20¢. 2 nickels = 10¢. Total: 50 + 20 + 10 = 80¢, not 90¢.",
+    "d": "h"
+  },
+  {
+    "t": "You have 3 quarters, 1 dime, and 2 nickels. You buy a toy for 85¢. How much left?",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "20¢"
+    ],
+    "a": 1,
+    "e": "You have: 75 + 10 + 10 = 95¢. Spent: 85¢. Left: 95 - 85 = 10¢.",
+    "d": "h"
+  },
+  {
+    "t": "Sam has $2.00. He buys a ball for 75¢ and tape for $0.50. How much left?",
+    "o": [
+      "$0.25",
+      "$0.50",
+      "$0.75",
+      "$1.00"
+    ],
+    "a": 2,
+    "e": "Step 1: Total cost = 75 + 50 = 125¢ = $1.25. Step 2: $2.00 - $1.25 = $0.75.",
+    "d": "h"
+  },
+  {
+    "t": "Which pair does NOT show the same amount?",
+    "o": [
+      "$0.25 and 25¢",
+      "$0.07 and 7¢",
+      "$0.60 and 6¢",
+      "$0.99 and 99¢"
+    ],
+    "a": 2,
+    "e": "$0.60 = 60¢, not 6¢. The other pairs all match. Be careful: $0.06 = 6¢ but $0.60 = 60¢!",
+    "d": "h"
+  },
+  {
+    "t": "You buy 3 items: a pen (25¢), a clip (15¢), and tape (20¢). You pay with $1.00. How much change?",
+    "o": [
+      "30¢",
+      "35¢",
+      "40¢",
+      "50¢"
+    ],
+    "a": 2,
+    "e": "Step 1: Total = 25 + 15 + 20 = 60¢. Step 2: Change = 100 - 60 = 40¢.",
+    "d": "h"
+  },
+  {
+    "t": "Nia has $1.50 in quarters. How many quarters does she have?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "$1.50 = 150¢. Each quarter = 25¢. 150 ÷ 25 = 6 quarters.",
+    "d": "h"
+  },
+  {
+    "t": "Which strategy helps you compare $0.47 and 52¢?",
+    "o": [
+      "Compare the dollar signs",
+      "Convert both to cents, then compare",
+      "The one with ¢ is always bigger",
+      "You cannot compare different symbols"
+    ],
+    "a": 1,
+    "e": "Convert to the same unit: $0.47 = 47¢. Now compare 47¢ and 52¢. Since 52 > 47, 52¢ is more.",
+    "d": "m"
+  }
+]

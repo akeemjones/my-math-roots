@@ -1,0 +1,242 @@
+[
+  {
+    "t": "A bookmark costs 35¢. You pay with 2 quarters. How much change?",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "25¢"
+    ],
+    "a": 2,
+    "e": "2 quarters = 50¢. Change = 50 - 35 = 15¢.",
+    "d": "m"
+  },
+  {
+    "t": "You buy a pencil for 45¢ and pay with 3 quarters. How much change do you get?",
+    "o": [
+      "20¢",
+      "25¢",
+      "30¢",
+      "35¢"
+    ],
+    "a": 2,
+    "e": "3 quarters = 75¢. Change = 75 - 45 = 30¢.",
+    "d": "m"
+  },
+  {
+    "t": "A fruit snack costs 60¢. You pay with $1.00. What coins could be your change?",
+    "o": [
+      "4 dimes",
+      "1 quarter, 1 dime, 1 nickel",
+      "2 nickels",
+      "Both A and B"
+    ],
+    "a": 3,
+    "e": "Change = 100 - 60 = 40¢. A: 4 dimes = 40¢. B: 25 + 10 + 5 = 40¢. Both work!",
+    "d": "h"
+  },
+  {
+    "t": "Mia buys a ring for 30¢. She pays with a quarter and a dime. How much change?",
+    "o": [
+      "0¢",
+      "5¢",
+      "10¢",
+      "15¢"
+    ],
+    "a": 1,
+    "e": "Quarter + dime = 25 + 10 = 35¢. Change = 35 - 30 = 5¢.",
+    "d": "m"
+  },
+  {
+    "t": "An apple costs 50¢. You have 3 dimes and 2 nickels. Do you have enough?",
+    "o": [
+      "No, you have 35¢",
+      "No, you have 40¢",
+      "Yes, you have exactly 50¢",
+      "Yes, you have 55¢"
+    ],
+    "a": 1,
+    "e": "3 dimes = 30¢. 2 nickels = 10¢. Total: 40¢. 40¢ < 50¢, so you do not have enough. You are 10¢ short.",
+    "d": "m"
+  },
+  {
+    "t": "A toy car costs 55¢. You pay with $1.00. How much change?",
+    "o": [
+      "35¢",
+      "40¢",
+      "45¢",
+      "55¢"
+    ],
+    "a": 2,
+    "e": "Change = $1.00 - 55¢ = 100 - 55 = 45¢.",
+    "d": "h"
+  },
+  {
+    "t": "You buy a notebook for 75¢. You pay with 4 quarters. How much change?",
+    "o": [
+      "15¢",
+      "20¢",
+      "25¢",
+      "50¢"
+    ],
+    "a": 2,
+    "e": "4 quarters = $1.00 = 100¢. Change = 100 - 75 = 25¢.",
+    "d": "h"
+  },
+  {
+    "t": "___ is the change from paying 50¢ for a 35¢ item.",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "20¢"
+    ],
+    "a": 2,
+    "e": "Change = Payment - Cost = 50 - 35 = 15¢.",
+    "d": "m"
+  },
+  {
+    "t": "A marker costs 40¢. You pay with 2 quarters. What coins could you get as change?",
+    "o": [
+      "1 dime",
+      "2 nickels",
+      "10 pennies",
+      "All of the above"
+    ],
+    "a": 3,
+    "e": "Change = 50 - 40 = 10¢. 1 dime = 10¢. 2 nickels = 10¢. 10 pennies = 10¢. All make 10¢!",
+    "d": "m"
+  },
+  {
+    "t": "A candy bar costs 65¢. You pay with 3 quarters. How much change?",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "25¢"
+    ],
+    "a": 1,
+    "e": "3 quarters = 75¢. Change = 75 - 65 = 10¢.",
+    "d": "m"
+  },
+  {
+    "t": "You have $1.00. You spend 25¢. How much do you have left?",
+    "o": [
+      "25¢",
+      "50¢",
+      "65¢",
+      "75¢"
+    ],
+    "a": 3,
+    "e": "$1.00 = 100¢. 100 - 25 = 75¢. You have 75¢ left.",
+    "d": "h"
+  },
+  {
+    "t": "A juice box costs 80¢. Which amount is NOT enough to pay for it?",
+    "o": [
+      "3 quarters and 1 nickel",
+      "8 dimes",
+      "3 quarters",
+      "4 quarters"
+    ],
+    "a": 2,
+    "e": "A: 75 + 5 = 80¢ (enough). B: 80¢ (enough). C: 75¢ (not enough — 5¢ short!). D: $1.00 (enough).",
+    "d": "m"
+  },
+  {
+    "t": "You buy a sticker for 22¢ and pay with a quarter. How much change?",
+    "o": [
+      "2¢",
+      "3¢",
+      "5¢",
+      "22¢"
+    ],
+    "a": 1,
+    "e": "Quarter = 25¢. Change = 25 - 22 = 3¢.",
+    "d": "m"
+  },
+  {
+    "t": "A banana costs 30¢. You pay with a quarter and a dime. How much change?",
+    "o": [
+      "0¢",
+      "5¢",
+      "10¢",
+      "15¢"
+    ],
+    "a": 1,
+    "e": "Quarter + dime = 25 + 10 = 35¢. Change = 35 - 30 = 5¢.",
+    "d": "m"
+  },
+  {
+    "t": "You have 75¢. You buy a pen for 50¢. How much is left?",
+    "o": [
+      "15¢",
+      "20¢",
+      "25¢",
+      "50¢"
+    ],
+    "a": 2,
+    "e": "75 - 50 = 25. You have 25¢ left.",
+    "d": "m"
+  },
+  {
+    "t": "An orange costs 45¢. You give the clerk 2 quarters. She gives you a nickel. Is that the right change?",
+    "o": [
+      "Yes",
+      "No, she should give 10¢",
+      "No, she should give 15¢",
+      "No, she should give a dime"
+    ],
+    "a": 0,
+    "e": "2 quarters = 50¢. Change = 50 - 45 = 5¢. A nickel = 5¢. Yes, that is correct!",
+    "d": "m"
+  },
+  {
+    "t": "You have $1.00. You spend 40¢. How much left?",
+    "o": [
+      "40¢",
+      "50¢",
+      "60¢",
+      "70¢"
+    ],
+    "a": 2,
+    "e": "$1.00 = 100¢. Change = 100 - 40 = 60¢.",
+    "d": "h"
+  },
+  {
+    "t": "Which item can you buy if you have exactly 50¢?",
+    "o": [
+      "Ball: 55¢",
+      "Sticker: 35¢",
+      "Crayon: 50¢",
+      "Both B and C"
+    ],
+    "a": 3,
+    "e": "You have 50¢. Ball costs 55¢ (too much). Sticker costs 35¢ (can buy, 15¢ left). Crayon costs 50¢ (exact). Both B and C work!",
+    "d": "m"
+  },
+  {
+    "t": "A cookie costs 38¢. You pay with 2 quarters. How much change?",
+    "o": [
+      "2¢",
+      "8¢",
+      "12¢",
+      "18¢"
+    ],
+    "a": 2,
+    "e": "2 quarters = 50¢. Change = 50 - 38 = 12¢.",
+    "d": "m"
+  },
+  {
+    "t": "You need 70¢ to buy a treat. You have 2 quarters and 1 dime. How much MORE do you need?",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "20¢"
+    ],
+    "a": 1,
+    "e": "You have: 50 + 10 = 60¢. Need: 70¢. More needed: 70 - 60 = 10¢.",
+    "d": "m"
+  }
+]

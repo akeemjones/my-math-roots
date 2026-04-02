@@ -1,0 +1,72 @@
+[
+  {
+    "t": "What number has 7 hundreds, 0 tens, and 14 ones?",
+    "o": ["7,014", "704", "714", "7,140"],
+    "a": 2,
+    "e": "7 hundreds = 700, 0 tens = 0, 14 ones = 14. Total = 714. The 14 ones regroup as 1 ten and 4 ones: 7 hundreds, 1 ten, 4 ones = 714.",
+    "d": "h"
+  },
+  {
+    "t": "Maya wrote 300 + 50 + 18 = 3,518. What should the answer be?",
+    "o": ["368", "3,518", "358", "850"],
+    "a": 0,
+    "e": "Add: 300 + 50 = 350, then 350 + 18 = 368. Maya put digits side by side (3-5-18) instead of adding.",
+    "d": "h"
+  },
+  {
+    "t": "Put these in order from least to greatest: 1,010, 1,100, 1,001, 1,011",
+    "o": ["1,001, 1,010, 1,011, 1,100", "1,100, 1,011, 1,010, 1,001", "1,001, 1,011, 1,010, 1,100", "1,010, 1,001, 1,011, 1,100"],
+    "a": 0,
+    "e": "All have 1 thousand. Compare hundreds: 1,001 and 1,010 and 1,011 have 0 hundreds; 1,100 has 1 hundred (greatest). Among 0-hundred numbers, compare tens: 1,001 has 0 tens, 1,010 has 1 ten, 1,011 has 1 ten. 1,010 vs 1,011: ones differ, 0 < 1. Order: 1,001, 1,010, 1,011, 1,100.",
+    "d": "h"
+  },
+  {
+    "t": "Omar starts at 485. He adds 10 twice, then 100 once. Where does he end?",
+    "o": ["595", "605", "685", "505"],
+    "a": 1,
+    "e": "485 + 10 = 495, + 10 = 505, + 100 = 605.",
+    "d": "h"
+  },
+  {
+    "t": "Jake says 998 > 1,002 because 9 > 1. What is wrong with his thinking?",
+    "o": ["Nothing, he is right", "He should compare digit by digit, but 1,002 has more digits so it is greater", "He should add the digits instead", "998 and 1,002 are equal"],
+    "a": 1,
+    "e": "A 4-digit number is always greater than a 3-digit number. 1,002 > 998. Jake compared individual digits instead of looking at how many digits each number has.",
+    "d": "h"
+  },
+  {
+    "t": "Ella counts by 5s from 7. Will she ever say 52?",
+    "o": ["Yes, the ones digit alternates 2 and 7, and 52 ends in 2", "No, because 52 does not end in 5 or 0", "No, she only says odd numbers", "Yes, but only if she counts past 100"],
+    "a": 0,
+    "e": "From 7, counting by 5s: 12, 17, 22, 27, 32, 37, 42, 47, 52. The ones digit alternates between 2 and 7. Since 52 ends in 2, she will say it!",
+    "d": "h"
+  },
+  {
+    "t": "Two students wrote 946 in expanded form. Ava: 900 + 40 + 6. Ben: 9 hundreds + 4 tens + 6 ones. Who is correct?",
+    "o": ["Only Ava", "Only Ben", "Both are correct", "Neither is correct"],
+    "a": 2,
+    "e": "Both forms equal 946. Ava used number expanded form (900 + 40 + 6). Ben used place-value form (9 hundreds + 4 tens + 6 ones). Both are valid!",
+    "d": "h"
+  },
+  {
+    "t": "What is the greatest 3-digit number with a 5 in the tens place?",
+    "o": ["959", "950", "955", "859"],
+    "a": 0,
+    "e": "For the greatest: hundreds = 9 (biggest), tens = 5 (given), ones = 9 (biggest). The number is 959.",
+    "d": "h"
+  },
+  {
+    "t": "___ is 10 less than 1,000 and 100 more than 890. What is ___?",
+    "o": ["900", "990", "890", "1,010"],
+    "a": 1,
+    "e": "10 less than 1,000 = 990. Check: 100 more than 890 = 990. Both clues give 990!",
+    "d": "h"
+  },
+  {
+    "t": "Kai says 400 + 60 + 13 = 4,613. His sister says it equals 473. Who is right and why?",
+    "o": ["Kai, because you put digits together", "His sister, because 400 + 60 + 13 = 473", "Neither, it equals 4,063", "Neither, it equals 463"],
+    "a": 1,
+    "e": "Add step by step: 400 + 60 = 460, then 460 + 13 = 473. Kai put the digits side by side instead of adding. His sister is correct!",
+    "d": "h"
+  }
+]

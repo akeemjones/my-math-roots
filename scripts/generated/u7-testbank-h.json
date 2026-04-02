@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A belt is 14 inches long. You cut off 6 inches, then cut off 3 more inches. How long is it now?",
+    "o": ["5 inches", "8 inches", "11 inches", "23 inches"],
+    "a": 0,
+    "e": "14 - 6 = 8, then 8 - 3 = 5 inches. Two steps!",
+    "d": "h"
+  },
+  {
+    "t": "A piano lesson starts at 3:15 PM and lasts 45 minutes. What time does it end?",
+    "o": ["3:60 PM", "4:00 PM", "4:15 PM", "3:45 PM"],
+    "a": 1,
+    "e": "3:15 + 45 min = 4:00 PM. There is no such thing as 3:60!",
+    "d": "h"
+  },
+  {
+    "t": "A rectangle is 5 squares long and 3 squares wide. Max says the area is 8 square units. What did Max do wrong?",
+    "o": ["He added 5 + 3 instead of counting all squares", "He is correct", "He subtracted 5 - 3", "He forgot to count"],
+    "a": 0,
+    "e": "Max added 5 + 3 = 8. But the real area is 3 rows of 5 = 15 square units!",
+    "d": "h"
+  },
+  {
+    "t": "Mia says a giraffe is 18 inches tall. Is that reasonable?",
+    "o": ["Yes, giraffes are small", "No, a giraffe is about 18 feet tall", "Yes, that is correct", "No, a giraffe is 1 inch tall"],
+    "a": 1,
+    "e": "18 inches is only 1.5 feet — that is the size of a small dog! A giraffe is about 18 feet tall.",
+    "d": "h"
+  },
+  {
+    "t": "It is 11:45 AM. What time will it be in 30 minutes?",
+    "o": ["11:75 AM", "12:15 PM", "12:15 AM", "12:45 PM"],
+    "a": 1,
+    "e": "11:45 + 15 min = 12:00, then + 15 more = 12:15. It changes from AM to PM at noon! So 12:15 PM.",
+    "d": "h"
+  },
+  {
+    "t": "A patio is 4 by 3. You add a 2-by-3 section. What is the new total area?",
+    "o": ["12 square units", "18 square units", "6 square units", "24 square units"],
+    "a": 1,
+    "e": "Patio: 4 x 3 = 12. New section: 2 x 3 = 6. Total: 12 + 6 = 18 square units!",
+    "d": "h"
+  },
+  {
+    "t": "A rope is 2 feet 6 inches. How many inches is that in all?",
+    "o": ["26 inches", "30 inches", "8 inches", "24 inches"],
+    "a": 1,
+    "e": "2 feet = 24 inches. 24 + 6 = 30 inches total!",
+    "d": "h"
+  },
+  {
+    "t": "Lee left home at 7:40 AM and arrived at school at 8:10 AM. How long was his trip?",
+    "o": ["30 minutes", "40 minutes", "1 hour 10 minutes", "20 minutes"],
+    "a": 0,
+    "e": "From 7:40 to 8:00 = 20 min. From 8:00 to 8:10 = 10 min. Total = 30 minutes!",
+    "d": "h"
+  },
+  {
+    "t": "A rectangle has an area of 18 square units. It is 6 squares long. How many squares wide is it?",
+    "o": ["12 squares", "6 squares", "3 squares", "2 squares"],
+    "a": 2,
+    "e": "If 6 squares long and area is 18, then width = 18 / 6 = 3 squares wide!",
+    "d": "h"
+  },
+  {
+    "t": "Kai has 3 pieces of string: 5 inches, 8 inches, and 4 inches. He puts them together. How long is the total string?",
+    "o": ["17 inches", "13 inches", "12 inches", "20 inches"],
+    "a": 0,
+    "e": "5 + 8 + 4 = 17 inches total!",
+    "d": "m"
+  },
+  {
+    "t": "Ava says the time is 5:70 PM. What should the correct time be?",
+    "o": ["5:70 PM is correct", "6:10 PM", "5:10 PM", "7:10 PM"],
+    "a": 1,
+    "e": "There is no :70 on a clock! 70 minutes = 1 hour 10 min. So 5:70 should be 6:10 PM.",
+    "d": "h"
+  },
+  {
+    "t": "A 2-by-8 rectangle and a 4-by-4 square — which has a bigger area?",
+    "o": ["The rectangle (16 square units)", "The square (16 square units)", "They are the same — both 16 square units", "The rectangle (10 square units)"],
+    "a": 2,
+    "e": "2 x 8 = 16 and 4 x 4 = 16. They have the same area! Different shapes, same area.",
+    "d": "h"
+  },
+  {
+    "t": "Dan says a pencil is 7 feet long. What did he do wrong?",
+    "o": ["He used feet instead of inches — a pencil is about 7 inches", "He is correct", "He should have said 7 meters", "Pencils cannot be measured"],
+    "a": 0,
+    "e": "7 feet is 84 inches — that is taller than most adults! A pencil is about 7 inches, not 7 feet.",
+    "d": "h"
+  },
+  {
+    "t": "A cartoon is 25 minutes long. It starts at 4:40 PM. What time does it end?",
+    "o": ["4:65 PM", "5:05 PM", "5:15 PM", "4:55 PM"],
+    "a": 1,
+    "e": "4:40 + 20 min = 5:00, then + 5 more = 5:05 PM.",
+    "d": "h"
+  },
+  {
+    "t": "A wall is 5 by 4. You hang a picture that covers 6 square units. How many wall squares are still showing?",
+    "o": ["20 square units", "14 square units", "26 square units", "11 square units"],
+    "a": 1,
+    "e": "Wall: 5 x 4 = 20. Then 20 - 6 = 14 squares still showing!",
+    "d": "h"
+  },
+  {
+    "t": "Which is longer: 3 feet or 40 inches?",
+    "o": ["3 feet", "40 inches", "They are the same", "Cannot tell"],
+    "a": 1,
+    "e": "3 feet = 36 inches. 40 > 36, so 40 inches is longer by 4 inches!",
+    "d": "h"
+  },
+  {
+    "t": "Nina says she slept for 120 minutes. How many hours is that?",
+    "o": ["1 hour", "12 hours", "2 hours", "20 hours"],
+    "a": 2,
+    "e": "60 minutes = 1 hour. 120 / 60 = 2 hours!",
+    "d": "h"
+  },
+  {
+    "t": "A garden is 6 by 3. A flower bed covers 10 of those squares. How many garden squares are left?",
+    "o": ["8 square units", "28 square units", "18 square units", "10 square units"],
+    "a": 0,
+    "e": "Garden: 6 x 3 = 18. Then 18 - 10 = 8 squares left!",
+    "d": "h"
+  },
+  {
+    "t": "Eva has a 30-inch ribbon. She cuts it into 3 equal pieces. How long is each piece?",
+    "o": ["10 inches", "27 inches", "15 inches", "33 inches"],
+    "a": 0,
+    "e": "30 / 3 = 10 inches per piece!",
+    "d": "h"
+  },
+  {
+    "t": "Jake played outside from 4:15 PM to 5:00 PM, then did homework from 5:00 PM to 5:30 PM. How much time in all?",
+    "o": ["1 hour 15 minutes", "45 minutes", "1 hour", "1 hour 30 minutes"],
+    "a": 0,
+    "e": "Outside: 4:15 to 5:00 = 45 min. Homework: 5:00 to 5:30 = 30 min. Total: 45 + 30 = 75 min = 1 hour 15 minutes!",
+    "d": "h"
+  }
+]

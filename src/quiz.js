@@ -2,51 +2,6 @@
 // plain text is HTML-escaped to prevent XSS.
 function _qText(t){ return (typeof t === 'string' && t.includes('<svg')) ? t : _escHtml(t); }
 
-// ════════════════════════════════════════
-//  AI HINTS & PERSONALIZED EXPLANATIONS
-// ════════════════════════════════════════
-const _AI_ENDPOINT = '/.netlify/functions/gemini-hint';
-const _aiExpCache = new Map(); // sessionStorage-style cache keyed by question+answer
-
-async function _callAI(type, question, wrongAnswer, correctAnswer){
-  const cacheKey = type+'|'+question+'|'+wrongAnswer;
-  if(_aiExpCache.has(cacheKey)) return _aiExpCache.get(cacheKey);
-  try {
-    const res = await fetch(_AI_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, question, wrongAnswer, correctAnswer })
-    });
-    if(!res.ok) return null;
-    const data = await res.json();
-    if(data.text){ _aiExpCache.set(cacheKey, data.text); return data.text; }
-    return null;
-  } catch(e){ return null; }
-}
-
-async function _fetchAIExplanation(revId, question, wrongAnswer, correctAnswer){
-  const el = document.getElementById(revId+'-exp');
-  if(!el) return;
-  el.classList.add('ai-exp-loading');
-  const text = await _callAI('explanation', question, wrongAnswer, correctAnswer);
-  if(!text || !document.getElementById(revId+'-exp')) return; // navigated away
-  el.classList.remove('ai-exp-loading');
-  el.innerHTML = '✨ ' + _escHtml(text);
-}
-
-async function _fetchAIHint(revId, question, wrongAnswer, correctAnswer){
-  const wrap = document.getElementById(revId+'-hw');
-  if(!wrap || wrap.dataset.used) return;
-  wrap.dataset.used = '1';
-  wrap.innerHTML = '<div class="ai-hint-loading">💡 Getting your hint…</div>';
-  const text = await _callAI('hint', question, wrongAnswer, correctAnswer);
-  if(!document.getElementById(revId+'-hw')) return;
-  if(text){
-    wrap.innerHTML = '<div class="ai-hint-box">💡 '+_escHtml(text)+'</div>';
-  } else {
-    wrap.innerHTML = '<div class="ai-hint-box ai-hint-err">Hint unavailable — check your explanation above!</div>';
-  }
-}
 
 // ════════════════════════════════════════
 //  SOUND ENGINE (Web Audio API)
@@ -501,11 +456,7 @@ function _pickAnswer(btnIdx){
         '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
         (!isOk ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
         '<div class="rev-exp" id="'+revId+'-exp">' + _ICO.lightbulb + ' '+_escHtml(q.e)+'</div>'+
-        (!isOk ? '<div class="rev-tip">'+_escHtml(nudge)+'</div>' : '')+
-        (!isOk ? '<div class="ai-hint-wrap" id="'+revId+'-hw"><button class="ai-hint-btn" data-action="fetchAIHint" data-arg="'+_escHtml(revId)+'" data-arg2=\''+_escHtml(JSON.stringify({q:q.t,chosen,correct})).replace(/\'/g,"&#39;")+'\'>💡 Get a Hint</button></div>' : '');
-
-      // Auto-fire personalized explanation on wrong answer
-      if(!isOk) _fetchAIExplanation(revId, q.t, chosen, correct);
+        (!isOk ? '<div class="rev-tip">'+_escHtml(nudge)+'</div>' : '');
     }
 
     qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs});

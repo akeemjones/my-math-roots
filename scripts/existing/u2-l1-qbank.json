@@ -1,0 +1,362 @@
+[
+  {
+    "t": "In 347, what is the HUNDREDS digit?",
+    "o": [
+      "3",
+      "4",
+      "7",
+      "34"
+    ],
+    "a": 0,
+    "e": "347: 3 is hundreds, 4 is tens, 7 is ones.",
+    "d": "e"
+  },
+  {
+    "t": "In 562, what is the TENS digit?",
+    "o": [
+      "2",
+      "5",
+      "6",
+      "56"
+    ],
+    "a": 2,
+    "e": "562: 5 is hundreds, 6 is tens, 2 is ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 4 in 347?",
+    "o": [
+      "4",
+      "40",
+      "400",
+      "4000"
+    ],
+    "a": 1,
+    "e": "4 is in the tens place = 40.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 5 in 562?",
+    "o": [
+      "5",
+      "50",
+      "500",
+      "5000"
+    ],
+    "a": 2,
+    "e": "5 is in hundreds place = 500.",
+    "d": "m"
+  },
+  {
+    "t": "What is 3 hundreds + 4 tens + 7 ones?",
+    "o": [
+      "347",
+      "374",
+      "437",
+      "473"
+    ],
+    "a": 0,
+    "e": "300+40+7=347.",
+    "d": "m"
+  },
+  {
+    "t": "What is 5 hundreds + 6 tens + 2 ones?",
+    "o": [
+      "526",
+      "625",
+      "652",
+      "562"
+    ],
+    "a": 3,
+    "e": "500+60+2=562.",
+    "d": "m"
+  },
+  {
+    "t": "In 809, what digit is in the TENS place?",
+    "o": [
+      "0",
+      "8",
+      "9",
+      "80"
+    ],
+    "a": 0,
+    "e": "809: 8 hundreds, 0 tens, 9 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 9 in 903?",
+    "o": [
+      "9",
+      "90",
+      "900",
+      "9000"
+    ],
+    "a": 2,
+    "e": "9 is in hundreds place = 900.",
+    "d": "m"
+  },
+  {
+    "t": "What digit is in the tens place in 450?",
+    "o": [
+      "4",
+      "0",
+      "45",
+      "5"
+    ],
+    "a": 3,
+    "e": "450: 4 hundreds, 5 tens, 0 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the ones digit in 738?",
+    "o": [
+      "3",
+      "7",
+      "8",
+      "73"
+    ],
+    "a": 2,
+    "e": "738: 7 hundreds, 3 tens, 8 ones.",
+    "d": "e"
+  },
+  {
+    "t": "In 206, what is in the tens place?",
+    "o": [
+      "0",
+      "2",
+      "6",
+      "20"
+    ],
+    "a": 0,
+    "e": "206: 2 hundreds, 0 tens, 6 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 7 in 735?",
+    "o": [
+      "7",
+      "70",
+      "700",
+      "7000"
+    ],
+    "a": 2,
+    "e": "7 is in hundreds place = 700.",
+    "d": "m"
+  },
+  {
+    "t": "What is 8 hundreds + 0 tens + 5 ones?",
+    "o": [
+      "850",
+      "508",
+      "580",
+      "805"
+    ],
+    "a": 3,
+    "e": "800+0+5=805.",
+    "d": "m"
+  },
+  {
+    "t": "In 614, what is the tens digit?",
+    "o": [
+      "4",
+      "6",
+      "61",
+      "1"
+    ],
+    "a": 3,
+    "e": "614: 6 hundreds, 1 ten, 4 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 3 in 370?",
+    "o": [
+      "3",
+      "30",
+      "300",
+      "3000"
+    ],
+    "a": 2,
+    "e": "3 is in hundreds place = 300.",
+    "d": "m"
+  },
+  {
+    "t": "In 528, how many hundreds?",
+    "o": [
+      "2",
+      "5",
+      "8",
+      "52"
+    ],
+    "a": 1,
+    "e": "528: 5 hundreds, 2 tens, 8 ones.",
+    "d": "e"
+  },
+  {
+    "t": "Which number has 4 hundreds, 3 tens, 6 ones?",
+    "o": [
+      "346",
+      "364",
+      "436",
+      "634"
+    ],
+    "a": 2,
+    "e": "400+30+6=436.",
+    "d": "m"
+  },
+  {
+    "t": "In 901, which place has a zero?",
+    "o": [
+      "Ones",
+      "Tens",
+      "Hundreds",
+      "All places"
+    ],
+    "a": 1,
+    "e": "901: 9 hundreds, 0 tens, 1 one.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 6 in 164?",
+    "o": [
+      "6",
+      "600",
+      "160",
+      "60"
+    ],
+    "a": 3,
+    "e": "6 is in tens place = 60.",
+    "d": "m"
+  },
+  {
+    "t": "In 777, all three digits are the same. What is the value of the hundreds digit?",
+    "o": [
+      "7",
+      "70",
+      "700",
+      "7000"
+    ],
+    "a": 2,
+    "e": "7 in hundreds place = 700.",
+    "d": "m"
+  },
+  {
+    "t": "Which digit is in the ONES place in 493?",
+    "o": [
+      "3",
+      "4",
+      "9",
+      "49"
+    ],
+    "a": 0,
+    "e": "493: 4 hundreds, 9 tens, 3 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is 7 hundreds + 2 tens + 0 ones?",
+    "o": [
+      "702",
+      "720",
+      "270",
+      "207"
+    ],
+    "a": 1,
+    "e": "700+20+0=720.",
+    "d": "m"
+  },
+  {
+    "t": "In 315, what is the value of the 3?",
+    "o": [
+      "3",
+      "30",
+      "300",
+      "3000"
+    ],
+    "a": 2,
+    "e": "3 is in hundreds place = 300.",
+    "d": "m"
+  },
+  {
+    "t": "In 615, what is the value of 1?",
+    "o": [
+      "1",
+      "100",
+      "1000",
+      "10"
+    ],
+    "a": 3,
+    "e": "1 is in tens place = 10.",
+    "d": "m"
+  },
+  {
+    "t": "Which number has 0 in the tens place?",
+    "o": [
+      "305",
+      "350",
+      "253",
+      "530"
+    ],
+    "a": 0,
+    "e": "305: 3 hundreds, 0 tens, 5 ones.",
+    "d": "m"
+  },
+  {
+    "t": "What is the value of 8 in 284?",
+    "o": [
+      "8",
+      "80",
+      "800",
+      "8000"
+    ],
+    "a": 1,
+    "e": "8 is in tens place = 80.",
+    "d": "m"
+  },
+  {
+    "t": "In 799, what digit is in hundreds place?",
+    "o": [
+      "9",
+      "99",
+      "79",
+      "7"
+    ],
+    "a": 3,
+    "e": "799: 7 hundreds, 9 tens, 9 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is 4 hundreds + 0 tens + 4 ones?",
+    "o": [
+      "404",
+      "440",
+      "400",
+      "44"
+    ],
+    "a": 0,
+    "e": "400+0+4=404.",
+    "d": "m"
+  },
+  {
+    "t": "In 863, how many tens are there?",
+    "o": [
+      "3",
+      "6",
+      "8",
+      "63"
+    ],
+    "a": 1,
+    "e": "863: 8 hundreds, 6 tens, 3 ones.",
+    "d": "e"
+  },
+  {
+    "t": "What is the value of 5 in 857?",
+    "o": [
+      "5",
+      "50",
+      "500",
+      "5000"
+    ],
+    "a": 1,
+    "e": "5 is in tens place = 50.",
+    "d": "m"
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A shape has 4 sides but they are NOT all equal. It has 4 square corners. What could it be?",
+    "o": ["Square", "Rectangle", "Triangle", "Pentagon"],
+    "a": 1,
+    "e": "A rectangle has 4 sides and 4 square corners, but its sides do not all have to be equal. A square would need all 4 sides equal.",
+    "d": "m"
+  },
+  {
+    "t": "Which of these shapes are quadrilaterals? (Shapes with exactly 4 sides.)",
+    "o": ["Triangle and hexagon", "Square and rectangle", "Circle and oval", "Pentagon and octagon"],
+    "a": 1,
+    "e": "Squares and rectangles both have exactly 4 sides, so they are both quadrilaterals.",
+    "d": "m"
+  },
+  {
+    "t": "A polygon has 5 sides. It is called a ___.",
+    "o": ["Hexagon", "Pentagon", "Octagon", "Quadrilateral"],
+    "a": 1,
+    "e": "A polygon with 5 sides is called a pentagon. 'Penta' means five.",
+    "d": "m"
+  },
+  {
+    "t": "How many more sides does a hexagon have than a triangle?",
+    "o": ["2", "3", "4", "6"],
+    "a": 1,
+    "e": "A hexagon has 6 sides and a triangle has 3 sides. 6 - 3 = 3 more sides.",
+    "d": "m"
+  },
+  {
+    "t": "I have 4 sides. Two of my sides are long and two are short. All my corners are square corners. What am I?",
+    "o": ["Square", "Triangle", "Rectangle", "Trapezoid"],
+    "a": 2,
+    "e": "A rectangle has 4 square corners, with 2 long sides and 2 short sides.",
+    "d": "m"
+  },
+  {
+    "t": "Which shape has MORE corners: a pentagon or a square?",
+    "o": ["Pentagon", "Square", "They are equal", "Neither has corners"],
+    "a": 0,
+    "e": "A pentagon has 5 corners and a square has 4 corners. 5 > 4, so the pentagon has more.",
+    "d": "m"
+  },
+  {
+    "t": "A ___ has 8 sides and 8 corners.",
+    "o": ["Hexagon", "Pentagon", "Heptagon", "Octagon"],
+    "a": 3,
+    "e": "An octagon has 8 sides and 8 corners. 'Octa' means eight.",
+    "d": "m"
+  },
+  {
+    "t": "Jake says a circle is a polygon because it is a flat shape. Is he correct?",
+    "o": ["Yes, all flat shapes are polygons", "No, polygons must have straight sides", "Yes, circles have curved sides", "No, polygons must be round"],
+    "a": 1,
+    "e": "Jake is wrong. A polygon must have straight sides. A circle has a curved edge, so it is NOT a polygon.",
+    "d": "m"
+  },
+  {
+    "t": "How many more sides does an octagon have than a rectangle?",
+    "o": ["2", "3", "4", "6"],
+    "a": 2,
+    "e": "An octagon has 8 sides and a rectangle has 4 sides. 8 - 4 = 4 more sides.",
+    "d": "m"
+  },
+  {
+    "t": "Which of these is TRUE about every square?",
+    "o": ["It has 3 sides", "It has sides of different lengths", "It is also a rectangle", "It has no corners"],
+    "a": 2,
+    "e": "Every square is also a rectangle because it has 4 sides and 4 right angles. But a square's sides are all the same length.",
+    "d": "m"
+  },
+  {
+    "t": "Sort these from fewest sides to most: hexagon, triangle, square.",
+    "o": ["Triangle, square, hexagon", "Square, triangle, hexagon", "Hexagon, square, triangle", "Triangle, hexagon, square"],
+    "a": 0,
+    "e": "Triangle has 3, square has 4, hexagon has 6. So the order is triangle, square, hexagon.",
+    "d": "m"
+  },
+  {
+    "t": "A shape has fewer than 5 sides but more than 3 sides. It has 4 equal sides. What is it?",
+    "o": ["Triangle", "Rectangle", "Square", "Pentagon"],
+    "a": 2,
+    "e": "More than 3 and fewer than 5 means it has 4 sides. With 4 equal sides, it must be a square.",
+    "d": "m"
+  },
+  {
+    "t": "What is the same about a square and a rectangle?",
+    "o": ["All sides are equal", "They both have 4 sides and 4 right angles", "They both have 3 corners", "They are both round"],
+    "a": 1,
+    "e": "Both a square and a rectangle have 4 sides and 4 right angles. The difference is a square's sides are all equal.",
+    "d": "m"
+  },
+  {
+    "t": "If you put 2 triangles together along one side, how many sides could the new shape have?",
+    "o": ["3", "4", "6", "2"],
+    "a": 1,
+    "e": "When you join 2 triangles along one side, the joined sides disappear inside. You can make a shape with 4 sides (like a parallelogram).",
+    "d": "m"
+  },
+  {
+    "t": "Emma drew a shape with more sides than a square but fewer sides than a hexagon. What shape could she have drawn?",
+    "o": ["Triangle", "Rectangle", "Pentagon", "Octagon"],
+    "a": 2,
+    "e": "A square has 4 sides and a hexagon has 6. A pentagon has 5 sides, which is between 4 and 6.",
+    "d": "m"
+  },
+  {
+    "t": "A shape has the same number of sides as corners. Is this always true for polygons?",
+    "o": ["Yes, always", "No, never", "Only for triangles", "Only for squares"],
+    "a": 0,
+    "e": "Yes! Every polygon has the same number of sides and corners. A triangle has 3 of each, a square has 4 of each, and so on.",
+    "d": "m"
+  },
+  {
+    "t": "Which shape does NOT belong: square, rectangle, triangle, rhombus?",
+    "o": ["Square", "Rectangle", "Triangle", "Rhombus"],
+    "a": 2,
+    "e": "The triangle does not belong. The square, rectangle, and rhombus are all quadrilaterals (4 sides). A triangle has only 3 sides.",
+    "d": "m"
+  },
+  {
+    "t": "How many sides do 2 separate triangles have in all?",
+    "o": ["3", "4", "5", "6"],
+    "a": 3,
+    "e": "Each triangle has 3 sides. 3 + 3 = 6 sides in all.",
+    "d": "m"
+  },
+  {
+    "t": "I am a polygon. I have more sides than a pentagon but fewer sides than an octagon. I could be a ___.",
+    "o": ["Square", "Hexagon", "Triangle", "Rectangle"],
+    "a": 1,
+    "e": "A pentagon has 5 sides and an octagon has 8. A hexagon has 6 sides (or a heptagon has 7). Both fit between 5 and 8.",
+    "d": "m"
+  },
+  {
+    "t": "Lily says a rectangle has 2 pairs of equal sides. Is she right?",
+    "o": ["Yes -- 2 long sides match and 2 short sides match", "No -- all 4 sides are equal", "No -- no sides are equal", "Yes -- but only if it is big"],
+    "a": 0,
+    "e": "Lily is correct! A rectangle has 2 pairs of equal sides: the 2 long sides are equal and the 2 short sides are equal.",
+    "d": "m"
+  }
+]

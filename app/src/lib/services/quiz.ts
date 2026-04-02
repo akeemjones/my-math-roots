@@ -8,7 +8,9 @@
 
 import { get } from 'svelte/store';
 import type { Question, QuizType, QuizState, QuizAnswer, ScoreEntry } from '$lib/types';
-import { mastery, streak, done, scores, cur } from '$lib/stores';
+import { mastery, streak, done, scores, cur, activeStudent, appTime, actDates } from '$lib/stores';
+import { supabase } from '$lib/supabase';
+import { pushStudentData } from '$lib/services/sync';
 
 // ─── Question key ─────────────────────────────────────────────────────────────
 
@@ -161,6 +163,29 @@ export function startQuiz(
   cur.update((c) => ({ ...c, unitIdx, quiz: state }));
 }
 
+/** Start a quiz with a pre-built question list (used by Practice Weak Topics). */
+export function startQuizDirect(
+  questions: Question[],
+  qid: string,
+  label: string,
+  type: QuizType,
+  unitIdx: number | null
+): void {
+  const state: QuizState = {
+    id: qid,
+    label,
+    type,
+    unitIdx,
+    questions: shuffle([...questions]),
+    idx: 0,
+    viewIdx: 0,
+    score: 0,
+    answers: [],
+    startTime: Date.now(),
+  };
+  cur.update((c) => ({ ...c, unitIdx, quiz: state }));
+}
+
 // ─── Mastery update ───────────────────────────────────────────────────────────
 
 /** Update the mastery store after a quiz completes. Matches vanilla _updateMastery(). */
@@ -185,7 +210,7 @@ export function updateMastery(answers: QuizAnswer[]): void {
 
 // ─── Streak update ────────────────────────────────────────────────────────────
 
-/** Bump the daily streak if the student hasn't already logged activity today. */
+/** Bump the daily streak and record the activity date. */
 export function touchStreak(): void {
   const today = new Date().toISOString().slice(0, 10);
   streak.update(($s) => {
@@ -197,6 +222,14 @@ export function touchStreak(): void {
       longest: Math.max($s.longest ?? 0, current),
       lastDate: today,
     };
+  });
+
+  // Record activity date (rolling 365-day window)
+  actDates.update(($dates) => {
+    if ($dates.includes(today)) return $dates;
+    const updated = [...$dates, today];
+    if (updated.length > 365) updated.shift();
+    return updated;
   });
 }
 
@@ -251,10 +284,43 @@ export function finaliseQuiz(qz: QuizState, color: string): ScoreEntry {
     time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
     timeTaken: formatDuration(Math.round((Date.now() - qz.startTime) / 1000)),
     answers: qz.answers,
+    name: get(activeStudent)?.display_name ?? 'Student',
+    studentId: get(activeStudent)?.id ?? '',
   };
 
   // 1. Persist score
   scores.update(($s) => [entry, ...$s]);
+
+  // Push score + all student data to Supabase (fire-and-forget)
+  supabase.auth.getUser().then(({ data }) => {
+    if (!data.user) return;
+    supabase.from('quiz_scores').insert({
+      user_id:      data.user.id,
+      student_id:   entry.studentId,
+      local_id:     entry.id,
+      qid:          entry.qid,
+      label:        entry.label,
+      type:         entry.type,
+      score:        entry.score,
+      total:        entry.total,
+      pct:          entry.pct,
+      stars:        entry.stars,
+      unit_idx:     entry.unitIdx,
+      color:        entry.color ?? '',
+      student_name: entry.name,
+      time_taken:   entry.timeTaken,
+      answers:      entry.answers,
+      date_str:     entry.date,
+      time_str:     entry.time,
+      quit:         entry.quit ?? false,
+      abandoned:    entry.abandoned ?? false,
+    }).then(({ error }) => {
+      if (error) console.warn('[quiz] Supabase score push failed:', error.message);
+    });
+  }).catch(() => {/* not signed in — local only */});
+
+  // Sync all student progress data to Supabase (fire-and-forget)
+  pushStudentData().catch(() => {});
 
   // 2. Update per-question mastery
   updateMastery(qz.answers);

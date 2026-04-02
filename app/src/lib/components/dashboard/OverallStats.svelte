@@ -57,3 +57,49 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (min-width: 420px) {
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .stat-tile {
+    background: color-mix(in srgb, var(--chip-color) 10%, #fff);
+    border: 1.5px solid color-mix(in srgb, var(--chip-color) 20%, transparent);
+    border-radius: 14px;
+    padding: 14px 8px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .stat-ico {
+    font-size: 1.3rem;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .stat-num {
+    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+    font-size: 1.55rem;
+    line-height: 1.05;
+    color: var(--chip-color);
+  }
+
+  .stat-lbl {
+    font-size: .72rem;
+    color: #546e7a;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-top: 1px;
+  }
+</style>

@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Does a heart shape have a line of symmetry?",
+    "o": ["Yes", "No", "Only if it is big", "Only if it is red"],
+    "a": 0,
+    "e": "Yes! A heart has 1 line of symmetry straight down the middle. The left and right halves match.",
+    "d": "e"
+  },
+  {
+    "t": "If you fold a square in half, do both sides match exactly?",
+    "o": ["Yes", "No", "Only sometimes", "Only if you fold it a special way"],
+    "a": 0,
+    "e": "Yes! A square has lines of symmetry. Folding it in half (top to bottom, left to right, or corner to corner) gives matching halves.",
+    "d": "e"
+  },
+  {
+    "t": "Two triangles can be put together to make a ___.",
+    "o": ["Circle", "Square", "Pentagon", "Sphere"],
+    "a": 1,
+    "e": "Two identical right triangles can be put together to make a square (or a rectangle or parallelogram, depending on the triangles).",
+    "d": "e"
+  },
+  {
+    "t": "What does 'line of symmetry' mean?",
+    "o": ["A line that makes a shape bigger", "A line that folds a shape into two matching halves", "A line that goes around a shape", "A line that makes a shape 3D"],
+    "a": 1,
+    "e": "A line of symmetry divides a shape into two halves that are mirror images -- they match exactly when folded.",
+    "d": "e"
+  },
+  {
+    "t": "Does a circle have a line of symmetry?",
+    "o": ["Yes", "No", "Only a big circle", "Only half a circle"],
+    "a": 0,
+    "e": "Yes! A circle has many lines of symmetry. Any line through the center divides it into two matching halves.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape can you make by putting 2 squares side by side?",
+    "o": ["Triangle", "Rectangle", "Circle", "Pentagon"],
+    "a": 1,
+    "e": "Two squares side by side make a rectangle that is twice as long as it is tall.",
+    "d": "e"
+  },
+  {
+    "t": "Does the letter A have a line of symmetry?",
+    "o": ["Yes, straight down the middle", "No, it does not", "Yes, across the top", "Only capital A"],
+    "a": 0,
+    "e": "The capital letter A has a line of symmetry straight down the middle. The left side mirrors the right side.",
+    "d": "e"
+  },
+  {
+    "t": "If you cut a rectangle in half from top to bottom, what 2 shapes do you get?",
+    "o": ["2 triangles", "2 smaller rectangles", "2 circles", "1 square and 1 triangle"],
+    "a": 1,
+    "e": "Cutting a rectangle straight down the middle gives you 2 smaller rectangles.",
+    "d": "e"
+  },
+  {
+    "t": "Does a square have more than one line of symmetry?",
+    "o": ["No, just 1", "Yes, it has 2", "Yes, it has 4", "Squares have no lines of symmetry"],
+    "a": 2,
+    "e": "A square has 4 lines of symmetry: horizontal, vertical, and 2 diagonal.",
+    "d": "e"
+  },
+  {
+    "t": "What shape do you get when you put 4 small triangles together?",
+    "o": ["A bigger triangle", "A circle", "A hexagon", "A bigger triangle or a square"],
+    "a": 3,
+    "e": "Four small triangles can be arranged to make a bigger triangle or a square, depending on how you place them.",
+    "d": "e"
+  },
+  {
+    "t": "Does a rectangle have a line of symmetry?",
+    "o": ["Yes", "No", "Only a square rectangle", "Only a long rectangle"],
+    "a": 0,
+    "e": "Yes! A rectangle has 2 lines of symmetry: one horizontal and one vertical through the center.",
+    "d": "e"
+  },
+  {
+    "t": "If you fold a shape along a line of symmetry, what happens?",
+    "o": ["The shape gets bigger", "Both halves match up perfectly", "The shape turns into a circle", "Nothing happens"],
+    "a": 1,
+    "e": "When you fold along a line of symmetry, both halves match up perfectly -- one half covers the other exactly.",
+    "d": "e"
+  },
+  {
+    "t": "You have 1 big square. You cut it into 4 equal pieces. What shape is each piece?",
+    "o": ["Triangle", "Small square", "Circle", "Hexagon"],
+    "a": 1,
+    "e": "Cutting a square into 4 equal pieces (one horizontal cut, one vertical cut) gives 4 smaller squares.",
+    "d": "e"
+  },
+  {
+    "t": "Which of these shapes has NO line of symmetry?",
+    "o": ["Square", "Circle", "Scalene triangle with all different sides", "Rectangle"],
+    "a": 2,
+    "e": "A scalene triangle (all sides different, all angles different) has no line of symmetry. The other shapes all have at least one.",
+    "d": "e"
+  },
+  {
+    "t": "Two rectangles placed end to end make a ___.",
+    "o": ["Circle", "Longer rectangle", "Triangle", "Hexagon"],
+    "a": 1,
+    "e": "Two rectangles placed end to end make one longer rectangle.",
+    "d": "e"
+  },
+  {
+    "t": "Does a butterfly have symmetry?",
+    "o": ["Yes, left and right sides match", "No, butterflies are not shapes", "Only big butterflies", "Only when flying"],
+    "a": 0,
+    "e": "Yes! A butterfly has symmetry. Its left wing mirrors its right wing, with a line of symmetry down the body.",
+    "d": "e"
+  },
+  {
+    "t": "If you put 6 triangles together at a point, what shape can you make?",
+    "o": ["Square", "Rectangle", "Hexagon", "Pentagon"],
+    "a": 2,
+    "e": "Six equilateral triangles arranged around a center point make a hexagon.",
+    "d": "e"
+  },
+  {
+    "t": "Does an equilateral triangle (all sides equal) have a line of symmetry?",
+    "o": ["Yes", "No", "Only if it is big", "Triangles never have symmetry"],
+    "a": 0,
+    "e": "Yes! An equilateral triangle has 3 lines of symmetry -- one from each corner to the middle of the opposite side.",
+    "d": "e"
+  },
+  {
+    "t": "You split a circle in half. What are the two pieces called?",
+    "o": ["Quarter circles", "Semicircles", "Triangles", "Rectangles"],
+    "a": 1,
+    "e": "Half of a circle is called a semicircle. 'Semi' means half.",
+    "d": "e"
+  },
+  {
+    "t": "Which letter does NOT have a line of symmetry: B, O, X, or F?",
+    "o": ["B", "O", "X", "F"],
+    "a": 3,
+    "e": "The letter F has no line of symmetry. B has a horizontal line, O has many, and X has both vertical and horizontal.",
+    "d": "e"
+  }
+]

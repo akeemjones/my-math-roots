@@ -1,0 +1,142 @@
+[
+  {
+    "t": "What number goes in the blank? ___ - 34 = 48. Then check your answer using addition.",
+    "o": ["72, because 48 + 34 = 82", "82, because 48 + 34 = 82 and 82 - 34 = 48", "92, because 48 + 34 = 92", "78, because 48 + 30 = 78"],
+    "a": 1,
+    "e": "Find the missing number by adding: 48 + 34 = 82. Check: 82 - 34 = 48. The answer 82 checks out because the addition confirms it.",
+    "d": "h"
+  },
+  {
+    "t": "Carlos solved 153 - 78 = 85. He checked: 85 + 78 = 163. What TWO mistakes did Carlos make?",
+    "o": ["Wrong subtraction AND wrong addition check", "Only wrong subtraction", "Only wrong addition", "No mistakes were made"],
+    "a": 0,
+    "e": "Carlos made two mistakes: (1) 153 - 78 = 75, not 85. (2) His check: 85 + 78 = 163, not 153, which should have told him the answer was wrong. Correct: 75 + 78 = 153.",
+    "d": "h"
+  },
+  {
+    "t": "If 67 + 48 = 115, write ALL the subtraction facts in this fact family.",
+    "o": ["115 - 48 = 67 and 115 - 67 = 48", "Only 115 - 48 = 67", "115 - 67 = 48 only", "67 - 48 = 19 and 48 - 67 = impossible"],
+    "a": 0,
+    "e": "A fact family uses the same three numbers. From 67 + 48 = 115: the two subtraction facts are 115 - 48 = 67 and 115 - 67 = 48.",
+    "d": "h"
+  },
+  {
+    "t": "A student solved 140 - 65 = 85. She checked: 85 + 65 = 150. She says 'It is close enough, so I am right.' Is she correct?",
+    "o": ["No, the check must match exactly, and 150 does not equal 140", "Yes, close enough is fine in math", "No, but only because the difference is more than 5", "Yes, 150 and 140 are close"],
+    "a": 0,
+    "e": "In math, 'close enough' is not correct. 85 + 65 = 150, not 140, so the subtraction has an error. Correct: 140 - 65 = 75. Check: 75 + 65 = 140 exactly.",
+    "d": "h"
+  },
+  {
+    "t": "Nora solved three problems. Which one has an error? A) 91 - 45 = 46  B) 83 - 37 = 46  C) 72 - 28 = 54",
+    "o": ["Problem C, because 54 + 28 = 82, not 72", "Problem A, because 46 + 45 = 91", "Problem B, because 46 + 37 = 83", "None have errors"],
+    "a": 0,
+    "e": "Check each: A) 46 + 45 = 91. Correct! B) 46 + 37 = 83. Correct! C) 54 + 28 = 82, not 72. Error! The correct answer for C is 72 - 28 = 44.",
+    "d": "h"
+  },
+  {
+    "t": "A number minus 56 gives 47. Use the checking strategy to also find: that same number minus 47.",
+    "o": ["56", "47", "103", "9"],
+    "a": 0,
+    "e": "Find the number: 47 + 56 = 103. Now: 103 - 47 = 56. The fact family connects both: if 103 - 56 = 47, then 103 - 47 = 56.",
+    "d": "h"
+  },
+  {
+    "t": "Tom checked 86 - 39 by computing 39 + 86 = 125. What is wrong with Tom's checking strategy?",
+    "o": ["He should add the ANSWER to 39, not 86 to 39", "Nothing, his strategy is fine", "He should subtract instead of add", "He should multiply to check"],
+    "a": 0,
+    "e": "Tom added the wrong numbers. To check, he needs to add the ANSWER (86 - 39 = 47) to the number subtracted (39): 47 + 39 = 86. Tom mistakenly added 39 + 86.",
+    "d": "h"
+  },
+  {
+    "t": "Three students solved 132 - 67. Amy: 65. Ben: 75. Cal: 55. Which student is correct?",
+    "o": ["Amy, because 65 + 67 = 132", "Ben, because 75 + 67 = 132", "Cal, because 55 + 67 = 132", "None of them"],
+    "a": 0,
+    "e": "Check each: Amy: 65 + 67 = 132. Correct! Ben: 75 + 67 = 142. Wrong! Cal: 55 + 67 = 122. Wrong! Amy is correct.",
+    "d": "h"
+  },
+  {
+    "t": "Why does adding the answer to the subtracted number prove the subtraction is correct?",
+    "o": ["Because addition undoes subtraction -- they are inverse operations", "Because adding always gives bigger numbers", "Because the teacher said so", "It does not actually prove it"],
+    "a": 0,
+    "e": "Addition and subtraction are inverse operations -- they undo each other. If A - B = C, then C + B must equal A. This inverse relationship is what makes the check work.",
+    "d": "h"
+  },
+  {
+    "t": "Lisa solved 148 - 79 = 69. She also solved 148 - 69 = 79. Both check out as a fact family. Is she right?",
+    "o": ["Yes, 69 + 79 = 148 confirms both are correct", "No, 69 + 79 = 138, not 148", "Yes, but only the first equation", "No, you cannot have two related facts"],
+    "a": 0,
+    "e": "Check: 69 + 79 = 148. This confirms both: 148 - 79 = 69 and 148 - 69 = 79. These are both part of the same fact family.",
+    "d": "h"
+  },
+  {
+    "t": "A student solved 95 - 38 = 57 and then 95 - 57 = 48. She says both are right. What error do you see?",
+    "o": ["The second equation is wrong: 95 - 57 = 38, not 48", "Both equations are wrong", "The first equation is wrong", "No errors"],
+    "a": 0,
+    "e": "The first is correct: 57 + 38 = 95. But the second is wrong: 95 - 57 should equal 38 (from the fact family), not 48. The student made a subtraction error on the second problem.",
+    "d": "h"
+  },
+  {
+    "t": "Jake knows 156 - 89 = 67. Without solving, what is 156 - 67?",
+    "o": ["89, because it is the other subtraction in the fact family", "99", "79", "Cannot tell without solving"],
+    "a": 0,
+    "e": "Since 156 - 89 = 67, the fact family tells us 156 - 67 = 89. No new calculation needed! The three numbers (156, 89, 67) always work together.",
+    "d": "h"
+  },
+  {
+    "t": "A student checked 113 - 47 = 66 by computing 66 + 47. She got 113. But the real answer is 113 - 47 = 66. How is this possible?",
+    "o": ["The answer IS 66 and the check proves it", "The check must be wrong", "66 + 47 cannot equal 113", "She got lucky"],
+    "a": 0,
+    "e": "113 - 47 = 66 is correct. The check confirms it: 66 + 47 = 113. When the check sum matches the original number, the subtraction is proven correct.",
+    "d": "h"
+  },
+  {
+    "t": "Emma solved 167 - 89 = 78. She wants to check but finds addition hard too. What easier check can she use?",
+    "o": ["Estimate: 170 - 90 = 80, and 78 is close to 80, so it is likely correct", "There is no other way to check", "Multiply 78 by 89", "Subtract 78 from 89"],
+    "a": 0,
+    "e": "Estimation is a great quick check! 170 - 90 = 80, and 78 is close to 80, supporting the answer. For certainty, do the addition check: 78 + 89 = 167. Correct!",
+    "d": "h"
+  },
+  {
+    "t": "Two problems use the same three numbers. If 94 - 56 = 38, what MUST be true?",
+    "o": ["38 + 56 = 94 and 94 - 38 = 56", "56 - 38 = 94", "94 + 56 = 38", "Only 38 + 56 = 94 is true"],
+    "a": 0,
+    "e": "From 94 - 56 = 38, the fact family gives us: 38 + 56 = 94, 56 + 38 = 94, and 94 - 38 = 56. All three numbers stay connected through inverse operations.",
+    "d": "h"
+  },
+  {
+    "t": "A class solved 125 - 67. Five students got 58 and three got 68. Use checking to settle the debate.",
+    "o": ["58 is correct: 58 + 67 = 125", "68 is correct: 68 + 67 = 125", "Both could be correct", "Neither is correct"],
+    "a": 0,
+    "e": "Check 58: 58 + 67 = 125. Correct! Check 68: 68 + 67 = 135, not 125. Wrong! The answer is 58. The three students who got 68 likely forgot to regroup properly.",
+    "d": "h"
+  },
+  {
+    "t": "Dan solved a subtraction problem and got 49. He added 49 + 36 and got 85. What was the original problem?",
+    "o": ["85 - 36 = 49", "49 - 36 = 13", "85 + 36 = 121", "36 - 49 = impossible"],
+    "a": 0,
+    "e": "If Dan's check is 49 + 36 = 85, then the original subtraction was 85 - 36 = 49. The addition check reveals the original problem's structure.",
+    "d": "h"
+  },
+  {
+    "t": "Mia made the same error on two problems: 82 - 35 = 53 and 71 - 24 = 53. What pattern of error is she making?",
+    "o": ["She is not regrouping -- she subtracts the smaller digit from the larger in ones place", "She is adding instead of subtracting", "She is guessing", "Her answers are correct"],
+    "a": 0,
+    "e": "82 - 35: Mia did 5 - 2 = 3 (wrong direction), 8 - 3 = 5, getting 53. Correct: 47. 71 - 24: Mia did 4 - 1 = 3, 7 - 2 = 5, getting 53. Correct: 47. She consistently subtracts the smaller ones digit from the larger instead of regrouping.",
+    "d": "h"
+  },
+  {
+    "t": "If 89 + 43 = 132, write the complete fact family. How many facts are in it?",
+    "o": ["4 facts: 89+43=132, 43+89=132, 132-43=89, 132-89=43", "2 facts", "3 facts", "6 facts"],
+    "a": 0,
+    "e": "The complete fact family has 4 facts: 89 + 43 = 132, 43 + 89 = 132, 132 - 43 = 89, 132 - 89 = 43. All use the same three numbers.",
+    "d": "h"
+  },
+  {
+    "t": "A student says 'If my subtraction check does not match, I should just erase and write the addition answer instead.' Is this good advice?",
+    "o": ["No, she should redo the subtraction carefully to find the error", "Yes, the addition answer is always right", "No, she should try a third method", "Yes, because addition is easier"],
+    "a": 0,
+    "e": "If the check does not match, she should redo the subtraction step by step. The check only tells you there is an error -- it does not automatically give the right answer. She needs to find WHERE the mistake happened.",
+    "d": "h"
+  }
+]

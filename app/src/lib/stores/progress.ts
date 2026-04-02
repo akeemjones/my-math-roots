@@ -25,10 +25,7 @@ import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/types';
 /**
  * Per-question mastery scores.
  * Key: base-36 hash of the question text (matching vanilla's _qKey()).
- *
- * NOTE: The vanilla app stores { q, c, w } — short-key format.
- * A compatibility shim in Phase 3 will migrate existing entries to
- * { attempts, correct, wrong } on first load from localStorage.
+ * Format: { attempts, correct, lastSeen } — same in both legacy and SvelteKit.
  */
 export const mastery = persisted<MasteryMap>('wb_mastery', {});
 
@@ -44,6 +41,13 @@ export const done = persisted<DoneMap>('wb_done5', {});
 
 /** Daily app time tracking. Stored as wb_apptime. */
 export const appTime = persisted<AppTimeState>('wb_apptime', DEFAULT_APP_TIME);
+
+/**
+ * Activity dates — ISO date strings for days the student was active.
+ * Matches legacy wb_act_dates. Used by the streak calendar.
+ * Capped at 365 entries (rolling window).
+ */
+export const actDates = persisted<string[]>('wb_act_dates', []);
 
 // ─── Derived helpers ──────────────────────────────────────────────────────────
 

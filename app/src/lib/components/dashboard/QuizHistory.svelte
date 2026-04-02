@@ -72,3 +72,107 @@
     </ul>
   {/if}
 </div>
+
+<style>
+  .qh-empty {
+    font-size: .9rem;
+    color: #90a4ae;
+    text-align: center;
+    padding: 16px 0 8px;
+    margin: 0;
+  }
+
+  .qh-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .qh-row {
+    background: rgba(0,0,0,.03);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-left: 4px solid #4a90d9;
+  }
+
+  .qh-type-badge {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #1565c0;
+    background: #e3f2fd;
+    border-radius: 6px;
+    padding: 2px 7px;
+    width: fit-content;
+  }
+
+  .qh-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .qh-label {
+    font-size: .9rem;
+    font-weight: 600;
+    color: #37474f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  .qh-stars {
+    font-size: .9rem;
+    flex-shrink: 0;
+  }
+
+  .qh-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .75rem;
+    color: #90a4ae;
+    flex-wrap: wrap;
+  }
+
+  .qh-pct {
+    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+  }
+
+  .qh-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .qh-date {
+    font-size: .72rem;
+    color: #b0bec5;
+  }
+
+  .qh-del {
+    background: none;
+    border: none;
+    font-size: .9rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+    opacity: .5;
+    transition: opacity .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .qh-del:hover { opacity: .85; }
+  .qh-del:active { opacity: 1; }
+</style>

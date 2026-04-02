@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A shape has 4 sides and 4 right angles, but NOT all sides are equal. What is it?",
+    "o": ["Square", "Non-square rectangle", "Triangle", "Hexagon"],
+    "a": 1,
+    "e": "A non-square rectangle has 4 sides and 4 right angles, but 2 sides are longer than the other 2.",
+    "d": "m"
+  },
+  {
+    "t": "How many more faces does a cube have than a triangular prism?",
+    "o": ["0", "1", "2", "3"],
+    "a": 1,
+    "e": "A cube has 6 faces and a triangular prism has 5. 6 - 5 = 1 more face.",
+    "d": "m"
+  },
+  {
+    "t": "Which has more lines of symmetry: an equilateral triangle or a square?",
+    "o": ["Equilateral triangle (3 vs 4)", "Square (4 vs 3)", "They are equal", "Neither has any"],
+    "a": 1,
+    "e": "A square has 4 lines of symmetry. An equilateral triangle has 3. The square has more.",
+    "d": "m"
+  },
+  {
+    "t": "How many more sides does an octagon have than a pentagon?",
+    "o": ["2", "3", "4", "5"],
+    "a": 1,
+    "e": "An octagon has 8 sides. A pentagon has 5 sides. 8 - 5 = 3 more sides.",
+    "d": "m"
+  },
+  {
+    "t": "What 2D shape do you see if you trace the face of a cylinder?",
+    "o": ["Square", "Triangle", "Rectangle", "Circle"],
+    "a": 3,
+    "e": "The flat face of a cylinder is a circle. Tracing it gives you a circle.",
+    "d": "m"
+  },
+  {
+    "t": "You cut a square from one corner to the opposite corner. What shapes do you get?",
+    "o": ["2 squares", "2 rectangles", "2 triangles", "1 triangle and 1 rectangle"],
+    "a": 2,
+    "e": "A diagonal cut through a square creates 2 identical right triangles.",
+    "d": "m"
+  },
+  {
+    "t": "Maria says a quadrilateral always has to be a rectangle. Is she right?",
+    "o": ["Yes, all quadrilaterals are rectangles", "No -- a quadrilateral is any shape with 4 sides", "Yes, if it has 4 corners", "No -- quadrilaterals have 5 sides"],
+    "a": 1,
+    "e": "A quadrilateral is ANY shape with 4 sides. Rectangles are quadrilaterals, but so are trapezoids, rhombuses, and other 4-sided shapes.",
+    "d": "m"
+  },
+  {
+    "t": "Which 3D shape has 2 triangular faces and 3 rectangular faces?",
+    "o": ["Cube", "Rectangular prism", "Triangular prism", "Cylinder"],
+    "a": 2,
+    "e": "A triangular prism has 2 triangular end faces and 3 rectangular side faces = 5 faces total.",
+    "d": "m"
+  },
+  {
+    "t": "A non-square rectangle has ___ lines of symmetry.",
+    "o": ["0", "1", "2", "4"],
+    "a": 2,
+    "e": "A non-square rectangle has 2 lines of symmetry: one horizontal and one vertical through the center.",
+    "d": "m"
+  },
+  {
+    "t": "Sort from fewest sides to most: octagon, triangle, pentagon.",
+    "o": ["Triangle, pentagon, octagon", "Pentagon, triangle, octagon", "Octagon, pentagon, triangle", "Triangle, octagon, pentagon"],
+    "a": 0,
+    "e": "Triangle = 3 sides, pentagon = 5, octagon = 8. Order: triangle, pentagon, octagon.",
+    "d": "m"
+  },
+  {
+    "t": "A ___ can slide but NOT roll because all its faces are flat.",
+    "o": ["Sphere", "Cylinder", "Cone", "Cube"],
+    "a": 3,
+    "e": "A cube has only flat faces (no curved surfaces), so it can slide but never roll.",
+    "d": "m"
+  },
+  {
+    "t": "If 2 identical triangles share one full side, how many sides does the new shape have?",
+    "o": ["3", "4", "5", "6"],
+    "a": 1,
+    "e": "Each triangle has 3 sides (6 total). The shared side is hidden inside, removing 2 edges. 6 - 2 = 4 sides.",
+    "d": "m"
+  },
+  {
+    "t": "I am a polygon. I have 1 more side than a pentagon and 2 fewer sides than an octagon. What am I?",
+    "o": ["Square", "Hexagon", "Heptagon", "Triangle"],
+    "a": 1,
+    "e": "Pentagon = 5 sides. 5 + 1 = 6. Octagon = 8 sides. 8 - 2 = 6. A hexagon has 6 sides.",
+    "d": "m"
+  },
+  {
+    "t": "How many vertices does a rectangular prism have?",
+    "o": ["4", "6", "8", "12"],
+    "a": 2,
+    "e": "A rectangular prism has 8 vertices (corners): 4 on top and 4 on the bottom.",
+    "d": "m"
+  },
+  {
+    "t": "Does the letter T have a line of symmetry?",
+    "o": ["Yes -- 1 vertical line", "Yes -- 2 lines", "No lines of symmetry", "Yes -- 1 horizontal line"],
+    "a": 0,
+    "e": "The capital letter T has 1 line of symmetry: a vertical line down the center. Left and right halves match.",
+    "d": "m"
+  },
+  {
+    "t": "What is different about a cube and a rectangular prism?",
+    "o": ["A cube has 6 faces but a rectangular prism does not", "A cube has all square faces; a rectangular prism can have rectangular faces", "A rectangular prism has more vertices", "A cube can roll but a rectangular prism cannot"],
+    "a": 1,
+    "e": "Both have 6 faces, 8 vertices, and 12 edges. The difference: a cube's faces are ALL squares, while a rectangular prism can have rectangular faces.",
+    "d": "m"
+  },
+  {
+    "t": "How many lines of symmetry does a regular hexagon have?",
+    "o": ["3", "4", "6", "8"],
+    "a": 2,
+    "e": "A regular hexagon has 6 lines of symmetry -- one from each vertex to the opposite vertex, and one through each pair of opposite sides.",
+    "d": "m"
+  },
+  {
+    "t": "Amy put 4 squares in a 2x2 grid. What shape did she make?",
+    "o": ["A rectangle", "A bigger square", "A triangle", "A pentagon"],
+    "a": 1,
+    "e": "Four identical squares in a 2x2 arrangement make one bigger square.",
+    "d": "m"
+  },
+  {
+    "t": "A cone has ___ flat face(s) and ___ vertex (vertices).",
+    "o": ["0 faces, 0 vertices", "1 face, 1 vertex", "2 faces, 0 vertices", "1 face, 2 vertices"],
+    "a": 1,
+    "e": "A cone has 1 flat circular face (the base) and 1 vertex (the point at the top).",
+    "d": "m"
+  },
+  {
+    "t": "Which shape does NOT belong: hexagon, pentagon, circle, octagon?",
+    "o": ["Hexagon", "Pentagon", "Circle", "Octagon"],
+    "a": 2,
+    "e": "Circle does not belong. The hexagon, pentagon, and octagon are all polygons (straight sides). A circle is not a polygon.",
+    "d": "m"
+  }
+]

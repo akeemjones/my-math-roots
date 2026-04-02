@@ -19,8 +19,8 @@
   import { page } from '$app/stores';
   import { unitsData } from '$lib/stores';
   import { loadUnit } from '$lib/boot';
-  import { startQuiz } from '$lib/services/quiz';
-  import { cur } from '$lib/stores';
+  import { startQuiz, startQuizDirect, qKey } from '$lib/services/quiz';
+  import { cur, mastery } from '$lib/stores';
   import QuizEngine from '$lib/components/quiz/QuizEngine.svelte';
   import QuizResults from '$lib/components/quiz/QuizResults.svelte';
   import type { Question, QuizType, ScoreEntry } from '$lib/types';
@@ -128,6 +128,40 @@
     initQuiz(quizId);
   }
 
+  function handlePracticeWeak() {
+    if (!resultEntry) return;
+    const qz = resultEntry;
+
+    // Wrong questions from this session
+    const weakBank: Question[] = qz.answers
+      .filter(a => !a.ok)
+      .map(a => {
+        // Find the original Question object from the resolved bank
+        const resolved = resolveQuiz(quizId);
+        if (!resolved) return null;
+        return resolved.bank.find(q => qKey(q.t) === qKey(a.t)) ?? null;
+      })
+      .filter((q): q is Question => q !== null);
+
+    // Add historically weak questions from same unit
+    const resolved = resolveQuiz(quizId);
+    if (resolved) {
+      const masteryData = get(mastery);
+      for (const q of resolved.bank) {
+        const m = masteryData[qKey(q.t)];
+        if (m && m.attempts >= 2 && (m.correct / m.attempts) < 0.6) {
+          if (!weakBank.some(w => w.t === q.t)) weakBank.push(q);
+        }
+      }
+    }
+
+    if (!weakBank.length) { handleRetry(); return; }
+
+    const unitIdx = resolved?.unitIdx ?? null;
+    startQuizDirect(weakBank, quizId, qz.label + ' — Practice', 'practice', unitIdx);
+    resultEntry = null;
+  }
+
   function handleQuit() {
     // Navigate back to unit or home
     if (quizId.startsWith('lq_')) {
@@ -158,6 +192,7 @@
     entry={resultEntry}
     color={quizColor}
     onRetry={handleRetry}
+    onPracticeWeak={handlePracticeWeak}
     onHome={handleHome}
   />
 

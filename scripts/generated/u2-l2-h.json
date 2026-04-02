@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?",
+    "o": ["She added wrong", "She put digits side by side instead of adding", "She forgot to carry", "She switched the tens and ones"],
+    "a": 1,
+    "e": "Lily placed 6, 4, and 15 side by side to get 6,415. She should have added: 600 + 40 + 15 = 655.",
+    "d": "h"
+  },
+  {
+    "t": "Marcus wrote 1,072 three ways. Which one is WRONG?",
+    "o": ["1,000 + 70 + 2", "One thousand seventy-two", "1,000 + 700 + 2", "10 hundreds + 7 tens + 2 ones"],
+    "a": 2,
+    "e": "1,000 + 700 + 2 = 1,702, not 1,072. Marcus confused 70 with 700. The other three all equal 1,072.",
+    "d": "h"
+  },
+  {
+    "t": "Ava wrote 'four hundred sixteen' as 4016. What should the correct number be?",
+    "o": ["4,016", "416", "4,160", "460"],
+    "a": 1,
+    "e": "Four hundred sixteen = 416. Ava split 'four hundred' as 400 and 'sixteen' as 16, then wrote them side by side: 4016. She should combine: 400 + 16 = 416.",
+    "d": "h"
+  },
+  {
+    "t": "Which number can be written as 11 hundreds + 5 tens + 3 ones?",
+    "o": ["1,153", "1,503", "11,053", "153"],
+    "a": 0,
+    "e": "11 hundreds = 1,100. Add 50 + 3 = 53. Total: 1,100 + 53 = 1,153. You must regroup: 11 hundreds = 1 thousand + 1 hundred.",
+    "d": "h"
+  },
+  {
+    "t": "Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800 + 37. Who is correct?",
+    "o": ["Only Kai", "Only Zoe", "Both are correct", "Neither is correct"],
+    "a": 2,
+    "e": "800 + 30 + 7 = 837 and 800 + 37 = 837. Both are valid ways to decompose the number, even though Kai's is the standard expanded form.",
+    "d": "h"
+  },
+  {
+    "t": "Write 500 + 130 + 4 in standard form.",
+    "o": ["5,134", "634", "504", "513"],
+    "a": 1,
+    "e": "500 + 130 + 4. Since 130 = 100 + 30, this is really 500 + 100 + 30 + 4 = 634. The 130 carries an extra hundred.",
+    "d": "h"
+  },
+  {
+    "t": "Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also write it as 12 hundreds. Are both right?",
+    "o": ["Only Eli is right", "Only the teacher is right", "Both are right", "Neither is right"],
+    "a": 2,
+    "e": "1,000 + 200 = 1,200 and 12 hundreds = 12 x 100 = 1,200. Both ways equal 1,200, so both are correct.",
+    "d": "h"
+  },
+  {
+    "t": "Dani writes the word form of 1,108 as 'one thousand one hundred eight.' Her friend writes 'one thousand one hundred and eight.' Who is correct?",
+    "o": ["Only Dani", "Only her friend", "Both are correct", "Neither is correct"],
+    "a": 2,
+    "e": "Both ways are accepted. Some people include 'and' before the last part, some do not. Both say the same number: 1,108.",
+    "d": "m"
+  },
+  {
+    "t": "900 + __ + 14 = 964. What goes in the blank?",
+    "o": ["50", "64", "5", "54"],
+    "a": 0,
+    "e": "964 - 900 - 14 = 50. Check: 900 + 50 + 14 = 964. The blank is 50.",
+    "d": "h"
+  },
+  {
+    "t": "Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG?\nA) 700 + 8\nB) 700 + 0 + 8\nC) 70 + 8",
+    "o": ["A is wrong", "B is wrong", "C is wrong", "They are all correct"],
+    "a": 2,
+    "e": "70 + 8 = 78, not 708. The student forgot the hundreds! 700 + 8 = 708 and 700 + 0 + 8 = 708, so A and B are both correct.",
+    "d": "h"
+  },
+  {
+    "t": "A number in expanded form is 1,000 + 100 + 50 + 12. What is it in standard form?",
+    "o": ["1,1512", "1,162", "11,512", "1,152"],
+    "a": 1,
+    "e": "Add step by step: 1,000 + 100 = 1,100. Then 1,100 + 50 = 1,150. Then 1,150 + 12 = 1,162. The 12 ones regroup as 1 ten and 2 ones.",
+    "d": "h"
+  },
+  {
+    "t": "Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct and why?",
+    "o": ["Rosa, because three hundred = 300 and nine = 09", "Oscar, because 300 + 9 = 309", "Both are correct", "Neither is correct"],
+    "a": 1,
+    "e": "Three hundred nine = 309. Oscar is correct. Rosa put 300 and 9 side by side instead of adding: 300 + 9 = 309, not 3009.",
+    "d": "h"
+  },
+  {
+    "t": "Which expanded form is WRONG for 555?",
+    "o": ["500 + 50 + 5", "5 hundreds + 5 tens + 5 ones", "55 tens + 5 ones", "500 + 55 + 5"],
+    "a": 3,
+    "e": "500 + 55 + 5 = 560, not 555. The other three all equal 555. Check: 55 tens = 550, + 5 = 555.",
+    "d": "h"
+  },
+  {
+    "t": "Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 17 tens + 6 ones. Is the second way correct?",
+    "o": ["No, you cannot have 17 tens", "Yes, 300 + 170 + 6 = 476", "No, that equals 376", "Yes, but only the first way is proper"],
+    "a": 1,
+    "e": "300 + 170 + 6 = 476. Yes! 17 tens = 170, and 300 + 170 + 6 = 476. You can trade 1 hundred for 10 tens.",
+    "d": "h"
+  },
+  {
+    "t": "What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?",
+    "o": ["Nothing, it is correct", "The tens and ones are switched: should be 200 + 10 + 3", "It should be 2,013", "Thirteen means 30, not 13"],
+    "a": 1,
+    "e": "Thirteen = 13, which is 10 + 3. So 213 = 200 + 10 + 3. The student wrote 30 + 1 instead of 10 + 3, mixing up the tens and ones of thirteen.",
+    "d": "h"
+  },
+  {
+    "t": "Write the number: 'The thousands digit is 1, the hundreds digit is the same as the ones digit, the tens digit is 0, and the ones digit is 3.'",
+    "o": ["1,303", "1,003", "1,030", "1,330"],
+    "a": 0,
+    "e": "Thousands = 1, tens = 0, ones = 3, hundreds = same as ones = 3. The number is 1,303.",
+    "d": "h"
+  },
+  {
+    "t": "Mia says 200 + 60 + 18 = 278. Is she right?",
+    "o": ["Yes", "No, it equals 268", "No, it equals 2,618", "No, it equals 878"],
+    "a": 0,
+    "e": "200 + 60 + 18 = 278. Check: 200 + 60 = 260, then 260 + 18 = 278. Mia is correct!",
+    "d": "m"
+  },
+  {
+    "t": "A number has these clues: In expanded form, the hundreds part is 900. The word form ends with 'eleven.' What is the number?",
+    "o": ["911", "901", "9,011", "9,110"],
+    "a": 0,
+    "e": "Hundreds = 900, ends with eleven = 11. So the number is 900 + 11 = 911. Eleven means 1 ten and 1 one.",
+    "d": "h"
+  },
+  {
+    "t": "Which is the correct expanded form of 1,050?",
+    "o": ["1,000 + 50", "1,000 + 500", "100 + 50", "1,000 + 0 + 50 + 0"],
+    "a": 3,
+    "e": "1,050 = 1,000 + 0 + 50 + 0. The fullest expanded form shows every place. 1,000 + 50 is also correct but less complete.",
+    "d": "h"
+  },
+  {
+    "t": "James says 'twelve hundred' and 'one thousand two hundred' are different numbers. Is he right?",
+    "o": ["Yes, twelve hundred = 1,200 and one thousand two hundred = 12,000", "Yes, they sound different so they must be different", "No, both equal 1,200", "No, both equal 12,000"],
+    "a": 2,
+    "e": "Twelve hundred = 12 x 100 = 1,200. One thousand two hundred = 1,000 + 200 = 1,200. They are the same number said two different ways!",
+    "d": "h"
+  }
+]

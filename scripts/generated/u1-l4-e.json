@@ -1,0 +1,22 @@
+[
+  {"t":"If 3 + 5 = 8, what is 5 + 3?","o":["7","9","8","6"],"a":2,"e":"Fact family: 3 + 5 and 5 + 3 both equal 8. You can add in any order!","d":"e"},
+  {"t":"If 2 + 6 = 8, what is 6 + 2?","o":["9","4","8","7"],"a":2,"e":"Fact family: 2 + 6 = 8 and 6 + 2 = 8. Same numbers, same answer.","d":"e"},
+  {"t":"If 4 + 3 = 7, what is 7 - 3?","o":["3","5","4","6"],"a":2,"e":"Fact family: If 4 + 3 = 7, then 7 - 3 = 4. Addition and subtraction are related.","d":"e"},
+  {"t":"If 5 + 4 = 9, what is 9 - 4?","o":["4","6","3","5"],"a":3,"e":"Fact family: If 5 + 4 = 9, then 9 - 4 = 5.","d":"e"},
+  {"t":"If 1 + 7 = 8, what is 8 - 7?","o":["2","0","7","1"],"a":3,"e":"Fact family: If 1 + 7 = 8, then 8 - 7 = 1.","d":"e"},
+  {"t":"If 6 + 3 = 9, what is 3 + 6?","o":["8","10","12","9"],"a":3,"e":"You can add in any order. 6 + 3 = 9 and 3 + 6 = 9.","d":"e"},
+  {"t":"If 2 + 5 = 7, what is 7 - 2?","o":["4","3","5","6"],"a":2,"e":"Fact family: If 2 + 5 = 7, then 7 - 2 = 5.","d":"e"},
+  {"t":"If 8 + 2 = 10, what is 10 - 2?","o":["7","9","6","8"],"a":3,"e":"Fact family: If 8 + 2 = 10, then 10 - 2 = 8.","d":"e"},
+  {"t":"If 3 + 4 = 7, what is 7 - 4?","o":["4","2","3","5"],"a":2,"e":"Fact family: If 3 + 4 = 7, then 7 - 4 = 3.","d":"e"},
+  {"t":"If 6 + 4 = 10, what is 4 + 6?","o":["9","11","10","8"],"a":2,"e":"Add in any order: 6 + 4 = 10 and 4 + 6 = 10.","d":"e"},
+  {"t":"If 9 + 1 = 10, what is 10 - 9?","o":["2","0","9","1"],"a":3,"e":"Fact family: If 9 + 1 = 10, then 10 - 9 = 1.","d":"e"},
+  {"t":"If 5 + 2 = 7, what is 7 - 5?","o":["3","1","4","2"],"a":3,"e":"Fact family: If 5 + 2 = 7, then 7 - 5 = 2.","d":"e"},
+  {"t":"If 7 + 3 = 10, what is 10 - 7?","o":["4","2","7","3"],"a":3,"e":"Fact family: If 7 + 3 = 10, then 10 - 7 = 3.","d":"e"},
+  {"t":"If 1 + 8 = 9, what is 8 + 1?","o":["10","7","8","9"],"a":3,"e":"Add in any order: 1 + 8 = 9 and 8 + 1 = 9.","d":"e"},
+  {"t":"If 4 + 5 = 9, what is 9 - 5?","o":["3","5","6","4"],"a":3,"e":"Fact family: If 4 + 5 = 9, then 9 - 5 = 4.","d":"e"},
+  {"t":"If 3 + 7 = 10, what is 10 - 3?","o":["8","6","3","7"],"a":3,"e":"Fact family: If 3 + 7 = 10, then 10 - 3 = 7.","d":"e"},
+  {"t":"If 2 + 4 = 6, what is 6 - 4?","o":["3","1","4","2"],"a":3,"e":"Fact family: If 2 + 4 = 6, then 6 - 4 = 2.","d":"e"},
+  {"t":"If 6 + 2 = 8, what is 8 - 6?","o":["3","6","4","2"],"a":3,"e":"Fact family: If 6 + 2 = 8, then 8 - 6 = 2.","d":"e"},
+  {"t":"If 5 + 5 = 10, what is 10 - 5?","o":["6","4","3","5"],"a":3,"e":"Fact family: 5 + 5 = 10, so 10 - 5 = 5. Doubles make special fact families!","d":"e"},
+  {"t":"If 1 + 6 = 7, what is 7 - 1?","o":["5","7","8","6"],"a":3,"e":"Fact family: If 1 + 6 = 7, then 7 - 1 = 6.","d":"e"}
+]

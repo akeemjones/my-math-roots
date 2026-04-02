@@ -1,0 +1,362 @@
+[
+  {
+    "t": "Which symbol goes in the blank? 527 ___ 572",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Both numbers have 5 hundreds — those are equal! Look at the tens: 527 has 2 tens and 572 has 7 tens. Since 2 is less than 7, use the < symbol.",
+    "d": "m"
+  },
+  {
+    "t": "Which is greater: 384 or 438?",
+    "o": [
+      "384",
+      "438",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 1,
+    "e": "Hundreds: 3<4, so 438 is greater.",
+    "d": "m"
+  },
+  {
+    "t": "Is this true or false? 650 > 605",
+    "o": [
+      "True",
+      "False",
+      "Maybe",
+      "Cannot tell"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 5>0. TRUE.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from least to greatest: 312, 132, 231",
+    "o": [
+      "132,231,312",
+      "312,132,231",
+      "231,132,312",
+      "132,312,231"
+    ],
+    "a": 0,
+    "e": "Hundreds: 1<2<3.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 760 ___ 760",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 2,
+    "e": "Same number = equal.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 523?",
+    "o": [
+      "524",
+      "533",
+      "613",
+      "623"
+    ],
+    "a": 3,
+    "e": "523+100=623.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 199 ___ 200",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "199 is one less than 200.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the greatest? 456, 546, or 465?",
+    "o": [
+      "456",
+      "465",
+      "546",
+      "Equal"
+    ],
+    "a": 2,
+    "e": "Hundreds: 5>4, so 546 is greatest.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 less than 350?",
+    "o": [
+      "349",
+      "340",
+      "360",
+      "351"
+    ],
+    "a": 1,
+    "e": "350-10=340.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 408 ___ 480",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 0<8.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from greatest to least: 528, 258, 825",
+    "o": [
+      "825,528,258",
+      "528,258,825",
+      "258,528,825",
+      "825,258,528"
+    ],
+    "a": 0,
+    "e": "Hundreds: 8>5>2.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 less than 756?",
+    "o": [
+      "646",
+      "656",
+      "756",
+      "856"
+    ],
+    "a": 1,
+    "e": "756-100=656.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 900 ___ 90",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "900 has 9 hundreds. 90 has 0 hundreds. 900>90.",
+    "d": "m"
+  },
+  {
+    "t": "Which is less: 742 or 724?",
+    "o": [
+      "742",
+      "724",
+      "Equal",
+      "Cannot tell"
+    ],
+    "a": 1,
+    "e": "Hundreds equal, tens: 2<4. 724 is less.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 more than 690?",
+    "o": [
+      "600",
+      "691",
+      "700",
+      "790"
+    ],
+    "a": 2,
+    "e": "690+10=700.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 335 ___ 353",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 3<5.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is in the middle when ordered least to greatest? 410, 401, 140",
+    "o": [
+      "140",
+      "401",
+      "410",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Hundreds: 1<4=4. Then tens: 0<1. So 140 < 401 < 410. Middle is 401.",
+    "d": "m"
+  },
+  {
+    "t": "What is 1 more than 399?",
+    "o": [
+      "300",
+      "389",
+      "398",
+      "400"
+    ],
+    "a": 3,
+    "e": "399+1=400.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 807 ___ 780",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "807: 8H,0T,7O. 780: 7H,8T,0O. Hundreds: 8>7, so 807>780.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the least? 605, 506, or 650?",
+    "o": [
+      "605",
+      "506",
+      "650",
+      "Equal"
+    ],
+    "a": 1,
+    "e": "Hundreds: 5<6=6. Then tens: 0<0. Ones: 506: 5H,0T,6O vs 605: 6H,0T,5O. 5 hundreds < 6 hundreds. 506 is least.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 500 ___ 499",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "500 > 499.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 899?",
+    "o": [
+      "800",
+      "900",
+      "989",
+      "999"
+    ],
+    "a": 3,
+    "e": "899+100=999.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 234 ___ 243",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 0,
+    "e": "Hundreds equal, tens: 3<4.",
+    "d": "m"
+  },
+  {
+    "t": "Put these numbers in order from least to greatest: 901, 190, 910",
+    "o": [
+      "190,901,910",
+      "901,910,190",
+      "910,901,190",
+      "190,910,901"
+    ],
+    "a": 0,
+    "e": "Hundreds: 1<9=9. Then tens: 0<1. So 190<901<910.",
+    "d": "m"
+  },
+  {
+    "t": "What is 10 less than 400?",
+    "o": [
+      "300",
+      "390",
+      "410",
+      "490"
+    ],
+    "a": 1,
+    "e": "400-10=390.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 673 ___ 637",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 1,
+    "e": "Hundreds equal, tens: 7>3.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the greatest? 289, 298, or 928?",
+    "o": [
+      "289",
+      "298",
+      "928",
+      "Equal"
+    ],
+    "a": 2,
+    "e": "Hundreds: 9>2. 928 is greatest.",
+    "d": "m"
+  },
+  {
+    "t": "What is 1 less than 700?",
+    "o": [
+      "600",
+      "699",
+      "701",
+      "709"
+    ],
+    "a": 1,
+    "e": "700-1=699.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 415 ___ 415",
+    "o": [
+      "<",
+      ">",
+      "=",
+      "≠"
+    ],
+    "a": 2,
+    "e": "Same number.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 more than 450?",
+    "o": [
+      "350",
+      "451",
+      "540",
+      "550"
+    ],
+    "a": 3,
+    "e": "450+100=550.",
+    "d": "m"
+  }
+]

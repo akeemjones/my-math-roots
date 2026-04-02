@@ -1,0 +1,142 @@
+[
+  {
+    "t": "How much is a quarter worth?",
+    "o": ["5¢", "10¢", "25¢", "50¢"],
+    "a": 2,
+    "e": "A quarter is worth 25¢.",
+    "d": "e"
+  },
+  {
+    "t": "3 dimes = ___ cents",
+    "o": ["3¢", "13¢", "30¢", "35¢"],
+    "a": 2,
+    "e": "Each dime is 10¢. Count by 10s: 10, 20, 30. So 3 dimes = 30¢.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth 1¢?",
+    "o": ["Nickel", "Dime", "Penny", "Quarter"],
+    "a": 2,
+    "e": "A penny is the coin worth 1¢. It is the smallest value coin.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 2 nickels and 1 penny.",
+    "o": ["3¢", "7¢", "11¢", "21¢"],
+    "a": 2,
+    "e": "Nickels: 5, 10. Penny: 11. Total = 11¢.",
+    "d": "e"
+  },
+  {
+    "t": "How do you write 50 cents with a dollar sign?",
+    "o": ["$50", "$5.00", "$0.50", "$0.05"],
+    "a": 2,
+    "e": "50 cents = $0.50. The zero before the decimal means zero dollars.",
+    "d": "e"
+  },
+  {
+    "t": "4 pennies = ___ ¢",
+    "o": ["1¢", "4¢", "40¢", "14¢"],
+    "a": 1,
+    "e": "Each penny = 1¢. Count: 1, 2, 3, 4. So 4 pennies = 4¢.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth the MOST?",
+    "o": ["Penny", "Nickel", "Dime", "Quarter"],
+    "a": 3,
+    "e": "A quarter (25¢) is worth the most of any common coin.",
+    "d": "e"
+  },
+  {
+    "t": "You have 10¢. You spend 4¢. How much is left?",
+    "o": ["4¢", "6¢", "10¢", "14¢"],
+    "a": 1,
+    "e": "10 - 4 = 6. You have 6¢ left.",
+    "d": "e"
+  },
+  {
+    "t": "Is $0.25 the same as 25¢?",
+    "o": ["Yes", "No, $0.25 is more", "No, 25¢ is more", "Cannot tell"],
+    "a": 0,
+    "e": "Yes! $0.25 and 25¢ both mean twenty-five cents.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 dime and 3 pennies.",
+    "o": ["4¢", "13¢", "30¢", "31¢"],
+    "a": 1,
+    "e": "Dime: 10. Pennies: 11, 12, 13. Total = 13¢.",
+    "d": "e"
+  },
+  {
+    "t": "How many cents is 1 nickel?",
+    "o": ["1¢", "5¢", "10¢", "25¢"],
+    "a": 1,
+    "e": "A nickel is worth 5¢.",
+    "d": "e"
+  },
+  {
+    "t": "You buy a toy for 5¢ and pay with a dime. How much change?",
+    "o": ["5¢", "10¢", "15¢", "0¢"],
+    "a": 0,
+    "e": "A dime = 10¢. Change = 10 - 5 = 5¢.",
+    "d": "e"
+  },
+  {
+    "t": "What does the decimal point in $1.50 separate?",
+    "o": ["Ones and tens", "Dollars and cents", "Big and small numbers", "Nothing"],
+    "a": 1,
+    "e": "The decimal point separates dollars from cents. $1.50 = 1 dollar and 50 cents.",
+    "d": "e"
+  },
+  {
+    "t": "2 dimes and 1 penny = ___ ¢",
+    "o": ["3¢", "12¢", "21¢", "20¢"],
+    "a": 2,
+    "e": "Dimes: 10, 20. Penny: 21. Total = 21¢.",
+    "d": "e"
+  },
+  {
+    "t": "How do you write 1 cent using a dollar sign?",
+    "o": ["$1.00", "$0.10", "$0.01", "$10"],
+    "a": 2,
+    "e": "1 cent = $0.01. Always write two digits after the decimal point.",
+    "d": "e"
+  },
+  {
+    "t": "You have a quarter. You spend 20¢. How much change?",
+    "o": ["5¢", "10¢", "20¢", "25¢"],
+    "a": 0,
+    "e": "Quarter = 25¢. Change = 25 - 20 = 5¢.",
+    "d": "e"
+  },
+  {
+    "t": "5 nickels = ___ ¢",
+    "o": ["5¢", "15¢", "25¢", "50¢"],
+    "a": 2,
+    "e": "Count by 5s: 5, 10, 15, 20, 25. Five nickels = 25¢.",
+    "d": "e"
+  },
+  {
+    "t": "How many cents are in $1.00?",
+    "o": ["1¢", "10¢", "50¢", "100¢"],
+    "a": 3,
+    "e": "$1.00 = 100 cents. One dollar equals one hundred cents.",
+    "d": "e"
+  },
+  {
+    "t": "Count the money: 1 quarter and 2 pennies.",
+    "o": ["7¢", "22¢", "27¢", "52¢"],
+    "a": 2,
+    "e": "Quarter: 25. Pennies: 26, 27. Total = 27¢.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes BEFORE the number: ¢ or $?",
+    "o": ["¢", "$", "Both", "Neither"],
+    "a": 1,
+    "e": "The dollar sign ($) goes before the number: $0.50. The cent sign (¢) goes after: 50¢.",
+    "d": "e"
+  }
+]

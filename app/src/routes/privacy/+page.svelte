@@ -1,0 +1,402 @@
+<script lang="ts">
+  import { goto } from '$app/navigation';
+</script>
+
+<svelte:head>
+  <title>Privacy Policy — My Math Roots</title>
+</svelte:head>
+
+<div class="pg-body">
+  <div class="container">
+    <button type="button" class="back-link" onclick={() => goto('/settings')}>&#8592; Back to My Math Roots</button>
+
+    <h1>Privacy Policy</h1>
+    <p class="subtitle">
+      Effective date: April 1, 2026 &nbsp;&middot;&nbsp; Last updated: April 1, 2026
+    </p>
+
+    <div class="highlight-box">
+      <strong>My Math Roots is designed for children in Kindergarten through 5th Grade.</strong>
+      We take children's privacy seriously and comply with the Children's Online Privacy
+      Protection Act (COPPA). A parent or guardian must provide consent before any personal
+      information is collected.
+    </div>
+
+    <p>This Privacy Notice for My Math Roots ("<strong>we</strong>," "<strong>us</strong>," or
+    "<strong>our</strong>") describes how and why we might access, collect, store, use, and/or
+    share ("<strong>process</strong>") your personal information when you use our services
+    ("<strong>Services</strong>"), including when you use our web application at
+    mymathroots.app.</p>
+
+    <p><strong>Questions or concerns?</strong> Reading this privacy notice will help you understand
+    your privacy rights and choices. If you disagree with our policies and practices, please do not
+    use our Services. If you still have any questions or concerns, please contact us at
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>
+    <span class="placeholder">(placeholder — update before launch)</span>.</p>
+
+    <h2>Summary of Key Points</h2>
+    <p><em>This summary provides key points from our privacy notice, but you can find out more
+    details about any of these topics in the full sections below.</em></p>
+    <ul>
+      <li><strong>What personal information do we process?</strong> We collect parent/guardian
+      email addresses, child grade levels, usernames, and learning progress data.</li>
+      <li><strong>Do we process sensitive personal information?</strong> No.</li>
+      <li><strong>Do we receive any information from third parties?</strong> No.</li>
+      <li><strong>How do we process your information?</strong> We process it to provide the
+      service, maintain security, and comply with legal obligations.</li>
+      <li><strong>How do we keep your information safe?</strong> We use Supabase encrypted
+      storage and AES-256-GCM encryption for locally stored email addresses.</li>
+      <li><strong>What are your rights?</strong> You may review, update, or delete your
+      account data at any time. See Section 8 and Section 16.</li>
+    </ul>
+
+    <h2>1. What Information Do We Collect?</h2>
+
+    <h3>Personal information you disclose to us</h3>
+    <div class="in-short"><strong>In Short:</strong> We collect personal information that you provide to us.</div>
+    <p>We collect personal information that you voluntarily provide to us when you register on
+    the Services, express an interest in obtaining information about us or our products and
+    Services, when you participate in activities on the Services, or otherwise when you contact us.</p>
+
+    <p><strong>Personal information we collect may include:</strong></p>
+    <ul>
+      <li><strong>Names</strong> — display name or username chosen by the parent/guardian</li>
+      <li><strong>Email addresses</strong> — parent or guardian email, used for account creation
+      and progress communications. Collected only with explicit parental consent.</li>
+      <li><strong>Usernames and passwords</strong> — for account authentication</li>
+      <li><strong>Contact or authentication data</strong> — information used to verify your
+      identity when logging in (e.g., via Google Sign-In)</li>
+      <li><strong>Contact preferences</strong> — your preference for receiving push notifications
+      and email updates</li>
+    </ul>
+
+    <p><strong>Sensitive Information:</strong> We do not process sensitive information.</p>
+
+    <h3>Application Data</h3>
+    <p>If you use our application, we also collect the following:</p>
+    <ul>
+      <li><strong>Push Notifications.</strong> If you opt in, we request permission to send you
+      push notifications regarding your account or certain features of the application. You may
+      turn these off at any time in your device's settings.</li>
+    </ul>
+    <p>We do <strong>not</strong> collect persistent device identifiers, advertising IDs,
+    or mobile device hardware IDs. This is by design for COPPA compliance. We do collect
+    standard server-side log data such as IP address and browser type for security and
+    service operation purposes.</p>
+
+    <h3>Information automatically collected</h3>
+    <div class="in-short"><strong>In Short:</strong> Some technical information is collected automatically when you visit our Services.</div>
+    <p>We automatically collect certain information when you visit, use, or navigate the
+    Services. This information does not reveal your specific identity but may include device
+    and usage information, such as your IP address, browser type, operating system, language
+    preferences, and information about how and when you use our Services. This is primarily
+    needed to maintain the security and operation of our Services.</p>
+    <ul>
+      <li><strong>Log and Usage Data.</strong> Service-related, diagnostic, and performance
+      information our servers automatically collect — including IP address, browser type,
+      device settings, date/time stamps of usage, and which features you use.</li>
+      <li><strong>Learning Progress Data.</strong> Quiz scores, lesson completion, streaks,
+      and mastery indicators. Stored to allow progress to persist across sessions and to
+      generate parent progress reports.</li>
+    </ul>
+    <p>We do <strong>not</strong> collect:</p>
+    <ul>
+      <li>The child's name, date of birth, or school name</li>
+      <li>Billing addresses, credit card numbers, or payment information (the app is free)</li>
+      <li>Phone numbers</li>
+      <li>Precise location data</li>
+      <li>Persistent device identifiers or advertising IDs</li>
+    </ul>
+
+    <p><strong>Google API:</strong> Our use of information received from Google APIs adheres to
+    the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>,
+    including the Limited Use requirements.</p>
+
+    <h2>2. How Do We Process Your Information?</h2>
+    <div class="in-short"><strong>In Short:</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law.</div>
+    <p>We process your personal information for the following reasons:</p>
+    <ul>
+      <li><strong>To facilitate account creation and authentication.</strong> We may process your
+      information so you can create and log in to your account.</li>
+      <li><strong>To respond to user inquiries and offer support.</strong> We may process your
+      information to respond to your inquiries and solve any potential issues.</li>
+      <li><strong>To send administrative information to you.</strong> We may process your information
+      to send you details about our products and services, changes to our terms and policies, and
+      other similar information.</li>
+      <li><strong>To request feedback.</strong> We may process your information when necessary to
+      request feedback and to contact you about your use of our Services.</li>
+      <li><strong>To evaluate and improve our Services.</strong> We may process your information when
+      we believe it is necessary to identify usage trends, determine the effectiveness of our
+      content, and to evaluate and improve our Services and your experience.</li>
+      <li><strong>To identify usage trends.</strong> We may process information about how you use our
+      Services to better understand how they are being used so we can improve them.</li>
+      <li><strong>To comply with our legal obligations.</strong> We may process your information to
+      comply with applicable laws, including COPPA.</li>
+    </ul>
+
+    <h2>3. When and With Whom Do We Share Your Personal Information?</h2>
+    <div class="in-short"><strong>In Short:</strong> We may share information in specific situations described in this section.</div>
+    <p>We do <strong>not</strong> sell personal information to third parties. We do not use personal
+    information for advertising. We may need to share your personal information in the following
+    situations:</p>
+    <ul>
+      <li><strong>Business Transfers.</strong> We may share or transfer your information in
+      connection with, or during negotiations of, any merger, sale of company assets, financing,
+      or acquisition of all or a portion of our business to another company.</li>
+      <li><strong>Service Providers.</strong> We share data with the third-party services listed
+      in Section 5 and Section 11 solely for the purpose of operating the app.</li>
+    </ul>
+
+    <h2>4. Do We Use Cookies and Other Tracking Technologies?</h2>
+    <div class="in-short"><strong>In Short:</strong> We use browser localStorage to save your child's progress and preferences. We do not use advertising cookies.</div>
+    <p>We use browser <strong>localStorage</strong> (not cookies) to save your child's learning
+    progress, preferences, and your Remember Me login preference. This data stays on your device
+    and is not transmitted to advertisers. Email addresses stored locally are encrypted using
+    AES-256-GCM with a device-specific key.</p>
+    <p>We do not use advertising cookies, third-party tracking pixels, or behavioral analytics
+    tools. Our service provider Supabase may set technical session cookies required for
+    authentication.</p>
+    <p>You can clear all locally stored app data at any time through your browser settings
+    (Settings &rarr; Privacy &rarr; Clear browsing data &rarr; Cookies and site data).</p>
+
+    <h2>5. Do We Offer Artificial Intelligence-Based Products?</h2>
+    <div class="in-short"><strong>In Short:</strong> We offer AI-powered features via Google Gemini. See Section 11 for full details.</div>
+    <p>As part of our Services, we offer features powered by Google's Gemini AI, including
+    on-demand quiz hints and parent progress reports. These features transmit limited,
+    relevant data to Google's API via a secure server-side proxy. See
+    <a href="#sec11">Section 11 — AI-Powered Features</a> for full details.</p>
+
+    <h2>6. How Long Do We Keep Your Information?</h2>
+    <div class="in-short"><strong>In Short:</strong> We keep your information for as long as necessary to fulfill the purposes outlined in this notice or as required by law.</div>
+    <p>We will only keep your personal information for as long as it is necessary for the purposes
+    set out in this Privacy Notice, unless a longer retention period is required or permitted by law.
+    When we have no ongoing legitimate business need to process your personal information, we will
+    either delete or anonymize it.</p>
+    <p>See <a href="#sec13">Section 13 — Data Retention</a> for our specific retention periods.</p>
+
+    <h2>7. How Do We Keep Your Information Safe?</h2>
+    <div class="in-short"><strong>In Short:</strong> We aim to protect your personal information through organizational and technical security measures.</div>
+    <p>We have implemented appropriate and reasonable technical and organizational security measures
+    designed to protect the security of any personal information we process, including:</p>
+    <ul>
+      <li>Encrypted data storage via <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase</a></li>
+      <li>AES-256-GCM encryption for email addresses stored in browser localStorage</li>
+      <li>Bot protection on sign-up forms via Cloudflare Turnstile</li>
+      <li>HTTPS for all data transmission</li>
+      <li>Row-level security policies in the database</li>
+    </ul>
+    <p>However, no electronic transmission over the Internet or information storage technology can
+    be guaranteed to be 100% secure. We cannot promise or guarantee that hackers, cybercriminals,
+    or other unauthorized third parties will not be able to defeat our security. You access and
+    use the Services at your own risk.</p>
+
+    <h2>8. What Are Your Privacy Rights?</h2>
+    <div class="in-short"><strong>In Short:</strong> You may review, change, or terminate your account at any time.</div>
+    <p>As a parent or guardian, you have the following rights:</p>
+    <ul>
+      <li><strong>Withdraw your consent</strong> at any time by contacting us at
+      <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>.</li>
+      <li><strong>Account information:</strong> If you wish to review or change the information
+      in your account or terminate your account, you may contact us using the contact information
+      provided in Section 15.</li>
+    </ul>
+    <p>Upon your request to terminate your account, we will deactivate or delete your account and
+    information from our active databases. We may retain some information in our files to prevent
+    fraud, troubleshoot problems, assist with any investigations, and comply with legal requirements.</p>
+    <p>If you have questions or comments about your privacy rights, you may email us at
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>.</p>
+
+    <h2>9. Controls for Do-Not-Track Features</h2>
+    <p>Most web browsers and some mobile operating systems include a Do-Not-Track ("DNT") feature
+    or setting you can activate to signal your privacy preference not to have data about your
+    online browsing activities monitored and collected. At this stage, no uniform technology
+    standard for recognizing and implementing DNT signals has been finalized. As such, we do not
+    currently respond to DNT browser signals or any other mechanism that automatically communicates
+    your choice not to be tracked online. If a standard for online tracking is adopted that we
+    must follow in the future, we will inform you about that practice in a revised version of
+    this Privacy Notice.</p>
+
+    <h2>10. Do United States Residents Have Specific Privacy Rights?</h2>
+    <div class="in-short"><strong>In Short:</strong> If you are a US resident, you may have the right to access, correct, or delete your personal information.</div>
+    <p>If you are a resident of California, Colorado, Connecticut, Delaware, Florida, Indiana,
+    Iowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon,
+    Rhode Island, Tennessee, Texas, Utah, or Virginia, you may have the right to request access
+    to and receive details about the personal information we maintain about you, correct
+    inaccuracies, get a copy of, or delete your personal information. You may also have the right
+    to withdraw your consent to our processing of your personal information. These rights may be
+    limited in some circumstances by applicable law.</p>
+
+    <h3>Categories of Personal Information We Collect</h3>
+    <p>The table below shows the categories of personal information we have collected in the past
+    twelve (12) months. The table includes illustrative examples of each category.</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%">Category</th>
+          <th style="width:60%">Examples</th>
+          <th style="width:15%">Collected</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>A. Identifiers</td><td>Contact details such as real name, alias, email address, and online identifier</td><td class="yes">YES</td></tr>
+        <tr><td>B. Personal information (CA Customer Records statute)</td><td>Name and contact information</td><td class="yes">YES</td></tr>
+        <tr><td>C. Protected classification characteristics</td><td>Gender, age, date of birth, race and ethnicity, national origin, marital status</td><td class="no">NO</td></tr>
+        <tr><td>D. Commercial information</td><td>Transaction information, purchase history, financial details, payment information</td><td class="no">NO</td></tr>
+        <tr><td>E. Biometric information</td><td>Fingerprints and voiceprints</td><td class="no">NO</td></tr>
+        <tr><td>F. Internet or other similar network activity</td><td>Browsing history, search history, online behavior, interactions with third-party sites</td><td class="no">NO</td></tr>
+        <tr><td>G. Geolocation data</td><td>Device location</td><td class="no">NO</td></tr>
+        <tr><td>H. Audio, electronic, sensory, or similar information</td><td>Images and audio, video or call recordings</td><td class="no">NO</td></tr>
+        <tr><td>I. Professional or employment-related information</td><td>Business contact details, job title, work history</td><td class="no">NO</td></tr>
+        <tr><td>J. Education information</td><td>Grade level, quiz scores, learning progress records</td><td class="yes">YES</td></tr>
+        <tr><td>K. Inferences drawn from collected personal information</td><td>Inferences drawn to create a profile about preferences or behavior</td><td class="no">NO</td></tr>
+        <tr><td>L. Sensitive personal information</td><td>&mdash;</td><td class="no">NO</td></tr>
+      </tbody>
+    </table>
+
+    <p>We have not disclosed, sold, or shared any personal information to third parties for a
+    business or commercial purpose in the preceding twelve (12) months. We will not sell or share
+    personal information in the future without providing you with notice.</p>
+
+    <h3>California Residents — Your Specific Privacy Rights</h3>
+    <p>California Civil Code Section 1798.83 permits users who are California residents to
+    request information regarding our disclosure of personal information to third parties for
+    direct marketing. As noted above, we do not share personal information with third parties for
+    direct marketing purposes.</p>
+
+    <h3>Exercising Your Rights</h3>
+    <p>To exercise your rights, submit a verifiable consumer request to us at
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>. We will respond within
+    45 days. If we decline your request, you may appeal our decision by emailing us at
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>
+    <span class="placeholder">(appeals email — update before launch if different from above)</span>.</p>
+
+    <h2 id="sec11">11. AI-Powered Features (Google Gemini)</h2>
+    <p>My Math Roots uses Google's Gemini AI to power two in-app features: on-demand hints and
+    explanations during quizzes, and parent progress reports. When a parent requests a progress
+    report, or when a child requests a hint, relevant data is transmitted to Google's Gemini API
+    via a secure server-side proxy.</p>
+    <p>For <strong>hints</strong>, this includes the quiz question text, the child's answer, and
+    the correct answer. For <strong>progress reports</strong>, this includes the child's display
+    name, quiz scores, unit performance, mastery data, app usage time, and streak information.
+    This data is used solely to generate the requested content and is not retained by Google beyond
+    the API request. My Math Roots does not store AI-generated responses on our servers.</p>
+
+    <h2>12. Push Notifications</h2>
+    <p>If you opt in to push notifications, your browser generates a unique push subscription token
+    (consisting of an endpoint URL and encryption keys). This token is stored in our database linked
+    to your account and is used solely to deliver streak reminders and other app notifications you
+    have requested. You can withdraw consent and delete your push subscription at any time through
+    your device or browser notification settings. Stale or expired subscriptions are automatically
+    removed from our database.</p>
+
+    <h2 id="sec13">13. Data Retention</h2>
+    <p>We retain account data, including learning progress, quiz scores, and mastery records, for
+    as long as your account remains active. Lead contact information submitted through the app's
+    save-progress prompt is retained until you request deletion. If you delete your account or
+    submit a deletion request to
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>, we will remove your
+    personal data from our systems within 30 days. Anonymized, aggregate usage data that cannot
+    be linked to any individual may be retained indefinitely for product improvement purposes.</p>
+
+    <h2>14. Do We Make Updates to This Notice?</h2>
+    <div class="in-short"><strong>In Short:</strong> Yes, we will update this notice as necessary to stay compliant with relevant laws.</div>
+    <p>We may update this Privacy Notice from time to time. The updated version will be indicated
+    by an updated "Last updated" date at the top of this Privacy Notice. If we make material
+    changes to this Privacy Notice, we may notify you either by prominently posting a notice of
+    such changes or by directly sending you a notification. We encourage you to review this
+    Privacy Notice frequently to be informed of how we are protecting your information.</p>
+
+    <h2>15. How Can You Contact Us About This Notice?</h2>
+    <p>If you have questions or comments about this notice, you may email us at
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>
+    <span class="placeholder">(placeholder — update before launch)</span>
+    or contact us by post at:</p>
+    <p style="margin-left:16px">
+      <strong>My Math Roots</strong><br>
+      <span class="placeholder">[Business address — add before launch]</span>
+    </p>
+
+    <h2>16. How Can You Review, Update, or Delete the Data We Collect From You?</h2>
+    <p>Based on the applicable laws of your country or state of residence in the US, you may have
+    the right to request access to the personal information we collect from you, details about how
+    we have processed it, correct inaccuracies, or delete your personal information. You may also
+    have the right to withdraw your consent to our processing of your personal information. These
+    rights may be limited in some circumstances by applicable law.</p>
+    <p>To request to review, update, or delete your personal information, please email
+    <a href="mailto:privacy@mymathroots.app">privacy@mymathroots.app</a>. We will respond to
+    your request within 30 days.</p>
+    <p>You can also delete your browser's locally stored app data at any time by clearing site
+    data in your browser settings (Settings &rarr; Privacy &rarr; Clear browsing data &rarr;
+    Cookies and site data).</p>
+
+    <hr>
+    <p style="font-size:0.8rem;color:#aaa;text-align:center;margin-bottom:20px">
+      This privacy notice was last reviewed on April 1, 2026 &nbsp;&middot;&nbsp;
+      <a href="/settings" style="color:#aaa">My Math Roots</a>
+    </p>
+    <div style="text-align:center;padding-bottom:8px">
+      <button type="button" class="close-btn" onclick={() => goto('/settings')}>Close</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pg-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f0f4f8;
+    color: #222;
+    line-height: 1.7;
+    padding: 24px 16px 48px;
+    min-height: 100dvh;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  h1 { font-size: 1.6rem; color: #1a3a5c; margin-bottom: 6px; }
+  .subtitle { font-size: 0.85rem; color: #666; margin-bottom: 28px; }
+  h2 {
+    font-size: 1.05rem; color: #1a3a5c;
+    margin: 28px 0 8px; padding-top: 16px;
+    border-top: 1px solid #eef2f7;
+  }
+  h3 { font-size: 0.98rem; color: #2a4a6c; margin: 16px 0 6px; }
+  p, li { font-size: 0.93rem; color: #444; margin-bottom: 8px; }
+  ul { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+  a { color: #3b82f6; }
+  hr { margin: 32px 0; border: none; border-top: 1px solid #eef2f7; }
+  .back-link {
+    display: inline-block; margin-bottom: 24px;
+    font-size: 0.9rem; color: #3b82f6;
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-family: inherit;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .highlight-box {
+    background: #fff8f0; border-left: 4px solid #ff6b00;
+    border-radius: 8px; padding: 14px 16px;
+    margin: 16px 0 24px; font-size: 0.9rem; color: #555;
+  }
+  .in-short {
+    background: #f7f9fc; border-left: 3px solid #3b82f6;
+    padding: 8px 12px; margin: 8px 0 12px;
+    font-size: 0.88rem; color: #555; border-radius: 0 6px 6px 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
+  th, td { border: 1px solid #dde3ec; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #f0f4f8; color: #1a3a5c; font-weight: 600; }
+  :global(td.yes) { color: #16a34a; font-weight: 600; }
+  :global(td.no)  { color: #999; }
+  .placeholder { color: #cc6600; font-style: italic; }
+  .close-btn {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.95rem; font-weight: 600; padding: 12px 36px;
+    border-radius: 50px; border: none; background: #1a3a5c;
+    color: #fff; cursor: pointer; letter-spacing: 0.01em;
+  }
+</style>

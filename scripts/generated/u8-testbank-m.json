@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A shape is split into 4 parts but the parts are NOT equal. Can we write a fraction for the shaded part? Why?",
+    "o": ["Yes, because something is shaded", "No, because fractions need equal parts", "Yes, because there are 4 parts", "No, because there are too many parts"],
+    "a": 1,
+    "e": "Fractions only work when the parts are equal. If the parts are different sizes, we cannot write a fraction.",
+    "d": "m"
+  },
+  {
+    "t": "How many fourths make 1 whole?",
+    "o": ["2", "3", "4", "8"],
+    "a": 2,
+    "e": "4 fourths make 1 whole. 4/4 = 1.",
+    "d": "m"
+  },
+  {
+    "t": "Order from smallest to largest: 1/2, 1/8, 1/4.",
+    "o": ["1/2, 1/4, 1/8", "1/8, 1/4, 1/2", "1/4, 1/8, 1/2", "1/8, 1/2, 1/4"],
+    "a": 1,
+    "e": "1/8 is smallest (tiny pieces), then 1/4, then 1/2 is biggest. More cuts = smaller pieces.",
+    "d": "m"
+  },
+  {
+    "t": "A brownie is cut into 8 equal pieces. You eat 3 pieces. What fraction is LEFT?",
+    "o": ["3/8", "5/8", "8/3", "8/5"],
+    "a": 1,
+    "e": "You ate 3 of 8. That leaves 8 - 3 = 5 pieces, or 5/8.",
+    "d": "m"
+  },
+  {
+    "t": "Jake says the fraction 3/4 means 4 out of 3 equal parts. Is Jake correct?",
+    "o": ["Yes", "No, it means 3 out of 4 equal parts", "No, it means 3 plus 4", "Yes, the bigger number always goes on top"],
+    "a": 1,
+    "e": "3/4 means 3 out of 4 equal parts. The top is how many we count; the bottom is how many equal parts in all.",
+    "d": "m"
+  },
+  {
+    "t": "Anna shades 2/4 of a circle. Marco shades 1/2 of the same size circle. Who shaded more?",
+    "o": ["Anna", "Marco", "They shaded the same amount", "You cannot compare them"],
+    "a": 2,
+    "e": "2/4 = 1/2. They shaded the same amount!",
+    "d": "m"
+  },
+  {
+    "t": "A pie is cut into 8 slices. Is 3/8 more or less than half the pie?",
+    "o": ["More than half", "Less than half", "Exactly half", "You cannot tell"],
+    "a": 1,
+    "e": "Half of 8 slices is 4 slices (4/8). Since 3 < 4, 3/8 is less than half.",
+    "d": "m"
+  },
+  {
+    "t": "Which two fractions are BOTH equal to 1 whole?",
+    "o": ["1/2 and 2/4", "2/2 and 4/4", "1/4 and 1/8", "3/4 and 4/8"],
+    "a": 1,
+    "e": "2/2 = 1 whole and 4/4 = 1 whole. When top equals bottom, it is always 1 whole.",
+    "d": "m"
+  },
+  {
+    "t": "A pizza has 4 equal slices. You eat some and 1/4 is left. How many slices did you eat?",
+    "o": ["1 slice", "2 slices", "3 slices", "4 slices"],
+    "a": 2,
+    "e": "1/4 left means 1 of 4 slices remains. So you ate 4 - 1 = 3 slices.",
+    "d": "m"
+  },
+  {
+    "t": "Which is bigger: 5/8 or 3/8?",
+    "o": ["3/8", "5/8", "They are equal", "You cannot compare"],
+    "a": 1,
+    "e": "Same bottom number, so compare tops: 5 > 3. 5/8 is bigger.",
+    "d": "m"
+  },
+  {
+    "t": "Eli splits a cracker into 2 pieces but one piece is way bigger. He says each piece is 1/2. Is Eli correct?",
+    "o": ["Yes, there are 2 pieces", "No, the pieces must be equal to call them halves", "Yes, any 2 pieces are halves", "No, crackers cannot be split into fractions"],
+    "a": 1,
+    "e": "Eli is wrong. For halves, the 2 pieces must be equal in size.",
+    "d": "m"
+  },
+  {
+    "t": "How many eighths equal 1/2?",
+    "o": ["2", "3", "4", "6"],
+    "a": 2,
+    "e": "Half of 8 is 4. So 4/8 = 1/2.",
+    "d": "m"
+  },
+  {
+    "t": "A shape has ___ equal parts. 5 parts are shaded. The fraction is 5/8. What goes in the blank?",
+    "o": ["5", "8", "3", "13"],
+    "a": 1,
+    "e": "In 5/8, the bottom number is 8. The shape has 8 equal parts.",
+    "d": "m"
+  },
+  {
+    "t": "Which fraction is closest to 1 whole: 3/4, 1/2, or 1/4?",
+    "o": ["1/4", "1/2", "3/4", "They are all the same distance"],
+    "a": 2,
+    "e": "3/4 is closest to 1 whole. It is only 1/4 away from being complete.",
+    "d": "m"
+  },
+  {
+    "t": "A rope is cut into 8 equal pieces. Ava uses 6 pieces. What fraction did she NOT use?",
+    "o": ["6/8", "2/8", "8/6", "8/2"],
+    "a": 1,
+    "e": "She used 6 of 8. 8 - 6 = 2 are unused. That is 2/8.",
+    "d": "m"
+  },
+  {
+    "t": "Rosa says 4/8 is bigger than 1/2. Is she right?",
+    "o": ["Yes, because 4 and 8 are bigger numbers", "No, 4/8 equals 1/2", "Yes, eighths are bigger", "No, 1/2 is bigger"],
+    "a": 1,
+    "e": "4/8 and 1/2 are the same. 4 out of 8 equal parts is exactly half.",
+    "d": "m"
+  },
+  {
+    "t": "A garden has 4 equal sections. 1 has flowers and 2 have vegetables. What fraction is planted?",
+    "o": ["1/4", "2/4", "3/4", "4/4"],
+    "a": 2,
+    "e": "1 flowers + 2 vegetables = 3 sections planted. That is 3/4.",
+    "d": "m"
+  },
+  {
+    "t": "Which is bigger: 2/4 or 3/8?",
+    "o": ["2/4", "3/8", "They are equal", "You cannot compare"],
+    "a": 0,
+    "e": "2/4 = 4/8. Since 4/8 > 3/8, 2/4 is bigger.",
+    "d": "m"
+  },
+  {
+    "t": "A circle is divided into 8 equal parts. How many parts must you shade to show 1/4?",
+    "o": ["1 part", "2 parts", "4 parts", "8 parts"],
+    "a": 1,
+    "e": "1/4 of 8 = 2 parts. So shade 2 out of 8 parts to show 1/4.",
+    "d": "m"
+  },
+  {
+    "t": "Kai has 2 equal halves of a granola bar. He puts them together. What does he have?",
+    "o": ["1/2 of a bar", "1 whole bar", "2 whole bars", "2/4 of a bar"],
+    "a": 1,
+    "e": "2 halves = 2/2 = 1 whole granola bar.",
+    "d": "m"
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "t": "How do you write 245 in words?",
+    "o": ["Two hundred forty-five", "Two hundred fifty-four", "Two forty-five", "Twenty-four five"],
+    "a": 0,
+    "e": "245 = two hundred forty-five. Say the hundreds first, then the tens and ones together.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of three hundred twelve?",
+    "o": ["3,012", "312", "321", "213"],
+    "a": 1,
+    "e": "Three hundred twelve = 312. Standard form uses digits, not words.",
+    "d": "m"
+  },
+  {
+    "t": "What is 400 + 30 + 7?",
+    "o": ["437", "4,307", "473", "347"],
+    "a": 0,
+    "e": "Add each part: 400 + 30 + 7 = 437. This is expanded form turning into standard form.",
+    "d": "m"
+  },
+  {
+    "t": "How do you write 860 in expanded form?",
+    "o": ["800 + 60", "800 + 60 + 0", "86 + 0", "8 + 6 + 0"],
+    "a": 1,
+    "e": "860 = 800 + 60 + 0. In expanded form, we show the value of each digit. The ones place is 0.",
+    "d": "m"
+  },
+  {
+    "t": "Which is the word form of 519?",
+    "o": ["Five nineteen", "Five hundred nineteen", "Fifty-one nine", "Five hundred ninety-one"],
+    "a": 1,
+    "e": "519 in words is five hundred nineteen. Always say 'hundred' for 3-digit numbers.",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of 200 + 50 + 3?",
+    "o": ["253", "2,503", "235", "523"],
+    "a": 0,
+    "e": "Just add them up: 200 + 50 + 3 = 253. Expanded form shows each place value added together.",
+    "d": "m"
+  },
+  {
+    "t": "How do you write seven hundred four?",
+    "o": ["740", "704", "74", "7,004"],
+    "a": 1,
+    "e": "Seven hundred four = 704. There are 0 tens, so a 0 goes in the tens place.",
+    "d": "m"
+  },
+  {
+    "t": "Which shows 651 in expanded form?",
+    "o": ["600 + 50 + 1", "6 + 5 + 1", "650 + 1", "65 + 1"],
+    "a": 0,
+    "e": "651 = 600 + 50 + 1. Each digit is written as its full value.",
+    "d": "m"
+  },
+  {
+    "t": "Amy wrote five hundred thirty. Which number is that?",
+    "o": ["513", "530", "503", "5,030"],
+    "a": 1,
+    "e": "Five hundred thirty = 530. Thirty means 3 tens and 0 ones.",
+    "d": "m"
+  },
+  {
+    "t": "What is 100 + 90 + 2?",
+    "o": ["912", "192", "129", "1,092"],
+    "a": 1,
+    "e": "100 + 90 + 2 = 192. The 1 is hundreds, 9 is tens, 2 is ones.",
+    "d": "m"
+  },
+  {
+    "t": "How do you write 408 in words?",
+    "o": ["Four hundred eight", "Four hundred eighty", "Forty-eight", "Four zero eight"],
+    "a": 0,
+    "e": "408 = four hundred eight. We do not say the zero -- we skip from hundreds right to ones.",
+    "d": "m"
+  },
+  {
+    "t": "Which is the expanded form of 370?",
+    "o": ["37 + 0", "300 + 70 + 0", "300 + 7", "3 + 7 + 0"],
+    "a": 1,
+    "e": "370 = 300 + 70 + 0. Show each digit as its full value: 3 hundreds, 7 tens, 0 ones.",
+    "d": "m"
+  },
+  {
+    "t": "Jake says nine hundred sixteen is 960. Is he right?",
+    "o": ["Yes", "No, it is 916", "No, it is 906", "No, it is 196"],
+    "a": 1,
+    "e": "Nine hundred sixteen = 916. Jake wrote sixty (60) instead of sixteen (16).",
+    "d": "m"
+  },
+  {
+    "t": "What is the standard form of 700 + 8?",
+    "o": ["78", "780", "708", "7,008"],
+    "a": 2,
+    "e": "700 + 8 = 708. There are 0 tens, so we need a 0 in the middle.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is written in word form?",
+    "o": ["452", "400 + 50 + 2", "Four hundred fifty-two", "4 hundreds 5 tens 2 ones"],
+    "a": 2,
+    "e": "Word form uses words to write the number. 'Four hundred fifty-two' is word form. The others are standard form, expanded form, and place-value form.",
+    "d": "e"
+  },
+  {
+    "t": "How do you write 999 in expanded form?",
+    "o": ["900 + 90 + 9", "9 + 9 + 9", "999", "99 + 9"],
+    "a": 0,
+    "e": "999 = 900 + 90 + 9. Each 9 has a different value based on its place.",
+    "d": "m"
+  },
+  {
+    "t": "What is the word form of 110?",
+    "o": ["One hundred ten", "One hundred one", "Eleven", "One ten"],
+    "a": 0,
+    "e": "110 = one hundred ten. 1 hundred and 1 ten and 0 ones.",
+    "d": "m"
+  },
+  {
+    "t": "Maria wrote 300 + 20 + 6. What number is that?",
+    "o": ["326", "362", "236", "3,206"],
+    "a": 0,
+    "e": "300 + 20 + 6 = 326. Add each part together to get the standard form.",
+    "d": "m"
+  },
+  {
+    "t": "Which is the expanded form of 205?",
+    "o": ["200 + 5", "200 + 0 + 5", "20 + 5", "2 + 0 + 5"],
+    "a": 1,
+    "e": "205 = 200 + 0 + 5. Even though there are 0 tens, we show it in expanded form.",
+    "d": "m"
+  },
+  {
+    "t": "What number is six hundred one?",
+    "o": ["610", "601", "61", "6,001"],
+    "a": 1,
+    "e": "Six hundred one = 601. Be careful not to write sixty-one (610) by mistake.",
+    "d": "m"
+  }
+]

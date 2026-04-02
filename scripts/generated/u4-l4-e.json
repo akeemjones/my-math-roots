@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Sam has 45 crayons. He gives 18 to his friend. How many crayons does Sam have left?",
+    "o": ["27", "37", "17", "26"],
+    "a": 0,
+    "e": "Sam gives crayons away, so subtract: 45 - 18. Regroup: 15 - 8 = 7 ones, 3 - 1 = 2 tens. Sam has 27 crayons left.",
+    "d": "e"
+  },
+  {
+    "t": "A tree has 73 apples. The wind knocks off 41 apples. How many apples are still on the tree?",
+    "o": ["42", "22", "32", "34"],
+    "a": 2,
+    "e": "Apples fall off, so subtract: 73 - 41. Ones: 3 - 1 = 2. Tens: 7 - 4 = 3. There are 32 apples still on the tree.",
+    "d": "e"
+  },
+  {
+    "t": "Mia has 56 stickers. She uses 24 stickers on her notebook. How many stickers does she have left?",
+    "o": ["42", "22", "32", "30"],
+    "a": 2,
+    "e": "Stickers are used up, so subtract: 56 - 24. Ones: 6 - 4 = 2. Tens: 5 - 2 = 3. Mia has 32 stickers left.",
+    "d": "e"
+  },
+  {
+    "t": "There are 89 children at the park. 52 children go home. How many children are still at the park?",
+    "o": ["47", "27", "37", "35"],
+    "a": 2,
+    "e": "Children leave, so subtract: 89 - 52. Ones: 9 - 2 = 7. Tens: 8 - 5 = 3. There are 37 children still at the park.",
+    "d": "e"
+  },
+  {
+    "t": "Dad baked 64 cookies. The family ate 31 cookies. How many cookies are left?",
+    "o": ["43", "23", "33", "35"],
+    "a": 2,
+    "e": "Cookies are eaten, so subtract: 64 - 31. Ones: 4 - 1 = 3. Tens: 6 - 3 = 3. There are 33 cookies left.",
+    "d": "e"
+  },
+  {
+    "t": "A store has 87 hats. They sell 43 hats. How many hats are left in the store?",
+    "o": ["54", "34", "44", "42"],
+    "a": 2,
+    "e": "Hats are sold, so subtract: 87 - 43. Ones: 7 - 3 = 4. Tens: 8 - 4 = 4. There are 44 hats left.",
+    "d": "e"
+  },
+  {
+    "t": "Leo has 91 baseball cards. He trades 50 cards with his friend. How many cards does Leo have now?",
+    "o": ["51", "31", "41", "40"],
+    "a": 2,
+    "e": "Cards are traded away, so subtract: 91 - 50. Ones: 1 - 0 = 1. Tens: 9 - 5 = 4. Leo has 41 cards now.",
+    "d": "e"
+  },
+  {
+    "t": "A bus has 48 passengers. 25 passengers get off at the next stop. How many passengers are still on the bus?",
+    "o": ["33", "13", "23", "21"],
+    "a": 2,
+    "e": "Passengers get off, so subtract: 48 - 25. Ones: 8 - 5 = 3. Tens: 4 - 2 = 2. There are 23 passengers still on the bus.",
+    "d": "e"
+  },
+  {
+    "t": "Emma has 76 beads. She uses 35 beads to make a necklace. How many beads are left?",
+    "o": ["51", "31", "41", "43"],
+    "a": 2,
+    "e": "Beads are used, so subtract: 76 - 35. Ones: 6 - 5 = 1. Tens: 7 - 3 = 4. Emma has 41 beads left.",
+    "d": "e"
+  },
+  {
+    "t": "There are 95 books on a shelf. A student checks out 62 books. How many books are still on the shelf?",
+    "o": ["43", "23", "33", "31"],
+    "a": 2,
+    "e": "Books are checked out, so subtract: 95 - 62. Ones: 5 - 2 = 3. Tens: 9 - 6 = 3. There are 33 books on the shelf.",
+    "d": "e"
+  },
+  {
+    "t": "A jar has 67 jelly beans. Maria eats 34 jelly beans. How many jelly beans are left in the jar?",
+    "o": ["43", "23", "33", "31"],
+    "a": 2,
+    "e": "Jelly beans are eaten, so subtract: 67 - 34. Ones: 7 - 4 = 3. Tens: 6 - 3 = 3. There are 33 jelly beans left.",
+    "d": "e"
+  },
+  {
+    "t": "A class has 58 pencils. The teacher gives 26 pencils to students. How many pencils are left?",
+    "o": ["42", "22", "32", "34"],
+    "a": 2,
+    "e": "Pencils are given away, so subtract: 58 - 26. Ones: 8 - 6 = 2. Tens: 5 - 2 = 3. There are 32 pencils left.",
+    "d": "e"
+  },
+  {
+    "t": "Jack had 83 toy cars. He lost 51 toy cars. How many toy cars does Jack have now?",
+    "o": ["42", "22", "32", "30"],
+    "a": 2,
+    "e": "Cars are lost, so subtract: 83 - 51. Ones: 3 - 1 = 2. Tens: 8 - 5 = 3. Jack has 32 toy cars now.",
+    "d": "e"
+  },
+  {
+    "t": "There are 79 birds on a wire. 46 birds fly away. How many birds are still on the wire?",
+    "o": ["43", "23", "33", "31"],
+    "a": 2,
+    "e": "Birds fly away, so subtract: 79 - 46. Ones: 9 - 6 = 3. Tens: 7 - 4 = 3. There are 33 birds on the wire.",
+    "d": "e"
+  },
+  {
+    "t": "A farmer has 84 eggs. He sells 42 eggs. How many eggs does the farmer have left?",
+    "o": ["52", "32", "42", "44"],
+    "a": 2,
+    "e": "Eggs are sold, so subtract: 84 - 42. Ones: 4 - 2 = 2. Tens: 8 - 4 = 4. The farmer has 42 eggs left.",
+    "d": "e"
+  },
+  {
+    "t": "Lily has 68 flowers. She puts 35 flowers in a vase. How many flowers does she still need to put away?",
+    "o": ["43", "23", "33", "31"],
+    "a": 2,
+    "e": "Some flowers are put in a vase, so subtract to find the rest: 68 - 35. Ones: 8 - 5 = 3. Tens: 6 - 3 = 3. She has 33 flowers still to put away.",
+    "d": "e"
+  },
+  {
+    "t": "A box has 97 crayons. A child takes 54 crayons. How many crayons are in the box now?",
+    "o": ["53", "33", "43", "45"],
+    "a": 2,
+    "e": "Crayons are taken out, so subtract: 97 - 54. Ones: 7 - 4 = 3. Tens: 9 - 5 = 4. There are 43 crayons in the box.",
+    "d": "e"
+  },
+  {
+    "t": "Rosa has 55 marbles. She gives 23 to her brother. How many marbles does Rosa have now?",
+    "o": ["42", "22", "32", "34"],
+    "a": 2,
+    "e": "Marbles are given away, so subtract: 55 - 23. Ones: 5 - 3 = 2. Tens: 5 - 2 = 3. Rosa has 32 marbles now.",
+    "d": "e"
+  },
+  {
+    "t": "There are 86 fish in a pond. A fisherman catches 45 fish. How many fish are still in the pond?",
+    "o": ["51", "31", "41", "43"],
+    "a": 2,
+    "e": "Fish are caught, so subtract: 86 - 45. Ones: 6 - 5 = 1. Tens: 8 - 4 = 4. There are 41 fish still in the pond.",
+    "d": "e"
+  },
+  {
+    "t": "A bakery has 72 muffins. They sell 31 muffins in the morning. How many muffins are left?",
+    "o": ["51", "31", "41", "43"],
+    "a": 2,
+    "e": "Muffins are sold, so subtract: 72 - 31. Ones: 2 - 1 = 1. Tens: 7 - 3 = 4. There are 41 muffins left.",
+    "d": "e"
+  }
+]

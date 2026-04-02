@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A pictograph shows each star = 1 student. The cat row has 5 stars. How many students picked cats?",
+    "o": ["4", "5", "6", "10"],
+    "a": 1,
+    "e": "Each star means 1 student. There are 5 stars, so 5 students picked cats.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each smiley face = 1 vote. Dogs has 7 smiley faces and fish has 3. Which pet got more votes?",
+    "o": ["Fish", "They are the same", "Dogs", "Cannot tell"],
+    "a": 2,
+    "e": "Dogs has 7 and fish has 3. 7 is more than 3, so dogs got more votes.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. The pizza row has 3 stars. How many students chose pizza?",
+    "o": ["3", "5", "6", "8"],
+    "a": 2,
+    "e": "Each star = 2 students. 3 stars: skip count by 2: 2, 4, 6. That is 6 students.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each heart = 1 vote. Red has 4 hearts, Blue has 6 hearts, Green has 4 hearts. Which two colors got the same number?",
+    "o": ["Red and Blue", "Blue and Green", "Red and Green", "None are the same"],
+    "a": 2,
+    "e": "Red = 4 and Green = 4. They both got 4 votes, so they are the same.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 kids. Soccer has 4 stars. How many kids picked soccer?",
+    "o": ["4", "6", "8", "10"],
+    "a": 2,
+    "e": "Each star = 2 kids. 4 stars: 2, 4, 6, 8. That is 8 kids.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each circle = 1 student. Apples has 8 circles and bananas has 5 circles. Which fruit has fewer votes?",
+    "o": ["Apples", "Bananas", "They are the same", "Cannot tell"],
+    "a": 1,
+    "e": "Bananas has 5 and apples has 8. 5 is less than 8, so bananas has fewer.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph uses a key that says each star = 5 students. The chocolate row has 2 stars. How many picked chocolate?",
+    "o": ["2", "5", "7", "10"],
+    "a": 3,
+    "e": "Each star = 5 students. 2 stars: 5, 10. That is 10 students.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 1 vote. Summer has 9 stars. Winter has 3 stars. Spring has 6 stars. Which season has the most votes?",
+    "o": ["Winter", "Spring", "Summer", "They are all the same"],
+    "a": 2,
+    "e": "Summer has 9, Spring has 6, Winter has 3. Summer has the most with 9 votes.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. The blue row has 5 stars. How many votes did blue get?",
+    "o": ["5", "7", "10", "12"],
+    "a": 2,
+    "e": "Each star = 2 votes. 5 stars: 2, 4, 6, 8, 10. That is 10 votes.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each ball = 1 student. Basketball has 6 balls and volleyball has 6 balls. Did the same number of students pick each sport?",
+    "o": ["No, basketball has more", "No, volleyball has more", "Yes, they are the same", "Cannot tell"],
+    "a": 2,
+    "e": "Basketball = 6 and Volleyball = 6. Yes, they are the same!",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 5 kids. Bikes has 3 stars. How many kids like bikes?",
+    "o": ["3", "8", "10", "15"],
+    "a": 3,
+    "e": "Each star = 5 kids. 3 stars: 5, 10, 15. That is 15 kids.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 1 vote. Cats has 4 stars, Dogs has 7 stars, Birds has 2 stars. Which pet got the fewest votes?",
+    "o": ["Cats", "Dogs", "Birds", "They are all the same"],
+    "a": 2,
+    "e": "Birds has only 2 stars. That is the fewest votes.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. The key says: each star = 2. You see 6 stars in the tiger row. How many students chose tigers?",
+    "o": ["6", "8", "10", "12"],
+    "a": 3,
+    "e": "Each star = 2. There are 6 stars: 6 x 2 = 12 students chose tigers.",
+    "d": "e"
+  },
+  {
+    "t": "Look at the pictograph. The key shows each apple picture = 1 student. The apple row has 3 pictures and the orange row has 5 pictures. How many picked oranges?",
+    "o": ["3", "4", "5", "8"],
+    "a": 2,
+    "e": "Each picture = 1 student. The orange row has 5 pictures, so 5 students picked oranges.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Sunny has 4 stars and Cloudy has 2 stars. Which weather has more votes?",
+    "o": ["Cloudy", "They are the same", "Sunny", "Cannot tell"],
+    "a": 2,
+    "e": "Sunny = 4 stars = 8 votes. Cloudy = 2 stars = 4 votes. Sunny has more.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. The candy row has 4 stars. How many students chose candy?",
+    "o": ["4", "9", "15", "20"],
+    "a": 3,
+    "e": "Each star = 5. 4 stars: 5, 10, 15, 20. That is 20 students.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 1 kid. Swings has 8 stars, Slide has 5 stars, Sandbox has 3 stars. Put them in order from most to fewest.",
+    "o": ["Sandbox, Slide, Swings", "Swings, Slide, Sandbox", "Slide, Swings, Sandbox", "Swings, Sandbox, Slide"],
+    "a": 1,
+    "e": "Swings = 8 (most), Slide = 5 (middle), Sandbox = 3 (fewest).",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. Crayons has 3 stars. Markers has 3 stars. Do they have the same number of students?",
+    "o": ["No, crayons has more", "No, markers has more", "Yes, both have 6 students", "Yes, both have 3 students"],
+    "a": 2,
+    "e": "Crayons: 3 x 2 = 6. Markers: 3 x 2 = 6. Yes, both have 6 students.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 1 student. The key is missing for one row. You know 4 students like turtles and you see 4 stars. What does each star equal?",
+    "o": ["2 students", "1 student", "4 students", "5 students"],
+    "a": 1,
+    "e": "4 stars stand for 4 students. So each star = 1 student.",
+    "d": "e"
+  },
+  {
+    "t": "A pictograph shows each star = 5 votes. Trucks has 2 stars and Cars has 3 stars. Which has more votes?",
+    "o": ["Trucks", "They are the same", "Cars", "Cannot tell"],
+    "a": 2,
+    "e": "Trucks = 2 x 5 = 10. Cars = 3 x 5 = 15. Cars has more votes.",
+    "d": "e"
+  }
+]

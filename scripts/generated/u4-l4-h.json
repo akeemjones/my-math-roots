@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Sam had 135 stickers. He gave 48 to Mia and 39 to Jake. Then he found 15 more. How many stickers does Sam have now?",
+    "o": ["63", "73", "53", "83"],
+    "a": 0,
+    "e": "Step 1: 135 - 48 = 87. Step 2: 87 - 39 = 48. Step 3: 48 + 15 = 63. Sam has 63 stickers now.",
+    "d": "h"
+  },
+  {
+    "t": "A zoo had 168 animals. 75 animals were moved to a new exhibit on Monday. 54 more were moved on Tuesday. How many animals are still in the original area?",
+    "o": ["39", "49", "29", "59"],
+    "a": 0,
+    "e": "Step 1: 168 - 75 = 93 after Monday. Step 2: 93 - 54 = 39 after Tuesday. 39 animals remain in the original area.",
+    "d": "h"
+  },
+  {
+    "t": "Ella says: '92 - 47 = 55 because 9 - 4 = 5 and 7 - 2 = 5.' What is wrong with Ella's thinking?",
+    "o": ["She subtracted ones digits in the wrong order (7-2 instead of regrouping 12-7)", "She added instead of subtracting", "She forgot to carry", "Her answer is correct"],
+    "a": 0,
+    "e": "Ella subtracted the ones in reverse: 7 - 2 = 5 instead of regrouping to get 12 - 7 = 5. She got lucky that both give 5, but her tens are wrong: it should be 8 - 4 = 4, not 9 - 4 = 5 (she forgot the regrouping reduces the tens). Correct: 92 - 47 = 45.",
+    "d": "h"
+  },
+  {
+    "t": "A school needs 150 notebooks. They have 83 notebooks. They buy 42 more. Do they have enough?",
+    "o": ["No, 83 + 42 = 125, which is 25 short of 150", "Yes, 83 + 42 = 150", "No, 83 + 42 = 115", "Yes, 83 + 42 = 155"],
+    "a": 0,
+    "e": "83 + 42 = 125 notebooks. They need 150. 150 - 125 = 25. They are 25 notebooks short.",
+    "d": "h"
+  },
+  {
+    "t": "Maria and Luis together have 143 marbles. Maria has 67. Luis gives 28 of his marbles away. How many does Luis have now?",
+    "o": ["48", "58", "38", "76"],
+    "a": 0,
+    "e": "Step 1: Luis's marbles: 143 - 67 = 76. Step 2: After giving away 28: 76 - 28 = 48. Luis has 48 marbles now.",
+    "d": "h"
+  },
+  {
+    "t": "A student solved these two problems: 86 - 39 = 53 and 74 - 28 = 52. Check both. Which is correct?",
+    "o": ["Only 74 - 28 = 52 is wrong (should be 46)", "Only 86 - 39 = 53 is wrong (should be 47)", "Both are wrong", "Both are correct"],
+    "a": 2,
+    "e": "Check: 53 + 39 = 92, not 86. Wrong! 52 + 28 = 80, not 74. Wrong! Both are incorrect. Correct: 86 - 39 = 47 and 74 - 28 = 46.",
+    "d": "h"
+  },
+  {
+    "t": "A bakery made 156 cookies. They need to fill boxes of 0 cookies for display and sell the rest. They sold 89 in the morning and 43 in the afternoon. How many are left?",
+    "o": ["24", "34", "14", "44"],
+    "a": 0,
+    "e": "Step 1: 156 - 89 = 67 after morning sales. Step 2: 67 - 43 = 24 after afternoon sales. 24 cookies are left.",
+    "d": "h"
+  },
+  {
+    "t": "Without solving exactly, is 128 - 69 closer to 50 or 70?",
+    "o": ["Closer to 60, which is between 50 and 70", "Closer to 50", "Closer to 70", "Exactly 50"],
+    "a": 0,
+    "e": "Estimate: 130 - 70 = 60. The exact answer is 128 - 69 = 59, which is closest to 60. 60 is right between 50 and 70.",
+    "d": "h"
+  },
+  {
+    "t": "Nora had some beads. She used 56 for a necklace and 37 for a bracelet. She has 28 left. How many beads did she start with?",
+    "o": ["111", "121", "131", "101"],
+    "a": 1,
+    "e": "Work backwards: 28 + 37 = 65 (before bracelet). 65 + 56 = 121 (before necklace). Nora started with 121 beads.",
+    "d": "h"
+  },
+  {
+    "t": "Ben scored 74 points. Ana scored 48 points. Ben says he scored 'about 30 more.' Is his estimate reasonable?",
+    "o": ["Yes, 74 - 48 = 26, and 26 is close to 30", "No, 74 - 48 = 26, and 26 is closer to 25 than 30", "Yes, 74 - 48 = 36", "No, he scored exactly 30 more"],
+    "a": 0,
+    "e": "74 - 48 = 26. Ben said 'about 30.' 26 is reasonably close to 30 for an estimate. His estimate is reasonable, though 25 would be more precise.",
+    "d": "h"
+  },
+  {
+    "t": "A number minus 67 equals 58. What is 20 less than that number?",
+    "o": ["105", "115", "95", "85"],
+    "a": 0,
+    "e": "Find the number: ? - 67 = 58, so ? = 58 + 67 = 125. Then 20 less: 125 - 20 = 105.",
+    "d": "h"
+  },
+  {
+    "t": "A toy shop has 142 toys. On Monday they sell 38 and on Tuesday they sell 47. A shipment of 25 new toys arrives Wednesday. How many toys do they have?",
+    "o": ["82", "92", "72", "62"],
+    "a": 0,
+    "e": "Step 1: 142 - 38 = 104. Step 2: 104 - 47 = 57. Step 3: 57 + 25 = 82. The shop has 82 toys.",
+    "d": "h"
+  },
+  {
+    "t": "Two classes collected cans. Class A: 87 cans. Class B: 69 cans. If they combine and donate 95 cans, how many do they have left?",
+    "o": ["51", "61", "71", "41"],
+    "a": 1,
+    "e": "Total: 87 + 69 = 156 cans. After donating: 156 - 95 = 61 cans left.",
+    "d": "h"
+  },
+  {
+    "t": "Jake says: 'If I start with a bigger number, the answer to my subtraction will always be bigger.' Is Jake correct?",
+    "o": ["Not necessarily -- it depends on what you subtract too", "Yes, bigger start always means bigger answer", "No, the answer is always the same", "Yes, but only without regrouping"],
+    "a": 0,
+    "e": "Not necessarily! 100 - 99 = 1, but 50 - 10 = 40. Even though 100 > 50, subtracting a large number (99) gives a small answer. The difference depends on BOTH numbers.",
+    "d": "h"
+  },
+  {
+    "t": "Ava solved a word problem and got 47. The problem said: 'A store had ___ hats. 39 were sold. 47 are left.' What number belongs in the blank?",
+    "o": ["86", "96", "76", "8"],
+    "a": 0,
+    "e": "Use the inverse: 47 + 39 = 86. The store started with 86 hats. Check: 86 - 39 = 47.",
+    "d": "h"
+  },
+  {
+    "t": "Which story problem matches 145 - 78 - 34?",
+    "o": ["A farmer had 145 apples. He sold 78 Monday and 34 Tuesday. How many are left?", "A farmer bought 145 apples and 78 oranges and 34 bananas", "A farmer had 78 apples and found 145 more and gave away 34", "A farmer needs 145 apples but only has 78 and 34"],
+    "a": 0,
+    "e": "145 - 78 - 34 means starting with 145 and subtracting two amounts. The farmer selling apples on two different days matches this two-step subtraction.",
+    "d": "h"
+  },
+  {
+    "t": "A piggy bank has 130 coins. Amy takes out 45 coins on Monday. She puts 18 coins back on Tuesday. On Wednesday she takes out 37 more. How many coins are in the piggy bank?",
+    "o": ["66", "56", "76", "46"],
+    "a": 0,
+    "e": "Step 1: 130 - 45 = 85. Step 2: 85 + 18 = 103. Step 3: 103 - 37 = 66. There are 66 coins in the piggy bank.",
+    "d": "h"
+  },
+  {
+    "t": "Kim and Dan each solved: 'There were 83 kids. 47 went inside. How many are outside?' Kim: 83 - 47 = 36. Dan: 47 + ? = 83, so ? = 36. Who used the better strategy?",
+    "o": ["Both strategies are valid and give the same answer", "Only Kim's subtraction method works", "Only Dan's addition method works", "Neither strategy is correct"],
+    "a": 0,
+    "e": "Both are valid! Kim subtracted directly: 83 - 47 = 36. Dan counted up: 47 + ? = 83, so ? = 36. Counting up (adding on) is another way to solve subtraction problems.",
+    "d": "h"
+  },
+  {
+    "t": "A class read 165 books total. They read 58 in September and 72 in October. How many did they read in November?",
+    "o": ["35", "45", "25", "55"],
+    "a": 0,
+    "e": "Total Sept + Oct: 58 + 72 = 130. November: 165 - 130 = 35 books. The class read 35 books in November.",
+    "d": "h"
+  },
+  {
+    "t": "True or false: 'Finding how many more' and 'finding how many are left' both use subtraction, but they mean different things.",
+    "o": ["True -- comparison and take-away are both subtraction but have different meanings", "False -- they mean the same thing", "True -- but only comparison uses subtraction", "False -- 'how many more' uses addition"],
+    "a": 0,
+    "e": "True! 'How many are left' is take-away subtraction (removing from a group). 'How many more' is comparison subtraction (finding the difference between two groups). Both use the minus sign but model different real-world situations.",
+    "d": "h"
+  }
+]

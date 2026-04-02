@@ -1,0 +1,142 @@
+[
+  {
+    "t": "5 + 5 + 5 = 3 groups of __. What goes in the blank?",
+    "o": ["3", "5", "10", "15"],
+    "a": 1,
+    "e": "5 + 5 + 5 means 5 is added 3 times, which is 3 groups of 5.",
+    "d": "m"
+  },
+  {
+    "t": "A frog jumps 4 feet each time. After some jumps it has gone 16 feet. How many jumps did it take?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "4 + 4 + 4 + 4 = 16. The frog jumped 4 times.",
+    "d": "m"
+  },
+  {
+    "t": "Which repeated addition sentence equals 18?",
+    "o": ["2 + 2 + 2 + 2 + 2", "3 + 3 + 3 + 3 + 3 + 3", "6 + 6 + 6 + 6", "4 + 4 + 4 + 4"],
+    "a": 1,
+    "e": "3 + 3 + 3 + 3 + 3 + 3 = 18. The others equal 10, 24, and 16.",
+    "d": "m"
+  },
+  {
+    "t": "__ + __ + __ + __ + __ = 25 (all the same number). What is each number?",
+    "o": ["3", "4", "5", "6"],
+    "a": 2,
+    "e": "5 equal numbers adding to 25: 5 + 5 + 5 + 5 + 5 = 25. Each number is 5.",
+    "d": "m"
+  },
+  {
+    "t": "Ben counts by 3s: 3, 6, 9, 12. How many 3s did he add?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "He said four numbers: 3, 6, 9, 12. That means he added 3 four times: 3 + 3 + 3 + 3 = 12.",
+    "d": "m"
+  },
+  {
+    "t": "Is 4 + 4 + 4 the same as 3 + 3 + 3 + 3?",
+    "o": ["Yes, both equal 12", "No, the first is bigger", "No, the second is bigger", "Yes, both equal 9"],
+    "a": 0,
+    "e": "4 + 4 + 4 = 12 and 3 + 3 + 3 + 3 = 12. They are the same!",
+    "d": "m"
+  },
+  {
+    "t": "A caterpillar moves 2 inches each minute. Which shows how far it goes in 7 minutes?",
+    "o": ["2 + 7", "7 + 7", "2 + 2 + 2 + 2 + 2 + 2 + 2", "7 + 2 + 7"],
+    "a": 2,
+    "e": "7 minutes of 2 inches each = adding 2 seven times: 2+2+2+2+2+2+2 = 14 inches.",
+    "d": "m"
+  },
+  {
+    "t": "Which number sentence does NOT equal 20?",
+    "o": ["5 + 5 + 5 + 5", "4 + 4 + 4 + 4 + 4", "10 + 10", "2 + 2 + 2 + 2 + 2 + 2 + 2 + 2"],
+    "a": 3,
+    "e": "5x4=20, 4x5=20, 10x2=20 all equal 20. But 2+2+2+2+2+2+2+2 = 16, not 20.",
+    "d": "m"
+  },
+  {
+    "t": "Sam skip-counts by 5s and says: 5, 10, 15, 20, 25, 35. What number did Sam skip?",
+    "o": ["22", "28", "30", "32"],
+    "a": 2,
+    "e": "Counting by 5s: 5, 10, 15, 20, 25, 30, 35. Sam skipped 30.",
+    "d": "m"
+  },
+  {
+    "t": "Kira adds 3 + 3 + 3 + 3 and gets 9. Is she correct?",
+    "o": ["Yes, 9 is correct", "No, the answer is 12", "No, the answer is 15", "No, the answer is 6"],
+    "a": 1,
+    "e": "3 + 3 + 3 + 3 = 12. Kira added only 3 three times (getting 9) but there are four 3s.",
+    "d": "m"
+  },
+  {
+    "t": "6 + 6 + 6 = __ groups of __. Fill in both blanks.",
+    "o": ["3 groups of 6", "6 groups of 3", "2 groups of 9", "6 groups of 6"],
+    "a": 0,
+    "e": "6 appears 3 times, so this is 3 groups of 6 = 18.",
+    "d": "m"
+  },
+  {
+    "t": "A child takes 5 steps. Each step is the same length. She walked 20 feet total. How long is each step?",
+    "o": ["2 feet", "3 feet", "4 feet", "5 feet"],
+    "a": 2,
+    "e": "__ + __ + __ + __ + __ = 20 with 5 equal numbers. 4 + 4 + 4 + 4 + 4 = 20. Each step is 4 feet.",
+    "d": "m"
+  },
+  {
+    "t": "Which has the same value as 2 + 2 + 2 + 2 + 2 + 2?",
+    "o": ["4 + 4 + 4", "3 + 3 + 3 + 3", "6 + 6", "All of the above"],
+    "a": 3,
+    "e": "2+2+2+2+2+2 = 12. Also 4+4+4=12, 3+3+3+3=12, and 6+6=12. All equal 12!",
+    "d": "m"
+  },
+  {
+    "t": "You earn 10 points each round. After how many rounds will you have 40 points?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "10 + 10 + 10 + 10 = 40. It takes 4 rounds.",
+    "d": "m"
+  },
+  {
+    "t": "__ + __ + __ = 12 (all the same number). What is each number?",
+    "o": ["2", "3", "4", "6"],
+    "a": 2,
+    "e": "3 equal numbers that sum to 12: 4 + 4 + 4 = 12. Each number is 4.",
+    "d": "m"
+  },
+  {
+    "t": "Maya counts by 4s starting at 4. What is the 5th number she says?",
+    "o": ["16", "18", "20", "24"],
+    "a": 2,
+    "e": "Counting by 4s: 4, 8, 12, 16, 20. The 5th number is 20.",
+    "d": "m"
+  },
+  {
+    "t": "Leo says 5 + 5 + 5 + 5 = 4 groups of 5 = 25. What is Leo's mistake?",
+    "o": ["The groups are wrong", "The total should be 20, not 25", "It should be 5 groups of 4", "Leo is correct"],
+    "a": 1,
+    "e": "4 groups of 5 is correct, but 5+5+5+5 = 20, not 25. Leo added incorrectly.",
+    "d": "m"
+  },
+  {
+    "t": "A bird eats 3 worms each day. How many worms does it eat in 4 days?",
+    "o": ["7", "9", "12", "15"],
+    "a": 2,
+    "e": "3 + 3 + 3 + 3 = 12 worms in 4 days.",
+    "d": "m"
+  },
+  {
+    "t": "Which pair of repeated addition sentences gives the same total? A) 2+2+2+2+2 and 5+5  B) 3+3+3 and 4+4  C) 6+6 and 3+3+3+3",
+    "o": ["A only", "B only", "C only", "A and C"],
+    "a": 3,
+    "e": "A: 10 and 10 (match!). B: 9 and 8 (no match). C: 12 and 12 (match!). A and C both match.",
+    "d": "m"
+  },
+  {
+    "t": "__ + __ = 14 (both the same number). What is each number?",
+    "o": ["5", "6", "7", "8"],
+    "a": 2,
+    "e": "Two equal numbers that add to 14: 7 + 7 = 14. Each number is 7.",
+    "d": "m"
+  }
+]

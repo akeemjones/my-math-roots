@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A shape is split into 4 parts, but the parts are NOT equal. Can you write a fraction for the shaded part?",
+    "o": ["Yes, because there are 4 parts", "No, because the parts must be equal", "Yes, because part is shaded", "No, because there are too many parts"],
+    "a": 1,
+    "e": "Fractions only work when the parts are equal. If the parts are different sizes, we cannot write a fraction.",
+    "d": "h"
+  },
+  {
+    "t": "Which shows 1/4?",
+    "o": ["1 out of 3 equal parts shaded", "1 out of 4 equal parts shaded", "4 out of 1 part shaded", "4 out of 4 equal parts shaded"],
+    "a": 1,
+    "e": "1/4 means 1 out of 4 equal parts. The bottom number tells how many equal parts, and the top tells how many are shaded.",
+    "d": "e"
+  },
+  {
+    "t": "How many fourths make 1 whole?",
+    "o": ["2", "3", "4", "8"],
+    "a": 2,
+    "e": "It takes 4 fourths (4/4) to make 1 whole. Each fourth is one piece of the 4-piece whole.",
+    "d": "e"
+  },
+  {
+    "t": "How many eighths make 1 whole?",
+    "o": ["2", "4", "6", "8"],
+    "a": 3,
+    "e": "It takes 8 eighths (8/8) to make 1 whole. You need all 8 pieces to complete the whole.",
+    "d": "e"
+  },
+  {
+    "t": "A brownie is cut into 8 equal pieces. Maria eats 2 pieces. What fraction of the brownie is left?",
+    "o": ["2/8", "6/8", "8/2", "8/6"],
+    "a": 1,
+    "e": "Maria ate 2 of 8 pieces, so 8 - 2 = 6 pieces are left. That is 6/8 of the brownie.",
+    "d": "m"
+  },
+  {
+    "t": "A rectangle is divided into parts. 3 parts are big and 1 part is small. Can we say 1/4 is shaded if the small part is colored?",
+    "o": ["Yes, because there are 4 parts", "No, because the parts are not equal", "Yes, because 1 part is shaded", "No, because rectangles cannot show fractions"],
+    "a": 1,
+    "e": "We cannot write 1/4 because the parts are not equal. Fractions require equal-sized parts.",
+    "d": "h"
+  },
+  {
+    "t": "Leo shades 2/4 of a square. Mia shades 1/2 of the same size square. Who shaded more?",
+    "o": ["Leo shaded more", "Mia shaded more", "They shaded the same amount", "You cannot compare them"],
+    "a": 2,
+    "e": "2/4 and 1/2 are the same amount! If you shade 2 out of 4 equal parts, that is the same as 1 out of 2 equal parts.",
+    "d": "h"
+  },
+  {
+    "t": "A pizza has 8 equal slices. 4 slices have pepperoni. What fraction has pepperoni?",
+    "o": ["8/4", "4/4", "4/8", "1/4"],
+    "a": 2,
+    "e": "4 out of 8 equal slices have pepperoni. That is the fraction 4/8.",
+    "d": "e"
+  },
+  {
+    "t": "Which fraction is the same as 1 whole?",
+    "o": ["1/2", "2/4", "4/4", "3/4"],
+    "a": 2,
+    "e": "4/4 means all 4 parts out of 4 are counted. That is the whole thing, or 1 whole.",
+    "d": "e"
+  },
+  {
+    "t": "Jake says 3/4 means 4 out of 3 equal parts. Is Jake correct?",
+    "o": ["Yes, that is right", "No, it means 3 out of 4 equal parts", "No, it means 3 wholes and 4 parts", "Yes, the bigger number always goes on top"],
+    "a": 1,
+    "e": "3/4 means 3 out of 4 equal parts. The top number (3) is how many we count, and the bottom (4) is how many equal parts in all.",
+    "d": "h"
+  },
+  {
+    "t": "A granola bar is split into 4 equal parts. You eat some and 1/4 is left. How many parts did you eat?",
+    "o": ["1 part", "2 parts", "3 parts", "4 parts"],
+    "a": 2,
+    "e": "If 1/4 is left, that means 1 out of 4 parts remains. So you ate the other 3 parts.",
+    "d": "m"
+  },
+  {
+    "t": "A circle is split into 8 equal parts. How many parts do you need to shade to show 1/2?",
+    "o": ["1 part", "2 parts", "4 parts", "8 parts"],
+    "a": 2,
+    "e": "Half of 8 is 4, so you shade 4 out of 8 parts to show 1/2.",
+    "d": "h"
+  },
+  {
+    "t": "Amy has a ribbon cut into 8 equal pieces. She uses 5 pieces. What fraction did she NOT use?",
+    "o": ["5/8", "3/8", "8/5", "8/3"],
+    "a": 1,
+    "e": "She used 5 out of 8, so 8 - 5 = 3 pieces are not used. That is 3/8.",
+    "d": "m"
+  },
+  {
+    "t": "Which two fractions are equal to 1 whole?",
+    "o": ["1/2 and 2/4", "2/2 and 8/8", "1/4 and 1/8", "3/4 and 4/8"],
+    "a": 1,
+    "e": "2/2 = 1 whole and 8/8 = 1 whole. Whenever the top and bottom numbers are the same, it equals 1 whole.",
+    "d": "e"
+  },
+  {
+    "t": "There are 4 equal boxes. 2 are red and 2 are blue. What fraction is red?",
+    "o": ["2/2", "4/2", "2/4", "1/2"],
+    "a": 2,
+    "e": "2 out of 4 equal boxes are red. The fraction is 2/4.",
+    "d": "e"
+  },
+  {
+    "t": "Kai splits a cracker into 2 pieces, but one piece is much bigger than the other. He says each piece is 1/2. Is Kai correct?",
+    "o": ["Yes, because there are 2 pieces", "No, because the pieces are not equal", "Yes, because he split it in half", "No, because crackers cannot be fractions"],
+    "a": 1,
+    "e": "Kai is wrong. For each piece to be 1/2, the two pieces must be equal in size.",
+    "d": "h"
+  },
+  {
+    "t": "A shape is split into 8 equal parts. ___ out of 8 parts are shaded to show 7/8. What number fills the blank?",
+    "o": ["1", "7", "8", "6"],
+    "a": 1,
+    "e": "7/8 means 7 out of 8 equal parts. So the blank is 7.",
+    "d": "e"
+  },
+  {
+    "t": "A pancake is cut into 4 equal slices. You eat 1 slice. What fraction of the pancake is left?",
+    "o": ["1/4", "4/4", "3/4", "2/4"],
+    "a": 2,
+    "e": "You started with 4/4. After eating 1 slice, 4 - 1 = 3 slices remain. That is 3/4.",
+    "d": "m"
+  },
+  {
+    "t": "Sara says 0/4 means nothing is shaded. Is she correct?",
+    "o": ["Yes, 0 out of 4 parts means none are shaded", "No, 0/4 is not a real fraction", "No, it means all parts are shaded", "Yes, but only for circles"],
+    "a": 0,
+    "e": "Sara is correct! 0/4 means 0 parts out of 4 are shaded -- that is none at all.",
+    "d": "e"
+  },
+  {
+    "t": "A rectangle has ___ equal parts. 3 are shaded. The fraction is 3/4. How many equal parts does the rectangle have?",
+    "o": ["3", "4", "7", "8"],
+    "a": 1,
+    "e": "In 3/4, the bottom number is 4. That means the rectangle is split into 4 equal parts.",
+    "d": "e"
+  }
+]

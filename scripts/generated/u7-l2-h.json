@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Lunch starts at 11:30 AM and lasts 45 minutes. What time does lunch end?",
+    "o": ["12:00 PM", "12:15 PM", "11:45 AM", "12:45 PM"],
+    "a": 1,
+    "e": "11:30 + 30 min = 12:00. Then 12:00 + 15 min = 12:15 PM. Lunch ends at 12:15 PM!",
+    "d": "h"
+  },
+  {
+    "t": "It is 2:45 PM. What time will it be in 30 minutes?",
+    "o": ["3:45 PM", "3:15 PM", "2:75 PM", "3:00 PM"],
+    "a": 1,
+    "e": "2:45 + 15 min = 3:00, then 3:00 + 15 min = 3:15 PM. There is no such thing as 2:75!",
+    "d": "h"
+  },
+  {
+    "t": "Ben says the clock shows 12:60. What is wrong?",
+    "o": ["Nothing, that is correct", "There is no 60 minutes — it should be 1:00", "He should say 12:06", "The clock is broken"],
+    "a": 1,
+    "e": "A clock only goes up to 59 minutes. After 12:59 comes 1:00, not 12:60!",
+    "d": "h"
+  },
+  {
+    "t": "School starts at 8:00 AM. Ava arrives 15 minutes early. What time does Ava arrive?",
+    "o": ["8:15 AM", "7:45 AM", "7:15 AM", "8:45 AM"],
+    "a": 1,
+    "e": "15 minutes before 8:00 is 7:45 AM. Ava arrives at 7:45 AM!",
+    "d": "h"
+  },
+  {
+    "t": "A cartoon starts at 4:00 PM and ends at 4:30 PM. A movie starts at 5:00 PM and ends at 6:30 PM. Which is longer and by how much?",
+    "o": ["Cartoon, by 30 min", "Movie, by 1 hour", "Movie, by 30 min", "They are the same"],
+    "a": 1,
+    "e": "Cartoon = 30 min. Movie = 1 hour 30 min. The movie is 1 hour longer!",
+    "d": "h"
+  },
+  {
+    "t": "It is 9:15 AM. Music class is in 45 minutes. What time does music start?",
+    "o": ["10:00 AM", "9:45 AM", "10:15 AM", "9:60 AM"],
+    "a": 0,
+    "e": "9:15 + 45 min = 10:00 AM. Music class starts at 10:00 AM!",
+    "d": "h"
+  },
+  {
+    "t": "Maya says she woke up at 7:00 PM. Does that make sense for a school day?",
+    "o": ["Yes, that is normal", "No, she probably means 7:00 AM — PM is evening", "Yes, PM is morning", "No, 7:00 does not exist"],
+    "a": 1,
+    "e": "PM is evening/night. You wake up in the morning, which is AM. Maya meant 7:00 AM!",
+    "d": "h"
+  },
+  {
+    "t": "A bus leaves at 3:30 PM. The ride takes 45 minutes. What time does the bus arrive?",
+    "o": ["4:00 PM", "4:15 PM", "3:75 PM", "4:45 PM"],
+    "a": 1,
+    "e": "3:30 + 30 min = 4:00, then 4:00 + 15 min = 4:15 PM.",
+    "d": "h"
+  },
+  {
+    "t": "Sam's clock shows the short hand on 10 and the long hand on 9. What time is it?",
+    "o": ["9:50", "10:45", "9:10", "10:09"],
+    "a": 1,
+    "e": "Short hand on 10 = hour is 10. Long hand on 9 = 9 x 5 = 45 minutes. It is 10:45!",
+    "d": "h"
+  },
+  {
+    "t": "Li says it takes him 90 minutes to do homework. How many hours and minutes is that?",
+    "o": ["1 hour 30 minutes", "9 hours", "1 hour 90 minutes", "2 hours"],
+    "a": 0,
+    "e": "60 minutes = 1 hour. 90 - 60 = 30 minutes left. So 90 minutes = 1 hour 30 minutes!",
+    "d": "h"
+  },
+  {
+    "t": "Kim left home at 8:15 AM and got to school at 8:45 AM. How long was her trip?",
+    "o": ["15 minutes", "30 minutes", "45 minutes", "1 hour"],
+    "a": 1,
+    "e": "From 8:15 to 8:45 is 30 minutes.",
+    "d": "h"
+  },
+  {
+    "t": "Jada says her reading time is from 1:00 PM to 1:30 PM, which is 1 hour. What did Jada do wrong?",
+    "o": ["She is correct", "She confused 30 minutes with 1 hour", "She read the clock backward", "She forgot to count"],
+    "a": 1,
+    "e": "From 1:00 to 1:30 is only 30 minutes, not 1 hour. Jada mixed up minutes and hours!",
+    "d": "h"
+  },
+  {
+    "t": "It is 6:50 PM. What time will it be in 20 minutes?",
+    "o": ["6:70 PM", "7:10 PM", "7:00 PM", "7:20 PM"],
+    "a": 1,
+    "e": "6:50 + 10 min = 7:00. Then 7:00 + 10 min = 7:10 PM. There is no such thing as 6:70!",
+    "d": "h"
+  },
+  {
+    "t": "Nate watched TV from 5:00 PM to 5:30 PM, then read from 5:30 PM to 6:15 PM. How long in all?",
+    "o": ["45 minutes", "1 hour 15 minutes", "30 minutes", "1 hour 45 minutes"],
+    "a": 1,
+    "e": "TV = 30 min. Reading = 45 min. 30 + 45 = 75 min = 1 hour 15 minutes total!",
+    "d": "h"
+  },
+  {
+    "t": "The clock shows the short hand on 3 and the long hand on 9. What time is it?",
+    "o": ["9:15", "3:09", "3:45", "9:03"],
+    "a": 2,
+    "e": "Short hand on 3 = hour is 3. Long hand on 9 = 9 x 5 = 45 minutes. It is 3:45!",
+    "d": "h"
+  },
+  {
+    "t": "Luke says there are 100 minutes in an hour. Is he correct?",
+    "o": ["Yes, 100 minutes", "No, there are 60 minutes in an hour", "Yes, like 100 cents in a dollar", "No, there are 30 minutes"],
+    "a": 1,
+    "e": "There are 60 minutes in 1 hour, not 100. After 59 minutes, a new hour starts!",
+    "d": "h"
+  },
+  {
+    "t": "Soccer practice starts at 4:15 PM and lasts 1 hour and 15 minutes. What time does it end?",
+    "o": ["5:15 PM", "5:30 PM", "5:00 PM", "4:30 PM"],
+    "a": 1,
+    "e": "4:15 + 1 hour = 5:15. Then 5:15 + 15 min = 5:30 PM.",
+    "d": "h"
+  },
+  {
+    "t": "Emma's clock shows 11:55 AM. What time will it be in 10 minutes?",
+    "o": ["11:65 AM", "12:05 PM", "12:05 AM", "11:05 AM"],
+    "a": 1,
+    "e": "11:55 + 5 min = 12:00, then + 5 more = 12:05. And it changes from AM to PM at noon!",
+    "d": "h"
+  },
+  {
+    "t": "Owen started reading at 3:20 PM and stopped at 4:00 PM. How long did he read?",
+    "o": ["20 minutes", "40 minutes", "1 hour", "1 hour 20 minutes"],
+    "a": 1,
+    "e": "From 3:20 to 4:00. Count: 3:20 to 3:60 (which is 4:00) = 40 minutes.",
+    "d": "h"
+  },
+  {
+    "t": "Zara says recess ended at 10:90 AM. What should the correct time be?",
+    "o": ["10:90 AM is correct", "11:30 AM", "10:30 AM", "9:90 AM"],
+    "a": 1,
+    "e": "There is no :90 on a clock! 90 minutes = 1 hour 30 min. So 10:90 should be 11:30 AM.",
+    "d": "h"
+  }
+]

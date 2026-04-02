@@ -1,0 +1,362 @@
+[
+  {
+    "t": "What is 274 rounded to the nearest hundred?",
+    "o": [
+      "300",
+      "200",
+      "270",
+      "280"
+    ],
+    "a": 0,
+    "e": "Look at the tens digit. It is 7, which is 5 or more, so round UP to 300.",
+    "d": "e"
+  },
+  {
+    "t": "What is 435 rounded to the nearest ten?",
+    "o": [
+      "430",
+      "400",
+      "440",
+      "500"
+    ],
+    "a": 2,
+    "e": "Look at the ones digit. It is 5, which is 5 or more, so round UP to 440.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 312 + 489? (Round to the nearest hundred first.)",
+    "o": [
+      "800",
+      "700",
+      "900",
+      "600"
+    ],
+    "a": 0,
+    "e": "312 rounds to 300, and 489 rounds to 500. Then 300 + 500 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 765 rounded to the nearest hundred?",
+    "o": [
+      "700",
+      "760",
+      "800",
+      "770"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 6, which is 5 or more, so round UP to 800.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 638 − 192? (Round to the nearest hundred first.)",
+    "o": [
+      "300",
+      "500",
+      "400",
+      "600"
+    ],
+    "a": 2,
+    "e": "638 rounds to 600, and 192 rounds to 200. Then 600 − 200 = 400.",
+    "d": "h"
+  },
+  {
+    "t": "What is 523 rounded to the nearest hundred?",
+    "o": [
+      "400",
+      "520",
+      "500",
+      "530"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 2, which is less than 5, so round DOWN to 500.",
+    "d": "e"
+  },
+  {
+    "t": "What is 78 rounded to the nearest ten?",
+    "o": [
+      "80",
+      "70",
+      "75",
+      "79"
+    ],
+    "a": 0,
+    "e": "Look at the ones digit. It is 8, which is 5 or more, so round UP to 80.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 247 + 381? (Round to the nearest hundred first.)",
+    "o": [
+      "500",
+      "700",
+      "600",
+      "800"
+    ],
+    "a": 2,
+    "e": "247 rounds to 200, and 381 rounds to 400. Then 200 + 400 = 600.",
+    "d": "h"
+  },
+  {
+    "t": "What is 450 rounded to the nearest hundred?",
+    "o": [
+      "400",
+      "450",
+      "500",
+      "460"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 5, which is 5 or more, so round UP to 500.",
+    "d": "e"
+  },
+  {
+    "t": "What is 332 rounded to the nearest ten?",
+    "o": [
+      "330",
+      "340",
+      "300",
+      "400"
+    ],
+    "a": 0,
+    "e": "Look at the ones digit. It is 2, which is less than 5, so round DOWN to 330.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 589 − 213? (Round to the nearest hundred first.)",
+    "o": [
+      "400",
+      "300",
+      "500",
+      "600"
+    ],
+    "a": 0,
+    "e": "589 rounds to 600, and 213 rounds to 200. Then 600 − 200 = 400.",
+    "d": "h"
+  },
+  {
+    "t": "What is 650 rounded to the nearest hundred?",
+    "o": [
+      "600",
+      "650",
+      "700",
+      "660"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 5, which is 5 or more, so round UP to 700.",
+    "d": "e"
+  },
+  {
+    "t": "What is 843 rounded to the nearest ten?",
+    "o": [
+      "840",
+      "850",
+      "800",
+      "900"
+    ],
+    "a": 0,
+    "e": "Look at the ones digit. It is 3, which is less than 5, so round DOWN to 840.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 491 + 308? (Round to the nearest hundred first.)",
+    "o": [
+      "700",
+      "900",
+      "800",
+      "600"
+    ],
+    "a": 2,
+    "e": "491 rounds to 500, and 308 rounds to 300. Then 500 + 300 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 155 rounded to the nearest hundred?",
+    "o": [
+      "100",
+      "150",
+      "200",
+      "160"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 5, which is 5 or more, so round UP to 200.",
+    "d": "e"
+  },
+  {
+    "t": "What is 67 rounded to the nearest ten?",
+    "o": [
+      "60",
+      "65",
+      "68",
+      "70"
+    ],
+    "a": 3,
+    "e": "Look at the ones digit. It is 7, which is 5 or more, so round UP to 70.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 723 − 398? (Round to the nearest hundred first.)",
+    "o": [
+      "200",
+      "400",
+      "500",
+      "300"
+    ],
+    "a": 3,
+    "e": "723 rounds to 700, and 398 rounds to 400. Then 700 − 400 = 300.",
+    "d": "h"
+  },
+  {
+    "t": "What is 249 rounded to the nearest hundred?",
+    "o": [
+      "100",
+      "240",
+      "250",
+      "200"
+    ],
+    "a": 3,
+    "e": "Look at the tens digit. It is 4, which is less than 5, so round DOWN to 200.",
+    "d": "e"
+  },
+  {
+    "t": "What is 95 rounded to the nearest ten?",
+    "o": [
+      "90",
+      "94",
+      "96",
+      "100"
+    ],
+    "a": 3,
+    "e": "Look at the ones digit. It is 5, which is 5 or more, so round UP to 100.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 563 + 418? (Round to the nearest hundred first.)",
+    "o": [
+      "900",
+      "800",
+      "700",
+      "1000"
+    ],
+    "a": 3,
+    "e": "563 rounds to 600, and 418 rounds to 400. Then 600 + 400 = 1000.",
+    "d": "h"
+  },
+  {
+    "t": "What is the first step when making an estimate?",
+    "o": [
+      "Add the numbers",
+      "Round each number",
+      "Subtract",
+      "Guess"
+    ],
+    "a": 1,
+    "e": "Always round each number first, then add or subtract the rounded numbers to get your estimate.",
+    "d": "e"
+  },
+  {
+    "t": "What is 701 rounded to the nearest hundred?",
+    "o": [
+      "600",
+      "700",
+      "710",
+      "800"
+    ],
+    "a": 1,
+    "e": "Look at the tens digit. It is 0, which is less than 5, so round DOWN to 700.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 876 − 324? (Round to the nearest hundred first.)",
+    "o": [
+      "400",
+      "500",
+      "600",
+      "700"
+    ],
+    "a": 2,
+    "e": "876 rounds to 900, and 324 rounds to 300. Then 900 − 300 = 600.",
+    "d": "h"
+  },
+  {
+    "t": "What is 545 rounded to the nearest ten?",
+    "o": [
+      "540",
+      "550",
+      "500",
+      "600"
+    ],
+    "a": 1,
+    "e": "Look at the ones digit. It is 5, which is 5 or more, so round UP to 550.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 197 + 603? (Round to the nearest hundred first.)",
+    "o": [
+      "700",
+      "900",
+      "1000",
+      "800"
+    ],
+    "a": 3,
+    "e": "197 rounds to 200, and 603 rounds to 600. Then 200 + 600 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 382 rounded to the nearest hundred?",
+    "o": [
+      "300",
+      "400",
+      "380",
+      "390"
+    ],
+    "a": 1,
+    "e": "Look at the tens digit. It is 8, which is 5 or more, so round UP to 400.",
+    "d": "e"
+  },
+  {
+    "t": "What is 33 rounded to the nearest ten?",
+    "o": [
+      "30",
+      "40",
+      "33",
+      "35"
+    ],
+    "a": 0,
+    "e": "Look at the ones digit. It is 3, which is less than 5, so round DOWN to 30.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 724 − 283? (Round to the nearest hundred first.)",
+    "o": [
+      "400",
+      "500",
+      "600",
+      "700"
+    ],
+    "a": 0,
+    "e": "724 rounds to 700, and 283 rounds to 300. Then 700 − 300 = 400.",
+    "d": "h"
+  },
+  {
+    "t": "What is 850 rounded to the nearest hundred?",
+    "o": [
+      "800",
+      "900",
+      "850",
+      "860"
+    ],
+    "a": 1,
+    "e": "Look at the tens digit. It is 5, which is 5 or more, so round UP to 900.",
+    "d": "e"
+  },
+  {
+    "t": "How are estimates different from exact answers?",
+    "o": [
+      "more than",
+      "exactly",
+      "less than",
+      "close to but not"
+    ],
+    "a": 3,
+    "e": "Estimates are close to the real answer, but not exactly right. They are a smart guess!",
+    "d": "e"
+  }
+]

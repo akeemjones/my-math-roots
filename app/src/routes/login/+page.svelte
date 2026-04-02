@@ -4,11 +4,11 @@
   import { signInWithGoogle } from '$lib/services/auth';
   import { verifyStudentPin } from '$lib/services/auth';
   import { supabase } from '$lib/supabase';
-  import { familyProfiles, activeStudentId } from '$lib/stores';
+  import { familyProfiles, activeStudentId, guestMode } from '$lib/stores';
   import type { StudentProfile } from '$lib/types';
 
   // ── Carousel ────────────────────────────────────────────────────────────────
-  let activeCard = $state(1); // 0=student, 1=parent
+  let activeCard = $state(0); // 0=student (default, matches legacy), 1=parent
 
   // ── Student PIN ─────────────────────────────────────────────────────────────
   let selectedStudentId = $state<string | null>(null);
@@ -24,6 +24,27 @@
     selectedStudentId ? ($familyProfiles.find(p => p.id === selectedStudentId) ?? null) : null
   );
 
+  // ── Soft gate (guest consent modal) ─────────────────────────────────────────
+  let showSoftGate = $state(false);
+  let softGateConsent = $state(false);
+  let softGateError = $state('');
+
+  function openSoftGate() {
+    softGateConsent = false;
+    softGateError = '';
+    showSoftGate = true;
+  }
+
+  function proceedAsGuest() {
+    if (!softGateConsent) {
+      softGateError = 'Please confirm you are a parent or guardian.';
+      return;
+    }
+    showSoftGate = false;
+    guestMode.set(true);
+    goto('/');
+  }
+
   // ── Parent form ──────────────────────────────────────────────────────────────
   let tab = $state<'login' | 'signup'>('login');
   let email = $state('');
@@ -34,6 +55,8 @@
   let consentChecked = $state(false);
   let loading = $state(false);
   let errorMsg = $state('');
+  let turnstileToken = $state('');
+  let turnstileContainer = $state<HTMLDivElement | null>(null);
 
   const pwStrength = $derived.by(() => {
     if (tab !== 'signup' || !password) return 0;
@@ -50,6 +73,24 @@
     pwStrength <= 1 ? '#e74c3c' : pwStrength <= 2 ? '#f39c12' : pwStrength <= 3 ? '#f1c40f' : '#27ae60'
   );
 
+  // ── Turnstile ────────────────────────────────────────────────────────────────
+  function renderTurnstile() {
+    const ts = (window as any).turnstile;
+    if (!ts || !turnstileContainer) return;
+    ts.render(turnstileContainer, {
+      sitekey: '0x4AAAAAACvY03hPN2AAZUGO',
+      theme: 'auto',
+      callback: (token: string) => { turnstileToken = token; },
+      'expired-callback': () => { turnstileToken = ''; },
+    });
+  }
+
+  function resetTurnstile() {
+    turnstileToken = '';
+    const ts = (window as any).turnstile;
+    if (ts && turnstileContainer) ts.reset(turnstileContainer);
+  }
+
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   onMount(() => {
     const saved = localStorage.getItem('mmr_remember_email');
@@ -60,6 +101,18 @@
       const lastId = localStorage.getItem('mmr_last_student_id');
       selectedStudentId = lastId && $familyProfiles.find(p => p.id === lastId)
         ? lastId : $familyProfiles[0].id;
+    }
+
+    // Load Turnstile script (explicit render so we control the container)
+    if ((window as any).turnstile) {
+      renderTurnstile();
+    } else if (!document.querySelector('script[src*="turnstile"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.onload = renderTurnstile;
+      document.head.appendChild(script);
     }
   });
 
@@ -87,6 +140,7 @@
     if (error) { pinError = error; pinBuffer = []; return; }
     if (success) {
       localStorage.setItem('mmr_last_student_id', selectedStudentId);
+      guestMode.set(false);
       activeStudentId.set(selectedStudentId);
       goto('/', { replaceState: true });
     } else {
@@ -127,6 +181,7 @@
   // ── Parent auth ──────────────────────────────────────────────────────────────
   async function handleEmailAuth(e: SubmitEvent) {
     e.preventDefault();
+    if (!turnstileToken) { errorMsg = '⚠️ Please complete the security check above.'; return; }
     loading = true;
     errorMsg = '';
     if (rememberEmail) {
@@ -137,18 +192,23 @@
     if (tab === 'signup') {
       const { data, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { display_name: name.trim() || 'Parent' } },
+        options: { data: { display_name: name.trim() || 'Parent' }, captchaToken: turnstileToken },
       });
       loading = false;
       if (error) {
         errorMsg = error.message;
+        resetTurnstile();
       } else if (data.user && !data.session) {
         errorMsg = '✅ Check your email to confirm your account.';
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email, password,
+        options: { captchaToken: turnstileToken },
+      });
       loading = false;
-      if (error) errorMsg = error.message;
+      if (error) { errorMsg = error.message; resetTurnstile(); }
+      else { goto('/dashboard'); }
     }
   }
 
@@ -221,7 +281,13 @@
               maxlength="8"
               bind:value={familyCode}
               style="text-align:center;letter-spacing:.15em;text-transform:uppercase"
-              oninput={(e) => { familyCode = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9-]/g,''); }}
+              oninput={(e) => {
+                const inp = e.target as HTMLInputElement;
+                const raw = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                const formatted = raw.length > 3 ? raw.slice(0, 3) + '-' + raw.slice(3, 7) : raw;
+                familyCode = formatted;
+                inp.value = formatted;
+              }}
             />
             {#if familyCodeMsg}
               <div class="ls-fam-msg">{familyCodeMsg}</div>
@@ -411,6 +477,9 @@
             </div>
           {/if}
 
+          <!-- Cloudflare Turnstile CAPTCHA -->
+          <div class="ls-turnstile-wrap" bind:this={turnstileContainer}></div>
+
           {#if errorMsg}
             <div class="ls-msg" style="color:{errorMsg.startsWith('✅') ? '#27ae60' : '#e74c3c'}">{errorMsg}</div>
           {/if}
@@ -418,7 +487,7 @@
           <button
             type="submit"
             class="btn-primary"
-            disabled={loading || (tab === 'signup' && !consentChecked)}
+            disabled={loading || (tab === 'signup' && !consentChecked) || !turnstileToken}
           >
             {loading ? '…' : tab === 'login' ? 'Sign In' : 'Create Account'}
           </button>
@@ -435,12 +504,55 @@
     <button type="button" class="ls-dot {activeCard === 1 ? 'active' : ''}" onclick={() => activeCard = 1} aria-label="Parent / Teacher login"></button>
   </div>
 
-  <!-- Guest link -->
-  <button type="button" class="ls-guest-btn" onclick={() => activeCard = 1}>
-    Parent / Teacher sign in →
+  <!-- Guest link — only shown on Student card, matches legacy -->
+  {#if activeCard === 0}
+  <button type="button" class="ls-guest-btn" onclick={openSoftGate}>
+    Continue without an account →
   </button>
+  {/if}
 
 </main>
+
+<!-- Soft gate consent modal -->
+{#if showSoftGate}
+<div class="sg-overlay" role="dialog" aria-modal="true" aria-label="Welcome" onclick={() => showSoftGate = false}>
+  <div class="sg-card" onclick={(e) => e.stopPropagation()}>
+    <div class="sg-header">
+      <div class="sg-wave">👋</div>
+      <div class="sg-title">Welcome to My Math Roots!</div>
+      <div class="sg-sub">This app is designed for K–5 students.<br>A quick note for parents before you begin.</div>
+    </div>
+
+    <div class="sg-consent-wrap">
+      <label class="sg-consent-label {softGateError ? 'sg-consent-error' : ''}">
+        <input
+          type="checkbox"
+          bind:checked={softGateConsent}
+          onchange={() => { if (softGateConsent) softGateError = ''; }}
+          style="margin-top:2px;flex-shrink:0;width:17px;height:17px;cursor:pointer;accent-color:#ff6b00"
+        />
+        <span>I am a parent or guardian of the child using this app</span>
+      </label>
+      <div class="sg-legal">
+        By continuing, you agree to our
+        <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+        and <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>.
+      </div>
+    </div>
+
+    {#if softGateError}
+      <div class="sg-msg">{softGateError}</div>
+    {/if}
+
+    <button type="button" class="sg-continue-btn" onclick={proceedAsGuest}>
+      Continue as Guest →
+    </button>
+    <button type="button" class="sg-account-btn" onclick={() => { showSoftGate = false; activeCard = 1; }}>
+      Create a Free Account
+    </button>
+  </div>
+</div>
+{/if}
 
 <style>
   .screen {
@@ -570,6 +682,7 @@
     padding: 0; text-decoration: underline; -webkit-tap-highlight-color: transparent;
   }
   .ls-consent-row { margin-bottom: 10px; }
+  .ls-turnstile-wrap { display: flex; justify-content: center; margin-bottom: 10px; }
   .ls-consent-label {
     display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
     font-size: var(--fs-sm); color: rgba(255,255,255,.8); line-height: 1.45;
@@ -602,5 +715,58 @@
   @keyframes bob {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
+  }
+
+  /* ── Soft gate modal ── */
+  .sg-overlay {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .sg-card {
+    width: 100%; max-width: 360px; border-radius: 24px;
+    padding: 28px 24px 22px;
+    background: linear-gradient(145deg,rgba(255,255,255,0.95) 0%,rgba(240,248,255,0.88) 100%);
+    box-shadow: 0 8px 40px rgba(60,120,200,0.18), 0 2px 12px rgba(0,0,0,0.08), inset 0 1.5px 0 rgba(255,255,255,0.98);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .sg-header { text-align: center; margin-bottom: 22px; }
+  .sg-wave { font-size: 2.2rem; margin-bottom: 8px; }
+  .sg-title {
+    font-family: 'Boogaloo','Arial Rounded MT Bold',sans-serif;
+    font-size: var(--fs-lg); color: var(--txt, #222); line-height: 1.2;
+  }
+  .sg-sub { font-size: var(--fs-sm); color: var(--txt2, #666); margin-top: 8px; line-height: 1.55; }
+  .sg-consent-wrap { margin-bottom: 18px; }
+  .sg-consent-label {
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+    font-size: var(--fs-sm); color: var(--txt, #222); line-height: 1.45;
+    padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid rgba(120,160,220,0.3);
+    background: rgba(255,255,255,0.55);
+    transition: border-color .15s;
+  }
+  .sg-consent-label.sg-consent-error { border-color: #e74c3c; }
+  .sg-legal {
+    margin-top: 8px; font-size: var(--fs-xs); color: var(--txt2, #888);
+    text-align: center; line-height: 1.5;
+  }
+  .sg-legal a { color: #3b82f6; text-decoration: underline; }
+  .sg-msg { font-size: var(--fs-sm); color: #e74c3c; text-align: center; min-height: 1.2rem; margin-bottom: 8px; }
+  .sg-continue-btn {
+    width: 100%; padding: 13px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #ff6b00, #e05200); color: #fff;
+    font-family: 'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size: var(--fs-md);
+    cursor: pointer; margin-bottom: 10px; letter-spacing: .3px; touch-action: manipulation;
+  }
+  .sg-account-btn {
+    width: 100%; padding: 12px; border-radius: 14px;
+    border: 2px solid #4a90d9; background: transparent; color: #4a90d9;
+    font-family: 'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size: var(--fs-base);
+    cursor: pointer; touch-action: manipulation;
   }
 </style>

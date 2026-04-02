@@ -6,10 +6,7 @@
 /**
  * Per-question mastery entry.
  * Keys in the MasteryMap are a base-36 hash of the question text.
- *
- * NOTE: The vanilla JS app stores this as { q, c, w } (short keys).
- * These interfaces use descriptive names; a compatibility layer
- * will be added in Phase 3 when we read from localStorage.
+ * Format is identical in both legacy and SvelteKit builds.
  */
 export interface MasteryEntry {
   /** Total times this question has been seen (was 'q' in vanilla). */

@@ -1,0 +1,398 @@
+[
+  {
+    "t": "How many sides does a hexagon have?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 2,
+    "e": "Hexagon=6 sides.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has no sides and no corners at all?",
+    "o": [
+      "Triangle",
+      "Square",
+      "Circle",
+      "Pentagon"
+    ],
+    "a": 2,
+    "e": "Circle has no sides.",
+    "d": "e"
+  },
+  {
+    "t": "A shape has 3 sides and 3 corners. What shape is it?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,49.5 9.9,49.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Square",
+      "Triangle",
+      "Rectangle",
+      "Pentagon"
+    ],
+    "a": 1,
+    "e": "Triangle=3 sides.",
+    "d": "e"
+  },
+  {
+    "t": "How many sides does a pentagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 62.6,26.0 52.0,58.5 18.0,58.5 7.4,26.0\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 1,
+    "e": "Pentagon=5 sides.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has all 4 sides the same length?",
+    "o": [
+      "Rectangle",
+      "Rhombus",
+      "Square",
+      "Trapezoid"
+    ],
+    "a": 2,
+    "e": "Square has 4 equal sides.",
+    "d": "m"
+  },
+  {
+    "t": "Square and rectangle both have how many sides?",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 1,
+    "e": "Both have 4 sides.",
+    "d": "e"
+  },
+  {
+    "t": "What is the name of a shape that has 8 sides?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 55.5,14.5 64.0,35.0 55.5,55.5 35.0,64.0 14.5,55.5 6.0,35.0 14.5,14.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Hexagon",
+      "Heptagon",
+      "Octagon",
+      "Nonagon"
+    ],
+    "a": 2,
+    "e": "Octagon=8 sides.",
+    "d": "m"
+  },
+  {
+    "t": "How many corners does a triangle have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,49.5 9.9,49.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 1,
+    "e": "3 corners=3 vertices.",
+    "d": "e"
+  },
+  {
+    "t": "What is the difference between a square and a rectangle?",
+    "o": [
+      "Fewer sides",
+      "All 4 equal",
+      "More corners",
+      "No corners"
+    ],
+    "a": 1,
+    "e": "Square=all 4 equal. Rectangle=2 pairs.",
+    "d": "m"
+  },
+  {
+    "t": "What shape has exactly 6 sides and 6 corners?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,20.5 60.1,49.5 35.0,64.0 9.9,49.5 9.9,20.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Pentagon",
+      "Hexagon",
+      "Heptagon",
+      "Octagon"
+    ],
+    "a": 1,
+    "e": "Hexagon.",
+    "d": "e"
+  },
+  {
+    "t": "How many vertices does a triangle have?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 1,
+    "e": "3 vertices.",
+    "d": "e"
+  },
+  {
+    "t": "Which is a quadrilateral?",
+    "o": [
+      "Triangle",
+      "Pentagon",
+      "Square",
+      "Hexagon"
+    ],
+    "a": 2,
+    "e": "Square has 4 sides=quadrilateral.",
+    "d": "m"
+  },
+  {
+    "t": "Rectangle has how many right angles?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "All 4 corners of a rectangle are right angles.",
+    "d": "m"
+  },
+  {
+    "t": "Which shape has 5 sides and 5 corners?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 62.6,26.0 52.0,58.5 18.0,58.5 7.4,26.0\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "Pentagon",
+      "Hexagon",
+      "Square",
+      "Octagon"
+    ],
+    "a": 0,
+    "e": "Pentagon.",
+    "d": "e"
+  },
+  {
+    "t": "Which shape has no corners?",
+    "o": [
+      "Square",
+      "Circle",
+      "Triangle",
+      "Pentagon"
+    ],
+    "a": 1,
+    "e": "Circle has no corners.",
+    "d": "e"
+  },
+  {
+    "t": "Rhombus has how many sides?",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 1,
+    "e": "4 sides.",
+    "d": "m"
+  },
+  {
+    "t": "Which shapes have 4 sides?",
+    "o": [
+      "Square and circle",
+      "Triangle and square",
+      "Square and rectangle",
+      "Circle and triangle"
+    ],
+    "a": 2,
+    "e": "Square and rectangle both have 4 sides.",
+    "d": "m"
+  },
+  {
+    "t": "Which shape has 4 sides and all 4 angles are equal right angles?",
+    "o": [
+      "Rhombus",
+      "Rectangle",
+      "Pentagon",
+      "Trapezoid"
+    ],
+    "a": 1,
+    "e": "Rectangle has 4 right angles.",
+    "d": "m"
+  },
+  {
+    "t": "How many corners does a hexagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 60.1,20.5 60.1,49.5 35.0,64.0 9.9,49.5 9.9,20.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 2,
+    "e": "Hexagon=6 corners.",
+    "d": "e"
+  },
+  {
+    "t": "Which of the following shapes is a polygon? Polygons have only straight sides.",
+    "o": [
+      "Circle",
+      "Oval",
+      "Triangle",
+      "Sphere"
+    ],
+    "a": 2,
+    "e": "Triangle has straight sides.",
+    "d": "m"
+  },
+  {
+    "t": "How many sides does an octagon have?<svg width=\"70\" height=\"70\" viewBox=\"0 0 70 70\" style=\"display:inline-block;vertical-align:middle;margin:0 5px\"><polygon points=\"35.0,6.0 55.5,14.5 64.0,35.0 55.5,55.5 35.0,64.0 14.5,55.5 6.0,35.0 14.5,14.5\" fill=\"#e8d5f5\" stroke=\"#6c3483\" stroke-width=\"2.5\"/></svg>",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "Octagon=8.",
+    "d": "e"
+  },
+  {
+    "t": "A square has 4 sides and a triangle has 3 sides. How many sides do they have altogether?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 1,
+    "e": "4+3=7.",
+    "d": "h"
+  },
+  {
+    "t": "What is the name for a polygon that has exactly 3 sides?",
+    "o": [
+      "Quadrilateral",
+      "Pentagon",
+      "Triangle",
+      "Hexagon"
+    ],
+    "a": 2,
+    "e": "Triangle.",
+    "d": "m"
+  },
+  {
+    "t": "A pentagon has 5 corners and a hexagon has 6 corners. How many corners do they have altogether?",
+    "o": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "a": 2,
+    "e": "5+6=11.",
+    "d": "h"
+  },
+  {
+    "t": "Which has more sides: hexagon or octagon?",
+    "o": [
+      "A hexagon",
+      "An octagon",
+      "They are equal",
+      "Neither"
+    ],
+    "a": 1,
+    "e": "Octagon has 8>6.",
+    "d": "m"
+  },
+  {
+    "t": "A square is a special type of which shape?",
+    "o": [
+      "Triangle",
+      "Circle",
+      "Rectangle",
+      "Pentagon"
+    ],
+    "a": 2,
+    "e": "A square is a special rectangle with all equal sides.",
+    "d": "h"
+  },
+  {
+    "t": "Which shape has 4 sides but the sides are not all the same length?",
+    "o": [
+      "Square",
+      "Rectangle",
+      "Rhombus",
+      "Circle"
+    ],
+    "a": 1,
+    "e": "Rectangle has 2 long + 2 short sides.",
+    "d": "h"
+  },
+  {
+    "t": "A hexagon has 6 sides and a pentagon has 5 sides. How many sides do they have altogether?",
+    "o": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "a": 2,
+    "e": "6+5=11.",
+    "d": "h"
+  },
+  {
+    "t": "A polygon always has which of the following features?",
+    "o": [
+      "Curves",
+      "Straight sides",
+      "Circles inside",
+      "No sides"
+    ],
+    "a": 1,
+    "e": "Polygons have straight sides.",
+    "d": "m"
+  },
+  {
+    "t": "Which quadrilateral has exactly one pair of parallel sides?",
+    "o": [
+      "Square",
+      "Rectangle",
+      "Trapezoid",
+      "Rhombus"
+    ],
+    "a": 2,
+    "e": "Trapezoid has 1 pair of parallel sides.",
+    "d": "h"
+  },
+  {
+    "t": "A triangle has 3 sides. A pentagon has 5 sides. How many sides altogether?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "3 + 5 = 8 sides altogether.",
+    "d": "h"
+  },
+  {
+    "t": "A rectangle has sides of 5 in and 3 in. What is the distance all the way around?",
+    "o": [
+      "8 in",
+      "15 in",
+      "16 in",
+      "20 in"
+    ],
+    "a": 2,
+    "e": "5 + 3 + 5 + 3 = 16 inches all the way around.",
+    "d": "h"
+  },
+  {
+    "t": "A square has 4 vertices. A triangle has 3 vertices. How many vertices in all?",
+    "o": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "a": 2,
+    "e": "4 + 3 = 7 vertices total.",
+    "d": "h"
+  }
+]

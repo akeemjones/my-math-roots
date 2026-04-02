@@ -1,0 +1,142 @@
+[
+  {
+    "t": "Which is greater: 47 or 74?",
+    "o": ["47", "74", "They are equal", "You cannot tell"],
+    "a": 1,
+    "e": "Compare the tens first. 74 has 7 tens and 47 has 4 tens. Since 7 > 4, we know 74 > 47.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 385 ___ 583",
+    "o": [">", "<", "=", "+"],
+    "a": 1,
+    "e": "Compare hundreds first. 385 has 3 hundreds, 583 has 5 hundreds. 3 < 5, so 385 < 583.",
+    "d": "e"
+  },
+  {
+    "t": "Which number is the smallest: 216, 621, 162?",
+    "o": ["216", "621", "162", "They are all equal"],
+    "a": 2,
+    "e": "Compare hundreds: 162 has 1 hundred, 216 has 2, 621 has 6. 1 is the smallest, so 162 is the smallest number.",
+    "d": "e"
+  },
+  {
+    "t": "Is 500 greater than, less than, or equal to 499?",
+    "o": ["Greater than", "Less than", "Equal to", "You cannot tell"],
+    "a": 0,
+    "e": "500 has 5 hundreds and 499 has 4 hundreds. Since 5 > 4, we know 500 > 499.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 250 ___ 250",
+    "o": [">", "<", "=", "None"],
+    "a": 2,
+    "e": "Both numbers are exactly the same: 250 = 250. Use the equal sign.",
+    "d": "e"
+  },
+  {
+    "t": "Which is greater: 892 or 829?",
+    "o": ["892", "829", "They are equal", "You cannot tell"],
+    "a": 0,
+    "e": "Both have 8 hundreds. Compare tens: 892 has 9 tens, 829 has 2 tens. Since 9 > 2, 892 > 829.",
+    "d": "e"
+  },
+  {
+    "t": "Put in order from least to greatest: 100, 10, 1",
+    "o": ["100, 10, 1", "1, 10, 100", "10, 1, 100", "1, 100, 10"],
+    "a": 1,
+    "e": "From least to greatest: 1 is the smallest, then 10, then 100. Answer: 1, 10, 100.",
+    "d": "m"
+  },
+  {
+    "t": "Which number is the greatest: 345, 354, 435?",
+    "o": ["345", "354", "435", "They are all equal"],
+    "a": 2,
+    "e": "Compare hundreds first. 435 has 4 hundreds, while 345 and 354 only have 3 hundreds. 435 is the greatest.",
+    "d": "m"
+  },
+  {
+    "t": "Which symbol goes in the blank? 607 ___ 670",
+    "o": [">", "<", "=", "+"],
+    "a": 1,
+    "e": "Both have 6 hundreds. 607 has 0 tens, 670 has 7 tens. 0 < 7, so 607 < 670.",
+    "d": "e"
+  },
+  {
+    "t": "Is 1,000 greater than 999?",
+    "o": ["Yes", "No", "They are equal", "You cannot compare them"],
+    "a": 0,
+    "e": "1,000 has 4 digits and 999 has 3 digits. A 4-digit number is always greater than a 3-digit number. 1,000 > 999.",
+    "d": "e"
+  },
+  {
+    "t": "Which number is less: 418 or 481?",
+    "o": ["418", "481", "They are equal", "You cannot tell"],
+    "a": 0,
+    "e": "Both have 4 hundreds. Compare tens: 418 has 1 ten, 481 has 8 tens. 1 < 8, so 418 < 481.",
+    "d": "e"
+  },
+  {
+    "t": "Sara has 312 stickers. Tom has 321 stickers. Who has more?",
+    "o": ["Sara", "Tom", "They have the same", "You cannot tell"],
+    "a": 1,
+    "e": "Both have 3 hundreds. Compare tens: 312 has 1 ten, 321 has 2 tens. 2 > 1, so Tom has more.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 755 ___ 575",
+    "o": [">", "<", "=", "+"],
+    "a": 0,
+    "e": "Compare hundreds: 755 has 7 hundreds, 575 has 5 hundreds. 7 > 5, so 755 > 575.",
+    "d": "e"
+  },
+  {
+    "t": "Which is the greatest number: 199, 200, 188?",
+    "o": ["199", "200", "188", "They are all equal"],
+    "a": 1,
+    "e": "200 has 2 hundreds while 199 and 188 only have 1 hundred. 200 is the greatest.",
+    "d": "m"
+  },
+  {
+    "t": "Is 340 greater than or less than 304?",
+    "o": ["Greater than", "Less than", "Equal to", "You cannot tell"],
+    "a": 0,
+    "e": "Both have 3 hundreds. Compare tens: 340 has 4 tens, 304 has 0 tens. 4 > 0, so 340 > 304.",
+    "d": "e"
+  },
+  {
+    "t": "Which number comes just BEFORE 600?",
+    "o": ["601", "599", "500", "610"],
+    "a": 1,
+    "e": "The number just before 600 is 599. Count: ...598, 599, 600.",
+    "d": "e"
+  },
+  {
+    "t": "Which number comes just AFTER 999?",
+    "o": ["998", "1,000", "990", "9,910"],
+    "a": 1,
+    "e": "The number just after 999 is 1,000. This is where we go from a 3-digit number to a 4-digit number!",
+    "d": "e"
+  },
+  {
+    "t": "Leo picked a number between 450 and 460. Which could it be?",
+    "o": ["449", "455", "461", "445"],
+    "a": 1,
+    "e": "Between 450 and 460 means numbers like 451, 452... 459. 455 fits!",
+    "d": "e"
+  },
+  {
+    "t": "Which is less: 1,100 or 1,010?",
+    "o": ["1,100", "1,010", "They are equal", "You cannot tell"],
+    "a": 1,
+    "e": "Both have 1 thousand. Compare hundreds: 1,100 has 1 hundred, 1,010 has 0 hundreds. 0 < 1, so 1,010 < 1,100.",
+    "d": "e"
+  },
+  {
+    "t": "Which symbol goes in the blank? 900 ___ 900",
+    "o": [">", "<", "=", "+"],
+    "a": 2,
+    "e": "Both numbers are 900. They are exactly equal, so we use =.",
+    "d": "e"
+  }
+]

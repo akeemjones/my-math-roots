@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A bar graph shows: Apples=8, Bananas=5, Grapes=7. How many students voted in all? If there are 25 students in the class, how many did NOT vote?",
+    "o": ["20 voted, 5 did not", "18 voted, 7 did not", "20 voted, 7 did not", "15 voted, 10 did not"],
+    "a": 0,
+    "e": "8 + 5 + 7 = 20 voted. 25 - 20 = 5 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A graph shows: Dogs=9, Cats=6, Fish=3. If 2 more kids pick fish, how many would fish have? Would it be more or less than cats?",
+    "o": ["5, less than cats", "5, more than cats", "8, more than cats", "5, same as cats"],
+    "a": 0,
+    "e": "Fish has 3 + 2 = 5. Cats has 6. 5 is less than 6, so fish is still less than cats.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 votes. Soccer has 4 stars and Baseball has 2 stars. Kai says the difference is 2 votes. What mistake did Kai make?",
+    "o": ["He subtracted stars (4-2=2) instead of actual votes (20-10=10)", "He added instead of subtracted", "He is correct", "He read the wrong rows"],
+    "a": 0,
+    "e": "Soccer = 20, Baseball = 10. Difference = 10 votes. Kai subtracted the star counts instead of the real vote totals.",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Red=4, Blue=7, Green=9. How many voted for red and blue together? Is it more or less than green?",
+    "o": ["11, more than green", "11, less than green", "13, more than green", "10, more than green"],
+    "a": 0,
+    "e": "Red + Blue = 4 + 7 = 11. Green = 9. 11 is more than 9!",
+    "d": "h"
+  },
+  {
+    "t": "A tally chart shows: Chocolate IIII IIII I, Vanilla IIII III, Strawberry IIII. The class has 28 students. How many students did NOT vote?",
+    "o": ["3", "4", "5", "6"],
+    "a": 2,
+    "e": "Chocolate: IIII IIII I = 5+5+1 = 11. Vanilla = 8, Strawberry = 4. Total = 11+8+4 = 23. 28 - 23 = 5 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A graph shows: Bikes=7, Scooters=4, Skateboards=9. If 3 kids change from skateboards to bikes, what would the new totals be for each?",
+    "o": ["Bikes=10, Scooters=4, Skateboards=6", "Bikes=4, Scooters=4, Skateboards=12", "Bikes=10, Scooters=7, Skateboards=6", "Bikes=7, Scooters=7, Skateboards=6"],
+    "a": 0,
+    "e": "Bikes gains 3: 7+3=10. Skateboards loses 3: 9-3=6. Scooters stays at 4.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 kids. Art has 5 stars, Music has 4 stars, PE has 6 stars. Which two subjects together have the same total as PE?",
+    "o": ["Art and Music together do NOT equal PE", "Art and Music together equal PE", "Music and PE equal Art", "None of them match"],
+    "a": 0,
+    "e": "Art=10, Music=8, PE=12. Art+Music=18. That is NOT equal to PE (12). So no pair equals PE alone.",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Lions=6, Bears=8, Eagles=4. Sophie says bears got twice as many votes as eagles. Jake says bears got 2 more than lions. Who is right?",
+    "o": ["Only Sophie", "Only Jake", "Both are right", "Neither is right"],
+    "a": 2,
+    "e": "Sophie: double of 4 is 8. Bears = 8. Correct! Jake: 8 - 6 = 2. Bears has 2 more than lions. Correct! Both are right.",
+    "d": "h"
+  },
+  {
+    "t": "The data shows: Sunny=9, Rainy=2, Snowy=4, Cloudy=5. How many students voted in all? How many more sunny than rainy days?",
+    "o": ["20 total, 7 more sunny", "20 total, 11 more sunny", "18 total, 7 more sunny", "16 total, 7 more sunny"],
+    "a": 0,
+    "e": "Total: 9+2+4+5=20. Sunny - Rainy = 9-2=7 more sunny days.",
+    "d": "h"
+  },
+  {
+    "t": "A tally chart shows: Carrots III, Corn IIII II, Peas IIII, Beans ???. There were 20 votes total. How many voted for beans?",
+    "o": ["4", "5", "6", "7"],
+    "a": 2,
+    "e": "Carrots=3, Corn=7, Peas=4. Total so far=14. 20-14=6 voted for beans.",
+    "d": "h"
+  },
+  {
+    "t": "A graph shows: Math=7, Reading=10, Art=8. Noah says reading and art together equal 16. He then says that is double math. What should Noah check?",
+    "o": ["16 is not double 7 (double 7 is 14)", "Noah added wrong", "16 is actually double 8", "Noah is completely correct"],
+    "a": 0,
+    "e": "Reading + Art = 10 + 8 = 18, not 16. Noah added wrong. And double of 7 is 14, not 16 or 18.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Spring has 3 stars, Summer has 7 stars, Fall has 5 stars, Winter has 2 stars. Which season got the most votes and how many?",
+    "o": ["Summer with 14 votes", "Summer with 7 votes", "Fall with 10 votes", "Spring with 6 votes"],
+    "a": 0,
+    "e": "Summer = 7 x 2 = 14 votes. That is the most. (Spring=6, Fall=10, Winter=4.)",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Trucks=5, Cars=12, Trains=3. How many fewer voted for trains than cars? If 4 more kids vote for trains, would trains pass trucks?",
+    "o": ["9 fewer; yes, trains would have 7", "9 fewer; no, trains would have 7", "7 fewer; yes, trains would pass", "9 fewer; no, trains stays at 3"],
+    "a": 0,
+    "e": "12-3=9 fewer. Trains + 4 = 7. Trucks = 5. 7 > 5, so yes, trains would pass trucks.",
+    "d": "h"
+  },
+  {
+    "t": "A graph shows: Swings=8, Slide=6, Sandbox=4. If each category gets 2 more votes, would swings still have the most?",
+    "o": ["Yes, Swings=10, Slide=8, Sandbox=6", "No, they would all be tied", "No, Slide would have the most", "Yes, but Slide would tie with Swings"],
+    "a": 0,
+    "e": "Swings: 8+2=10. Slide: 6+2=8. Sandbox: 4+2=6. Swings still has the most.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 kids. Cats has 3 stars, Dogs has 4 stars, Birds has 1 star. Ella says there were 35 votes total. Is Ella right?",
+    "o": ["No, the total is 40", "Yes, 35 is correct", "No, the total is 30", "No, the total is 45"],
+    "a": 0,
+    "e": "Cats=15, Dogs=20, Birds=5. Total=15+20+5=40. Ella said 35, which is wrong. The total is 40.",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Camping=5, Hiking=8, Fishing=7. Which two activities together have the same total as hiking plus fishing?",
+    "o": ["There is no pair that equals 15", "Camping and Hiking equal 15 but that uses hiking", "Camping and Fishing = 12, not 15", "Camping and Hiking both used"],
+    "a": 0,
+    "e": "Hiking+Fishing=15. The only other activity is camping (5). No pair of the three that doesn't include hiking or fishing equals 15. There is no such pair.",
+    "d": "h"
+  },
+  {
+    "t": "A tally chart shows: Milk IIII I, Juice IIII IIII II, Water IIII. Maria says juice got exactly double the votes of water. Is she correct?",
+    "o": ["No, juice has 12 and double of 4 is 8", "Yes, juice is double water", "No, juice has 10 and double of 4 is 8", "No, juice has 12 and double of 4 is 12... wait, she is correct"],
+    "a": 0,
+    "e": "Juice = 5+5+2 = 12. Water = 4. Double of 4 is 8, not 12. So juice is NOT double water. Maria is incorrect. (Juice is actually triple water: 4 x 3 = 12.)",
+    "d": "h"
+  },
+  {
+    "t": "A graph shows: Red=8, Blue=5, Yellow=7, Green=10. Put them in order from most to fewest votes.",
+    "o": ["Blue, Yellow, Red, Green", "Green, Red, Yellow, Blue", "Green, Yellow, Red, Blue", "Red, Green, Yellow, Blue"],
+    "a": 1,
+    "e": "Green=10, Red=8, Yellow=7, Blue=5. From most to fewest: Green, Red, Yellow, Blue.",
+    "d": "h"
+  },
+  {
+    "t": "Two classes collected data on favorite animals. Class A: Dogs=12, Cats=8. Class B: Dogs=7, Cats=11. Which class had more students vote, and by how much?",
+    "o": ["Class A by 2", "Class B by 2", "They are the same", "Class A by 4"],
+    "a": 0,
+    "e": "Class A total: 12+8=20. Class B total: 7+11=18. Class A had 2 more students.",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 students. Crayons has 6 stars, Markers has 4 stars, Pencils has ???. There are 26 students total. How many stars should the pencils row have?",
+    "o": ["2 stars", "3 stars", "4 stars", "5 stars"],
+    "a": 1,
+    "e": "Crayons = 12, Markers = 8. Total so far = 20. 26-20=6 students for pencils. 6/2 = 3 stars.",
+    "d": "h"
+  }
+]

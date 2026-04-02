@@ -1,0 +1,142 @@
+[
+  {
+    "t": "4 + 4 + 4 + 4 + 4 is the same as __ groups of 4. What number goes in the blank?",
+    "o": ["3", "4", "5", "20"],
+    "a": 2,
+    "e": "There are five 4s being added, so that is 5 groups of 4 = 20.",
+    "d": "m"
+  },
+  {
+    "t": "Which shows 4 groups of 3?",
+    "o": ["4 + 3", "3 + 3 + 3 + 3", "4 + 4 + 4", "3 + 4 + 3 + 4"],
+    "a": 1,
+    "e": "4 groups of 3 means 3 is added 4 times: 3 + 3 + 3 + 3 = 12.",
+    "d": "m"
+  },
+  {
+    "t": "18 apples are put in bags with 6 in each bag. How many bags are there?",
+    "o": ["2", "3", "4", "6"],
+    "a": 1,
+    "e": "6 + 6 + 6 = 18. You need 3 groups of 6, so there are 3 bags.",
+    "d": "m"
+  },
+  {
+    "t": "Is 3 + 3 + 3 + 3 the same as 4 + 4 + 4?",
+    "o": ["Yes, both equal 12", "No, the first is bigger", "No, the second is bigger", "Yes, both equal 9"],
+    "a": 0,
+    "e": "3+3+3+3 = 12 and 4+4+4 = 12. They are the same!",
+    "d": "m"
+  },
+  {
+    "t": "__ + __ + __ + __ + __ = 20 (all the same number). What is each number?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "5 equal numbers that add to 20: 4+4+4+4+4 = 20. Each number is 4.",
+    "d": "m"
+  },
+  {
+    "t": "A store has 16 balls. Each bin holds 4 balls. How many bins are needed?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "4+4+4+4 = 16. You need 4 bins.",
+    "d": "m"
+  },
+  {
+    "t": "Noah says 2+2+2+2+2 = 5 groups of 5. What is Noah's mistake?",
+    "o": ["It is 5 groups of 2, not 5 groups of 5", "It is 2 groups of 5", "The total is wrong", "Noah is correct"],
+    "a": 0,
+    "e": "2+2+2+2+2 means 2 is added 5 times. That is 5 groups of 2 = 10, not 5 groups of 5.",
+    "d": "m"
+  },
+  {
+    "t": "Which number sentence does NOT show equal groups?",
+    "o": ["3 + 3 + 3", "5 + 5 + 5 + 5", "4 + 3 + 4", "10 + 10"],
+    "a": 2,
+    "e": "4 + 3 + 4 has different numbers (4 and 3), so the groups are not equal.",
+    "d": "m"
+  },
+  {
+    "t": "A girl earns 5 stars each day at school. After some days she has 25 stars. How many days?",
+    "o": ["3", "4", "5", "6"],
+    "a": 2,
+    "e": "5+5+5+5+5 = 25. It takes 5 days to earn 25 stars.",
+    "d": "m"
+  },
+  {
+    "t": "Which gives each person MORE: 12 cookies for 4 people, or 10 cookies for 2 people?",
+    "o": ["12 for 4 (3 each)", "10 for 2 (5 each)", "They are the same", "Cannot tell"],
+    "a": 1,
+    "e": "12/4 = 3 each. 10/2 = 5 each. 10 cookies for 2 people gives more per person.",
+    "d": "m"
+  },
+  {
+    "t": "Amy counts by 2s and writes: 2, 4, 6, 10. What number did she skip?",
+    "o": ["5", "7", "8", "9"],
+    "a": 2,
+    "e": "Counting by 2s: 2, 4, 6, 8, 10. Amy skipped 8.",
+    "d": "m"
+  },
+  {
+    "t": "15 books shared equally among 5 shelves. How many books on each shelf?",
+    "o": ["2", "3", "4", "5"],
+    "a": 1,
+    "e": "15 split into 5 equal groups: 3+3+3+3+3 = 15. Each shelf gets 3 books.",
+    "d": "m"
+  },
+  {
+    "t": "__ + __ = 18 (both the same number). What is each number?",
+    "o": ["6", "7", "8", "9"],
+    "a": 3,
+    "e": "Two equal numbers that add to 18: 9 + 9 = 18. Each number is 9.",
+    "d": "m"
+  },
+  {
+    "t": "Leo says he can share 11 erasers equally among 3 friends with none left over. Is he right?",
+    "o": ["Yes, each gets 3", "Yes, each gets 4", "No, there will be 2 left over", "No, there will be 1 left over"],
+    "a": 2,
+    "e": "3+3+3 = 9, leaving 11-9 = 2 leftover. 11 cannot be split evenly among 3.",
+    "d": "m"
+  },
+  {
+    "t": "A dog gets 2 treats after each walk. After 6 walks, how many treats has the dog eaten?",
+    "o": ["8", "10", "12", "14"],
+    "a": 2,
+    "e": "2+2+2+2+2+2 = 12 treats after 6 walks.",
+    "d": "m"
+  },
+  {
+    "t": "Which has the same value as 6+6+6?",
+    "o": ["3+3+3+3+3+3", "9+9", "2+2+2+2+2+2+2+2+2", "All of the above"],
+    "a": 3,
+    "e": "6+6+6 = 18. 3+3+3+3+3+3 = 18, 9+9 = 18, 2x9 = 18. All equal 18!",
+    "d": "m"
+  },
+  {
+    "t": "A teacher puts 20 pencils in cups with 5 in each cup. She says she filled 3 cups. Is that right?",
+    "o": ["Yes, 3 cups", "No, she filled 4 cups", "No, she filled 5 cups", "No, she filled 2 cups"],
+    "a": 1,
+    "e": "5+5+5+5 = 20. She needs 4 cups, not 3.",
+    "d": "m"
+  },
+  {
+    "t": "Jake has some boxes with 4 toys each. He has 16 toys total. How many boxes?",
+    "o": ["2", "3", "4", "5"],
+    "a": 2,
+    "e": "4+4+4+4 = 16. He has 4 boxes.",
+    "d": "m"
+  },
+  {
+    "t": "Which number CAN be shared equally among 4 with none left over?",
+    "o": ["9", "14", "16", "18"],
+    "a": 2,
+    "e": "16/4 = 4 each with none left. 9, 14, and 18 do not divide evenly by 4.",
+    "d": "m"
+  },
+  {
+    "t": "6 + 6 + 6 is __ groups of __. Fill in both blanks.",
+    "o": ["3 groups of 6", "6 groups of 3", "2 groups of 9", "6 groups of 6"],
+    "a": 0,
+    "e": "6 appears 3 times, so this is 3 groups of 6 = 18.",
+    "d": "m"
+  }
+]

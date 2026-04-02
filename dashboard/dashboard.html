@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>My Math Roots — Parent Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap" rel="stylesheet">
@@ -21,6 +21,9 @@
 
   <footer class="db-ai-footer-wrap" id="db-ai-footer"></footer>
 
+  <!-- Supabase must be loaded before dashboard.js so the auth session is available
+       whether the dashboard is opened directly or navigated from index.html -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="dashboard.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', initDashboard);

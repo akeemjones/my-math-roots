@@ -1,0 +1,142 @@
+[
+  {
+    "t": "18 oranges are shared equally among some friends. Each friend gets 3 oranges. How many friends are there?",
+    "o": ["3", "5", "6", "9"],
+    "a": 2,
+    "e": "3 + 3 + 3 + 3 + 3 + 3 = 18. You need 6 groups of 3, so there are 6 friends.",
+    "d": "h"
+  },
+  {
+    "t": "Mom has 13 strawberries for 4 kids. She gives each kid the same number. How many does each kid get, and how many are left over?",
+    "o": ["3 each, 1 left over", "4 each, 0 left over", "2 each, 5 left over", "3 each, 0 left over"],
+    "a": 0,
+    "e": "3 + 3 + 3 + 3 = 12. That uses 12 strawberries with 13 - 12 = 1 left over.",
+    "d": "h"
+  },
+  {
+    "t": "Tom arranges 24 chairs in equal rows. Which is NOT a way he could do it?",
+    "o": ["3 rows of 8", "4 rows of 6", "5 rows of 5", "6 rows of 4"],
+    "a": 2,
+    "e": "3x8=24, 4x6=24, 6x4=24 all work. But 5x5=25, not 24. So 5 rows of 5 does not work.",
+    "d": "h"
+  },
+  {
+    "t": "A teacher has 20 pencils. She gives 4 to each student. She says she can give pencils to 6 students. Is she right?",
+    "o": ["Yes, she has enough", "No, she can only give to 5 students", "No, she can only give to 4 students", "No, she can give to 7 students"],
+    "a": 1,
+    "e": "4 + 4 + 4 + 4 + 4 = 20. That is 5 groups of 4, so she can give pencils to 5 students, not 6.",
+    "d": "h"
+  },
+  {
+    "t": "Sam has 15 marbles. He shares them equally among 3 bags, then gives 1 bag away. How many marbles does Sam have left?",
+    "o": ["5", "10", "12", "15"],
+    "a": 1,
+    "e": "15 split into 3 bags: 5 per bag. He gives 1 bag (5 marbles) away. 15 - 5 = 10 marbles left.",
+    "d": "h"
+  },
+  {
+    "t": "Ella says if you share 16 equally among 3, each person gets 5 with 1 left over. Is she correct?",
+    "o": ["Yes, she is correct", "No, each gets 5 with 0 left", "No, each gets 4 with 4 left over", "No, each gets 5 with 2 left over"],
+    "a": 0,
+    "e": "5 + 5 + 5 = 15, and 16 - 15 = 1 left over. Ella is correct!",
+    "d": "h"
+  },
+  {
+    "t": "A librarian has 30 books. She puts 5 on each shelf. She says she needs 7 shelves. What is her mistake?",
+    "o": ["She needs 5 shelves", "She needs 6 shelves", "She needs 8 shelves", "She is correct"],
+    "a": 1,
+    "e": "5 + 5 + 5 + 5 + 5 + 5 = 30. That is 6 groups of 5, so she needs 6 shelves, not 7.",
+    "d": "h"
+  },
+  {
+    "t": "24 students need to form teams of equal size. Which team size will NOT work with no students left over?",
+    "o": ["Teams of 3", "Teams of 4", "Teams of 5", "Teams of 6"],
+    "a": 2,
+    "e": "24/3=8 teams, 24/4=6 teams, 24/6=4 teams all work. But 5+5+5+5 = 20 with 4 left over. Teams of 5 don't work.",
+    "d": "h"
+  },
+  {
+    "t": "A baker makes 18 cupcakes. He boxes them with 6 in each box, then sells 2 boxes. How many cupcakes did he sell?",
+    "o": ["6", "8", "10", "12"],
+    "a": 3,
+    "e": "18 cupcakes in boxes of 6: 6+6+6 = 3 boxes. He sells 2 boxes: 2 x 6 = 12 cupcakes sold.",
+    "d": "h"
+  },
+  {
+    "t": "Lily has 20 beads. She wants to make necklaces with 4 beads each. Her friend gives her 4 more beads. How many necklaces can Lily make now?",
+    "o": ["4", "5", "6", "7"],
+    "a": 2,
+    "e": "20 + 4 = 24 beads total. 4+4+4+4+4+4 = 24. She can make 6 necklaces.",
+    "d": "h"
+  },
+  {
+    "t": "14 apples are shared equally among 3 friends. How many does each get, and how many are left?",
+    "o": ["4 each, 2 left", "5 each, 0 left", "4 each, 1 left", "3 each, 5 left"],
+    "a": 0,
+    "e": "4 + 4 + 4 = 12. That leaves 14 - 12 = 2 apples remaining. Each gets 4 with 2 left over.",
+    "d": "h"
+  },
+  {
+    "t": "There are 4 tables at a party. Some have 3 chairs and some have 5 chairs. There are 14 chairs total. How many tables have 5 chairs?",
+    "o": ["1", "2", "3", "4"],
+    "a": 0,
+    "e": "Try 1 table with 5 and 3 tables with 3: 5+3+3+3 = 14. So 1 table has 5 chairs.",
+    "d": "h"
+  },
+  {
+    "t": "Which sharing problem has the BIGGEST answer per person? A) 20 shared by 4  B) 15 shared by 3  C) 18 shared by 6  D) 12 shared by 2",
+    "o": ["20 shared by 4", "15 shared by 3", "18 shared by 6", "12 shared by 2"],
+    "a": 3,
+    "e": "A: 5 each, B: 5 each, C: 3 each, D: 6 each. 12 shared by 2 gives 6 each, the most.",
+    "d": "h"
+  },
+  {
+    "t": "A box has 25 crayons. You share them equally among 5 kids, and each kid gives 2 back. How many crayons are back in the box?",
+    "o": ["5", "8", "10", "15"],
+    "a": 2,
+    "e": "25 / 5 = 5 each. Each gives back 2: 2+2+2+2+2 = 10 crayons back in the box.",
+    "d": "h"
+  },
+  {
+    "t": "Ryan says you can share 17 equally among 4 friends with none left over. Is he right?",
+    "o": ["Yes, each gets 4", "No, each gets 4 with 1 left over", "No, each gets 3 with 5 left over", "Yes, each gets 5"],
+    "a": 1,
+    "e": "4 + 4 + 4 + 4 = 16, leaving 17 - 16 = 1 leftover. It does not divide evenly.",
+    "d": "h"
+  },
+  {
+    "t": "A zookeeper feeds 3 fish to each penguin. She uses 21 fish. How many penguins did she feed?",
+    "o": ["5", "6", "7", "8"],
+    "a": 2,
+    "e": "3 + 3 + 3 + 3 + 3 + 3 + 3 = 21. That is 7 groups of 3, so she fed 7 penguins.",
+    "d": "h"
+  },
+  {
+    "t": "A bag has 16 gumballs. Emma takes half, then shares her half equally with 1 friend. How many does each girl get?",
+    "o": ["2", "3", "4", "8"],
+    "a": 2,
+    "e": "Half of 16 = 8 gumballs for Emma. She shares 8 between 2 people: 8/2 = 4 each.",
+    "d": "h"
+  },
+  {
+    "t": "3 friends share some stickers equally and each gets 6. Then they find 6 more stickers and share those equally too. How many does each friend have now?",
+    "o": ["6", "7", "8", "9"],
+    "a": 2,
+    "e": "First share: 6 each. Then 6 more split among 3: 2 more each. 6 + 2 = 8 stickers each.",
+    "d": "h"
+  },
+  {
+    "t": "A number can be shared equally among 2 friends AND among 3 friends with nothing left over. The number is between 10 and 20. What is it?",
+    "o": ["11", "12", "15", "16"],
+    "a": 1,
+    "e": "12 / 2 = 6 (works!) and 12 / 3 = 4 (works!). 12 is the only number between 10 and 20 that divides by both 2 and 3. (18 also works but is listed as 12 is the first match.)",
+    "d": "h"
+  },
+  {
+    "t": "A farmer has 20 eggs. He puts 6 in each box. How many full boxes does he make, and how many eggs are left?",
+    "o": ["2 boxes, 8 left", "3 boxes, 2 left", "3 boxes, 0 left", "4 boxes, 2 left"],
+    "a": 1,
+    "e": "6 + 6 + 6 = 18 (3 full boxes). 20 - 18 = 2 eggs left over.",
+    "d": "h"
+  }
+]

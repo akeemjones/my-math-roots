@@ -1,0 +1,362 @@
+[
+  {
+    "t": "A pencil ends at the 7 on a ruler. How many inches long is the pencil?",
+    "o": [
+      "5 in",
+      "6 in",
+      "7 in",
+      "8 in"
+    ],
+    "a": 2,
+    "e": "Read where it ends: 7 inches.",
+    "d": "e"
+  },
+  {
+    "t": "12 inches is the same as how many feet?",
+    "o": [
+      "1 foot",
+      "2 feet",
+      "6 inches",
+      "1 yard"
+    ],
+    "a": 0,
+    "e": "12 in=1 ft.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best unit to measure the length of a room?",
+    "o": [
+      "Inches",
+      "Feet",
+      "Yards",
+      "Meters"
+    ],
+    "a": 1,
+    "e": "Feet for big distances.",
+    "d": "e"
+  },
+  {
+    "t": "About how many feet tall is a door?",
+    "o": [
+      "2",
+      "5",
+      "7",
+      "15"
+    ],
+    "a": 2,
+    "e": "Standard door≈7 feet.",
+    "d": "m"
+  },
+  {
+    "t": "100 centimeters is equal to how many meters?",
+    "o": [
+      "1 inch",
+      "1 foot",
+      "1 meter",
+      "1 yard"
+    ],
+    "a": 2,
+    "e": "100 cm=1 meter.",
+    "d": "e"
+  },
+  {
+    "t": "About how many centimeters long is a crayon?",
+    "o": [
+      "2",
+      "9",
+      "30",
+      "100"
+    ],
+    "a": 1,
+    "e": "Crayon≈9 cm.",
+    "d": "m"
+  },
+  {
+    "t": "The short hand is on the 4 and the long hand is on the 12. What time does the clock show?",
+    "o": [
+      "12:04",
+      "4:00",
+      "4:12",
+      "12:40"
+    ],
+    "a": 1,
+    "e": "4:00 o'clock.",
+    "d": "e"
+  },
+  {
+    "t": "What time does half past 3 equal?",
+    "o": [
+      "3:15",
+      "3:30",
+      "3:45",
+      "3:50"
+    ],
+    "a": 1,
+    "e": "3:30.",
+    "d": "m"
+  },
+  {
+    "t": "When the long hand points to the 6, how many minutes past the hour is it?",
+    "o": [
+      "5",
+      "15",
+      "30",
+      "45"
+    ],
+    "a": 2,
+    "e": "30 minutes.",
+    "d": "e"
+  },
+  {
+    "t": "How many minutes are in 1 hour?",
+    "o": [
+      "30",
+      "45",
+      "60",
+      "90"
+    ],
+    "a": 2,
+    "e": "60 minutes.",
+    "d": "e"
+  },
+  {
+    "t": "About how many inches long is a pencil?",
+    "o": [
+      "1",
+      "5",
+      "12",
+      "36"
+    ],
+    "a": 1,
+    "e": "≈5 inches.",
+    "d": "m"
+  },
+  {
+    "t": "Which is longer: 15 centimeters or 15 inches?",
+    "o": [
+      "15 cm",
+      "15 inches",
+      "Equal",
+      "Depends"
+    ],
+    "a": 1,
+    "e": "1 inch=2.54cm, so 15 inches > 15 cm.",
+    "d": "m"
+  },
+  {
+    "t": "What time does quarter past 9 equal?",
+    "o": [
+      "9:05",
+      "9:15",
+      "9:30",
+      "9:45"
+    ],
+    "a": 1,
+    "e": "9:15.",
+    "d": "m"
+  },
+  {
+    "t": "When the clock shows 2:30, which hand is pointing to the 6?",
+    "o": [
+      "Hour",
+      "Minute",
+      "Both",
+      "Neither"
+    ],
+    "a": 1,
+    "e": "Minute hand at 6=30 minutes.",
+    "d": "m"
+  },
+  {
+    "t": "A book is 8 inches long. A notebook is 6 inches long. How much longer is the book?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "8-6=2 inches.",
+    "d": "m"
+  },
+  {
+    "t": "It is 90°F outside. What should you wear?",
+    "o": [
+      "Heavy coat",
+      "Light clothes",
+      "Rain boots",
+      "Snow boots"
+    ],
+    "a": 1,
+    "e": "90°F is hot! Light clothes.",
+    "d": "m"
+  },
+  {
+    "t": "At what temperature in degrees Fahrenheit does water freeze?",
+    "o": [
+      "0",
+      "32",
+      "100",
+      "212"
+    ],
+    "a": 1,
+    "e": "32°F.",
+    "d": "e"
+  },
+  {
+    "t": "About how much does a math book weigh?",
+    "o": [
+      "1 pound",
+      "10 pounds",
+      "50 pounds",
+      "100 pounds"
+    ],
+    "a": 0,
+    "e": "≈1 pound.",
+    "d": "m"
+  },
+  {
+    "t": "2 cups is equal to how many pints?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "2 cups=1 pint.",
+    "d": "e"
+  },
+  {
+    "t": "4 quarts is equal to how many gallons?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "4 quarts=1 gallon.",
+    "d": "e"
+  },
+  {
+    "t": "The short hand is between the 7 and 8, and the long hand is on the 6. What time does the clock show?",
+    "o": [
+      "7:00",
+      "7:30",
+      "8:00",
+      "6:30"
+    ],
+    "a": 1,
+    "e": "7:30.",
+    "d": "m"
+  },
+  {
+    "t": "The temperature went from 65°F to 78°F. How many degrees warmer did it get?",
+    "o": [
+      "10",
+      "12",
+      "13",
+      "15"
+    ],
+    "a": 2,
+    "e": "78-65=13.",
+    "d": "m"
+  },
+  {
+    "t": "What time does quarter to 5 equal?",
+    "o": [
+      "4:45",
+      "5:15",
+      "5:45",
+      "4:15"
+    ],
+    "a": 0,
+    "e": "4:45.",
+    "d": "m"
+  },
+  {
+    "t": "What is the best unit to measure the length of a swimming pool?",
+    "o": [
+      "Inches",
+      "Feet",
+      "Yards",
+      "Meters"
+    ],
+    "a": 1,
+    "e": "Feet.",
+    "d": "m"
+  },
+  {
+    "t": "16 ounces is equal to how many pounds?",
+    "o": [
+      "1",
+      "2",
+      "4",
+      "8"
+    ],
+    "a": 0,
+    "e": "16 oz=1 lb.",
+    "d": "e"
+  },
+  {
+    "t": "A classroom is about 30 ___ long. Which unit fits best?",
+    "o": [
+      "inches",
+      "feet",
+      "miles",
+      "cm"
+    ],
+    "a": 1,
+    "e": "Feet.",
+    "d": "m"
+  },
+  {
+    "t": "When the long hand points to the 3, how many minutes past the hour is it?",
+    "o": [
+      "3",
+      "15",
+      "30",
+      "45"
+    ],
+    "a": 1,
+    "e": "3 on clock=15 min.",
+    "d": "m"
+  },
+  {
+    "t": "2 pints is equal to how many quarts?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 0,
+    "e": "2 pints=1 quart.",
+    "d": "e"
+  },
+  {
+    "t": "A pencil is 7 centimeters long. A pen is 12 centimeters long. How much longer is the pen?",
+    "o": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "a": 2,
+    "e": "12-7=5 cm.",
+    "d": "m"
+  },
+  {
+    "t": "When the clock shows 11:45, where does the long hand point?",
+    "o": [
+      "3",
+      "6",
+      "9",
+      "12"
+    ],
+    "a": 2,
+    "e": "45 min→long hand at 9.",
+    "d": "h"
+  }
+]

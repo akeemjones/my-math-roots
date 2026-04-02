@@ -1,0 +1,142 @@
+[
+  {
+    "t": "A store had 150 toys. They sold 67 on Monday and 48 on Tuesday. How many toys are left?",
+    "o": ["35", "45", "25", "55"],
+    "a": 0,
+    "e": "Step 1: 150 - 67 = 83 (regroup: 10 - 7 = 3, 14 - 6 = 8). Step 2: 83 - 48 = 35 (regroup: 13 - 8 = 5, 7 - 4 = 3). The store has 35 toys left.",
+    "d": "h"
+  },
+  {
+    "t": "Jake solved 83 - 47 = 44. What did Jake do wrong?",
+    "o": ["Jake subtracted 7 - 3 in the ones instead of regrouping", "Jake added instead of subtracting", "Jake regrouped twice", "Jake's answer is correct"],
+    "a": 0,
+    "e": "Correct: 83 - 47 = 36. Jake got 44 because he did 7 - 3 = 4 in the ones (subtracting upward) instead of regrouping: 13 - 7 = 6 ones, 7 - 4 = 3 tens.",
+    "d": "h"
+  },
+  {
+    "t": "Is 142 - 78 greater or less than 60? How can you tell without solving?",
+    "o": ["Greater, because 140 - 80 = 60 and 142 > 140 while 78 < 80", "Less, because both numbers have regrouping", "Exactly 60", "Cannot tell without solving"],
+    "a": 0,
+    "e": "Estimate: 140 - 80 = 60. Since 142 is 2 more than 140 and 78 is 2 less than 80, the actual answer is 60 + 2 + 2 = 64. So it is greater than 60. Estimation lets you compare without finding the exact answer.",
+    "d": "h"
+  },
+  {
+    "t": "__ - __ = 35. Both numbers are between 50 and 100. Which pair works?",
+    "o": ["92 - 57", "88 - 53", "76 - 49", "105 - 70"],
+    "a": 1,
+    "e": "Check: 92 - 57 = 35 and both in range. 88 - 53 = 35 and both in range. 76 - 49 = 27. 105 - 70 = 35 but 105 > 100. Both A and B work, but 88 - 53 = 35 is the answer at position B.",
+    "d": "h"
+  },
+  {
+    "t": "Maria solved 120 - 53 = 77. She checked: 77 + 53 = 130. What went wrong?",
+    "o": ["Maria's subtraction is wrong because 77 + 53 = 130, not 120", "Maria added wrong during checking", "Maria's answer is actually correct", "The check does not work for 3-digit numbers"],
+    "a": 0,
+    "e": "If 120 - 53 = 77 were correct, then 77 + 53 should equal 120. But 77 + 53 = 130, not 120. Maria's subtraction is wrong. Correct: 120 - 53 = 67. Check: 67 + 53 = 120.",
+    "d": "h"
+  },
+  {
+    "t": "A farmer had 163 apples. He sold 78 on Saturday and 49 on Sunday. How many does he have left?",
+    "o": ["36", "46", "26", "56"],
+    "a": 0,
+    "e": "Step 1: 163 - 78 = 85. Step 2: 85 - 49 = 36. The farmer has 36 apples left.",
+    "d": "h"
+  },
+  {
+    "t": "Eli says 'To subtract 98 from any number, I subtract 100 and add 2.' Is Eli's strategy correct?",
+    "o": ["Yes, because 100 - 98 = 2, so adding 2 corrects the extra taken away", "No, you should subtract 100 and subtract 2", "Yes, but only when the number is greater than 100", "No, compensation only works for addition"],
+    "a": 0,
+    "e": "Eli is correct! Subtracting 100 removes 2 too many (since 100 = 98 + 2). Adding 2 back gives the right answer. Example: 156 - 98 = 156 - 100 + 2 = 58.",
+    "d": "h"
+  },
+  {
+    "t": "Without solving, which has the bigger answer: 131 - 64 or 128 - 59?",
+    "o": ["131 - 64, because 130 - 60 = 70 is greater than 130 - 60 = 70", "128 - 59, because the numbers are closer together", "They are about the same", "131 - 64, because 131 is the biggest number"],
+    "a": 2,
+    "e": "Estimate: 131 - 64 is about 130 - 65 = 65. 128 - 59 is about 130 - 60 = 70. Actually exact: 131 - 64 = 67 and 128 - 59 = 69. They are close but 128 - 59 is slightly bigger. The estimates show they are about the same.",
+    "d": "h"
+  },
+  {
+    "t": "Zoe had some stickers. She gave 45 to her sister and 38 to her friend. She has 22 left. How many did she start with?",
+    "o": ["95", "105", "115", "85"],
+    "a": 1,
+    "e": "Work backwards: 22 + 38 = 60, then 60 + 45 = 105. Zoe started with 105 stickers. Check: 105 - 45 - 38 = 22.",
+    "d": "h"
+  },
+  {
+    "t": "Tim says 91 - 45 = 56. Amy says 91 - 45 = 46. Who is correct and why?",
+    "o": ["Tim, because 56 + 45 = 101", "Amy, because 46 + 45 = 91", "Tim, because 9 - 4 = 5 and 1 - 5 = 6", "Neither is correct"],
+    "a": 1,
+    "e": "Check with addition: 46 + 45 = 91. Amy is correct! Tim likely forgot to reduce the tens after regrouping: 11 - 5 = 6 ones, but then 8 - 4 = 4 tens (not 5 tens).",
+    "d": "h"
+  },
+  {
+    "t": "A number minus 48 equals 57. What is the number minus 50?",
+    "o": ["55", "57", "53", "59"],
+    "a": 0,
+    "e": "Find the number: ? - 48 = 57, so ? = 57 + 48 = 105. Now subtract 50: 105 - 50 = 55. Or use reasoning: subtracting 50 is 2 more than subtracting 48, so the answer is 57 - 2 = 55.",
+    "d": "h"
+  },
+  {
+    "t": "Which subtraction problem requires regrouping TWICE (in ones AND tens)?",
+    "o": ["145 - 32", "132 - 78", "156 - 43", "189 - 65"],
+    "a": 1,
+    "e": "Check: 132 - 78: ones: 2 < 8 (regroup), tens: 2 < 7 after regrouping (regroup again). This needs regrouping in both the ones and the tens place. The others need at most one regrouping.",
+    "d": "h"
+  },
+  {
+    "t": "A library had 175 books. Students returned 34 books but checked out 89 books. How many books does the library have now?",
+    "o": ["110", "120", "130", "100"],
+    "a": 1,
+    "e": "Step 1: Add returned books: 175 + 34 = 209. Step 2: Subtract checked out: 209 - 89 = 120. The library has 120 books.",
+    "d": "h"
+  },
+  {
+    "t": "Dani says 'Regrouping changes the value of the number.' Is Dani correct?",
+    "o": ["No, regrouping changes the form but not the value", "Yes, the number gets smaller", "Yes, you lose a ten", "No, but only in addition"],
+    "a": 0,
+    "e": "Regrouping does NOT change the value. It changes the form: 1 ten becomes 10 ones, but 10 ones = 1 ten. So the total value stays the same. It is like exchanging a dime for 10 pennies -- same amount, different form.",
+    "d": "h"
+  },
+  {
+    "t": "A school collected 156 cans in Week 1, then 89 cans in Week 2. They donated 118 cans. How many cans do they still have?",
+    "o": ["117", "127", "137", "107"],
+    "a": 1,
+    "e": "Step 1: Total collected: 156 + 89 = 245. Step 2: Subtract donated: 245 - 118 = 127. They have 127 cans left.",
+    "d": "h"
+  },
+  {
+    "t": "Look at this pattern: 82 - 46 = 36, 83 - 47 = 36, 84 - 48 = 36. Why does the answer stay the same?",
+    "o": ["Adding 1 to both numbers keeps the difference the same", "All the answers just happen to be 36", "The ones digits cancel out", "Regrouping makes them all equal"],
+    "a": 0,
+    "e": "When you add the same number to both parts of a subtraction, the difference stays the same. This is the constant difference property. 82 - 46 = 36, and adding 1 to each: 83 - 47 = 36, 84 - 48 = 36.",
+    "d": "h"
+  },
+  {
+    "t": "Nora needs to solve 103 - 67. She changes it to 106 - 70 to make it easier. Does this give the right answer?",
+    "o": ["Yes, adding 3 to both numbers keeps the same difference", "No, you can only change one number", "Yes, but only because 103 and 106 are close", "No, 106 - 70 = 36 but 103 - 67 = 46"],
+    "a": 0,
+    "e": "103 - 67 = 36 and 106 - 70 = 36. Adding 3 to both numbers keeps the difference the same. This is a smart strategy to avoid regrouping!",
+    "d": "h"
+  },
+  {
+    "t": "A pet store had 142 fish. They sold some on Monday. Then they sold 35 on Tuesday. Now they have 58 fish. How many did they sell on Monday?",
+    "o": ["39", "49", "59", "29"],
+    "a": 1,
+    "e": "Work backwards: Before Tuesday sales: 58 + 35 = 93 fish. Monday sales: 142 - 93 = 49. They sold 49 fish on Monday.",
+    "d": "h"
+  },
+  {
+    "t": "Liam solved 135 - 79 like this: 135 - 80 = 55, then 55 + 1 = 56. Is his strategy and answer correct?",
+    "o": ["Yes, he used compensation correctly", "No, he should have subtracted 1 instead of adding 1", "Yes, but the math is wrong", "No, compensation does not work here"],
+    "a": 0,
+    "e": "Liam subtracted 80 instead of 79, which is 1 too many. So he adds 1 back: 55 + 1 = 56. Check: 135 - 79 = 56. His strategy and answer are both correct!",
+    "d": "h"
+  },
+  {
+    "t": "An art class had 168 sheets of paper. They used 74 for painting and 56 for drawing. How many sheets are left?",
+    "o": ["38", "48", "28", "58"],
+    "a": 0,
+    "e": "Step 1: 168 - 74 = 94 sheets after painting. Step 2: 94 - 56 = 38 sheets after drawing. There are 38 sheets left.",
+    "d": "h"
+  }
+]

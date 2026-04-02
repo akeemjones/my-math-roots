@@ -1,0 +1,22 @@
+[
+  {"t":"What is 2 + 2?","o":["3","5","4","2"],"a":2,"e":"Use doubles: 2 + 2 = 4.","d":"e"},
+  {"t":"What is 3 + 3?","o":["5","7","6","3"],"a":2,"e":"Use doubles: 3 + 3 = 6.","d":"e"},
+  {"t":"What is 4 + 4?","o":["6","9","8","7"],"a":2,"e":"Use doubles: 4 + 4 = 8.","d":"e"},
+  {"t":"What is 5 + 5?","o":["11","8","9","10"],"a":3,"e":"Use doubles: 5 + 5 = 10.","d":"e"},
+  {"t":"What is 1 + 1?","o":["3","0","1","2"],"a":3,"e":"Use doubles: 1 + 1 = 2.","d":"e"},
+  {"t":"What is 6 + 6?","o":["11","13","10","12"],"a":3,"e":"Use doubles: 6 + 6 = 12.","d":"e"},
+  {"t":"What is 7 + 7?","o":["13","15","12","14"],"a":3,"e":"Use doubles: 7 + 7 = 14.","d":"e"},
+  {"t":"What is 8 + 8?","o":["14","18","15","16"],"a":3,"e":"Use doubles: 8 + 8 = 16.","d":"e"},
+  {"t":"What is 9 + 9?","o":["17","19","18","16"],"a":2,"e":"Use doubles: 9 + 9 = 18.","d":"e"},
+  {"t":"What is 10 + 10?","o":["22","18","20","19"],"a":2,"e":"Use doubles: 10 + 10 = 20.","d":"e"},
+  {"t":"What is double 3?","o":["5","9","3","6"],"a":3,"e":"Double means add a number to itself. 3 + 3 = 6.","d":"e"},
+  {"t":"What is double 5?","o":["15","5","10","8"],"a":2,"e":"Double means 5 + 5. That equals 10.","d":"e"},
+  {"t":"What is double 7?","o":["12","15","7","14"],"a":3,"e":"Double 7 means 7 + 7. That equals 14.","d":"e"},
+  {"t":"What is double 4?","o":["6","4","10","8"],"a":3,"e":"Double 4 means 4 + 4 = 8.","d":"e"},
+  {"t":"What is 0 + 0?","o":["2","1","0","10"],"a":2,"e":"Use doubles: 0 + 0 = 0. Zero plus zero is still zero.","d":"e"},
+  {"t":"What is double 8?","o":["18","14","16","8"],"a":2,"e":"Double 8 means 8 + 8 = 16.","d":"e"},
+  {"t":"What is double 2?","o":["2","6","3","4"],"a":3,"e":"Double 2 means 2 + 2 = 4.","d":"e"},
+  {"t":"What is double 6?","o":["8","6","10","12"],"a":3,"e":"Double 6 means 6 + 6 = 12.","d":"e"},
+  {"t":"What is double 1?","o":["0","1","3","2"],"a":3,"e":"Double 1 means 1 + 1 = 2.","d":"e"},
+  {"t":"What is double 9?","o":["16","19","18","17"],"a":2,"e":"Double 9 means 9 + 9 = 18.","d":"e"}
+]

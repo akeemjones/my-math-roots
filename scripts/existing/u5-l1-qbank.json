@@ -1,0 +1,410 @@
+[
+  {
+    "t": "How much is this coin worth? <svg width=\"63\" height=\"63\" viewBox=\"0 0 40 40\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"20\" cy=\"20\" r=\"18\" fill=\"#b87333\" stroke=\"#7a4c1d\" stroke-width=\"2\"/><circle cx=\"20\" cy=\"20\" r=\"15\" fill=\"none\" stroke=\"#d4934a\" stroke-width=\"1\"/><circle cx=\"20\" cy=\"20\" r=\"11\" fill=\"none\" stroke=\"#c8843a\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"20\" y=\"24\" text-anchor=\"middle\" font-size=\"7\" fill=\"#f5d090\" font-weight=\"bold\">PENNY</text></svg>",
+    "o": [
+      "1¢",
+      "5¢",
+      "10¢",
+      "25¢"
+    ],
+    "a": 0,
+    "e": "A penny is worth 1 cent.",
+    "d": "e"
+  },
+  {
+    "t": "How much is this coin worth? <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg>",
+    "o": [
+      "1¢",
+      "5¢",
+      "10¢",
+      "25¢"
+    ],
+    "a": 1,
+    "e": "A nickel is worth 5 cents.",
+    "d": "e"
+  },
+  {
+    "t": "How much is this coin worth? <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg>",
+    "o": [
+      "5¢",
+      "10¢",
+      "15¢",
+      "25¢"
+    ],
+    "a": 1,
+    "e": "A dime is worth 10 cents.",
+    "d": "e"
+  },
+  {
+    "t": "How much is this coin worth? <svg width=\"80\" height=\"80\" viewBox=\"0 0 48 48\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"#c0c0c0\" stroke=\"#888\" stroke-width=\"1.5\" stroke-dasharray=\"3 1\"/><circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#c0c0c0\" stroke=\"none\"/><circle cx=\"24\" cy=\"24\" r=\"16\" fill=\"none\" stroke=\"#d8d8d8\" stroke-width=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"11\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"24\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">QUARTER</text></svg>",
+    "o": [
+      "10¢",
+      "15¢",
+      "20¢",
+      "25¢"
+    ],
+    "a": 3,
+    "e": "A quarter is worth 25 cents.",
+    "d": "e"
+  },
+  {
+    "t": "How many pennies equal one nickel?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 3,
+    "e": "5 pennies = 1 nickel.",
+    "d": "e"
+  },
+  {
+    "t": "How many nickels equal one dime?",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "2 nickels = 1 dime.",
+    "d": "e"
+  },
+  {
+    "t": "How many dimes equal $1.00?",
+    "o": [
+      "5",
+      "8",
+      "20",
+      "10"
+    ],
+    "a": 3,
+    "e": "10 dimes × 10¢ = 100¢.",
+    "d": "e"
+  },
+  {
+    "t": "How many quarters equal $1.00?",
+    "o": [
+      "4",
+      "2",
+      "3",
+      "5"
+    ],
+    "a": 0,
+    "e": "4 quarters × 25¢ = 100¢.",
+    "d": "e"
+  },
+  {
+    "t": "How many nickels equal one quarter?",
+    "o": [
+      "3",
+      "4",
+      "6",
+      "5"
+    ],
+    "a": 3,
+    "e": "5 nickels × 5¢ = 25¢.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is the smallest in size?",
+    "o": [
+      "Dime",
+      "Penny",
+      "Nickel",
+      "Quarter"
+    ],
+    "a": 0,
+    "e": "Even though it is worth 10 cents, the dime is the smallest coin.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin has Abraham Lincoln on it?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 0,
+    "e": "Abraham Lincoln is on the penny (1 cent).",
+    "d": "e"
+  },
+  {
+    "t": "Which coin has George Washington on it?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 3,
+    "e": "George Washington is on the quarter (25 cents).",
+    "d": "e"
+  },
+  {
+    "t": "Which coin has Franklin Roosevelt on it?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 2,
+    "e": "Franklin Roosevelt is on the dime (10 cents).",
+    "d": "e"
+  },
+  {
+    "t": "Which coin has Thomas Jefferson on it?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 1,
+    "e": "Thomas Jefferson is on the nickel (5 cents).",
+    "d": "e"
+  },
+  {
+    "t": "How many pennies equal one dime?",
+    "o": [
+      "5",
+      "10",
+      "8",
+      "15"
+    ],
+    "a": 1,
+    "e": "10 pennies = 1 dime.",
+    "d": "e"
+  },
+  {
+    "t": "How many pennies equal one quarter?",
+    "o": [
+      "15",
+      "20",
+      "30",
+      "25"
+    ],
+    "a": 3,
+    "e": "25 pennies = 1 quarter.",
+    "d": "e"
+  },
+  {
+    "t": "100 pennies = ?",
+    "o": [
+      "$0.50",
+      "$0.75",
+      "$1.00",
+      "$2.00"
+    ],
+    "a": 2,
+    "e": "100 cents = $1.00.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth the most?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 3,
+    "e": "A quarter is worth the most at 25 cents.",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is worth the least?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 0,
+    "e": "A penny is worth the least at 1 cent.",
+    "d": "e"
+  },
+  {
+    "t": "How much money is shown? <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg> <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg>",
+    "o": [
+      "10¢",
+      "15¢",
+      "20¢",
+      "25¢"
+    ],
+    "a": 2,
+    "e": "2 × 10¢ = 20¢.",
+    "d": "e"
+  },
+  {
+    "t": "How much money is shown? <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg> <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg> <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg>",
+    "o": [
+      "10¢",
+      "15¢",
+      "20¢",
+      "25¢"
+    ],
+    "a": 1,
+    "e": "3 × 5¢ = 15¢.",
+    "d": "e"
+  },
+  {
+    "t": "Is a nickel worth 5 times as much as a penny?",
+    "o": [
+      "True",
+      "False",
+      "Sometimes",
+      "Depends"
+    ],
+    "a": 0,
+    "e": "Yes! A nickel = 5 cents = 5 pennies. True!",
+    "d": "e"
+  },
+  {
+    "t": "How many cents are in half a dollar?",
+    "o": [
+      "25¢",
+      "50¢",
+      "75¢",
+      "100¢"
+    ],
+    "a": 1,
+    "e": "Half of 100 cents = 50¢.",
+    "d": "e"
+  },
+  {
+    "t": "How much money is shown? <svg width=\"80\" height=\"80\" viewBox=\"0 0 48 48\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"#c0c0c0\" stroke=\"#888\" stroke-width=\"1.5\" stroke-dasharray=\"3 1\"/><circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#c0c0c0\" stroke=\"none\"/><circle cx=\"24\" cy=\"24\" r=\"16\" fill=\"none\" stroke=\"#d8d8d8\" stroke-width=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"11\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"24\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">QUARTER</text></svg> <svg width=\"80\" height=\"80\" viewBox=\"0 0 48 48\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"#c0c0c0\" stroke=\"#888\" stroke-width=\"1.5\" stroke-dasharray=\"3 1\"/><circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#c0c0c0\" stroke=\"none\"/><circle cx=\"24\" cy=\"24\" r=\"16\" fill=\"none\" stroke=\"#d8d8d8\" stroke-width=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"11\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"24\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">QUARTER</text></svg> <svg width=\"80\" height=\"80\" viewBox=\"0 0 48 48\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"#c0c0c0\" stroke=\"#888\" stroke-width=\"1.5\" stroke-dasharray=\"3 1\"/><circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#c0c0c0\" stroke=\"none\"/><circle cx=\"24\" cy=\"24\" r=\"16\" fill=\"none\" stroke=\"#d8d8d8\" stroke-width=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"11\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"24\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">QUARTER</text></svg> <svg width=\"80\" height=\"80\" viewBox=\"0 0 48 48\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"#c0c0c0\" stroke=\"#888\" stroke-width=\"1.5\" stroke-dasharray=\"3 1\"/><circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#c0c0c0\" stroke=\"none\"/><circle cx=\"24\" cy=\"24\" r=\"16\" fill=\"none\" stroke=\"#d8d8d8\" stroke-width=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"11\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"24\" y=\"28\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">QUARTER</text></svg>",
+    "o": [
+      "50¢",
+      "75¢",
+      "$1.00",
+      "$2.00"
+    ],
+    "a": 2,
+    "e": "4 × 25¢ = 100¢ = $1.00.",
+    "d": "e"
+  },
+  {
+    "t": "How much money is shown? <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg> <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg> <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg> <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg> <svg width=\"59\" height=\"59\" viewBox=\"0 0 34 34\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"17\" cy=\"17\" r=\"15\" fill=\"#d4d4d4\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 1\"/><circle cx=\"17\" cy=\"17\" r=\"12\" fill=\"#d4d4d4\" stroke=\"none\"/><circle cx=\"17\" cy=\"17\" r=\"10\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"1\"/><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"17\" y=\"21\" text-anchor=\"middle\" font-size=\"5.5\" fill=\"#555\" font-weight=\"bold\">DIME</text></svg>",
+    "o": [
+      "25¢",
+      "40¢",
+      "50¢",
+      "60¢"
+    ],
+    "a": 2,
+    "e": "5 × 10¢ = 50¢.",
+    "d": "e"
+  },
+  {
+    "t": "How much is 20 nickels worth? <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg> × 20",
+    "o": [
+      "50¢",
+      "$1.00",
+      "$1.50",
+      "$2.00"
+    ],
+    "a": 1,
+    "e": "20 × 5¢ = 100¢ = $1.00.",
+    "d": "e"
+  },
+  {
+    "t": "Is a dime worth more than a nickel?",
+    "o": [
+      "True",
+      "False",
+      "Same",
+      "Depends"
+    ],
+    "a": 0,
+    "e": "Yes! A dime = 10¢ and a nickel = 5¢. True!",
+    "d": "e"
+  },
+  {
+    "t": "Which coin is the largest in size?",
+    "o": [
+      "Penny",
+      "Nickel",
+      "Dime",
+      "Quarter"
+    ],
+    "a": 3,
+    "e": "The quarter is the largest coin.",
+    "d": "e"
+  },
+  {
+    "t": "How much money is shown? <svg width=\"70\" height=\"70\" viewBox=\"0 0 44 44\" style=\"display:inline-block;vertical-align:middle;margin:0 4px\"><circle cx=\"22\" cy=\"22\" r=\"20\" fill=\"#c8c8c0\" stroke=\"#888\" stroke-width=\"2\"/><circle cx=\"22\" cy=\"22\" r=\"17\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/><circle cx=\"22\" cy=\"22\" r=\"12\" fill=\"none\" stroke=\"#bbb\" stroke-width=\"0.6\" opacity=\"0.6\"/><text x=\"22\" y=\"26\" text-anchor=\"middle\" font-size=\"7\" fill=\"#555\" font-weight=\"bold\">NICKEL</text></svg> × 6",
+    "o": [
+      "20¢",
+      "25¢",
+      "30¢",
+      "35¢"
+    ],
+    "a": 2,
+    "e": "6 × 5¢ = 30¢.",
+    "d": "e"
+  },
+  {
+    "t": "Half of one dime equals how many cents?",
+    "o": [
+      "1¢",
+      "3¢",
+      "5¢",
+      "10¢"
+    ],
+    "a": 2,
+    "e": "Half of 10¢ = 5¢, which equals one nickel.",
+    "d": "e"
+  },
+  {
+    "t": "You have 25¢ and find 18¢ more. How much money do you have now?",
+    "o": [
+      "33¢",
+      "43¢",
+      "53¢",
+      "42¢"
+    ],
+    "a": 1,
+    "e": "25 + 18 = 43¢.",
+    "d": "m"
+  },
+  {
+    "t": "A toy costs 50¢. You have 35¢. How much more do you need?",
+    "o": [
+      "25¢",
+      "15¢",
+      "20¢",
+      "10¢"
+    ],
+    "a": 1,
+    "e": "50 − 35 = 15¢.",
+    "d": "m"
+  },
+  {
+    "t": "4 dimes = how many pennies?",
+    "o": [
+      "4",
+      "14",
+      "40",
+      "44"
+    ],
+    "a": 2,
+    "e": "Each dime = 10 pennies. 4 × 10 = 40.",
+    "d": "m"
+  },
+  {
+    "t": "You buy a pencil for 37¢ and an eraser for 24¢. What is the total?",
+    "o": [
+      "51¢",
+      "61¢",
+      "63¢",
+      "57¢"
+    ],
+    "a": 1,
+    "e": "37 + 24 = 61¢. Regroup: 7+4=11, write 1 regroup 1 ten.",
+    "d": "m"
+  }
+]

@@ -1,0 +1,362 @@
+[
+  {
+    "t": "What is 347 + 286?",
+    "o": [
+      "572",
+      "681",
+      "633",
+      "714"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 7 + 6 = 13, write 3 and regroup 1 ten. Then tens: 4 + 8 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 3 + 2 + 1 = 6. The answer is 633.",
+    "d": "m"
+  },
+  {
+    "t": "What is 456 + 378?",
+    "o": [
+      "834",
+      "762",
+      "871",
+      "913"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 6 + 8 = 14, write 4 and regroup 1 ten. Then tens: 5 + 7 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8. The answer is 834.",
+    "d": "m"
+  },
+  {
+    "t": "What is 742 − 385?",
+    "o": [
+      "284",
+      "413",
+      "526",
+      "357"
+    ],
+    "a": 3,
+    "e": "You need to regroup twice! Work from right to left, regrouping when the top digit is smaller. The answer is 357.",
+    "d": "m"
+  },
+  {
+    "t": "What is 600 − 245?",
+    "o": [
+      "283",
+      "355",
+      "412",
+      "521"
+    ],
+    "a": 1,
+    "e": "The ones and tens are both 0, so regroup from the hundreds first. The answer is 355.",
+    "d": "h"
+  },
+  {
+    "t": "What is 523 + 349?",
+    "o": [
+      "872",
+      "801",
+      "913",
+      "754"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 3 + 9 = 12, write 2 and regroup 1 ten. Then tens: 2 + 4 + 1 = 7. Then hundreds: 5 + 3 = 8. The answer is 872.",
+    "d": "m"
+  },
+  {
+    "t": "What is 800 − 367?",
+    "o": [
+      "364",
+      "512",
+      "276",
+      "433"
+    ],
+    "a": 3,
+    "e": "Both the tens and ones are 0, so regroup from the hundreds and work through each column. The answer is 433.",
+    "d": "h"
+  },
+  {
+    "t": "What is 274 rounded to the nearest 100?",
+    "o": [
+      "200",
+      "270",
+      "300",
+      "280"
+    ],
+    "a": 2,
+    "e": "Look at the tens digit. It is 7, which is 5 or more, so round UP to 300.",
+    "d": "e"
+  },
+  {
+    "t": "What is the best estimate for 489 + 312? (Round to the nearest hundred first.)",
+    "o": [
+      "700",
+      "800",
+      "900",
+      "600"
+    ],
+    "a": 1,
+    "e": "489 rounds to 500, and 312 rounds to 300. Then 500 + 300 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 267 + 435?",
+    "o": [
+      "702",
+      "651",
+      "743",
+      "815"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 7 + 5 = 12, write 2 and regroup 1 ten. Then tens: 6 + 3 + 1 = 10, write 0 and regroup 1 ten. Then hundreds: 2 + 4 + 1 = 7. The answer is 702.",
+    "d": "m"
+  },
+  {
+    "t": "What is 900 − 536?",
+    "o": [
+      "291",
+      "423",
+      "512",
+      "364"
+    ],
+    "a": 3,
+    "e": "Both the ones and tens are 0, so regroup from the hundreds first and work through each column. The answer is 364.",
+    "d": "h"
+  },
+  {
+    "t": "What is the best estimate for 197 + 312? (Round to the nearest hundred first.)",
+    "o": [
+      "400",
+      "600",
+      "500",
+      "700"
+    ],
+    "a": 2,
+    "e": "197 rounds to 200, and 312 rounds to 300. Then 200 + 300 = 500.",
+    "d": "h"
+  },
+  {
+    "t": "What is 451 + 279?",
+    "o": [
+      "653",
+      "730",
+      "781",
+      "912"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 1 + 9 = 10, write 0 and regroup 1 ten. Then tens: 5 + 7 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 4 + 2 + 1 = 7. The answer is 730.",
+    "d": "m"
+  },
+  {
+    "t": "What is 705 − 348?",
+    "o": [
+      "284",
+      "423",
+      "516",
+      "357"
+    ],
+    "a": 3,
+    "e": "Ones: 5 is less than 8, so regroup to get 15 − 8 = 7. Tens: after regrouping from hundreds, 9 − 4 = 5. Hundreds: 6 − 3 = 3. The answer is 357.",
+    "d": "m"
+  },
+  {
+    "t": "What is 346 rounded to the nearest ten?",
+    "o": [
+      "340",
+      "350",
+      "300",
+      "400"
+    ],
+    "a": 1,
+    "e": "Look at the ones digit. It is 6, which is 5 or more, so round UP to 350.",
+    "d": "e"
+  },
+  {
+    "t": "What is 563 + 187?",
+    "o": [
+      "673",
+      "821",
+      "750",
+      "914"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 3 + 7 = 10, write 0 and regroup 1 ten. Then tens: 6 + 8 + 1 = 15, write 5 and regroup 1 ten. Then hundreds: 5 + 1 + 1 = 7. The answer is 750.",
+    "d": "m"
+  },
+  {
+    "t": "What is 432 − 256?",
+    "o": [
+      "104",
+      "176",
+      "234",
+      "315"
+    ],
+    "a": 1,
+    "e": "Ones: 2 < 6, regroup → 12−6=6. Tens: 2 < 5, regroup → 12−5=7. Hundreds: 3−2=1. Answer: 176.",
+    "d": "m"
+  },
+  {
+    "t": "What is 765 rounded to the nearest 100?",
+    "o": [
+      "700",
+      "760",
+      "770",
+      "800"
+    ],
+    "a": 3,
+    "e": "Look at the tens digit. It is 6, which is 5 or more, so round UP to 800.",
+    "d": "e"
+  },
+  {
+    "t": "What is 281 + 649?",
+    "o": [
+      "852",
+      "971",
+      "930",
+      "1013"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 1 + 9 = 10, write 0 and regroup 1 ten. Then tens: 8 + 4 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 2 + 6 + 1 = 9. The answer is 930.",
+    "d": "m"
+  },
+  {
+    "t": "What is 1000 − 473?",
+    "o": [
+      "527",
+      "454",
+      "583",
+      "612"
+    ],
+    "a": 0,
+    "e": "Work carefully from right to left, regrouping as needed across the zeros. 1000 − 473 = 527.",
+    "d": "h"
+  },
+  {
+    "t": "What is 548 + 276?",
+    "o": [
+      "763",
+      "871",
+      "912",
+      "824"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 8 + 6 = 14, write 4 and regroup 1 ten. Then tens: 4 + 7 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 5 + 2 + 1 = 8. The answer is 824.",
+    "d": "m"
+  },
+  {
+    "t": "What is the best estimate for 312 + 489? (Round to the nearest hundred first.)",
+    "o": [
+      "800",
+      "700",
+      "900",
+      "600"
+    ],
+    "a": 0,
+    "e": "312 rounds to 300, and 489 rounds to 500. Then 300 + 500 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 900 − 628?",
+    "o": [
+      "272",
+      "194",
+      "331",
+      "415"
+    ],
+    "a": 0,
+    "e": "Both the ones and tens are 0, so regroup from the hundreds first, then regroup again. The answer is 272.",
+    "d": "h"
+  },
+  {
+    "t": "What is 423 + 398?",
+    "o": [
+      "754",
+      "873",
+      "821",
+      "912"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 3 + 8 = 11, write 1 and regroup 1 ten. Then tens: 2 + 9 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8. The answer is 821.",
+    "d": "m"
+  },
+  {
+    "t": "What is 756 − 389?",
+    "o": [
+      "293",
+      "425",
+      "514",
+      "367"
+    ],
+    "a": 3,
+    "e": "Ones: 6 is less than 9, so regroup to get 16 − 9 = 7. Tens: 4 is less than 8, so regroup to get 14 − 8 = 6. Hundreds: 6 − 3 = 3. The answer is 367.",
+    "d": "m"
+  },
+  {
+    "t": "What is 450 rounded to the nearest 100?",
+    "o": [
+      "400",
+      "500",
+      "450",
+      "460"
+    ],
+    "a": 1,
+    "e": "Look at the tens digit. It is 5, which is 5 or more, so round UP to 500.",
+    "d": "e"
+  },
+  {
+    "t": "What is 634 + 187?",
+    "o": [
+      "821",
+      "754",
+      "873",
+      "912"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 4 + 7 = 11, write 1 and regroup 1 ten. Then tens: 3 + 8 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 6 + 1 + 1 = 8. The answer is 821.",
+    "d": "m"
+  },
+  {
+    "t": "What is 502 − 147?",
+    "o": [
+      "283",
+      "412",
+      "355",
+      "521"
+    ],
+    "a": 2,
+    "e": "Ones: 2 is less than 7, so regroup to get 12 − 7 = 5. The tens digit is 0, so regroup from the hundreds: 10 − 4 = 6. Hundreds: 4 − 1 = 3. The answer is 355.",
+    "d": "m"
+  },
+  {
+    "t": "What is the best estimate for 197 + 603? (Round to the nearest hundred first.)",
+    "o": [
+      "700",
+      "900",
+      "1000",
+      "800"
+    ],
+    "a": 3,
+    "e": "197 rounds to 200, and 603 rounds to 600. Then 200 + 600 = 800.",
+    "d": "h"
+  },
+  {
+    "t": "What is 387 + 246?",
+    "o": [
+      "572",
+      "633",
+      "681",
+      "714"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 7 + 6 = 13, write 3 and regroup 1 ten. Then tens: 8 + 4 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 3 + 2 + 1 = 6. The answer is 633.",
+    "d": "m"
+  },
+  {
+    "t": "What is 700 − 358?",
+    "o": [
+      "264",
+      "413",
+      "342",
+      "521"
+    ],
+    "a": 2,
+    "e": "Both the ones and tens are 0, so regroup from the hundreds first, then work through each column. The answer is 342.",
+    "d": "h"
+  }
+]

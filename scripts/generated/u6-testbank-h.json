@@ -1,0 +1,72 @@
+[
+  {
+    "t": "A bar graph shows: Chocolate=12, Vanilla=7, Strawberry=5. How many students voted in all? If vanilla and strawberry combine, do they equal chocolate?",
+    "o": ["24 total; yes, they equal chocolate", "24 total; no, they do not equal chocolate", "22 total; yes, they equal chocolate", "24 total; they are 1 less than chocolate"],
+    "a": 0,
+    "e": "Total: 12+7+5=24. Vanilla + Strawberry = 7+5=12. Chocolate=12. Yes, they are equal!",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 5 students. Dogs has 4 stars and Cats has 2 stars. Lily says the difference is 2 students. What did Lily do wrong?",
+    "o": ["She subtracted stars instead of students: should be 20-10=10", "She added instead of subtracted", "She is correct", "She multiplied instead of subtracted"],
+    "a": 0,
+    "e": "Dogs = 4x5=20, Cats = 2x5=10. Difference = 10. Lily subtracted stars (4-2=2) instead of actual student counts.",
+    "d": "h"
+  },
+  {
+    "t": "A line plot shows pencil lengths. Above 4: XXX, Above 5: XXXXXX, Above 6: XXXX, Above 7: XX. How many pencils are longer than 5 inches?",
+    "o": ["2", "4", "6", "12"],
+    "a": 2,
+    "e": "Longer than 5: 6 inches (4) + 7 inches (2) = 6 pencils.",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Soccer=8, Baseball=5, Basketball=7. If 4 more kids vote for baseball, would baseball have the most votes?",
+    "o": ["No, soccer still has the most", "Yes, baseball would have 9", "No, they would all be tied", "Yes, baseball would have 12"],
+    "a": 1,
+    "e": "Baseball: 5+4=9. Soccer=8, Basketball=7. 9 is the most, so yes, baseball would have the most!",
+    "d": "h"
+  },
+  {
+    "t": "A pictograph shows each star = 2 votes. Red has 6 stars, Blue has 4 stars, Green has 3 stars. How many votes in all? If there are 30 students, how many did NOT vote?",
+    "o": ["26 voted, 4 did not", "22 voted, 8 did not", "26 voted, 6 did not", "24 voted, 6 did not"],
+    "a": 0,
+    "e": "Red=12, Blue=8, Green=6. Total=26. 30-26=4 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A line plot shows leaf lengths. Above 2: XXXX, Above 3: XXXXXX, Above 4: XXX, Above 5: XX. How many leaves are 3 inches or shorter?",
+    "o": ["6", "4", "10", "15"],
+    "a": 2,
+    "e": "3 inches or shorter: 2 inches (4) + 3 inches (6) = 10 leaves.",
+    "d": "h"
+  },
+  {
+    "t": "A tally chart shows: Art IIII IIII, Music IIII I, PE IIII III. The class has 28 students. How many did NOT vote?",
+    "o": ["3", "4", "5", "6"],
+    "a": 2,
+    "e": "Art=9, Music=6, PE=8. Total=23. 28-23=5 did not vote.",
+    "d": "h"
+  },
+  {
+    "t": "A bar graph shows: Swings=9, Slide=5, Sandbox=6. How many students voted for the two least popular combined? Is that more than swings?",
+    "o": ["11, yes more than swings", "11, no less than swings", "14, yes more than swings", "9, same as swings"],
+    "a": 0,
+    "e": "Slide (5) + Sandbox (6) = 11. Swings = 9. 11 > 9, yes, more than swings!",
+    "d": "h"
+  },
+  {
+    "t": "A line plot shows worm lengths. Above 3: XX, Above 4: XXXXX, Above 5: XXXXX, Above 6: XXX. What is the range? How many worms in all?",
+    "o": ["Range 3, total 15", "Range 4, total 15", "Range 3, total 12", "Range 2, total 15"],
+    "a": 0,
+    "e": "Range: 6-3=3. Total: 2+5+5+3=15 worms.",
+    "d": "h"
+  },
+  {
+    "t": "Could you make a pictograph with each star = 3 for this data: Roses=9, Tulips=12, Daisies=7? Why or why not?",
+    "o": ["No, because 7 does not divide evenly by 3", "Yes, all numbers work with 3", "No, because 12 is too big", "Yes, because 9 and 12 work"],
+    "a": 0,
+    "e": "Roses: 9/3=3 stars. Tulips: 12/3=4 stars. Daisies: 7/3=2 with 1 left over. 7 does not divide evenly by 3, so you cannot make it.",
+    "d": "h"
+  }
+]

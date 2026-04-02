@@ -1,0 +1,142 @@
+[
+  {
+    "t": "There are 3 bags with 2 apples each. How many apples in all?",
+    "o": ["5", "6", "7", "8"],
+    "a": 1,
+    "e": "Each bag has 2 apples. 2 + 2 + 2 = 6 apples in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 4 cups with 5 straws each. How many straws in all?",
+    "o": ["15", "20", "9", "25"],
+    "a": 1,
+    "e": "Each cup has 5 straws. 5 + 5 + 5 + 5 = 20 straws in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 2 plates with 3 cookies each. How many cookies in all?",
+    "o": ["5", "6", "8", "3"],
+    "a": 1,
+    "e": "Each plate has 3 cookies. 3 + 3 = 6 cookies in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 5 trees with 2 birds each. How many birds in all?",
+    "o": ["7", "8", "10", "12"],
+    "a": 2,
+    "e": "Each tree has 2 birds. 2 + 2 + 2 + 2 + 2 = 10 birds in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 3 boxes with 4 crayons each. How many crayons in all?",
+    "o": ["7", "10", "12", "14"],
+    "a": 2,
+    "e": "Each box has 4 crayons. 4 + 4 + 4 = 12 crayons in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 2 tanks with 5 fish each. How many fish in all?",
+    "o": ["7", "8", "10", "12"],
+    "a": 2,
+    "e": "Each tank has 5 fish. 5 + 5 = 10 fish in all.",
+    "d": "e"
+  },
+  {
+    "t": "4 + 4 + 4 = ?",
+    "o": ["8", "12", "16", "10"],
+    "a": 1,
+    "e": "4 + 4 = 8, then 8 + 4 = 12.",
+    "d": "e"
+  },
+  {
+    "t": "3 + 3 + 3 + 3 = ?",
+    "o": ["9", "12", "15", "6"],
+    "a": 1,
+    "e": "Count by 3s: 3, 6, 9, 12. The answer is 12.",
+    "d": "e"
+  },
+  {
+    "t": "There are 6 nests with 2 eggs each. How many eggs in all?",
+    "o": ["8", "10", "12", "14"],
+    "a": 2,
+    "e": "Each nest has 2 eggs. 2 + 2 + 2 + 2 + 2 + 2 = 12 eggs in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 2 hands. Each hand has 5 fingers. How many fingers in all?",
+    "o": ["7", "10", "12", "5"],
+    "a": 1,
+    "e": "Each hand has 5 fingers. 5 + 5 = 10 fingers in all.",
+    "d": "e"
+  },
+  {
+    "t": "5 + 5 + 5 = ?",
+    "o": ["10", "15", "20", "12"],
+    "a": 1,
+    "e": "Count by 5s: 5, 10, 15. The answer is 15.",
+    "d": "e"
+  },
+  {
+    "t": "There are 3 ponds with 3 ducks each. How many ducks in all?",
+    "o": ["6", "9", "12", "3"],
+    "a": 1,
+    "e": "Each pond has 3 ducks. 3 + 3 + 3 = 9 ducks in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 4 vases with 2 flowers each. How many flowers in all?",
+    "o": ["6", "8", "10", "4"],
+    "a": 1,
+    "e": "Each vase has 2 flowers. 2 + 2 + 2 + 2 = 8 flowers in all.",
+    "d": "e"
+  },
+  {
+    "t": "2 + 2 + 2 + 2 + 2 = ?",
+    "o": ["8", "10", "12", "6"],
+    "a": 1,
+    "e": "Count by 2s: 2, 4, 6, 8, 10. The answer is 10.",
+    "d": "e"
+  },
+  {
+    "t": "There are 3 tables with 5 books each. How many books in all?",
+    "o": ["8", "12", "15", "18"],
+    "a": 2,
+    "e": "Each table has 5 books. 5 + 5 + 5 = 15 books in all.",
+    "d": "e"
+  },
+  {
+    "t": "There are 4 jars with 3 marbles each. How many marbles in all?",
+    "o": ["7", "10", "12", "14"],
+    "a": 2,
+    "e": "Each jar has 3 marbles. 3 + 3 + 3 + 3 = 12 marbles in all.",
+    "d": "e"
+  },
+  {
+    "t": "How many equal groups are there? OO OO OO (O = apple)",
+    "o": ["2", "3", "4", "6"],
+    "a": 1,
+    "e": "There are 3 groups, and each group has 2 apples.",
+    "d": "e"
+  },
+  {
+    "t": "There are 2 shelves with 4 toys each. How many toys in all?",
+    "o": ["6", "8", "10", "4"],
+    "a": 1,
+    "e": "Each shelf has 4 toys. 4 + 4 = 8 toys in all.",
+    "d": "e"
+  },
+  {
+    "t": "10 + 10 = ?",
+    "o": ["10", "15", "20", "25"],
+    "a": 2,
+    "e": "10 + 10 = 20. That is 2 groups of 10.",
+    "d": "e"
+  },
+  {
+    "t": "There are 5 baskets with 4 oranges each. How many oranges in all?",
+    "o": ["16", "18", "20", "22"],
+    "a": 2,
+    "e": "Each basket has 4 oranges. 4 + 4 + 4 + 4 + 4 = 20 oranges in all.",
+    "d": "e"
+  }
+]

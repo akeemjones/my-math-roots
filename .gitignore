@@ -6,3 +6,11 @@ Thumbs.db
 node_modules/
 dist/
 .superpowers/
+
+# Local Netlify folder
+.netlify
+
+# SvelteKit app
+app/.svelte-kit/
+app/build/
+app/node_modules/

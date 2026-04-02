@@ -1,0 +1,397 @@
+[
+  {
+    "t": "How many are in 3 groups of 4?",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "4+4+4=12.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 3 rows and 4 columns. How many in all?",
+    "o": [
+      "7",
+      "10",
+      "12",
+      "14"
+    ],
+    "a": 2,
+    "e": "3×4=12.",
+    "d": "e"
+  },
+  {
+    "t": "Equal groups shown by 3+3+3+3?",
+    "o": [
+      "Yes",
+      "No",
+      "Sometimes",
+      "Depends"
+    ],
+    "a": 0,
+    "e": "All groups have 3=equal.",
+    "d": "e"
+  },
+  {
+    "t": "How many are in 5 groups of 2?",
+    "o": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "a": 2,
+    "e": "2+2+2+2+2=10.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 4 rows and 6 columns. How many in all?",
+    "o": [
+      "16",
+      "20",
+      "24",
+      "28"
+    ],
+    "a": 2,
+    "e": "4×6=24.",
+    "d": "h"
+  },
+  {
+    "t": "How many are in 2 groups of 6?",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "6+6=12.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 5 rows and 4 columns. How many in all?",
+    "o": [
+      "15",
+      "18",
+      "20",
+      "25"
+    ],
+    "a": 2,
+    "e": "5×4=20.",
+    "d": "m"
+  },
+  {
+    "t": "How many are in 3 groups of 5?",
+    "o": [
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "a": 3,
+    "e": "5+5+5=15.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 2 rows and 7 columns. How many in all?",
+    "o": [
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "a": 2,
+    "e": "2×7=14.",
+    "d": "m"
+  },
+  {
+    "t": "How many are in 4 groups of 4?",
+    "o": [
+      "12",
+      "14",
+      "16",
+      "18"
+    ],
+    "a": 2,
+    "e": "4+4+4+4=16.",
+    "d": "m"
+  },
+  {
+    "t": "Is 3+4+3 equal groups?",
+    "o": [
+      "Yes",
+      "No",
+      "Sometimes",
+      "Depends"
+    ],
+    "a": 1,
+    "e": "3,4,3 are not all the same.",
+    "d": "m"
+  },
+  {
+    "t": "An array has 6 rows and 2 columns. How many in all?",
+    "o": [
+      "8",
+      "10",
+      "12",
+      "14"
+    ],
+    "a": 2,
+    "e": "6×2=12.",
+    "d": "m"
+  },
+  {
+    "t": "How many are in 2 groups of 9?",
+    "o": [
+      "16",
+      "17",
+      "18",
+      "19"
+    ],
+    "a": 2,
+    "e": "9+9=18.",
+    "d": "m"
+  },
+  {
+    "t": "An array has 3 rows and 3 columns. How many in all?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 3,
+    "e": "3×3=9.",
+    "d": "e"
+  },
+  {
+    "t": "How many are in 5 groups of 5?",
+    "o": [
+      "20",
+      "22",
+      "24",
+      "25"
+    ],
+    "a": 3,
+    "e": "5×5=25.",
+    "d": "h"
+  },
+  {
+    "t": "What is an ARRAY?",
+    "o": [
+      "Type of subtraction",
+      "Equal rows and columns",
+      "Way to measure",
+      "Type of fraction"
+    ],
+    "a": 1,
+    "e": "Array=equal groups in rows and columns.",
+    "d": "e"
+  },
+  {
+    "t": "How many are in 3 groups of 7?",
+    "o": [
+      "18",
+      "19",
+      "20",
+      "21"
+    ],
+    "a": 3,
+    "e": "7+7+7=21.",
+    "d": "m"
+  },
+  {
+    "t": "An array has 4 rows and 5 columns. How many in all?",
+    "o": [
+      "16",
+      "18",
+      "20",
+      "22"
+    ],
+    "a": 2,
+    "e": "4×5=20.",
+    "d": "m"
+  },
+  {
+    "t": "How many are in 6 groups of 3?",
+    "o": [
+      "15",
+      "16",
+      "17",
+      "18"
+    ],
+    "a": 3,
+    "e": "3+3+3+3+3+3=18.",
+    "d": "h"
+  },
+  {
+    "t": "An array has 4 rows. There are 12 items total. How many columns does it have?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 1,
+    "e": "4 rows × 3 columns = 12 items.",
+    "d": "h"
+  },
+  {
+    "t": "Is 5+5+5+5 equal groups?",
+    "o": [
+      "Yes",
+      "No",
+      "Sometimes"
+    ],
+    "a": 0,
+    "e": "All groups of 5=equal.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 10 rows and 2 columns. How many in all?",
+    "o": [
+      "16",
+      "18",
+      "20",
+      "22"
+    ],
+    "a": 2,
+    "e": "10×2=20.",
+    "d": "h"
+  },
+  {
+    "t": "How many are in 2 groups of 4?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "4+4=8.",
+    "d": "e"
+  },
+  {
+    "t": "An array has 3 rows and 6 columns. How many in all?",
+    "o": [
+      "15",
+      "16",
+      "17",
+      "18"
+    ],
+    "a": 3,
+    "e": "3×6=18.",
+    "d": "m"
+  },
+  {
+    "t": "How many are in 4 groups of 6?",
+    "o": [
+      "20",
+      "22",
+      "24",
+      "26"
+    ],
+    "a": 2,
+    "e": "4×6=24.",
+    "d": "h"
+  },
+  {
+    "t": "How many items in 3 rows of 4?",
+    "o": [
+      "4",
+      "8",
+      "12",
+      "16"
+    ],
+    "a": 2,
+    "e": "3×4=12.",
+    "d": "e"
+  },
+  {
+    "t": "Array rows go which direction?",
+    "o": [
+      "Up and down",
+      "Left to right",
+      "Diagonal",
+      "All directions"
+    ],
+    "a": 1,
+    "e": "Rows go across left to right.",
+    "d": "e"
+  },
+  {
+    "t": "How many are in 5 groups of 4?",
+    "o": [
+      "16",
+      "18",
+      "20",
+      "22"
+    ],
+    "a": 2,
+    "e": "4+4+4+4+4=20.",
+    "d": "m"
+  },
+  {
+    "t": "An array has 2 rows and 10 columns. How many in all?",
+    "o": [
+      "15",
+      "18",
+      "20",
+      "22"
+    ],
+    "a": 2,
+    "e": "2×10=20.",
+    "d": "h"
+  },
+  {
+    "t": "How many are in 3 groups of 8?",
+    "o": [
+      "20",
+      "22",
+      "24",
+      "26"
+    ],
+    "a": 2,
+    "e": "8+8+8=24.",
+    "d": "h"
+  },
+  {
+    "t": "3 bags with 5 apples each. Write as addition: 5+5+5 = ?",
+    "o": [
+      "10",
+      "12",
+      "15",
+      "20"
+    ],
+    "a": 2,
+    "e": "5 + 5 + 5 = 15. Three groups of 5!",
+    "d": "m"
+  },
+  {
+    "t": "Skip count by 10 four times starting at 0. What number do you reach?",
+    "o": [
+      "14",
+      "40",
+      "100",
+      "410"
+    ],
+    "a": 1,
+    "e": "10, 20, 30, 40. Four tens = 40.",
+    "d": "h"
+  },
+  {
+    "t": "4 groups of 2 pencils. How many pencils in all? 2+2+2+2 = ?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "10"
+    ],
+    "a": 2,
+    "e": "2 + 2 + 2 + 2 = 8 pencils. Four groups of 2!",
+    "d": "m"
+  }
+]

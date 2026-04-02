@@ -1,0 +1,362 @@
+[
+  {
+    "t": "What is 347 + 286?",
+    "o": [
+      "572",
+      "681",
+      "633",
+      "714"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 7 + 6 = 13, write 3 and regroup 1 ten. Then tens: 4 + 8 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 3 + 2 + 1 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 456 + 378?",
+    "o": [
+      "834",
+      "762",
+      "871",
+      "913"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 6 + 8 = 14, write 4 and regroup 1 ten. Then tens: 5 + 7 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 523 + 349?",
+    "o": [
+      "872",
+      "801",
+      "913",
+      "754"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 3 + 9 = 12, write 2 and regroup 1 ten. Then tens: 2 + 4 + 1 = 7. Then hundreds: 5 + 3 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 267 + 435?",
+    "o": [
+      "702",
+      "651",
+      "743",
+      "815"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 7 + 5 = 12, write 2 and regroup 1 ten. Then tens: 6 + 3 + 1 = 10, write 0 and regroup 1 ten. Then hundreds: 2 + 4 + 1 = 7.",
+    "d": "m"
+  },
+  {
+    "t": "What is 548 + 276?",
+    "o": [
+      "763",
+      "871",
+      "912",
+      "824"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 8 + 6 = 14, write 4 and regroup 1 ten. Then tens: 4 + 7 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 5 + 2 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 381 + 249?",
+    "o": [
+      "630",
+      "573",
+      "681",
+      "742"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 1 + 9 = 10, write 0 and regroup 1 ten. Then tens: 8 + 4 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 3 + 2 + 1 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 475 + 356?",
+    "o": [
+      "763",
+      "872",
+      "831",
+      "914"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 5 + 6 = 11, write 1 and regroup 1 ten. Then tens: 7 + 5 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 629 + 183?",
+    "o": [
+      "751",
+      "873",
+      "812",
+      "934"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 9 + 3 = 12, write 2 and regroup 1 ten. Then tens: 2 + 8 + 1 = 11, write 1 and regroup 1 ten. Then hundreds: 6 + 1 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 157 + 468?",
+    "o": [
+      "571",
+      "673",
+      "625",
+      "814"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 7 + 8 = 15, write 5 and regroup 1 ten. Then tens: 5 + 6 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 1 + 4 + 1 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 234 + 589?",
+    "o": [
+      "761",
+      "823",
+      "874",
+      "912"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 4 + 9 = 13, write 3 and regroup 1 ten. Then tens: 3 + 8 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 2 + 5 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "When your ones column adds up to 14, what do you write and regroup?",
+    "o": [
+      "4, regroup 1 ten",
+      "1, regroup 4",
+      "14, regroup 0",
+      "0, regroup 1 ten4"
+    ],
+    "a": 0,
+    "e": "Write the 4 in the ones column, then regroup 1 ten over to the tens column.",
+    "d": "e"
+  },
+  {
+    "t": "What is 648 + 175?",
+    "o": [
+      "823",
+      "764",
+      "871",
+      "912"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 8 + 5 = 13, write 3 and regroup 1 ten. Then tens: 4 + 7 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 6 + 1 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 362 + 479?",
+    "o": [
+      "763",
+      "892",
+      "841",
+      "914"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 2 + 9 = 11, write 1 and regroup 1 ten. Then tens: 6 + 7 + 1 = 14, write 4 and regroup 1 ten. Then hundreds: 3 + 4 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 793 + 148?",
+    "o": [
+      "873",
+      "982",
+      "941",
+      "1014"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 3 + 8 = 11, write 1 and regroup 1 ten. Then tens: 9 + 4 + 1 = 14, write 4 and regroup 1 ten. Then hundreds: 7 + 1 + 1 = 9.",
+    "d": "m"
+  },
+  {
+    "t": "What is 456 + 289?",
+    "o": [
+      "671",
+      "793",
+      "745",
+      "814"
+    ],
+    "a": 2,
+    "e": "Add the ones first: 6 + 9 = 15, write 5 and regroup 1 ten. Then tens: 5 + 8 + 1 = 14, write 4 and regroup 1 ten. Then hundreds: 4 + 2 + 1 = 7.",
+    "d": "m"
+  },
+  {
+    "t": "Which addition problem requires regrouping twice?",
+    "o": [
+      "123+456",
+      "301+408",
+      "247+368",
+      "211+353"
+    ],
+    "a": 2,
+    "e": "In 247 + 368, the ones give 7 + 8 = 15 (regroup!), and the tens give 4 + 6 + 1 = 11 (regroup again!). That is two regroupings!",
+    "d": "h"
+  },
+  {
+    "t": "What is 174 + 368?",
+    "o": [
+      "542",
+      "471",
+      "583",
+      "624"
+    ],
+    "a": 0,
+    "e": "Add the ones first: 4 + 8 = 12, write 2 and regroup 1 ten. Then tens: 7 + 6 + 1 = 14, write 4 and regroup 1 ten. Then hundreds: 1 + 3 + 1 = 5.",
+    "d": "m"
+  },
+  {
+    "t": "What is 539 + 283?",
+    "o": [
+      "751",
+      "873",
+      "934",
+      "822"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 9 + 3 = 12, write 2 and regroup 1 ten. Then tens: 3 + 8 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 5 + 2 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 427 + 396?",
+    "o": [
+      "761",
+      "874",
+      "915",
+      "823"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 7 + 6 = 13, write 3 and regroup 1 ten. Then tens: 2 + 9 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 685 + 237?",
+    "o": [
+      "851",
+      "973",
+      "1034",
+      "922"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 5 + 7 = 12, write 2 and regroup 1 ten. Then tens: 8 + 3 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 6 + 2 + 1 = 9.",
+    "d": "m"
+  },
+  {
+    "t": "Is this true or false? You should always add the ones column first in 3-digit addition.",
+    "o": [
+      "True",
+      "False",
+      "Only sometimes",
+      "Depends"
+    ],
+    "a": 0,
+    "e": "Always add ones first, then tens, then hundreds. This is always true!",
+    "d": "e"
+  },
+  {
+    "t": "What is 352 + 179?",
+    "o": [
+      "463",
+      "582",
+      "614",
+      "531"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 2 + 9 = 11, write 1 and regroup 1 ten. Then tens: 5 + 7 + 1 = 13, write 3 and regroup 1 ten. Then hundreds: 3 + 1 + 1 = 5.",
+    "d": "m"
+  },
+  {
+    "t": "What is 463 + 258?",
+    "o": [
+      "653",
+      "782",
+      "814",
+      "721"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 3 + 8 = 11, write 1 and regroup 1 ten. Then tens: 6 + 5 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 4 + 2 + 1 = 7.",
+    "d": "m"
+  },
+  {
+    "t": "What is 871 + 254?",
+    "o": [
+      "1053",
+      "1186",
+      "1214",
+      "1125"
+    ],
+    "a": 3,
+    "e": "Add the ones first: 1 + 4 = 5. Then tens: 7 + 5 = 12, write 2 and regroup 1 ten. Then hundreds: 8 + 2 + 1 = 11.",
+    "d": "m"
+  },
+  {
+    "t": "What is 245 + 378?",
+    "o": [
+      "571",
+      "623",
+      "674",
+      "815"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 5 + 8 = 13, write 3 and regroup 1 ten. Then tens: 4 + 7 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 2 + 3 + 1 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 567 + 284?",
+    "o": [
+      "773",
+      "851",
+      "892",
+      "914"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 7 + 4 = 11, write 1 and regroup 1 ten. Then tens: 6 + 8 + 1 = 15, write 5 and regroup 1 ten. Then hundreds: 5 + 2 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "What is 139 + 486?",
+    "o": [
+      "571",
+      "625",
+      "673",
+      "814"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 9 + 6 = 15, write 5 and regroup 1 ten. Then tens: 3 + 8 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 1 + 4 + 1 = 6.",
+    "d": "m"
+  },
+  {
+    "t": "What is 724 + 198?",
+    "o": [
+      "851",
+      "922",
+      "973",
+      "1034"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 4 + 8 = 12, write 2 and regroup 1 ten. Then tens: 2 + 9 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 7 + 1 + 1 = 9.",
+    "d": "m"
+  },
+  {
+    "t": "What is 495 + 317?",
+    "o": [
+      "751",
+      "812",
+      "873",
+      "934"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 5 + 7 = 12, write 2 and regroup 1 ten. Then tens: 9 + 1 + 1 = 11, write 1 and regroup 1 ten. Then hundreds: 4 + 3 + 1 = 8.",
+    "d": "m"
+  },
+  {
+    "t": "Max has 376 cards. He gets 248 more. How many cards does Max have in all?",
+    "o": [
+      "561",
+      "624",
+      "673",
+      "812"
+    ],
+    "a": 1,
+    "e": "Add the ones first: 6 + 8 = 14, write 4 and regroup 1 ten. Then tens: 7 + 4 + 1 = 12, write 2 and regroup 1 ten. Then hundreds: 3 + 2 + 1 = 6. Max has 624 cards!",
+    "d": "h"
+  }
+]
