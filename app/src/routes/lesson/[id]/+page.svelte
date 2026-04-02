@@ -76,7 +76,7 @@
     <div class="les-teks-bar">{unit?.teks ?? ''}</div>
 
     <!-- Scrollable content -->
-    <div class="lesson-content-wrap">
+    <div class="sc-in">
 
       <!-- Key Points -->
       {#if lesson.points && lesson.points.length > 0}
