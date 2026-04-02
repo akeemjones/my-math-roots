@@ -48,53 +48,12 @@
   ]);
 </script>
 
-<div class="stats-grid">
+<div class="stat-grid">
   {#each chips as chip}
-    <div class="stat-chip" style="--chip-color: {chip.color}">
-      <span class="chip-icon">{chip.icon}</span>
-      <span class="chip-value">{chip.value}</span>
-      <span class="chip-label">{chip.label}</span>
+    <div class="stat-tile" style="--chip-color: {chip.color}">
+      <span class="stat-ico">{chip.icon}</span>
+      <span class="stat-num">{chip.value}</span>
+      <span class="stat-lbl">{chip.label}</span>
     </div>
   {/each}
 </div>
-
-<style>
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.625rem;
-  }
-
-  .stat-chip {
-    background: var(--color-surface, #fff);
-    border-radius: 0.875rem;
-    padding: 0.875rem 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    border-top: 3px solid var(--chip-color);
-  }
-
-  .chip-icon {
-    font-size: 1.4rem;
-    line-height: 1;
-  }
-
-  .chip-value {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--chip-color);
-    line-height: 1.1;
-  }
-
-  .chip-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted, #636e72);
-    text-align: center;
-  }
-</style>
