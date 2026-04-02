@@ -2,7 +2,7 @@ name: CI / Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [master, staging]
   pull_request:
     branches: [master]
 
@@ -70,13 +70,13 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
   # ───────────────────────────────────────────────────────────────
-  # Job 3: Deploy to Staging — PRs only, for preview / QA
+  # Job 3: Deploy to Staging — staging branch push OR PRs
   # ───────────────────────────────────────────────────────────────
   deploy-staging:
-    name: Deploy PR Preview to Staging
+    name: Deploy to Staging
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/staging'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
