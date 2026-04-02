@@ -20,53 +20,28 @@
 <main class="dash-page" style="--color: {accentColor}">
 
   <section class="dash-section">
-    <h2 class="section-title">📈 Overall Stats</h2>
+    <div class="dash-section-title">📈 Overall Stats</div>
     <OverallStats />
   </section>
 
   <section class="dash-section">
-    <h2 class="section-title">📋 Quiz History</h2>
+    <div class="dash-section-title">📋 Quiz History</div>
     <QuizHistory />
   </section>
 
   <section class="dash-section">
-    <h2 class="section-title">🗺️ Mastery Map</h2>
+    <div class="dash-section-title">🗺️ Mastery Map</div>
     <MasteryGrid />
   </section>
 
   <section class="dash-section">
-    <h2 class="section-title">🤖 AI Progress Report</h2>
+    <div class="dash-section-title">🤖 AI Progress Report</div>
     <AiReportCard />
   </section>
 
   <section class="dash-section">
-    <h2 class="section-title">⚙️ Settings</h2>
+    <div class="dash-section-title">⚙️ Settings</div>
     <ParentSettings />
   </section>
 
 </main>
-
-<style>
-  .dash-page {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-bottom: 3rem;
-  }
-
-  .dash-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-
-  .section-title {
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-text-muted, #636e72);
-  }
-</style>
