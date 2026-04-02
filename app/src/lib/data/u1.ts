@@ -1,0 +1,6745 @@
+// Auto-converted from src/data/u1.js
+// Regenerate with: node scripts/convert-unit-data.js 1
+// Do NOT edit manually — edit the source in src/data/u1.js then re-run.
+
+import type { LessonContent, UnitQuiz, Question } from '$lib/types/content';
+
+export const lessons: LessonContent[] = [
+  {
+    "points": [
+      "Count ON to add: start at the bigger number, then count forward",
+      "Count BACK to subtract: start at the bigger number, then count backward",
+      "Always start with the BIGGER number!"
+    ],
+    "examples": [
+      {
+        "c": "#e74c3c",
+        "tag": "Counting ON to Add",
+        "p": "7 + 3 = ?",
+        "s": "Start at 7, count on 3 more: 8 → 9 → 10",
+        "a": "7 + 3 = 10 ✅",
+        "vis": "add:🍎:7:3"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Counting ON to Add",
+        "p": "8 + 5 = ?",
+        "s": "Start at 8, count on 5 more: 9 → 10 → 11 → 12 → 13",
+        "a": "8 + 5 = 13 ✅",
+        "vis": "add:🍋:8:5"
+      },
+      {
+        "c": "#c0392b",
+        "tag": "Counting BACK to Subtract",
+        "p": "12 - 4 = ?",
+        "s": "Start at 12, count back 4: 11 → 10 → 9 → 8",
+        "a": "12 - 4 = 8 ✅",
+        "vis": "sub:🍎:12:4"
+      }
+    ],
+    "practice": [
+      {
+        "q": "5 + 2 = ?",
+        "a": "7",
+        "h": "Start at 5, count on 2 fingers!",
+        "e": "Great job! You're learning so much about numbers! Keep up the amazing work! ✨"
+      },
+      {
+        "q": "9 + 3 = ?",
+        "a": "12",
+        "h": "Start at 9, count on 3 more: 10, 11, 12",
+        "e": "Fantastic! Every answer helps you grow your math brain. You're doing great! 🌟"
+      },
+      {
+        "q": "14 - 4 = ?",
+        "a": "10",
+        "h": "Start at 14, count back 4: 13, 12, 11, 10",
+        "e": "Wow, you're a math star! Keep practicing and you'll be a math wizard! 🧙‍♀️"
+      }
+    ],
+    "qBank": [
+      {
+        "t": "Use the count-on strategy. What is 6 + 3?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "To add 6 + 3, start at 6 and count on 3 more: 7, 8, 9. So, 6 + 3 = 9! Good job! 👍",
+        "d": "e"
+      },
+      {
+        "t": "Use the count-on strategy. What is 8 + 4?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "To find 8 + 4, start at 8 and count on 4 steps: 9, 10, 11, 12. So, 8 + 4 = 12! You got it! ✅",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 7 + 5?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "To add 7 + 5, start at 7 and count on 5 steps: 8, 9, 10, 11, 12. So, 7 + 5 = 12! Way to go! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 9 + 3?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "To add 9 + 3, start at 9 and count on 3 steps: 10, 11, 12. So, 9 + 3 = 12! Super work! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 5 + 4?",
+        "o": [
+          "9",
+          "7",
+          "8",
+          "10"
+        ],
+        "a": 0,
+        "e": "To find 5 + 4, start at 5 and count on 4 steps: 6, 7, 8, 9. So, 5 + 4 = 9! Keep counting! 🔢",
+        "d": "e"
+      },
+      {
+        "t": "Use the count-on strategy. What is 11 + 3?",
+        "o": [
+          "12",
+          "13",
+          "15",
+          "14"
+        ],
+        "a": 3,
+        "e": "To add 11 + 3, start at 11 and count on 3 steps: 12, 13, 14. So, 11 + 3 = 14! You're brilliant! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 14 + 2?",
+        "o": [
+          "14",
+          "16",
+          "15",
+          "17"
+        ],
+        "a": 1,
+        "e": "To find 14 + 2, start at 14 and count on 2 steps: 15, 16. So, 14 + 2 = 16! Amazing job! 💯",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 7 + 4?",
+        "o": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "a": 2,
+        "e": "To add 7 + 4, start at 7 and count on 4 steps: 8, 9, 10, 11. So, 7 + 4 = 11! You're a pro! 🏆",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 10 − 3?",
+        "o": [
+          "5",
+          "6",
+          "8",
+          "7"
+        ],
+        "a": 3,
+        "e": "To subtract 10 - 3, start at 10 and count back 3 steps: 9, 8, 7. So, 10 - 3 = 7! Well done! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 13 − 4?",
+        "o": [
+          "7",
+          "8",
+          "10",
+          "9"
+        ],
+        "a": 3,
+        "e": "To find 13 - 4, start at 13 and count back 4 steps: 12, 11, 10, 9. So, 13 - 4 = 9! Great thinking! 🤔",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 15 − 5?",
+        "o": [
+          "10",
+          "8",
+          "9",
+          "11"
+        ],
+        "a": 0,
+        "e": "To subtract 15 - 5, start at 15 and count back 5 steps: 14, 13, 12, 11, 10. So, 15 - 5 = 10! Keep it up! 💪",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 12 − 3?",
+        "o": [
+          "7",
+          "9",
+          "8",
+          "10"
+        ],
+        "a": 1,
+        "e": "To find 12 - 3, start at 12 and count back 3 steps: 11, 10, 9. So, 12 - 3 = 9! You're doing great! ⭐",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 17 − 6?",
+        "o": [
+          "9",
+          "10",
+          "12",
+          "11"
+        ],
+        "a": 3,
+        "e": "To subtract 17 - 6, start at 17 and count back 6 steps: 16, 15, 14, 13, 12, 11. So, 17 - 6 = 11! Fantastic! 👏",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 14 − 5?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "To find 14 - 5, start at 14 and count back 5 steps: 13, 12, 11, 10, 9. So, 14 - 5 = 9! You're a whiz! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 11 − 4?",
+        "o": [
+          "7",
+          "5",
+          "6",
+          "8"
+        ],
+        "a": 0,
+        "e": "To subtract 11 - 4, start at 11 and count back 4 steps: 10, 9, 8, 7. So, 11 - 4 = 7! Good job! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 16 − 7?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "To find 16 - 7, start at 16 and count back 7 steps: 15, 14, 13, 12, 11, 10, 9. So, 16 - 7 = 9! Awesome! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "Which strategy works best to solve 8 + 3?",
+        "o": [
+          "Count back from 11",
+          "Count on from 8",
+          "Start at 3",
+          "Subtract"
+        ],
+        "a": 1,
+        "e": "When you add, start with the bigger number and count on. It helps you get to the answer faster! Smart move! 💡",
+        "d": "m"
+      },
+      {
+        "t": "Which strategy works best to solve 14 − 4?",
+        "o": [
+          "Count on from 14",
+          "Count back from 14",
+          "Add 4 to 14",
+          "Double 7"
+        ],
+        "a": 1,
+        "e": "Subtraction means taking away. Count back from the bigger number to find what's left! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 12 + 4?",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "Adding means putting together! Count on 4 from 12. You land on 16. So, 12 + 4 = 16! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 18 − 5?",
+        "o": [
+          "13",
+          "11",
+          "12",
+          "14"
+        ],
+        "a": 0,
+        "e": "To subtract 5 from 18, count back 5 steps. You land on 13. So, 18 - 5 = 13! Great job! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 6 + 6?",
+        "o": [
+          "10",
+          "11",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "Adding 6 to 6 means counting forward 6 steps. You land on 12. So, 6 + 6 = 12! You got it! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 20 − 4?",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "Taking 4 away from 20 means counting back 4 steps. You land on 16. So, 20 - 4 = 16! Awesome! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 9 + 5?",
+        "o": [
+          "14",
+          "12",
+          "13",
+          "15"
+        ],
+        "a": 0,
+        "e": "Adding 5 to 9 means counting forward 5 steps. You land on 14. So, 9 + 5 = 14! Fantastic! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "What does count ON mean?",
+        "o": [
+          "Subtract",
+          "Count forward to add",
+          "Count backward",
+          "Guess"
+        ],
+        "a": 1,
+        "e": "Counting ON helps us add! We start at the bigger number and count forward to find the total. Keep going! 🚀",
+        "d": "e"
+      },
+      {
+        "t": "Use the count-on strategy. What is 13 + 3?",
+        "o": [
+          "14",
+          "15",
+          "17",
+          "16"
+        ],
+        "a": 3,
+        "e": "To add 3 to 13, count forward 3 steps. You land on 16. So, 13 + 3 = 16! You're a math whiz! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 19 − 6?",
+        "o": [
+          "11",
+          "13",
+          "12",
+          "14"
+        ],
+        "a": 1,
+        "e": "Taking 6 away from 19 means counting back 6 steps. You land on 13. So, 19 - 6 = 13! Super! ⭐",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 10 + 5?",
+        "o": [
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "a": 2,
+        "e": "To add 5 to 10, count forward 5 steps. You land on 15. So, 10 + 5 = 15! Way to go! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 16 − 4?",
+        "o": [
+          "10",
+          "11",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "Taking 4 away from 16 means counting back 4 steps. You land on 12. So, 16 - 4 = 12! Nice work! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-on strategy. What is 15 + 3?",
+        "o": [
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "a": 2,
+        "e": "To add 3 to 15, count forward 3 steps. You land on 18. So, 15 + 3 = 18! You're doing great! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "Use the count-back strategy. What is 13 − 6?",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "Taking 6 away from 13 means counting back 6 steps. You land on 7. So, 13 - 6 = 7! Good job! ✅",
+        "d": "m"
+      },
+      {
+        "t": "Start at 3. Count up 2. What number do you land on?",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "3"
+        ],
+        "a": 1,
+        "e": "To add 2 to 3, count forward 2 steps. You land on 5. So, 3 + 2 = 5! You got it! ✨",
+        "d": "e"
+      },
+      {
+        "t": "What is 2 + 1?",
+        "o": [
+          "3",
+          "4",
+          "2",
+          "1"
+        ],
+        "a": 0,
+        "e": "Adding 1 to 2 means counting forward 1 step. You land on 3. So, 2 + 1 = 3! Easy peasy! 😊",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 + 2?",
+        "o": [
+          "6",
+          "8",
+          "7",
+          "5"
+        ],
+        "a": 2,
+        "e": "To add 2 to 5, count forward 2 steps. You land on 7. So, 5 + 2 = 7! You're a star! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "What is 4 + 3?",
+        "o": [
+          "8",
+          "6",
+          "7",
+          "5"
+        ],
+        "a": 2,
+        "e": "Adding 3 to 4 means counting forward 3 steps. You land on 7. So, 4 + 3 = 7! Keep up the great work! 🚀",
+        "d": "e"
+      },
+      {
+        "t": "Start at 6. Count up 1. What number do you get?",
+        "o": [
+          "5",
+          "8",
+          "6",
+          "7"
+        ],
+        "a": 3,
+        "e": "To add 1 to 6, count forward 1 step. You land on 7. So, 6 + 1 = 7! That's it! ✅",
+        "d": "e"
+      },
+      {
+        "t": "What is 1 + 3?",
+        "o": [
+          "3",
+          "5",
+          "4",
+          "2"
+        ],
+        "a": 2,
+        "e": "Adding 3 to 1 means counting forward 3 steps. You land on 4. So, 1 + 3 = 4! You're so smart! 💡",
+        "d": "e"
+      },
+      {
+        "t": "Count back 1 from 5. What number do you get?",
+        "o": [
+          "6",
+          "3",
+          "5",
+          "4"
+        ],
+        "a": 3,
+        "e": "Taking 1 away from 5 means counting back 1 step. You land on 4. So, 5 - 1 = 4! Wonderful! 👏",
+        "d": "e"
+      },
+      {
+        "t": "What is 7 - 1?",
+        "o": [
+          "8",
+          "7",
+          "5",
+          "6"
+        ],
+        "a": 3,
+        "e": "Taking 1 away from 7 means you have 6 left. So, 7 - 1 = 6! Great job! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "Count back 2 from 6. Where do you land?",
+        "o": [
+          "5",
+          "4",
+          "3",
+          "8"
+        ],
+        "a": 1,
+        "e": "When you take 2 away from 6, you count back two steps. 6 minus 2 is 4. You got it! 👏",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 - 2?",
+        "o": [
+          "4",
+          "2",
+          "3",
+          "7"
+        ],
+        "a": 2,
+        "e": "Subtracting 2 from 5 means finding what's left. Counting back 2 gives you 3. Super! ✨",
+        "d": "e"
+      },
+      {
+        "t": "What is 3 + 1?",
+        "o": [
+          "2",
+          "5",
+          "3",
+          "4"
+        ],
+        "a": 3,
+        "e": "Adding 1 to 3 means taking one jump forward. 3 + 1 makes 4. You're a math star! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "Count up 3 from 2. What number do you reach?",
+        "o": [
+          "4",
+          "6",
+          "5",
+          "3"
+        ],
+        "a": 2,
+        "e": "When you add 3 to 2, you count up three steps. 2 + 3 equals 5. Way to go! 👍",
+        "d": "e"
+      },
+      {
+        "t": "What is 8 - 2?",
+        "o": [
+          "5",
+          "7",
+          "6",
+          "10"
+        ],
+        "a": 2,
+        "e": "Taking 2 away from 8 means you have 6 left. So, 8 - 2 = 6. Awesome work! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "What is 6 - 1?",
+        "o": [
+          "7",
+          "4",
+          "6",
+          "5"
+        ],
+        "a": 3,
+        "e": "Subtracting 1 from 6 means one less. 6 minus 1 is 5. You're so smart! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "Start at 1. Count up 2. Where do you land?",
+        "o": [
+          "2",
+          "4",
+          "1",
+          "3"
+        ],
+        "a": 3,
+        "e": "When you add 2 to 1, you count two steps forward. 1 + 2 equals 3. Fantastic! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "What is 9 - 2?",
+        "o": [
+          "8",
+          "6",
+          "11",
+          "7"
+        ],
+        "a": 3,
+        "e": "Taking 2 away from 9 means finding what's left. 9 minus 2 is 7. You did it! ✅",
+        "d": "e"
+      },
+      {
+        "t": "What is 4 + 1?",
+        "o": [
+          "3",
+          "6",
+          "4",
+          "5"
+        ],
+        "a": 3,
+        "e": "Adding 1 to 4 means one more. 4 + 1 makes 5. Keep up the great work! 😄",
+        "d": "e"
+      },
+      {
+        "t": "Count back 3 from 7. What number do you get?",
+        "o": [
+          "5",
+          "3",
+          "10",
+          "4"
+        ],
+        "a": 3,
+        "e": "Subtracting 3 from 7 means counting back three steps. 7 minus 3 is 4. Excellent! 💯",
+        "d": "e"
+      },
+      {
+        "t": "What is 2 + 3?",
+        "o": [
+          "4",
+          "6",
+          "5",
+          "3"
+        ],
+        "a": 2,
+        "e": "Adding 3 to 2 means jumping forward 3 times. 2 + 3 equals 5. You're a math whiz! ➕",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 - 1?",
+        "o": [
+          "11",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "Taking 1 away from 10 means you have 9 left. 10 - 1 = 9. Super counting! 🔢",
+        "d": "e"
+      },
+      {
+        "t": "Jada has 8 crayons. She gets 3 more. How many crayons does she have now?",
+        "o": [
+          "10",
+          "12",
+          "11",
+          "5"
+        ],
+        "a": 2,
+        "e": "To find the total, add 3 to 8. Counting up 3 steps from 8 gives 11. Jada has 11 crayons! 🖍️",
+        "d": "h"
+      },
+      {
+        "t": "__ + 3 = 7. What is the missing number?",
+        "o": [
+          "3",
+          "10",
+          "5",
+          "4"
+        ],
+        "a": 3,
+        "e": "To find the missing number, take 3 away from 7. Counting back 3 from 7 gives 4. The number is 4! 🤔",
+        "d": "h"
+      },
+      {
+        "t": "Which way helps you solve 9 + 3?",
+        "o": [
+          "Count back 3 from 9",
+          "Skip count by 5s",
+          "Count up 3 from 9",
+          "Subtract 3 from 9"
+        ],
+        "a": 2,
+        "e": "To add 3 to 9, count up 3 steps from 9. You land on 12. So, 9 + 3 = 12. Fantastic! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "Leo had 12 grapes. He ate 3. How many grapes are left?",
+        "o": [
+          "8",
+          "15",
+          "10",
+          "9"
+        ],
+        "a": 3,
+        "e": "To find how many are left, subtract 3 from 12. Counting back 3 gives 9. Leo has 9 grapes! 🍇",
+        "d": "h"
+      },
+      {
+        "t": "Count up 4 from 7. What number do you reach?",
+        "o": [
+          "12",
+          "10",
+          "3",
+          "11"
+        ],
+        "a": 3,
+        "e": "Adding 4 to 7 means taking 4 jumps forward. 7 + 4 equals 11. You're doing great! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "9 - __ = 6. What is the missing number?",
+        "o": [
+          "2",
+          "15",
+          "4",
+          "3"
+        ],
+        "a": 3,
+        "e": "To find how many were taken away, count back from 9 to 6. That's 3 steps. So, 9 - 3 = 6! 💡",
+        "d": "h"
+      },
+      {
+        "t": "A frog is on lily pad 5. It jumps forward 4 pads. Which pad does it land on?",
+        "o": [
+          "10",
+          "1",
+          "8",
+          "9"
+        ],
+        "a": 3,
+        "e": "To find where the frog lands, add 4 to 5. Counting up 4 from 5 gives 9. The frog lands on 9! 🐸",
+        "d": "e"
+      },
+      {
+        "t": "Which number sentence can you solve by counting back 2?",
+        "o": [
+          "5 + 2",
+          "7 - 2",
+          "3 + 3",
+          "2 + 2"
+        ],
+        "a": 1,
+        "e": "When we subtract, we count back! Start at 7, count back 2 spots. You land on 5. So, 7 - 2 = 5! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "There are 11 birds on a fence. 4 fly away. How many are left?",
+        "o": [
+          "8",
+          "6",
+          "15",
+          "7"
+        ],
+        "a": 3,
+        "e": "You had 11 birds. 4 flew away! Count back 4 from 11. You land on 7. There are 7 birds left! 🐦",
+        "d": "h"
+      },
+      {
+        "t": "6 + __ = 9. What is the missing number?",
+        "o": [
+          "2",
+          "4",
+          "15",
+          "3"
+        ],
+        "a": 3,
+        "e": "To find the missing number, count up from 6 to 9. You took 3 steps! The missing number is 3. Great job! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Kai has 7 toy cars. His friend gives him some more. Now Kai has 10. How many did his friend give him?",
+        "o": [
+          "2",
+          "4",
+          "17",
+          "3"
+        ],
+        "a": 3,
+        "e": "He had 7 cars and now has 10. Count up from 7 to 10 to see how many were added. That's 3 steps! His friend gave him 3 cars! 🚗",
+        "d": "h"
+      },
+      {
+        "t": "Which is the best way to solve 11 - 3?",
+        "o": [
+          "Count up 3 from 11",
+          "Count back 3 from 11",
+          "Add 3 to 11",
+          "Skip count by 3s"
+        ],
+        "a": 1,
+        "e": "When you subtract, you count back! Start at 11 and count back 3 spots. You land on 8. So, 11 - 3 = 8! ✨",
+        "d": "m"
+      },
+      {
+        "t": "__ - 2 = 8. What is the missing number?",
+        "o": [
+          "6",
+          "11",
+          "9",
+          "10"
+        ],
+        "a": 3,
+        "e": "If you take 2 away and have 8 left, you can count up 2 from 8 to find the start. 8, 9, 10! The missing number is 10. 💡",
+        "d": "h"
+      },
+      {
+        "t": "A bunny hops 3 spaces from 6 on a number line. Where does it land?",
+        "o": [
+          "3",
+          "10",
+          "8",
+          "9"
+        ],
+        "a": 3,
+        "e": "The bunny starts at 6 and jumps 3 more spots. Count up 3 from 6! You land on 9. The bunny lands on 9! 🐰",
+        "d": "m"
+      },
+      {
+        "t": "There are 14 apples. 4 are eaten. How many are left?",
+        "o": [
+          "11",
+          "10",
+          "18",
+          "9"
+        ],
+        "a": 1,
+        "e": "You had 14 apples and 4 were eaten. Count back 4 from 14 to see what's left. You land on 10. There are 10 apples left! 🍎",
+        "d": "h"
+      },
+      {
+        "t": "Which problem can be solved by counting up from 8?",
+        "o": [
+          "8 - 3",
+          "3 - 8",
+          "8 + 2",
+          "2 - 8"
+        ],
+        "a": 2,
+        "e": "When you add, you count up! Start at 8 and count up 2 spots. You land on 10. So, 8 + 2 = 10! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "Maya picks 6 flowers. Then she picks 5 more. How many flowers does she have?",
+        "o": [
+          "12",
+          "1",
+          "10",
+          "11"
+        ],
+        "a": 3,
+        "e": "Maya had 6 flowers and picked 5 more. Count up 5 from 6 to find her total. You land on 11. Maya has 11 flowers! 🌸",
+        "d": "h"
+      },
+      {
+        "t": "7 + __ = 11. What is the missing number?",
+        "o": [
+          "3",
+          "5",
+          "18",
+          "4"
+        ],
+        "a": 3,
+        "e": "To find the missing part, count up from 7 to 11. How many steps did you take? That's 4 steps! The missing number is 4. ✅",
+        "d": "h"
+      },
+      {
+        "t": "Start at 15. Count back 3. What number do you land on?",
+        "o": [
+          "11",
+          "18",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "When you subtract, you count back! Start at 15 and count back 3 spots. You land on 12. So, 15 - 3 = 12! ✨",
+        "d": "e"
+      },
+      {
+        "t": "A dog has 9 treats. It eats some. Now it has 6. How many did it eat?",
+        "o": [
+          "4",
+          "2",
+          "15",
+          "3"
+        ],
+        "a": 3,
+        "e": "The dog had 9 treats and now has 6. Count back from 9 to 6 to find how many were eaten. That's 3 steps! The dog ate 3 treats! 🐶",
+        "d": "h"
+      },
+      {
+        "t": "Mia had 14 stickers. She gave 3 to Kai and 4 to Jada. How many stickers does Mia have left?",
+        "o": [
+          "8",
+          "6",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "First, take 3 from 14 by counting back. That's 11. Then, take 4 from 11 by counting back. You land on 7. Mia has 7 left! 🌟",
+        "d": "h"
+      },
+      {
+        "t": "A student wrote: 11 - 3 = 9. What mistake did the student make?",
+        "o": [
+          "They added instead",
+          "They counted back only 2, not 3",
+          "They started at 12",
+          "They counted up"
+        ],
+        "a": 1,
+        "e": "To subtract 3 from 11, you need to count back 3 times. The student only counted back 2 times. Count back 3: 10, 9, 8. The answer is 8! 🤔",
+        "d": "h"
+      },
+      {
+        "t": "Leo says counting back 4 from 13 gives 8. Is Leo correct?",
+        "o": [
+          "No, it should be 10",
+          "No, it should be 9",
+          "Yes, Leo is correct",
+          "No, it should be 7"
+        ],
+        "a": 1,
+        "e": "When you count back 4 from 13, you land on 9. Leo counted back 5 steps by mistake! Always check your counts. The answer is 9. 👍",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 11. Both numbers are more than 3. What could they be?",
+        "o": [
+          "2 and 9",
+          "4 and 7",
+          "3 and 8",
+          "1 and 10"
+        ],
+        "a": 1,
+        "e": "Both numbers you add to make 11 must be bigger than 3. For example, 4 + 7 = 11. Both 4 and 7 are bigger than 3! ✨",
+        "d": "h"
+      },
+      {
+        "t": "Sam had 8 marbles. He found some more and now has 15. Then he lost 3. How many does Sam have now?",
+        "o": [
+          "10",
+          "13",
+          "11",
+          "12"
+        ],
+        "a": 3,
+        "e": "First, count up from 8 to 15 to find how many Sam added. Then, subtract 3 from 15 by counting back. Sam has 12 marbles now! 🤩",
+        "d": "h"
+      },
+      {
+        "t": "Which number sentence is NOT solved by counting back?",
+        "o": [
+          "10 - 2",
+          "13 - 4",
+          "7 + 3",
+          "9 - 1"
+        ],
+        "a": 2,
+        "e": "When you add, you count UP to find the total. Counting back is for subtraction. For 7 + 3, count up! 7, 8, 9, 10. The answer is 10! ⬆️",
+        "d": "e"
+      },
+      {
+        "t": "A student wrote: 7 + 4 = 12. What went wrong?",
+        "o": [
+          "They subtracted instead",
+          "They counted up 5 instead of 4",
+          "They started at 8 instead of 7",
+          "They counted up from 6"
+        ],
+        "a": 1,
+        "e": "To add 4 to 7, you count up 4 times. The student counted 5 times instead of 4. Count up 4: 8, 9, 10, 11. The answer is 11! 🧐",
+        "d": "h"
+      },
+      {
+        "t": "Zoe is on step 6. She goes up 3 steps, then back down 2 steps. What step is she on now?",
+        "o": [
+          "5",
+          "8",
+          "6",
+          "7"
+        ],
+        "a": 3,
+        "e": "First, Zoe adds 3 steps to 6. Then she takes 2 steps back. She is on step 7! 👣",
+        "d": "h"
+      },
+      {
+        "t": "I am a number. If you count back 3 from me, you get 9. What number am I?",
+        "o": [
+          "6",
+          "11",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "To find the missing number, add back the 3 that were taken away from 9. It's 12! ✨",
+        "d": "h"
+      },
+      {
+        "t": "True or false: You can solve 6 + 3 by counting back 3 from 6.",
+        "o": [
+          "True, counting back works for addition",
+          "False, you should count up 3 from 6",
+          "True, it gives the same answer",
+          "False, you should count back from 3"
+        ],
+        "a": 1,
+        "e": "For addition, you count up from the first number to find the total. 6 + 3 = 9! ⬆️",
+        "d": "h"
+      },
+      {
+        "t": "There were 16 kids at the park. 5 went home, then 3 more went home. How many are still at the park?",
+        "o": [
+          "7",
+          "9",
+          "10",
+          "8"
+        ],
+        "a": 3,
+        "e": "First, 5 kids left. Then 3 more left. Count back twice to find how many are left: 8 kids! 🌳",
+        "d": "h"
+      },
+      {
+        "t": "Kim says 8 + 3 = 10. What should Kim do to fix her work?",
+        "o": [
+          "Count back 3 from 8",
+          "Count up one more from 10",
+          "Start over at 3",
+          "Subtract instead of add"
+        ],
+        "a": 1,
+        "e": "Kim needs to count 3 more from 8. She stopped too early! 8 + 3 = 11. Keep counting! ✅",
+        "d": "h"
+      },
+      {
+        "t": "__ - 4 = 7. Then 7 + 2 = __. What are both missing numbers?",
+        "o": [
+          "10 and 9",
+          "12 and 9",
+          "11 and 9",
+          "11 and 10"
+        ],
+        "a": 2,
+        "e": "For 7 + 4, count up 4 from 7 to get 11. For 7 + 2, count up 2 from 7 to get 9. Great job! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Which problem gives the BIGGEST answer?",
+        "o": [
+          "9 + 3",
+          "8 + 2",
+          "7 + 4",
+          "6 + 5"
+        ],
+        "a": 0,
+        "e": "Add each pair of numbers. Then compare the sums to find the greatest one. 9 + 3 = 12 is the biggest! 🏆",
+        "d": "e"
+      },
+      {
+        "t": "A number line goes from 0 to 20. You start at 5, jump forward 4, then jump forward 3. Where are you?",
+        "o": [
+          "11",
+          "13",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "First, add 4 to 5. Then add 3 more to that sum. You land on 12! Keep jumping! 🐸",
+        "d": "h"
+      },
+      {
+        "t": "Eli has 13 cards. He gives away some and has 9 left. Then he finds 4 more. How many does Eli have now?",
+        "o": [
+          "12",
+          "14",
+          "8",
+          "13"
+        ],
+        "a": 3,
+        "e": "These numbers are a fact family! 13 minus 9 is 4. And 9 plus 4 is 13. So Eli has 13 cards! 🃏",
+        "d": "h"
+      },
+      {
+        "t": "A student solved 15 - 4 and got 10. Explain what went wrong.",
+        "o": [
+          "They counted back 5 instead of 4",
+          "They counted back 4 correctly",
+          "They added 4 instead",
+          "They started at 14"
+        ],
+        "a": 0,
+        "e": "To subtract 4 from 15, you count back 4 times. The student counted back 5 times! 15 - 4 = 11. 🔢",
+        "d": "h"
+      },
+      {
+        "t": "I am thinking of two numbers that add up to 13. Both are greater than 5. What could they be?",
+        "o": [
+          "4 and 9",
+          "5 and 8",
+          "6 and 7",
+          "3 and 10"
+        ],
+        "a": 2,
+        "e": "We need two numbers bigger than 5 that add up to 13. 6 and 7 work because 6 + 7 = 13! ✨",
+        "d": "h"
+      },
+      {
+        "t": "Count back 3 from 12, then count back 2 more. What number do you get?",
+        "o": [
+          "8",
+          "6",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "First, count back 3 from 12. Then, count back 2 more from that number. You get 7! ⬇️",
+        "d": "h"
+      },
+      {
+        "t": "Is this true or false? 14 - 3 and 13 - 2 give the same answer.",
+        "o": [
+          "True, both equal 11",
+          "False, 14 - 3 = 10",
+          "False, 13 - 2 = 12",
+          "False, they give different answers"
+        ],
+        "a": 0,
+        "e": "Subtract for each problem. Both 14 - 3 and 13 - 2 give you 11! They are equal! 🙌",
+        "d": "h"
+      }
+    ],
+    "quiz": [
+      {
+        "t": "Use the count-on strategy. What is 9 + 3?",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "To add 3 to 9, start at 9 and count on 3 more numbers. You land on 12! 🚀"
+      },
+      {
+        "t": "Use the count-on strategy. What is 7 + 4?",
+        "o": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "a": 2,
+        "e": "To add 4 to 7, start at 7 and count on 4 more numbers. You land on 11! 🎉"
+      },
+      {
+        "t": "Use the count-on strategy. What is 6 + 5?",
+        "o": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "a": 2,
+        "e": "To add 5 to 6, start at 6 and count on 5 more numbers. You land on 11! 🥳"
+      },
+      {
+        "t": "Use the count-back strategy. What is 12 − 5?",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "To subtract 5 from 12, start at 12 and count back 5 numbers. You land on 7! 🔙"
+      },
+      {
+        "t": "Use the count-back strategy. What is 15 − 4?",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 1,
+        "e": "To subtract 4 from 15, start at 15 and count back 4 numbers. You land on 11! 👈"
+      },
+      {
+        "t": "Use the count-back strategy. What is 16 − 3?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "To subtract 3 from 16, start at 16 and count back 3 numbers. You land on 13! 📉"
+      }
+    ]
+  },
+  {
+    "points": [
+      "DOUBLES: add the same number twice — memorize these!",
+      "NEAR DOUBLES: one number is 1 more — use the double then add 1",
+      "Example: 6+7? Think 6+6=12, then +1 more = 13"
+    ],
+    "examples": [
+      {
+        "c": "#e74c3c",
+        "tag": "Doubles",
+        "p": "6 + 6 = ?",
+        "s": "Same number + same number = double! 6 doubled is 12",
+        "a": "6 + 6 = 12 ✅",
+        "vis": "doubles:🍊:6"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Doubles",
+        "p": "8 + 8 = ?",
+        "s": "8 doubled = 16",
+        "a": "8 + 8 = 16 ✅",
+        "vis": "doubles:🍇:8"
+      },
+      {
+        "c": "#c0392b",
+        "tag": "Near Doubles",
+        "p": "7 + 8 = ?",
+        "s": "Think: 7+7=14 (double), then add 1 more = 15",
+        "a": "7 + 8 = 15 ✅",
+        "vis": "add:🍓:7:8"
+      }
+    ],
+    "practice": [
+      {
+        "q": "7 + 7 = ?",
+        "a": "14",
+        "h": "Double 7! Two groups of 7",
+        "e": "To find 8 + 5, start at 8 and count on 5 more numbers. You land on 13! Great job! ✨"
+      },
+      {
+        "q": "5 + 5 = ?",
+        "a": "10",
+        "h": "Double 5! Two groups of 5",
+        "e": "You found the correct answer! When you add the same number twice, it's a double! 🌟"
+      },
+      {
+        "q": "6 + 7 = ?",
+        "a": "13",
+        "h": "Near double: 6+6=12, then +1 more!",
+        "e": "You got it! Adding two groups of the same number helps us find the total. 🍓"
+      }
+    ],
+    "qBank": [
+      {
+        "t": "What is 3 + 3? (This is a doubles fact!)",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 2,
+        "e": "Doubling 3 means adding 3 + 3. We put two groups of 3 together to make 6. Awesome! 👍",
+        "d": "e"
+      },
+      {
+        "t": "What is 4 + 4? (This is a doubles fact!)",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 2,
+        "e": "Doubling 4 means adding 4 + 4. We put two groups of 4 together to make 8. Fantastic! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 + 5? (This is a doubles fact!)",
+        "o": [
+          "8",
+          "9",
+          "10",
+          "11"
+        ],
+        "a": 2,
+        "e": "Doubling 5 means adding 5 + 5. We put two groups of 5 together to make 10. Super! 🖐️",
+        "d": "e"
+      },
+      {
+        "t": "What is 6 + 6? (This is a doubles fact!)",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "Doubling 6 means adding 6 + 6. We put two groups of 6 together to make 12. You got it! ✅",
+        "d": "m"
+      },
+      {
+        "t": "What is 7 + 7? (This is a doubles fact!)",
+        "o": [
+          "12",
+          "13",
+          "14",
+          "15"
+        ],
+        "a": 2,
+        "e": "Doubling 7 means adding 7 + 7. We put two groups of 7 together to make 14. Way to go! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "What is 8 + 8? (This is a doubles fact!)",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "Doubling 8 means adding 8 + 8. We put two groups of 8 together to make 16. Excellent! 💯",
+        "d": "m"
+      },
+      {
+        "t": "What is 9 + 9? (This is a doubles fact!)",
+        "o": [
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "a": 2,
+        "e": "Doubling 9 means adding 9 + 9. We put two groups of 9 together to make 18. Smart work! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "What is 3 + 4? Use the near-doubles strategy.",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "You know 3 + 3 is 6. Adding one more to the double makes 7. That's a \"doubles plus one\" strategy! ➕",
+        "d": "e"
+      },
+      {
+        "t": "What is 4 + 5? Use the near-doubles strategy.",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "You know 4 + 4 is 8. Adding one more to the double makes 9. That's a \"doubles plus one\" strategy! ➕",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 + 6? Use the near-doubles strategy.",
+        "o": [
+          "11",
+          "9",
+          "10",
+          "12"
+        ],
+        "a": 0,
+        "e": "You know 5 + 5 is 10. Adding one more to the double makes 11. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 6 + 7? Use the near-doubles strategy.",
+        "o": [
+          "11",
+          "12",
+          "14",
+          "13"
+        ],
+        "a": 3,
+        "e": "You know 6 + 6 is 12. Adding one more to the double makes 13. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 7 + 8? Use the near-doubles strategy.",
+        "o": [
+          "13",
+          "15",
+          "14",
+          "16"
+        ],
+        "a": 1,
+        "e": "You know 7 + 7 is 14. Adding one more to the double makes 15. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 8 + 9? Use the near-doubles strategy.",
+        "o": [
+          "15",
+          "16",
+          "17",
+          "18"
+        ],
+        "a": 2,
+        "e": "You know 8 + 8 is 16. Adding one more to the double makes 17. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 9 + 10? Use the near-doubles strategy.",
+        "o": [
+          "17",
+          "18",
+          "19",
+          "20"
+        ],
+        "a": 2,
+        "e": "You know 9 + 9 is 18. Adding one more to the double makes 19. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 2 + 2? (This is a doubles fact!)",
+        "o": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "a": 2,
+        "e": "Doubling 2 means adding 2 + 2. We put two groups of 2 together to make 4. Good thinking! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "Which is a doubles fact?",
+        "o": [
+          "3+4=7",
+          "6+6=12",
+          "5+6=11",
+          "7+8=15"
+        ],
+        "a": 1,
+        "e": "You got it! When you add a number to itself, like 6 + 6, you are finding a double. The answer is 12! ✨",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 11? Use the near-doubles strategy.",
+        "o": [
+          "19",
+          "20",
+          "21",
+          "22"
+        ],
+        "a": 2,
+        "e": "You know 10 + 10 is 20. Adding one more to the double makes 21. That's a \"doubles plus one\" strategy! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 1 + 1? (This is a doubles fact!)",
+        "o": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "a": 1,
+        "e": "Doubling 1 means adding 1 + 1. We put two groups of 1 together to make 2. You're a math star! ⭐",
+        "d": "m"
+      },
+      {
+        "t": "Near double strategy: 5 + 6. Think 5+5=10 then?",
+        "o": [
+          "Add 0",
+          "Add 1",
+          "Add 2",
+          "Subtract 1"
+        ],
+        "a": 1,
+        "e": "5+6 is a near double! We know 5+5=10. Since 6 is 1 more than 5, 5+6 is 1 more than 10. So, 5+6=11! ✨",
+        "d": "h"
+      },
+      {
+        "t": "What is 10 + 10? (This is a doubles fact!)",
+        "o": [
+          "15",
+          "18",
+          "20",
+          "22"
+        ],
+        "a": 2,
+        "e": "Doubling 10 means 10 + 10. Counting by tens is fun! 10 + 10 = 20. You got it! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "Which helps solve 7+8?",
+        "o": [
+          "7+7=14",
+          "8+8=16",
+          "7+9=16",
+          "6+8=14"
+        ],
+        "a": 0,
+        "e": "7+8 is a near double! We know 7+7=14. Since 8 is 1 more than 7, 7+8 is 1 more than 14. So, 7+8=15! ➕",
+        "d": "m"
+      },
+      {
+        "t": "What is 11 + 12? Use the near-doubles strategy.",
+        "o": [
+          "21",
+          "22",
+          "23",
+          "24"
+        ],
+        "a": 2,
+        "e": "11+12 is a near double! We know 11+11=22. Since 12 is 1 more than 11, 11+12 is 1 more than 22. So, 11+12=23! 👍",
+        "d": "m"
+      },
+      {
+        "t": "What is 15 + 15? (This is a doubles fact!)",
+        "o": [
+          "25",
+          "28",
+          "30",
+          "32"
+        ],
+        "a": 2,
+        "e": "Doubling 15 means 15 + 15. You can think of 10+10=20 and 5+5=10. Put them together for 30! Great job! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "What is 4 + 3? Use the near-doubles strategy.",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "3+4 is a near double! We know 3+3=6. Since 4 is 1 more than 3, 3+4 is 1 more than 6. So, 3+4=7! ✅",
+        "d": "m"
+      },
+      {
+        "t": "What is the double of 12?",
+        "o": [
+          "20",
+          "22",
+          "24",
+          "26"
+        ],
+        "a": 2,
+        "e": "Doubling 12 means 12 + 12. You can think of 10+10=20 and 2+2=4. Put them together for 24! Awesome! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "What is 6 + 5? Use the near-doubles strategy.",
+        "o": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "a": 2,
+        "e": "5+6 is a near double! We know 5+5=10. Since 6 is 1 more than 5, 5+6 is 1 more than 10. So, 5+6=11! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Which strategy for 8+9?",
+        "o": [
+          "Count back",
+          "Doubles",
+          "Near doubles",
+          "Skip count by 5"
+        ],
+        "a": 2,
+        "e": "8+9 is a near double! We know 8+8=16. Since 9 is 1 more than 8, 8+9 is 1 more than 16. So, 8+9=17! 🤩",
+        "d": "m"
+      },
+      {
+        "t": "What is the double of 20?",
+        "o": [
+          "30",
+          "35",
+          "40",
+          "45"
+        ],
+        "a": 2,
+        "e": "Doubling 20 means 20 + 20. Think of it as 2 tens + 2 tens = 4 tens. So, 20 + 20 = 40! You're a math whiz! 💯",
+        "d": "m"
+      },
+      {
+        "t": "What is 14 + 15? Use the near-doubles strategy.",
+        "o": [
+          "27",
+          "28",
+          "29",
+          "30"
+        ],
+        "a": 2,
+        "e": "14+15 is a near double! We know 14+14=28. Since 15 is 1 more than 14, 14+15 is 1 more than 28. So, 14+15=29! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "What is 11 + 11? (This is a doubles fact!)",
+        "o": [
+          "20",
+          "21",
+          "22",
+          "23"
+        ],
+        "a": 2,
+        "e": "Doubling 11 means 11 + 11. You can think of 10+10=20 and 1+1=2. Put them together for 22! Fantastic! ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is 2 + 2?",
+        "o": [
+          "3",
+          "5",
+          "4",
+          "2"
+        ],
+        "a": 2,
+        "e": "A double is when you add a number to itself! So, 2 + 2 = 4. You know your doubles! ✌️",
+        "d": "e"
+      },
+      {
+        "t": "What is 3 + 3?",
+        "o": [
+          "5",
+          "7",
+          "6",
+          "3"
+        ],
+        "a": 2,
+        "e": "A double is when you add a number to itself! So, 3 + 3 = 6. Keep up the great work! 🤩",
+        "d": "e"
+      },
+      {
+        "t": "What is 4 + 4?",
+        "o": [
+          "6",
+          "9",
+          "8",
+          "7"
+        ],
+        "a": 2,
+        "e": "A double is when you add a number to itself! So, 4 + 4 = 8. You're doing awesome! 👏",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 + 5?",
+        "o": [
+          "11",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 3,
+        "e": "A double is when you add a number to itself! So, 5 + 5 = 10. You're a doubles master! 🖐️",
+        "d": "e"
+      },
+      {
+        "t": "What is 1 + 1?",
+        "o": [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        "a": 3,
+        "e": "A double is when you add a number to itself! So, 1 + 1 = 2. Way to go! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "What is 6 + 6?",
+        "o": [
+          "11",
+          "13",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "A double is when you add a number to itself! So, 6 + 6 = 12. You've got this! 💪",
+        "d": "e"
+      },
+      {
+        "t": "What is 7 + 7?",
+        "o": [
+          "13",
+          "15",
+          "12",
+          "14"
+        ],
+        "a": 3,
+        "e": "A double is when you add a number to itself! So, 7 + 7 = 14. Super smart! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "What is 8 + 8?",
+        "o": [
+          "14",
+          "18",
+          "15",
+          "16"
+        ],
+        "a": 3,
+        "e": "A double is when you add a number to itself! So, 8 + 8 = 16. Amazing work! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "What is 9 + 9?",
+        "o": [
+          "17",
+          "19",
+          "18",
+          "16"
+        ],
+        "a": 2,
+        "e": "Doubles are super helpful! 9 + 9 is a double. When you add a number to itself, like 9 + 9, the answer is 18. You got it! ✨",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 10?",
+        "o": [
+          "22",
+          "18",
+          "20",
+          "19"
+        ],
+        "a": 2,
+        "e": "Doubles are easy to remember! 10 + 10 is a double. When you add 10 to itself, you get 20. So, 10 + 10 = 20! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "What is double 3?",
+        "o": [
+          "5",
+          "9",
+          "3",
+          "6"
+        ],
+        "a": 3,
+        "e": "You're right! To 'double' a number means to add it to itself. So, to double 3, you add 3 + 3, which equals 6! Good thinking! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "What is double 5?",
+        "o": [
+          "15",
+          "5",
+          "10",
+          "8"
+        ],
+        "a": 2,
+        "e": "Spot on! To double 5 means to add 5 to itself. So, 5 + 5 = 10. You know your doubles! Excellent! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "What is double 7?",
+        "o": [
+          "12",
+          "15",
+          "7",
+          "14"
+        ],
+        "a": 3,
+        "e": "Yes! To double 7, you simply add 7 + 7. That's a double fact! 7 + 7 = 14. You're a doubles pro! 👏",
+        "d": "m"
+      },
+      {
+        "t": "What is double 4?",
+        "o": [
+          "6",
+          "4",
+          "10",
+          "8"
+        ],
+        "a": 3,
+        "e": "That's right! When you double 4, you add 4 + 4. This double fact equals 8. You're doing great! 👍",
+        "d": "e"
+      },
+      {
+        "t": "What is 0 + 0?",
+        "o": [
+          "2",
+          "1",
+          "0",
+          "10"
+        ],
+        "a": 2,
+        "e": "Even with zero, doubles work! 0 + 0 is a double. When you add zero to itself, it's still zero. So, 0 + 0 = 0! Smart! 💡",
+        "d": "e"
+      },
+      {
+        "t": "What is double 8?",
+        "o": [
+          "18",
+          "14",
+          "16",
+          "8"
+        ],
+        "a": 2,
+        "e": "Awesome! To double 8, you add 8 + 8. This doubles fact equals 16. Keep practicing your doubles! 💪",
+        "d": "m"
+      },
+      {
+        "t": "What is double 2?",
+        "o": [
+          "2",
+          "6",
+          "3",
+          "4"
+        ],
+        "a": 3,
+        "e": "You got it! To double 2, you add 2 + 2. This doubles fact equals 4. You're learning so much! 😄",
+        "d": "e"
+      },
+      {
+        "t": "What is double 6?",
+        "o": [
+          "8",
+          "6",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "Perfect! To double 6, you add 6 + 6. This doubles fact equals 12. Knowing doubles helps you add quickly! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "What is double 1?",
+        "o": [
+          "0",
+          "1",
+          "3",
+          "2"
+        ],
+        "a": 3,
+        "e": "Yes! To double 1, you add 1 + 1. This doubles fact equals 2. You're building a strong math foundation! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "What is double 9?",
+        "o": [
+          "16",
+          "19",
+          "18",
+          "17"
+        ],
+        "a": 2,
+        "e": "That's it! To double 9, you add 9 + 9. This doubles fact equals 18. You are becoming a doubles expert! 💯",
+        "d": "m"
+      },
+      {
+        "t": "What is 6 + 7? Hint: Think of a double you know.",
+        "o": [
+          "14",
+          "12",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "Great strategy! 6 + 7 is almost a double. Think 6 + 6 = 12, then add 1 more because 7 is one more than 6. So, 12 + 1 = 13! ✨",
+        "d": "h"
+      },
+      {
+        "t": "What is 5 + 6?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "9"
+        ],
+        "a": 2,
+        "e": "Super strategy! 5 + 6 is almost a double. Think 5 + 5 = 10, then add 1 more because 6 is one more than 5. So, 10 + 1 = 11! ✅",
+        "d": "e"
+      },
+      {
+        "t": "Sara has 7 red beads and 7 blue beads. How many beads in all?",
+        "o": [
+          "13",
+          "15",
+          "12",
+          "14"
+        ],
+        "a": 3,
+        "e": "You used doubles to solve it! Sara has 7 beads + 7 beads, which is a double. 7 + 7 = 14. So, Sara has 14 beads! Nicely done! 💖",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 16. Both numbers are the same. What are they?",
+        "o": [
+          "7 and 7",
+          "9 and 9",
+          "6 and 6",
+          "8 and 8"
+        ],
+        "a": 3,
+        "e": "You're finding the missing double! If the total is 16, what two same numbers add up to 16? 8 + 8 = 16! Both numbers are 8. Smart! 🧠",
+        "d": "h"
+      },
+      {
+        "t": "Which doubles fact helps you solve 8 + 9?",
+        "o": [
+          "7 + 7",
+          "9 + 9",
+          "8 + 8",
+          "6 + 6"
+        ],
+        "a": 2,
+        "e": "Excellent strategy! 8 + 9 is like 8 + 8 (which is 16), plus 1 more because 9 is one more than 8. So, 16 + 1 = 17! You got it! 🌟",
+        "d": "h"
+      },
+      {
+        "t": "What is 7 + 8?",
+        "o": [
+          "14",
+          "16",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "You used doubles plus 1! 7 + 8 is like 7 + 7 (which is 14), plus 1 more because 8 is one more than 7. So, 14 + 1 = 15! Awesome! ✨",
+        "d": "e"
+      },
+      {
+        "t": "A boy has 2 hands. Each hand has 5 fingers. How many fingers in all?",
+        "o": [
+          "7",
+          "12",
+          "10",
+          "8"
+        ],
+        "a": 2,
+        "e": "You used doubles to count! Each hand has 5 fingers. So, two hands have 5 + 5 fingers. That's a double! 5 + 5 = 10. He has 10 fingers! 👋",
+        "d": "h"
+      },
+      {
+        "t": "What is 4 + 5?",
+        "o": [
+          "10",
+          "8",
+          "7",
+          "9"
+        ],
+        "a": 3,
+        "e": "Fantastic! 4 + 5 is like 4 + 4 (which is 8), plus 1 more because 5 is one more than 4. So, 8 + 1 = 9! You're a math whiz! 🤩",
+        "d": "e"
+      },
+      {
+        "t": "__ + 6 = 12. What is the missing number?",
+        "o": [
+          "5",
+          "7",
+          "8",
+          "6"
+        ],
+        "a": 3,
+        "e": "You need to find a number that, when added to 6, makes 12. We know 6 + 6 = 12! So, the missing number is 6. ✨",
+        "d": "h"
+      },
+      {
+        "t": "Which strategy helps you solve 3 + 4?",
+        "o": [
+          "Make a 10",
+          "Doubles plus 1",
+          "Count by 10s",
+          "Subtract"
+        ],
+        "a": 1,
+        "e": "3 and 4 are neighbors! We know 3 + 3 = 6. Just add 1 more to get 7. So, 3 + 4 = 7. 👍",
+        "d": "m"
+      },
+      {
+        "t": "What is 9 + 8?",
+        "o": [
+          "18",
+          "16",
+          "15",
+          "17"
+        ],
+        "a": 3,
+        "e": "8 and 9 are neighbor numbers! You can think 8 + 8 = 16, then add 1 more. Or 9 + 9 = 18, then subtract 1. Either way, 8 + 9 = 17! 🤩",
+        "d": "e"
+      },
+      {
+        "t": "Two friends each have 6 stickers. How many stickers do they have together?",
+        "o": [
+          "10",
+          "14",
+          "11",
+          "12"
+        ],
+        "a": 3,
+        "e": "When you add the same number twice, it's a double! 6 + 6 = 12. They have 12 stickers together. 🎉",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 10. Both numbers are the same. What is each number?",
+        "o": [
+          "4",
+          "6",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "We need two of the same number that add up to 10. We know 5 + 5 = 10! So, each number is 5. 🖐️",
+        "d": "h"
+      },
+      {
+        "t": "What is 5 + 6? Use a doubles fact to help.",
+        "o": [
+          "10",
+          "12",
+          "11",
+          "9"
+        ],
+        "a": 2,
+        "e": "5 and 6 are neighbor numbers! Think 5 + 5 = 10. Then add 1 more to get 11. So, 5 + 6 = 11. 👍",
+        "d": "m"
+      },
+      {
+        "t": "Max has 8 toy cars. His brother has 7. How many cars do they have together?",
+        "o": [
+          "14",
+          "16",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "7 and 8 are neighbor numbers! Think 7 + 7 = 14. Add 1 more to get 15. They have 15 cars. 🚗",
+        "d": "h"
+      },
+      {
+        "t": "Which doubles fact helps you solve 5 + 6?",
+        "o": [
+          "6 + 6",
+          "4 + 4",
+          "5 + 5",
+          "3 + 3"
+        ],
+        "a": 2,
+        "e": "5 and 6 are neighbor numbers! Think 5 + 5 = 10. Add 1 more to get 11. So, 5 + 6 = 11. ✨",
+        "d": "h"
+      },
+      {
+        "t": "__ + 9 = 18. What is the missing number?",
+        "o": [
+          "8",
+          "10",
+          "7",
+          "9"
+        ],
+        "a": 3,
+        "e": "You need a number that, when added to 9, makes 18. We know 9 + 9 = 18! So, the missing number is 9. 🤔",
+        "d": "h"
+      },
+      {
+        "t": "What is 8 + 7?",
+        "o": [
+          "14",
+          "16",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "7 and 8 are neighbor numbers! You can think 7 + 7 = 14, then add 1. Or 8 + 8 = 16, then subtract 1. Either way, 7 + 8 = 15! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "Ava and Mia each brought 4 books. How many books are there in all?",
+        "o": [
+          "6",
+          "9",
+          "7",
+          "8"
+        ],
+        "a": 3,
+        "e": "When you add the same number twice, it's a double! 4 + 4 = 8. They have 8 books in all. 📚",
+        "d": "m"
+      },
+      {
+        "t": "What is 2 + 3? Use a doubles fact.",
+        "o": [
+          "4",
+          "6",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "2 and 3 are neighbor numbers! Think 2 + 2 = 4. Add 1 more to get 5. So, 2 + 3 = 5. ✅",
+        "d": "m"
+      },
+      {
+        "t": "Emma has 7 red marbles and 8 blue marbles. She gives away 3 marbles. How many does she have left?",
+        "o": [
+          "11",
+          "13",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "First, find 7 + 8. Use 7 + 7 = 14, then add 1 more to get 15. Next, subtract: 15 - 3 = 12. The answer is 12. 💡",
+        "d": "h"
+      },
+      {
+        "t": "A student said double 7 is 15. What mistake did the student make?",
+        "o": [
+          "They added 8 + 7 by mistake",
+          "They subtracted instead",
+          "They used the wrong double",
+          "They forgot to count"
+        ],
+        "a": 0,
+        "e": "Double 7 means 7 + 7, which is 14. 15 is what you get from 7 + 8, not a double of 7. Keep practicing! 🧐",
+        "d": "h"
+      },
+      {
+        "t": "Jake says 6 + 7 = 14 because double 7 is 14. Is Jake correct?",
+        "o": [
+          "Yes, 6 + 7 = 14",
+          "No, it should be 13",
+          "No, it should be 12",
+          "No, it should be 15"
+        ],
+        "a": 1,
+        "e": "Jake, 6 and 7 are neighbors! Think 6 + 6 = 12, then add 1 to get 13. Or 7 + 7 = 14, then subtract 1 to get 13. Great try! 👍",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 18. Both numbers are the same. What are they? Then subtract 5 from your answer. What do you get?",
+        "o": [
+          "9 and 13",
+          "8 and 13",
+          "9 and 14",
+          "8 and 11"
+        ],
+        "a": 0,
+        "e": "First, find the double: 9 + 9 = 18. Then, subtract 5 from 18. 18 - 5 = 13. The answer is 13. Great job! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "Which problem can NOT be solved with doubles plus 1?",
+        "o": [
+          "6 + 7",
+          "5 + 6",
+          "4 + 4",
+          "3 + 4"
+        ],
+        "a": 2,
+        "e": "4 + 4 is an exact double! It's not \"doubles plus 1\" because 4 and 4 are the same number. Doubles plus 1 is for numbers like 4 + 5. 🤔",
+        "d": "e"
+      },
+      {
+        "t": "Two teams each score 8 points. Then one team scores 3 more. What is the winning team's total?",
+        "o": [
+          "16",
+          "19",
+          "10",
+          "11"
+        ],
+        "a": 3,
+        "e": "First, find the tie score: 8 + 8 = 16. Then, the winning team has 3 more points: 8 + 3 = 11. The winning team has 11. 🏆",
+        "d": "h"
+      },
+      {
+        "t": "A student wrote 8 + 9 = 16. What should the student do to fix it?",
+        "o": [
+          "Subtract 1 from 16",
+          "Add 1 more to get 17",
+          "Start over with 8 + 8",
+          "Change to 9 + 9"
+        ],
+        "a": 1,
+        "e": "8 and 9 are neighbor numbers! You used 8 + 8 = 16. That's a great start! Just add 1 more to get 17. You're almost there! ✨",
+        "d": "h"
+      },
+      {
+        "t": "I am a doubles fact. My answer is between 10 and 15. What could I be?",
+        "o": [
+          "5 + 5 or 6 + 6",
+          "4 + 4 or 8 + 8",
+          "6 + 6 or 7 + 7",
+          "3 + 3 or 9 + 9"
+        ],
+        "a": 2,
+        "e": "We need doubles that are between 10 and 15. 6 + 6 = 12, which works! And 7 + 7 = 14, which also works! Both are correct! ✅",
+        "d": "h"
+      },
+      {
+        "t": "Lily had 6 coins. She found 6 more. Then she spent 4 coins. How many does she have now?",
+        "o": [
+          "10",
+          "7",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "First, we use doubles. 6 + 6 = 12. Then, take away 4. 12 - 4 = 8. Lily has 8 coins! ✨",
+        "d": "h"
+      },
+      {
+        "t": "True or false: 5 + 6 and 6 + 5 give different answers because the numbers switched.",
+        "o": [
+          "True, switching changes the answer",
+          "False, both equal 11",
+          "True, 5 + 6 = 12",
+          "False, both equal 12"
+        ],
+        "a": 1,
+        "e": "You can add numbers in any order! 5 + 6 = 11 and 6 + 5 = 11. The sum is always 11! ➕",
+        "d": "h"
+      },
+      {
+        "t": "Which two doubles facts have answers that are 4 apart?",
+        "o": [
+          "3 + 3 and 5 + 5",
+          "4 + 4 and 5 + 5",
+          "2 + 2 and 3 + 3",
+          "6 + 6 and 7 + 7"
+        ],
+        "a": 0,
+        "e": "Double 3 is 6. Double 5 is 10. To find how far apart, we subtract: 10 - 6 = 4. They are 4 apart! 📏",
+        "d": "e"
+      },
+      {
+        "t": "Ben says 5 + 4 = 10 because double 5 is 10. What did Ben forget?",
+        "o": [
+          "He should subtract 1 since 4 is one less than 5",
+          "He should add 1 more",
+          "He used the wrong doubles fact",
+          "He should use make a 10"
+        ],
+        "a": 0,
+        "e": "5 + 4 is a near double! Double 5 is 10. Since 4 is one less than 5, subtract 1. 10 - 1 = 9. Ben forgot to subtract 1! 🤔",
+        "d": "h"
+      },
+      {
+        "t": "Each of 3 kids has 5 crayons. Is this a doubles problem? Why or why not?",
+        "o": [
+          "Yes, because 5 + 5 = 10",
+          "No, there are 3 groups, not 2",
+          "Yes, because 3 + 3 = 6",
+          "No, because 5 is odd"
+        ],
+        "a": 1,
+        "e": "Doubles means two groups that are the same size. 3 kids with 5 each is 3 groups, not 2. So it's not a doubles problem. ❌",
+        "d": "h"
+      },
+      {
+        "t": "What is the missing number? Double __ = 14. Then add 3 to that number. What do you get?",
+        "o": [
+          "7 and 10",
+          "6 and 9",
+          "8 and 11",
+          "7 and 9"
+        ],
+        "a": 0,
+        "e": "Double 7 means 7 + 7, which is 14. Then, 7 + 3 makes 10. The answers are 14 and 10! ✔️",
+        "d": "h"
+      },
+      {
+        "t": "Ava solved 7 + 8 by thinking 7 + 7 + 1. Nora solved it by thinking 8 + 8 - 1. Who is correct?",
+        "o": [
+          "Only Ava",
+          "Only Nora",
+          "Both are correct",
+          "Neither is correct"
+        ],
+        "a": 2,
+        "e": "Both ways work! Double 7 plus 1 (7+7+1=15) and Double 8 minus 1 (8+8-1=15) both equal 15! Great math! 👍",
+        "d": "h"
+      },
+      {
+        "t": "A student wrote: double 6 = 11. Then they wrote 6 + 7 = 12. How many errors did they make?",
+        "o": [
+          "0 errors",
+          "1 error",
+          "2 errors",
+          "3 errors"
+        ],
+        "a": 2,
+        "e": "Double 6 is 12, not 11. And 6 + 7 is 13, not 12. There were two mistakes! Keep practicing doubles! ✏️",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 12. The two numbers are 2 apart. What could they be?",
+        "o": [
+          "4 and 8",
+          "5 and 7",
+          "6 and 6",
+          "3 and 9"
+        ],
+        "a": 1,
+        "e": "5 + 7 = 12. To find how far apart 5 and 7 are, subtract: 7 - 5 = 2. They are 2 apart! ↔️",
+        "d": "h"
+      },
+      {
+        "t": "Sam has some stickers. He gets the same number again and now has 16. How many did he start with?",
+        "o": [
+          "6",
+          "9",
+          "7",
+          "8"
+        ],
+        "a": 3,
+        "e": "If you add the same number to itself to get 16, you are doubling! What number doubles to 16? 8! So, Sam started with 8. 💡",
+        "d": "h"
+      },
+      {
+        "t": "Which is greater: double 6 plus 3 OR double 4 plus 5?",
+        "o": [
+          "Double 6 plus 3",
+          "Double 4 plus 5",
+          "They are equal",
+          "Cannot tell"
+        ],
+        "a": 0,
+        "e": "Double 6 + 3 = 12 + 3 = 15. Double 4 + 5 = 8 + 5 = 13. Since 15 is bigger than 13, double 6 plus 3 is greater! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "A puzzle says: I am a number. Double me, then take away 2. You get 10. What number am I?",
+        "o": [
+          "5",
+          "7",
+          "8",
+          "6"
+        ],
+        "a": 3,
+        "e": "If double a number minus 2 equals 10, then double the number is 12 (10+2). Half of 12 is 6. The number is 6! 🔄",
+        "d": "h"
+      }
+    ],
+    "quiz": [
+      {
+        "t": "What is 6 + 6? (Doubles fact)",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "6 + 6 is a doubles fact! When you add 6 and 6, you get 12. Keep practicing your doubles! 🧠"
+      },
+      {
+        "t": "What is 4 + 4? (Doubles fact)",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 2,
+        "e": "4 + 4 is a doubles fact! When you add 4 and 4, you get 8. You're doing great with doubles! 👍"
+      },
+      {
+        "t": "What is 9 + 9? (Doubles fact)",
+        "o": [
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "a": 2,
+        "e": "9 + 9 is a doubles fact! When you add 9 and 9, you get 18. Nine doubled is eighteen! ✨"
+      },
+      {
+        "t": "What is 5 + 6? Use the near-doubles strategy.",
+        "o": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "a": 2,
+        "e": "5 + 6 is a near double! Think: 5 + 5 = 10. Then add 1 more to get 11. So, 5 + 6 = 11! ➕"
+      },
+      {
+        "t": "What is 7 + 8? Use the near-doubles strategy.",
+        "o": [
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "a": 2,
+        "e": "7 + 8 is a near double! Think: 7 + 7 = 14. Then add 1 more to get 15. So, 7 + 8 = 15! 🌟"
+      },
+      {
+        "t": "What is 8 + 9? Use the near-doubles strategy.",
+        "o": [
+          "15",
+          "16",
+          "17",
+          "18"
+        ],
+        "a": 2,
+        "e": "8 + 9 is a near double! Think: 8 + 8 = 16. Then add 1 more to get 17. So, 8 + 9 = 17! ✅"
+      }
+    ]
+  },
+  {
+    "points": [
+      "Find what you need to REACH 10 from the bigger number",
+      "Break the smaller number to reach 10 first",
+      "Example: 8+6 → 8+2=10, then +4 more = 14"
+    ],
+    "examples": [
+      {
+        "c": "#e74c3c",
+        "tag": "Make a Ten",
+        "p": "8 + 5 = ?",
+        "s": "Step 1: How many does 8 need to reach 10? → 2\nStep 2: Break 5 into 2 + 3\nStep 3: 8 + 2 = 10, then 10 + 3 = 13",
+        "a": "8 + 5 = 13 ✅",
+        "vis": "tenframe:8"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Make a Ten",
+        "p": "9 + 6 = ?",
+        "s": "Step 1: How many does 9 need to reach 10? → 1\nStep 2: Break 6 into 1 + 5\nStep 3: 9 + 1 = 10, then 10 + 5 = 15",
+        "a": "9 + 6 = 15 ✅",
+        "vis": "tenframe:9"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Make a Ten",
+        "p": "7 + 5 = ?",
+        "s": "Step 1: How many does 7 need to reach 10? → 3\nStep 2: Break 5 into 3 + 2\nStep 3: 7 + 3 = 10, then 10 + 2 = 12",
+        "a": "7 + 5 = 12 ✅",
+        "vis": "tenframe:7"
+      }
+    ],
+    "practice": [
+      {
+        "q": "8 + 4 = ?",
+        "a": "12",
+        "h": "8 needs 2 to reach 10. Then add 2 more = 12",
+        "e": "Doubles facts are when you add a number to itself, like 3 + 3 = 6. They help you add fast! 🔵"
+      },
+      {
+        "q": "9 + 5 = ?",
+        "a": "14",
+        "h": "9 needs 1 to reach 10. Then add 4 more = 14",
+        "e": "Near doubles help too! If you know 4 + 4 = 8, then 4 + 5 is just one more, so it's 9! 🟡"
+      },
+      {
+        "q": "7 + 4 = ?",
+        "a": "11",
+        "h": "7 needs 3 to reach 10. Then add 1 more = 11",
+        "e": "Great job! You got it right! Keep up the amazing work! 🌟"
+      }
+    ],
+    "qBank": [
+      {
+        "t": "Use the make-ten strategy. What is 9 + 4?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "You made a 10 first! 9 needs 1 to make 10. Then add the 3. So, 13! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 5?",
+        "o": [
+          "13",
+          "11",
+          "12",
+          "14"
+        ],
+        "a": 0,
+        "e": "Super! You made a 10! 8 needs 2 to make 10. Then add the 3. The answer is 13! ✨",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 4?",
+        "o": [
+          "11",
+          "9",
+          "10",
+          "12"
+        ],
+        "a": 0,
+        "e": "Awesome! Making a 10 helps! 7 needs 3 to make 10. Then add the 1. So, 11! 👍",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 7?",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "Fantastic! You made a 10! 9 needs 1 to make 10. Then add the 6. The answer is 16! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 6?",
+        "o": [
+          "12",
+          "13",
+          "14",
+          "15"
+        ],
+        "a": 2,
+        "e": "Way to go! You made a 10! 8 needs 2 to make 10. Then add the 4. The answer is 14! 👏",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 6?",
+        "o": [
+          "13",
+          "11",
+          "12",
+          "14"
+        ],
+        "a": 0,
+        "e": "Smart thinking! You made a 10! 7 needs 3 to make 10. Then add the 3. The answer is 13! 💡",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 5?",
+        "o": [
+          "11",
+          "9",
+          "10",
+          "12"
+        ],
+        "a": 0,
+        "e": "Yes! Making a 10 is easy! 6 needs 4 to make 10. Then add the 1. The answer is 11! ✅",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 8?",
+        "o": [
+          "17",
+          "15",
+          "16",
+          "18"
+        ],
+        "a": 0,
+        "e": "Great work! You made a 10! 9 needs 1 to make 10. Then add the 7. The answer is 17! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 8?",
+        "o": [
+          "12",
+          "13",
+          "15",
+          "14"
+        ],
+        "a": 3,
+        "e": "You're a math whiz! You made a 10! 6 needs 4 to make 10. Then add the 4. The answer is 14! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 5?",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "Excellent! Making a 10 helps! 7 needs 3 to make 10. Then add the 2. The answer is 12! 💯",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 4?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "Awesome! You made a 10! 8 needs 2 to make 10. Then add the 2. The answer is 12! 🤩",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 5?",
+        "o": [
+          "14",
+          "12",
+          "13",
+          "15"
+        ],
+        "a": 0,
+        "e": "Super job! You made a 10! 9 needs 1 to make 10. Then add the 4. The answer is 14! ✨",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 6?",
+        "o": [
+          "10",
+          "11",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "You got it! Making a 10 is smart! 6 needs 4 to make 10. Then add the 2. The answer is 12! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 8?",
+        "o": [
+          "13",
+          "14",
+          "16",
+          "15"
+        ],
+        "a": 3,
+        "e": "Fantastic! You made a 10! 7 needs 3 to make 10. Then add the 5. The answer is 15! 👏",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 3?",
+        "o": [
+          "9",
+          "11",
+          "10",
+          "12"
+        ],
+        "a": 1,
+        "e": "You're right! 8 needs 2 to make 10. Then you add the 1 to 10. So, the answer is 11! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 3?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "Smart thinking! 9 needs 1 to make 10. Then you add the 2 to 10. So, the answer is 12! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 7?",
+        "o": [
+          "12",
+          "14",
+          "13",
+          "15"
+        ],
+        "a": 1,
+        "e": "Yes! 7 needs 3 to make 10. Then you add the 4 to 10. So, the answer is 14! 🤩",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 5 + 8?",
+        "o": [
+          "13",
+          "11",
+          "12",
+          "14"
+        ],
+        "a": 0,
+        "e": "You found a way to make 10! You can make 10 with 5+5 or 8+2. Then add the 3. The answer is 13! 💡",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 4 + 9?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "You're doing great! 9 needs 1 to make 10. Then you add the 3 to 10. So, the answer is 13! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 7?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "To solve 6 + 7, we can make a 10! 6 + 4 makes 10. Then add 3 more. So, 6 + 7 = 13! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Why do we \"make ten\" first?",
+        "o": [
+          "It looks cool",
+          "10 is easy to add to",
+          "It takes longer",
+          "We always must start at 10"
+        ],
+        "a": 1,
+        "e": "Making a 10 helps us add big numbers! Find two numbers that make 10 first, then add what's left. It's super easy! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 7?",
+        "o": [
+          "13",
+          "14",
+          "16",
+          "15"
+        ],
+        "a": 3,
+        "e": "To solve 8 + 7, we make a 10! 8 + 2 makes 10. Then add 5 more. So, 8 + 7 = 15! Great job! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 6?",
+        "o": [
+          "13",
+          "14",
+          "16",
+          "15"
+        ],
+        "a": 3,
+        "e": "To solve 9 + 6, we make a 10! 9 + 1 makes 10. Then add 5 more. So, 9 + 6 = 15! You got it! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 5 + 7?",
+        "o": [
+          "10",
+          "11",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "To solve 5 + 7, we make a 10! 5 + 5 makes 10. Then add 2 more. So, 5 + 7 = 12! Super work! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 3 + 9?",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "To solve 9 + 3, we make a 10! 9 + 1 makes 10. Then add 2 more. So, 9 + 3 = 12! Keep going! 💪",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 4 + 8?",
+        "o": [
+          "10",
+          "11",
+          "12",
+          "13"
+        ],
+        "a": 2,
+        "e": "To solve 8 + 4, we make a 10! 8 + 2 makes 10. Then add 2 more. So, 8 + 4 = 12! Awesome! 🤩",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 8?",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "To solve 8 + 8, we make a 10! 8 + 2 makes 10. Then add 6 more. So, 8 + 8 = 16! You're a math whiz! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 9?",
+        "o": [
+          "14",
+          "15",
+          "16",
+          "17"
+        ],
+        "a": 2,
+        "e": "To solve 9 + 7, we make a 10! 9 + 1 makes 10. Then add 6 more. So, 9 + 7 = 16! Fantastic! ✨",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 9?",
+        "o": [
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "a": 2,
+        "e": "To solve 9 + 6, we make a 10! 9 + 1 makes 10. Then add 5 more. So, 9 + 6 = 15! Smart thinking! 💡",
+        "d": "m"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 5 + 9?",
+        "o": [
+          "12",
+          "13",
+          "14",
+          "15"
+        ],
+        "a": 2,
+        "e": "To solve 9 + 5, we make a 10! 9 + 1 makes 10. Then add 4 more. So, 9 + 5 = 14! So clever! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 9 to make 10?",
+        "o": [
+          "2",
+          "0",
+          "3",
+          "1"
+        ],
+        "a": 3,
+        "e": "9 and 1 are a perfect pair! They join together to make 10. Knowing pairs that make 10 helps us add fast! 💖",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 8 to make 10?",
+        "o": [
+          "3",
+          "1",
+          "2",
+          "4"
+        ],
+        "a": 2,
+        "e": "8 and 2 are a perfect pair! They join together to make 10. Knowing pairs that make 10 helps us add fast! 💖",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 7 to make 10?",
+        "o": [
+          "4",
+          "2",
+          "3",
+          "1"
+        ],
+        "a": 2,
+        "e": "7 and 3 are a perfect pair! They join together to make 10. Knowing pairs that make 10 helps us add fast! 💖",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 6 to make 10?",
+        "o": [
+          "3",
+          "5",
+          "4",
+          "6"
+        ],
+        "a": 2,
+        "e": "6 and 4 are a perfect pair! They join together to make 10. Knowing pairs that make 10 helps us add fast! 💖",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 5 to make 10?",
+        "o": [
+          "4",
+          "6",
+          "5",
+          "3"
+        ],
+        "a": 2,
+        "e": "5 and 5 are a perfect pair! They join together to make 10. Knowing pairs that make 10 helps us add fast! 💖",
+        "d": "m"
+      },
+      {
+        "t": "What is 10 + 3?",
+        "o": [
+          "12",
+          "14",
+          "13",
+          "11"
+        ],
+        "a": 2,
+        "e": "When we add to 10, the number just takes the ones place! 10 + 3 means 1 ten and 3 ones, which is 13! Easy! 😊",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 5?",
+        "o": [
+          "14",
+          "16",
+          "50",
+          "15"
+        ],
+        "a": 3,
+        "e": "When we add to 10, the number just takes the ones place! 10 + 5 means 1 ten and 5 ones, which is 15! So simple! 😄",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 7?",
+        "o": [
+          "18",
+          "17",
+          "16",
+          "71"
+        ],
+        "a": 1,
+        "e": "When we add to 10, the number just takes the ones place! 10 + 7 means 1 ten and 7 ones, which is 17! You did it! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 1?",
+        "o": [
+          "12",
+          "9",
+          "10",
+          "11"
+        ],
+        "a": 3,
+        "e": "When we add to 10, the number just takes the ones place! 10 + 1 means 1 ten and 1 one, which is 11! Way to go! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 9?",
+        "o": [
+          "20",
+          "18",
+          "91",
+          "19"
+        ],
+        "a": 3,
+        "e": "When you add 9 to 10, you get 19! It's like having 1 group of ten and 9 ones. ✨",
+        "d": "e"
+      },
+      {
+        "t": "What number goes with 4 to make 10?",
+        "o": [
+          "5",
+          "7",
+          "4",
+          "6"
+        ],
+        "a": 3,
+        "e": "The number 6 goes with 4 to make 10. You found a number bond! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 3 to make 10?",
+        "o": [
+          "6",
+          "8",
+          "7",
+          "5"
+        ],
+        "a": 2,
+        "e": "3 and 7 are number bond friends! They make 10 together. So, 7 goes with 3. You got it! ⭐",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 2 to make 10?",
+        "o": [
+          "7",
+          "9",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "2 and 8 are a perfect pair to make 10! So, 8 goes with 2. Awesome work! 🤩",
+        "d": "m"
+      },
+      {
+        "t": "What number goes with 1 to make 10?",
+        "o": [
+          "8",
+          "10",
+          "9",
+          "7"
+        ],
+        "a": 2,
+        "e": "1 and 9 are number bond partners! They make 10. So, 9 goes with 1. Super! ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is 10 + 2?",
+        "o": [
+          "11",
+          "20",
+          "13",
+          "12"
+        ],
+        "a": 3,
+        "e": "When you add 2 to 10, you get 12! It's 1 group of ten and 2 ones. You're a math star! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 4?",
+        "o": [
+          "40",
+          "13",
+          "14",
+          "15"
+        ],
+        "a": 2,
+        "e": "Adding 4 to 10 makes 14! You have 1 ten and 4 ones. Keep up the great work! 👍",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 6?",
+        "o": [
+          "60",
+          "17",
+          "15",
+          "16"
+        ],
+        "a": 3,
+        "e": "10 plus 6 equals 16! You have 1 ten and 6 ones. You're doing awesome! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "What is 10 + 8?",
+        "o": [
+          "80",
+          "19",
+          "17",
+          "18"
+        ],
+        "a": 3,
+        "e": "When you add 8 to 10, you get 18! That's 1 ten and 8 ones. You're so smart! ✨",
+        "d": "e"
+      },
+      {
+        "t": "What number goes with 10 to make 10?",
+        "o": [
+          "1",
+          "10",
+          "0",
+          "5"
+        ],
+        "a": 2,
+        "e": "10 + 0 = 10. When you add zero, the number stays the same! You need 0 more. Great! ✅",
+        "d": "m"
+      },
+      {
+        "t": "What is 10 + 0?",
+        "o": [
+          "0",
+          "11",
+          "1",
+          "10"
+        ],
+        "a": 3,
+        "e": "10 + 0 = 10. Adding zero means you don't add anything, so the number stays 10! Good job! 👍",
+        "d": "e"
+      },
+      {
+        "t": "What is 8 + 5? Think: 8 + 2 = 10, then 10 + 3 = ?",
+        "o": [
+          "12",
+          "14",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "To make 10, we regroup 5 into 2 and 3. Add 2 to 8 (8+2=10). Then add the leftover 3. So, 10+3=13! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "What is 9 + 4?",
+        "o": [
+          "14",
+          "12",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "9 needs 1 to make 10! We regroup 4 into 1 and 3. Add 1 to 9 (9+1=10). Then add the leftover 3. So, 10+3=13! ✨",
+        "d": "e"
+      },
+      {
+        "t": "__ + 6 = 10. What is the missing number?",
+        "o": [
+          "5",
+          "3",
+          "4",
+          "6"
+        ],
+        "a": 2,
+        "e": "What number plus 6 makes 10? 4 and 6 are number bond friends! So, 4 is the missing number. Way to go! ⭐",
+        "d": "h"
+      },
+      {
+        "t": "Which strategy helps solve 7 + 5?",
+        "o": [
+          "Count by 2s",
+          "Make a 10 first",
+          "Use doubles of 7",
+          "Subtract 5 from 7"
+        ],
+        "a": 1,
+        "e": "To make 10, we regroup 5 into 3 and 2. Add 3 to 7 (7+3=10). Then add the leftover 2. So, 10+2=12! Fantastic! 🥳",
+        "d": "m"
+      },
+      {
+        "t": "Kai has 9 toy trucks. He gets 6 more. How many does he have?",
+        "o": [
+          "14",
+          "16",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "9 needs 1 to make 10! We regroup 6 into 1 and 5. Add 1 to 9 (9+1=10). Then add the leftover 5. So, 10+5=15! Super smart! ✨",
+        "d": "h"
+      },
+      {
+        "t": "What is 7 + 6? Use make a 10.",
+        "o": [
+          "14",
+          "12",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "7 needs 3 to make 10! We regroup 6 into 3 and 3. Add 3 to 7 (7+3=10). Then add the leftover 3. So, 10+3=13! You got it! ✅",
+        "d": "m"
+      },
+      {
+        "t": "8 + __ = 13. What is the missing number?",
+        "o": [
+          "6",
+          "4",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "8 needs 2 to make 10! To get 13, we need 3 more (10+3=13). So we regrouped 5 into 2 and 3. The missing number is 5! ⭐",
+        "d": "h"
+      },
+      {
+        "t": "A jar has 6 red marbles and 8 blue marbles. How many marbles in all?",
+        "o": [
+          "15",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 3,
+        "e": "8 needs 2 to make 10! We regroup 6 into 2 and 4. Add 2 to 8 (8+2=10). Then add the leftover 4. So, 10+4=14! Amazing! 🤩",
+        "d": "h"
+      },
+      {
+        "t": "What is 9 + 7? Use make a 10.",
+        "o": [
+          "15",
+          "17",
+          "14",
+          "16"
+        ],
+        "a": 3,
+        "e": "9 needs 1 to make 10! We regroup 7 into 1 and 6. Add 1 to 9 (9+1=10). Then add the leftover 6. So, 10+6=16! You're a pro! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Which shows how to make a 10 for 8 + 6?",
+        "o": [
+          "8 + 8 = 16",
+          "8 + 2 + 4 = 14",
+          "8 + 6 + 2 = 16",
+          "6 + 6 = 12"
+        ],
+        "a": 1,
+        "e": "Break 6 into 2 and 4. Add 8 + 2 to make 10! Then add 10 + 4. The sum is 14. Making a 10 helps! ✨",
+        "d": "h"
+      },
+      {
+        "t": "What is 6 + 5? Use make a 10.",
+        "o": [
+          "12",
+          "10",
+          "13",
+          "11"
+        ],
+        "a": 3,
+        "e": "Break 5 into 4 and 1. Add 6 + 4 to make 10! Then add 10 + 1. The sum is 11. Making a 10 helps! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Ana has 7 stickers. She finds 4 more. How many does she have now?",
+        "o": [
+          "12",
+          "10",
+          "13",
+          "11"
+        ],
+        "a": 3,
+        "e": "Break 4 into 3 and 1. Add 7 + 3 to make 10! Then add 10 + 1. The sum is 11. Making a 10 helps! 🌟",
+        "d": "h"
+      },
+      {
+        "t": "9 + __ = 15. What is the missing number?",
+        "o": [
+          "5",
+          "7",
+          "4",
+          "6"
+        ],
+        "a": 3,
+        "e": "9 needs 1 to make 10. We need 5 more to reach 15. So, 1 + 5 = 6. The missing number is 6. You got it! ✅",
+        "d": "h"
+      },
+      {
+        "t": "What is 8 + 7? Use make a 10.",
+        "o": [
+          "14",
+          "16",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "Break 7 into 2 and 5. Add 8 + 2 to make 10! Then add 10 + 5. The sum is 15. Making a 10 helps! ➕",
+        "d": "m"
+      },
+      {
+        "t": "Which number is easiest to make a 10 with?",
+        "o": [
+          "5",
+          "3",
+          "9",
+          "6"
+        ],
+        "a": 2,
+        "e": "9 is super close to 10! It only needs 1 more. This makes it easy to make a 10 with another number! 💡",
+        "d": "e"
+      },
+      {
+        "t": "What is 5 + 8?",
+        "o": [
+          "14",
+          "12",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "Break 5 into 2 and 3. Add 8 + 2 to make 10! Then add 10 + 3. The sum is 13. Making a 10 helps! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "7 + __ = 12. What is the missing number?",
+        "o": [
+          "6",
+          "4",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "7 needs 3 to make 10. We need 2 more to reach 12. So, 3 + 2 = 5. The missing number is 5. Way to go! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "There are 9 birds in a tree. 5 more land. How many birds now?",
+        "o": [
+          "13",
+          "15",
+          "12",
+          "14"
+        ],
+        "a": 3,
+        "e": "Break 5 into 1 and 4. Add 9 + 1 to make 10! Then add 10 + 4. The sum is 14. Making a 10 helps! 😄",
+        "d": "h"
+      },
+      {
+        "t": "What is 6 + 7? Use make a 10.",
+        "o": [
+          "14",
+          "12",
+          "11",
+          "13"
+        ],
+        "a": 3,
+        "e": "Break 7 into 4 and 3. Add 6 + 4 to make 10! Then add 10 + 3. The sum is 13. Making a 10 helps! 🥳",
+        "d": "h"
+      },
+      {
+        "t": "__ + 8 = 10. What is the missing number?",
+        "o": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ],
+        "a": 3,
+        "e": "Think: what number plus 8 equals 10? We know 2 + 8 = 10! The missing number is 2. Good thinking! 🤔",
+        "d": "h"
+      },
+      {
+        "t": "Mia has 8 grapes. Her mom gives her 7 more. She eats 3. How many does Mia have now?",
+        "o": [
+          "11",
+          "13",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "First, add 8 + 7. Make a 10: 8 + 2 = 10, then + 5 = 15. Now subtract 15 - 3 = 12. The answer is 12! 🤩",
+        "d": "h"
+      },
+      {
+        "t": "A student solved 9 + 5 and got 13. What mistake did the student make?",
+        "o": [
+          "They made a 10, then added too many",
+          "They forgot to break apart 5",
+          "They added 9 + 4 instead",
+          "They counted wrong by 1"
+        ],
+        "a": 2,
+        "e": "Oops! 9 + 5 is 14, not 13. Maybe they added 9 + 4. Remember to count all parts! The correct answer is 14. 🧐",
+        "d": "h"
+      },
+      {
+        "t": "Tom says you cannot use make a 10 for 6 + 3 because the answer is less than 10. Is Tom correct?",
+        "o": [
+          "No, you can always make a 10",
+          "Yes, make a 10 works best when the sum is more than 10",
+          "No, 6 + 3 equals 10",
+          "Yes, but only because 3 is too small"
+        ],
+        "a": 1,
+        "e": "Tom is right! 6 + 3 = 9. Making a 10 is super helpful when your answer will be more than 10! 👍",
+        "d": "h"
+      },
+      {
+        "t": "__ + 7 = 15. What is the missing number? Then add 3 more to 15. What do you get?",
+        "o": [
+          "8 and 18",
+          "7 and 18",
+          "8 and 17",
+          "9 and 18"
+        ],
+        "a": 0,
+        "e": "First, 7 needs 3 to make 10. We need 5 more to get 15. So 3 + 5 = 8. Missing number is 8. Then 15 + 3 = 18! ✨",
+        "d": "h"
+      },
+      {
+        "t": "Which two problems BOTH equal 14?",
+        "o": [
+          "8 + 5 and 9 + 4",
+          "8 + 6 and 9 + 5",
+          "7 + 6 and 8 + 5",
+          "9 + 6 and 7 + 7"
+        ],
+        "a": 1,
+        "e": "Let's check! 8 + 6 = 14. And 9 + 5 = 14. Both are correct! Remember, 8 + 5 = 13. Always double check! ✔️",
+        "d": "e"
+      },
+      {
+        "t": "A student wrote: 7 + 6 = 14. They said 7 + 3 = 10, then 10 + 4 = 14. What went wrong?",
+        "o": [
+          "They broke apart 6 into 3 and 4 instead of 3 and 3",
+          "They should have started with 6",
+          "Nothing, the answer is correct",
+          "They added to 10 wrong"
+        ],
+        "a": 0,
+        "e": "Oops! 6 is 3 + 3, not 3 + 4. So, 7 + 3 = 10, then 10 + 3 = 13. The answer is 13. You found the mistake! 🕵️‍♀️",
+        "d": "h"
+      },
+      {
+        "t": "Leo has 9 apples. Kai has 8 apples. They put them together and give 5 to a friend. How many are left?",
+        "o": [
+          "11",
+          "13",
+          "10",
+          "12"
+        ],
+        "a": 3,
+        "e": "First, add 9 + 8. Make a 10: 9 + 1 = 10, then + 7 = 17. Now subtract 17 - 5 = 12. The answer is 12! 🥳",
+        "d": "h"
+      },
+      {
+        "t": "For 8 + 5, show two different ways to make a 10.",
+        "o": [
+          "8+2+3 or 5+5+3",
+          "8+2+3 only",
+          "5+5+3 only",
+          "Neither works"
+        ],
+        "a": 0,
+        "e": "Both ways make 10 to find 13! Way 1: 8 + 2 = 10, then + 3 = 13. Way 2: 5 + 5 = 10, then + 3 = 13. Awesome! ✨",
+        "d": "h"
+      },
+      {
+        "t": "A puzzle says: I added a number to 9 and got 16. What number did I add?",
+        "o": [
+          "6",
+          "8",
+          "5",
+          "7"
+        ],
+        "a": 3,
+        "e": "9 needs 1 to make 10. To get to 16, you need 6 more (10 + 6 = 16). So, 1 + 6 = 7. The missing number is 7! 🤩",
+        "d": "h"
+      },
+      {
+        "t": "Which problem does NOT need make a 10? Why?",
+        "o": [
+          "9 + 6",
+          "8 + 5",
+          "10 + 4",
+          "7 + 8"
+        ],
+        "a": 2,
+        "e": "This is already a 10! Just add 4 more. 10 + 4 = 14. You got it! ✨",
+        "d": "e"
+      },
+      {
+        "t": "Sara solved 8 + 6 using make a 10. She wrote 8 + 2 = 10, then 10 + 3 = 13. Did she break apart 6 correctly?",
+        "o": [
+          "Yes, 2 + 3 = 6",
+          "No, 2 + 3 = 5, not 6. She should write 10 + 4 = 14",
+          "No, she should have used 8 + 8",
+          "Yes, the answer is 13"
+        ],
+        "a": 1,
+        "e": "You need 2 to make a 10 with 8. So 6 breaks into 2 and 4. 8 + 2 = 10, then 10 + 4 = 14. Super! 👍",
+        "d": "h"
+      },
+      {
+        "t": "There are 7 red cubes and 9 blue cubes. Then 8 green cubes are added. How many cubes in all? Use make a 10 to start.",
+        "o": [
+          "22",
+          "25",
+          "26",
+          "24"
+        ],
+        "a": 3,
+        "e": "To add 7 + 9, make a 10! 9 + 1 = 10, then add the rest (6). So 16. Then 16 + 8 = 24. Wow! ✨",
+        "d": "h"
+      },
+      {
+        "t": "What is the same about 9 + 4 and 8 + 5?",
+        "o": [
+          "They both use doubles",
+          "They both equal 13",
+          "They both equal 14",
+          "They both start with make 10 + 3"
+        ],
+        "a": 1,
+        "e": "Both 9 + 4 and 8 + 5 equal 13! Different numbers can make the same sum. You found it! 🌟",
+        "d": "h"
+      },
+      {
+        "t": "__ + __ = 16. One number is 2 more than the other. What are they?",
+        "o": [
+          "6 and 10",
+          "7 and 9",
+          "8 and 8",
+          "5 and 11"
+        ],
+        "a": 1,
+        "e": "7 + 9 = 16. The numbers 7 and 9 are 2 apart (9 - 7 = 2). What a cool connection! 💡",
+        "d": "h"
+      },
+      {
+        "t": "A student solved 7 + 8 and got 16. Explain what went wrong.",
+        "o": [
+          "They added 1 too many — the answer is 15",
+          "They subtracted instead",
+          "They used the wrong numbers",
+          "They forgot to make a 10"
+        ],
+        "a": 0,
+        "e": "To make a 10 with 8, take 2 from 7. 8 + 2 = 10, then add 5 more. So 7 + 8 = 15. Not 16. Good catch! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Nora had 6 pencils. She got 9 more. Then she gave away 4. How many does she have now?",
+        "o": [
+          "10",
+          "12",
+          "13",
+          "11"
+        ],
+        "a": 3,
+        "e": "First, make a 10 with 9. Take 1 from 6. 9 + 1 = 10, then add 5 more for 15. Then 15 - 4 = 11. Great! ➕➖",
+        "d": "h"
+      },
+      {
+        "t": "If 9 + 6 = 15, what is 9 + 7?",
+        "o": [
+          "15",
+          "17",
+          "14",
+          "16"
+        ],
+        "a": 3,
+        "e": "9 + 7 is 1 more than 9 + 6. Since 9 + 6 = 15, then 9 + 7 = 15 + 1 = 16. Great thinking! ➕",
+        "d": "h"
+      },
+      {
+        "t": "Which is greater: 8 + 7 or 9 + 5? How do you know?",
+        "o": [
+          "8 + 7, because 15 > 14",
+          "9 + 5, because 9 is bigger",
+          "They are equal, both are 14",
+          "They are equal, both are 15"
+        ],
+        "a": 0,
+        "e": "For 8 + 7, make a 10 to get 15. For 9 + 5, make a 10 to get 14. Since 15 > 14, 8 + 7 is greater! ✨",
+        "d": "h"
+      },
+      {
+        "t": "Fill in both blanks: 8 + __ = 10 + __. The answer is 13.",
+        "o": [
+          "5 and 3",
+          "4 and 3",
+          "6 and 3",
+          "5 and 4"
+        ],
+        "a": 0,
+        "e": "To make a 10 with 8, take 2 from 5. So 8 + 2 = 10. You have 3 left from 5. So 10 + 3 = 13! ✅",
+        "d": "h"
+      },
+      {
+        "t": "Jada says every make-a-10 problem must start with 9 or 8. Is she right?",
+        "o": [
+          "Yes, only 9 and 8 work",
+          "No, you can start with 7 too, like 7 + 5",
+          "No, you can start with any number",
+          "Yes, other numbers are too small"
+        ],
+        "a": 2,
+        "e": "Making a 10 helps with any numbers! For 6 + 7, take 4 from 7 to make 6 + 4 = 10. Add the 3 left: 13! Awesome! ➕",
+        "d": "h"
+      }
+    ],
+    "quiz": [
+      {
+        "t": "Use the make-ten strategy. What is 9 + 4?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "9 needs 1 to make a 10. Take 1 from the other number. Then you have 10 and the rest. 10 + 3 = 13! You did it! 💯"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 3?",
+        "o": [
+          "9",
+          "11",
+          "10",
+          "12"
+        ],
+        "a": 1,
+        "e": "8 needs 2 to make a 10. Take 2 from the other number. Then you have 10 and the rest. 10 + 1 = 11! Nice work! ✅"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 7 + 6?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "7 needs 3 to make a 10. Take 3 from the other number. Then you have 10 and the rest. 10 + 3 = 13! You're a star! ⭐"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 8 + 5?",
+        "o": [
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        "a": 2,
+        "e": "8 needs 2 to make a 10. Take 2 from the other number. Then you have 10 and the rest. 10 + 3 = 13! So clever! 🧠"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 6 + 8?",
+        "o": [
+          "12",
+          "13",
+          "14",
+          "15"
+        ],
+        "a": 2,
+        "e": "6 needs 4 to make a 10. Take 4 from the other number. Then you have 10 and the rest. 10 + 4 = 14! Fantastic! 🚀"
+      },
+      {
+        "t": "Use the make-ten strategy. What is 9 + 3?",
+        "o": [
+          "12",
+          "10",
+          "11",
+          "13"
+        ],
+        "a": 0,
+        "e": "9 needs 1 to make a 10. Take 1 from the other number. Then you have 10 and the rest. 10 + 2 = 12! Super job! 👍"
+      }
+    ]
+  },
+  {
+    "points": [
+      "A fact family uses the SAME 3 numbers to make 4 facts",
+      "2 addition facts + 2 subtraction facts = 1 fact family",
+      "If you know 3+7=10, you also know 10-7=3!"
+    ],
+    "examples": [
+      {
+        "c": "#e74c3c",
+        "tag": "Fact Family: 3, 7, 10",
+        "p": "4 related facts:",
+        "s": "[ 3 + 7 = 10 ]\n[ 7 + 3 = 10 ]\n[ 10 − 3 = 7 ]\n[ 10 − 7 = 3 ]",
+        "a": "All 4 use the same 3 numbers! ✅"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Fact Family: 5, 8, 13",
+        "p": "4 related facts:",
+        "s": "[ 5 + 8 = 13 ]\n[ 8 + 5 = 13 ]\n[ 13 − 5 = 8 ]\n[ 13 − 8 = 5 ]",
+        "a": "The 3 numbers are 5, 8, and 13 ✅"
+      },
+      {
+        "c": "#e74c3c",
+        "tag": "Missing Number",
+        "p": "8 + __ = 15",
+        "s": "Think: what is 15 − 8?\n[ 8 + 7 = 15 ]\n[ 15 − 8 = 7 ]",
+        "a": "8 + 7 = 15  (and 15 − 8 = 7) ✅"
+      }
+    ],
+    "practice": [
+      {
+        "q": "4 + 9 = 13. So 13 - 9 = ?",
+        "a": "4",
+        "h": "Fact families! Use the same 3 numbers: 4, 9, 13",
+        "e": "To find 7 + 6, make a 10! Take 3 from 6 to make 7 + 3 = 10. Add the 3 left. So 10 + 3 = 13! Great work! ✨"
+      },
+      {
+        "q": "6 + 7 = 13. So 13 - 6 = ?",
+        "a": "7",
+        "h": "Fact families! 6, 7, and 13 belong together",
+        "e": "To solve 15 - 8, think: 8 + what equals 15? We know 8 + 2 = 10, then 5 more is 15. So 8 + 7 = 15! 15 - 8 = 7. ✅"
+      },
+      {
+        "q": "8 + __ = 12",
+        "a": "4",
+        "h": "Think: 12 - 8 = ? Count back from 12!",
+        "e": "For 6 + 7, think of doubles! 6 + 6 = 12. Since 7 is 1 more than 6, then 6 + 7 is 1 more than 12. So 13! Super! 🤩"
+      }
+    ],
+    "qBank": [
+      {
+        "t": "Which number sentence belongs in the fact family for 3, 7, and 10?",
+        "o": [
+          "3+8=10",
+          "7+3=10",
+          "10+3=7",
+          "7-3=10"
+        ],
+        "a": 1,
+        "e": "7, 3, and 10 are a fact family! They always go together for addition and subtraction. Great job! 👍",
+        "d": "m"
+      },
+      {
+        "t": "If 5 + 8 = 13, what is 13 − 8?",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 1,
+        "e": "Yes! 13, 8, and 5 make a fact family. 13 - 8 = 5 is one way they connect. Super! ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? 6 + ___ = 14",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 1,
+        "e": "You got it! Addition and subtraction are opposites. If 14 - 6 = 8, then 6 + 8 = 14. Awesome! 🤩",
+        "d": "h"
+      },
+      {
+        "t": "If 4 + 9 = 13, what is 13 − 4?",
+        "o": [
+          "8",
+          "9",
+          "10",
+          "11"
+        ],
+        "a": 1,
+        "e": "Exactly! 13, 4, and 9 are a fact family. 13 - 4 = 9 shows how they fit! Keep it up! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "The numbers 2, 8, and 10 form a fact family. How many facts are in every fact family?",
+        "o": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "a": 2,
+        "e": "A fact family like 2, 8, 10 has 4 facts: two addition and two subtraction. You listed them all! Smart! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "If 7 + 6 = 13, what is 13 − 7?",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 2,
+        "e": "Yes! 13, 7, and 6 are a fact family. 13 - 7 = 6 is one of their connections. Fantastic! ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? 9 + ___ = 17",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 2,
+        "e": "Great thinking! Addition and subtraction are related. If 17 - 9 = 8, then 9 + 8 = 17. You got it! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Which fact is in family 5,9,14?",
+        "o": [
+          "5+8=13",
+          "9+5=14",
+          "5+5=10",
+          "14-4=10"
+        ],
+        "a": 1,
+        "e": "9, 5, and 14 are a fact family! They always go together for addition and subtraction. You found it! 🌟",
+        "d": "e"
+      },
+      {
+        "t": "If 8 + 7 = 15, what is 15 − 8?",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 1,
+        "e": "You're right! 15, 8, and 7 are a fact family. 15 - 8 = 7 is one of their important facts. Super! 🚀",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? ___ + 6 = 11",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 1,
+        "e": "Excellent! Addition and subtraction are linked. If 11 - 6 = 5, then 5 + 6 = 11. You understand! 💡",
+        "d": "e"
+      },
+      {
+        "t": "What are the three numbers in the fact family for 8 + 5 = 13?",
+        "o": [
+          "8,5,13",
+          "8,5,12",
+          "7,5,13",
+          "8,4,13"
+        ],
+        "a": 0,
+        "e": "Yes! 8, 5, and 13 form a fact family. They are the three numbers that work together for these facts. Smart! 🧠",
+        "d": "m"
+      },
+      {
+        "t": "If 9 + 6 = 15, what is 15 − 6?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "Exactly! 15, 6, and 9 are a fact family. 15 - 6 = 9 shows how they connect. Way to go! 🎉",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? 7 + ___ = 16",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "You're a math whiz! Addition and subtraction are related. If 16 - 7 = 9, then 7 + 9 = 16. Awesome! 🌟",
+        "d": "h"
+      },
+      {
+        "t": "Which shows a fact family?",
+        "o": [
+          "3+4=7 and 7-3=4",
+          "3+4=7 and 5+2=7",
+          "3+4=7 and 4-3=1",
+          "3+3=6 and 3+4=7"
+        ],
+        "a": 0,
+        "e": "That's a fact family! 3, 4, and 7 always go together. 3 + 4 = 7 and 7 - 3 = 4 are two facts! Good job! 😊",
+        "d": "e"
+      },
+      {
+        "t": "If 6 + 8 = 14, what is 14 − 6?",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 2,
+        "e": "Correct! 14, 6, and 8 are a fact family. 14 - 6 = 8 is one of their facts. You're doing great! ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? ___ + 9 = 18",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "You're right! Addition and subtraction are related. If 18 - 9 = 9, then 9 + 9 = 18. Keep up the great work! 🚀",
+        "d": "e"
+      },
+      {
+        "t": "The fact family for 4 + 7 = 11 has how many subtraction facts?",
+        "o": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "a": 1,
+        "e": "That's right! A fact family always has two subtraction facts. It also has two addition facts! You know your facts! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "If 5 + 7 = 12, what is 12 − 5?",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "You got it! 12, 5, and 7 are a fact family. 12 - 5 = 7 is one of their facts. Keep learning! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? 8 + ___ = 13",
+        "o": [
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "a": 2,
+        "e": "Yes! Addition and subtraction are connected. If 13 - 8 = 5, then 8 + 5 = 13. You're doing great! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Which number sentence does NOT belong in the fact family for 6, 7, and 13?",
+        "o": [
+          "6+7=13",
+          "7+6=13",
+          "13-6=7",
+          "13-7=5"
+        ],
+        "a": 3,
+        "e": "Good try! 13 - 7 is 6, not 5. Remember, 6 and 7 make 13. You'll get it next time! Keep practicing! 💪",
+        "d": "m"
+      },
+      {
+        "t": "If 3 + 9 = 12, what is 12 − 3?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "A fact family uses the same numbers. If 3 + 9 = 12, then 12 - 3 = 9! So, 9 is correct. ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? ___ + 8 = 15",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "Subtraction helps us find a missing part. If 15 - 8 = 7, then 7 + 8 = 15! So, 7 is right. 👍",
+        "d": "e"
+      },
+      {
+        "t": "Which addition fact belongs to the fact family with 5, 6, and 11?",
+        "o": [
+          "5+7=12",
+          "6+5=11",
+          "5+5=10",
+          "6+6=12"
+        ],
+        "a": 1,
+        "e": "A fact family uses three numbers. For 6 + 5 = 11, the numbers are 5, 6, and 11! So, 11 is correct. 🔢",
+        "d": "m"
+      },
+      {
+        "t": "If 7 + 8 = 15, what is 15 − 7?",
+        "o": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 2,
+        "e": "A fact family uses the same numbers. If 7 + 8 = 15, then 15 - 7 = 8! So, 8 is correct. ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? 6 + ___ = 15",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 2,
+        "e": "Subtraction helps us find a missing part. If 15 - 6 = 9, then 6 + 9 = 15! So, 9 is right. 👍",
+        "d": "h"
+      },
+      {
+        "t": "How many number sentences are in every fact family?",
+        "o": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "a": 2,
+        "e": "A fact family has 2 addition facts and 2 subtraction facts. That makes 4 facts in total! You got it. ✅",
+        "d": "e"
+      },
+      {
+        "t": "If 9 + 8 = 17, what is 17 − 9?",
+        "o": [
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "a": 1,
+        "e": "A fact family uses the same numbers. If 9 + 8 = 17, then 17 - 9 = 8! So, 8 is correct. ✨",
+        "d": "m"
+      },
+      {
+        "t": "What is the missing number? ___ + 7 = 12",
+        "o": [
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "a": 2,
+        "e": "Subtraction helps us find a missing part. If 12 - 7 = 5, then 5 + 7 = 12! So, 5 is right. 👍",
+        "d": "e"
+      },
+      {
+        "t": "What are the three numbers in the fact family for 9 + 7 = 16?",
+        "o": [
+          "9,7,16",
+          "9,7,15",
+          "8,7,16",
+          "9,6,16"
+        ],
+        "a": 0,
+        "e": "A fact family uses three special numbers. For 9 + 7 = 16, the numbers are 9, 7, and 16! Great job. 🔢",
+        "d": "m"
+      },
+      {
+        "t": "If 4 + 6 = 10, what is 10 − 4?",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 2,
+        "e": "A fact family uses the same numbers. If 4 + 6 = 10, then 10 - 4 = 6! So, 6 is correct. ✨",
+        "d": "m"
+      },
+      {
+        "t": "If 3 + 5 = 8, what is 5 + 3?",
+        "o": [
+          "7",
+          "9",
+          "8",
+          "6"
+        ],
+        "a": 2,
+        "e": "In a fact family, you can add numbers in any order! 3 + 5 = 8 and 5 + 3 = 8. So, 8 is the answer! ➕",
+        "d": "e"
+      },
+      {
+        "t": "If 2 + 6 = 8, what is 6 + 2?",
+        "o": [
+          "9",
+          "4",
+          "8",
+          "7"
+        ],
+        "a": 2,
+        "e": "For a fact family, adding numbers in a different order gives the same answer! 2 + 6 = 8 and 6 + 2 = 8. Great! ➕",
+        "d": "e"
+      },
+      {
+        "t": "If 4 + 3 = 7, what is 7 - 3?",
+        "o": [
+          "3",
+          "5",
+          "4",
+          "6"
+        ],
+        "a": 2,
+        "e": "Addition and subtraction are related! If 4 + 3 = 7, then 7 - 3 = 4. This is a fact family! So, 4 is right. ↔️",
+        "d": "e"
+      },
+      {
+        "t": "If 5 + 4 = 9, what is 9 - 4?",
+        "o": [
+          "4",
+          "6",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "Addition and subtraction are related! If 5 + 4 = 9, then 9 - 4 = 5. This is a fact family! So, 5 is right. ↔️",
+        "d": "e"
+      },
+      {
+        "t": "If 1 + 7 = 8, what is 8 - 7?",
+        "o": [
+          "2",
+          "0",
+          "7",
+          "1"
+        ],
+        "a": 3,
+        "e": "Addition and subtraction are related! If 1 + 7 = 8, then 8 - 7 = 1. This is a fact family! So, 1 is right. ↔️",
+        "d": "e"
+      },
+      {
+        "t": "If 6 + 3 = 9, what is 3 + 6?",
+        "o": [
+          "8",
+          "10",
+          "12",
+          "9"
+        ],
+        "a": 3,
+        "e": "You can add numbers in any order and get the same sum! 6 + 3 = 9 and 3 + 6 = 9. So, 9 is correct! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "If 2 + 5 = 7, what is 7 - 2?",
+        "o": [
+          "4",
+          "3",
+          "5",
+          "6"
+        ],
+        "a": 2,
+        "e": "Addition and subtraction are related! If 2 + 5 = 7, then 7 - 2 = 5. This is a fact family! So, 5 is right. ↔️",
+        "d": "e"
+      },
+      {
+        "t": "If 8 + 2 = 10, what is 10 - 2?",
+        "o": [
+          "7",
+          "9",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "Addition and subtraction are related! If 8 + 2 = 10, then 10 - 2 = 8. This is a fact family! So, 8 is right. ↔️",
+        "d": "m"
+      },
+      {
+        "t": "If 3 + 4 = 7, what is 7 - 4?",
+        "o": [
+          "4",
+          "2",
+          "3",
+          "5"
+        ],
+        "a": 2,
+        "e": "Addition and subtraction are related! If 3 + 4 = 7, then 7 - 4 = 3. This is a fact family! So, 3 is right. ↔️",
+        "d": "e"
+      },
+      {
+        "t": "If 6 + 4 = 10, what is 4 + 6?",
+        "o": [
+          "9",
+          "11",
+          "10",
+          "8"
+        ],
+        "a": 2,
+        "e": "You can add numbers in any order and get the same sum! 6 + 4 = 10 and 4 + 6 = 10. So, 10 is correct! 🎉",
+        "d": "e"
+      },
+      {
+        "t": "If 9 + 1 = 10, what is 10 - 9?",
+        "o": [
+          "2",
+          "0",
+          "9",
+          "1"
+        ],
+        "a": 3,
+        "e": "A fact family uses the same numbers! Since 9 + 1 = 10, then 10 - 9 = 1. They are related! ✨",
+        "d": "m"
+      },
+      {
+        "t": "If 5 + 2 = 7, what is 7 - 5?",
+        "o": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ],
+        "a": 3,
+        "e": "These numbers are a fact family! 5 + 2 = 7, so 7 - 5 = 2. They are related! 👍",
+        "d": "e"
+      },
+      {
+        "t": "If 7 + 3 = 10, what is 10 - 7?",
+        "o": [
+          "4",
+          "2",
+          "7",
+          "3"
+        ],
+        "a": 3,
+        "e": "Fact families show how numbers are related. 7 + 3 = 10, so 10 - 7 = 3. Great job! 🌟",
+        "d": "m"
+      },
+      {
+        "t": "If 1 + 8 = 9, what is 8 + 1?",
+        "o": [
+          "10",
+          "7",
+          "8",
+          "9"
+        ],
+        "a": 3,
+        "e": "You can add numbers in any order! 1 + 8 = 9 and 8 + 1 = 9. The sum is still 9. So smart! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "If 4 + 5 = 9, what is 9 - 5?",
+        "o": [
+          "3",
+          "5",
+          "6",
+          "4"
+        ],
+        "a": 3,
+        "e": "Fact families use the same numbers! If 4 + 5 = 9, then 9 - 5 = 4. They are connected! 🔗",
+        "d": "e"
+      },
+      {
+        "t": "If 3 + 7 = 10, what is 10 - 3?",
+        "o": [
+          "8",
+          "6",
+          "3",
+          "7"
+        ],
+        "a": 3,
+        "e": "These numbers form a fact family! 3 + 7 = 10, so 10 - 3 = 7. They belong together! 🏡",
+        "d": "m"
+      },
+      {
+        "t": "If 2 + 4 = 6, what is 6 - 4?",
+        "o": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ],
+        "a": 3,
+        "e": "A fact family shows how addition and subtraction are related. 2 + 4 = 6, so 6 - 4 = 2. You got it! ✅",
+        "d": "e"
+      },
+      {
+        "t": "If 6 + 2 = 8, what is 8 - 6?",
+        "o": [
+          "3",
+          "6",
+          "4",
+          "2"
+        ],
+        "a": 3,
+        "e": "Fact families use the same three numbers. 6 + 2 = 8, so 8 - 6 = 2. Keep up the great work! ✨",
+        "d": "e"
+      },
+      {
+        "t": "If 5 + 5 = 10, what is 10 - 5?",
+        "o": [
+          "6",
+          "4",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "Doubles like 5 + 5 = 10 make special fact families! 10 - 5 = 5. The numbers are 5, 5, and 10. Awesome! 🤩",
+        "d": "m"
+      },
+      {
+        "t": "If 1 + 6 = 7, what is 7 - 1?",
+        "o": [
+          "5",
+          "7",
+          "8",
+          "6"
+        ],
+        "a": 3,
+        "e": "Fact families show how addition and subtraction are related. 1 + 6 = 7, so 7 - 1 = 6. You're a math whiz! 💯",
+        "d": "e"
+      },
+      {
+        "t": "3 + __ = 10. What is the missing number? Use a related fact to help.",
+        "o": [
+          "8",
+          "6",
+          "5",
+          "7"
+        ],
+        "a": 3,
+        "e": "We can use related facts to find the missing number! Since 10 - 3 = 7, then 3 + 7 = 10. The missing number is 7. You did it! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "Which number sentence belongs to the same fact family as 6 + 8 = 14?",
+        "o": [
+          "6 + 6 = 12",
+          "14 - 8 = 6",
+          "8 + 8 = 16",
+          "14 + 6 = 20"
+        ],
+        "a": 1,
+        "e": "A fact family has four facts that use the same three numbers: 6, 8, and 14. They are all connected! 🤝",
+        "d": "m"
+      },
+      {
+        "t": "If 9 + 5 = 14, which subtraction fact do you also know?",
+        "o": [
+          "14 - 9 = 5",
+          "14 - 5 = 8",
+          "9 - 5 = 14",
+          "14 + 5 = 19"
+        ],
+        "a": 0,
+        "e": "Fact families show how addition and subtraction are related. If 9 + 5 = 14, then 14 - 9 = 5 and 14 - 5 = 9. Smart! 💡",
+        "d": "e"
+      },
+      {
+        "t": "__ - 4 = 7. What is the missing number?",
+        "o": [
+          "3",
+          "12",
+          "10",
+          "11"
+        ],
+        "a": 3,
+        "e": "Use related facts to find the missing number! Since 7 + 4 = 11, then 11 - 4 = 7. The missing number is 11. Way to go! 🚀",
+        "d": "h"
+      },
+      {
+        "t": "How many facts are in the fact family for 3, 5, and 8?",
+        "o": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "a": 2,
+        "e": "A complete fact family has four facts that use the same three numbers: 3, 5, and 8. You found them all! 🥳",
+        "d": "e"
+      },
+      {
+        "t": "Ella has some books. She gives 6 away and has 9 left. How many did she start with?",
+        "o": [
+          "3",
+          "16",
+          "14",
+          "15"
+        ],
+        "a": 3,
+        "e": "Use a related fact to solve! If Ella has 6 books and 9 more, 9 + 6 = 15. So, Ella started with 15 books. Great thinking! 🤔",
+        "d": "h"
+      },
+      {
+        "t": "Which strategy helps solve 13 - 7?",
+        "o": [
+          "Count by 10s",
+          "Think: 7 + __ = 13",
+          "Use doubles of 13",
+          "Skip count by 7s"
+        ],
+        "a": 1,
+        "e": "Use a related addition fact! Think: 7 + ? = 13. Since 7 + 6 = 13, then 13 - 7 = 6. The answer is 6. You're a star! ⭐",
+        "d": "e"
+      },
+      {
+        "t": "If 7 + 6 = 13, what is 13 - 6?",
+        "o": [
+          "8",
+          "6",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "Fact families show how addition and subtraction are connected. If 7 + 6 = 13, then 13 - 6 = 7. Super work! 👍",
+        "d": "m"
+      },
+      {
+        "t": "8 + __ = 15. What is the missing number?",
+        "o": [
+          "6",
+          "8",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "Use a related fact to find the missing number! Since 15 - 8 = 7, then 8 + 7 = 15. The missing number is 7. Awesome job! 👏",
+        "d": "h"
+      },
+      {
+        "t": "Which number sentence does NOT belong in the fact family for 5, 9, and 14?",
+        "o": [
+          "5 + 9 = 14",
+          "14 - 5 = 9",
+          "9 + 5 = 14",
+          "9 - 5 = 4"
+        ],
+        "a": 3,
+        "e": "A fact family uses only specific numbers. 9 - 5 = 4 uses 4, not 14. So it's not in the 5, 9, 14 family. Good eye! 👀",
+        "d": "m"
+      },
+      {
+        "t": "A boy had 12 crayons. He lost some and has 5 left. How many did he lose?",
+        "o": [
+          "6",
+          "8",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "We know 5 + 7 = 12. So, if Ben had 12 and 5 are left, he lost 7 crayons. Great job! 🖍️",
+        "d": "h"
+      },
+      {
+        "t": "If 8 + 4 = 12, which is also true?",
+        "o": [
+          "12 - 4 = 8",
+          "12 + 4 = 8",
+          "8 - 4 = 12",
+          "4 - 8 = 12"
+        ],
+        "a": 0,
+        "e": "A fact family shows how 3 numbers (8, 4, 12) are connected! 8 + 4 = 12, 12 - 4 = 8, and 12 - 8 = 4. You got it! ✨",
+        "d": "e"
+      },
+      {
+        "t": "14 - __ = 6. What is the missing number?",
+        "o": [
+          "7",
+          "9",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "If 6 + 8 = 14, then 14 - 8 must be 6! Addition and subtraction are related. Super thinking! 👍",
+        "d": "h"
+      },
+      {
+        "t": "How many facts are in the fact family for 6, 6, and 12?",
+        "o": [
+          "4",
+          "1",
+          "3",
+          "2"
+        ],
+        "a": 3,
+        "e": "Doubles are special! 6 + 6 = 12 and 12 - 6 = 6. Since both parts are the same, there are only 2 facts in this family! ⭐",
+        "d": "m"
+      },
+      {
+        "t": "__ + 9 = 16. What is the missing number?",
+        "o": [
+          "6",
+          "8",
+          "5",
+          "7"
+        ],
+        "a": 3,
+        "e": "You found the missing part! If 16 - 9 = 7, then 7 + 9 = 16. They are related facts. Awesome! ✅",
+        "d": "h"
+      },
+      {
+        "t": "Which fact helps you solve 11 - 4?",
+        "o": [
+          "11 + 4 = 15",
+          "4 + 7 = 11",
+          "4 + 4 = 8",
+          "11 - 11 = 0"
+        ],
+        "a": 1,
+        "e": "To solve 11 - 4, think: 4 + what equals 11? Since 4 + 7 = 11, then 11 - 4 = 7. You're a math whiz! 🧠",
+        "d": "e"
+      },
+      {
+        "t": "There are 15 kids. 8 are boys. How many are girls?",
+        "o": [
+          "6",
+          "8",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "If there are 8 boys and 15 kids total, we need to find the missing part! 8 + 7 = 15. There are 7 girls. Nicely done! 👧",
+        "d": "e"
+      },
+      {
+        "t": "5 + __ = 13. What is the missing number?",
+        "o": [
+          "7",
+          "9",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "To check 13 - 5 = 8, use the related addition fact: 5 + 8 = 13. This shows they are a fact family! Super! ✨",
+        "d": "h"
+      },
+      {
+        "t": "If 6 + 7 = 13, which subtraction fact is in the same family?",
+        "o": [
+          "13 - 6 = 7",
+          "13 - 7 = 5",
+          "7 - 6 = 13",
+          "6 - 7 = 1"
+        ],
+        "a": 0,
+        "e": "A fact family shows all 4 ways to use 6, 7, and 13! 6+7=13, 7+6=13, 13-6=7, 13-7=6. Fantastic! 🔢",
+        "d": "m"
+      },
+      {
+        "t": "Liam has 9 toy cars. His sister gives him more. Now he has 17. How many did she give?",
+        "o": [
+          "7",
+          "9",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "We need to find the missing part! If 9 + 8 = 17, then she gave him 8 cars. You used a related fact! Great! 🚗",
+        "d": "h"
+      },
+      {
+        "t": "Ana picked 7 flowers. Together with Ben they have 15 flowers. How many did Ben pick? Then 4 flowers wilted. How many are left?",
+        "o": [
+          "8 and 11",
+          "7 and 11",
+          "8 and 12",
+          "9 and 11"
+        ],
+        "a": 0,
+        "e": "First, find Ben's flowers: 7 + 8 = 15. Then, subtract the 4 given away: 15 - 4 = 11 flowers left. You solved it! 🌷",
+        "d": "h"
+      },
+      {
+        "t": "A student wrote the fact family for 5, 8, and 13 as: 5 + 8 = 13, 8 + 5 = 13, 13 - 5 = 7. What mistake did they make?",
+        "o": [
+          "13 - 5 = 8, not 7",
+          "They need more facts",
+          "5 + 8 is wrong",
+          "The family should use 12"
+        ],
+        "a": 0,
+        "e": "The student made a mistake. To check, think: 5 + 7 = 12, not 13. The correct answer is 13 - 5 = 8. Keep trying! 💪",
+        "d": "h"
+      },
+      {
+        "t": "If 6 + 9 = 15, which number sentence is NOT in the same fact family?",
+        "o": [
+          "9 + 6 = 15",
+          "15 - 9 = 6",
+          "15 - 6 = 9",
+          "9 - 6 = 3"
+        ],
+        "a": 3,
+        "e": "A fact family uses only 3 numbers. 9 - 6 = 3 uses different numbers (3, 6, 9) than the family of 6, 9, 15. Good thinking! 🤔",
+        "d": "m"
+      },
+      {
+        "t": "__ + __ = 14. Use the fact family to write a subtraction fact. Which pair works?",
+        "o": [
+          "5 + 9 = 14, so 14 - 9 = 5",
+          "5 + 8 = 14, so 14 - 8 = 6",
+          "6 + 9 = 14, so 14 - 9 = 6",
+          "4 + 9 = 14, so 14 - 9 = 5"
+        ],
+        "a": 0,
+        "e": "Yes, 5 + 9 = 14 is correct! The related subtraction fact is 14 - 9 = 5. They are part of the same fact family. Awesome! ➕➖",
+        "d": "h"
+      },
+      {
+        "t": "Mia says: if I know 8 + 7 = 15, I also know 15 - 7 without counting. What is 15 - 7?",
+        "o": [
+          "9",
+          "7",
+          "6",
+          "8"
+        ],
+        "a": 3,
+        "e": "If you know 8 + 7 = 15, then you know 15 - 7 = 8! Related facts help you solve problems faster. Way to go! 🚀",
+        "d": "h"
+      },
+      {
+        "t": "A student wrote: 12 - 5 = 6. Use a fact family to check. Is this correct?",
+        "o": [
+          "Yes, 5 + 6 = 12",
+          "No, 5 + 6 = 11, not 12. The answer should be 7",
+          "No, the answer should be 8",
+          "Yes, 6 + 6 = 12"
+        ],
+        "a": 1,
+        "e": "To check 12 - 5 = 6, think: 5 + 6 = 11, not 12. So it's wrong! The correct answer is 12 - 5 = 7. Good job finding the error! 👍",
+        "d": "m"
+      },
+      {
+        "t": "Tom has 16 stickers. He gives some to 2 friends. He gives 7 to one and keeps 4 for himself. How many did the second friend get?",
+        "o": [
+          "4",
+          "6",
+          "3",
+          "5"
+        ],
+        "a": 3,
+        "e": "First, Tom gave away 16 - 4 = 12 marbles. Then, 12 - 7 = 5 marbles went to the second friend. You did great! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "Which fact family has only 2 facts instead of 4?",
+        "o": [
+          "3, 5, 8",
+          "4, 4, 8",
+          "6, 7, 13",
+          "5, 9, 14"
+        ],
+        "a": 1,
+        "e": "When both parts are the same (like 4 + 4 = 8), there are only 2 facts in the family: 4 + 4 = 8 and 8 - 4 = 4. Super smart! ✌️",
+        "d": "e"
+      },
+      {
+        "t": "I know 7 + 8 = 15. Without adding, what is 8 + 7?",
+        "o": [
+          "16",
+          "14",
+          "13",
+          "15"
+        ],
+        "a": 3,
+        "e": "With addition, you can switch the numbers! 7 + 8 = 15, and 8 + 7 = 15. This is the order property. Amazing! 🔄",
+        "d": "h"
+      },
+      {
+        "t": "Leo says the fact family for 4, 9, and 13 has 5 facts. Is he right?",
+        "o": [
+          "Yes, there are 5 facts",
+          "No, there are only 4 facts",
+          "No, there are only 3 facts",
+          "No, there are only 2 facts"
+        ],
+        "a": 1,
+        "e": "When a fact family has two different parts, it always has 4 facts: two addition and two subtraction. You know your facts! 💯",
+        "d": "h"
+      },
+      {
+        "t": "If 6 + __ = 14, then 14 - 6 = __. Fill in both blanks.",
+        "o": [
+          "7 and 7",
+          "9 and 9",
+          "8 and 8",
+          "7 and 8"
+        ],
+        "a": 2,
+        "e": "A fact family connects addition and subtraction! Since 6 + 8 = 14, then 14 - 6 = 8. So, both blanks are 8! 😊",
+        "d": "h"
+      },
+      {
+        "t": "A student says 11 - 5 = 7 because 5 + 7 = 12. What TWO mistakes did they make?",
+        "o": [
+          "Wrong addition fact AND wrong subtraction",
+          "Only the subtraction is wrong",
+          "Only the addition is wrong",
+          "No mistakes were made"
+        ],
+        "a": 0,
+        "e": "Let's fix it! 5 + 7 = 12, not 11. And 11 - 5 = 6, not 7. The math facts were wrong. ❌",
+        "d": "h"
+      },
+      {
+        "t": "Sara had some beads. She lost 8 and has 6 left. She finds 3 more. How many does she have now?",
+        "o": [
+          "11",
+          "8",
+          "10",
+          "9"
+        ],
+        "a": 3,
+        "e": "First, find the start: 14 - 8 = 6. She had 14. Then, 6 + 3 = 9. She has 9 now! 👍",
+        "d": "h"
+      },
+      {
+        "t": "Which number can replace the box? 5 + box = 12, and 12 - box = 5.",
+        "o": [
+          "6",
+          "8",
+          "9",
+          "7"
+        ],
+        "a": 3,
+        "e": "Fact families help! Since 5 + 7 = 12, then 12 - 7 = 5. The missing number in the box is 7! ✨",
+        "d": "h"
+      },
+      {
+        "t": "Kai wrote four facts: 3 + 9 = 12, 9 + 3 = 12, 12 - 3 = 9, 12 - 9 = 4. Which fact has an error?",
+        "o": [
+          "3 + 9 = 12",
+          "9 + 3 = 12",
+          "12 - 3 = 9",
+          "12 - 9 = 4"
+        ],
+        "a": 3,
+        "e": "Let's check! 12 - 9 = 3. The last fact should be 12 - 9 = 3. Keep practicing! ✅",
+        "d": "h"
+      },
+      {
+        "t": "If you know 9 + 7 = 16, name two subtraction facts you also know.",
+        "o": [
+          "16 - 9 = 7 and 16 - 7 = 9",
+          "16 - 9 = 8 and 16 - 7 = 8",
+          "9 - 7 = 2 and 16 - 9 = 6",
+          "16 - 7 = 8 and 16 - 9 = 7"
+        ],
+        "a": 0,
+        "e": "A fact family uses the same numbers! Since 9 + 7 = 16, we also know 16 - 9 = 7 and 16 - 7 = 9. 👨‍👩‍👧‍👦",
+        "d": "h"
+      },
+      {
+        "t": "__ - 6 = 9. Then use that answer to find __ + 3. What are both answers?",
+        "o": [
+          "15 and 18",
+          "14 and 17",
+          "16 and 19",
+          "13 and 16"
+        ],
+        "a": 0,
+        "e": "First, find the related fact: 9 + 6 = 15. Then, add 3 more: 15 + 3 = 18. Your answers are 15 and 18! 🎉",
+        "d": "h"
+      },
+      {
+        "t": "Can 3, 5, and 9 be a fact family? Why or why not?",
+        "o": [
+          "Yes, 3 + 5 = 9",
+          "No, because 3 + 5 = 8, not 9",
+          "Yes, 9 - 3 = 5",
+          "No, because 9 - 5 = 3"
+        ],
+        "a": 1,
+        "e": "For a fact family, the numbers must work together. 3 + 5 = 8, not 9. So 3, 5, and 9 are not a fact family. 🤔",
+        "d": "m"
+      },
+      {
+        "t": "A jar has red and blue cubes. There are 16 cubes total. If you remove all 9 red cubes, 7 blue are left. Write the fact family.",
+        "o": [
+          "9+7=16, 7+9=16, 16-9=7, 16-7=9",
+          "9+7=16, 16-7=8, 16-9=6",
+          "9+7=15, 7+9=15, 15-9=7",
+          "Only 9+7=16"
+        ],
+        "a": 0,
+        "e": "The numbers 9, 7, 16 make a fact family! 9+7=16, 7+9=16, 16-9=7, 16-7=9. All four facts! 👨‍👩‍👧‍👦",
+        "d": "h"
+      },
+      {
+        "t": "Maya says knowing one addition fact gives you three more facts for free. Is she right?",
+        "o": [
+          "Yes, you get 1 more addition and 2 subtraction facts",
+          "No, you only get 1 subtraction fact",
+          "No, you have to memorize each one",
+          "Yes, but only for doubles"
+        ],
+        "a": 0,
+        "e": "You got it! 6 + 8 = 14 is part of a fact family. You also know 8+6=14, 14-6=8, and 14-8=6! Great job! ⭐",
+        "d": "e"
+      }
+    ],
+    "quiz": [
+      {
+        "t": "Which fact belongs in the family 4, 6, 10?",
+        "o": [
+          "4+7=11",
+          "6+4=10",
+          "5+5=10",
+          "6+5=11"
+        ],
+        "a": 1,
+        "e": "The numbers 4, 6, 10 make a fact family! 4+6=10, 6+4=10, 10-4=6, 10-6=4. You know all four! 💖"
+      },
+      {
+        "t": "If 5 + 8 = 13, what is 13 - 8?",
+        "o": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "a": 1,
+        "e": "Fact families use the same numbers! 5 + 8 = 13 and 13 - 8 = 5 are connected. Great thinking! 🧩"
+      },
+      {
+        "t": "How many facts are in every fact family?",
+        "o": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "a": 2,
+        "e": "That's right! Every fact family has 4 facts: 2 addition facts and 2 subtraction facts. You know them! 🔢"
+      },
+      {
+        "t": "What is the missing number? 8 + ___ = 15",
+        "o": [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "a": 2,
+        "e": "Addition and subtraction are related! Since 15 - 8 = 7, we know that 8 + 7 = 15. Great job! 🔗"
+      },
+      {
+        "t": "If 6 + 9 = 15, which is also true?",
+        "o": [
+          "6+9=14",
+          "15-9=6",
+          "15+6=9",
+          "9-6=15"
+        ],
+        "a": 1,
+        "e": "Yes! 15 - 9 = 6 is in the same fact family as 6 + 9 = 15. They use the same numbers! 👨‍👩‍👧‍👦"
+      },
+      {
+        "t": "The 3 numbers in the fact family for 7+4=11 are?",
+        "o": [
+          "7, 4, 11",
+          "7, 4, 12",
+          "6, 4, 11",
+          "7, 5, 11"
+        ],
+        "a": 0,
+        "e": "You found the fact family numbers! 7, 4, and 11 are the three numbers that belong together. ✨"
+      }
+    ]
+  }
+];
+
+export const unitQuiz: UnitQuiz = {
+  "qBank": [
+    {
+      "t": "Use the count-on strategy. What is 9 + 3?",
+      "o": [
+        "12",
+        "10",
+        "11",
+        "13"
+      ],
+      "a": 0,
+      "e": "To add, start at 9 and count on 3! 10, 11, 12. So 9 + 3 = 12. You counted perfectly! ⬆️",
+      "d": "e"
+    },
+    {
+      "t": "Use the count-back strategy. What is 12 − 5?",
+      "o": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "a": 2,
+      "e": "To subtract, start at 12 and count back 5! 11, 10, 9, 8, 7. So 12 - 5 = 7. Great counting! ⬇️",
+      "d": "e"
+    },
+    {
+      "t": "What is 6 + 6? (Doubles fact)",
+      "o": [
+        "10",
+        "11",
+        "13",
+        "12"
+      ],
+      "a": 3,
+      "e": "You know your doubles! 6 + 6 = 12. It's a special fact that helps you add faster! 👯",
+      "d": "e"
+    },
+    {
+      "t": "What is 5 + 6? Use the near-doubles strategy.",
+      "o": [
+        "11",
+        "9",
+        "10",
+        "12"
+      ],
+      "a": 0,
+      "e": "Use a doubles fact! 5 + 5 = 10, then add 1 more to get 11. So 5 + 6 = 11. Smart strategy!➕",
+      "d": "m"
+    },
+    {
+      "t": "Use the make-ten strategy. What is 9 + 4?",
+      "o": [
+        "11",
+        "13",
+        "12",
+        "14"
+      ],
+      "a": 1,
+      "e": "We make a ten! 9 + 1 = 10. Then add 3 more: 10 + 3 = 13. Great job! 👍",
+      "d": "m"
+    },
+    {
+      "t": "Which number sentence belongs in the fact family for 3, 7, and 10?",
+      "o": [
+        "3+8=10",
+        "7+3=10",
+        "10+3=7",
+        "7-3=10"
+      ],
+      "a": 1,
+      "e": "7 and 3 are parts that make the whole, 10! This is a number bond. 7 + 3 = 10. You got it! ✨",
+      "d": "h"
+    },
+    {
+      "t": "What is 8 + 8? (Doubles fact)",
+      "o": [
+        "14",
+        "15",
+        "16",
+        "17"
+      ],
+      "a": 2,
+      "e": "This is a doubles fact! 8 + 8 = 16. You know your doubles! 🎉",
+      "d": "e"
+    },
+    {
+      "t": "Use the count-on strategy. What is 14 + 3?",
+      "o": [
+        "17",
+        "15",
+        "16",
+        "18"
+      ],
+      "a": 0,
+      "e": "We count on from 14: 15, 16, 17. The next number is 17. Keep counting! 🔢",
+      "d": "m"
+    },
+    {
+      "t": "What is 7 + 8? Use the near-doubles strategy.",
+      "o": [
+        "13",
+        "15",
+        "14",
+        "16"
+      ],
+      "a": 1,
+      "e": "Use your doubles! 7 + 7 = 14. Add 1 more to get 15. So smart! 💡",
+      "d": "m"
+    },
+    {
+      "t": "Use the make-ten strategy. What is 8 + 6?",
+      "o": [
+        "12",
+        "13",
+        "14",
+        "15"
+      ],
+      "a": 2,
+      "e": "Let's make a ten! 8 + 2 = 10. Then add 4 more: 10 + 4 = 14. You're a math whiz! ➕",
+      "d": "m"
+    },
+    {
+      "t": "If 5 + 8 = 13, what is 13 − 8?",
+      "o": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "a": 1,
+      "e": "This is a fact family! If 8 + 5 = 13, then 13 - 8 = 5. They are related! 👨‍👩‍👧‍👦",
+      "d": "h"
+    },
+    {
+      "t": "Use the count-back strategy. What is 16 − 4?",
+      "o": [
+        "12",
+        "10",
+        "11",
+        "13"
+      ],
+      "a": 0,
+      "e": "We count back from 16: 15, 14, 13, 12. The number is 12. Great counting! ⏪",
+      "d": "m"
+    },
+    {
+      "t": "What is 4 + 4? (Doubles fact)",
+      "o": [
+        "6",
+        "7",
+        "9",
+        "8"
+      ],
+      "a": 3,
+      "e": "Another doubles fact! 4 + 4 = 8. You're getting good at these! ✨",
+      "d": "e"
+    },
+    {
+      "t": "What is 4 + 5? Use the near-doubles strategy.",
+      "o": [
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "a": 2,
+      "e": "Use your doubles! 4 + 4 = 8. Add 1 more to get 9. Fantastic! 🌟",
+      "d": "e"
+    },
+    {
+      "t": "Use the make-ten strategy. What is 7 + 6?",
+      "o": [
+        "11",
+        "12",
+        "14",
+        "13"
+      ],
+      "a": 3,
+      "e": "Make a ten first! 7 + 3 = 10. Then add 3 more: 10 + 3 = 13. You found it! ✅",
+      "d": "m"
+    },
+    {
+      "t": "Use the count-on strategy. What is 6 + 5?",
+      "o": [
+        "9",
+        "11",
+        "10",
+        "12"
+      ],
+      "a": 1,
+      "e": "We count on from 6: 7, 8, 9, 10, 11. The next number is 11. You're a pro! 🚀",
+      "d": "m"
+    },
+    {
+      "t": "What is 9 + 9? (Doubles fact)",
+      "o": [
+        "18",
+        "16",
+        "17",
+        "19"
+      ],
+      "a": 0,
+      "e": "This is a doubles fact! 9 + 9 = 18. Keep practicing your doubles! 💪",
+      "d": "e"
+    },
+    {
+      "t": "What is 8 + 9? Use the near-doubles strategy.",
+      "o": [
+        "15",
+        "16",
+        "17",
+        "18"
+      ],
+      "a": 2,
+      "e": "Use your doubles! 8 + 8 = 16. Add 1 more to get 17. Wonderful! 🌈",
+      "d": "m"
+    },
+    {
+      "t": "Use the make-ten strategy. What is 6 + 7?",
+      "o": [
+        "11",
+        "13",
+        "12",
+        "14"
+      ],
+      "a": 1,
+      "e": "Make a ten first! 6 + 4 = 10. Then add 3 more: 10 + 3 = 13. Super work! 💯",
+      "d": "m"
+    },
+    {
+      "t": "What is 17 − 8?",
+      "o": [
+        "9",
+        "7",
+        "8",
+        "10"
+      ],
+      "a": 0,
+      "e": "Subtraction is the opposite of addition! If 8 + 9 = 17, then 17 - 8 = 9. You got it! ↔️",
+      "d": "e"
+    },
+    {
+      "t": "What is the missing number? 8 + ___ = 15",
+      "o": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "a": 2,
+      "e": "Addition and subtraction are related! If 15 - 8 = 7, then 8 + 7 = 15. You're a star! ⭐",
+      "d": "h"
+    },
+    {
+      "t": "What is 3 + 3? (Doubles fact)",
+      "o": [
+        "4",
+        "6",
+        "5",
+        "7"
+      ],
+      "a": 1,
+      "e": "Another doubles fact! 3 + 3 = 6. You're so good at these! 👍",
+      "d": "e"
+    },
+    {
+      "t": "Use the count-back strategy. What is 15 − 7?",
+      "o": [
+        "6",
+        "7",
+        "9",
+        "8"
+      ],
+      "a": 3,
+      "e": "We count back from 15: 14, 13, 12, 11, 10, 9, 8. The answer is 8. Keep going! ⬇️",
+      "d": "h"
+    },
+    {
+      "t": "What is 9 + 10? Use the near-doubles strategy.",
+      "o": [
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "a": 2,
+      "e": "Use your doubles! 9 + 9 = 18. Add 1 more to get 19. Amazing! 🤩",
+      "d": "h"
+    },
+    {
+      "t": "Use the make-ten strategy. What is 5 + 7?",
+      "o": [
+        "10",
+        "11",
+        "13",
+        "12"
+      ],
+      "a": 3,
+      "e": "We know 5 + 5 is 10! Then add 2 more: 10 + 2 = 12. Great job! 👍",
+      "d": "h"
+    },
+    {
+      "t": "Use the count-on strategy. What is 8 + 4?",
+      "o": [
+        "10",
+        "11",
+        "12",
+        "13"
+      ],
+      "a": 2,
+      "e": "Start at 8 and count on 4 more: 9, 10, 11, 12. So, 8 + 4 = 12! You did it! ✨",
+      "d": "h"
+    },
+    {
+      "t": "If 7 + 5 = 12, what is 12 − 7?",
+      "o": [
+        "5",
+        "3",
+        "4",
+        "6"
+      ],
+      "a": 0,
+      "e": "You know 7 + 5 = 12! So, 12 - 7 must be 5. They are a fact family! 🏡",
+      "d": "h"
+    },
+    {
+      "t": "What is 7 + 7? (Doubles fact)",
+      "o": [
+        "12",
+        "13",
+        "15",
+        "14"
+      ],
+      "a": 3,
+      "e": "You know your doubles! 7 + 7 makes 14. Super work! ⭐",
+      "d": "e"
+    },
+    {
+      "t": "Use the count-back strategy. What is 11 − 3?",
+      "o": [
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "a": 2,
+      "e": "Start at 11 and count back 3: 10, 9, 8. So, 11 - 3 = 8. You got it! 🎉",
+      "d": "h"
+    },
+    {
+      "t": "What is 6 + 7? Use the near-doubles strategy.",
+      "o": [
+        "11",
+        "12",
+        "14",
+        "13"
+      ],
+      "a": 3,
+      "e": "You know 6 + 6 = 12. Then add 1 more to get 13! That's 6 + 7 = 13. Smart thinking! 🧠",
+      "d": "h"
+    }
+  ]
+};
+
+export const testBank: Question[] = [
+  {
+    "t": "Use the count-on strategy. What is 6 + 3?",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 2,
+    "e": "Start at 6 and count on 3 more: 7, 8, 9. So, 6 + 3 = 9. You're a math whiz! ➕",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 8 + 4?",
+    "o": [
+      "12",
+      "10",
+      "11",
+      "13"
+    ],
+    "a": 0,
+    "e": "Start at 8 and count on 4 more: 9, 10, 11, 12. So, 8 + 4 = 12. Perfect! ✅",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 7 + 5?",
+    "o": [
+      "12",
+      "10",
+      "11",
+      "13"
+    ],
+    "a": 0,
+    "e": "Start at 7 and count on 5 more: 8, 9, 10, 11, 12. So, 7 + 5 = 12. Keep it up! 🚀",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 9 + 3?",
+    "o": [
+      "12",
+      "10",
+      "11",
+      "13"
+    ],
+    "a": 0,
+    "e": "Start at 9 and count on 3 more: 10, 11, 12. So, 9 + 3 = 12. Awesome! 🌟",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 5 + 4?",
+    "o": [
+      "9",
+      "7",
+      "8",
+      "10"
+    ],
+    "a": 0,
+    "e": "Start at 5 and count on 4 more: 6, 7, 8, 9. So, 5 + 4 = 9. You got it! 👍",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 11 + 3?",
+    "o": [
+      "12",
+      "13",
+      "15",
+      "14"
+    ],
+    "a": 3,
+    "e": "Start at 11 and count on 3 more: 12, 13, 14. So, 11 + 3 = 14. Way to go! 🥳",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 14 + 2?",
+    "o": [
+      "14",
+      "16",
+      "15",
+      "17"
+    ],
+    "a": 1,
+    "e": "Start at 14 and count on 2 more: 15, 16. So, 14 + 2 = 16. Excellent! ✨",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 7 + 4?",
+    "o": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "a": 2,
+    "e": "Start at 7 and count on 4 more: 8, 9, 10, 11. So, 7 + 4 = 11. Super smart! 💡",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 10 − 3?",
+    "o": [
+      "5",
+      "6",
+      "8",
+      "7"
+    ],
+    "a": 3,
+    "e": "Start at 10 and count back 3: 9, 8, 7. So, 10 - 3 = 7. You're a pro! 💯",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 13 − 4?",
+    "o": [
+      "7",
+      "8",
+      "10",
+      "9"
+    ],
+    "a": 3,
+    "e": "Start at 13 and count back 4: 12, 11, 10, 9. So, 13 - 4 = 9. Fantastic! 🥳",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 15 − 5?",
+    "o": [
+      "10",
+      "8",
+      "9",
+      "11"
+    ],
+    "a": 0,
+    "e": "Start at 15 and count back 5: 14, 13, 12, 11, 10. So, 15 - 5 = 10. Great work! ✅",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 12 − 3?",
+    "o": [
+      "7",
+      "9",
+      "8",
+      "10"
+    ],
+    "a": 1,
+    "e": "Start at 12 and count back 3: 11, 10, 9. So, 12 - 3 = 9. You're doing great! ✨",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 17 − 6?",
+    "o": [
+      "9",
+      "10",
+      "12",
+      "11"
+    ],
+    "a": 3,
+    "e": "Start at 17 and count back 6: 16, 15, 14, 13, 12, 11. So, 17 - 6 = 11. Keep going! 👏",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 14 − 5?",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 2,
+    "e": "Start at 14 and count back 5: 13, 12, 11, 10, 9. So, 14 - 5 = 9. Wonderful! 🌟",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 11 − 4?",
+    "o": [
+      "7",
+      "5",
+      "6",
+      "8"
+    ],
+    "a": 0,
+    "e": "When we count back 4 from 11, we are subtracting! We land on 7. So, 11 - 4 = 7. ✨",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 16 − 7?",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 2,
+    "e": "To subtract 7 from 16, count back 7 steps. You will land on 9! So, 16 - 7 = 9. 👍",
+    "d": "e"
+  },
+  {
+    "t": "Which strategy works best to solve 8 + 3?",
+    "o": [
+      "Count back from 11",
+      "Count on from 8",
+      "Start at 3",
+      "Subtract"
+    ],
+    "a": 1,
+    "e": "Counting on from the bigger number helps us add quickly! We find the total sum. ➕",
+    "d": "e"
+  },
+  {
+    "t": "Which strategy works best to solve 14 − 4?",
+    "o": [
+      "Count on from 14",
+      "Count back from 14",
+      "Add 4 to 14",
+      "Double 7"
+    ],
+    "a": 1,
+    "e": "Counting back helps us subtract! We find how many are left or the difference. ➖",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 12 + 4?",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "To add 4 to 12, count on 4 steps from 12. You will land on 16! So, 12 + 4 = 16. 🎉",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 18 − 5?",
+    "o": [
+      "13",
+      "11",
+      "12",
+      "14"
+    ],
+    "a": 0,
+    "e": "When we count back 5 from 18, we are subtracting! We land on 13. So, 18 - 5 = 13. ✅",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 6 + 6?",
+    "o": [
+      "10",
+      "11",
+      "13",
+      "12"
+    ],
+    "a": 3,
+    "e": "To add 6 to 6, count on 6 steps. You land on 12! This is also a double: 6 + 6 = 12. 🤩",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-back strategy. What is 20 − 4?",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "To subtract 4 from 20, count back 4 steps. You will land on 16! So, 20 - 4 = 16. 👍",
+    "d": "h"
+  },
+  {
+    "t": "Use the count-on strategy. What is 9 + 5?",
+    "o": [
+      "14",
+      "12",
+      "13",
+      "15"
+    ],
+    "a": 0,
+    "e": "To add 5 to 9, count on 5 steps from 9. You will land on 14! So, 9 + 5 = 14. ✨",
+    "d": "m"
+  },
+  {
+    "t": "What does count ON mean?",
+    "o": [
+      "Subtract",
+      "Count forward to add",
+      "Count backward",
+      "Guess"
+    ],
+    "a": 1,
+    "e": "Counting ON means adding! We count forward from the bigger number to find the sum. ➕",
+    "d": "e"
+  },
+  {
+    "t": "Use the count-on strategy. What is 13 + 3?",
+    "o": [
+      "14",
+      "15",
+      "17",
+      "16"
+    ],
+    "a": 3,
+    "e": "To add 3 to 13, count on 3 steps from 13. You will land on 16! So, 13 + 3 = 16. 🎉",
+    "d": "m"
+  },
+  {
+    "t": "Use the count-back strategy. What is 19 − 6?",
+    "o": [
+      "11",
+      "13",
+      "12",
+      "14"
+    ],
+    "a": 1,
+    "e": "When we count back 6 from 19, we are subtracting! We land on 13. So, 19 - 6 = 13. ✅",
+    "d": "m"
+  },
+  {
+    "t": "Use the count-on strategy. What is 10 + 5?",
+    "o": [
+      "13",
+      "14",
+      "15",
+      "16"
+    ],
+    "a": 2,
+    "e": "To add 5 to 10, count on 5 steps from 10. You will land on 15! So, 10 + 5 = 15. ✨",
+    "d": "m"
+  },
+  {
+    "t": "Use the count-back strategy. What is 16 − 4?",
+    "o": [
+      "10",
+      "11",
+      "13",
+      "12"
+    ],
+    "a": 3,
+    "e": "To subtract 4 from 16, count back 4 steps. You will land on 12! So, 16 - 4 = 12. 👍",
+    "d": "m"
+  },
+  {
+    "t": "Use the count-on strategy. What is 15 + 3?",
+    "o": [
+      "16",
+      "17",
+      "18",
+      "19"
+    ],
+    "a": 2,
+    "e": "To add 3 to 15, count on 3 steps from 15. You will land on 18! So, 15 + 3 = 18. 🎉",
+    "d": "m"
+  },
+  {
+    "t": "Use the count-back strategy. What is 13 − 6?",
+    "o": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "a": 2,
+    "e": "When we count back 6 from 13, we are subtracting! We land on 7. So, 13 - 6 = 7. ✅",
+    "d": "m"
+  },
+  {
+    "t": "What is 3 + 3? (This is a doubles fact!)",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "Doubling 3 means adding 3 + 3. The answer is 6! You did great! ✨",
+    "d": "e"
+  },
+  {
+    "t": "What is 4 + 4? (This is a doubles fact!)",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "Doubling 4 means adding 4 + 4. The answer is 8! You got it! 🌟",
+    "d": "e"
+  },
+  {
+    "t": "What is 5 + 5? (This is a doubles fact!)",
+    "o": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "a": 2,
+    "e": "Doubling 5 means adding 5 + 5. The answer is 10! Super job! 👍",
+    "d": "e"
+  },
+  {
+    "t": "What is 6 + 6? (This is a doubles fact!)",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "Doubling 6 means adding 6 + 6. The answer is 12! Way to go! 🎉",
+    "d": "m"
+  },
+  {
+    "t": "What is 7 + 7? (This is a doubles fact!)",
+    "o": [
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "a": 2,
+    "e": "Doubling 7 means 7 + 7. That makes 14! Great job! 👍",
+    "d": "m"
+  },
+  {
+    "t": "What is 8 + 8? (This is a doubles fact!)",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "When you double 8, you add 8 + 8. The answer is 16! You're super! ✨",
+    "d": "m"
+  },
+  {
+    "t": "What is 9 + 9? (This is a doubles fact!)",
+    "o": [
+      "16",
+      "17",
+      "18",
+      "19"
+    ],
+    "a": 2,
+    "e": "Doubling 9 is like 9 + 9. That makes 18! Keep up the amazing work! 🚀",
+    "d": "m"
+  },
+  {
+    "t": "What is 3 + 4? Use the near-doubles strategy.",
+    "o": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "a": 2,
+    "e": "3 + 4 is a near double! Think of 3 + 3 = 6, then add 1 more. So, 3 + 4 = 7! 🎉",
+    "d": "e"
+  },
+  {
+    "t": "What is 4 + 5? Use the near-doubles strategy.",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 2,
+    "e": "For 4 + 5, use the near double! 4 + 4 = 8, then add 1 more. So, 4 + 5 = 9! Good job!",
+    "d": "e"
+  },
+  {
+    "t": "What is 5 + 6? Use the near-doubles strategy.",
+    "o": [
+      "11",
+      "9",
+      "10",
+      "12"
+    ],
+    "a": 0,
+    "e": "5 + 6 is a near double! 5 + 5 = 10, then add 1 more. So, 5 + 6 = 11! You got it! 👍",
+    "d": "m"
+  },
+  {
+    "t": "What is 6 + 7? Use the near-doubles strategy.",
+    "o": [
+      "11",
+      "12",
+      "14",
+      "13"
+    ],
+    "a": 3,
+    "e": "For 6 + 7, use the near double! 6 + 6 = 12, then add 1 more. So, 6 + 7 = 13! Smart thinking!",
+    "d": "m"
+  },
+  {
+    "t": "What is 7 + 8? Use the near-doubles strategy.",
+    "o": [
+      "13",
+      "15",
+      "14",
+      "16"
+    ],
+    "a": 1,
+    "e": "7 + 8 is a near double! 7 + 7 = 14, then add 1 more. So, 7 + 8 = 15! Wonderful work!",
+    "d": "m"
+  },
+  {
+    "t": "What is 8 + 9? Use the near-doubles strategy.",
+    "o": [
+      "15",
+      "16",
+      "17",
+      "18"
+    ],
+    "a": 2,
+    "e": "For 8 + 9, use the near double! 8 + 8 = 16, then add 1 more. So, 8 + 9 = 17! Amazing!",
+    "d": "m"
+  },
+  {
+    "t": "What is 9 + 10? Use the near-doubles strategy.",
+    "o": [
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "a": 2,
+    "e": "9 + 10 is a near double! 9 + 9 = 18, then add 1 more. So, 9 + 10 = 19! You're a math star! ⭐",
+    "d": "m"
+  },
+  {
+    "t": "What is 2 + 2? (This is a doubles fact!)",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "Doubling 2 means 2 + 2. That makes 4! Super! 🤩",
+    "d": "e"
+  },
+  {
+    "t": "Which is a doubles fact?",
+    "o": [
+      "3+4=7",
+      "6+6=12",
+      "5+6=11",
+      "7+8=15"
+    ],
+    "a": 1,
+    "e": "6 + 6 = 12 is a double! You add the same number to itself. You got it! ✅",
+    "d": "e"
+  },
+  {
+    "t": "What is 10 + 11? Use the near-doubles strategy.",
+    "o": [
+      "19",
+      "20",
+      "21",
+      "22"
+    ],
+    "a": 2,
+    "e": "For 10 + 11, use the near double! 10 + 10 = 20, then add 1 more. So, 10 + 11 = 21! 🎉",
+    "d": "m"
+  },
+  {
+    "t": "What is 1 + 1? (This is a doubles fact!)",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1,
+    "e": "Doubling 1 means 1 + 1. That makes 2! You're awesome! 👍",
+    "d": "e"
+  },
+  {
+    "t": "Near double strategy: 5 + 6. Think 5+5=10 then?",
+    "o": [
+      "Add 0",
+      "Add 1",
+      "Add 2",
+      "Subtract 1"
+    ],
+    "a": 1,
+    "e": "To solve 5 + 6, use the near double strategy! 5 + 5 = 10, then add 1 more. So, 5 + 6 = 11! ✨",
+    "d": "h"
+  },
+  {
+    "t": "What is 10 + 10? (This is a doubles fact!)",
+    "o": [
+      "15",
+      "18",
+      "20",
+      "22"
+    ],
+    "a": 2,
+    "e": "Doubling 10 means 10 + 10. That makes 20! Fantastic! 💯",
+    "d": "m"
+  },
+  {
+    "t": "Which helps solve 7+8?",
+    "o": [
+      "7+7=14",
+      "8+8=16",
+      "7+9=16",
+      "6+8=14"
+    ],
+    "a": 0,
+    "e": "For 7 + 8, use the near double! 7 + 7 = 14, then add 1 more. So, 7 + 8 = 15! Great job!",
+    "d": "e"
+  },
+  {
+    "t": "What is 11 + 12? Use the near-doubles strategy.",
+    "o": [
+      "21",
+      "22",
+      "23",
+      "24"
+    ],
+    "a": 2,
+    "e": "11 + 12 is a near double! 11 + 11 = 22, then add 1 more. So, 11 + 12 = 23! You're smart! 🧠",
+    "d": "m"
+  },
+  {
+    "t": "What is 15 + 15? (This is a doubles fact!)",
+    "o": [
+      "25",
+      "28",
+      "30",
+      "32"
+    ],
+    "a": 2,
+    "e": "Doubling 15 means 15 + 15. That makes 30! You're a math whiz! 🌟",
+    "d": "m"
+  },
+  {
+    "t": "What is 4 + 3? Use the near-doubles strategy.",
+    "o": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "a": 2,
+    "e": "For 3 + 4, use the near double! 3 + 3 = 6, then add 1 more. So, 3 + 4 = 7! Awesome! ✨",
+    "d": "e"
+  },
+  {
+    "t": "What is the double of 12?",
+    "o": [
+      "20",
+      "22",
+      "24",
+      "26"
+    ],
+    "a": 2,
+    "e": "When you double 12, you get 24. That means 12 + 12 = 24! Great job! ✨",
+    "d": "e"
+  },
+  {
+    "t": "What is 6 + 5? Use the near-doubles strategy.",
+    "o": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "a": 2,
+    "e": "You know 5+5=10. Since 6 is just 1 more than 5, 5+6 is 1 more than 10. So, 11! 🎉",
+    "d": "m"
+  },
+  {
+    "t": "Which strategy for 8+9?",
+    "o": [
+      "Count back",
+      "Doubles",
+      "Near doubles",
+      "Skip count by 5"
+    ],
+    "a": 2,
+    "e": "8+9 is a near double! You know 8+8=16. Since 9 is 1 more than 8, 8+9 is 1 more than 16. It's 17! 👍",
+    "d": "e"
+  },
+  {
+    "t": "What is the double of 20?",
+    "o": [
+      "30",
+      "35",
+      "40",
+      "45"
+    ],
+    "a": 2,
+    "e": "When you double 20, you get 40. Think of it like 2 tens + 2 tens = 4 tens. So, 20+20=40! 💯",
+    "d": "e"
+  },
+  {
+    "t": "What is 14 + 15? Use the near-doubles strategy.",
+    "o": [
+      "27",
+      "28",
+      "29",
+      "30"
+    ],
+    "a": 2,
+    "e": "You know 14+14=28. Since 15 is 1 more than 14, 14+15 is 1 more than 28. So, 29! Great job! 🌟",
+    "d": "m"
+  },
+  {
+    "t": "What is 11 + 11? (This is a doubles fact!)",
+    "o": [
+      "20",
+      "21",
+      "22",
+      "23"
+    ],
+    "a": 2,
+    "e": "Doubling 11 means 11 + 11. You add 1+1=2 in the ones place and 1+1=2 in the tens place. So, 22! 🥳",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 4?",
+    "o": [
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "a": 2,
+    "e": "To add 9+4, we can make a ten! Take 1 from 4 to make 9+1=10. Then add the 3 left over. 10+3=13! 💡",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 5?",
+    "o": [
+      "13",
+      "11",
+      "12",
+      "14"
+    ],
+    "a": 0,
+    "e": "To add 8+5, let's make a ten! Take 2 from 5 to make 8+2=10. Then add the 3 left over. 10+3=13! 🧠",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 4?",
+    "o": [
+      "11",
+      "9",
+      "10",
+      "12"
+    ],
+    "a": 0,
+    "e": "To add 7+4, make a ten! Take 3 from 4 to make 7+3=10. Then add the 1 left over. 10+1=11! Awesome! 🤩",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 7?",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "To add 9+7, make a ten! Take 1 from 7 to make 9+1=10. Then add the 6 left over. 10+6=16! You got it! ✅",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 6?",
+    "o": [
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "a": 2,
+    "e": "To add 8+6, make a ten! Take 2 from 6 to make 8+2=10. Then add the 4 left over. 10+4=14! Super! ✨",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 6?",
+    "o": [
+      "13",
+      "11",
+      "12",
+      "14"
+    ],
+    "a": 0,
+    "e": "To add 7+6, make a ten! Take 3 from 6 to make 7+3=10. Then add the 3 left over. 10+3=13! Good thinking! 🤔",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 6 + 5?",
+    "o": [
+      "11",
+      "9",
+      "10",
+      "12"
+    ],
+    "a": 0,
+    "e": "To add 6+5, make a ten! Take 4 from 5 to make 6+4=10. Then add the 1 left over. 10+1=11! Way to go! 🚀",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 8?",
+    "o": [
+      "17",
+      "15",
+      "16",
+      "18"
+    ],
+    "a": 0,
+    "e": "To add 9+8, make a ten! Take 1 from 8 to make 9+1=10. Then add the 7 left over. 10+7=17! You're so smart! 🌟",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 6 + 8?",
+    "o": [
+      "12",
+      "13",
+      "15",
+      "14"
+    ],
+    "a": 3,
+    "e": "To add 6+8, make a ten! Take 4 from 8 to make 6+4=10. Then add the 4 left over. 10+4=14! Fantastic! 🥳",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 5?",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "To add 7+5, make a ten! Take 3 from 5 to make 7+3=10. Then add the 2 left over. 10+2=12! You're a math whiz! 🤩",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 4?",
+    "o": [
+      "12",
+      "10",
+      "11",
+      "13"
+    ],
+    "a": 0,
+    "e": "To add 8+4, make a ten! Take 2 from 4 to make 8+2=10. Then add the 2 left over. 10+2=12! Excellent! 👍",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 5?",
+    "o": [
+      "14",
+      "12",
+      "13",
+      "15"
+    ],
+    "a": 0,
+    "e": "To add 9+5, make a ten! Take 1 from 5 to make 9+1=10. Then add the 4 left over. 10+4=14! Keep it up! 💪",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 6 + 6?",
+    "o": [
+      "10",
+      "11",
+      "13",
+      "12"
+    ],
+    "a": 3,
+    "e": "To add 6+6, make a ten! Take 4 from 6 to make 6+4=10. Then add the 2 left over. 10+2=12! Amazing! 🎉",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 8?",
+    "o": [
+      "13",
+      "14",
+      "16",
+      "15"
+    ],
+    "a": 3,
+    "e": "To add 7+8, make a ten! Take 3 from 8 to make 7+3=10. Then add the 5 left over. 10+5=15! You're a star! ⭐",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 3?",
+    "o": [
+      "9",
+      "11",
+      "10",
+      "12"
+    ],
+    "a": 1,
+    "e": "Break 3 into 2 and 1. 8 + 2 makes 10! Then add the 1 left over. 8 + 3 = 11. You did it! ✨",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 3?",
+    "o": [
+      "12",
+      "10",
+      "11",
+      "13"
+    ],
+    "a": 0,
+    "e": "Break 3 into 1 and 2. 9 + 1 makes 10! Then add the 2 left over. 9 + 3 = 12. Super smart! 🧠",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 7?",
+    "o": [
+      "12",
+      "14",
+      "13",
+      "15"
+    ],
+    "a": 1,
+    "e": "Break 7 into 3 and 4. 7 + 3 makes 10! Then add the 4 left over. 7 + 7 = 14. Way to go! 🥳",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 5 + 8?",
+    "o": [
+      "13",
+      "11",
+      "12",
+      "14"
+    ],
+    "a": 0,
+    "e": "You can make 10 in two ways! 5+5=10, then add 3 for 13. Or 8+2=10, then add 3 for 13. Great! ✅",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 4 + 9?",
+    "o": [
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "a": 2,
+    "e": "Break 4 into 1 and 3. 9 + 1 makes 10! Then add the 3 left over. 9 + 4 = 13. You're a star! ⭐",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 6 + 7?",
+    "o": [
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "a": 2,
+    "e": "Break 7 into 4 and 3. 6 + 4 makes 10! Then add the 3 left over. 6 + 7 = 13. Awesome work! 👍",
+    "d": "m"
+  },
+  {
+    "t": "Why do we \"make ten\" first?",
+    "o": [
+      "It looks cool",
+      "10 is easy to add to",
+      "It takes longer",
+      "We always must start at 10"
+    ],
+    "a": 1,
+    "e": "Making a 10 first helps you add big numbers easily! Then just add what's left. You're a math whiz! 💯",
+    "d": "e"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 7?",
+    "o": [
+      "13",
+      "14",
+      "16",
+      "15"
+    ],
+    "a": 3,
+    "e": "Break 7 into 2 and 5. 8 + 2 makes 10! Then add the 5 left over. 8 + 7 = 15. Super smart! 💡",
+    "d": "m"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 9 + 6?",
+    "o": [
+      "13",
+      "14",
+      "16",
+      "15"
+    ],
+    "a": 3,
+    "e": "Break 6 into 1 and 5. 9 + 1 makes 10! Then add the 5 left over. 9 + 6 = 15. You got this! 💪",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 5 + 7?",
+    "o": [
+      "10",
+      "11",
+      "13",
+      "12"
+    ],
+    "a": 3,
+    "e": "Break 7 into 5 and 2. 5 + 5 makes 10! Then add the 2 left over. 5 + 7 = 12. Keep it up! 🚀",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 3 + 9?",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "Break 3 into 1 and 2. 9 + 1 makes 10! Then add the 2 left over. 9 + 3 = 12. Great job! 😄",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 4 + 8?",
+    "o": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "a": 2,
+    "e": "Break 4 into 2 and 2. 8 + 2 makes 10! Then add the 2 left over. 8 + 4 = 12. You're amazing! ✨",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 8 + 8?",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "Break 8 into 2 and 6. 8 + 2 makes 10! Then add the 6 left over. 8 + 8 = 16. Fantastic! 🥳",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 7 + 9?",
+    "o": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "a": 2,
+    "e": "Break 7 into 1 and 6. 9 + 1 makes 10! Then add the 6 left over. 9 + 7 = 16. Way to go! 🌟",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 6 + 9?",
+    "o": [
+      "13",
+      "14",
+      "15",
+      "16"
+    ],
+    "a": 2,
+    "e": "Break 6 into 1 and 5. 9 + 1 makes 10! Then add the 5 left over. 9 + 6 = 15. Smart thinking! 🧠",
+    "d": "h"
+  },
+  {
+    "t": "Use the make-ten strategy. What is 5 + 9?",
+    "o": [
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "a": 2,
+    "e": "Break 5 into 1 and 4. 9 + 1 makes 10! Then add the 4 left over. 9 + 5 = 14. You're a champ! 🏆",
+    "d": "h"
+  },
+  {
+    "t": "Which number sentence belongs in the fact family for 3, 7, and 10?",
+    "o": [
+      "3+8=10",
+      "7+3=10",
+      "10+3=7",
+      "7-3=10"
+    ],
+    "a": 1,
+    "e": "7, 3, and 10 are a number family! They go together to make 10. Knowing this helps you add and subtract! 💡",
+    "d": "h"
+  },
+  {
+    "t": "If 5 + 8 = 13, what is 13 − 8?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 1,
+    "e": "This is a fact family! Since 8 + 5 = 13, then 13 - 8 = 5. They are related! You got it! ✅",
+    "d": "h"
+  },
+  {
+    "t": "What is the missing number? 6 + ___ = 14",
+    "o": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "a": 1,
+    "e": "Subtraction and addition are friends! If 14 - 6 = 8, then 6 + 8 = 14. They are a fact family! 🌟",
+    "d": "h"
+  },
+  {
+    "t": "If 4 + 9 = 13, what is 13 − 4?",
+    "o": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "a": 1,
+    "e": "This is a fact family! Since 4 + 9 = 13, then 13 - 4 = 9. They are related! Good job! 👍",
+    "d": "h"
+  },
+  {
+    "t": "The numbers 2, 8, and 10 form a fact family. How many facts are in every fact family?",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 2,
+    "e": "A fact family uses the same 3 numbers for 2 addition and 2 subtraction facts. They are all connected! ✨",
+    "d": "h"
+  },
+  {
+    "t": "If 7 + 6 = 13, what is 13 − 7?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 2,
+    "e": "This is part of a fact family! If 7 + 6 = 13, then 13 - 7 = 6. You got it! 👍",
+    "d": "h"
+  },
+  {
+    "t": "What is the missing number? 9 + ___ = 17",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 2,
+    "e": "Subtraction and addition are friends! If 9 + 8 = 17, then 17 - 9 = 8. The answer is 8! ✅",
+    "d": "h"
+  },
+  {
+    "t": "Which fact is in family 5,9,14?",
+    "o": [
+      "5+8=13",
+      "9+5=14",
+      "5+5=10",
+      "14-4=10"
+    ],
+    "a": 1,
+    "e": "These three numbers (5, 9, 14) are a fact family! They are all related in addition and subtraction. Way to go! 🔢",
+    "d": "h"
+  },
+  {
+    "t": "If 8 + 7 = 15, what is 15 − 8?",
+    "o": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "a": 1,
+    "e": "This is part of a fact family! If 8 + 7 = 15, then 15 - 8 = 7. The answer is 7! ✨",
+    "d": "h"
+  },
+  {
+    "t": "What is the missing number? ___ + 6 = 11",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "a": 1,
+    "e": "Subtraction and addition are connected! If 5 + 6 = 11, then 11 - 6 = 5. The answer is 5! ⭐",
+    "d": "h"
+  },
+  {
+    "t": "Start at 4. Count up 3. What number do you land on?",
+    "o": [
+      "6",
+      "8",
+      "7",
+      "5"
+    ],
+    "a": 2,
+    "e": "Counting up 3 from 4 means you say 5, 6, 7. You land on 7! So, 4 + 3 = 7. Great job! 🚀",
+    "d": "e"
+  },
+  {
+    "t": "What is 6 + 6?",
+    "o": [
+      "11",
+      "13",
+      "10",
+      "12"
+    ],
+    "a": 3,
+    "e": "Doubles facts are easy to remember! 6 + 6 = 12. You knew that double fact! 👍",
+    "d": "e"
+  },
+  {
+    "t": "What number goes with 8 to make 10?",
+    "o": [
+      "3",
+      "1",
+      "2",
+      "4"
+    ],
+    "a": 2,
+    "e": "You found the pair that makes 10! 8 and 2 go together to make 10. Making a 10 is a super strategy! 🔟",
+    "d": "h"
+  },
+  {
+    "t": "If 4 + 5 = 9, what is 5 + 4?",
+    "o": [
+      "8",
+      "10",
+      "9",
+      "7"
+    ],
+    "a": 2,
+    "e": "In a fact family, you can switch the numbers you add, and the answer (sum) stays the same! 4 + 5 = 9. Amazing! ➕",
+    "d": "h"
+  },
+  {
+    "t": "What is 9 - 3?",
+    "o": [
+      "5",
+      "7",
+      "6",
+      "12"
+    ],
+    "a": 2,
+    "e": "Counting back 3 from 9 means you say 8, 7, 6. You landed on 6! So, 9 - 3 = 6. You got it! 🔙",
+    "d": "e"
+  },
+  {
+    "t": "What is double 4?",
+    "o": [
+      "6",
+      "4",
+      "10",
+      "8"
+    ],
+    "a": 3,
+    "e": "Doubling a number means adding it to itself! 4 + 4 = 8. You know your doubles! ✨",
+    "d": "e"
+  },
+  {
+    "t": "What is 10 + 6?",
+    "o": [
+      "60",
+      "17",
+      "15",
+      "16"
+    ],
+    "a": 3,
+    "e": "Adding to 10 is so easy! Just put the numbers together. 10 + 6 = 16. You're a math whiz! 💯",
+    "d": "e"
+  },
+  {
+    "t": "If 3 + 7 = 10, what is 10 - 7?",
+    "o": [
+      "4",
+      "2",
+      "7",
+      "3"
+    ],
+    "a": 3,
+    "e": "Addition and subtraction are inverse operations in a fact family! If 3 + 7 = 10, then 10 - 7 = 3. Good job! 💡",
+    "d": "h"
+  },
+  {
+    "t": "Count back 2 from 8. What number do you get?",
+    "o": [
+      "5",
+      "7",
+      "6",
+      "10"
+    ],
+    "a": 2,
+    "e": "Counting back 2 from 8 means you say 7, 6. You landed on 6! So, 8 - 2 = 6. You're so smart! 🧠",
+    "d": "e"
+  },
+  {
+    "t": "What is 7 + 7?",
+    "o": [
+      "13",
+      "15",
+      "12",
+      "14"
+    ],
+    "a": 3,
+    "e": "Doubles facts are easy to remember! 7 + 7 = 14. You knew that double fact! ✨",
+    "d": "e"
+  },
+  {
+    "t": "A cat has 9 treats. It gets 4 more. How many treats does the cat have now?",
+    "o": [
+      "14",
+      "12",
+      "11",
+      "13"
+    ],
+    "a": 3,
+    "e": "Make a 10 first! 9 + 1 = 10. Then add the rest: 10 + 3 = 13. The cat has 13 treats! 🐱",
+    "d": "h"
+  },
+  {
+    "t": "What is 7 + 8? Use a doubles fact to help.",
+    "o": [
+      "14",
+      "16",
+      "13",
+      "15"
+    ],
+    "a": 3,
+    "e": "Use a doubles fact you know! 7 + 7 = 14. Then just add 1 more! 14 + 1 = 15. Super strategy! ➕",
+    "d": "h"
+  },
+  {
+    "t": "__ + 5 = 12. What is the missing number?",
+    "o": [
+      "6",
+      "8",
+      "5",
+      "7"
+    ],
+    "a": 3,
+    "e": "Addition and subtraction are related facts! If 7 + 5 = 12, then 12 - 5 = 7. The answer is 7! 💡",
+    "d": "h"
+  },
+  {
+    "t": "Which strategy helps you solve 8 + 5?",
+    "o": [
+      "Count by 2s",
+      "Use doubles of 8",
+      "Make a 10 first",
+      "Subtract 5 from 8"
+    ],
+    "a": 2,
+    "e": "Make a 10 first! 8 + 2 = 10. Then add the rest: 10 + 3 = 13. You made a 10! 🎉",
+    "d": "h"
+  },
+  {
+    "t": "If 9 + 6 = 15, what is 15 - 9?",
+    "o": [
+      "5",
+      "7",
+      "8",
+      "6"
+    ],
+    "a": 3,
+    "e": "A fact family uses the same numbers! If 9 + 6 = 15, then 15 - 9 = 6 is also true. Great job! 👨‍👩‍👧‍👦",
+    "d": "h"
+  },
+  {
+    "t": "There are 13 ducks. 4 swim away. How many are left?",
+    "o": [
+      "8",
+      "10",
+      "17",
+      "9"
+    ],
+    "a": 3,
+    "e": "Counting back is a great way to subtract! From 13, count back 4 steps: 12, 11, 10, 9. There are 9 ducks left. 🦆",
+    "d": "h"
+  },
+  {
+    "t": "__ + __ = 14. Both numbers are the same. What are they?",
+    "o": [
+      "6 and 6",
+      "8 and 8",
+      "5 and 5",
+      "7 and 7"
+    ],
+    "a": 3,
+    "e": "Doubles facts help! We know 7 + 7 = 14. So, both missing numbers must be 7. You got it! 🤔",
+    "d": "h"
+  },
+  {
+    "t": "Which number sentence belongs to the same fact family as 8 + 5 = 13?",
+    "o": [
+      "13 - 5 = 8",
+      "13 - 5 = 7",
+      "8 + 8 = 16",
+      "5 + 5 = 10"
+    ],
+    "a": 0,
+    "e": "A fact family uses the same numbers! With 8, 5, and 13, then 13 - 5 = 8 is part of the family. Super! 👨‍👩‍👧‍👦",
+    "d": "h"
+  },
+  {
+    "t": "9 - __ = 5. What is the missing number?",
+    "o": [
+      "3",
+      "5",
+      "2",
+      "4"
+    ],
+    "a": 3,
+    "e": "Counting up helps find the missing part! From 5 to 9 is 4 steps (6, 7, 8, 9). The missing number is 4. Way to go! ⬆️",
+    "d": "h"
+  },
+  {
+    "t": "Ben has 6 red blocks and 7 blue blocks. How many blocks in all?",
+    "o": [
+      "14",
+      "12",
+      "11",
+      "13"
+    ],
+    "a": 3,
+    "e": "Make a 10 (6+4=10, then 10+3=13) or use doubles plus 1 (6+6=12, +1=13). Both ways show the answer is 13!💡",
+    "d": "h"
+  },
+  {
+    "t": "Kai had 14 toy trucks. He gave 6 to his brother and 3 to his friend. How many does Kai have left?",
+    "o": [
+      "4",
+      "6",
+      "3",
+      "5"
+    ],
+    "a": 3,
+    "e": "Subtracting in steps makes it easier! First 14 - 6 = 8. Then 8 - 3 = 5. Kai has 5 left. Excellent work! ➖",
+    "d": "h"
+  },
+  {
+    "t": "A student wrote: double 8 = 15. Then they said 8 + 9 = 16. How many errors are there?",
+    "o": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "a": 2,
+    "e": "Let's check! Double 8 is 16 (not 15). And 8 + 9 = 17 (not 16). Both facts are wrong. Keep practicing! ❌",
+    "d": "h"
+  },
+  {
+    "t": "If 7 + 9 = 16, what are the two subtraction facts in the same family?",
+    "o": [
+      "16-7=9 and 16-9=7",
+      "16-7=8 and 16-9=6",
+      "9-7=2 and 16-7=8",
+      "7-9=2 and 16-9=8"
+    ],
+    "a": 0,
+    "e": "A fact family shows all related math facts! For 7, 9, 16: 7+9=16, 9+7=16, 16-7=9, 16-9=7. Awesome! 👨‍👩‍👧‍👦",
+    "d": "h"
+  },
+  {
+    "t": "Emma has 8 stickers. She finds 7 more, then gives 6 away. How many does she have now?",
+    "o": [
+      "10",
+      "8",
+      "11",
+      "9"
+    ],
+    "a": 3,
+    "e": "Solve in two steps! First, 8 + 7 = 15 (think doubles plus 1). Then, 15 - 6 = 9. Emma has 9 stickers! ✨",
+    "d": "h"
+  },
+  {
+    "t": "A student solved 9 + 4 using make a 10: 9 + 1 = 10, then 10 + 4 = 14. What went wrong?",
+    "o": [
+      "They should have added 10 + 3, not 10 + 4",
+      "They started at the wrong number",
+      "Nothing, the answer is 14",
+      "They should use doubles instead"
+    ],
+    "a": 0,
+    "e": "When you take 1 from 4, only 3 is left! So, 10 + 3 = 13 is correct, not 10 + 4 = 14. Keep trying! 🧐",
+    "d": "h"
+  },
+  {
+    "t": "__ + __ = 13. Both numbers are greater than 4. One is 3 more than the other. What are they?",
+    "o": [
+      "4 and 9",
+      "6 and 7",
+      "5 and 8",
+      "3 and 10"
+    ],
+    "a": 2,
+    "e": "The numbers 5 and 8 work! 5 + 8 = 13, both are more than 4, and they are 3 apart (8 - 5 = 3). Great thinking! 🤔",
+    "d": "h"
+  },
+  {
+    "t": "Leo says 15 - 8 = 6 because 8 + 6 = 14. What TWO things did Leo get wrong?",
+    "o": [
+      "Wrong addition fact AND wrong subtraction",
+      "Only the addition is wrong",
+      "Only the subtraction is wrong",
+      "Nothing is wrong"
+    ],
+    "a": 0,
+    "e": "Let's check! 8 + 6 = 14 (not 15). And 15 - 8 = 7 (not 6). Both math facts are wrong. You'll get it! ❌",
+    "d": "h"
+  },
+  {
+    "t": "Which is greater: 9 + 6 or double 7 plus 1?",
+    "o": [
+      "9 + 6, because 15 > 14",
+      "Double 7 plus 1, because 15 > 14",
+      "They are equal, both are 15",
+      "They are equal, both are 14"
+    ],
+    "a": 2,
+    "e": "Let's check! 9 + 6 = 15. And double 7 (14) plus 1 also equals 15! Both ways, the answer is 15. You're right! ✅",
+    "d": "h"
+  },
+  {
+    "t": "I am a number. Add me to myself and you get 12. Then subtract 5. What do you get?",
+    "o": [
+      "6 and 1",
+      "5 and 7",
+      "7 and 8",
+      "6 and 7"
+    ],
+    "a": 3,
+    "e": "First, think: double 6 = 12. So the number is 6. Then, 12 - 5 = 7. The answers are 6 and 7. Fantastic! 🔢",
+    "d": "h"
+  },
+  {
+    "t": "Can 4, 8, and 11 be a fact family? Explain.",
+    "o": [
+      "Yes, 4 + 8 = 11",
+      "No, because 4 + 8 = 12, not 11",
+      "Yes, 11 - 8 = 4",
+      "No, because 11 - 4 = 8"
+    ],
+    "a": 1,
+    "e": "For a fact family, the numbers must work together. 4 + 8 = 12, not 11. So, 4, 8, and 11 cannot be a fact family. 💔",
+    "d": "h"
+  }
+];

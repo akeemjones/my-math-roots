@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Viewport — safe area insets for notched iOS devices -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, viewport-fit=cover"
+		/>
+
+		<!-- PWA theme colour (matches manifest) -->
+		<meta name="theme-color" content="#4a90d9" />
+
+		<!-- iOS PWA -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="My Math Roots" />
+		<link rel="apple-touch-icon" href="/icon-192.png" />
+
+		<!-- Description / SEO (staging — not indexed by robots.txt) -->
+		<meta
+			name="description"
+			content="My Math Roots — K-5 Review — 10 units, 34 lessons, 2,502 questions"
+		/>
+
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

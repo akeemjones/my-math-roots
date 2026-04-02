@@ -17,10 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node 20
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install root dependencies
         run: npm ci
@@ -29,10 +29,12 @@ jobs:
         run: npm test
 
       - name: Install SvelteKit dependencies
-        run: cd app && npm ci
+        run: npm ci
+        working-directory: app
 
       - name: Run Vitest (SvelteKit app)
-        run: cd app && npx vitest run --reporter=verbose
+        run: npx vitest run --reporter=verbose
+        working-directory: app
 
   # ───────────────────────────────────────────────────────────────
   # Job 2: Deploy to Production — master push only, gated on tests
@@ -46,16 +48,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node 20
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install SvelteKit dependencies
-        run: cd app && npm ci
+        run: npm ci
+        working-directory: app
 
       - name: Build SvelteKit app
-        run: cd app && npm run build
+        run: npm run build
+        working-directory: app
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -77,16 +81,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node 20
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install SvelteKit dependencies
-        run: cd app && npm ci
+        run: npm ci
+        working-directory: app
 
       - name: Build SvelteKit app
-        run: cd app && npm run build
+        run: npm run build
+        working-directory: app
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
