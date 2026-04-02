@@ -100,6 +100,8 @@ export interface Unit {
   gp: number;
   /** TEKS standard reference, e.g. "TEKS 2.4A". */
   teks: string;
+  /** Optional unit description shown in the banner. */
+  desc?: string;
   /** Lesson shells — always present; content merged after load. */
   lessons: Lesson[];
   /** Unit quiz bank — merged in from the data file. */
