@@ -2,7 +2,7 @@ name: CI / Deploy
 
 on:
   push:
-    branches: [master, staging]
+    branches: [staging]
   pull_request:
     branches: [master]
 
@@ -37,40 +37,8 @@ jobs:
         working-directory: app
 
   # ───────────────────────────────────────────────────────────────
-  # Job 2: Deploy to Production — master push only, gated on tests
-  # ───────────────────────────────────────────────────────────────
-  deploy-production:
-    name: Deploy to Production
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install SvelteKit dependencies
-        run: npm ci
-        working-directory: app
-
-      - name: Build SvelteKit app
-        run: npm run build
-        working-directory: app
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
-      - name: Deploy to Netlify Production
-        run: npx netlify-cli deploy --prod --dir=app/build --site=${{ secrets.NETLIFY_SITE_ID_PRODUCTION }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-
-  # ───────────────────────────────────────────────────────────────
-  # Job 3: Deploy to Staging — staging branch push OR PRs
+  # Job 2: Deploy to Staging — staging branch push OR PRs
+  # Production is deployed manually via Netlify UI (never auto-deployed)
   # ───────────────────────────────────────────────────────────────
   deploy-staging:
     name: Deploy to Staging
