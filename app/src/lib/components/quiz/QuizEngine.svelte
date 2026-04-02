@@ -161,327 +161,128 @@
   });
 </script>
 
-<div class="engine" style="--color: {color}">
-  <!-- Progress bar -->
-  <div class="progress-bar" role="progressbar" aria-valuenow={qz.idx} aria-valuemax={total}>
-    <div class="progress-fill" style="width: {progress * 100}%"></div>
-  </div>
+<div class="sc" style="--color: {color}">
+  <div class="sc-in">
 
-  <!-- Header -->
-  <header class="quiz-header">
-    <button type="button" class="quit-btn" onclick={onQuit} aria-label="Quit quiz">✕</button>
-    <span class="q-label">Question {qz.viewIdx + 1} of {total}</span>
-    <span class="score-chip">{qz.score} correct</span>
-  </header>
-
-  <!-- Question card -->
-  <div class="q-card" role="main">
-    <!-- Question text -->
-    <p class="q-text" role="heading" aria-level="2">{q?.t ?? ''}</p>
-
-    <!-- Inline SVG visual (geometry questions) -->
-    {#if q?.s}
-      <div class="q-visual" aria-hidden="true">{@html q.s}</div>
-    {/if}
-
-    <!-- Review mode indicator -->
-    {#if isReview}
-      <p class="review-badge">👁 Review — answer locked</p>
-    {/if}
-
-    <!-- Answer grid -->
-    <div class="answer-grid" role="group" aria-label="Answer choices">
-      {#each (isReview ? (pastAnswer?.opts ?? q?.o ?? []) : opts.map(o => o.text)) as optText, i}
-        {@const origIdx = isReview ? i : opts[i]?.origIdx}
-        {@const isCorrect = isReview
-          ? optText === (pastAnswer?.opts?.[pastAnswer.correct] ?? q?.o[q.a])
-          : origIdx === q?.a}
-        {@const isChosen = isReview
-          ? i === pastAnswer?.chosen
-          : i === chosenIdx}
-        {@const state = !answered && !isReview
-          ? 'idle'
-          : isCorrect ? 'correct'
-          : isChosen ? 'wrong'
-          : 'idle'}
-
-        <button
-          type="button"
-          class="answer-btn {state}"
-          onclick={() => pickAnswer(i)}
-          disabled={answered || isReview}
-          aria-label="Answer: {optText}"
-          aria-pressed={isChosen}
-        >
-          {optText}
-        </button>
-      {/each}
+    <!-- Progress bar -->
+    <div class="qpb" role="progressbar" aria-valuenow={qz.idx} aria-valuemax={total}>
+      <div class="qpbf" style="width: {progress * 100}%; background: {color}"></div>
     </div>
 
-    <!-- Reveal panel (shown after answering) -->
-    {#if answered && !isReview}
-      {@const wasCorrect = opts[chosenIdx ?? 0]?.origIdx === q?.a}
-      <div class="reveal {wasCorrect ? 'ok' : 'no'}" role="status" aria-live="polite">
-        <p class="reveal-header {wasCorrect ? 'ok' : 'no'}">
-          {wasCorrect ? '🎉 Correct! Great job!' : '😊 Not quite…'}
-        </p>
-        {#if !wasCorrect}
-          <p class="reveal-correct">✅ Correct answer: {correctText}</p>
-        {/if}
-        <p class="reveal-exp">💡 {q?.e}</p>
+    <!-- Header: quit + label + score -->
+    <div class="qhdr">
+      <div class="qmeta">
+        <span class="q-lbl">Q {qz.viewIdx + 1} of {total}</span>
+        <span class="q-score" style="background: {color}22; color: {color}">{qz.score} correct</span>
+        <button type="button" class="quiz-quit-btn" onclick={onQuit} aria-label="Quit quiz">✕ Quit</button>
+      </div>
+    </div>
 
-        <!-- AI Hint button (only shown on wrong answers) -->
-        {#if !wasCorrect}
-          {#if hintLoading}
-            <p class="hint-loading" aria-live="polite">🤔 Thinking…</p>
-          {:else if hintText}
-            <div class="hint-box" role="note">
-              <p class="hint-label">✨ AI Hint</p>
-              <p>{hintText}</p>
-            </div>
-          {:else if hintError}
-            <p class="hint-error">{hintError}</p>
-          {:else}
-            <button type="button" class="hint-btn" onclick={fetchHint}>
-              ✨ Get a Hint
-            </button>
+    <!-- Question card -->
+    <div class="qcard">
+      <p class="q-text">{q?.t ?? ''}</p>
+
+      {#if q?.s}
+        <div class="q-visual" aria-hidden="true">{@html q.s}</div>
+      {/if}
+
+      {#if isReview}
+        <p style="font-size:var(--fs-sm); color:var(--txt2); margin:0 0 10px">👁 Review — answer locked</p>
+      {/if}
+
+      <!-- Answer grid -->
+      <div class="agrid" role="group" aria-label="Answer choices">
+        {#each (isReview ? (pastAnswer?.opts ?? q?.o ?? []) : opts.map(o => o.text)) as optText, i}
+          {@const origIdx = isReview ? i : opts[i]?.origIdx}
+          {@const isCorrect = isReview
+            ? optText === (pastAnswer?.opts?.[pastAnswer.correct] ?? q?.o[q.a])
+            : origIdx === q?.a}
+          {@const isChosen = isReview ? i === pastAnswer?.chosen : i === chosenIdx}
+          {@const btnClass = !answered && !isReview ? '' : isCorrect ? 'correct' : isChosen ? 'wrong' : ''}
+
+          <button
+            type="button"
+            class="abtn {btnClass}"
+            onclick={() => pickAnswer(i)}
+            disabled={answered || isReview}
+            aria-label="Answer: {optText}"
+            aria-pressed={isChosen}
+          >
+            {optText}
+          </button>
+        {/each}
+      </div>
+
+      <!-- Reveal panel -->
+      {#if answered && !isReview}
+        {@const wasCorrect = opts[chosenIdx ?? 0]?.origIdx === q?.a}
+        <div class="reveal {wasCorrect ? 'ok' : 'no'}" role="status" aria-live="polite">
+          <p class="rev-h {wasCorrect ? 'ok' : 'no'}">
+            {wasCorrect ? '🎉 Correct! Great job!' : '😊 Not quite…'}
+          </p>
+          {#if !wasCorrect}
+            <p class="rev-correct">✅ Correct answer: {correctText}</p>
           {/if}
-        {/if}
-      </div>
-    {/if}
+          <p class="rev-exp">💡 {q?.e}</p>
 
-    <!-- Review reveal -->
-    {#if isReview && pastAnswer}
-      <div class="reveal {pastAnswer.ok ? 'ok' : 'no'}" role="status">
-        <p class="reveal-header {pastAnswer.ok ? 'ok' : 'no'}">
-          {pastAnswer.ok ? '🎉 Correct!' : '😊 Not quite…'}
-        </p>
-        {#if !pastAnswer.ok}
-          <p class="reveal-correct">✅ Correct answer: {pastAnswer.opts?.[pastAnswer.correct] ?? ''}</p>
-        {/if}
-        <p class="reveal-exp">💡 {pastAnswer.exp}</p>
-        {#if pastAnswer.timeSecs != null}
-          <p class="reveal-time">⏱ {pastAnswer.timeSecs}s on this question</p>
-        {/if}
-      </div>
-    {/if}
-  </div>
+          {#if !wasCorrect}
+            {#if hintLoading}
+              <p class="rev-time" aria-live="polite">🤔 Thinking…</p>
+            {:else if hintText}
+              <div class="rev-tip" role="note">
+                <strong>✨ AI Hint</strong><br>{hintText}
+              </div>
+            {:else if hintError}
+              <p class="rev-time" style="color:#e74c3c">{hintError}</p>
+            {:else}
+              <button type="button" class="hint-btn-legacy" onclick={fetchHint}>✨ Get a Hint</button>
+            {/if}
+          {/if}
+        </div>
+      {/if}
 
-  <!-- Navigation buttons -->
-  <div class="nav-row">
-    {#if qz.viewIdx > 0}
-      <button type="button" class="nav-btn secondary" onclick={goBack}>← Back</button>
-    {/if}
+      <!-- Review reveal -->
+      {#if isReview && pastAnswer}
+        <div class="reveal {pastAnswer.ok ? 'ok' : 'no'}" role="status">
+          <p class="rev-h {pastAnswer.ok ? 'ok' : 'no'}">
+            {pastAnswer.ok ? '🎉 Correct!' : '😊 Not quite…'}
+          </p>
+          {#if !pastAnswer.ok}
+            <p class="rev-correct">✅ Correct answer: {pastAnswer.opts?.[pastAnswer.correct] ?? ''}</p>
+          {/if}
+          <p class="rev-exp">💡 {pastAnswer.exp}</p>
+          {#if pastAnswer.timeSecs != null}
+            <p class="rev-time">⏱ {pastAnswer.timeSecs}s on this question</p>
+          {/if}
+        </div>
+      {/if}
+    </div>
 
-    {#if answered || isReview}
-      <button type="button" class="nav-btn primary" onclick={nextQuestion}>
-        {#if isReview && qz.viewIdx < qz.idx - 1}
-          Forward →
-        {:else if isReview}
-          Back to Current →
-        {:else if qz.idx + 1 >= total}
-          See Results 🏆
-        {:else}
-          Next Question →
-        {/if}
-      </button>
-    {/if}
+    <!-- Navigation -->
+    <div class="quiz-nav-row">
+      {#if qz.viewIdx > 0}
+        <button type="button" class="prev-btn" onclick={goBack}>← Back</button>
+      {/if}
+
+      {#if answered || isReview}
+        <button
+          type="button"
+          class="next-btn"
+          style="background: {color}"
+          onclick={nextQuestion}
+        >
+          {#if isReview && qz.viewIdx < qz.idx - 1}
+            Forward →
+          {:else if isReview}
+            Back to Current →
+          {:else if qz.idx + 1 >= total}
+            See Results 🏆
+          {:else}
+            Next Question →
+          {/if}
+        </button>
+      {/if}
+    </div>
+
   </div>
 </div>
-
-<style>
-  .engine {
-    display: flex;
-    flex-direction: column;
-    min-height: 100dvh;
-    background: var(--color-bg, #f0f2f5);
-  }
-
-  /* Progress */
-  .progress-bar {
-    height: 4px;
-    background: color-mix(in srgb, var(--color) 20%, transparent);
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--color);
-    transition: width 0.3s ease;
-  }
-
-  /* Header */
-  .quiz-header {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background: var(--color-surface, #fff);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    gap: 0.75rem;
-  }
-  .quit-btn {
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    cursor: pointer;
-    color: var(--color-text-muted, #636e72);
-    padding: 0.25rem;
-  }
-  .q-label {
-    flex: 1;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--color-text-muted, #636e72);
-  }
-  .score-chip {
-    font-size: 0.8rem;
-    font-weight: 700;
-    background: color-mix(in srgb, var(--color) 15%, transparent);
-    color: var(--color);
-    padding: 0.25rem 0.6rem;
-    border-radius: 999px;
-  }
-
-  /* Question card */
-  .q-card {
-    flex: 1;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .q-text {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-text, #2d3436);
-    line-height: 1.4;
-    margin: 0;
-  }
-  .q-visual :global(svg) {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-  .review-badge {
-    font-size: 0.8rem;
-    color: var(--color-text-muted, #636e72);
-    margin: 0;
-  }
-
-  /* Answer grid */
-  .answer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.625rem;
-  }
-  .answer-btn {
-    padding: 0.75rem 0.5rem;
-    border-radius: 0.875rem;
-    border: 2px solid var(--color-border, #dfe6e9);
-    background: var(--color-surface, #fff);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    text-align: center;
-    line-height: 1.3;
-  }
-  .answer-btn:hover:not(:disabled) {
-    border-color: var(--color);
-    background: color-mix(in srgb, var(--color) 6%, var(--color-surface, #fff));
-  }
-  .answer-btn.correct {
-    border-color: var(--color-success, #00b894);
-    background: color-mix(in srgb, var(--color-success, #00b894) 12%, #fff);
-    color: var(--color-success, #00b894);
-    font-weight: 700;
-  }
-  .answer-btn.wrong {
-    border-color: var(--color-error, #d63031);
-    background: color-mix(in srgb, var(--color-error, #d63031) 10%, #fff);
-    color: var(--color-error, #d63031);
-  }
-
-  /* Reveal */
-  .reveal {
-    border-radius: 1rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .reveal.ok { background: color-mix(in srgb, var(--color-success, #00b894) 10%, #fff); }
-  .reveal.no { background: color-mix(in srgb, var(--color-error, #d63031) 8%, #fff); }
-  .reveal-header {
-    font-weight: 700;
-    font-size: 1rem;
-    margin: 0;
-  }
-  .reveal-header.ok { color: var(--color-success, #00b894); }
-  .reveal-header.no { color: var(--color-error, #d63031); }
-  .reveal-correct, .reveal-exp, .reveal-time {
-    font-size: 0.875rem;
-    color: var(--color-text, #2d3436);
-    margin: 0;
-  }
-
-  /* Hint */
-  .hint-btn {
-    align-self: flex-start;
-    background: none;
-    border: 1.5px solid var(--color-primary, #6c5ce7);
-    color: var(--color-primary, #6c5ce7);
-    border-radius: 0.5rem;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .hint-loading {
-    font-size: 0.85rem;
-    color: var(--color-text-muted, #636e72);
-    margin: 0;
-    font-style: italic;
-  }
-  .hint-box {
-    background: color-mix(in srgb, var(--color-primary, #6c5ce7) 8%, #fff);
-    border-radius: 0.75rem;
-    padding: 0.75rem;
-    font-size: 0.85rem;
-    color: var(--color-text, #2d3436);
-  }
-  .hint-label {
-    font-weight: 700;
-    margin: 0 0 0.3rem;
-    color: var(--color-primary, #6c5ce7);
-  }
-  .hint-box p { margin: 0; }
-  .hint-error { font-size: 0.82rem; color: var(--color-error, #d63031); margin: 0; }
-
-  /* Navigation */
-  .nav-row {
-    display: flex;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem 2rem;
-    justify-content: flex-end;
-  }
-  .nav-btn {
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.875rem;
-    font-size: 1rem;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .nav-btn.primary {
-    background: var(--color);
-    color: #fff;
-    flex: 1;
-  }
-  .nav-btn.secondary {
-    background: var(--color-surface, #fff);
-    color: var(--color-text, #2d3436);
-    border: 2px solid var(--color-border, #dfe6e9);
-  }
-  .nav-btn:hover { opacity: 0.88; }
-</style>
