@@ -368,9 +368,9 @@
 
 /* ── SHARED TOKENS (not in layout :root yet) ─────────── */
 :root {
-  --rad: 18px;
-  --shad: 0 8px 32px rgba(0,0,0,.10), inset 0 1.5px 0 rgba(255,255,255,.85);
-  --bar-bg: rgba(255,255,255,.82);
+  --rad: 22px;
+  --shad: 0 6px 28px rgba(0,0,0,.16);
+  --bar-bg: rgba(255,255,255,.18);
 }
 
 /* ── QUIZ SCREEN ─────────────────────────────── */
@@ -557,7 +557,7 @@ body.dark .lcard{ background:rgba(255,255,255,.08); }
 body.dark .badge-done,body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
 /* ── LESSON SCREEN ─────────────────────────────── */
-.bar{ position:sticky; top:0; z-index:10; background:var(--bar-bg,rgba(255,255,255,.82));
+.bar{ position:sticky; top:0; z-index:90; background:var(--bar-bg,rgba(255,255,255,.82));
       backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
       border-bottom:1px solid rgba(255,255,255,0.35);
       padding:12px 16px; padding-top:calc(12px + env(safe-area-inset-top));
@@ -659,7 +659,7 @@ body.dark .kp{ background:rgba(255,255,255,.08); }
   padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
   background:rgba(255,255,255,.82); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,.35);
-  box-shadow:0 2px 18px rgba(0,0,0,.08); position:sticky; top:0; z-index:10; }
+  box-shadow:0 2px 18px rgba(0,0,0,.08); position:sticky; top:0; z-index:90; }
 .dash-brand{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg);
   color:var(--txt); }
 .dash-back-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base);
