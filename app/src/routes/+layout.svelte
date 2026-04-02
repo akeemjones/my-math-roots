@@ -1,4 +1,6 @@
 <script lang="ts">
+  import '../app.css';
+
   /**
    * Root layout — auth guard.
    *
@@ -17,7 +19,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { supabase } from '$lib/supabase';
-  import { authUser, activeStudent, familyProfiles } from '$lib/stores';
+  import { authUser, activeStudent, familyProfiles, settings } from '$lib/stores';
   import { getStudentProfiles } from '$lib/services/auth';
   import { initPwa, pwaUpdateAvailable, applyUpdate } from '$lib/pwa';
   import type { AuthUser } from '$lib/types';
@@ -87,6 +89,11 @@
       goto('/select', { replaceState: true });
     }
   });
+
+  // Dark mode: sync body.dark class to settings store
+  $effect(() => {
+    document.body.classList.toggle('dark', $settings.theme === 'dark');
+  });
 </script>
 
 {@render children()}
@@ -116,28 +123,62 @@
 
   :global(body) {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--color-bg, #f0f2f5);
-    color: var(--color-text, #2d3436);
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    background-color: #eafaf2;
+    color: var(--txt, #1a2535);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   :global(:root) {
-    --color-primary: #6c5ce7;
-    --color-primary-light: #e8e3ff;
-    --color-bg: #f0f2f5;
-    --color-surface: #ffffff;
-    --color-surface-alt: #f8f9fa;
-    --color-text: #2d3436;
-    --color-text-muted: #636e72;
-    --color-border: #dfe6e9;
-    --color-error: #d63031;
-    --color-success: #00b894;
-    /* Safe-area insets for notched iOS devices */
-    --safe-top: env(safe-area-inset-top, 0px);
+    /* ── Original design tokens (mirrors src/styles.css) ───────────── */
+    --bg:    #e4eeff;
+    --bg2:   #ffffff;
+    --bg3:   #eef3ff;
+    --bg4:   #f4f7ff;
+    --txt:   #1a2535;
+    --txt2:  #5a7080;
+    --txt3:  #3d4f60;
+    --border:  rgba(0,0,0,.11);
+    --border2: rgba(0,0,0,.16);
+    --inp-border: rgba(0,0,0,.13);
+
+    /* Gradient background — matches production light mode exactly */
+    --home-grad: linear-gradient(155deg,#f9fcff 0%,#eef7ff 45%,#eafaf2 100%);
+
+    /* Tiled math-symbol pattern (420×420 SVG, rendered as CSS background-image) */
+    --app-bg-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Ccircle cx='30' cy='30' r='22' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='30' y='30' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e74c3c' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='110' cy='20' r='16' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='110' y='20' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E7%3C/text%3E%3Crect x='185' y='8' width='40' height='40' rx='10' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='205' y='28' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='22' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='295' cy='25' r='20' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='295' y='25' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%2327ae60' opacity='.34'%3E12%3C/text%3E%3Ccircle cx='380' cy='35' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='380' y='35' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%238e44ad' opacity='.34'%3E%C3%B7%3C/text%3E%3Ccircle cx='60' cy='105' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='60' y='105' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23e67e22' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='160' cy='95' r='22' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='160' y='95' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%231abc9c' opacity='.34'%3E%3D%3C/text%3E%3Ccircle cx='250' cy='110' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='250' y='110' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E5%3C/text%3E%3Crect x='320' y='88' width='38' height='38' rx='10' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='339' y='107' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23f1c40f' opacity='.34'%3E%E2%98%85%3C/text%3E%3Ccircle cx='20' cy='195' r='20' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='20' y='195' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%234a90d9' opacity='.34'%3E3%3C/text%3E%3Ccircle cx='120' cy='185' r='16' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='120' y='185' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%2327ae60' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='210' cy='200' r='22' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='210' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%238e44ad' opacity='.34'%3E10%3C/text%3E%3Ccircle cx='310' cy='190' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='310' y='190' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e67e22' opacity='.34'%3E%E2%88%92%3C/text%3E%3Ccircle cx='395' cy='200' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='395' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BC%3C/text%3E%3Ccircle cx='55' cy='290' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='55' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E8%3C/text%3E%3Crect x='145' y='272' width='36' height='36' rx='9' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='163' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='255' cy='285' r='20' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='255' y='285' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E6%3C/text%3E%3Ccircle cx='350' cy='295' r='18' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='350' y='295' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%2327ae60' opacity='.34'%3E%3D%3C/text%3E%3Ccircle cx='30' cy='385' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='30' y='385' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%238e44ad' opacity='.34'%3E9%3C/text%3E%3Ccircle cx='130' cy='378' r='22' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='130' y='378' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e67e22' opacity='.34'%3E%C3%B7%3C/text%3E%3Ccircle cx='230' cy='390' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='230' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='320' cy='380' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='320' y='380' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E2%3C/text%3E%3Ccircle cx='400' cy='390' r='16' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='400' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%234a90d9' opacity='.34'%3E%2B%3C/text%3E%3C/svg%3E");
+
+    /* ── Accent / brand colours ─────────────────────────────────────── */
+    --color-primary: #4a90d9;
+    --color-success: #27ae60;
+    --color-error:   #e74c3c;
+
+    /* ── Font-size scale (matches original --fs-* tokens) ───────────── */
+    --fs-xs:   0.72rem;
+    --fs-sm:   0.85rem;
+    --fs-base: 0.95rem;
+    --fs-md:   1.1rem;
+    --fs-lg:   1.3rem;
+    --fs-xl:   1.6rem;
+    --fs-2xl:  2rem;
+    --fs-3xl:  2.5rem;
+    --fs-4xl:  3.2rem;
+    --fs-5xl:  4.5rem;
+
+    /* ── Safe-area insets for notched iOS devices ────────────────────── */
+    --safe-top:    env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-left:   env(safe-area-inset-left, 0px);
+    --safe-right:  env(safe-area-inset-right, 0px);
+  }
+
+  /* Full-screen route background — math symbols tiled over gradient */
+  :global(.sc) {
+    min-height: 100dvh;
+    background-image: var(--app-bg-svg), var(--home-grad);
+    background-size: 420px 420px, 100% 100%;
   }
 
   /* PWA update banner */
