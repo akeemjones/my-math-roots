@@ -164,18 +164,17 @@
 <div class="sc" style="--color: {color}">
   <div class="sc-in">
 
-    <!-- Progress bar -->
-    <div class="qpb" role="progressbar" aria-valuenow={qz.idx} aria-valuemax={total}>
-      <div class="qpbf" style="width: {progress * 100}%; background: {color}"></div>
-    </div>
-
     <!-- Header: quit + label + score -->
     <div class="qhdr">
       <div class="qmeta">
         <span class="q-lbl">Q {qz.viewIdx + 1} of {total}</span>
         <span class="q-score" style="background: {color}22; color: {color}">{qz.score} correct</span>
-        <button type="button" class="quiz-quit-btn" onclick={onQuit} aria-label="Quit quiz">✕ Quit</button>
       </div>
+      <!-- Progress bar -->
+      <div class="qpb" role="progressbar" aria-valuenow={qz.idx} aria-valuemax={total}>
+        <div class="qpbf" style="width: {progress * 100}%; background: {color}"></div>
+      </div>
+      <button type="button" class="quiz-quit-btn" onclick={onQuit} aria-label="Quit quiz">✕ Quit</button>
     </div>
 
     <!-- Question card -->
