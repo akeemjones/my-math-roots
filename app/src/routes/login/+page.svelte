@@ -451,6 +451,9 @@
     justify-content: center;
     padding: 1.5rem 1rem 2rem;
     gap: 0;
+    /* Override the global light gradient — login needs a dark background so white text is readable */
+    background-image: var(--app-bg-svg), linear-gradient(155deg, #2563b0 0%, #1d7a49 100%) !important;
+    background-size: 420px 420px, 100% 100% !important;
   }
 
   /* Logo */
