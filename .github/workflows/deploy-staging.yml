@@ -1,0 +1,97 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  # ───────────────────────────────────────────────────────────────
+  # Job 1: Tests — runs on every push and every PR
+  # ───────────────────────────────────────────────────────────────
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run Jest (legacy vanilla app)
+        run: npm test
+
+      - name: Install SvelteKit dependencies
+        run: cd app && npm ci
+
+      - name: Run Vitest (SvelteKit app)
+        run: cd app && npx vitest run --reporter=verbose
+
+  # ───────────────────────────────────────────────────────────────
+  # Job 2: Deploy to Production — master push only, gated on tests
+  # ───────────────────────────────────────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install SvelteKit dependencies
+        run: cd app && npm ci
+
+      - name: Build SvelteKit app
+        run: cd app && npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy to Netlify Production
+        run: npx netlify-cli deploy --prod --dir=app/build --site=${{ secrets.NETLIFY_SITE_ID_PRODUCTION }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+  # ───────────────────────────────────────────────────────────────
+  # Job 3: Deploy to Staging — PRs only, for preview / QA
+  # ───────────────────────────────────────────────────────────────
+  deploy-staging:
+    name: Deploy PR Preview to Staging
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install SvelteKit dependencies
+        run: cd app && npm ci
+
+      - name: Build SvelteKit app
+        run: cd app && npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy PR preview to Netlify Staging
+        run: npx netlify-cli deploy --prod --dir=app/build --site=${{ secrets.NETLIFY_SITE_ID_STAGING }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
