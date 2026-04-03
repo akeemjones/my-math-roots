@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { stackNavigate } from '$lib/services/navStack';
   import { unitsData, activeStudent, done, scores, streak, familyProfiles, activeStudentId, guestMode } from '$lib/stores';
   import { verifyStudentPin } from '$lib/services/auth';
   import UnitCard from '$lib/components/home/UnitCard.svelte';
@@ -195,7 +196,7 @@
               lessonsTotal={unit.lessons.length}
               lessonsDone={dL}
               uqDone={uqD}
-              onSelect={() => goto(`/unit/${unit.id}`)}
+              onSelect={() => stackNavigate(`/unit/${unit.id}`)}
             />
           {/each}
         {/if}
