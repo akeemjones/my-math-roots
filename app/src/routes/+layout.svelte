@@ -21,6 +21,7 @@
   import { supabase } from '$lib/supabase';
   import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode } from '$lib/stores';
   import { mountSwipeBack } from '$lib/services/swipe';
+  import { navStack, stackNavigate } from '$lib/services/navStack';
   import { isTutorialDone } from '$lib/services/tour';
   import { pullStudentData, pushStudentData } from '$lib/services/sync';
 
@@ -53,15 +54,38 @@
 
   const PUBLIC_ROUTES = ['/login', '/settings', '/history', '/privacy', '/terms', '/dashboard'];
 
+  /** Apply a11y body classes from persisted localStorage. */
+  function applyA11yClasses() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem('wb_a11y') ?? '{}');
+      document.body.classList.toggle('a11y-large-text',    !!cfg.largeText);
+      document.body.classList.toggle('a11y-high-contrast', !!cfg.highContrast);
+      document.body.classList.toggle('a11y-colorblind',    !!cfg.colorblind);
+      document.body.classList.toggle('a11y-reduce-motion', !!cfg.reduceMotion);
+      document.body.classList.toggle('a11y-text-select',   !!cfg.textSelect);
+      document.body.classList.toggle('a11y-focus',         !!cfg.focus);
+      document.body.classList.toggle('a11y-screenreader',  !!cfg.screenreader);
+    } catch { /* no stored prefs */ }
+  }
+
   onMount(() => {
     // Populate unitsData store with the 10 curriculum shells
     boot();
+
+    // Apply accessibility classes from saved preferences
+    applyA11yClasses();
 
     // Wire up PWA update detection
     initPwa();
 
     // Mount iOS-style swipe-back gesture
     const cleanupSwipe = mountSwipeBack();
+
+    // Keep nav stack in sync when browser back/forward buttons are used
+    function onPopState() {
+      navStack.pop();
+    }
+    window.addEventListener('popstate', onPopState);
 
     // If tutorial already done, enable spotlight tours immediately
     if (isTutorialDone()) spotlightReady = true;
@@ -96,6 +120,7 @@
           const { profiles } = await getStudentProfiles();
           familyProfiles.set(profiles);
           // Parent just authenticated — send straight to the dashboard
+          navStack.clear();
           goto('/dashboard');
         }
       } else {
@@ -104,7 +129,7 @@
       }
     });
 
-    return () => { subscription.unsubscribe(); cleanupSwipe(); };
+    return () => { subscription.unsubscribe(); cleanupSwipe(); window.removeEventListener('popstate', onPopState); };
   });
 
   // Reactive guard: redirect when auth state changes
@@ -115,8 +140,10 @@
     // Guest mode bypasses both guards — user clicked "Continue without an account"
     if ($guestMode) return;
 
-    // Not signed in and not on a public route → go to login
-    if (!$authUser && !isPublic) {
+    // Not signed in, no student selected, and not on a public route → go to login
+    // (Student PIN login sets activeStudentId without a Supabase auth session)
+    if (!$authUser && !$activeStudentId && !isPublic) {
+      navStack.clear();
       goto('/login', { replaceState: true });
     }
     // Signed in but no student → ProfilePicker overlay is rendered below (no redirect needed)
@@ -166,7 +193,7 @@
 
 <!-- Global cog button — fixed position, visible on all screens (matches legacy) -->
 {#if showCog}
-  <button type="button" class="cog-btn" aria-label="Settings" onclick={() => goto('/settings')}>
+  <button type="button" class="cog-btn" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
     <span class="cog-ico">⚙️</span>
   </button>
 {/if}
@@ -195,7 +222,7 @@
 {/if}
 
 <!-- Tutorial overlay (first launch only) -->
-<TutorialOverlay onDone={onTutorialDone} />
+<TutorialOverlay onDone={onTutorialDone} currentPath={$page.url.pathname} />
 
 <!-- Spotlight tour (per-screen, after tutorial is complete) -->
 {#if spotlightReady}
