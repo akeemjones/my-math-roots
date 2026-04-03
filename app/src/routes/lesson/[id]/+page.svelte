@@ -11,6 +11,7 @@
 
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { stackBack } from '$lib/services/navStack';
   import { page } from '$app/stores';
   import { unitsData, scores, done } from '$lib/stores';
   import { loadUnit } from '$lib/boot';
@@ -114,7 +115,7 @@
   }
 
   // ── Navigation ────────────────────────────────────────────────────────────────
-  function goBack()    { goto(`/unit/${unitId}`); }
+  function goBack()    { stackBack(`/unit/${unitId}`); }
   function startQuiz() { goto(`/quiz/lq_${lessonId}`); }
   function goNextLesson() {
     if (nextLesson) goto(`/lesson/${nextLesson.id}`);
