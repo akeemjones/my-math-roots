@@ -5,10 +5,71 @@
   import { verifyStudentPin } from '$lib/services/auth';
   import { supabase } from '$lib/supabase';
   import { familyProfiles, activeStudentId, guestMode } from '$lib/stores';
+  import { navStack } from '$lib/services/navStack';
   import type { StudentProfile } from '$lib/types';
 
   // ── Carousel ────────────────────────────────────────────────────────────────
   let activeCard = $state(0); // 0=student (default, matches legacy), 1=parent
+  let trackEl = $state<HTMLDivElement | null>(null);
+
+  // Swipe state (ported from legacy src/auth.js)
+  let _startX = 0, _startY = 0, _startT = 0;
+  let _intentSet = false, _isHoriz = false, _outerW = 0;
+  const _EASE = 'cubic-bezier(0.4,0,0.2,1)';
+
+  function onTrackTouchStart(e: TouchEvent) {
+    _startX = e.touches[0].clientX;
+    _startY = e.touches[0].clientY;
+    _startT = Date.now();
+    _intentSet = false;
+    _isHoriz = false;
+    _outerW = (trackEl?.parentElement || document.body).offsetWidth || window.innerWidth;
+    if (trackEl) trackEl.style.transition = 'none';
+  }
+
+  function onTrackTouchMove(e: TouchEvent) {
+    const dx = e.touches[0].clientX - _startX;
+    const dy = e.touches[0].clientY - _startY;
+    if (!_intentSet && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      _intentSet = true;
+      _isHoriz = Math.abs(dx) > Math.abs(dy);
+    }
+    if (!_isHoriz || !trackEl) return;
+    // Follow finger in pixels, clamped so you can't over-drag past either card
+    const currentPx = activeCard * (-_outerW);
+    const newPx = Math.max(-_outerW, Math.min(0, currentPx + dx));
+    trackEl.style.transform = `translateX(${newPx}px)`;
+  }
+
+  function snapTo(targetIdx: number, duration = 0.28) {
+    if (!trackEl) return;
+    trackEl.style.transition = `transform ${duration}s ${_EASE}`;
+    trackEl.style.transform = `translateX(${targetIdx * -50}%)`;
+  }
+
+  function onTrackTouchEnd(e: TouchEvent) {
+    if (!_intentSet || !_isHoriz) {
+      snapTo(activeCard, 0.28);
+      return;
+    }
+    const dx = e.changedTouches[0].clientX - _startX;
+    const gestureMs = Math.max(1, Date.now() - _startT);
+    const velocity = Math.abs(dx) / gestureMs; // px/ms
+    const isFast = velocity > 0.3 && Math.abs(dx) > 20;
+    const committed = Math.abs(dx) >= _outerW * 0.5 || isFast;
+
+    let targetIdx = activeCard;
+    if (committed) {
+      if (dx < 0 && activeCard < 1) targetIdx = 1;
+      else if (dx > 0 && activeCard > 0) targetIdx = 0;
+    }
+
+    snapTo(targetIdx, 0.28);
+
+    if (targetIdx !== activeCard) {
+      setTimeout(() => { activeCard = targetIdx; }, 280);
+    }
+  }
 
   // ── Student PIN ─────────────────────────────────────────────────────────────
   let selectedStudentId = $state<string | null>(null);
@@ -42,6 +103,7 @@
     }
     showSoftGate = false;
     guestMode.set(true);
+    navStack.clear();
     goto('/');
   }
 
@@ -142,6 +204,7 @@
       localStorage.setItem('mmr_last_student_id', selectedStudentId);
       guestMode.set(false);
       activeStudentId.set(selectedStudentId);
+      navStack.clear();
       goto('/', { replaceState: true });
     } else {
       pinBuffer = [];
@@ -208,7 +271,7 @@
       });
       loading = false;
       if (error) { errorMsg = error.message; resetTurnstile(); }
-      else { goto('/dashboard'); }
+      else { navStack.clear(); goto('/dashboard'); }
     }
   }
 
@@ -255,7 +318,12 @@
 
   <!-- Two-card carousel -->
   <div class="ls-carousel-outer">
-    <div class="ls-carousel-track" style="transform: translateX({activeCard === 0 ? '0%' : '-50%'})">
+    <div class="ls-carousel-track"
+         bind:this={trackEl}
+         style="transform: translateX({activeCard === 0 ? '0%' : '-50%'})"
+         ontouchstart={onTrackTouchStart}
+         ontouchmove={onTrackTouchMove}
+         ontouchend={onTrackTouchEnd}>
 
       <!-- Card 0: Student -->
       <div class="ls-card">

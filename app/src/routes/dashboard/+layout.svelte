@@ -8,8 +8,10 @@
    */
 
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import { familyProfiles, activeStudentId, activeStudent, authUser } from '$lib/stores';
   import { signOut as authSignOut } from '$lib/services/auth';
+  import { navStack } from '$lib/services/navStack';
   import { ICON_BARCHART } from '$lib/icons/dashboard';
 
   const { children } = $props();
@@ -17,8 +19,13 @@
   async function signOut() {
     await authSignOut();
     authUser.set(null);
+    navStack.clear();
     goto('/login', { replaceState: true });
   }
+
+  onMount(() => {
+    navStack.clear();
+  });
 </script>
 
 <div class="dash-shell">
