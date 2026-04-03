@@ -1,13 +1,19 @@
 /**
  * Swipe-back gesture — iOS-style slide-out navigation.
  *
- * Ported from src/nav.js. Slide-out only (no peek of previous screen).
+ * Ported from src/nav.js. During swipe, reveals a cached DOM snapshot
+ * of the previous page with parallax animation. Falls back to a
+ * background div if no snapshot exists.
+ *
  * Uses the same physics constants as legacy.
  */
 
 import { goto } from '$app/navigation';
+import { tick } from 'svelte';
 import { get } from 'svelte/store';
 import { cur } from '$lib/stores';
+import { navStack, restoreScroll } from '$lib/services/navStack';
+import type { StackEntry } from '$lib/services/navStack';
 
 // ── Physics constants (from legacy src/nav.js) ──────────────────────────────
 const COMMIT_V  = 0.4;   // px/ms velocity threshold for fast flick
@@ -17,8 +23,8 @@ const H_RATIO   = 0.8;   // dx must exceed dy * this to be treated as horizontal
 
 /** Route → back destination. null means root (absorb gesture, no animation). */
 function getBackTarget(path: string): string | null {
-  if (path === '/' || path === '/login') return null; // root screens
-  if (path === '/settings' || path === '/history' || path === '/dashboard') return '/';
+  if (path === '/' || path === '/login' || path === '/dashboard') return null; // root screens — no swipe-back
+  if (path === '/settings' || path === '/history') return '/';
 
   // /unit/u1 → /
   if (path.startsWith('/unit/')) return '/';
@@ -51,14 +57,56 @@ export function mountSwipeBack(): () => void {
   let intentDecided = false, swiping = false, absorbed = false, locked = false;
   let targetEl: HTMLElement | null = null;
   let backDest: string | null = null;
+  let peekEl: HTMLElement | null = null;
+  let peekEntry: StackEntry | undefined = undefined;
+  let fallbackPeek = false;
 
   const W = () => window.innerWidth;
+
+  /** Insert the snapshot peek or fallback background behind the active page. */
+  function showPeek() {
+    if (peekEl) return;
+
+    peekEntry = navStack.peek();
+    if (peekEntry) {
+      // Use the cached DOM snapshot
+      peekEl = peekEntry.snapshot.cloneNode(true) as HTMLElement;
+      peekEl.className = (peekEl.className || '') + ' swipe-peek-snapshot';
+      // Restore scroll positions on the clone so it looks right
+      for (const [selector, scrollTop] of peekEntry.scrollMap) {
+        const el = peekEl.querySelector(selector) as HTMLElement | null;
+        if (el) el.scrollTop = scrollTop;
+      }
+      fallbackPeek = false;
+    } else {
+      // No snapshot — use fallback background div
+      peekEl = document.createElement('div');
+      peekEl.className = 'swipe-peek-bg';
+      fallbackPeek = true;
+    }
+
+    document.body.appendChild(peekEl);
+  }
+
+  function hidePeek() {
+    if (peekEl) { peekEl.remove(); peekEl = null; }
+    peekEntry = undefined;
+    fallbackPeek = false;
+  }
 
   function snapBack() {
     if (!targetEl) return;
     locked = true;
     targetEl.style.transition = `transform ${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94)`;
     targetEl.style.transform = 'translateX(0px)';
+
+    // Animate peek back to -28% and fade out
+    if (peekEl && !fallbackPeek) {
+      peekEl.style.transition = `transform ${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94), opacity ${ANIM_MS}ms ease`;
+      peekEl.style.transform = 'translateX(-28%)';
+      peekEl.style.opacity = '0.85';
+    }
+
     setTimeout(cleanup, ANIM_MS);
   }
 
@@ -68,6 +116,7 @@ export function mountSwipeBack(): () => void {
       targetEl.style.transition = '';
       targetEl.style.transform = '';
     }
+    hidePeek();
     targetEl = null; backDest = null;
     intentDecided = false; swiping = false; absorbed = false; locked = false;
   }
@@ -121,6 +170,7 @@ export function mountSwipeBack(): () => void {
           swiping = true;
           document.body.classList.add('swiping');
           targetEl.style.transition = 'none';
+          showPeek();
         }
       } else {
         // Vertical scroll — bail
@@ -137,7 +187,18 @@ export function mountSwipeBack(): () => void {
     e.preventDefault();
     if (dx <= 0) { snapBack(); return; }
 
+    // Move active page with finger
     targetEl.style.transform = `translateX(${dx}px)`;
+
+    // Parallax the peek from -28% toward 0%
+    if (peekEl && !fallbackPeek) {
+      const progress = Math.min(dx / W(), 1);
+      const peekX = -28 + (28 * progress);
+      const peekOpacity = 0.85 + (0.15 * progress);
+      peekEl.style.transition = 'none';
+      peekEl.style.transform = `translateX(${peekX}%)`;
+      peekEl.style.opacity = String(peekOpacity);
+    }
   }
 
   function onTouchEnd(e: TouchEvent) {
@@ -152,11 +213,31 @@ export function mountSwipeBack(): () => void {
     if (commit && targetEl && backDest) {
       locked = true;
       const ease = `${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94)`;
+
+      // Slide active page off-screen
       targetEl.style.transition = `transform ${ease}`;
       targetEl.style.transform = `translateX(${W()}px)`;
+
+      // Slide peek to final position
+      if (peekEl && !fallbackPeek) {
+        peekEl.style.transition = `transform ${ease}, opacity ${ease}`;
+        peekEl.style.transform = 'translateX(0%)';
+        peekEl.style.opacity = '1';
+      }
+
       const dest = backDest;
-      setTimeout(() => {
-        goto(dest);
+      // Keep peek visible through navigation
+      const _peek = peekEl;
+      const _entry = navStack.pop();
+      peekEl = null; // prevent cleanup() from removing it early
+
+      setTimeout(async () => {
+        await goto(dest);
+        await tick();
+        // Restore scroll positions on the real page
+        if (_entry) restoreScroll(_entry);
+        // Remove the snapshot peek now that the real page is rendered
+        if (_peek) _peek.remove();
         cleanup();
       }, ANIM_MS);
     } else {
