@@ -5,6 +5,7 @@
 
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { stackNavigate, stackBack } from '$lib/services/navStack';
   import { page } from '$app/stores';
   import { unitsData, scores, hasPassed, bestScore, settings } from '$lib/stores';
   import { loadUnit } from '$lib/boot';
@@ -89,14 +90,14 @@
 {#if !unit}
   <main class="sc" style="display:flex;align-items:center;justify-content:center;min-height:100dvh">
     <p style="color:var(--txt2)">Unit not found.</p>
-    <button type="button" class="bar-back" onclick={() => goto('/')} style="margin-left:8px">← Back</button>
+    <button type="button" class="bar-back" onclick={() => stackBack('/')} style="margin-left:8px">← Back</button>
   </main>
 {:else}
   <div class="sc" id="unit-screen">
 
     <!-- Bar -->
     <div class="bar">
-      <button type="button" class="bar-back" style="color:{unit.color}" onclick={() => goto('/')} aria-label="Back to home">Home</button>
+      <button type="button" class="bar-back" style="color:{unit.color}" onclick={() => stackBack('/')} aria-label="Back to home">Home</button>
       <span class="bar-title">{unit.name}</span>
     </div>
 
@@ -143,8 +144,8 @@
                      role="button" tabindex="0"
                      style="--uc:{unit.color}"
                      aria-label="Lesson {i+1}, {lesson.title}{lqPassed ? ', completed' : lqBest > 0 ? ', best score ' + lqBest + '%' : ''}"
-                     onclick={() => goto(`/lesson/${lesson.id}`)}
-                     onkeydown={(e) => e.key === 'Enter' && goto(`/lesson/${lesson.id}`)}>
+                     onclick={() => stackNavigate(`/lesson/${lesson.id}`)}
+                     onkeydown={(e) => e.key === 'Enter' && stackNavigate(`/lesson/${lesson.id}`)}>
                   <div class="lcard-num" style="background:{unit.color}" aria-hidden="true">{i + 1}</div>
                   <div class="lcard-info">
                     <div class="lcard-title">{lesson.icon} {lesson.title}</div>
@@ -217,7 +218,7 @@
 
       <!-- Unit quiz button -->
       {#if uqUnlocked && !pausedUQ && uqPassed && nextUnit}
-        <button type="button" class="uq-btn" style="--uc:{nextUnit.color}" onclick={() => goto(`/unit/${nextUnit.id}`)}>
+        <button type="button" class="uq-btn" style="--uc:{nextUnit.color}" onclick={() => stackNavigate(`/unit/${nextUnit.id}`)}>
           <div class="uq-btn-ico" aria-hidden="true">{nextUnit.icon}</div>
           <div class="uq-btn-left">
             <h3 style="color:{nextUnit.color}">Next Unit: {nextUnit.name} →</h3>
@@ -269,7 +270,7 @@
         type="button"
         class="locked-sheet-cta"
         style="background:{unit?.color}"
-        onclick={() => { closeLockedSheet(); goto(`/lesson/${s.prevId}`); }}
+        onclick={() => { closeLockedSheet(); stackNavigate(`/lesson/${s.prevId}`); }}
       >
         {s.prevPct > 0 ? '🔄 Try That Quiz Again' : `📖 Go to ${s.prevTitle}`}
       </button>
