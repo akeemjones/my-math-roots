@@ -61,8 +61,6 @@ export interface AppSettings {
   visitCount: number;
   /** True once the onboarding tutorial has been dismissed. */
   tutorialDone: boolean;
-  /** Internal migration version — used to upgrade persisted settings across releases. */
-  _v?: number;
 }
 
 export const DEFAULT_A11Y_PREFS: A11yPrefs = {
@@ -86,5 +84,4 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   freeMode: false,
   visitCount: 0,
   tutorialDone: false,
-  _v: 1,
 };
