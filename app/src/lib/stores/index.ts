@@ -10,7 +10,8 @@ export { unitsData, activeUnit, mergeUnitContent } from './content.js';
 export { cur, scores, bestScore, hasPassed } from './quiz.js';
 
 // User & auth
-export { authUser, familyProfiles, activeStudentId, activeStudent, isSignedIn, isStudentActive, guestMode } from './user.js';
+export { authUser, familyProfiles, activeStudentId, activeStudent, isSignedIn, isStudentActive, guestMode, pinSession } from './user.js';
+export type { PinSession } from './user.js';
 
 // Progress
 export { mastery, streak, done, appTime, actDates, isDone, recentSecs, currentStreak, aiReports, unlockSettings, initialPullDone, syncStatus } from './progress.js';
