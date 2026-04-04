@@ -15,6 +15,7 @@
 
 import { writable, derived } from 'svelte/store';
 import { persisted } from './persist.js';
+import type { StoreSchema } from './persist.js';
 import { done } from './progress.js';
 import type { CurrentState, ScoreEntry } from '$lib/types';
 
@@ -27,13 +28,36 @@ export const cur = writable<CurrentState>({
 
 /**
  * All completed quiz scores.
- * Persisted to localStorage as 'wb_sc5' to match the vanilla app's key.
- *
- * NOTE: The vanilla app stores scores in a signed envelope { d, s }.
- * In Phase 5, a migration helper will unwrap that format on first load.
- * For now, new scores are stored as plain ScoreEntry objects.
+ * Persisted to localStorage as 'wb_sc5_v2'.
+ * Migrates legacy data from 'wb_sc5' (vanilla app key), unwrapping the
+ * signed envelope format { d, s } used by the old app.
  */
-export const scores = persisted<ScoreEntry[]>('wb_sc5_v2', []);
+const scoresSchema: StoreSchema<ScoreEntry[]> = {
+  version: 1,
+  legacyKey: 'wb_sc5',
+  migrate(raw: any, _fromVersion: number): ScoreEntry[] {
+    // Legacy signed envelope format: { d: "JSON string", s: "hash" }
+    let entries: any[];
+    if (raw && typeof raw === 'object' && typeof raw.d === 'string') {
+      try { entries = JSON.parse(raw.d); } catch { return []; }
+    } else if (Array.isArray(raw)) {
+      entries = raw;
+    } else {
+      return [];
+    }
+
+    if (!Array.isArray(entries)) return [];
+    return entries.filter((e: any) =>
+      e && typeof e === 'object' &&
+      typeof e.qid === 'string' &&
+      typeof e.pct === 'number' && e.pct >= 0 && e.pct <= 100 &&
+      typeof e.score === 'number' && e.score >= 0 &&
+      typeof e.total === 'number' && e.total > 0
+    );
+  },
+};
+
+export const scores = persisted<ScoreEntry[]>('wb_sc5_v2', [], scoresSchema);
 
 /** Best score for a given quiz ID (0 if never attempted). */
 export const bestScore = derived(scores, ($scores) => (qid: string): number => {
