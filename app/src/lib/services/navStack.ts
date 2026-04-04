@@ -40,6 +40,9 @@ export const navStack = {
 
     // Record scroll positions
     const scrollMap = new Map<string, number>();
+    // Save document/window scroll position
+    const winScroll = window.scrollY || document.documentElement.scrollTop || 0;
+    if (winScroll > 0) scrollMap.set('__window', winScroll);
     for (const sel of SCROLL_SELECTORS) {
       const el = sc.querySelector(sel) as HTMLElement | null;
       if (el && el.scrollTop > 0) {
@@ -103,15 +106,22 @@ export const navStackSize = derived(_stack, ($s) => $s.length);
  */
 export function restoreScroll(entry: StackEntry): void {
   for (const [selector, scrollTop] of entry.scrollMap) {
+    if (selector === '__window') {
+      window.scrollTo(0, scrollTop);
+      continue;
+    }
     const el = document.querySelector(selector) as HTMLElement | null;
     if (el) {
       el.scrollTop = scrollTop;
     } else {
-      // Retry once after a frame (lazy-loaded content may not be ready)
-      requestAnimationFrame(() => {
+      // Retry up to 5 times (50ms apart) for lazy-loaded content
+      let attempts = 0;
+      const tryRestore = () => {
         const retry = document.querySelector(selector) as HTMLElement | null;
-        if (retry) retry.scrollTop = scrollTop;
-      });
+        if (retry) { retry.scrollTop = scrollTop; }
+        else if (++attempts < 5) { setTimeout(tryRestore, 50); }
+      };
+      requestAnimationFrame(tryRestore);
     }
   }
 }

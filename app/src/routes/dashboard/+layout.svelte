@@ -17,14 +17,29 @@
   const { children } = $props();
 
   async function signOut() {
-    await authSignOut();
+    try { await authSignOut(); } catch { /* ignore — clear stores regardless */ }
     authUser.set(null);
+    activeStudentId.set(null);
+    familyProfiles.set([]);
     navStack.clear();
     goto('/login', { replaceState: true });
   }
 
+  function goToApp() {
+    if (!$activeStudentId) return;
+    navStack.clear();
+    goto('/');
+  }
+
   onMount(() => {
     navStack.clear();
+    // Match body/html background to dash-shell so iOS overscroll bounce shows #f0f4f8 not white
+    document.documentElement.style.backgroundColor = '#f0f4f8';
+    document.body.style.backgroundColor = '#f0f4f8';
+    return () => {
+      document.documentElement.style.backgroundColor = '';
+      document.body.style.backgroundColor = '';
+    };
   });
 </script>
 
@@ -33,7 +48,14 @@
   <!-- Header — matches legacy .db-header -->
   <header class="db-header">
     <div class="db-header-title">{@html ICON_BARCHART} Parent Dashboard</div>
-    <button type="button" class="db-signout-btn" onclick={signOut}>Sign Out</button>
+    <div class="db-header-actions">
+      {#if $activeStudentId}
+        <button type="button" class="db-goto-app-btn" onclick={goToApp}>
+          ▶ {$activeStudent?.display_name ?? 'Student'}'s App
+        </button>
+      {/if}
+      <button type="button" class="db-signout-btn" onclick={signOut}>Sign Out</button>
+    </div>
   </header>
 
   <!-- Student selector — matches legacy .db-selector-wrap -->
@@ -68,6 +90,7 @@
     min-height: 100dvh;
     background: #f0f4f8;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* ── Header ── */
@@ -83,6 +106,9 @@
     top: 0;
     z-index: 20;
     box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   .db-header-title {
@@ -104,6 +130,27 @@
     transition: background .15s;
   }
   .db-signout-btn:active { background: rgba(255,255,255,.32); }
+
+  .db-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .db-goto-app-btn {
+    background: rgba(255,255,255,.2);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    padding: 6px 14px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .db-goto-app-btn:active { background: rgba(255,255,255,.32); }
 
   /* ── Student selector ── */
   .db-selector-wrap {

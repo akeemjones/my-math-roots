@@ -23,7 +23,9 @@
   import { cur, mastery } from '$lib/stores';
   import QuizEngine from '$lib/components/quiz/QuizEngine.svelte';
   import QuizResults from '$lib/components/quiz/QuizResults.svelte';
-  import type { Question, QuizType, ScoreEntry } from '$lib/types';
+  import type { Question, QuizType, QuizState, ScoreEntry } from '$lib/types';
+
+  const PAUSE_KEY = 'wb_quiz_pause';
 
   const quizId = $derived($page.params.id ?? '');
 
@@ -81,7 +83,36 @@
   }
 
   /**
+   * Try to restore a paused quiz from localStorage.
+   * Returns a valid QuizState if found and still fresh (< 24h), or null.
+   */
+  function getPausedState(id: string): QuizState | null {
+    try {
+      const raw = localStorage.getItem(PAUSE_KEY);
+      if (!raw) return null;
+      const all = JSON.parse(raw);
+      const saved = all[id];
+      if (!saved || !Array.isArray(saved.questions) || saved.questions.length === 0) return null;
+      // Expire paused quizzes older than 24 hours
+      if (saved.pausedAt && Date.now() - saved.pausedAt > 24 * 60 * 60 * 1000) return null;
+      return {
+        id: saved.id,
+        label: saved.label,
+        type: saved.type,
+        unitIdx: saved.unitIdx ?? null,
+        questions: saved.questions,
+        idx: saved.idx ?? 0,
+        viewIdx: saved.idx ?? 0,
+        score: saved.score ?? 0,
+        answers: saved.answers ?? [],
+        startTime: saved.pausedAt ?? Date.now(),
+      };
+    } catch { return null; }
+  }
+
+  /**
    * Load the relevant unit(s) for this quiz id, then start the quiz.
+   * Resumes from a paused state if one exists, otherwise starts fresh.
    */
   async function initQuiz(id: string): Promise<void> {
     loadError = null;
@@ -109,7 +140,20 @@
       }
 
       quizColor = resolved.color;
-      startQuiz(resolved.bank, id, resolved.label, resolved.type, resolved.unitIdx);
+
+      // Check for a paused quiz to resume
+      const paused = getPausedState(id);
+      if (paused) {
+        // Clear the paused entry so it won't resume again on next visit
+        try {
+          const all = JSON.parse(localStorage.getItem(PAUSE_KEY) ?? '{}');
+          delete all[id];
+          localStorage.setItem(PAUSE_KEY, JSON.stringify(all));
+        } catch { /* ignore */ }
+        cur.update((c) => ({ ...c, unitIdx: paused.unitIdx, quiz: paused }));
+      } else {
+        startQuiz(resolved.bank, id, resolved.label, resolved.type, resolved.unitIdx);
+      }
 
     } catch (err) {
       loadError = 'Failed to load quiz. Please go back and try again.';

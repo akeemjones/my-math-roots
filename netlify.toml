@@ -15,17 +15,22 @@
     Content-Security-Policy = """
       default-src 'self';
       script-src 'self' 'unsafe-inline'
-        https://accounts.google.com;
+        https://accounts.google.com
+        https://cdn.jsdelivr.net
+        https://challenges.cloudflare.com;
       style-src 'self' 'unsafe-inline'
         https://accounts.google.com;
       font-src 'self' data:;
       connect-src 'self'
         https://omjegwtzirskgmgeojdn.supabase.co
-        https://accounts.google.com;
+        wss://omjegwtzirskgmgeojdn.supabase.co
+        https://accounts.google.com
+        https://cdn.jsdelivr.net;
       img-src 'self' data: blob:
         https://lh3.googleusercontent.com;
       frame-src
-        https://accounts.google.com;
+        https://accounts.google.com
+        https://challenges.cloudflare.com;
       frame-ancestors 'none';
       form-action 'self';
       worker-src 'self';

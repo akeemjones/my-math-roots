@@ -17,10 +17,20 @@
  *   - APP_TIME → apptime_json column on student_profiles
  */
 
-import { derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { persisted } from './persist.js';
 import type { MasteryMap, StreakState, DoneMap, AppTimeState } from '$lib/types';
 import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/types';
+
+/**
+ * Flag set to true after the first pullStudentData completes.
+ * Used to gate the tutorial overlay so it waits for cloud onboarding
+ * state before deciding whether to show.
+ */
+export const initialPullDone = writable(false);
+
+// Re-export from dedicated module (avoids circular dep with persist.ts)
+export { syncStatus } from './syncStatus.js';
 
 /**
  * Per-question mastery scores.
@@ -48,6 +58,11 @@ export const appTime = persisted<AppTimeState>('wb_apptime', DEFAULT_APP_TIME);
  * Capped at 365 entries (rolling window).
  */
 export const actDates = persisted<string[]>('wb_act_dates', []);
+
+/** Parent-set unlock overrides synced from Supabase unlock_settings column. */
+export const unlockSettings = persisted<{ freeMode: boolean; units: number[]; lessons: Record<string, boolean> }>(
+  'wb_unlock_settings', { freeMode: false, units: [], lessons: {} }
+);
 
 // ─── Derived helpers ──────────────────────────────────────────────────────────
 

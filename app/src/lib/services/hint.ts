@@ -10,7 +10,7 @@
  * reaches feature parity in Phase 8.
  */
 
-const STUB_MODE = true;
+const STUB_MODE = import.meta.env.DEV;
 
 export interface HintResult {
   hint: string | null;

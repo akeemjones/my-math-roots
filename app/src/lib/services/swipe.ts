@@ -18,7 +18,7 @@ import type { StackEntry } from '$lib/services/navStack';
 // ── Physics constants (from legacy src/nav.js) ──────────────────────────────
 const COMMIT_V  = 0.4;   // px/ms velocity threshold for fast flick
 const ANIM_MS   = 280;   // slide-out / snap-back animation duration
-const DECIDE_PX = 8;     // min movement before deciding swipe vs scroll
+const DECIDE_PX = 5;     // min movement before deciding swipe vs scroll
 const H_RATIO   = 0.8;   // dx must exceed dy * this to be treated as horizontal
 
 /** Route → back destination. null means root (absorb gesture, no animation). */
@@ -55,6 +55,7 @@ function isModalOpen(): boolean {
 export function mountSwipeBack(): () => void {
   let sx = 0, sy = 0, t0 = 0;
   let intentDecided = false, swiping = false, absorbed = false, locked = false;
+  let inScrollable = false;
   let targetEl: HTMLElement | null = null;
   let backDest: string | null = null;
   let peekEl: HTMLElement | null = null;
@@ -74,6 +75,7 @@ export function mountSwipeBack(): () => void {
       peekEl.className = (peekEl.className || '') + ' swipe-peek-snapshot';
       // Restore scroll positions on the clone so it looks right
       for (const [selector, scrollTop] of peekEntry.scrollMap) {
+        if (selector === '__window') continue; // handled below
         const el = peekEl.querySelector(selector) as HTMLElement | null;
         if (el) el.scrollTop = scrollTop;
       }
@@ -86,6 +88,14 @@ export function mountSwipeBack(): () => void {
     }
 
     document.body.appendChild(peekEl);
+
+    // Restore window-level scroll on the snapshot (overflow-y:auto in CSS)
+    if (peekEl && peekEntry && !fallbackPeek) {
+      const winScroll = peekEntry.scrollMap.get('__window');
+      if (winScroll) {
+        requestAnimationFrame(() => { if (peekEl) peekEl.scrollTop = winScroll; });
+      }
+    }
   }
 
   function hidePeek() {
@@ -119,6 +129,7 @@ export function mountSwipeBack(): () => void {
     hidePeek();
     targetEl = null; backDest = null;
     intentDecided = false; swiping = false; absorbed = false; locked = false;
+    inScrollable = false;
   }
 
   function onTouchStart(e: TouchEvent) {
@@ -135,13 +146,16 @@ export function mountSwipeBack(): () => void {
     const path = window.location.pathname;
     backDest = getBackTarget(path);
 
-    // Find the .sc (screen container) element
-    targetEl = document.querySelector('.sc') as HTMLElement | null;
+    // Find the .sc (screen container) or .dash-shell element
+    targetEl = (document.querySelector('.sc') ?? document.querySelector('.dash-shell')) as HTMLElement | null;
     if (!targetEl) { backDest = null; return; }
 
     const t = e.touches[0];
     sx = t.clientX; sy = t.clientY; t0 = Date.now();
     intentDecided = false; swiping = false; absorbed = false;
+    inScrollable = !!(e.target as HTMLElement)?.closest?.(
+      '.carousel-wrap, .sc-scroll-box, .lesson-glass-wrap'
+    );
 
     // Prevent iOS native back gesture on left edge
     if (t.clientX < 30) e.preventDefault();
@@ -160,6 +174,22 @@ export function mountSwipeBack(): () => void {
 
     // Phase 1: decide intent
     if (!intentDecided) {
+      // Fast bail-out: touch started inside a scrollable container and
+      // movement is clearly vertical — skip the DECIDE_PX deadzone
+      if (inScrollable && dy > 3 && dy > dx) {
+        intentDecided = true;
+        swiping = false;
+        targetEl = null; backDest = null;
+        return;
+      }
+      // Root screens: absorb horizontal movement immediately (no deadzone)
+      // to prevent native back gesture from starting
+      if (backDest === null && dx > 0) {
+        intentDecided = true;
+        absorbed = true;
+        e.preventDefault();
+        return;
+      }
       if (Math.max(dx, dy) < DECIDE_PX) return;
       if (dx > 0 && dx >= dy * H_RATIO) {
         intentDecided = true;
@@ -207,7 +237,8 @@ export function mountSwipeBack(): () => void {
 
     const t = e.changedTouches[0];
     const dx = t.clientX - sx;
-    const v = dx / (Date.now() - t0);
+    const dt = Math.max(Date.now() - t0, 1); // guard against zero-duration touch
+    const v = dx / dt;
     const commit = dx >= W() * 0.5 || v >= COMMIT_V;
 
     if (commit && targetEl && backDest) {
@@ -232,7 +263,7 @@ export function mountSwipeBack(): () => void {
       peekEl = null; // prevent cleanup() from removing it early
 
       setTimeout(async () => {
-        await goto(dest);
+        await goto(dest, { noScroll: true });
         await tick();
         // Restore scroll positions on the real page
         if (_entry) restoreScroll(_entry);

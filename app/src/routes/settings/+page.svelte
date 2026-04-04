@@ -1,24 +1,20 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { settings, isSignedIn, guestMode, activeStudent, authUser } from '$lib/stores';
+  import { settings, a11y, isSignedIn, guestMode, activeStudent, authUser, activeStudentId, familyProfiles } from '$lib/stores';
   import { signOut as authSignOut } from '$lib/services/auth';
+  import InstallModal from '$lib/components/tour/InstallModal.svelte';
+  import DashboardGate from '$lib/components/auth/DashboardGate.svelte';
+  import type { A11yPrefs } from '$lib/types';
 
   // ── Derived with defaults for fields that may be missing in older persisted data ──
   const theme       = $derived($settings.theme       ?? 'auto');
   const sound       = $derived($settings.sound       ?? 'on');
   const studentName = $derived($settings.studentName ?? '');
 
-  // ── Accessibility (mirrors src/settings.js getA11y / toggleA11y / applyA11y) ──
-  const A11Y_KEY = 'wb_a11y';
-
-  function getA11y(): Record<string, boolean> {
-    try { return JSON.parse(localStorage.getItem(A11Y_KEY) ?? '{}'); } catch { return {}; }
-  }
-
-  let a11y = $state<Record<string, boolean>>({});
-
-  function applyA11y(cfg: Record<string, boolean>) {
+  // ── Accessibility — uses the persisted a11y store from $lib/stores ──
+  function applyA11y(cfg: A11yPrefs) {
+    document.body.classList.toggle('a11y-large-text',    !!cfg.largeText);
+    document.body.classList.toggle('a11y-high-contrast', !!cfg.highContrast);
     document.body.classList.toggle('a11y-colorblind',    !!cfg.colorblind);
     document.body.classList.toggle('a11y-haptic',        !!cfg.haptic);
     document.body.classList.toggle('a11y-reduce-motion', !!cfg.reduceMotion);
@@ -27,18 +23,17 @@
     document.body.classList.toggle('a11y-screenreader',  !!cfg.screenreader);
   }
 
-  function toggleA11y(key: string) {
-    const cfg = getA11y();
-    if (cfg[key]) delete cfg[key]; else cfg[key] = true;
-    localStorage.setItem(A11Y_KEY, JSON.stringify(cfg));
-    a11y = { ...cfg };
-    applyA11y(cfg);
+  function toggleA11y(key: keyof A11yPrefs) {
+    a11y.update(cfg => {
+      const updated = { ...cfg, [key]: !cfg[key] };
+      applyA11y(updated);
+      return updated;
+    });
   }
 
-  onMount(() => {
-    const cfg = getA11y();
-    a11y = { ...cfg };
-    applyA11y(cfg);
+  // Apply body classes whenever a11y store changes (handles initial load + cloud sync)
+  $effect(() => {
+    applyA11y($a11y);
   });
 
   function setTheme(t: 'auto' | 'light' | 'dark') {
@@ -55,18 +50,23 @@
   }
 
   async function signOut() {
-    await authSignOut();
+    try { await authSignOut(); } catch { /* ignore — clear stores regardless */ }
     authUser.set(null);
+    activeStudentId.set(null);
+    familyProfiles.set([]);
     guestMode.set(false);
-    goto('/login', { replaceState: true });
+    // Use hard redirect so navigation can't be blocked or intercepted
+    window.location.replace('/login');
   }
 
   // ── Accessibility modal ──────────────────────────────────────────────────────
   let showA11y = $state(false);
 
   // ── Install modal ────────────────────────────────────────────────────────────
-  let showInstall  = $state(false);
-  let installTab   = $state<'iphone' | 'ipad'>('iphone');
+  let showInstall = $state(false);
+
+  // ── Dashboard gate ───────────────────────────────────────────────────────────
+  let showDashboardGate = $state(false);
 </script>
 
 <div class="sc sett-sc" id="settings-screen">
@@ -94,6 +94,7 @@
               type="text"
               placeholder="e.g. Emma"
               maxlength="30"
+              data-no-swipe
               value={studentName}
               oninput={saveStudentName}
             />
@@ -183,17 +184,20 @@
     </div>
 
     <!-- Sign In / Sign Out -->
-    {#if $isSignedIn}
-      <div style="text-align:center;padding:4px 0 24px">
+    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:4px 0 24px">
+      {#if $activeStudent}
+        <!-- Signed in (Supabase or PIN): show Dashboard + Sign Out -->
+        <button type="button" class="auth-action-btn dashboard-btn" onclick={() => showDashboardGate = true}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="ico"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Dashboard
+        </button>
         <button type="button" class="auth-action-btn sign-out-btn" onclick={signOut}>Sign Out</button>
-      </div>
-    {:else}
-      <div style="text-align:center;padding:4px 0 24px">
+      {:else}
+        <!-- Guest: show Log In only -->
         <button type="button" class="auth-action-btn sign-in-btn" onclick={() => goto('/login')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l2 2"/></svg> Log In
         </button>
-      </div>
-    {/if}
+      {/if}
+    </div>
 
     <!-- Legal links -->
     <div style="text-align:center;padding:0 0 28px;display:flex;justify-content:center;gap:20px">
@@ -217,38 +221,52 @@
       </div>
       <div class="a11y-row">
         <div class="a11y-info">
+          <div class="a11y-lbl">Large text</div>
+          <div class="a11y-desc">Increases font size across the app for easier reading</div>
+        </div>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.largeText} aria-pressed={!!$a11y.largeText} onclick={() => toggleA11y('largeText')}></button>
+      </div>
+      <div class="a11y-row">
+        <div class="a11y-info">
+          <div class="a11y-lbl">High contrast</div>
+          <div class="a11y-desc">Increases color contrast for better readability</div>
+        </div>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.highContrast} aria-pressed={!!$a11y.highContrast} onclick={() => toggleA11y('highContrast')}></button>
+      </div>
+      <div class="a11y-row">
+        <div class="a11y-info">
           <div class="a11y-lbl">Colorblind-friendly answers</div>
           <div class="a11y-desc">Adds ✓/✗ symbols and border patterns to quiz answers (not just color)</div>
         </div>
-        <button type="button" class="a11y-toggle" class:active={!!a11y.colorblind} aria-pressed={!!a11y.colorblind} onclick={() => toggleA11y('colorblind')}></button>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.colorblind} aria-pressed={!!$a11y.colorblind} onclick={() => toggleA11y('colorblind')}></button>
       </div>
       <div class="a11y-row">
         <div class="a11y-info">
           <div class="a11y-lbl">Reduce motion</div>
           <div class="a11y-desc">Turns off slide animations, bouncing, and transitions</div>
         </div>
-        <button type="button" class="a11y-toggle" class:active={!!a11y.reduceMotion} aria-pressed={!!a11y.reduceMotion} onclick={() => toggleA11y('reduceMotion')}></button>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.reduceMotion} aria-pressed={!!$a11y.reduceMotion} onclick={() => toggleA11y('reduceMotion')}></button>
       </div>
       <div class="a11y-row">
         <div class="a11y-info">
           <div class="a11y-lbl">Text selection</div>
           <div class="a11y-desc">Allows selecting quiz question and answer text (helpful for dyslexia tools)</div>
         </div>
-        <button type="button" class="a11y-toggle" class:active={!!a11y.textSelect} aria-pressed={!!a11y.textSelect} onclick={() => toggleA11y('textSelect')}></button>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.textSelect} aria-pressed={!!$a11y.textSelect} onclick={() => toggleA11y('textSelect')}></button>
       </div>
       <div class="a11y-row">
         <div class="a11y-info">
           <div class="a11y-lbl">Focus indicators</div>
           <div class="a11y-desc">Shows visible outlines when navigating with a keyboard</div>
         </div>
-        <button type="button" class="a11y-toggle" class:active={!!a11y.focus} aria-pressed={!!a11y.focus} onclick={() => toggleA11y('focus')}></button>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.focus} aria-pressed={!!$a11y.focus} onclick={() => toggleA11y('focus')}></button>
       </div>
       <div class="a11y-row">
         <div class="a11y-info">
           <div class="a11y-lbl">Screen reader support</div>
           <div class="a11y-desc">Adds descriptive labels and live announcements for VoiceOver / TalkBack</div>
         </div>
-        <button type="button" class="a11y-toggle" class:active={!!a11y.screenreader} aria-pressed={!!a11y.screenreader} onclick={() => toggleA11y('screenreader')}></button>
+        <button type="button" class="a11y-toggle" class:active={!!$a11y.screenreader} aria-pressed={!!$a11y.screenreader} onclick={() => toggleA11y('screenreader')}></button>
       </div>
     </div>
   </div>
@@ -256,92 +274,12 @@
 
 <!-- Install modal -->
 {#if showInstall}
-  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div class="install-overlay centered" onclick={(e) => { if (e.target === e.currentTarget) showInstall = false; }}>
-    <div class="install-box">
-      <div style="text-align:center;margin-bottom:4px">
-        <span style="font-size:var(--fs-3xl)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </span>
-      </div>
-      <h2>Add to Home Screen</h2>
-      <p class="sub">Works on <strong>iPhone &amp; iPad</strong> — must use <strong>Safari</strong><br />Takes less than a minute!</p>
+  <InstallModal onClose={() => showInstall = false} />
+{/if}
 
-      <!-- Device tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:18px">
-        <button
-          type="button"
-          class="tab-btn"
-          class:tab-active={installTab === 'iphone'}
-          onclick={() => installTab = 'iphone'}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> iPhone
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          class:tab-active={installTab === 'ipad'}
-          onclick={() => installTab = 'ipad'}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> iPad
-        </button>
-      </div>
-
-      <!-- Steps -->
-      {#if installTab === 'iphone'}
-        <div class="install-step">
-          <div class="install-step-num">1</div>
-          <div><p>Open this page in <strong>Safari</strong></p><small>⚠️ Must be Safari — Chrome or other browsers won't work</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">2</div>
-          <div><p>Tap the <strong>Share</strong> button at the <strong>bottom</strong> of Safari</p><small>It looks like a box with an arrow pointing up (⬆) in the toolbar</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">3</div>
-          <div><p>Scroll down the Share menu and tap <strong>"Add to Home Screen"</strong></p><small>It has a + icon next to it</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">4</div>
-          <div><p>Tap <strong>Add</strong> in the top-right corner</p><small>The name will say "My Math Roots" — leave it as is</small></div>
-        </div>
-        <div class="install-step" style="background:#eafaf1;border:2px solid #27ae60">
-          <div class="install-step-num" style="background:#27ae60">✓</div>
-          <div><p style="color:#1a7a4a">App icon now on your home screen!</p><small>Opens full screen, works offline, no Safari bar</small></div>
-        </div>
-      {:else}
-        <div class="install-step">
-          <div class="install-step-num">1</div>
-          <div><p>Open this page in <strong>Safari</strong></p><small>⚠️ Must be Safari — Chrome or other browsers won't work</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">2</div>
-          <div><p>Tap the <strong>Share</strong> button at the <strong>top</strong> of Safari</p><small>It's in the toolbar — looks like a box with an arrow pointing up (⬆)</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">3</div>
-          <div><p>Tap <strong>"Add to Home Screen"</strong> from the menu</p><small>You may need to scroll down in the Share sheet to find it</small></div>
-        </div>
-        <div class="install-step">
-          <div class="install-step-num">4</div>
-          <div><p>Tap <strong>Add</strong> in the top-right corner</p><small>The name will say "My Math Roots" — leave it as is</small></div>
-        </div>
-        <div class="install-step" style="background:#eafaf1;border:2px solid #27ae60">
-          <div class="install-step-num" style="background:#27ae60">✓</div>
-          <div><p style="color:#1a7a4a">App icon now on your home screen!</p><small>Opens full screen, works offline, no Safari address bar</small></div>
-        </div>
-      {/if}
-
-      <div style="background:#fff8e1;border:2px solid #f1c40f;border-radius:14px;padding:10px 14px;margin-top:14px;font-size:var(--fs-sm);color:#7d6608;line-height:1.6">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-        <strong>Already installed but seeing an old version?</strong><br>
-        Delete the app from your home screen, then clear Safari history &amp; website data in Settings → Safari, and reinstall.
-      </div>
-
-      <button type="button" class="install-close" onclick={() => showInstall = false}>✅ Got it!</button>
-      <div style="text-align:center;margin-top:10px;font-size:var(--fs-xs);color:#7f8c8d">Tap outside this box to dismiss</div>
-    </div>
-  </div>
+<!-- Dashboard gate -->
+{#if showDashboardGate}
+  <DashboardGate onClose={() => showDashboardGate = false} />
 {/if}
 
 <style>
@@ -370,40 +308,6 @@
     position: sticky;
     top: 0;
     z-index: 20;
-  }
-  :global(.bar-back) {
-    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-md);
-    padding: 8px 10px 8px 4px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: opacity .15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-  :global(.bar-back::before) {
-    content: '';
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-left: 2.5px solid currentColor;
-    border-top: 2.5px solid currentColor;
-    transform: rotate(-45deg);
-    border-radius: 1px;
-    flex-shrink: 0;
-    margin-right: 1px;
-  }
-  :global(.bar-back:hover) { opacity: .6; }
-  :global(.bar-title) {
-    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-xl);
-    position: absolute;
-    left: 50%; transform: translateX(-50%);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    max-width: 55%; text-align: center; pointer-events: none;
   }
 
   /* ── Settings sections ── */
@@ -489,8 +393,9 @@
     display: inline-flex; align-items: center; gap: 6px;
     touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
-  .sign-in-btn  { border: 2px solid #4a90d9; background: transparent; color: #4a90d9; }
-  .sign-out-btn { border: 2px solid #e74c3c; background: transparent; color: #e74c3c; }
+  .sign-in-btn    { border: 2px solid #4a90d9; background: transparent; color: #4a90d9; }
+  .sign-out-btn   { border: 2px solid #e74c3c; background: transparent; color: #e74c3c; }
+  .dashboard-btn  { border: 2px solid #27ae60; background: transparent; color: #27ae60; }
 
   /* ── Legal links ── */
   .legal-link {
@@ -560,61 +465,5 @@
   :global(.a11y-toggle::before) { content: 'Off'; }
   :global(.a11y-toggle.active::before) { content: 'On'; }
 
-  /* ── Install modal overlay — no dim background, box floats over screen ── */
-  .install-overlay {
-    position: fixed; inset: 0; z-index: 9800;
-    display: flex; align-items: center; justify-content: center;
-    padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
-  }
-  .install-box {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255,255,255,0.55);
-    border-top: 1.5px solid rgba(255,255,255,0.55);
-    border-radius: 28px;
-    padding: 28px 24px 40px;
-    max-width: 540px; width: 100%;
-    max-height: min(88vh, 680px); overflow-y: auto; -webkit-overflow-scrolling: touch;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.2), inset 0 1.5px 0 rgba(255,255,255,0.6);
-    animation: slideUp .25s cubic-bezier(0.34,1.56,0.64,1) both;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .install-box h2 {
-    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-xl); text-align: center; margin-bottom: 6px; color: var(--txt);
-  }
-  .sub {
-    text-align: center; color: var(--txt2); font-size: var(--fs-base); margin-bottom: 22px;
-  }
-  .install-step {
-    display: flex; align-items: center; gap: 14px; padding: 13px 16px;
-    background: var(--bg3); border-radius: 14px; margin-bottom: 10px;
-  }
-  .install-step-num {
-    width: 36px; height: 36px; border-radius: 50%; background: #4a90d9; color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-base); flex-shrink: 0;
-  }
-  .install-step p  { font-size: var(--fs-base); font-weight: 800; color: var(--txt); line-height: 1.4; }
-  .install-step small { font-size: var(--fs-sm); color: var(--txt2); }
-  .install-close {
-    width: 100%; font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-md); padding: 15px; border-radius: 50px; border: none; cursor: pointer;
-    background: linear-gradient(135deg,#4a90d9,#27ae60); color: #fff;
-    box-shadow: 0 5px 0 rgba(0,0,0,.15); margin-top: 16px;
-  }
-  .tab-btn {
-    flex: 1; font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
-    font-size: var(--fs-base); padding: 10px; border-radius: 12px;
-    border: 2.5px solid var(--border2); background: transparent;
-    color: var(--txt2); cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .tab-btn.tab-active {
-    border-color: #4a90d9; background: #4a90d9; color: #fff;
-  }
+  /* Install modal styles now live in InstallModal.svelte */
 </style>

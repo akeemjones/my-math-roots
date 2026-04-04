@@ -72,6 +72,8 @@
   async function handleSignOut() {
     await signOut();
     authUser.set(null);
+    activeStudentId.set(null);
+    familyProfiles.set([]);
     goto('/login', { replaceState: true });
   }
 </script>

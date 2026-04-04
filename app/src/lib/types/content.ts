@@ -77,6 +77,12 @@ export interface Lesson extends Partial<LessonContent> {
   icon: string;
   /** Short description shown on the lesson card. */
   desc: string;
+  /** TEKS standard codes covered by this lesson, e.g. ["2.4A", "2.7C"]. */
+  teks_tags?: string[];
+  /** True for lessons that extend beyond the grade-level TEKS scope. */
+  enrichment?: boolean;
+  /** Grade level of the enrichment content (3 or 4). */
+  enrichment_grade?: 3 | 4;
 }
 
 /** Unit-level quiz question bank. */
@@ -100,6 +106,8 @@ export interface Unit {
   gp: number;
   /** TEKS standard reference, e.g. "TEKS 2.4A". */
   teks: string;
+  /** TEKS standard codes covered by this unit, e.g. ["2.4A", "2.7C"]. */
+  teks_tags?: string[];
   /** Optional unit description shown in the banner. */
   desc?: string;
   /** Lesson shells — always present; content merged after load. */

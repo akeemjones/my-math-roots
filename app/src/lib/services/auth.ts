@@ -13,6 +13,20 @@
 import { supabase } from '$lib/supabase';
 import type { StudentProfile, AuthUser } from '$lib/types';
 
+/**
+ * Race a promise against a timeout. Rejects with Error('timeout') if ms elapses first.
+ * Used to prevent Supabase network calls from hanging indefinitely after iOS force-close,
+ * where the SDK queues API calls behind a stalled token refresh.
+ */
+function withTimeout<T>(ms: number, promise: Promise<T>): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), ms)
+    ),
+  ]);
+}
+
 // ─── Types returned by this service ──────────────────────────────────────────
 
 export interface AuthResult {
@@ -30,6 +44,8 @@ export interface PinResult {
   success: boolean;
   /** Number of attempts remaining before lockout, or null if success. */
   attemptsLeft: number | null;
+  /** Server-issued session token (UUID). Present only on success. */
+  sessionToken: string | null;
   error: string | null;
 }
 
@@ -54,10 +70,45 @@ export async function signInWithEmail(
 
 /**
  * Initiate Google OAuth sign-in.
- * Redirects the browser — call after user clicks "Sign in with Google".
- * The auth callback lands on /login?type=recovery or similar; Supabase handles the session.
+ *
+ * On iOS standalone PWA, a redirect to accounts.google.com permanently
+ * breaks fullscreen mode for that session. To avoid this, we detect
+ * standalone mode and open a popup window instead.
+ *
+ * In regular browser tabs the redirect flow is used as before.
  */
 export async function signInWithGoogle(): Promise<{ error: string | null }> {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as any).standalone === true;
+
+  if (isStandalone) {
+    // Popup flow — keeps the PWA in fullscreen
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+        skipBrowserRedirect: true,
+      },
+    });
+    if (error) return { error: error.message };
+    if (data?.url) {
+      // Open Google auth in a child window; Supabase JS detects the
+      // callback and resolves the session via onAuthStateChange.
+      const popup = window.open(data.url, '_blank', 'width=500,height=600');
+      // Poll for popup close — session will arrive via onAuthStateChange
+      if (popup) {
+        await new Promise<void>((resolve) => {
+          const timer = setInterval(() => {
+            if (popup.closed) { clearInterval(timer); resolve(); }
+          }, 500);
+        });
+      }
+    }
+    return { error: null };
+  }
+
+  // Standard redirect flow for regular browser tabs
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -73,19 +124,25 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
  * to the next family that signs in on this device.
  */
 export async function signOut(): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.signOut();
+  // 5 s timeout prevents a stalled token refresh on iOS force-close from
+  // blocking the sign-out indefinitely. localStorage is cleared regardless.
+  try {
+    await withTimeout(5000, supabase.auth.signOut());
+  } catch { /* timed out or network error — clear localStorage anyway */ }
 
   // Clear all student/progress data from localStorage
   const keysToRemove = [
     'wb_sc5_v2', 'wb_mastery', 'wb_streak', 'wb_done5',
     'wb_apptime', 'wb_act_dates', 'wb_a11y', 'wb_settings_v2',
     'mmr_family_profiles', 'mmr_active_student', 'mmr_guest_mode',
+    'mmr_auth_user', 'wb_unlock_settings', 'wb_quiz_pause',
+    'mmr_pin_session', 'mmr_pending_scores',
   ];
   for (const key of keysToRemove) {
     try { localStorage.removeItem(key); } catch { /* SSR guard */ }
   }
 
-  return { error: error?.message ?? null };
+  return { error: null };
 }
 
 // ─── Session ─────────────────────────────────────────────────────────────────
@@ -114,7 +171,7 @@ export async function getStudentProfiles(): Promise<ProfilesResult> {
 
   const { data, error } = await supabase
     .from('student_profiles')
-    .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, family_code, parent_id, created_at')
+    .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, parent_id, created_at')
     .eq('parent_id', user.id)
     .order('created_at', { ascending: true });
 
@@ -127,7 +184,6 @@ export async function getStudentProfiles(): Promise<ProfilesResult> {
     avatar_emoji: row.avatar_emoji,
     avatar_color_from: row.avatar_color_from,
     avatar_color_to: row.avatar_color_to,
-    family_code: row.family_code,
     parent_id: row.parent_id,
   }));
 
@@ -165,6 +221,7 @@ export async function createStudentProfile(params: {
       avatar_emoji: data.avatar_emoji,
       avatar_color_from: data.avatar_color_from,
       avatar_color_to: data.avatar_color_to,
+      parent_id: data.parent_id,
       family_code: data.family_code,
     },
     error: null,
@@ -186,16 +243,34 @@ export async function verifyStudentPin(
   studentId: string,
   pin: string
 ): Promise<PinResult> {
-  const { data, error } = await supabase.rpc('verify_student_pin', {
-    p_student_id: studentId,
-    p_pin: pin,
-  });
-
-  if (error) return { success: false, attemptsLeft: null, error: error.message };
-
-  return {
-    success: data?.success ?? false,
-    attemptsLeft: data?.attempts_left ?? null,
-    error: null,
-  };
+  // 8 s timeout prevents the "Checking…" spinner from freezing after iOS
+  // force-close when the Supabase SDK queues the RPC behind a stalled refresh.
+  try {
+    const { data, error } = await withTimeout(
+      8000,
+      supabase.rpc('verify_student_pin', {
+        p_student_id: studentId,
+        p_pin: pin,
+      })
+    );
+    if (error) return { success: false, attemptsLeft: null, sessionToken: null, error: error.message };
+    const result: PinResult = {
+      success: data?.success ?? false,
+      attemptsLeft: data?.attempts_left ?? null,
+      sessionToken: data?.session_token ?? null,
+      error: null,
+    };
+    // Persist session token on success so sync RPCs can use it
+    if (result.success && result.sessionToken) {
+      try {
+        localStorage.setItem('mmr_pin_session', JSON.stringify({
+          studentId: studentId,
+          token: result.sessionToken,
+        }));
+      } catch { /* quota exceeded — session still valid for this page load */ }
+    }
+    return result;
+  } catch {
+    return { success: false, attemptsLeft: null, sessionToken: null, error: 'Network error. Please try again.' };
+  }
 }

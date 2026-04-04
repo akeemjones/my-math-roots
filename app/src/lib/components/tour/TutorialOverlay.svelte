@@ -5,8 +5,9 @@
    */
 
   import { TUT_SLIDES, isTutorialDone, markTutorialDone } from '$lib/services/tour';
+  import { initialPullDone } from '$lib/stores';
 
-  const { onDone }: { onDone: () => void } = $props();
+  const { onDone, currentPath }: { onDone: () => void; currentPath: string } = $props();
 
   let idx = $state(0);
   let visible = $state(false);
@@ -18,8 +19,12 @@
   let tx = 0;
   let dragging = false;
 
+  // Only show the tutorial when the student reaches the home screen AND
+  // the initial pull has completed (so cloud onboarding state is in localStorage).
+  // Without this gate, re-adding the PWA clears localStorage and the tutorial
+  // would fire before the cloud state is restored.
   $effect(() => {
-    if (!isTutorialDone()) {
+    if (currentPath === '/' && $initialPullDone && !isTutorialDone() && !visible) {
       visible = true;
       document.body.classList.add('tut-active');
       document.body.style.overflow = 'hidden';
@@ -55,7 +60,6 @@
     if (!dragging) return;
     dragging = false;
     const dx = e.changedTouches[0].clientX - tx;
-    const dy = e.changedTouches[0].clientY - (e.changedTouches[0]?.clientY ?? 0);
     if (Math.abs(dx) < 40) return;
     if (dx < 0) next(); else back();
   }

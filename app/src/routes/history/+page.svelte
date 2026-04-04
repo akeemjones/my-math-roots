@@ -14,7 +14,9 @@
    */
 
   import { goto } from '$app/navigation';
+  import { stackNavigate } from '$lib/services/navStack';
   import { scores } from '$lib/stores';
+  import { hasHtmlTags } from '$lib/utils';
   import type { ScoreEntry } from '$lib/types';
 
   let histFilter = $state<'all' | 'lesson' | 'unit'>('all');
@@ -27,9 +29,10 @@
   const perfect      = $derived($scores.filter(s => s.pct === 100).length);
 
   // ── Filtered list (mirrors renderScList histFilter logic) ────────────────────
+  // $scores is already sorted newest-first (by id descending)
   const filtered = $derived(
-    histFilter === 'all' ? [...$scores].reverse()
-    : [...$scores].filter(s => s.type === histFilter).reverse()
+    histFilter === 'all' ? [...$scores]
+    : [...$scores].filter(s => s.type === histFilter)
   );
 
   // ── Helpers (mirrors legacy pctColor / cardAccent inline logic) ──────────────
@@ -48,7 +51,7 @@
 
 <div class="sc" id="history-screen">
   <!-- Bar — matches legacy .bar with position:relative so title can absolute-center -->
-  <div class="bar" style="position:relative">
+  <div class="bar">
     <button class="bar-back" style="color:#27ae60" type="button" onclick={() => goto('/')}>Home</button>
     <div class="bar-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -63,6 +66,9 @@
       </svg>
       Score History
     </div>
+    <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+      <span class="cog-ico">⚙️</span>
+    </button>
   </div>
 
   <div class="sc-in">
@@ -178,7 +184,7 @@
             <div class="sc-rev-sec" style="color:#e74c3c">❌ Incorrect ({wrong.length})</div>
             {#each wrong as a}
               <div class="sc-rev-item sc-rev-wrong">
-                <div class="sc-rev-q">{#if a.t?.includes('<')}{@html a.t}{:else}{a.t}{/if}</div>
+                <div class="sc-rev-q">{#if hasHtmlTags(a.t)}{@html a.t}{:else}{a.t}{/if}</div>
                 <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">{a.chosen != null && a.opts ? (a.opts[a.chosen] ?? '') : ''}</span></div>
                 <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">{a.opts ? (a.opts[a.correct] ?? '') : ''}</span></div>
                 {#if a.timeSecs != null}<div class="sc-rev-time">⏱ {a.timeSecs}s</div>{/if}
@@ -189,7 +195,7 @@
             <div class="sc-rev-sec" style="color:#27ae60">✅ Correct ({right.length})</div>
             {#each right as a}
               <div class="sc-rev-item sc-rev-right">
-                <div class="sc-rev-q">{#if a.t?.includes('<')}{@html a.t}{:else}{a.t}{/if}</div>
+                <div class="sc-rev-q">{#if hasHtmlTags(a.t)}{@html a.t}{:else}{a.t}{/if}</div>
                 <div class="sc-rev-correct" style="color:#27ae60">✅ {a.opts ? (a.opts[a.correct] ?? '') : ''}</div>
                 {#if a.timeSecs != null}<div class="sc-rev-time">⏱ {a.timeSecs}s</div>{/if}
               </div>

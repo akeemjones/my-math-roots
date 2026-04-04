@@ -12,9 +12,11 @@
    */
 
   import { onMount } from 'svelte';
-  import { scores, mastery, streak, appTime, unitsData, activeStudentId, activeStudent, familyProfiles, aiReports } from '$lib/stores';
+  import { goto } from '$app/navigation';
+  import { scores, mastery, streak, appTime, done, actDates, unitsData, activeStudentId, activeStudent, familyProfiles, aiReports, hasPassed } from '$lib/stores';
   import { supabase } from '$lib/supabase';
   import { getStudentProfiles } from '$lib/services/auth';
+  import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/types';
   import type { ScoreEntry, QuizAnswer } from '$lib/types';
   import {
     ICON_PERSON, ICON_KEY, ICON_CALENDAR, ICON_TIMER, ICON_FLAME, ICON_BOOK,
@@ -459,12 +461,22 @@
   let savingUnlock    = $state(false);
 
   function isUnitUnlocked(unitIdx: number): boolean {
+    if (unitIdx === 0) return true; // Unit 1 is always unlocked
     if (unlockDraft.freeMode) return true;
-    return unlockDraft.units.includes(unitIdx);
+    if (unlockDraft.units.includes(unitIdx)) return true;
+    // Also unlocked if previous unit quiz was passed
+    const prevUnit = $unitsData[unitIdx - 1];
+    if (prevUnit && $hasPassed(prevUnit.id + '_uq')) return true;
+    return false;
   }
   function isLessonUnlocked(unitIdx: number, li: number): boolean {
     if (unlockDraft.freeMode) return true;
-    return !!unlockDraft.lessons[unitIdx + '_' + li];
+    if (li === 0) return true; // First lesson always unlocked
+    if (unlockDraft.lessons[unitIdx + '_' + li]) return true;
+    // Also unlocked if previous lesson quiz was passed
+    const u = $unitsData[unitIdx];
+    if (u && u.lessons[li - 1] && $hasPassed('lq_' + u.lessons[li - 1].id)) return true;
+    return false;
   }
   function toggleFreeMode() {
     unlockDraft = { ...unlockDraft, freeMode: !unlockDraft.freeMode };
@@ -524,6 +536,13 @@
     try {
       const r = await supabase.rpc('reset_student_data', { p_student_id: sid });
       if (r.error) throw r.error;
+      // Clear local stores so the dashboard reflects the reset immediately
+      scores.set([]);
+      mastery.set({});
+      streak.set(DEFAULT_STREAK);
+      done.set({});
+      appTime.set(DEFAULT_APP_TIME);
+      actDates.set([]);
       unlockMsg = '🗑 Student data cleared.'; unlockMsgErr = false;
       setTimeout(() => { unlockMsg = ''; }, 3000);
     } catch {
@@ -561,12 +580,12 @@
 
   // ── Accessibility state ───────────────────────────────────────────────────
 
-  let a11yDraft  = $state({ largeText: false, highContrast: false });
+  let a11yDraft  = $state({ largeText: false, highContrast: false, colorblind: false, haptic: true, reduceMotion: false, textSelect: false, focus: false, screenreader: false });
   let a11yMsg    = $state('');
   let a11yMsgErr = $state(false);
 
-  function toggleA11y(key: 'largeText' | 'highContrast') {
-    a11yDraft = { ...a11yDraft, [key]: !a11yDraft[key] };
+  function toggleA11y(key: string) {
+    a11yDraft = { ...a11yDraft, [key]: !(a11yDraft as Record<string, boolean>)[key] };
   }
 
   async function saveA11y() {
@@ -795,14 +814,18 @@
     } catch { timerDraft = { enabled: true, lessonSecs: 300, unitSecs: 600, finalSecs: 3600 }; }
   }
 
+  const DEFAULT_A11Y = { largeText: false, highContrast: false, colorblind: false, haptic: true, reduceMotion: false, textSelect: false, focus: false, screenreader: false };
+
   async function loadA11y(sid: string) {
-    if (!sid) { a11yDraft = { largeText: false, highContrast: false }; return; }
+    if (!sid) { a11yDraft = { ...DEFAULT_A11Y }; return; }
     try {
       const r = await supabase.rpc('get_a11y_settings', { p_student_id: sid });
       const d = r.data || {};
-      a11yDraft = { largeText: d.largeText === true, highContrast: d.highContrast === true };
-    } catch { a11yDraft = { largeText: false, highContrast: false }; }
+      a11yDraft = { ...DEFAULT_A11Y, ...Object.fromEntries(Object.entries(d).filter(([, v]) => typeof v === 'boolean')) };
+    } catch { a11yDraft = { ...DEFAULT_A11Y }; }
   }
+
+  let lastReminderDate = '';
 
   onMount(() => {
     notifSupport = 'Notification' in window;
@@ -812,6 +835,28 @@
       reminders = { ...reminders, enabled: false };
       saveReminders({ ...r, enabled: false });
     }
+
+    // Poll every 60s to fire a reminder notification at the scheduled time
+    const reminderInterval = setInterval(() => {
+      try {
+        if (!notifSupport || Notification.permission !== 'granted') return;
+        const rr = loadReminders();
+        if (!rr?.enabled || !rr?.time) return;
+        const now = new Date();
+        const todayStr = now.toISOString().slice(0, 10);
+        if (lastReminderDate === todayStr) return;
+        const [hh, mm] = rr.time.split(':').map(Number);
+        if (now.getHours() >= hh && now.getMinutes() >= mm) {
+          lastReminderDate = todayStr;
+          new Notification('My Math Roots', {
+            body: 'Time for math practice! Keep your streak going.',
+            icon: '/icon-192.png',
+          });
+        }
+      } catch { /* ignore */ }
+    }, 60_000);
+
+    return () => clearInterval(reminderInterval);
   });
 
   $effect(() => {
@@ -868,8 +913,9 @@
       familyProfiles.set(profiles);
       closeAdd();
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : '';
-      addMsg = msg.includes('unique') ? 'A student with that name already exists.' : 'Error saving. Try again.';
+      const msg = e instanceof Error ? e.message : (typeof e === 'object' && e !== null && 'message' in e ? String((e as Record<string, unknown>).message) : String(e));
+      console.error('[addSave] error:', e);
+      addMsg = msg.includes('unique') ? 'A student with that name already exists.' : `Error: ${msg || 'Unknown error'}`;
     }
     addSaving = false;
   }
@@ -910,18 +956,61 @@
     editSaving = false;
   }
 
-  // ── Fetch family code on mount ────────────────────────────────────────────
+  // ── Auth provider detection ────────────────────────────────────────────────
+  let isGoogleAuth = $state(false);
+
+  // ── Fetch family code + profiles on mount ──────────────────────────────────
+  let dashReady = $state(false);
+
   onMount(async () => {
+    // Auth guard — check local session first (instant), then verify with server if needed
+    let user: any = null;
+
+    // Fast path: read from localStorage (no network call)
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.user) {
+      user = sessionData.session.user;
+    }
+
+    // Slow path: verify with Supabase server (handles token refresh, OAuth callbacks)
+    if (!user) {
+      for (let i = 0; i < 15; i++) {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) { user = data.user; break; }
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+
+    if (!user) { goto('/login'); return; }
+
+    // Detect Google auth — hide Change Password for OAuth users
+    isGoogleAuth = user.app_metadata?.provider === 'google'
+      || user.identities?.some((i: any) => i.provider === 'google') || false;
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const r = await supabase.from('profiles').select('family_code').eq('id', user.id).single();
-        if (!r.error && r.data) familyCode = r.data.family_code || null;
+      const r = await supabase.from('profiles').select('family_code').eq('id', user.id).single();
+      if (!r.error && r.data) familyCode = r.data.family_code || null;
+    } catch { /* silently ignore */ }
+
+    // Always refresh profiles from Supabase on dashboard load
+    try {
+      const { profiles } = await getStudentProfiles();
+      if (profiles.length > 0) {
+        familyProfiles.set(profiles);
+        // Auto-select first profile if none selected
+        if (!$activeStudentId) activeStudentId.set(profiles[0].id);
       }
     } catch { /* silently ignore */ }
+
+    dashReady = true;
   });
 </script>
 
+{#if !dashReady}
+  <main class="dash-page" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+    <div style="text-align:center;color:#546e7a;font-size:1.1rem;">Loading dashboard…</div>
+  </main>
+{:else}
 <main class="dash-page">
 
 {#if reportView}
@@ -1257,10 +1346,12 @@
     <!-- Unit cards grid -->
     <div class="db-unit-grid" style="{unlockDraft.freeMode ? 'opacity:.5;pointer-events:none' : ''}">
       {#each UNITS_META as u, i}
+        {@const earnedUnit = i === 0 || !!($unitsData[i - 1] && $hasPassed($unitsData[i - 1].id + '_uq'))}
         <div class="db-unit-card {isUnitUnlocked(i) ? 'db-unit-unlocked' : ''}">
           <div class="db-unit-card-top">
             <span class="db-unit-num">Unit {i + 1}</span>
             <button class="db-toggle-btn db-toggle-sm {isUnitUnlocked(i) ? 'db-toggle-on' : ''}"
+                    disabled={earnedUnit}
                     onclick={() => toggleUnitUnlock(i)}>
               {isUnitUnlocked(i) ? 'ON' : 'OFF'}
             </button>
@@ -1275,9 +1366,15 @@
           <!-- Lesson drawer — full-width after this card's row -->
           <div class="db-lesson-drawer" style="grid-column:1/-1">
             {#each u.lessons as lName, li}
+              {@const earnedLesson = li === 0 || ($unitsData[i]?.lessons[li - 1] && $hasPassed('lq_' + $unitsData[i].lessons[li - 1].id))}
+              {@const enrichLesson = $unitsData[i]?.lessons[li]?.enrichment}
               <div class="db-lesson-row">
-                <span class="db-lesson-name">{lName}</span>
+                <span class="db-lesson-name">
+                  {lName}
+                  {#if enrichLesson}<span class="db-enrich-star" title="Above grade level — enrichment content">⭐</span>{/if}
+                </span>
                 <button class="db-toggle-btn db-toggle-sm {isLessonUnlocked(i, li) ? 'db-toggle-on' : ''}"
+                        disabled={earnedLesson}
                         onclick={() => toggleLessonUnlock(i, li)}>
                   {isLessonUnlocked(i, li) ? 'ON' : 'OFF'}
                 </button>
@@ -1359,6 +1456,56 @@
         {a11yDraft.highContrast ? 'ON' : 'OFF'}
       </button>
     </div>
+    <div class="db-toggle-row">
+      <div>
+        <strong>Colorblind-friendly answers</strong><br>
+        <span class="db-toggle-sub">Adds symbols and border patterns to quiz answers</span>
+      </div>
+      <button class="db-toggle-btn {a11yDraft.colorblind ? 'db-toggle-on' : ''}"
+              onclick={() => toggleA11y('colorblind')}>
+        {a11yDraft.colorblind ? 'ON' : 'OFF'}
+      </button>
+    </div>
+    <div class="db-toggle-row">
+      <div>
+        <strong>Reduce motion</strong><br>
+        <span class="db-toggle-sub">Turns off slide animations, bouncing, and transitions</span>
+      </div>
+      <button class="db-toggle-btn {a11yDraft.reduceMotion ? 'db-toggle-on' : ''}"
+              onclick={() => toggleA11y('reduceMotion')}>
+        {a11yDraft.reduceMotion ? 'ON' : 'OFF'}
+      </button>
+    </div>
+    <div class="db-toggle-row">
+      <div>
+        <strong>Text selection</strong><br>
+        <span class="db-toggle-sub">Allows selecting text (helpful for dyslexia tools)</span>
+      </div>
+      <button class="db-toggle-btn {a11yDraft.textSelect ? 'db-toggle-on' : ''}"
+              onclick={() => toggleA11y('textSelect')}>
+        {a11yDraft.textSelect ? 'ON' : 'OFF'}
+      </button>
+    </div>
+    <div class="db-toggle-row">
+      <div>
+        <strong>Focus indicators</strong><br>
+        <span class="db-toggle-sub">Shows visible outlines for keyboard navigation</span>
+      </div>
+      <button class="db-toggle-btn {a11yDraft.focus ? 'db-toggle-on' : ''}"
+              onclick={() => toggleA11y('focus')}>
+        {a11yDraft.focus ? 'ON' : 'OFF'}
+      </button>
+    </div>
+    <div class="db-toggle-row">
+      <div>
+        <strong>Screen reader support</strong><br>
+        <span class="db-toggle-sub">Adds labels and announcements for VoiceOver / TalkBack</span>
+      </div>
+      <button class="db-toggle-btn {a11yDraft.screenreader ? 'db-toggle-on' : ''}"
+              onclick={() => toggleA11y('screenreader')}>
+        {a11yDraft.screenreader ? 'ON' : 'OFF'}
+      </button>
+    </div>
     <div class="db-ctrl-msg" style="color:{a11yMsgErr ? '#c62828' : '#2e7d32'}">{a11yMsg}</div>
     <div class="db-ctrl-btns">
       <button class="db-ctrl-save" onclick={saveA11y}>Save Accessibility</button>
@@ -1415,7 +1562,8 @@
   <div class="db-ctrl-msg" style="color:{pushMsgErr ? '#c62828' : '#2e7d32'}">{pushMsg}</div>
 </section>
 
-<!-- ── Change Password ────────────────────────────────────────────────────── -->
+<!-- ── Change Password (hidden for Google auth users) ─────────────────────── -->
+{#if !isGoogleAuth}
 <section class="db-section">
   <h2 class="db-sec-h">{@html ICON_LOCK} Change Password</h2>
   <div class="db-form-row">
@@ -1428,6 +1576,7 @@
     <button class="db-ctrl-save" onclick={savePassword}>Change Password</button>
   </div>
 </section>
+{/if}
 
 <!-- ── Send Feedback ──────────────────────────────────────────────────────── -->
 <section class="db-section">
@@ -1486,6 +1635,7 @@
 {/if}<!-- end {:else} stats view -->
 
 </main>
+{/if}<!-- end dashReady gate -->
 
 <!-- ════════════════════════════════════════
      AI Report — sticky footer
@@ -1787,6 +1937,8 @@
     max-width: 600px;
     margin: 0 auto;
     width: 100%;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     box-sizing: border-box;
   }
   .db-ai-gen-btn {
@@ -1965,6 +2117,7 @@
   .db-lesson-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f5f5f5; }
   .db-lesson-row:last-child { border-bottom:none; }
   .db-lesson-name { font-size:.82rem; color:#37474f; }
+  .db-enrich-star { font-size:.75rem; margin-left:4px; vertical-align:middle; }
 
   /* ── Timer ── */
   .db-timer-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0; }

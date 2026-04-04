@@ -32,6 +32,8 @@ export interface AuthUser {
 
 /** Accessibility preferences — stored in localStorage as wb_a11y. */
 export interface A11yPrefs {
+  largeText: boolean;
+  highContrast: boolean;
   colorblind: boolean;
   haptic: boolean;
   reduceMotion: boolean;
@@ -64,6 +66,8 @@ export interface AppSettings {
 }
 
 export const DEFAULT_A11Y_PREFS: A11yPrefs = {
+  largeText: false,
+  highContrast: false,
   colorblind: false,
   haptic: true,
   reduceMotion: false,

@@ -13,9 +13,11 @@
 
   import { onMount } from 'svelte';
   import { getGeminiHint } from '$lib/services/hint';
-  import { finaliseQuiz } from '$lib/services/quiz';
+  import { finaliseQuiz, saveAbandonedScore } from '$lib/services/quiz';
   import { playCorrect, playWrong, playPassQuiz } from '$lib/services/sound';
   import { settings } from '$lib/stores';
+  import { stackNavigate } from '$lib/services/navStack';
+  import { hasHtmlTags } from '$lib/utils';
   import type { QuizState, QuizAnswer, ScoreEntry } from '$lib/types';
 
   const { quizState, color, onComplete, onQuit }: {
@@ -58,20 +60,26 @@
   let timerInterval: ReturnType<typeof setInterval> | null = null;
 
   function timerMins(): number {
-    if (quizState.type === 'lesson') return $settings.lessonTimerMins ?? 0;
-    if (quizState.type === 'unit')   return $settings.unitTimerMins   ?? 0;
-    if (quizState.type === 'final')  return $settings.finalTimerMins  ?? 0;
+    if (quizState.type === 'lesson')  return $settings.lessonTimerMins ?? 0;
+    if (quizState.type === 'unit')    return $settings.unitTimerMins   ?? 0;
+    if (quizState.type === 'final')   return $settings.finalTimerMins  ?? 0;
+    if (quizState.type === 'practice') return 0; // practice quizzes have no timer
     return 0;
   }
+
+  let timerPaused = false;
 
   function startTimer() {
     const mins = timerMins();
     if (mins <= 0) return;
     secsLeft = timerTotal = mins * 60;
+    timerPaused = false;
     timerInterval = setInterval(() => {
+      if (!qz || timerPaused) return;
       secsLeft--;
       if (secsLeft <= 0) {
         clearInterval(timerInterval!);
+        timerInterval = null;
         const entry = finaliseQuiz(qz, color);
         onComplete(entry);
       }
@@ -80,7 +88,11 @@
 
   function stopTimer() {
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    timerPaused = false;
   }
+
+  function pauseTimer()  { timerPaused = true; }
+  function resumeTimer() { timerPaused = false; }
 
   function fmtTimer(s: number): string {
     return `${Math.floor(s / 60).toString().padStart(2,'0')}:${(s % 60).toString().padStart(2,'0')}`;
@@ -99,6 +111,7 @@
 
   function savePaused() {
     try {
+      // Re-read immediately before write to minimise multi-tab race window
       const all = JSON.parse(localStorage.getItem(PAUSE_KEY) ?? '{}');
       all[qz.id] = {
         questions: qz.questions, idx: qz.idx, score: qz.score,
@@ -106,26 +119,33 @@
         unitIdx: qz.unitIdx, pausedAt: Date.now(),
       };
       localStorage.setItem(PAUSE_KEY, JSON.stringify(all));
-    } catch {}
+    } catch (e) { console.warn('[quiz] Failed to save paused state:', e); }
   }
 
   function clearPaused() {
     try {
+      // Re-read immediately before write to minimise multi-tab race window
       const all = JSON.parse(localStorage.getItem(PAUSE_KEY) ?? '{}');
       delete all[qz.id];
       localStorage.setItem(PAUSE_KEY, JSON.stringify(all));
-    } catch {}
+    } catch (e) { console.warn('[quiz] Failed to clear paused state:', e); }
   }
 
-  function showQuitConfirm()    { quitModalOpen    = true; }
-  function cancelQuit()         { quitModalOpen    = false; }
+  function showQuitConfirm()    { quitModalOpen = true;    pauseTimer(); }
+  function cancelQuit()         { quitModalOpen = false;   resumeTimer(); }
   function confirmQuit()        { quitModalOpen = false; stopTimer(); savePaused(); onQuit(); }
-  function showRestartConfirm() { restartModalOpen = true; }
-  function cancelRestart()      { restartModalOpen = false; }
+  function showRestartConfirm() { restartModalOpen = true;  pauseTimer(); }
+  function cancelRestart()      { restartModalOpen = false; resumeTimer(); }
   function confirmRestart()     {
     restartModalOpen = false;
+    // Save current progress as "Abandoned" before resetting.
+    // Uses saveAbandonedScore (NOT finaliseQuiz) because finaliseQuiz clears
+    // cur.quiz which would unmount this component.
+    if (qz.answers.length > 0) {
+      saveAbandonedScore(qz, color);
+    }
     // Reset quiz to question 0 (matches legacy retryQuiz / restartQuiz)
-    qz = { ...qz, idx: 0, viewIdx: 0, score: 0, answers: [] };
+    qz = { ...qz, idx: 0, viewIdx: 0, score: 0, answers: [], startTime: Date.now() };
     answered = false; chosenIdx = null; selectedIdx = null; revealReady = false;
     shuffleOpts();
     qStartedAt = Date.now();
@@ -142,6 +162,26 @@
   let lastX = 0, lastY = 0;
 
   function getCtx() { return canvasEl?.getContext('2d') ?? null; }
+
+  // Sync canvas internal resolution with its CSS display size.
+  // Uses ResizeObserver so orientation changes while open are handled.
+  $effect(() => {
+    if (!scratchOpen || !canvasEl) return;
+    const wrap = canvasEl.parentElement;
+    if (!wrap) return;
+    const cv = canvasEl;
+    const ro = new ResizeObserver(() => {
+      const rect = wrap.getBoundingClientRect();
+      const w = Math.round(rect.width);
+      const h = Math.round(rect.height);
+      if (cv.width !== w || cv.height !== h) {
+        cv.width = w;
+        cv.height = h;
+      }
+    });
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  });
 
   function onScratchDown(x: number, y: number) { drawing = true; lastX = x; lastY = y; }
   function onScratchMove(x: number, y: number) {
@@ -160,17 +200,22 @@
     if (ctx && canvasEl) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
   }
 
-  function mouseDown(e: MouseEvent) { const r = canvasEl!.getBoundingClientRect(); onScratchDown(e.clientX-r.left, e.clientY-r.top); }
-  function mouseMove(e: MouseEvent) { const r = canvasEl!.getBoundingClientRect(); onScratchMove(e.clientX-r.left, e.clientY-r.top); }
-  function touchStart(e: TouchEvent) { e.preventDefault(); const r=canvasEl!.getBoundingClientRect(); const t=e.touches[0]; onScratchDown(t.clientX-r.left,t.clientY-r.top); }
-  function touchMove(e: TouchEvent)  { e.preventDefault(); const r=canvasEl!.getBoundingClientRect(); const t=e.touches[0]; onScratchMove(t.clientX-r.left,t.clientY-r.top); }
+  function mouseDown(e: MouseEvent) { if (!canvasEl) return; const r = canvasEl.getBoundingClientRect(); onScratchDown(e.clientX-r.left, e.clientY-r.top); }
+  function mouseMove(e: MouseEvent) { if (!canvasEl) return; const r = canvasEl.getBoundingClientRect(); onScratchMove(e.clientX-r.left, e.clientY-r.top); }
+  function touchStart(e: TouchEvent) { e.preventDefault(); if (!canvasEl) return; const r=canvasEl.getBoundingClientRect(); const t=e.touches[0]; onScratchDown(t.clientX-r.left,t.clientY-r.top); }
+  function touchMove(e: TouchEvent)  { e.preventDefault(); if (!canvasEl) return; const r=canvasEl.getBoundingClientRect(); const t=e.touches[0]; onScratchMove(t.clientX-r.left,t.clientY-r.top); }
 
   // ── Confetti ──────────────────────────────────────────────────────────────────
 
   function confetti(count = 32) {
+    // Cleanup any stale confetti from throttled timers
+    document.querySelectorAll('[data-confetti]').forEach(el => {
+      if (el.getAnimations?.().length === 0) el.remove();
+    });
     const colors = ['#e74c3c','#e67e22','#27ae60','#8e44ad','#f1c40f','#4a90d9','#ffffff'];
     for (let i = 0; i < count; i++) {
       const el = document.createElement('div');
+      el.setAttribute('data-confetti', '');
       const size = 7 + Math.random() * 7;
       const left = Math.random() * 100;
       const delay = Math.random() * 0.5;
@@ -204,7 +249,25 @@
   // ── Navigation ────────────────────────────────────────────────────────────────
 
   function goBack() {
-    if (qz.viewIdx > 0) qz = { ...qz, viewIdx: qz.viewIdx - 1 };
+    if (qz.viewIdx > 0) {
+      const wasLive = !isReview;
+      qz = { ...qz, viewIdx: qz.viewIdx - 1 };
+      // Entering review from live question — pause timer
+      if (wasLive && showTimer) pauseTimer();
+    }
+  }
+
+  /** Navigate forward during review, or advance to next question when active. */
+  function goForward() {
+    if (isReview) {
+      // During review: move viewIdx forward, clamped to idx
+      const next = Math.min(qz.viewIdx + 1, qz.idx);
+      qz = { ...qz, viewIdx: next };
+      // Returning to live question — resume timer
+      if (next === qz.idx && showTimer) resumeTimer();
+    } else {
+      nextQuestion();
+    }
   }
 
   // ── Answer handling (matches legacy _pickAnswer with 120ms delay) ────────────
@@ -221,7 +284,8 @@
     selectedIdx  = optIdx;
     revealReady  = false;
 
-    // Step 2: after 120ms, show correct/wrong + reveal panel (matches legacy setTimeout 120)
+    // Step 2: after brief delay, show correct/wrong + reveal panel (matches legacy)
+    const ANSWER_REVEAL_MS = 120;
     setTimeout(() => {
       chosenIdx   = optIdx;
       selectedIdx = null;
@@ -243,9 +307,10 @@
       newAnswers[qz.idx] = answer;
       qz = { ...qz, score: qz.score + (isOk ? 1 : 0), answers: newAnswers };
 
-      // Auto-scroll next button into view (matches legacy setTimeout 60ms scrollIntoView)
-      setTimeout(() => nextBtnEl?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 60);
-    }, 120);
+      // Auto-scroll next button into view
+      const SCROLL_DELAY_MS = 60;
+      setTimeout(() => nextBtnEl?.scrollIntoView({ behavior: 'smooth', block: 'end' }), SCROLL_DELAY_MS);
+    }, ANSWER_REVEAL_MS);
   }
 
   function nextQuestion() {
@@ -272,15 +337,18 @@
     const chosen = opts[chosenIdx];
     if (chosen?.origIdx === q.a) return;
     hintLoading = true; hintText = ''; hintError = '';
-    const result = await getGeminiHint(q.t, chosen?.text ?? '');
-    hintLoading = false;
-    hintText  = result.hint  ?? '';
-    hintError = result.error ?? '';
+    try {
+      const result = await getGeminiHint(q.t, chosen?.text ?? '');
+      hintText  = result.hint  ?? '';
+      hintError = result.error ?? '';
+    } catch {
+      hintError = 'Something went wrong. Please try again.';
+    } finally {
+      hintLoading = false;
+    }
   }
 
-  $effect(() => { shuffleOpts(); qStartedAt = Date.now(); });
-
-  onMount(() => { startTimer(); return () => stopTimer(); });
+  onMount(() => { shuffleOpts(); startTimer(); return () => stopTimer(); });
 </script>
 
 <!-- Confetti keyframe injected once globally -->
@@ -298,6 +366,9 @@
   <div class="bar">
     <button type="button" class="bar-back" id="quiz-back" style="color:{color}" onclick={showQuitConfirm}>Back</button>
     <div class="bar-title" id="quiz-title">{qz.label ?? 'Quiz'}</div>
+    <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+      <span class="cog-ico">⚙️</span>
+    </button>
   </div>
   <div class="sc-in">
 
@@ -307,7 +378,7 @@
         <div class="q-lbl">Question {qz.viewIdx + 1} of {total}</div>
         <div class="q-score" style="background:{color}22;color:{color}">{qz.score} correct</div>
         {#if showTimer}
-          <div class="q-timer {timerCls}">⏱ {fmtTimer(secsLeft)}</div>
+          <div class="q-timer {timerCls}" aria-label="Time remaining: {fmtTimer(secsLeft)}">⏱ {fmtTimer(secsLeft)}</div>
         {/if}
       </div>
       <div class="qpb">
@@ -318,15 +389,15 @@
     <!-- Top action row (matches legacy .quiz-top-row) -->
     <div class="quiz-top-row">
       <button type="button" class="quiz-restart-btn" onclick={showRestartConfirm}>↩ Start Over</button>
-      <button type="button" class="quiz-scratch-btn" onclick={() => scratchOpen = !scratchOpen}>✏️ Note Pad</button>
+      <button type="button" class="quiz-scratch-btn" aria-label="Toggle note pad" onclick={() => scratchOpen = !scratchOpen}>✏️ Note Pad</button>
       <button type="button" class="quiz-quit-btn" onclick={showQuitConfirm}>✕ Quit</button>
     </div>
 
     <!-- Question card -->
-    <div class="qcard" id="qcard">
+    <div class="qcard" id="qcard" data-no-swipe>
       <div class="q-num" style="color:{color}">Question {qz.viewIdx + 1}</div>
       <div class="q-text" role="heading" aria-level="2">
-        {#if q?.t?.includes('<')}
+        {#if hasHtmlTags(q?.t)}
           {@html q.t}
         {:else}
           {q?.t ?? ''}
@@ -383,7 +454,7 @@
             {:else if hintError}
               <p class="rev-time" style="color:#e74c3c">{hintError}</p>
             {:else}
-              <button type="button" class="hint-btn-legacy" onclick={fetchHint}>✨ Get a Hint</button>
+              <button type="button" class="hint-btn-legacy" aria-label="Get an AI hint" onclick={fetchHint}>✨ Get a Hint</button>
             {/if}
           {/if}
         </div>
@@ -410,7 +481,7 @@
         <button type="button" class="prev-btn" style="display:block" onclick={goBack}>← Previous Question</button>
       {/if}
       {#if revealReady || isReview}
-        <button type="button" class="next-btn" bind:this={nextBtnEl} style="display:block;background:{color}" onclick={nextQuestion}>
+        <button type="button" class="next-btn" bind:this={nextBtnEl} style="display:block;background:{color}" onclick={isReview ? goForward : nextQuestion}>
           {#if isReview && qz.viewIdx < qz.idx - 1}
             Forward →
           {:else if isReview}
@@ -479,7 +550,7 @@
         <button type="button" class="scratch-tool-btn" onclick={clearScratch}
           style="color:#e74c3c;border-color:#e74c3c">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico" style="width:16px;height:16px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-        <button type="button"
+        <button type="button" aria-label="Close note pad"
           style="font-size:var(--fs-lg);background:none;border:none;cursor:pointer;color:var(--txt2);padding:0 4px;line-height:1"
           onclick={() => scratchOpen = false}>×</button>
       </div>

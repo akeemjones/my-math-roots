@@ -12,6 +12,41 @@ import { mastery, streak, done, scores, cur, activeStudent, appTime, actDates } 
 import { supabase } from '$lib/supabase';
 import { pushStudentData } from '$lib/services/sync';
 
+// ─── Score buffering for PIN-only students ───────────────────────────────────
+
+/**
+ * Buffer a score entry in localStorage for the next pushStudentData() call.
+ * Used by PIN-only students who can't insert directly into quiz_scores.
+ */
+function bufferPendingScore(entry: ScoreEntry): void {
+  try {
+    const raw = localStorage.getItem('mmr_pending_scores');
+    const pending: any[] = raw ? JSON.parse(raw) : [];
+    pending.push({
+      local_id:     entry.id,
+      qid:          entry.qid,
+      label:        entry.label,
+      type:         entry.type,
+      score:        entry.score,
+      total:        entry.total,
+      pct:          entry.pct,
+      stars:        entry.stars,
+      unit_idx:     entry.unitIdx,
+      color:        entry.color ?? '#6c5ce7',
+      student_name: entry.name,
+      time_taken:   entry.timeTaken,
+      answers:      entry.answers,
+      date_str:     entry.date,
+      time_str:     entry.time,
+      quit:         entry.quit ?? false,
+      abandoned:    entry.abandoned ?? false,
+    });
+    localStorage.setItem('mmr_pending_scores', JSON.stringify(pending));
+  } catch {
+    console.warn('[quiz] Failed to buffer pending score');
+  }
+}
+
 // ─── Question key ─────────────────────────────────────────────────────────────
 
 /** 31-hash of question text → base-36 string. Matches vanilla _qKey(). */
@@ -76,13 +111,14 @@ function masteryWeightedSample(bank: Question[], n: number): Question[] {
   return result;
 }
 
-/** Shuffle an array in-place (Fisher-Yates). */
-function shuffle<T>(arr: T[]): T[] {
-  for (let i = arr.length - 1; i > 0; i--) {
+/** Shuffle an array (Fisher-Yates). Always returns a new copy. */
+export function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return arr;
+  return a;
 }
 
 // ─── Public sampler ───────────────────────────────────────────────────────────
@@ -210,34 +246,144 @@ export function updateMastery(answers: QuizAnswer[]): void {
 
 // ─── Streak update ────────────────────────────────────────────────────────────
 
-/** Bump the daily streak and record the activity date. */
-export function touchStreak(): void {
+/**
+ * Bump the daily streak and record the activity date.
+ *
+ * @param quizId — pass the quiz ID when triggered by a quiz completion.
+ *   The same quiz ID can only count once per day (prevents spamming the
+ *   same quiz). Pass undefined when triggered by lesson engagement time.
+ *
+ * @returns true if the streak was actually incremented, false if skipped.
+ */
+export function touchStreak(quizId?: string): boolean {
   const today = new Date().toISOString().slice(0, 10);
+  let incremented = false;
+
   streak.update(($s) => {
-    if ($s.lastDate === today) return $s;
+    const todayQuizIds = $s.todayQuizIds ?? [];
+
+    // If triggered by a quiz, reject duplicate quiz IDs on the same day
+    if (quizId) {
+      // Reset todayQuizIds if it's a new day
+      const isNewDay = $s.lastDate !== today;
+      const activeIds = isNewDay ? [] : todayQuizIds;
+      if (!isNewDay && activeIds.includes(quizId)) {
+        // Same quiz already counted today — skip
+        return $s;
+      }
+      // Mark this quiz as used today
+      const newTodayIds = [...activeIds, quizId];
+
+      if ($s.lastDate === today) {
+        // Already have a streak entry for today — just record the quiz ID
+        incremented = true;
+        return { ...$s, todayQuizIds: newTodayIds };
+      }
+
+      const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+      const current = $s.lastDate === yesterday ? $s.current + 1 : 1;
+      incremented = true;
+      return {
+        current,
+        longest: Math.max($s.longest ?? 0, current),
+        lastDate: today,
+        todayQuizIds: newTodayIds,
+      };
+    }
+
+    // Triggered by lesson engagement time — no quiz ID dedup needed
+    if ($s.lastDate === today) return $s; // already counted today
     const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
     const current = $s.lastDate === yesterday ? $s.current + 1 : 1;
+    incremented = true;
     return {
       current,
       longest: Math.max($s.longest ?? 0, current),
       lastDate: today,
+      todayQuizIds: [],
     };
   });
 
-  // Record activity date (rolling 365-day window)
-  actDates.update(($dates) => {
-    if ($dates.includes(today)) return $dates;
-    const updated = [...$dates, today];
-    if (updated.length > 365) updated.shift();
-    return updated;
-  });
+  if (incremented) {
+    // Record activity date (rolling 365-day window)
+    actDates.update(($dates) => {
+      if ($dates.includes(today)) return $dates;
+      const updated = [...$dates, today];
+      if (updated.length > 365) updated.shift();
+      return updated;
+    });
+  }
+
+  return incremented;
+}
+
+// ─── Lesson engagement streak timer ──────────────────────────────────────────
+// Module-level so it accumulates across multiple lesson page navigations.
+
+const STREAK_ENGAGE_SECS = 600; // 10 minutes
+let _engageSecs = 0;
+let _engageInterval: ReturnType<typeof setInterval> | null = null;
+let _engageStreakDate: string | null = null; // date streak was already earned via engagement
+
+function _resetEngageIfNewDay() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (_engageStreakDate && _engageStreakDate !== today) {
+    // New day — reset so the timer can fire again
+    _engageSecs = 0;
+    _engageStreakDate = null;
+  }
+}
+
+/**
+ * Call on any meaningful lesson interaction (example cycle, practice answer).
+ * Starts the shared engagement timer if not already running.
+ * After 10 cumulative minutes across any lesson pages, awards a streak day.
+ */
+export function recordLessonInteraction(): void {
+  _resetEngageIfNewDay();
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Already earned a streak today via lesson engagement — nothing to do
+  if (_engageStreakDate === today) return;
+
+  if (_engageInterval) return; // timer already running
+
+  _engageInterval = setInterval(() => {
+    // Don't count time when the tab is backgrounded
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+    _resetEngageIfNewDay();
+    const t = new Date().toISOString().slice(0, 10);
+    if (_engageStreakDate === t) {
+      // Already earned — stop
+      clearInterval(_engageInterval!);
+      _engageInterval = null;
+      return;
+    }
+    _engageSecs++;
+    if (_engageSecs >= STREAK_ENGAGE_SECS) {
+      touchStreak(); // lesson engagement path — no quiz ID
+      _engageStreakDate = t;
+      clearInterval(_engageInterval!);
+      _engageInterval = null;
+    }
+  }, 1000);
+}
+
+/**
+ * Stop the engagement timer. Call from lesson page onDestroy.
+ * The accumulated seconds are preserved — timer resumes on next interaction.
+ */
+export function pauseLessonEngageTimer(): void {
+  if (_engageInterval) {
+    clearInterval(_engageInterval);
+    _engageInterval = null;
+  }
 }
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
 /** Star rating matching vanilla results screen. */
 export function calcStars(pct: number): string {
-  if (pct === 100) return '⭐⭐⭐';
   if (pct >= 90)   return '⭐⭐⭐';
   if (pct >= 80)   return '⭐⭐';
   if (pct >= 60)   return '⭐';
@@ -291,9 +437,15 @@ export function finaliseQuiz(qz: QuizState, color: string): ScoreEntry {
   // 1. Persist score
   scores.update(($s) => [entry, ...$s]);
 
-  // Push score + all student data to Supabase (fire-and-forget)
+  // Push score to Supabase.
+  // Authenticated parents: direct insert into quiz_scores (RLS-protected).
+  // PIN-only students: buffer to mmr_pending_scores for next pushStudentData() call.
   supabase.auth.getUser().then(({ data }) => {
-    if (!data.user) return;
+    if (!data.user) {
+      // PIN-only student: buffer for push RPC
+      bufferPendingScore(entry);
+      return;
+    }
     supabase.from('quiz_scores').insert({
       user_id:      data.user.id,
       student_id:   entry.studentId,
@@ -317,16 +469,16 @@ export function finaliseQuiz(qz: QuizState, color: string): ScoreEntry {
     }).then(({ error }) => {
       if (error) console.warn('[quiz] Supabase score push failed:', error.message);
     });
-  }).catch(() => {/* not signed in — local only */});
+  }).catch((e) => console.warn('[quiz] Score sync failed:', e));
 
   // Sync all student progress data to Supabase (fire-and-forget)
-  pushStudentData().catch(() => {});
+  pushStudentData().catch((e) => console.warn('[quiz] Progress push failed:', e));
 
   // 2. Update per-question mastery
   updateMastery(qz.answers);
 
-  // 3. Streak
-  if (pct >= 80) touchStreak();
+  // 3. Streak — pass quiz ID so the same quiz can't count more than once per day
+  if (pct >= 80) touchStreak(qz.id);
 
   // 4. Mark done
   if (pct >= 80) {
@@ -337,6 +489,74 @@ export function finaliseQuiz(qz: QuizState, color: string): ScoreEntry {
   cur.update(($c) => ({ ...$c, quiz: null }));
 
   return entry;
+}
+
+/**
+ * Save an abandoned score entry without clearing cur.quiz.
+ * Used by confirmRestart() — the quiz continues running after this call,
+ * so we must NOT call cur.update({ quiz: null }).
+ */
+export function saveAbandonedScore(qz: QuizState, color: string): void {
+  const total = qz.questions.length;
+  const pct = total > 0 ? Math.floor((qz.score / total) * 100) : 0;
+  const now = new Date();
+
+  const entry: ScoreEntry = {
+    id: Date.now(),
+    qid: qz.id,
+    label: qz.label,
+    type: qz.type,
+    unitIdx: qz.unitIdx,
+    color,
+    score: qz.score,
+    total,
+    pct,
+    stars: calcStars(pct),
+    date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+    timeTaken: formatDuration(Math.round((Date.now() - qz.startTime) / 1000)),
+    answers: qz.answers,
+    name: get(activeStudent)?.display_name ?? 'Student',
+    studentId: get(activeStudent)?.id ?? '',
+    abandoned: true,
+  };
+
+  // Persist score locally
+  scores.update(($s) => [entry, ...$s]);
+
+  // Push to Supabase (fire-and-forget) — entry already has abandoned: true
+  supabase.auth.getUser().then(({ data }) => {
+    if (!data.user) {
+      bufferPendingScore(entry);
+      return;
+    }
+    supabase.from('quiz_scores').insert({
+      user_id:      data.user.id,
+      student_id:   entry.studentId,
+      local_id:     entry.id,
+      qid:          entry.qid,
+      label:        entry.label,
+      type:         entry.type,
+      score:        entry.score,
+      total:        entry.total,
+      pct:          entry.pct,
+      stars:        entry.stars,
+      unit_idx:     entry.unitIdx,
+      color:        entry.color ?? '',
+      student_name: entry.name,
+      time_taken:   entry.timeTaken,
+      answers:      entry.answers,
+      date_str:     entry.date,
+      time_str:     entry.time,
+      quit:         false,
+      abandoned:    true,
+    }).then(({ error }) => {
+      if (error) console.warn('[quiz] Supabase abandoned score push failed:', error.message);
+    });
+  }).catch((e) => console.warn('[quiz] Abandoned score sync failed:', e));
+
+  // Sync aggregated progress
+  pushStudentData().catch(() => {});
 }
 
 function formatDuration(totalSecs: number): string {

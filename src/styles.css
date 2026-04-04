@@ -436,7 +436,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
   background:rgba(255,255,255,.32);
   box-shadow:0 8px 32px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.2);
   -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+  overscroll-behavior:contain; touch-action:pan-y;
   scrollbar-width:thin;
   scrollbar-color:rgba(0,0,0,.15) transparent; }
 .carousel-wrap::-webkit-scrollbar{ width:5px; }
@@ -567,7 +567,8 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
   padding:10px 16px calc(8px + env(safe-area-inset-bottom)); }
 #unit-screen .sc-in > *{ margin-bottom:0; }
 #unit-screen .lesson-glass-wrap{ flex:1; min-height:0; overflow-y:auto; margin-bottom:0;
-  max-height:calc(100dvh - 340px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  max-height:calc(100dvh - 340px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  touch-action:pan-y; }
 .unit-banner{ border-radius:var(--rad); padding:10px 18px; color:#fff;
               box-shadow:var(--shad); flex-shrink:0; }
 .unit-banner h2{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg); margin-bottom:2px; }
@@ -1108,7 +1109,7 @@ span.cca-hi-red{background:#fde8e8;border-radius:5px;color:#c0392b}
   border-radius:var(--rad); border:1px solid rgba(255,255,255,.25);
   background:rgba(255,255,255,.08);
   box-shadow:0 8px 32px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.2);
-  -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y;
   scrollbar-width:thin; scrollbar-color:rgba(0,0,0,.15) transparent;
   margin-bottom:16px; }
 .sc-scroll-box::-webkit-scrollbar{ width:5px; }

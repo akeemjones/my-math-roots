@@ -4,7 +4,7 @@
   import { signInWithGoogle } from '$lib/services/auth';
   import { verifyStudentPin } from '$lib/services/auth';
   import { supabase } from '$lib/supabase';
-  import { familyProfiles, activeStudentId, guestMode } from '$lib/stores';
+  import { familyProfiles, activeStudentId, guestMode, scores, done, mastery, streak, actDates, appTime, initialPullDone } from '$lib/stores';
   import { navStack } from '$lib/services/navStack';
   import type { StudentProfile } from '$lib/types';
 
@@ -102,7 +102,16 @@
       return;
     }
     showSoftGate = false;
+    // Reset all progress stores so guest doesn't see previous user's data
+    scores.set([]);
+    done.set({});
+    mastery.set({});
+    streak.set({ current: 0, longest: 0, lastDate: null });
+    actDates.set([]);
+    appTime.set({ totalSecs: 0, sessions: 0, dailySecs: {} });
+    activeStudentId.set(null);
     guestMode.set(true);
+    initialPullDone.set(true);  // No cloud pull for guests — ungate tutorial/spotlight
     navStack.clear();
     goto('/');
   }
@@ -117,8 +126,6 @@
   let consentChecked = $state(false);
   let loading = $state(false);
   let errorMsg = $state('');
-  let turnstileToken = $state('');
-  let turnstileContainer = $state<HTMLDivElement | null>(null);
 
   const pwStrength = $derived.by(() => {
     if (tab !== 'signup' || !password) return 0;
@@ -135,23 +142,6 @@
     pwStrength <= 1 ? '#e74c3c' : pwStrength <= 2 ? '#f39c12' : pwStrength <= 3 ? '#f1c40f' : '#27ae60'
   );
 
-  // ── Turnstile ────────────────────────────────────────────────────────────────
-  function renderTurnstile() {
-    const ts = (window as any).turnstile;
-    if (!ts || !turnstileContainer) return;
-    ts.render(turnstileContainer, {
-      sitekey: '0x4AAAAAACvY03hPN2AAZUGO',
-      theme: 'auto',
-      callback: (token: string) => { turnstileToken = token; },
-      'expired-callback': () => { turnstileToken = ''; },
-    });
-  }
-
-  function resetTurnstile() {
-    turnstileToken = '';
-    const ts = (window as any).turnstile;
-    if (ts && turnstileContainer) ts.reset(turnstileContainer);
-  }
 
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   onMount(() => {
@@ -165,17 +155,15 @@
         ? lastId : $familyProfiles[0].id;
     }
 
-    // Load Turnstile script (explicit render so we control the container)
-    if ((window as any).turnstile) {
-      renderTurnstile();
-    } else if (!document.querySelector('script[src*="turnstile"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-      script.async = true;
-      script.defer = true;
-      script.onload = renderTurnstile;
-      document.head.appendChild(script);
-    }
+    // Listen for auth state changes (handles popup OAuth flow in PWA standalone mode)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        loading = false;
+        navStack.clear();
+        goto('/dashboard');
+      }
+    });
+    return () => subscription.unsubscribe();
   });
 
   // ── Student actions ──────────────────────────────────────────────────────────
@@ -244,7 +232,6 @@
   // ── Parent auth ──────────────────────────────────────────────────────────────
   async function handleEmailAuth(e: SubmitEvent) {
     e.preventDefault();
-    if (!turnstileToken) { errorMsg = '⚠️ Please complete the security check above.'; return; }
     loading = true;
     errorMsg = '';
     if (rememberEmail) {
@@ -255,22 +242,20 @@
     if (tab === 'signup') {
       const { data, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { display_name: name.trim() || 'Parent' }, captchaToken: turnstileToken },
+        options: { data: { display_name: name.trim() || 'Parent' } },
       });
       loading = false;
       if (error) {
         errorMsg = error.message;
-        resetTurnstile();
       } else if (data.user && !data.session) {
         errorMsg = '✅ Check your email to confirm your account.';
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email, password,
-        options: { captchaToken: turnstileToken },
       });
       loading = false;
-      if (error) { errorMsg = error.message; resetTurnstile(); }
+      if (error) { errorMsg = error.message; }
       else { navStack.clear(); goto('/dashboard'); }
     }
   }
@@ -432,6 +417,11 @@
             </div>
           {/if}
         {/if}
+
+        <!-- Guest link inside student card -->
+        <button type="button" class="ls-guest-btn" onclick={openSoftGate} style="margin-top:auto;padding-top:14px">
+          Continue without an account →
+        </button>
       </div><!-- Card 0 -->
 
       <!-- Card 1: Parent / Teacher -->
@@ -453,7 +443,7 @@
         </div>
 
         <!-- Google OAuth -->
-        <button type="button" class="ls-google-btn btn-google" onclick={() => { loading = true; signInWithGoogle(); }} disabled={loading}>
+        <button type="button" class="ls-google-btn btn-google" onclick={async () => { loading = true; const r = await signInWithGoogle(); if (r.error) { errorMsg = r.error; loading = false; } }} disabled={loading}>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
             <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
             <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
@@ -545,9 +535,6 @@
             </div>
           {/if}
 
-          <!-- Cloudflare Turnstile CAPTCHA -->
-          <div class="ls-turnstile-wrap" bind:this={turnstileContainer}></div>
-
           {#if errorMsg}
             <div class="ls-msg" style="color:{errorMsg.startsWith('✅') ? '#27ae60' : '#e74c3c'}">{errorMsg}</div>
           {/if}
@@ -555,7 +542,7 @@
           <button
             type="submit"
             class="btn-primary"
-            disabled={loading || (tab === 'signup' && !consentChecked) || !turnstileToken}
+            disabled={loading || (tab === 'signup' && !consentChecked)}
           >
             {loading ? '…' : tab === 'login' ? 'Sign In' : 'Create Account'}
           </button>
@@ -564,20 +551,13 @@
       </div><!-- Card 1 -->
 
     </div><!-- .ls-carousel-track -->
+
+    <!-- Carousel dots — inside outer so they sit below the cards -->
+    <div class="ls-dots">
+      <button type="button" class="ls-dot {activeCard === 0 ? 'active' : ''}" onclick={() => { activeCard = 0; snapTo(0); }} aria-label="Student login"></button>
+      <button type="button" class="ls-dot {activeCard === 1 ? 'active' : ''}" onclick={() => { activeCard = 1; snapTo(1); }} aria-label="Parent / Teacher login"></button>
+    </div>
   </div><!-- .ls-carousel-outer -->
-
-  <!-- Carousel dots -->
-  <div class="ls-dots">
-    <button type="button" class="ls-dot {activeCard === 0 ? 'active' : ''}" onclick={() => activeCard = 0} aria-label="Student login"></button>
-    <button type="button" class="ls-dot {activeCard === 1 ? 'active' : ''}" onclick={() => activeCard = 1} aria-label="Parent / Teacher login"></button>
-  </div>
-
-  <!-- Guest link — only shown on Student card, matches legacy -->
-  {#if activeCard === 0}
-  <button type="button" class="ls-guest-btn" onclick={openSoftGate}>
-    Continue without an account →
-  </button>
-  {/if}
 
 </main>
 
@@ -750,7 +730,6 @@
     padding: 0; text-decoration: underline; -webkit-tap-highlight-color: transparent;
   }
   .ls-consent-row { margin-bottom: 10px; }
-  .ls-turnstile-wrap { display: flex; justify-content: center; margin-bottom: 10px; }
   .ls-consent-label {
     display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
     font-size: var(--fs-sm); color: rgba(255,255,255,.8); line-height: 1.45;
@@ -774,10 +753,9 @@
 
   /* Guest link */
   .ls-guest-btn {
-    margin-top: 16px;
     font-family: 'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size: var(--fs-base);
     background: none; border: none; color: rgba(255,255,255,.65); cursor: pointer;
-    text-decoration: underline; touch-action: manipulation;
+    text-decoration: underline; touch-action: manipulation; width: 100%; text-align: center;
   }
 
   @keyframes bob {

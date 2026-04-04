@@ -14,7 +14,7 @@
 
   // Auto-focus PIN input when profile is selected (triggers iOS keyboard)
   $effect(() => {
-    if (selected && pinInputEl) {
+    if (selectedId && pinInputEl) {
       tick().then(() => pinInputEl?.focus());
     }
   });
@@ -86,6 +86,8 @@
   async function handleSignOut() {
     await signOut();
     authUser.set(null);
+    activeStudentId.set(null);
+    familyProfiles.set([]);
     goto('/login', { replaceState: true });
   }
 </script>
@@ -119,12 +121,12 @@
         <div class="ls-avatar-row" role="list" aria-label="Student profiles">
           {#each $familyProfiles as profile}
             {@const isSel = profile.id === selectedId}
-            <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <div
               class="ls-avatar-item {isSel ? 'ls-avatar-selected' : ''}"
-              role="listitem"
+              role="button"
+              tabindex="0"
               onclick={() => selectAvatar(profile.id)}
+              onkeydown={(e) => e.key === 'Enter' && selectAvatar(profile.id)}
               aria-label="{profile.display_name}{isSel ? ' (selected)' : ''}"
             >
               <div
@@ -174,6 +176,7 @@
                 pattern="[0-9]*"
                 maxlength="4"
                 autocomplete="one-time-code"
+                data-no-swipe
                 value={pinBuffer.join('')}
                 oninput={handlePinInput}
                 disabled={pinLoading}
@@ -188,6 +191,11 @@
                 <span style="color:rgba(255,255,255,0.6)">Checking…</span>
               {:else if pinError}
                 <span style="color:#f87171">{pinError}</span>
+                {#if pinError.includes('locked')}
+                  <button type="button" class="pp-retry-btn" onclick={() => { selectedId = null; pinError = ''; pinBuffer = []; }}>
+                    ← Choose a Different Profile
+                  </button>
+                {/if}
               {:else}
                 &nbsp;
               {/if}
@@ -399,6 +407,25 @@
     text-align: center;
     min-height: 1.1rem;
     margin-bottom: 4px;
+  }
+
+  /* ── Lockout retry button ──────────────────────────────────────────────────── */
+  .pp-retry-btn {
+    display: block;
+    margin: 8px auto 0;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 50px;
+    color: rgba(255,255,255,.8);
+    font-size: .78rem;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pp-retry-btn:active {
+    background: rgba(255,255,255,.22);
   }
 
   /* ── Sign out button ───────────────────────────────────────────────────────── */

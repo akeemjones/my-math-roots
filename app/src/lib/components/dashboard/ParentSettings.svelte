@@ -121,7 +121,7 @@
             class="timer-input"
             min="0" max="120"
             value={$settings.lessonTimerMins ?? 8}
-            oninput={(e) => setTimer('lessonTimerMins', Number((e.target as HTMLInputElement).value))}
+            oninput={(e) => { if (!(e.target instanceof HTMLInputElement)) return; const val = Number(e.target.value); setTimer('lessonTimerMins', val); }}
           />
           <span class="timer-unit">min</span>
         </div>
@@ -138,7 +138,7 @@
             class="timer-input"
             min="0" max="120"
             value={$settings.unitTimerMins ?? 30}
-            oninput={(e) => setTimer('unitTimerMins', Number((e.target as HTMLInputElement).value))}
+            oninput={(e) => { if (!(e.target instanceof HTMLInputElement)) return; const val = Number(e.target.value); setTimer('unitTimerMins', val); }}
           />
           <span class="timer-unit">min</span>
         </div>
@@ -155,7 +155,7 @@
             class="timer-input"
             min="0" max="120"
             value={$settings.finalTimerMins ?? 60}
-            oninput={(e) => setTimer('finalTimerMins', Number((e.target as HTMLInputElement).value))}
+            oninput={(e) => { if (!(e.target instanceof HTMLInputElement)) return; const val = Number(e.target.value); setTimer('finalTimerMins', val); }}
           />
           <span class="timer-unit">min</span>
         </div>

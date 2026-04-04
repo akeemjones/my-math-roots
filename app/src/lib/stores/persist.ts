@@ -14,6 +14,7 @@
 
 import { writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import { syncStatus } from './syncStatus.js';
 
 export function persisted<T>(key: string, initialValue: T): Writable<T> {
   let initial = initialValue;
@@ -22,8 +23,9 @@ export function persisted<T>(key: string, initialValue: T): Writable<T> {
     try {
       const raw = localStorage.getItem(key);
       if (raw !== null) initial = JSON.parse(raw) as T;
-    } catch {
+    } catch (e) {
       // Corrupted entry — start fresh.
+      console.error('[persist] Corrupted key "' + key + '":', e);
       localStorage.removeItem(key);
     }
   }
@@ -31,11 +33,16 @@ export function persisted<T>(key: string, initialValue: T): Writable<T> {
   const store = writable<T>(initial);
 
   if (browser) {
+    // Intentionally not capturing unsubscribe — stores are singletons that
+    // live for the entire app lifetime. Minor HMR dev leak cleaned on reload.
     store.subscribe((value) => {
       try {
         localStorage.setItem(key, JSON.stringify(value));
-      } catch {
-        // Storage quota exceeded — silently skip.
+      } catch (e) {
+        console.warn('[persist] localStorage write failed (quota exceeded?):', e);
+        if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+          syncStatus.set('error');
+        }
       }
     });
   }

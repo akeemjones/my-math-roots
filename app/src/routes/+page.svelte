@@ -1,28 +1,37 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { stackNavigate } from '$lib/services/navStack';
-  import { unitsData, activeStudent, done, scores, streak, familyProfiles, activeStudentId, guestMode } from '$lib/stores';
+  import { unitsData, activeStudent, done, scores, streak, familyProfiles, activeStudentId, guestMode, unlockSettings } from '$lib/stores';
   import { verifyStudentPin } from '$lib/services/auth';
   import UnitCard from '$lib/components/home/UnitCard.svelte';
   import StreakCalendar from '$lib/components/home/StreakCalendar.svelte';
+  import { isScrollHintSeen, markScrollHintSeen } from '$lib/services/tour';
   // ── Computed progress ────────────────────────────────────────────────────────
+
+  // Check if a quiz has been passed (done_json flag OR score entry with 80%+)
+  // done_json is the authoritative flag; scores may not exist for legacy data.
+  function isPassed(qid: string): boolean {
+    return !!$done[qid] || $scores.some(s => s.qid === qid && s.pct >= 80);
+  }
 
   // Per-unit lesson done count (80%+ on lesson quiz)
   function unitLessonsDone(u: typeof $unitsData[0]): number {
-    return u.lessons.filter(l => $scores.some(s => s.qid === 'lq_' + l.id && s.pct >= 80)).length;
+    return u.lessons.filter(l => isPassed('lq_' + l.id)).length;
   }
 
   // Unit quiz passed?
   function unitQuizDone(u: typeof $unitsData[0]): boolean {
-    return $scores.some(s => s.qid === u.id + '_uq' && s.pct >= 80);
+    return isPassed(u.id + '_uq');
   }
 
-  // Is unit unlocked? (matches legacy isUnitUnlocked)
+  // Is unit unlocked? (quiz progression OR parent override)
   function isUnitUnlocked(idx: number): boolean {
     if (idx === 0) return true;
+    if ($unlockSettings.freeMode) return true;
+    if ($unlockSettings.units.includes(idx)) return true;
     const prevUnit = $unitsData[idx - 1];
     if (!prevUnit) return false;
-    return $scores.some(s => s.qid === prevUnit.id + '_uq' && s.pct >= 80);
+    return isPassed(prevUnit.id + '_uq');
   }
 
   // Find current unit index (matches legacy logic)
@@ -31,19 +40,28 @@
     $unitsData.forEach((u, i) => { if (isUnitUnlocked(i)) cur = i; });
     const u = $unitsData[cur];
     if (u) {
-      const allDone = u.lessons.every(l => $scores.some(s => s.qid === 'lq_' + l.id && s.pct >= 80));
-      const uqDone = $scores.some(s => s.qid === u.id + '_uq' && s.pct >= 80);
+      const allDone = u.lessons.every(l => isPassed('lq_' + l.id));
+      const uqDone = isPassed(u.id + '_uq');
       if (allDone && uqDone && cur < $unitsData.length - 1) cur++;
     }
     return cur;
   });
 
-  // Overall progress across all 10 units
+  // Overall progress — count all lessons across all units regardless of unlock status
   const completedCount = $derived(
     $unitsData.reduce((acc, u) => acc + unitLessonsDone(u), 0)
   );
   const totalLessons = $derived($unitsData.reduce((acc, u) => acc + u.lessons.length, 0));
   const progressPct  = $derived(totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0);
+
+  // ── Scroll hint ──────────────────────────────────────────────────────────────
+  let showScrollHint = $state(!isScrollHintSeen());
+
+  function dismissScrollHint() {
+    if (!showScrollHint) return;
+    showScrollHint = false;
+    markScrollHintSeen();
+  }
 
   // ── Profile switcher (inline bottom sheet) ───────────────────────────────────
   let showSwitcher   = $state(false);
@@ -80,7 +98,8 @@
     const inp = e.target as HTMLInputElement;
     const digits = inp.value.replace(/\D/g, '').slice(0, 4).split('').map(Number);
     switchBuffer = digits;
-    inp.value = digits.join('');
+    // Sync native input value to sanitised digits (strips non-numeric chars)
+    requestAnimationFrame(() => { inp.value = digits.join(''); });
     if (digits.length === 4) submitSwitch();
   }
 
@@ -90,12 +109,15 @@
     switchError   = '';
     const { success, attemptsLeft, error } = await verifyStudentPin(switchTarget, switchBuffer.join(''));
     switchLoading = false;
-    if (error) { switchError = error; switchBuffer = []; return; }
+    // Clear native input value on failure to stay in sync with switchBuffer
+    const pinInp = document.querySelector('input[aria-label="Enter PIN"]') as HTMLInputElement | null;
+    if (error) { switchError = error; switchBuffer = []; if (pinInp) pinInp.value = ''; return; }
     if (success) {
       activeStudentId.set(switchTarget);
       showSwitcher = false;
     } else {
       switchBuffer = [];
+      if (pinInp) pinInp.value = '';
       switchError  = attemptsLeft !== null && attemptsLeft > 0
         ? `Wrong PIN. ${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} left.`
         : 'Account locked. Try again later.';
@@ -105,32 +127,31 @@
   // ── Streak calendar ──────────────────────────────────────────────────────────
   let showStreakCal = $state(false);
 
-  // ── Settings / dashboard nav ─────────────────────────────────────────────────
-  function goSettings() {
-    goto('/settings');
-  }
-
   // ── Fire SVG — inline helper for streak badge ─────────────────────────────
   function fireSvg(w: number, h: number): string {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 38" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle"><defs><radialGradient id="hfg" cx="50%" cy="95%" r="55%"><stop offset="0%" stop-color="#ffb300" stop-opacity=".7"/><stop offset="100%" stop-color="#ff6600" stop-opacity="0"/></radialGradient><linearGradient id="hfo" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0%" stop-color="#ff9500"/><stop offset="55%" stop-color="#ff5a00"/><stop offset="100%" stop-color="#e83200"/></linearGradient><linearGradient id="hfm" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0%" stop-color="#ffcd3c"/><stop offset="100%" stop-color="#ff8c00"/></linearGradient><linearGradient id="hfi" x1="40%" y1="0%" x2="60%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="100%" stop-color="#ffe033"/></linearGradient></defs><ellipse cx="16" cy="36" rx="9" ry="2.5" fill="url(#hfg)"/><path d="M16,36 C9,33 5,27 5,20 C5,13.5 8.5,8.5 12,5.5 C11,9.5 11.5,13 13.5,15.5 C12,10.5 14,3 16,0 C16,0 18,7.5 16.5,13 C19,10.5 19.5,7 19,4.5 C22.5,7.5 27,13.5 27,20 C27,27 23,33 16,36Z" fill="url(#hfo)"/><path d="M16,32 C11,29.5 9,25.5 9,21.5 C9,17.5 11,14.5 13,12.5 C12.5,15.5 13,18 14.5,20 C14,16.5 14.5,13 16,11 C16,11 17.5,15 17,19 C18.5,17 19,14.5 18.5,12 C20.5,14 23,17.5 23,21.5 C23,25.5 21,29.5 16,32Z" fill="url(#hfm)"/><path d="M16,28 C13.5,26 12.5,23.5 12.5,21 C12.5,18.5 14,16.5 15,15 C15,17 15.5,18.5 16,20.5 C16.5,18.5 17,17 16,15 C17.5,16.5 19.5,18.5 19.5,21 C19.5,23.5 18.5,26 16,28Z" fill="url(#hfi)"/></svg>`;
   }
 </script>
 
-<!-- ── Fixed nav buttons (home-only: profile switcher) ──────────────────── -->
-{#if showProfBtn && !$guestMode}
-  <button
-    id="prof-btn"
-    type="button"
-    class="prof-btn"
-    aria-label="Switch profile: {$activeStudent?.display_name ?? ''}"
-    onclick={openSwitcher}
-  >
-    <span style="line-height:1">{$activeStudent?.avatar_emoji ?? '👤'}</span>
-  </button>
-{/if}
-
 <!-- ── Home screen ──────────────────────────────────────────────────────── -->
 <div class="sc" id="home">
+  <!-- Top bar — profile switcher + settings cog -->
+  <div class="bar home-bar">
+    {#if showProfBtn && !$guestMode}
+      <button
+        id="prof-btn"
+        type="button"
+        class="home-prof-btn"
+        aria-label="Switch profile: {$activeStudent?.display_name ?? ''}"
+        onclick={openSwitcher}
+      >
+        <span style="line-height:1">{$activeStudent?.avatar_emoji ?? '👤'}</span>
+      </button>
+    {/if}
+    <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+      <span class="cog-ico">⚙️</span>
+    </button>
+  </div>
   <div class="home-in">
 
     <!-- Hero -->
@@ -168,11 +189,18 @@
       </div>
     {/if}
 
-    <!-- Scroll hint -->
-    <div class="carousel-hint">📜 Scroll to browse all 10 units</div>
+    <!-- Scroll hint (shown only on first visit) -->
+    {#if showScrollHint}
+      <div class="carousel-hint" role="button" tabindex="-1" onclick={dismissScrollHint}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;flex-shrink:0;vertical-align:middle">
+          <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+        </svg>
+        Scroll to browse all 10 units
+      </div>
+    {/if}
 
     <!-- Unit scroll box -->
-    <div class="carousel-wrap">
+    <div class="carousel-wrap" onscroll={dismissScrollHint}>
       <div class="carousel-track">
         {#if $unitsData.length === 0}
           <p style="text-align:center; color:var(--txt2); padding: 2rem 0;">Loading curriculum…</p>
@@ -203,7 +231,7 @@
       </div>
     </div>
 
-    <!-- Score history -->
+    <!-- Score history — always visible at bottom -->
     <div class="scores-link">
       <button
         type="button"
@@ -298,51 +326,33 @@
   /* ── Fire SVG inline helper ── */
   /* (defined as a script function below the style block) */
 
-  /* ── Nav buttons ── */
-  :global(.prof-btn) {
-    position: fixed;
-    top: calc(14px + env(safe-area-inset-top));
-    left: 16px;
-    z-index: 80;
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    border: 1.5px solid rgba(255,255,255,0.82);
-    box-shadow: 0 4px 18px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.95);
-    cursor: pointer;
-    font-size: var(--fs-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform .2s, box-shadow .2s;
-    -webkit-tap-highlight-color: transparent;
+  /* ── Home top bar (transparent, just profile + cog) ── */
+  .home-bar {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+    position: sticky;
+    top: 0;
+    z-index: 90;
   }
-  :global(.prof-btn:active) { transform: scale(.93); }
 
-  :global(.cog-btn) {
-    position: fixed;
-    top: calc(14px + env(safe-area-inset-top));
-    right: 16px;
-    z-index: 80;
-    width: 50px; height: 50px;
+  .home-prof-btn {
+    width: 42px; height: 42px;
     border-radius: 50%;
     background: rgba(255,255,255,0.85);
     border: 1.5px solid rgba(255,255,255,0.82);
-    box-shadow: 0 4px 18px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.95);
+    box-shadow: 0 4px 14px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.95);
     cursor: pointer;
-    font-size: var(--fs-xl);
+    font-size: 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform .3s, box-shadow .2s;
     -webkit-tap-highlight-color: transparent;
+    transition: transform .2s;
   }
-  :global(.cog-btn:active) { transform: scale(.93); }
-  :global(.cog-ico) { display: inline-block; transition: transform .35s ease; line-height: 1; }
-  @media (hover: hover) {
-    :global(.cog-btn:hover .cog-ico) { transform: rotate(60deg); }
-    :global(.cog-btn:hover), :global(.prof-btn:hover) { box-shadow: 0 5px 20px rgba(0,0,0,.2); }
-  }
+  .home-prof-btn:active { transform: scale(.93); }
 
   /* ── Hero icon ── */
   :global(.hero-ico) {

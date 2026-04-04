@@ -9,15 +9,17 @@
    *   Step 4: Quiz launch (.lq-start-btn) + completion / next-lesson state
    */
 
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
-  import { stackBack } from '$lib/services/navStack';
+  import { stackBack, stackNavigate } from '$lib/services/navStack';
   import { page } from '$app/stores';
-  import { unitsData, scores, done } from '$lib/stores';
+  import { unitsData, scores, done, hasPassed, unlockSettings } from '$lib/stores';
   import { loadUnit } from '$lib/boot';
   import { playCorrect, playWrong } from '$lib/services/sound';
   import { handleExampleAction } from '$lib/services/animations';
   import { settings } from '$lib/stores';
+  import { recordLessonInteraction, pauseLessonEngageTimer, shuffle } from '$lib/services/quiz';
+  import { hasHtmlTags } from '$lib/utils';
   import type { Question } from '$lib/types';
 
   const EMOJIS = ['🤔','💡','🧠','⭐','🎯','🔢','✏️','📐','🦁','🐯','🦊','🐸'];
@@ -53,6 +55,7 @@
 
   function nextExample() {
     if (exTotal <= 1) return;
+    recordLessonInteraction();
     exFade = true;
     setTimeout(() => {
       exIdx  = (exIdx + 1) % exTotal;
@@ -74,15 +77,6 @@
 
   let drills = $state<Drill[]>([]);
 
-  function shuffle<T>(arr: T[]): T[] {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
   function buildDrills() {
     const bank: Question[] = lesson?.qBank ?? (lesson as any)?.quiz ?? [];
     if (!bank.length) { drills = []; return; }
@@ -103,6 +97,7 @@
   function pickPracticeAns(drillIdx: number, btnIdx: number) {
     const drill = drills[drillIdx];
     if (!drill || drill.answered) return;
+    recordLessonInteraction();
     const chosenText = drill.opts[btnIdx];
     const isOk = chosenText === drill.correctText;
     drills[drillIdx] = { ...drill, answered: true, chosenIdx: btnIdx, isOk };
@@ -111,6 +106,7 @@
   }
 
   function morePractice() {
+    recordLessonInteraction();
     buildDrills();
   }
 
@@ -127,9 +123,29 @@
     loading = true;
     await loadUnit(unitId);
     loading = false;
+
+    // Enforce unlock: if the lesson is locked, redirect to unit page
+    const u = $unitsData.find(u => u.id === unitId);
+    if (u && !$settings.freeMode && !$unlockSettings.freeMode) {
+      const idx = u.lessons.findIndex(l => l.id === lessonId);
+      if (idx > 0) {
+        const prev = u.lessons[idx - 1];
+        if (prev && !$hasPassed('lq_' + prev.id)) {
+          goto(`/unit/${unitId}`, { replaceState: true });
+          return;
+        }
+      }
+    }
+
     exIdx  = 0;
     exFade = false;
     buildDrills();
+    // Start engagement timer when page loads (passive time doesn't count —
+    // timer only ticks while the page is in focus and user has interacted)
+  });
+
+  onDestroy(() => {
+    pauseLessonEngageTimer();
   });
 </script>
 
@@ -146,15 +162,18 @@
   <div class="sc" id="lesson-screen" style="--ac:{unit?.color ?? '#4a90d9'};--color:{unit?.color ?? '#4a90d9'}">
 
     <!-- Sticky bar (matches legacy #lesson-screen .bar) -->
-    <div class="bar" style="padding-right:76px">
+    <div class="bar">
       <button type="button" class="bar-back" style="color:{unit?.color ?? '#4a90d9'}"
               onclick={goBack} aria-label="Back to unit">
-        {unit?.name ?? 'Back'}
+        <span class="bar-back-label">{unit?.name ?? 'Back'}</span>
       </button>
       <div class="bar-title">{lesson.icon} {lesson.title}</div>
       {#if lqPassed}
         <div class="bar-badge" style="background:#eafaf1;color:#27ae60;border-radius:50px;padding:5px 10px;font-size:1.1rem">✅</div>
       {/if}
+      <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+        <span class="cog-ico">⚙️</span>
+      </button>
     </div>
 
     <!-- TEKS strip -->
@@ -218,7 +237,7 @@
             <div class="pq-drill" id={drill.id}>
               <div class="pq-q">
                 <span class="pq-emo">{drill.emoji}</span>
-                {#if drill.q.t?.includes('<')}
+                {#if hasHtmlTags(drill.q.t)}
                   {@html drill.q.t}
                 {:else}
                   {drill.q.t}

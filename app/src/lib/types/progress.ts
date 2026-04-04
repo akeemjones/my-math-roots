@@ -24,12 +24,14 @@ export type MasteryMap = Record<string, MasteryEntry>;
 
 /** Daily/overall streak state.  Stored in localStorage as wb_streak. */
 export interface StreakState {
-  /** Consecutive days with at least one passing quiz (≥80%). */
+  /** Consecutive days with at least one qualifying activity. */
   current: number;
   /** Historical maximum streak. */
   longest: number;
-  /** ISO date string of the last passing quiz day, e.g. "2026-04-01". */
+  /** ISO date string of the last streak activity day, e.g. "2026-04-01". */
   lastDate: string | null;
+  /** Quiz IDs that have already counted toward today's streak (prevents spam). */
+  todayQuizIds?: string[];
 }
 
 /**

@@ -19,28 +19,38 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { supabase } from '$lib/supabase';
-  import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode } from '$lib/stores';
+  import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode, initialPullDone, syncStatus } from '$lib/stores';
   import { mountSwipeBack } from '$lib/services/swipe';
   import { navStack, stackNavigate } from '$lib/services/navStack';
-  import { isTutorialDone } from '$lib/services/tour';
-  import { pullStudentData, pushStudentData } from '$lib/services/sync';
+  import { isTutorialDone, isInstallSeen } from '$lib/services/tour';
+  import { pullStudentData, pushStudentData, subscribeUnlockSettings, refreshUnlockSettings } from '$lib/services/sync';
 
-  // Show cog on student-facing screens (hidden on settings, login, dashboard, parent)
-  const showCog = $derived(
-    $page.url.pathname === '/' ||
-    $page.url.pathname.startsWith('/unit/') ||
-    $page.url.pathname.startsWith('/lesson/') ||
-    $page.url.pathname.startsWith('/quiz/') ||
-    $page.url.pathname === '/history'
-  );
   import { getStudentProfiles } from '$lib/services/auth';
   import { initPwa, pwaUpdateAvailable, applyUpdate } from '$lib/pwa';
   import ProfilePicker from '$lib/components/auth/ProfilePicker.svelte';
   import TutorialOverlay from '$lib/components/tour/TutorialOverlay.svelte';
   import SpotlightTour from '$lib/components/tour/SpotlightTour.svelte';
+  import InstallModal from '$lib/components/tour/InstallModal.svelte';
   import type { AuthUser } from '$lib/types';
 
+  // ── Onboarding flow: install → tutorial → spotlight (matches legacy tutCheckAndShow) ──
+  // showInstallModal: true when the install popup should show as part of onboarding
+  let showInstallModal = $state(false);
   let spotlightReady = $state(false);
+
+  // Check if we should show install modal on first home visit
+  $effect(() => {
+    if ($page.url.pathname === '/' && $initialPullDone && !isInstallSeen() && !showInstallModal) {
+      showInstallModal = true;
+    }
+  });
+
+  function onInstallClosed() {
+    // Matches legacy closeInstall: if first time, fire tutorial next; else unlock body
+    showInstallModal = false;
+    // Tutorial will auto-fire via TutorialOverlay's $effect if not done yet
+  }
+
   function onTutorialDone() {
     // Small delay so home screen can render before spotlight tour starts
     document.body.classList.add('spot-scroll-lock');
@@ -51,6 +61,14 @@
   }
 
   let { children } = $props();
+
+  /**
+   * Session restoration gate — starts false, becomes true once onMount
+   * has finished restoring the Supabase session (or failed/timed out).
+   * The auth guard $effect skips redirect while this is false, preventing
+   * the flash-to-login race on iOS force-close restart.
+   */
+  let sessionReady = $state(false);
 
   const PUBLIC_ROUTES = ['/login', '/settings', '/history', '/privacy', '/terms', '/dashboard'];
 
@@ -87,10 +105,12 @@
     }
     window.addEventListener('popstate', onPopState);
 
-    // If tutorial already done, enable spotlight tours immediately
-    if (isTutorialDone()) spotlightReady = true;
+    // If tutorial already done AND pull is complete, enable spotlight tours.
+    // (Moved to $effect below so it reacts to initialPullDone changes.)
 
-    // Restore existing session on first load
+    // Restore existing session on first load.
+    // On success or failure, set sessionReady = true so the auth guard $effect
+    // can fire. This prevents the flash-to-login race on iOS force-close restart.
     supabase.auth.getSession().then(async ({ data }) => {
       const session = data.session;
       if (session?.user) {
@@ -103,7 +123,17 @@
         // Pre-load student profiles into the store
         const { profiles } = await getStudentProfiles();
         familyProfiles.set(profiles);
+      } else {
+        // No valid Supabase session — clear the cached auth user.
+        // Do NOT clear familyProfiles here: PIN-only students have no
+        // Supabase session but their profiles are persisted in localStorage.
+        authUser.set(null);
       }
+      sessionReady = true;
+    }).catch(() => {
+      // Network error (offline) — trust cached localStorage state.
+      // authUser and familyProfiles remain from their persisted values.
+      sessionReady = true;
     });
 
     // Keep the store in sync as Supabase auth state changes
@@ -123,7 +153,11 @@
           navStack.clear();
           goto('/dashboard');
         }
-      } else {
+      } else if (event === 'SIGNED_OUT') {
+        // Only clear on explicit sign-out, NOT on INITIAL_SESSION with null
+        // session. PIN-only students never have a Supabase session, so
+        // INITIAL_SESSION always arrives with session=null for them — blindly
+        // clearing here would wipe their persisted familyProfiles.
         authUser.set(null);
         familyProfiles.set([]);
       }
@@ -132,8 +166,12 @@
     return () => { subscription.unsubscribe(); cleanupSwipe(); window.removeEventListener('popstate', onPopState); };
   });
 
-  // Reactive guard: redirect when auth state changes
+  // Reactive guard: redirect when auth state changes.
+  // Gated on sessionReady so we don't redirect before the Supabase session
+  // has been restored from localStorage (prevents iOS force-close flash-to-login).
   $effect(() => {
+    if (!sessionReady) return;
+
     const currentPath = $page.url.pathname;
     const isPublic = PUBLIC_ROUTES.includes(currentPath);
 
@@ -146,29 +184,70 @@
       navStack.clear();
       goto('/login', { replaceState: true });
     }
+
+    // PIN-only session hardening: if activeStudentId is set but there's no
+    // auth user and no valid PIN session token, clear the student and redirect.
+    // This prevents the sibling bypass where editing mmr_active_student in
+    // localStorage would grant access without knowing the PIN.
+    if (!$authUser && $activeStudentId && !$guestMode) {
+      try {
+        const raw = localStorage.getItem('mmr_pin_session');
+        const session = raw ? JSON.parse(raw) : null;
+        if (!session?.token || session.studentId !== $activeStudentId) {
+          activeStudentId.set(null);
+          localStorage.removeItem('mmr_pin_session');
+          if (!isPublic) {
+            navStack.clear();
+            goto('/login', { replaceState: true });
+          }
+        }
+      } catch {
+        activeStudentId.set(null);
+        if (!isPublic) {
+          navStack.clear();
+          goto('/login', { replaceState: true });
+        }
+      }
+    }
     // Signed in but no student → ProfilePicker overlay is rendered below (no redirect needed)
   });
 
-  // Pull student data from Supabase when active student changes
+  // Pull student data + subscribe to Realtime unlock changes when active student changes
   let lastPulledId: string | null = null;
   $effect(() => {
     const sid = $activeStudentId;
-    if (sid && sid !== lastPulledId && $authUser) {
-      lastPulledId = sid;
-      pullStudentData(sid).catch(() => {});
-    }
+    // Reset on sign-out so re-login triggers a fresh pull
+    if (!sid) { lastPulledId = null; return; }
+    if (sid === lastPulledId) return;
+    lastPulledId = sid;
+    pullStudentData(sid).catch(() => {});
+
+    // Subscribe to live unlock_settings changes (parent toggles on dashboard)
+    const unsubRealtime = subscribeUnlockSettings(sid);
+    return () => { unsubRealtime(); };
   });
 
-  // Push student data to Supabase when app is backgrounded/closed
+  // Push student data on background + refresh unlock_settings on foreground
   $effect(() => {
-    if (!$activeStudentId || !$authUser) return;
+    const sid = $activeStudentId;
+    if (!sid) return;
     const handleVisChange = () => {
       if (document.visibilityState === 'hidden') {
         pushStudentData().catch(() => {});
+      } else if (document.visibilityState === 'visible') {
+        // Catch up on any changes missed while Realtime was suspended
+        refreshUnlockSettings(sid).catch(() => {});
       }
     };
     document.addEventListener('visibilitychange', handleVisChange);
     return () => document.removeEventListener('visibilitychange', handleVisChange);
+  });
+
+  // Enable spotlight tours once pull completes and both install + tutorial are done
+  $effect(() => {
+    if ($initialPullDone && isInstallSeen() && isTutorialDone() && !spotlightReady) {
+      spotlightReady = true;
+    }
   });
 
   // Dark mode: sync body.dark class to settings store
@@ -190,13 +269,6 @@
 </script>
 
 {@render children()}
-
-<!-- Global cog button — fixed position, visible on all screens (matches legacy) -->
-{#if showCog}
-  <button type="button" class="cog-btn" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
-    <span class="cog-ico">⚙️</span>
-  </button>
-{/if}
 
 <!-- Profile Picker overlay — shown when signed in but no student is selected -->
 {#if $authUser && !$activeStudent && !$guestMode && !$page.url.pathname.startsWith('/dashboard')}
@@ -221,10 +293,35 @@
   </div>
 {/if}
 
-<!-- Tutorial overlay (first launch only) -->
-<TutorialOverlay onDone={onTutorialDone} currentPath={$page.url.pathname} />
+<!-- Sync error banner — shown when data failed to save to cloud -->
+{#if $syncStatus === 'error'}
+  <div class="sync-banner" role="alert">
+    <span>Your progress may not be saved. Check your connection.</span>
+    <button type="button" class="sync-retry-btn" onclick={() => pushStudentData().catch(() => {})}>
+      Retry
+    </button>
+    <button
+      type="button"
+      class="pwa-dismiss-btn"
+      aria-label="Dismiss sync error"
+      onclick={() => syncStatus.set('idle')}
+    >
+      ✕
+    </button>
+  </div>
+{/if}
 
-<!-- Spotlight tour (per-screen, after tutorial is complete) -->
+<!-- Install modal — shown first time on home screen (legacy tutCheckAndShow flow) -->
+{#if showInstallModal}
+  <InstallModal onClose={onInstallClosed} />
+{/if}
+
+<!-- Tutorial overlay (first launch only, after install modal is dismissed) -->
+{#if !showInstallModal}
+  <TutorialOverlay onDone={onTutorialDone} currentPath={$page.url.pathname} />
+{/if}
+
+<!-- Spotlight tour (per-screen, after install + tutorial are complete) -->
 {#if spotlightReady}
   <SpotlightTour />
 {/if}
@@ -290,6 +387,7 @@
   /* Full-screen route background — math symbols tiled over gradient */
   :global(.sc) {
     min-height: 100dvh;
+    overflow-x: hidden;
     background-image: var(--app-bg-svg), var(--home-grad);
     background-size: 420px 420px, 100% 100%;
   }
@@ -335,5 +433,36 @@
     cursor: pointer;
     padding: 0;
     line-height: 1;
+  }
+
+  /* Sync error banner — same layout as PWA banner, amber accent */
+  .sync-banner {
+    position: fixed;
+    bottom: calc(1rem + var(--safe-bottom));
+    left: 1rem;
+    right: 1rem;
+    background: #7f1d1d;
+    color: #fff;
+    border-radius: 0.875rem;
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    z-index: 9998;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .sync-banner span { flex: 1; }
+  .sync-retry-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.875rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
   }
 </style>

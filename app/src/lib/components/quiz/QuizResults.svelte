@@ -10,6 +10,8 @@
    */
 
   import { scores, unitsData, settings } from '$lib/stores';
+  import { stackNavigate } from '$lib/services/navStack';
+  import { hasHtmlTags } from '$lib/utils';
   import type { ScoreEntry } from '$lib/types';
 
   const { entry, color, onRetry, onPracticeWeak, onHome }: {
@@ -138,14 +140,17 @@
   const wrong   = $derived(entry.answers.filter(a => !a.ok));
   const correct = $derived(entry.answers.filter(a => a.ok));
 
-  let wrongOpen   = $state(false);
-  let correctOpen = $state(true);  // correct starts collapsed (legacy: collapsed=true)
+  let wrongOpen   = $state(true);   // wrong answers expanded so students review mistakes
+  let correctOpen = $state(false);  // correct answers collapsed by default
 </script>
 
 <div class="sc" style="--color:{color}">
   <div class="bar">
     <button type="button" class="bar-back" style="color:{color}" onclick={onHome}>Done</button>
     <div class="bar-title">{entry.label} — Results</div>
+    <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+      <span class="cog-ico">⚙️</span>
+    </button>
   </div>
   <div class="sc-in">
 
@@ -180,8 +185,8 @@
               <div class="rev-item">
                 <div class="rinum" style="background:#e74c3c">{i + 1}</div>
                 <div class="ribody">
-                  <div class="ri-q">{#if a.t?.includes('<')}{@html a.t}{:else}{a.t}{/if}</div>
-                  <div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#7f8c8d">{a.chosen != null && a.opts ? a.opts[a.chosen] ?? '' : ''}</span></div>
+                  <div class="ri-q">{#if hasHtmlTags(a.t)}{@html a.t}{:else}{a.t}{/if}</div>
+                  <div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#7f8c8d">{a.opts && a.chosen != null ? a.opts[a.chosen] ?? 'Not answered' : 'Not answered'}</span></div>
                   <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> {a.opts ? a.opts[a.correct] ?? '' : a.correct} ✅</div>
                   <div class="ri-e">💡 {a.exp}</div>
                   {#if a.timeSecs != null}
@@ -206,8 +211,8 @@
               <div class="rev-item">
                 <div class="rinum" style="background:#27ae60">{i + 1}</div>
                 <div class="ribody">
-                  <div class="ri-q">{#if a.t?.includes('<')}{@html a.t}{:else}{a.t}{/if}</div>
-                  <div class="ri-a" style="color:#27ae60">Your answer: {a.chosen != null && a.opts ? a.opts[a.chosen] ?? '' : ''} ✅</div>
+                  <div class="ri-q">{#if hasHtmlTags(a.t)}{@html a.t}{:else}{a.t}{/if}</div>
+                  <div class="ri-a" style="color:#27ae60">Your answer: {a.opts && a.chosen != null ? a.opts[a.chosen] ?? 'Not answered' : 'Not answered'} ✅</div>
                   <div class="ri-e">💡 {a.exp}</div>
                   {#if a.timeSecs != null}
                     <div class="ri-e">⏱ {a.timeSecs}s</div>
@@ -227,7 +232,7 @@
           Practice Weak Topics ({wrong.length} question{wrong.length === 1 ? '' : 's'}) →
         </button>
       {/if}
-      <button type="button" class="rbtn" style="background:linear-gradient(135deg,{color},{color}aa)" onclick={onRetry}>Try Again 🔄</button>
+      <button type="button" class="rbtn" style="background:linear-gradient(135deg,{color},{color}aa)" onclick={onRetry}>Try Again</button>
       <button type="button" class="rbtn" style="background:linear-gradient(135deg,#7f8c8d,#636e72)" onclick={onHome}>
         {entry.type === 'final' ? 'Back to Home' : 'Back to Unit'}
       </button>

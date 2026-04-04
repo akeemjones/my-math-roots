@@ -30,7 +30,7 @@ CREATE OR REPLACE FUNCTION verify_student_pin(p_student_id UUID, p_pin TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_stored_hash TEXT;
@@ -117,7 +117,7 @@ CREATE OR REPLACE FUNCTION ensure_family_code(p_parent_id UUID)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_code TEXT;
@@ -162,7 +162,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_key TEXT;

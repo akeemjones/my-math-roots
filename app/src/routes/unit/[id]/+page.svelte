@@ -7,7 +7,7 @@
   import { goto } from '$app/navigation';
   import { stackNavigate, stackBack } from '$lib/services/navStack';
   import { page } from '$app/stores';
-  import { unitsData, scores, hasPassed, bestScore, settings } from '$lib/stores';
+  import { unitsData, scores, hasPassed, bestScore, settings, unlockSettings } from '$lib/stores';
   import { loadUnit } from '$lib/boot';
 
   const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
@@ -15,18 +15,22 @@
   const unitId = $derived($page.params.id);
   const unit   = $derived($unitsData.find(u => u.id === unitId) ?? null);
 
-  let loading = $state(false);
-
   // ── Lesson unlock logic ─────────────────────────────────────────────────────
   function isLessonUnlocked(i: number): boolean {
-    if ($settings.freeMode || i === 0) return true;
-    return $hasPassed('lq_' + unit!.lessons[i - 1].id);
+    if (!unit) return true;
+    if ($settings.freeMode || $unlockSettings.freeMode || i <= 0) return true;
+    // Check parent lesson-level override (e.g. "4_2" for unit 5, lesson 3)
+    const unitIdx = $unitsData.findIndex(u => u.id === unit.id);
+    if ($unlockSettings.lessons[`${unitIdx}_${i}`]) return true;
+    const prevLesson = unit.lessons[i - 1];
+    if (!prevLesson) return true; // defensive guard
+    return $hasPassed('lq_' + prevLesson.id);
   }
 
   // ── Unit quiz state ─────────────────────────────────────────────────────────
   const uqUnlocked = $derived.by(() => {
     if (!unit) return false;
-    if ($settings.freeMode) return true;
+    if ($settings.freeMode || $unlockSettings.freeMode) return true;
     return unit.lessons.every(l => $hasPassed('lq_' + l.id));
   });
 
@@ -80,9 +84,7 @@
 
   onMount(async () => {
     if (!unitId) return;
-    loading = true;
     await loadUnit(unitId);
-    loading = false;
     refreshPaused();
   });
 </script>
@@ -99,6 +101,9 @@
     <div class="bar">
       <button type="button" class="bar-back" style="color:{unit.color}" onclick={() => stackBack('/')} aria-label="Back to home">Home</button>
       <span class="bar-title">{unit.name}</span>
+      <button type="button" class="bar-cog" aria-label="Settings" onclick={() => stackNavigate('/settings')}>
+        <span class="cog-ico">⚙️</span>
+      </button>
     </div>
 
     <!-- TEKS strip -->
@@ -125,7 +130,7 @@
 
       <!-- Lesson cards -->
       <div class="lesson-glass-wrap">
-        {#if loading && !unit._loaded}
+        {#if !unit._loaded}
           <p style="color:var(--txt2);padding:8px">Loading lessons…</p>
         {:else}
           <div class="lcard-grid">
@@ -137,15 +142,23 @@
               {@const avgPct = allAttempts.length
                 ? Math.round(allAttempts.reduce((s, x) => s + x.pct, 0) / allAttempts.length)
                 : null}
+              {@const isEnrich    = unlocked && !!lesson.enrichment}
+              {@const enrichGrade = lesson.enrichment_grade ?? 3}
+              {@const badgeLabel  = enrichGrade === 4 ? 'Expert Mode' : 'Grade 3 Prep'}
 
               {#if unlocked}
                 <!-- Unlocked lesson card -->
                 <div class="lcard"
+                     class:lcard-enrichment={isEnrich}
                      role="button" tabindex="0"
                      style="--uc:{unit.color}"
                      aria-label="Lesson {i+1}, {lesson.title}{lqPassed ? ', completed' : lqBest > 0 ? ', best score ' + lqBest + '%' : ''}"
                      onclick={() => stackNavigate(`/lesson/${lesson.id}`)}
                      onkeydown={(e) => e.key === 'Enter' && stackNavigate(`/lesson/${lesson.id}`)}>
+                  {#if isEnrich}
+                    <div class="enrich-shimmer" aria-hidden="true"></div>
+                    <div class="enrich-badge">{badgeLabel}</div>
+                  {/if}
                   <div class="lcard-num" style="background:{unit.color}" aria-hidden="true">{i + 1}</div>
                   <div class="lcard-info">
                     <div class="lcard-title">{lesson.icon} {lesson.title}</div>
@@ -312,5 +325,37 @@
     overflow-y: auto;
     margin-bottom: 0;
     max-height: calc(100dvh - 340px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    touch-action: pan-y;
+  }
+
+  /* ── Enrichment "Legendary" card treatment ── */
+  #unit-screen :global(.lcard-enrichment) {
+    border: 2px solid #d4af37 !important;
+    box-shadow: 0 0 0 1px rgba(212,175,55,.28), 0 2px 16px rgba(212,175,55,.22);
+    overflow: hidden;
+    position: relative;
+  }
+  #unit-screen :global(.enrich-shimmer) {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(249,242,149,.42) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: shimmer 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  #unit-screen :global(.enrich-badge) {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: #1a1a2e;
+    color: #d4af37;
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 2px 7px;
+    border-radius: 50px;
+    pointer-events: none;
+    z-index: 1;
+    text-transform: uppercase;
   }
 </style>

@@ -42,6 +42,16 @@ export async function initPwa(): Promise<void> {
         // Periodically poll for updates every 60 minutes
         if (registration) {
           setInterval(() => registration.update(), 60 * 60 * 1000);
+
+          // Also check on app resume (mobile may throttle background intervals).
+          // Intentionally permanent — lives for the app lifetime alongside the SW registration.
+          let lastCheck = Date.now();
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && Date.now() - lastCheck > 5 * 60 * 1000) {
+              lastCheck = Date.now();
+              registration.update();
+            }
+          });
         }
       },
 

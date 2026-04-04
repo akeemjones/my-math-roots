@@ -7,18 +7,23 @@
  *   declare let _lsFamilyProfiles: StudentProfile[] | null
  *
  * Active student profile is persisted to localStorage.
- * Supabase auth session is in-memory only (re-established on load).
+ * Auth user is persisted to localStorage as a cache so the app doesn't
+ * flash the login screen on iOS force-close before session restoration.
  *
  * Supabase sync: student profiles are pulled from student_profiles
  * table on login (Phase 3).
  */
 
-import { writable, derived } from 'svelte/store';
+import { derived } from 'svelte/store';
 import { persisted } from './persist.js';
 import type { StudentProfile, AuthUser } from '$lib/types';
 
-/** Supabase Auth user (parent/teacher). Null when signed out. In-memory only. */
-export const authUser = writable<AuthUser | null>(null);
+/**
+ * Supabase Auth user (parent/teacher). Null when signed out.
+ * Persisted so the value survives iOS force-close (swipe-away) without
+ * flashing the login screen while the Supabase session is restored.
+ */
+export const authUser = persisted<AuthUser | null>('mmr_auth_user', null);
 
 /**
  * All student profiles available to the current family.

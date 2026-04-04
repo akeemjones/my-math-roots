@@ -12,31 +12,36 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "svg": "<svg viewBox=\"0 0 60 60\" fill=\"none\"><circle cx=\"30\" cy=\"30\" r=\"27\" fill=\"#FF2200\" opacity=\"0.1\"/><rect x=\"8\" y=\"27\" width=\"18\" height=\"7\" rx=\"3.5\" fill=\"#FF2200\"/><rect x=\"13.5\" y=\"21.5\" width=\"7\" height=\"18\" rx=\"3.5\" fill=\"#FF2200\"/><rect x=\"34\" y=\"27\" width=\"18\" height=\"7\" rx=\"3.5\" fill=\"#FF2200\" opacity=\"0.75\"/><circle cx=\"9\" cy=\"47\" r=\"3\" fill=\"#FF2200\" opacity=\"0.35\"/><circle cx=\"51\" cy=\"13\" r=\"3\" fill=\"#FF2200\" opacity=\"0.35\"/></svg>",
     "color": "#FF2200",
     "gp": 1,
-    "teks": "TEKS 2.4A, 2.7A",
+    "teks": "TEKS 2.4A, 2.7C",
+    "teks_tags": ["2.4A", "2.7C"],
     "lessons": [
       {
         "id": "u1l1",
         "title": "Count Up & Count Back",
         "icon": "🔢",
-        "desc": "Count forward to add, backward to subtract"
+        "desc": "Count forward to add, backward to subtract",
+        "teks_tags": ["2.4A"]
       },
       {
         "id": "u1l2",
         "title": "Doubles!",
         "icon": "✌️",
-        "desc": "Use doubles facts to add quickly"
+        "desc": "Use doubles facts to add quickly",
+        "teks_tags": ["2.4A"]
       },
       {
         "id": "u1l3",
         "title": "Make a 10",
         "icon": "🔟",
-        "desc": "Break apart numbers to reach 10 first"
+        "desc": "Break apart numbers to reach 10 first",
+        "teks_tags": ["2.4A"]
       },
       {
         "id": "u1l4",
         "title": "Number Families",
         "icon": "👨‍👩‍👧",
-        "desc": "Related addition & subtraction facts using 3 numbers"
+        "desc": "Related addition & subtraction facts using 3 numbers",
+        "teks_tags": ["2.4A", "2.7C"]
       }
     ]
   },
@@ -47,31 +52,36 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "svg": "<svg viewBox=\"0 0 60 60\" fill=\"none\"><rect x=\"3\" y=\"14\" width=\"54\" height=\"38\" rx=\"6\" fill=\"#0095FF\" opacity=\"0.1\" stroke=\"#0095FF\" stroke-width=\"2.5\"/><line x1=\"21\" y1=\"14\" x2=\"21\" y2=\"52\" stroke=\"#0095FF\" stroke-width=\"2\"/><line x1=\"39\" y1=\"14\" x2=\"39\" y2=\"52\" stroke=\"#0095FF\" stroke-width=\"2\"/><rect x=\"5\" y=\"17\" width=\"13\" height=\"6\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.4\"/><rect x=\"23\" y=\"17\" width=\"13\" height=\"6\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.4\"/><rect x=\"41\" y=\"17\" width=\"13\" height=\"6\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.4\"/><rect x=\"5\" y=\"26\" width=\"13\" height=\"22\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.65\"/><rect x=\"23\" y=\"32\" width=\"13\" height=\"16\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.5\"/><rect x=\"41\" y=\"40\" width=\"13\" height=\"8\" rx=\"2\" fill=\"#0095FF\" opacity=\"0.35\"/><rect x=\"21\" y=\"8\" width=\"18\" height=\"5\" rx=\"2.5\" fill=\"#0095FF\" opacity=\"0.5\"/></svg>",
     "color": "#0095FF",
     "gp": 1,
-    "teks": "TEKS 2.2A-F, 2.7B, 2.9C",
+    "teks": "TEKS 2.2A-F, 2.7B",
+    "teks_tags": ["2.2A", "2.2B", "2.2C", "2.2D", "2.2E", "2.2F", "2.7B"],
     "lessons": [
       {
         "id": "u2l1",
         "title": "Big Numbers",
         "icon": "🏠",
-        "desc": "Each digit has a place and a value"
+        "desc": "Each digit has a place and a value",
+        "teks_tags": ["2.2A", "2.2B"]
       },
       {
         "id": "u2l2",
         "title": "Different Ways to Write Numbers",
         "icon": "📖",
-        "desc": "Write numbers three different ways"
+        "desc": "Write numbers three different ways",
+        "teks_tags": ["2.2B", "2.2C"]
       },
       {
         "id": "u2l3",
         "title": "Bigger or Smaller?",
         "icon": "⚖️",
-        "desc": "Greater than, less than, and equal to"
+        "desc": "Greater than, less than, and equal to",
+        "teks_tags": ["2.2D", "2.7B"]
       },
       {
         "id": "u2l4",
         "title": "Skip Counting",
         "icon": "🐸",
-        "desc": "Count by 2s, 5s, 10s, and 100s"
+        "desc": "Count by 2s, 5s, 10s, and 100s",
+        "teks_tags": ["2.2E", "2.2F", "2.7B"]
       }
     ]
   },
@@ -83,30 +93,35 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#FF6600",
     "gp": 2,
     "teks": "TEKS 2.4A-D, 2.7B-C",
+    "teks_tags": ["2.4A", "2.4B", "2.4C", "2.4D", "2.7C"],
     "lessons": [
       {
         "id": "u3l1",
         "title": "Adding Bigger Numbers",
         "icon": "➕",
-        "desc": "Add with and without regrouping"
+        "desc": "Add with and without regrouping",
+        "teks_tags": ["2.4B", "2.4C"]
       },
       {
         "id": "u3l2",
         "title": "Taking Away Bigger Numbers",
         "icon": "➖",
-        "desc": "Subtract with and without borrowing"
+        "desc": "Subtract with and without borrowing",
+        "teks_tags": ["2.4B", "2.4C"]
       },
       {
         "id": "u3l3",
         "title": "Add Three Numbers",
         "icon": "🔱",
-        "desc": "Find clever ways to add 3 numbers"
+        "desc": "Find clever ways to add 3 numbers",
+        "teks_tags": ["2.4D"]
       },
       {
         "id": "u3l4",
         "title": "Math Stories",
         "icon": "📝",
-        "desc": "Solve math stories step by step"
+        "desc": "Solve math stories step by step",
+        "teks_tags": ["2.7C"]
       }
     ]
   },
@@ -118,24 +133,30 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#FF4400",
     "gp": 2,
     "teks": "TEKS 2.4A-D, 2.7B-C",
+    "teks_tags": ["2.4B", "2.4C", "2.2D"],
     "lessons": [
       {
         "id": "u4l1",
         "title": "Adding Really Big Numbers",
         "icon": "➕",
-        "desc": "Add hundreds, tens, and ones with regrouping"
+        "desc": "Add hundreds, tens, and ones with regrouping",
+        "teks_tags": ["2.4B", "2.4C"]
       },
       {
         "id": "u4l2",
         "title": "Taking Away Really Big Numbers",
         "icon": "➖",
-        "desc": "Subtract with regrouping across columns"
+        "desc": "Subtract with regrouping across columns",
+        "teks_tags": ["2.4B", "2.4C"]
       },
       {
         "id": "u4l3",
         "title": "Close Enough Counts!",
         "icon": "🎯",
-        "desc": "Round numbers to get close answers fast"
+        "desc": "Round numbers to get close answers fast",
+        "teks_tags": ["2.2D"],
+        "enrichment": true,
+        "enrichment_grade": 3
       }
     ]
   },
@@ -146,31 +167,36 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "svg": "<svg viewBox=\"0 0 60 60\" fill=\"none\"><rect x=\"3\" y=\"18\" width=\"36\" height=\"24\" rx=\"5\" fill=\"#00CC44\" opacity=\"0.12\" stroke=\"#00CC44\" stroke-width=\"2.5\"/><path d=\"M21 24 Q15 24 15 29 Q15 33 21 33 Q27 33 27 37 Q27 41 21 41\" stroke=\"#00CC44\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"/><line x1=\"21\" y1=\"21\" x2=\"21\" y2=\"44\" stroke=\"#00CC44\" stroke-width=\"2\" stroke-linecap=\"round\"/><ellipse cx=\"50\" cy=\"38\" rx=\"8\" ry=\"3\" fill=\"#00CC44\" opacity=\"0.35\" stroke=\"#00CC44\" stroke-width=\"1.5\"/><rect x=\"42\" y=\"30\" width=\"16\" height=\"8\" fill=\"#00CC44\" opacity=\"0.2\"/><ellipse cx=\"50\" cy=\"30\" rx=\"8\" ry=\"3\" fill=\"#00CC44\" opacity=\"0.55\" stroke=\"#00CC44\" stroke-width=\"1.5\"/><rect x=\"42\" y=\"22\" width=\"16\" height=\"8\" fill=\"#00CC44\" opacity=\"0.2\"/><ellipse cx=\"50\" cy=\"22\" rx=\"8\" ry=\"3\" fill=\"#00CC44\" stroke=\"#00CC44\" stroke-width=\"1.5\"/></svg>",
     "color": "#00CC44",
     "gp": 3,
-    "teks": "TEKS 2.5A-B, 2.11A-F",
+    "teks": "TEKS 2.5A-B, 2.11A-C",
+    "teks_tags": ["2.5A", "2.5B", "2.11A", "2.11B", "2.11C"],
     "lessons": [
       {
         "id": "u5l1",
         "title": "All About Coins",
         "icon": "🪙",
-        "desc": "Learn each coin and how much it is worth"
+        "desc": "Learn each coin and how much it is worth",
+        "teks_tags": ["2.5A"]
       },
       {
         "id": "u5l2",
         "title": "Count Your Coins",
         "icon": "💵",
-        "desc": "Add coin values from biggest to smallest"
+        "desc": "Add coin values from biggest to smallest",
+        "teks_tags": ["2.5A"]
       },
       {
         "id": "u5l3",
         "title": "Dollars and Cents",
         "icon": "💲",
-        "desc": "Write and compare money amounts"
+        "desc": "Write and compare money amounts",
+        "teks_tags": ["2.5A", "2.5B"]
       },
       {
         "id": "u5l4",
         "title": "Save, Spend and Give",
         "icon": "🏦",
-        "desc": "Smart ways to use money"
+        "desc": "Smart ways to use money",
+        "teks_tags": ["2.11A", "2.11B", "2.11C"]
       }
     ]
   },
@@ -182,30 +208,37 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#00C7BE",
     "gp": 3,
     "teks": "TEKS 2.10A-D",
+    "teks_tags": ["2.10A", "2.10B", "2.10C", "2.10D"],
     "lessons": [
       {
         "id": "u6l1",
         "title": "Tally Marks",
         "icon": "📋",
-        "desc": "Record and read data with tally marks"
+        "desc": "Record and read data with tally marks",
+        "teks_tags": ["2.10B"]
       },
       {
         "id": "u6l2",
         "title": "Bar Graphs",
         "icon": "📊",
-        "desc": "Read and understand bar graphs"
+        "desc": "Read and understand bar graphs",
+        "teks_tags": ["2.10A", "2.10B", "2.10C"]
       },
       {
         "id": "u6l3",
         "title": "Picture Graphs",
         "icon": "🖼️",
-        "desc": "Use pictures to represent data"
+        "desc": "Use pictures to represent data",
+        "teks_tags": ["2.10A", "2.10B"]
       },
       {
         "id": "u6l4",
         "title": "Line Plots",
         "icon": "📈",
-        "desc": "Show and read data on a number line"
+        "desc": "Show and read data on a number line",
+        "teks_tags": ["2.10B"],
+        "enrichment": true,
+        "enrichment_grade": 3
       }
     ]
   },
@@ -217,24 +250,30 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#4C4BFF",
     "gp": 3,
     "teks": "TEKS 2.9A-G",
+    "teks_tags": ["2.9A", "2.9B", "2.9D", "2.9E", "2.9G"],
     "lessons": [
       {
         "id": "u7l1",
         "title": "How Long Is It?",
         "icon": "📏",
-        "desc": "Measure in inches, feet, and centimeters"
+        "desc": "Measure in inches, feet, and centimeters",
+        "teks_tags": ["2.9A", "2.9B", "2.9D", "2.9E"]
       },
       {
         "id": "u7l2",
         "title": "What Time Is It?",
         "icon": "🕐",
-        "desc": "Read clocks to hours and 5-minute intervals"
+        "desc": "Read clocks to hours and 5-minute intervals",
+        "teks_tags": ["2.9G"]
       },
       {
         "id": "u7l3",
         "title": "Hot, Cold and Full",
         "icon": "🌡️",
-        "desc": "Read thermometers and measure liquids"
+        "desc": "Read thermometers and measure liquids",
+        "teks_tags": ["2.9D"],
+        "enrichment": true,
+        "enrichment_grade": 3
       }
     ]
   },
@@ -246,24 +285,28 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#FF0055",
     "gp": 4,
     "teks": "TEKS 2.3A-D",
+    "teks_tags": ["2.3A", "2.3B", "2.3C", "2.3D"],
     "lessons": [
       {
         "id": "u8l1",
         "title": "What is a Fraction?",
         "icon": "✂️",
-        "desc": "Understand what a fraction means"
+        "desc": "Understand what a fraction means",
+        "teks_tags": ["2.3A", "2.3B"]
       },
       {
         "id": "u8l2",
         "title": "Halves, Fourths and Eighths",
         "icon": "🍕",
-        "desc": "Name and identify common fractions"
+        "desc": "Name and identify common fractions",
+        "teks_tags": ["2.3B", "2.3C"]
       },
       {
         "id": "u8l3",
         "title": "Which Piece is Bigger?",
         "icon": "⚖️",
-        "desc": "Which fraction is bigger or smaller?"
+        "desc": "Which fraction is bigger or smaller?",
+        "teks_tags": ["2.3D"]
       }
     ]
   },
@@ -275,24 +318,30 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#C844FF",
     "gp": 4,
     "teks": "TEKS 2.8A-E",
+    "teks_tags": ["2.8A", "2.8B", "2.8C", "2.8D", "2.8E"],
     "lessons": [
       {
         "id": "u9l1",
         "title": "Flat Shapes",
         "icon": "⭕",
-        "desc": "Flat shapes — sides and corners"
+        "desc": "Flat shapes — sides and corners",
+        "teks_tags": ["2.8A", "2.8B", "2.8E"]
       },
       {
         "id": "u9l2",
         "title": "Solid Shapes",
         "icon": "📦",
-        "desc": "Solid shapes — faces, edges, vertices"
+        "desc": "Solid shapes — faces, edges, vertices",
+        "teks_tags": ["2.8A", "2.8C"]
       },
       {
         "id": "u9l3",
         "title": "Mirror Shapes",
         "icon": "🦋",
-        "desc": "Lines of symmetry in shapes"
+        "desc": "Lines of symmetry in shapes",
+        "teks_tags": ["2.8E"],
+        "enrichment": true,
+        "enrichment_grade": 4
       }
     ]
   },
@@ -304,24 +353,28 @@ export const UNIT_SHELLS: Omit<Unit, '_loaded'>[] = [
     "color": "#FFAA00",
     "gp": 4,
     "teks": "TEKS 2.6A-B",
+    "teks_tags": ["2.6A", "2.6B"],
     "lessons": [
       {
         "id": "u10l1",
         "title": "Equal Groups",
         "icon": "🍎",
-        "desc": "Groups with the same amount — start of multiplication"
+        "desc": "Groups with the same amount — start of multiplication",
+        "teks_tags": ["2.6A"]
       },
       {
         "id": "u10l2",
         "title": "Adding the Same Number",
         "icon": "🔄",
-        "desc": "Adding equal groups — the bridge to multiplication"
+        "desc": "Adding equal groups — the bridge to multiplication",
+        "teks_tags": ["2.6A"]
       },
       {
         "id": "u10l3",
         "title": "Sharing Equally",
         "icon": "🤝",
-        "desc": "Split into equal groups — introduction to division"
+        "desc": "Split into equal groups — introduction to division",
+        "teks_tags": ["2.6B"]
       }
     ]
   }

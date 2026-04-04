@@ -15,6 +15,7 @@
 
 import { writable, derived } from 'svelte/store';
 import { persisted } from './persist.js';
+import { done } from './progress.js';
 import type { CurrentState, ScoreEntry } from '$lib/types';
 
 /** Current navigation + quiz state. In-memory only. */
@@ -40,7 +41,8 @@ export const bestScore = derived(scores, ($scores) => (qid: string): number => {
   return entries.length === 0 ? 0 : Math.max(...entries.map((s) => s.pct));
 });
 
-/** True if the student has passed the given quiz (≥80%). */
-export const hasPassed = derived(scores, ($scores) => (qid: string): boolean =>
-  $scores.some((s) => s.qid === qid && s.pct >= 80)
+/** True if the student has passed the given quiz (≥80%).
+ *  Also checks done_json flags for legacy data that may not have score rows. */
+export const hasPassed = derived([scores, done], ([$scores, $done]) => (qid: string): boolean =>
+  !!$done[qid] || $scores.some((s) => s.qid === qid && s.pct >= 80)
 );

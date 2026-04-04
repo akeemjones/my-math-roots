@@ -48,6 +48,7 @@ const MIGRATION_FLAG = 'mmr_migrated_v6';
  *  3. Unlocks: wb_unit_unlocks, wb_lesson_unlocks → wb_settings_v2.freeMode
  */
 function migrateLegacy(): void {
+  if (!browser) return;
   if (localStorage.getItem(MIGRATION_FLAG)) return;
 
   let didMigrate = false;
@@ -174,8 +175,11 @@ function migrateLegacy(): void {
 
 /**
  * Lazy-load a unit's full lesson content.
- * Imports the pre-converted TypeScript data file and merges it into the store.
+ * Uses import.meta.glob so Vite statically discovers all unit data files
+ * and creates proper chunks for each one.
  */
+const unitLoaders = import.meta.glob('./data/u*.ts') as Record<string, () => Promise<any>>;
+
 export async function loadUnit(unitId: string): Promise<void> {
   const idx = parseInt(unitId.replace('u', ''), 10) - 1;
   if (isNaN(idx) || idx < 0 || idx > 9) return;
@@ -188,9 +192,10 @@ export async function loadUnit(unitId: string): Promise<void> {
   });
   if (alreadyLoaded) return;
 
-  // Dynamic import — relative path so Vite can resolve it at runtime
-  const mod = await import(`./data/u${idx + 1}.ts`);
+  const loader = unitLoaders[`./data/u${idx + 1}.ts`];
+  if (!loader) return;
 
+  const mod = await loader();
   const { mergeUnitContent } = await import('$lib/stores/content');
   mergeUnitContent(idx, mod.lessons, mod.unitQuiz, mod.testBank);
 }
