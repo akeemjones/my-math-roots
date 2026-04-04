@@ -16,31 +16,18 @@ import { supabase } from '$lib/supabase';
 import {
   mastery, streak, done, appTime, actDates, scores,
   activeStudent, activeStudentId, a11y, settings, unlockSettings, initialPullDone,
-  syncStatus,
+  syncStatus, pinSession,
 } from '$lib/stores';
 import type { ScoreEntry } from '$lib/types';
 import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/types';
 import { applyCloudOnboarding, clearOnboardingLocal } from '$lib/services/tour';
-
-// ─── PIN session token helpers ──────────────────────────────────────────────
-
-/** Read the PIN session token from localStorage. Returns null if missing/invalid. */
-function getPinSession(): { studentId: string; token: string } | null {
-  try {
-    const raw = localStorage.getItem('mmr_pin_session');
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (parsed?.studentId && parsed?.token) return parsed;
-  } catch { /* corrupted — treat as missing */ }
-  return null;
-}
 
 /**
  * Handle a session-expired error from an RPC.
  * Clears the PIN session and active student so the auth guard redirects to login.
  */
 function handleSessionExpired(): void {
-  try { localStorage.removeItem('mmr_pin_session'); } catch {}
+  pinSession.set(null);
   try { localStorage.removeItem('mmr_pending_scores'); } catch {}
   activeStudentId.set(null);
 }
@@ -99,7 +86,7 @@ async function _doPush(): Promise<boolean> {
     if (error) { console.warn('[sync] Push failed:', error.message); return false; }
   } else {
     // PIN-only student — use session-authenticated RPC
-    const session = getPinSession();
+    const session = get(pinSession);
     if (!session || session.studentId !== student.id) {
       console.warn('[sync] Push failed: no valid PIN session');
       handleSessionExpired();
@@ -224,7 +211,7 @@ export async function pullStudentData(studentId: string): Promise<void> {
     profile = data;
   } else {
     // PIN-only student — use session-authenticated RPC
-    const session = getPinSession();
+    const session = get(pinSession);
     if (!session || session.studentId !== studentId) {
       console.warn('[sync] Pull failed: no valid PIN session');
       handleSessionExpired();
@@ -461,7 +448,7 @@ export async function refreshUnlockSettings(studentId: string): Promise<void> {
     cloud = data?.unlock_settings;
   } else {
     // PIN-only student — use session-authenticated RPC
-    const session = getPinSession();
+    const session = get(pinSession);
     const { data, error } = await supabase.rpc('get_unlock_settings', {
       p_student_id: studentId,
       p_session_token: session?.token ?? null,
