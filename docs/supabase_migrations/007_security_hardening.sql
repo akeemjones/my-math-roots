@@ -91,8 +91,8 @@ BEGIN
   SELECT pin_hash INTO v_stored_hash
   FROM student_profiles WHERE id = p_student_id;
 
-  IF v_stored_hash IS NULL THEN
-    RETURN jsonb_build_object('success', false, 'attempts_left', 0, 'error', 'Student not found or PIN not set');
+  IF v_stored_hash IS NULL OR v_stored_hash = '' THEN
+    RETURN jsonb_build_object('success', false, 'attempts_left', 0, 'error', 'PIN not set — please ask a parent to reset your PIN.');
   END IF;
 
   -- 2. Check/create attempt record
@@ -225,9 +225,11 @@ GRANT EXECUTE ON FUNCTION create_student_profile(TEXT, TEXT, TEXT, TEXT, INTEGER
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- 4. Drop all existing PIN hashes (no production users — confirmed)
+--    Allow NULL so parents can reset PINs via reset_student_pin RPC.
 -- ═══════════════════════════════════════════════════════════════════════════════
 
-UPDATE student_profiles SET pin_hash = '';
+ALTER TABLE student_profiles ALTER COLUMN pin_hash DROP NOT NULL;
+UPDATE student_profiles SET pin_hash = NULL WHERE pin_hash IS NOT DISTINCT FROM '';
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- 5. Reset student PIN — parent-only RPC

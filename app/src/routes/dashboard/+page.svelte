@@ -777,10 +777,10 @@
     if (pinResetBuffer.length < 4 || !pinResetStudentId) return;
     savingPinReset = true;
     try {
-      const enc     = new TextEncoder();
-      const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(pinResetBuffer.join('') + 'mymathroots_pin_salt_2025'));
-      const newHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
-      const r = await supabase.from('student_profiles').update({ pin_hash: newHash, updated_at: new Date().toISOString() }).eq('id', pinResetStudentId);
+      const r = await supabase.rpc('reset_student_pin', {
+        p_student_id: pinResetStudentId,
+        p_new_pin: pinResetBuffer.join(''),
+      });
       if (r.error) throw r.error;
       closePinReset();
     } catch {
@@ -894,19 +894,16 @@
     if (addPinBuf.length < 4) { addMsg = 'Enter a 4-digit PIN.'; return; }
     addSaving = true; addMsg = '';
     try {
-      const enc = new TextEncoder();
-      const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(addPinBuf.join('') + 'mymathroots_pin_salt_2025'));
-      const pinHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
-      const emoji = addEmoji;
+      const emoji  = addEmoji;
       const colors = AVATAR_COLORS[emoji] || ['#f59e0b','#f97316'];
-      const username = addName.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20) || 'student';
-      const ageVal = addAge ? (parseInt(addAge) || null) : null;
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { addMsg = 'Session expired — please sign out and sign in again.'; addSaving = false; return; }
-      const r = await supabase.from('student_profiles').insert({
-        parent_id: user.id, username, display_name: addName.trim(), age: ageVal,
-        avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
-        pin_hash: pinHash,
+      const ageVal = addAge ? (parseInt(addAge) || 0) : 0;
+      const r = await supabase.rpc('create_student_profile', {
+        p_display_name:      addName.trim(),
+        p_avatar_emoji:      emoji,
+        p_avatar_color_from: colors[0],
+        p_avatar_color_to:   colors[1],
+        p_age:               ageVal,
+        p_pin:               addPinBuf.join(''),
       });
       if (r.error) throw r.error;
       const { profiles } = await getStudentProfiles();

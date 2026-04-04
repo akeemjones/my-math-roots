@@ -75,7 +75,9 @@
   /** Apply a11y body classes from persisted localStorage. */
   function applyA11yClasses() {
     try {
-      const cfg = JSON.parse(localStorage.getItem('wb_a11y') ?? '{}');
+      const raw = JSON.parse(localStorage.getItem('wb_a11y') ?? '{}');
+      // wb_a11y is stored as { _v, data: {...} } after Track 2B versioning
+      const cfg = (raw?._v !== undefined && raw?.data) ? raw.data : raw;
       document.body.classList.toggle('a11y-large-text',    !!cfg.largeText);
       document.body.classList.toggle('a11y-high-contrast', !!cfg.highContrast);
       document.body.classList.toggle('a11y-colorblind',    !!cfg.colorblind);
@@ -109,9 +111,9 @@
     // (Moved to $effect below so it reacts to initialPullDone changes.)
 
     // Restore existing session on first load.
-    // On success or failure, set sessionReady = true so the auth guard $effect
-    // can fire. This prevents the flash-to-login race on iOS force-close restart.
-    supabase.auth.getSession().then(async ({ data }) => {
+    // Sets authUser synchronously from cached session — profiles are loaded
+    // below via onAuthStateChange INITIAL_SESSION to avoid duplicate fetches.
+    supabase.auth.getSession().then(({ data }) => {
       const session = data.session;
       if (session?.user) {
         const u = session.user;
@@ -119,10 +121,6 @@
           id: u.id,
           email: u.email ?? '',
         } satisfies AuthUser);
-
-        // Pre-load student profiles into the store
-        const { profiles } = await getStudentProfiles();
-        familyProfiles.set(profiles);
       } else {
         // No valid Supabase session — clear the cached auth user.
         // Do NOT clear familyProfiles here: PIN-only students have no
@@ -136,6 +134,12 @@
       sessionReady = true;
     });
 
+    // Track whether profiles have been fetched this session to avoid
+    // duplicate network calls when both INITIAL_SESSION and SIGNED_IN fire
+    // (e.g. Google OAuth redirect on iOS where the token exchange timing
+    // causes both events to carry a valid session).
+    let profilesFetched = false;
+
     // Keep the store in sync as Supabase auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
@@ -145,13 +149,20 @@
           email: u.email ?? '',
         } satisfies AuthUser);
 
-        if (event === 'SIGNED_IN') {
-          guestMode.set(false);
-          const { profiles } = await getStudentProfiles();
-          familyProfiles.set(profiles);
-          // Parent just authenticated — send straight to the dashboard
-          navStack.clear();
-          goto('/dashboard');
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          if (!profilesFetched) {
+            profilesFetched = true;
+            // Pass u.id directly to skip the extra supabase.auth.getUser()
+            // network call inside getStudentProfiles() — saves one RTT on iOS.
+            const { profiles } = await getStudentProfiles(u.id);
+            familyProfiles.set(profiles);
+          }
+          if (event === 'SIGNED_IN') {
+            // Parent just authenticated — send straight to the dashboard
+            guestMode.set(false);
+            navStack.clear();
+            goto('/dashboard');
+          }
         }
       } else if (event === 'SIGNED_OUT') {
         // Only clear on explicit sign-out, NOT on INITIAL_SESSION with null
@@ -160,6 +171,7 @@
         // clearing here would wipe their persisted familyProfiles.
         authUser.set(null);
         familyProfiles.set([]);
+        profilesFetched = false;
       }
     });
 

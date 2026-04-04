@@ -125,10 +125,10 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
  * to the next family that signs in on this device.
  */
 export async function signOut(): Promise<{ error: string | null }> {
-  // 5 s timeout prevents a stalled token refresh on iOS force-close from
+  // 1.5 s timeout prevents a stalled token refresh on iOS force-close from
   // blocking the sign-out indefinitely. localStorage is cleared regardless.
   try {
-    await withTimeout(5000, supabase.auth.signOut());
+    await withTimeout(1500, supabase.auth.signOut());
   } catch { /* timed out or network error — clear localStorage anyway */ }
 
   // Clear all student/progress data from localStorage
@@ -169,14 +169,14 @@ export async function getAuthUser(): Promise<AuthUser | null> {
  * Calls the `get_profiles_by_family_code` RPC (see supabase_setup.sql).
  * Falls back to a direct table query if the RPC is unavailable.
  */
-export async function getStudentProfiles(): Promise<ProfilesResult> {
-  const user = (await supabase.auth.getUser()).data.user;
-  if (!user) return { profiles: [], error: 'Not authenticated' };
+export async function getStudentProfiles(parentId?: string): Promise<ProfilesResult> {
+  const uid = parentId ?? (await supabase.auth.getUser()).data.user?.id;
+  if (!uid) return { profiles: [], error: 'Not authenticated' };
 
   const { data, error } = await supabase
     .from('student_profiles')
     .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, parent_id, created_at')
-    .eq('parent_id', user.id)
+    .eq('parent_id', uid)
     .order('created_at', { ascending: true });
 
   if (error) return { profiles: [], error: error.message };
