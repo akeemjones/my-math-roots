@@ -19,7 +19,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { supabase } from '$lib/supabase';
-  import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode, initialPullDone, syncStatus } from '$lib/stores';
+  import { authUser, activeStudent, activeStudentId, familyProfiles, settings, guestMode, initialPullDone, syncStatus, pinSession } from '$lib/stores';
   import { mountSwipeBack } from '$lib/services/swipe';
   import { navStack, stackNavigate } from '$lib/services/navStack';
   import { isTutorialDone, isInstallSeen } from '$lib/services/tour';
@@ -190,19 +190,9 @@
     // This prevents the sibling bypass where editing mmr_active_student in
     // localStorage would grant access without knowing the PIN.
     if (!$authUser && $activeStudentId && !$guestMode) {
-      try {
-        const raw = localStorage.getItem('mmr_pin_session');
-        const session = raw ? JSON.parse(raw) : null;
-        if (!session?.token || session.studentId !== $activeStudentId) {
-          activeStudentId.set(null);
-          localStorage.removeItem('mmr_pin_session');
-          if (!isPublic) {
-            navStack.clear();
-            goto('/login', { replaceState: true });
-          }
-        }
-      } catch {
+      if (!$pinSession?.token || $pinSession.studentId !== $activeStudentId) {
         activeStudentId.set(null);
+        pinSession.set(null);
         if (!isPublic) {
           navStack.clear();
           goto('/login', { replaceState: true });
