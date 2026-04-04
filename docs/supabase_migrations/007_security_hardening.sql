@@ -177,7 +177,7 @@ CREATE OR REPLACE FUNCTION create_student_profile(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_parent_id UUID;
@@ -239,7 +239,7 @@ CREATE OR REPLACE FUNCTION reset_student_pin(p_student_id UUID, p_new_pin TEXT)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   -- Only the owning parent can reset
