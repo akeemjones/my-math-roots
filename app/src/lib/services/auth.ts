@@ -12,6 +12,7 @@
 
 import { supabase } from '$lib/supabase';
 import type { StudentProfile, AuthUser } from '$lib/types';
+import { pinSession } from '$lib/stores';
 
 /**
  * Race a promise against a timeout. Rejects with Error('timeout') if ms elapses first.
@@ -136,11 +137,14 @@ export async function signOut(): Promise<{ error: string | null }> {
     'wb_apptime', 'wb_act_dates', 'wb_a11y', 'wb_settings_v2',
     'mmr_family_profiles', 'mmr_active_student', 'mmr_guest_mode',
     'mmr_auth_user', 'wb_unlock_settings', 'wb_quiz_pause',
-    'mmr_pin_session', 'mmr_pending_scores',
+    'mmr_pending_scores',
   ];
   for (const key of keysToRemove) {
     try { localStorage.removeItem(key); } catch { /* SSR guard */ }
   }
+
+  // Clear PIN session store (subscriber writes null to localStorage)
+  pinSession.set(null);
 
   return { error: null };
 }
@@ -262,12 +266,7 @@ export async function verifyStudentPin(
     };
     // Persist session token on success so sync RPCs can use it
     if (result.success && result.sessionToken) {
-      try {
-        localStorage.setItem('mmr_pin_session', JSON.stringify({
-          studentId: studentId,
-          token: result.sessionToken,
-        }));
-      } catch { /* quota exceeded — session still valid for this page load */ }
+      pinSession.set({ studentId, token: result.sessionToken });
     }
     return result;
   } catch {
