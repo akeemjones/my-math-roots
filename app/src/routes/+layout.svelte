@@ -408,12 +408,12 @@
     --safe-right:  env(safe-area-inset-right, 0px);
   }
 
-  /* Full-screen route container — flex column so .bar stays pinned and .sc-in scrolls */
+  /* Full-screen route background — overflow-x:clip prevents horizontal bleed
+     without creating a scroll container (unlike hidden), so position:sticky
+     on .bar correctly anchors to the body scroll. */
   :global(.sc) {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    min-height: 100dvh;
+    overflow-x: clip;
   }
 
   /* PWA update banner */
