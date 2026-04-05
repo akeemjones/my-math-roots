@@ -408,10 +408,12 @@
     --safe-right:  env(safe-area-inset-right, 0px);
   }
 
-  /* Full-screen route background — body::before provides the fixed gradient layer */
+  /* Full-screen route container — flex column so .bar stays pinned and .sc-in scrolls */
   :global(.sc) {
-    min-height: 100dvh;
-    overflow-x: hidden;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   /* PWA update banner */

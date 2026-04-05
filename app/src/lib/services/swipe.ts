@@ -154,7 +154,7 @@ export function mountSwipeBack(): () => void {
     sx = t.clientX; sy = t.clientY; t0 = Date.now();
     intentDecided = false; swiping = false; absorbed = false;
     inScrollable = !!(e.target as HTMLElement)?.closest?.(
-      '.carousel-wrap, .sc-scroll-box, .lesson-glass-wrap'
+      '.carousel-wrap, .sc-scroll-box, .lesson-glass-wrap, .sc-in, .dash-shell, .db-review-body'
     );
 
     // Prevent iOS native back gesture on left edge
