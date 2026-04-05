@@ -89,7 +89,7 @@ body.dark.a11y-high-contrast { --txt: #fff !important; --txt2: #ddd !important; 
 /* ── HERO ── */
 .hero {
   text-align: center;
-  padding: 10px 16px 6px;
+  padding: 2px 16px 6px;
   flex-shrink: 0;
 }
 
