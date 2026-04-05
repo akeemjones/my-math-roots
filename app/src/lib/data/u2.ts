@@ -992,15 +992,15 @@ export const lessons: LessonContent[] = [
         "d": "m"
       },
       {
-        "t": "What number has 12 tens, 4 hundreds, and 3 ones?",
+        "t": "What number has 5 hundreds, 2 tens, and 7 ones?",
         "o": [
-          "1,243",
-          "523",
-          "4,123",
-          "1,423"
+          "572",
+          "527",
+          "725",
+          "275"
         ],
         "a": 1,
-        "e": "12 tens is 120. We regroup 10 tens to make 1 hundred. So we have 5 hundreds, 2 tens, 3 ones. That's 523! 👍",
+        "e": "5 hundreds is 500. 2 tens is 20. 7 ones is 7. Add them up: 500 + 20 + 7 = 527! Great work! ✨",
         "d": "m"
       },
       {
