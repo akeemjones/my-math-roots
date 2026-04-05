@@ -740,10 +740,12 @@
   function closeReview() { reviewOpen = false; }
 
   $effect(() => {
-    const sc = document.querySelector<HTMLElement>('.sc');
-    if (!sc) return;
-    sc.style.overflowY = reviewOpen ? 'hidden' : '';
-    return () => { sc.style.overflowY = ''; };
+    if (reviewOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
   });
 
   // Helper: get answer text from a QuizAnswer
