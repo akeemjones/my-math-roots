@@ -467,7 +467,7 @@ export const lessons: LessonContent[] = [
         "t": "Which number has a 6 in the tens place?",
         "o": [
           "602",
-          "260",
+          "296",
           "326",
           "463"
         ],
