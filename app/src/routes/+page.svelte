@@ -400,11 +400,9 @@
     position: fixed;
     inset: 0;
     z-index: 9600;
-    background: rgba(0,0,0,0.45);
+    background: transparent;
     display: flex;
     align-items: flex-end;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
   }
 
   :global(.ps-sheet) {
