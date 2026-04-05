@@ -739,6 +739,13 @@
   }
   function closeReview() { reviewOpen = false; }
 
+  $effect(() => {
+    const sc = document.querySelector<HTMLElement>('.sc');
+    if (!sc) return;
+    sc.style.overflowY = reviewOpen ? 'hidden' : '';
+    return () => { sc.style.overflowY = ''; };
+  });
+
   // Helper: get answer text from a QuizAnswer
   function chosenText(a: QuizAnswer): string {
     if (a.chosen === null || a.chosen === undefined) return '(no answer)';
@@ -2165,7 +2172,7 @@
   .db-review-meta  { font-size:.78rem; color:#90a4ae; margin-top:3px; }
   .db-review-score { font-family:'Boogaloo','Arial Rounded MT Bold',system-ui,sans-serif; font-size:1.4rem; margin-top:6px; }
   .db-review-frac  { font-family:-apple-system,sans-serif; font-size:.85rem; color:#90a4ae; }
-  .db-review-body  { overflow-y:auto; padding:12px 16px 32px; flex:1; }
+  .db-review-body  { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px 32px; flex:1; }
   .db-rev-sec  { font-weight:700; font-size:.88rem; margin:10px 0 6px; }
   .db-rev-item { background:rgba(0,0,0,.03); border-radius:10px; padding:10px 12px; margin-bottom:6px; }
   .db-rev-wrong { border-left:3px solid #c62828; }
