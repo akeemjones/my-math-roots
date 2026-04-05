@@ -876,7 +876,7 @@ body .cs-locked-slide .cs-lock-card {
 .bar-badge{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base);
             padding:6px 16px; border-radius:50px; flex-shrink:0;
             background:rgba(255,255,255,.5); color:var(--txt2); }
-.bar-cog{ margin-left:auto; width:38px; height:38px; border-radius:50%; border:none;
+.bar-cog{ margin-left:auto; width:48px; height:48px; border-radius:50%; border:none;
           background:rgba(0,0,0,.06); cursor:pointer; font-size:1.15rem;
           display:flex; align-items:center; justify-content:center; flex-shrink:0;
           -webkit-tap-highlight-color:transparent; transition:transform .2s; }
