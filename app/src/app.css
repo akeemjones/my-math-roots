@@ -1249,7 +1249,7 @@ body.dark{
   --inp-border:rgba(255,255,255,.18); --home-grad:linear-gradient(155deg,#0d1e35 0%,#152846 45%,#0a2418 100%);
   --shad:0 6px 28px rgba(0,0,0,.5);
 }
-body.dark{ background-color:#0a2418; }
+body.dark{ background-color:#0a2418; background-image:var(--app-bg-svg),var(--home-grad); background-size:420px 420px,100% 100%; }
 body.dark .op{
   background:rgba(255,255,255,.06);
   border-top-color:rgba(255,255,255,.20);

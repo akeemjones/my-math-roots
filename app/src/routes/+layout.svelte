@@ -338,6 +338,8 @@
     font-family: 'Nunito', sans-serif;
     font-size: 18px;
     background-color: #eafaf2;
+    background-image: var(--app-bg-svg), var(--home-grad);
+    background-size: 420px 420px, 100% 100%;
     color: var(--txt, #1a2535);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
