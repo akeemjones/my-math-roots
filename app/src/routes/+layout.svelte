@@ -252,18 +252,24 @@
     }
   });
 
-  // Dark mode: sync body.dark class to settings store
+  // Dark mode: sync body.dark + html.dark class to settings store.
+  // html.dark is needed so the root-element background (canvas) picks up the dark gradient.
+  function setDark(dark: boolean) {
+    document.body.classList.toggle('dark', dark);
+    document.documentElement.classList.toggle('dark', dark);
+  }
+
   $effect(() => {
     const theme = $settings.theme;
     if (theme === 'dark') {
-      document.body.classList.add('dark');
+      setDark(true);
     } else if (theme === 'light') {
-      document.body.classList.remove('dark');
+      setDark(false);
     } else {
       // 'auto' — follow system preference
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      document.body.classList.toggle('dark', mq.matches);
-      const handler = (e: MediaQueryListEvent) => document.body.classList.toggle('dark', e.matches);
+      setDark(mq.matches);
+      const handler = (e: MediaQueryListEvent) => setDark(e.matches);
       mq.addEventListener('change', handler);
       return () => mq.removeEventListener('change', handler);
     }
@@ -333,13 +339,27 @@
     box-sizing: border-box;
   }
 
+  /* Root element carries the background so it paints the full canvas —
+     including safe-area zones — when viewport-fit=cover is active. */
+  :global(html) {
+    background-color: #eafaf2;
+    background-image: var(--app-bg-svg), var(--home-grad);
+    /* 100vw/100dvh so the gradient always covers the viewport even when
+       html has 0 height (all content position:fixed on the home page) */
+    background-size: 420px 420px, 100vw 100dvh;
+  }
+
+  /* Dark mode: redefine --home-grad on html so the canvas gradient updates. */
+  :global(html.dark) {
+    background-color: #0a2418;
+    --home-grad: linear-gradient(155deg, #0d1e35 0%, #152846 45%, #0a2418 100%);
+  }
+
   :global(body) {
     margin: 0;
     font-family: 'Nunito', sans-serif;
     font-size: 18px;
-    background-color: #eafaf2;
-    background-image: var(--app-bg-svg), var(--home-grad);
-    background-size: 420px 420px, 100% 100%;
+    background: transparent;
     color: var(--txt, #1a2535);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -388,12 +408,10 @@
     --safe-right:  env(safe-area-inset-right, 0px);
   }
 
-  /* Full-screen route background — math symbols tiled over gradient */
+  /* Full-screen route background — body::before provides the fixed gradient layer */
   :global(.sc) {
     min-height: 100dvh;
     overflow-x: hidden;
-    background-image: var(--app-bg-svg), var(--home-grad);
-    background-size: 420px 420px, 100% 100%;
   }
 
   /* PWA update banner */

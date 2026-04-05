@@ -339,7 +339,7 @@
   }
 
   .home-prof-btn {
-    width: 42px; height: 42px;
+    width: 44px; height: 44px;
     border-radius: 50%;
     background: rgba(255,255,255,0.85);
     border: 1.5px solid rgba(255,255,255,0.82);
@@ -407,7 +407,10 @@
 
   :global(.ps-sheet) {
     width: 100%;
-    background: var(--bg, #fff);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px 20px 0 0;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
     transform: translateY(100%);
@@ -416,6 +419,7 @@
     overflow-y: auto;
   }
   :global(.ps-sheet-open) { transform: translateY(0); }
+  :global(body.dark .ps-sheet) { background-color: rgba(0, 0, 0, 0.3); }
 
   :global(.ps-sheet-handle) {
     width: 40px; height: 4px;

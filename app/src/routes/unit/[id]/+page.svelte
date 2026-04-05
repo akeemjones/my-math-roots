@@ -299,7 +299,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+    height: 100dvh;
   }
 
   #unit-screen :global(.sc-in) {

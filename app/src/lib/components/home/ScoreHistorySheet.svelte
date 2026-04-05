@@ -53,6 +53,37 @@
     scores.update(s => s.filter(x => x.id !== entry.id));
     if (selected?.id === entry.id) selected = null;
   }
+
+  // ── Swipe-to-dismiss ─────────────────────────────────────────────────────
+  let dragY       = $state(0);
+  let isDragging  = $state(false);
+  let dragStartY  = 0;
+
+  function onDragStart(e: PointerEvent) {
+    dragStartY = e.clientY;
+    isDragging = true;
+    dragY = 0;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onDragMove(e: PointerEvent) {
+    if (!isDragging) return;
+    const dy = e.clientY - dragStartY;
+    if (dy <= 0) { dragY = 0; return; }
+    // Apply resistance above 100 px so the card doesn't fly off
+    dragY = dy <= 100 ? dy : 100 + (dy - 100) * 0.35;
+  }
+
+  function onDragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    if (dragY > 80) {
+      dragY = 600; // animate off-screen, then clear
+      setTimeout(() => { selected = null; dragY = 0; }, 220);
+    } else {
+      dragY = 0; // spring back
+    }
+  }
 </script>
 
 <!-- Full-screen sheet — matches #history-screen .sc -->
@@ -163,9 +194,23 @@
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
   <div class="sc-lightbox open" onclick={() => selected = null}>
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-    <div class="sc-lightbox-box" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+    <div
+      class="sc-lightbox-box"
+      class:dragging={isDragging}
+      onclick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      style="transform: translateY({dragY}px); opacity: {1 - Math.min(dragY / 350, 0.35)}"
+    >
 
-      <div class="sc-lightbox-head">
+      <div
+        class="sc-lightbox-head"
+        onpointerdown={onDragStart}
+        onpointermove={onDragMove}
+        onpointerup={onDragEnd}
+        onpointercancel={onDragEnd}
+      >
+        <div class="sc-drag-handle" aria-hidden="true"></div>
         <button type="button" class="sc-lightbox-close" onclick={() => selected = null}>✕</button>
         <div class="sc-name" style="font-size:var(--fs-md)">{s.name ?? 'Student'}</div>
         <div class="sc-type">
@@ -482,6 +527,30 @@
     overflow: hidden;
     box-shadow: 0 20px 56px rgba(60,120,200,0.14), 0 6px 18px rgba(0,0,0,0.09), inset 0 1.5px 0 rgba(255,255,255,0.98);
     animation: slideUp .25s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: transform 0.22s cubic-bezier(0.32,0,0.67,0), opacity 0.22s;
+    will-change: transform;
+  }
+  :global(.sc-lightbox-box.dragging) {
+    transition: none;
+  }
+  :global(.sc-drag-handle) {
+    width: 36px;
+    height: 4px;
+    background: rgba(0,0,0,0.18);
+    border-radius: 2px;
+    margin: 0 auto 10px;
+    flex-shrink: 0;
+    cursor: grab;
+    touch-action: none;
+  }
+  :global(.sc-lightbox-head) {
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  :global(.sc-lightbox-head:active),
+  :global(.sc-lightbox-box.dragging .sc-lightbox-head) {
+    cursor: grabbing;
   }
   :global(.sc-lightbox-head) {
     padding: 20px 20px 14px;
