@@ -12,10 +12,10 @@
 
   import { goto } from '$app/navigation';
   import { tick } from 'svelte';
-  import StudentCard from '$lib/components/auth/StudentCard.svelte';
-  import { familyProfiles, activeStudentId, authUser } from '$lib/stores';
-  import { verifyStudentPin, signOut } from '$lib/services/auth';
-  import type { StudentProfile } from '$lib/types';
+  import StudentCard from '$lib/ui/components/auth/StudentCard.svelte';
+  import { familyProfiles, activeStudentId, authUser } from '$lib/core/stores';
+  import { verifyStudentPin, signOut } from '$lib/core/services/auth';
+  import type { StudentProfile } from '$lib/core/types';
 
   // Which student has been tapped (awaiting PIN)
   let pendingId = $state<string | null>(null);

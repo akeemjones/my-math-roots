@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { settings, a11y, isSignedIn, guestMode, activeStudent, authUser, activeStudentId, familyProfiles } from '$lib/stores';
-  import { signOut as authSignOut } from '$lib/services/auth';
-  import InstallModal from '$lib/components/tour/InstallModal.svelte';
-  import DashboardGate from '$lib/components/auth/DashboardGate.svelte';
-  import type { A11yPrefs } from '$lib/types';
+  import { settings, a11y, isSignedIn, guestMode, activeStudent, authUser, activeStudentId, familyProfiles } from '$lib/core/stores';
+  import { signOut as authSignOut } from '$lib/core/services/auth';
+  import InstallModal from '$lib/ui/components/tour/InstallModal.svelte';
+  import DashboardGate from '$lib/ui/components/auth/DashboardGate.svelte';
+  import type { A11yPrefs } from '$lib/core/types';
 
   // ── Derived with defaults for fields that may be missing in older persisted data ──
   const theme       = $derived($settings.theme       ?? 'auto');

@@ -11,16 +11,16 @@
 
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
-  import { stackBack, stackNavigate } from '$lib/services/navStack';
+  import { stackBack, stackNavigate } from '$lib/ui/services/navStack';
   import { page } from '$app/stores';
-  import { unitsData, scores, done, hasPassed, unlockSettings } from '$lib/stores';
-  import { loadUnit } from '$lib/boot';
-  import { playCorrect, playWrong } from '$lib/services/sound';
-  import { handleExampleAction } from '$lib/services/animations';
-  import { settings } from '$lib/stores';
-  import { recordLessonInteraction, pauseLessonEngageTimer, shuffle } from '$lib/services/quiz';
-  import { hasHtmlTags } from '$lib/utils';
-  import type { Question } from '$lib/types';
+  import { unitsData, scores, done, hasPassed, unlockSettings } from '$lib/core/stores';
+  import { loadUnit } from '$lib/core/boot';
+  import { playCorrect, playWrong } from '$lib/ui/services/sound';
+  import { handleExampleAction } from '$lib/ui/services/animations';
+  import { settings } from '$lib/core/stores';
+  import { recordLessonInteraction, pauseLessonEngageTimer, shuffle } from '$lib/core/services/quiz';
+  import { hasHtmlTags } from '$lib/core/utils';
+  import type { Question } from '$lib/core/types';
 
   const EMOJIS = ['🤔','💡','🧠','⭐','🎯','🔢','✏️','📐','🦁','🐯','🦊','🐸'];
 

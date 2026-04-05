@@ -17,13 +17,13 @@
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { unitsData } from '$lib/stores';
-  import { loadUnit } from '$lib/boot';
-  import { startQuiz, startQuizDirect, qKey } from '$lib/services/quiz';
-  import { cur, mastery } from '$lib/stores';
-  import QuizEngine from '$lib/components/quiz/QuizEngine.svelte';
-  import QuizResults from '$lib/components/quiz/QuizResults.svelte';
-  import type { Question, QuizType, QuizState, ScoreEntry } from '$lib/types';
+  import { unitsData } from '$lib/core/stores';
+  import { loadUnit } from '$lib/core/boot';
+  import { startQuiz, startQuizDirect, qKey } from '$lib/core/services/quiz';
+  import { cur, mastery } from '$lib/core/stores';
+  import QuizEngine from '$lib/ui/components/quiz/QuizEngine.svelte';
+  import QuizResults from '$lib/ui/components/quiz/QuizResults.svelte';
+  import type { Question, QuizType, QuizState, ScoreEntry } from '$lib/core/types';
 
   const PAUSE_KEY = 'wb_quiz_pause';
 

@@ -1,0 +1,270 @@
+/* ─────────────────────────────────────────────────────────────
+   Layout — global resets, page structure, scroll containers,
+   hero section, progress bar, carousel, swipe peek
+   Extracted from app.css
+   ───────────────────────────────────────────────────────────── */
+
+/* ── GLOBAL RESETS (matching legacy) ── */
+html, body { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; touch-action: pan-x pan-y; }
+input, textarea { user-select: text; -webkit-user-select: text; -webkit-touch-callout: default; }
+
+/* ── SWIPE PEEK ── */
+.swipe-peek-snapshot {
+  position: fixed; inset: 0; z-index: 1;
+  pointer-events: none;
+  transform: translateX(-28%);
+  opacity: 0.85;
+  will-change: transform, opacity;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.swipe-peek-snapshot::-webkit-scrollbar { display: none; }
+.swipe-peek-bg {
+  position: fixed; inset: 0; z-index: 1;
+  background: var(--bg, #f5f5f5);
+  pointer-events: none;
+}
+body.dark .swipe-peek-bg { background: var(--bg, #1a1a2e); }
+body.swiping .sc:not(.swipe-peek-snapshot) { position: relative; z-index: 10; }
+
+/* ── HOME LAYOUT ── */
+.home-in {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  /* svh = small viewport height — stays constant on iOS as Safari chrome shows/hides */
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+#home {
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* bar handles its own internal spacing; safe area is on #home */
+#home .bar {
+  padding-top: 12px;
+  flex-shrink: 0;
+}
+
+#home .home-in {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  padding-top: 0;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 2px 16px 6px;
+  flex-shrink: 0;
+}
+
+.hero-ico {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 4px;
+  animation: bob 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 3px 6px rgba(0,80,20,0.18));
+}
+
+.hero-ico svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.hero-h1 {
+  font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+  font-size: clamp(2.6rem, 8vw, 3.8rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #ffffff;
+  filter: drop-shadow(0 6px 3px rgba(0,0,0,0.32));
+  margin: 0;
+}
+
+.hero-credit {
+  font-family: 'Nunito', sans-serif;
+  font-size: var(--fs-sm, 0.85rem);
+  font-weight: 800;
+  color: #5a7080;
+  margin-top: 3px;
+  letter-spacing: .3px;
+}
+
+.hero-sub {
+  font-family: 'Nunito', sans-serif;
+  font-size: var(--fs-xs, 0.72rem);
+  font-weight: 700;
+  color: #7a9aaa;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.hero-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 18px;
+  border-radius: 50px;
+  font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+  font-size: var(--fs-base, 0.95rem);
+  color: #fff;
+  background: linear-gradient(135deg, #e74c3c, #e67e22);
+  box-shadow: 0 2px 10px rgba(231,76,60,0.4);
+}
+
+/* ── PROGRESS BAR ── */
+.op {
+  background: rgba(255,255,255,.14);
+  border-radius: 22px;
+  padding: 12px 18px;
+  margin: 0 16px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.10), inset 0 1.5px 0 rgba(255,255,255,.85);
+  border-top: 1.5px solid rgba(255,255,255,.80);
+  border-left: 1.5px solid rgba(255,255,255,.55);
+  border-right: 1.5px solid rgba(255,255,255,.22);
+  border-bottom: 1.5px solid rgba(255,255,255,.14);
+  flex-shrink: 0;
+}
+
+.op-title {
+  font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+  font-size: var(--fs-base, 0.95rem);
+  margin-bottom: 4px;
+  color: var(--txt, #1a2535);
+  font-weight: 700;
+}
+
+.pb {
+  height: 14px;
+  background: rgba(255,255,255,.32);
+  border-radius: 50px;
+  overflow: hidden;
+  margin: 4px 0;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.10), inset 0 -1px 0 rgba(255,255,255,.25);
+  border-top: 1px solid rgba(255,255,255,.60);
+  border-left: 1px solid rgba(255,255,255,.40);
+  border-right: 1px solid rgba(255,255,255,.15);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+
+.pbf {
+  height: 100%;
+  border-radius: 50px;
+  transition: width .6s ease;
+  background: linear-gradient(90deg, #e74c3c, #e67e22, #f1c40f, #27ae60, #4a90d9, #8e44ad);
+  box-shadow: 0 2px 10px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+.pb-lbl {
+  font-size: var(--fs-xs, 0.72rem);
+  color: var(--txt2, #5a7080);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ── CAROUSEL HINT ── */
+.carousel-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Boogaloo', 'Arial Rounded MT Bold', sans-serif;
+  font-size: var(--fs-sm, 0.85rem);
+  color: var(--txt2, #5a7080);
+  padding: 3px 0 5px;
+  flex-shrink: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── UNIT SCROLL BOX ── */
+.carousel-wrap {
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0 16px 10px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.32);
+  box-shadow: 0 8px 32px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.2);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,.15) transparent;
+}
+
+.carousel-wrap::-webkit-scrollbar       { width: 5px; }
+.carousel-wrap::-webkit-scrollbar-track { background: transparent; }
+.carousel-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,.18); border-radius: 10px; }
+
+.carousel-track {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px 12px;
+  gap: 8px;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ── SCROLL CONTAINER (.sc / .sc-in) ── */
+/* Full-screen route background — overflow-x:clip prevents horizontal bleed
+   without creating a scroll container (unlike hidden), so position:sticky
+   on .bar correctly anchors to the body scroll. */
+.sc {
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.sc-in{
+  max-width:780px; margin:0 auto; width:100%; padding:20px 16px env(safe-area-inset-bottom);
+  display:flex; flex-direction:column; }
+
+/* ── LANDSCAPE / SHORT SCREENS ── */
+@media (max-height: 500px) {
+  #home .home-in { flex: 1; min-height: 0; height: auto; }
+  .hero { padding: 2px 16px 0; display: flex; align-items: center; gap: 8px; justify-content: center; }
+  .hero-ico { width: 22px; height: 22px; margin: 0; animation: none; }
+  .hero-h1 { font-size: var(--fs-lg, 1.3rem); }
+  .hero-credit, .hero-sub, .hero-tag { display: none; }
+  .op { padding: 4px 14px; margin: 0 16px 2px; }
+  .op-title { font-size: var(--fs-xs, 0.72rem); margin-bottom: 1px; }
+  .pb { height: 8px; margin: 1px 0; }
+  .carousel-hint { display: none; }
+  .carousel-wrap { margin: 0 16px 4px; }
+  .carousel-track { padding: 4px 10px; gap: 5px; }
+}
+
+/* ── WIDER SCREENS ── */
+@media (min-width: 480px) {
+  .home-in     { max-width: 540px; }
+  .carousel-wrap { max-width: 540px; margin: 0 auto; width: 100%; }
+}
+
+@media (min-width: 600px) {
+  .hero-h1     { font-size: var(--fs-4xl, 3.2rem); }
+  .home-in     { max-width: 600px; }
+  .carousel-wrap { max-width: 600px; margin: 0 auto; width: 100%; }
+}

@@ -13,11 +13,11 @@
 
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { scores, mastery, streak, appTime, done, actDates, unitsData, activeStudentId, activeStudent, familyProfiles, aiReports, hasPassed } from '$lib/stores';
-  import { supabase } from '$lib/supabase';
-  import { getStudentProfiles } from '$lib/services/auth';
-  import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/types';
-  import type { ScoreEntry, QuizAnswer } from '$lib/types';
+  import { scores, mastery, streak, appTime, done, actDates, unitsData, activeStudentId, activeStudent, familyProfiles, aiReports, hasPassed } from '$lib/core/stores';
+  import { supabase } from '$lib/core/supabase';
+  import { getStudentProfiles } from '$lib/core/services/auth';
+  import { DEFAULT_STREAK, DEFAULT_APP_TIME } from '$lib/core/types';
+  import type { ScoreEntry, QuizAnswer } from '$lib/core/types';
   import {
     ICON_PERSON, ICON_KEY, ICON_CALENDAR, ICON_TIMER, ICON_FLAME, ICON_BOOK,
     ICON_CLIPBOARD, ICON_WARNING, ICON_MEMO, ICON_CYCLE, ICON_CALDAY, ICON_ALARM,

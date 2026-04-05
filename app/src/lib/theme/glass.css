@@ -1,0 +1,73 @@
+/* ─────────────────────────────────────────────────────────────
+   TRUE GLASS SYSTEM — tiered glassmorphism utility classes
+   New utility classes for consistent glass effects across the app.
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Level 1: Subtle — background panels, calendars ── */
+.glass-1 {
+  background: rgba(255,255,255,0.40);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.50);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* ── Level 2: Standard — cards, sheets, interactive surfaces ── */
+.glass-2 {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.60);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ── Level 3: Heavy — overlays, tooltips, floating UI ── */
+.glass-3 {
+  background: rgba(255,255,255,0.80);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.70);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.12);
+}
+
+/* ── Level 4: Max — full-screen overlays, login ── */
+.glass-4 {
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(28px) saturate(160%) brightness(1.04);
+  -webkit-backdrop-filter: blur(28px) saturate(160%) brightness(1.04);
+  border: 1px solid rgba(255,255,255,0.80);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+}
+
+/* ── Dark mode variants ── */
+body.dark .glass-1 {
+  background: rgba(12,22,42,0.50);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+body.dark .glass-2 {
+  background: rgba(12,22,42,0.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+
+body.dark .glass-3 {
+  background: rgba(12,22,42,0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.45);
+}
+
+body.dark .glass-4 {
+  background: rgba(12,22,42,0.95);
+  backdrop-filter: blur(22px) saturate(140%) brightness(0.96);
+  -webkit-backdrop-filter: blur(22px) saturate(140%) brightness(0.96);
+  border: 1px solid rgba(255,255,255,0.20);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+}

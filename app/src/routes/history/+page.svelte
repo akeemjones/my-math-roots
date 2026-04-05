@@ -14,10 +14,10 @@
    */
 
   import { goto } from '$app/navigation';
-  import { stackNavigate } from '$lib/services/navStack';
-  import { scores } from '$lib/stores';
-  import { hasHtmlTags } from '$lib/utils';
-  import type { ScoreEntry } from '$lib/types';
+  import { stackNavigate } from '$lib/ui/services/navStack';
+  import { scores } from '$lib/core/stores';
+  import { hasHtmlTags } from '$lib/core/utils';
+  import type { ScoreEntry } from '$lib/core/types';
 
   let histFilter = $state<'all' | 'lesson' | 'unit'>('all');
   let lightboxEntry = $state<ScoreEntry | null>(null);
