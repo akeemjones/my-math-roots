@@ -1457,8 +1457,7 @@ function _openStreakCal(){
     Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9950' /* --z-calendar */,display:'none',alignItems:'center',justifyContent:'center',padding:'20px'});
     modal.addEventListener('click', e => {
       if(e.target !== modal) return;
-      if(modal.dataset.calView === 'day') _buildStreakCal();
-      else _closeStreakCal();
+      _closeStreakCal();
     });
 
     // iOS-style drag-to-swipe month navigation
@@ -1526,7 +1525,7 @@ function _openStreakCal(){
         slide.style.transform = `translateX(${_scalDir===1 ? -vpW : vpW}px)`;
         if(peek){ peek.style.transition = `transform 0.25s ${ease}`; peek.style.transform = 'translateX(0)'; }
         const commitDir = _scalDir; _scalDir = 0;
-        setTimeout(() => { _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+commitDir, 1); _buildStreakCal(); }, 250);
+        setTimeout(() => { _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+commitDir, 1); _buildStreakCal(); var dp = document.getElementById('scal-day-panel'); if(dp) dp.innerHTML = ''; }, 250);
       } else {
         slide.style.transition = `transform 0.25s ${ease}`;
         slide.style.transform = 'translateX(0)';
@@ -1562,6 +1561,7 @@ function _streakCalNav(dir){
   setTimeout(() => {
     _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+dir, 1);
     _buildStreakCal();
+    var dp = document.getElementById('scal-day-panel'); if(dp) dp.innerHTML = '';
     const newSlide = document.getElementById('scal-slide');
     if(newSlide){
       newSlide.style.transition = 'none';
