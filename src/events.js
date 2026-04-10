@@ -169,11 +169,12 @@
     _spotDone:              ()    => typeof _spotDone === 'function' && _spotDone(),
 
     // ── Streak calendar ──────────────────────────────────────────────────────
-    _openStreakCal:         ()    => _openStreakCal(),
+    openCalendar:           ()    => _openStreakCal(),
     _closeStreakCal:        ()    => _closeStreakCal(),
     _buildStreakCal:        ()    => _buildStreakCal(),
     _streakCalNav:          (a)   => _streakCalNav(Number(a)),
     _showDayDetail:         (a)   => _showDayDetail(a),
+    _toggleDayExpand:       ()    => _toggleDayExpand(),
 
     // ── Pin-lockout poll ─────────────────────────────────────────────────────
     _upmCheck:              ()    => typeof _upmCheck === 'function' && _upmCheck(),
