@@ -1401,6 +1401,14 @@ function _updateCalDot(){
   }
 }
 
+function _getMilestone(streak){
+  if(streak >= 30) return { label: 'MATH LEGEND', gradient: 'linear-gradient(135deg,#ffd700,#ff8c00)' };
+  if(streak >= 14) return { label: 'SUPER STUDENT', gradient: 'linear-gradient(135deg,#a29bfe,#6c5ce7)' };
+  if(streak >= 7) return { label: 'WEEK WARRIOR', gradient: 'linear-gradient(135deg,#ff9500,#ff5a00)' };
+  if(streak >= 3) return { label: 'GETTING STARTED', gradient: 'linear-gradient(135deg,#74b9ff,#0984e3)' };
+  return null;
+}
+
 // ── STREAK CALENDAR ───────────────────────────────────────────────────────────
 let _scDate = new Date();
 
