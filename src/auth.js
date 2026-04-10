@@ -1375,15 +1375,30 @@ function _showDayDetail(dateStr){
     ${items}`;
 }
 
-function _renderStreak(){
-  const el = document.getElementById('streak-badge');
-  if(!el) return;
-  if(!STREAK.current){ el.style.display = 'none'; return; }
-  el.style.display = 'inline-block';
-  el.style.cursor = 'pointer';
-  el.onclick = _openStreakCal;
-  const best = STREAK.longest > STREAK.current ? ` <span style="opacity:.65;font-weight:400">· Best: ${STREAK.longest}</span>` : '';
-  el.innerHTML = `${_fireSvg('sfb',22,30)} <strong>${STREAK.current}-day streak</strong>${best}`;
+function _renderCalBtn(){
+  const btn = document.getElementById('cal-btn');
+  if(!btn) return;
+  if(!_supaUser){ btn.style.display = 'none'; return; }
+  btn.style.display = 'flex';
+  const prof = document.getElementById('prof-btn');
+  if(prof && prof.style.display !== 'none'){
+    btn.classList.add('cal-btn--stacked');
+  } else {
+    btn.classList.remove('cal-btn--stacked');
+  }
+  _updateCalDot();
+}
+
+function _updateCalDot(){
+  const dot = document.getElementById('cal-dot');
+  if(!dot) return;
+  const todayStr = new Date().toISOString().slice(0,10);
+  const actDates = safeLoad('wb_act_dates', []);
+  if(actDates.indexOf(todayStr) !== -1){
+    dot.classList.add('cal-dot--active');
+  } else {
+    dot.classList.remove('cal-dot--active');
+  }
 }
 
 // ── STREAK CALENDAR ───────────────────────────────────────────────────────────
