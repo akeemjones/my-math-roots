@@ -8,7 +8,7 @@
 const CAR = { idx: 0 };
 
 function buildHome(instant){
-  _renderStreak();
+  _renderCalBtn();
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
     SCORES.some(s=>s.qid==='lq_'+l.id && s.pct>=80)
@@ -154,7 +154,7 @@ function buildHome(instant){
 
 function refreshHomeState(){
   // 1. Same prologue as buildHome()
-  _renderStreak();
+  _renderCalBtn();
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
     SCORES.some(s=>s.qid==='lq_'+l.id && s.pct>=80)
