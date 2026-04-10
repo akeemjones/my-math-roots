@@ -1554,12 +1554,13 @@ function _buildCalGridHTML(date){
 
   const pad = n => String(n).padStart(2,'0');
   let cells = '';
-  for(let i=0;i<firstDow;i++) cells += '<div style="height:40px"></div>';
+  for(let i=0;i<firstDow;i++) cells += '<div style="height:30px"></div>';
 
   for(let d=1; d<=daysInMo; d++){
     const ds = `${y}-${pad(mo+1)}-${pad(d)}`;
     const isAct = actSet.has(ds);
     const isToday = ds === todayStr;
+    const isFuture = ds > todayStr;
     const inStreak = streakStart && ds >= streakStart && ds <= todayStr;
     const dow = (firstDow + d - 1) % 7;
     const prev = d>1 ? `${y}-${pad(mo+1)}-${pad(d-1)}` : null;
@@ -1567,40 +1568,38 @@ function _buildCalGridHTML(date){
     const prevConn = prev && actSet.has(prev) && dow !== 0;
     const nextConn = next && actSet.has(next) && dow !== 6;
     const col = inStreak ? FC : GC;
-    const colL = inStreak ? 'rgba(255,119,0,.2)' : 'rgba(39,174,96,.2)';
+    const colL = inStreak ? 'rgba(255,119,0,.15)' : 'rgba(39,174,96,.15)';
+
     let pipBg='', pipTxt='var(--txt,#333)', pipEx='';
-    if(isAct){ pipBg=`background:${col};`; pipTxt='#fff'; }
+    if(isFuture){ pipTxt='var(--txt,#333);opacity:.3'; }
+    else if(isAct){ pipBg=`background:${col};`; pipTxt='#fff'; }
     if(isToday && !isAct){ pipBg=`border:2px solid ${inStreak?col:FC};`; pipTxt=inStreak?col:FC; }
-    else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px ${col};`; }
-    const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
-    const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2px #fff,0 0 0 3.5px ${col};`; }
+
+    const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:18px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:18px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
     const fw = (isAct||isToday) ? '700' : '400';
-    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:40px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:40px"`;
-    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
+    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:30px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:30px"`;
+    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
   }
 
-  // Pad to always 42 cells (6 rows × 7 cols) so the grid height never changes between months
   const totalCells = firstDow + daysInMo;
   const padEnd = 42 - totalCells;
-  for(let i=0;i<padEnd;i++) cells += '<div style="height:40px"></div>';
+  for(let i=0;i<padEnd;i++) cells += '<div style="height:30px"></div>';
 
-  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:var(--fs-xs);font-weight:700;color:var(--txt2,#999);padding-bottom:6px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
-  const streakLine = streakStart
-    ? `<p style="text-align:center;font-size:var(--fs-sm);color:var(--txt2,#888);margin:14px 0 0;font-family:'Nunito',sans-serif">Streak started <strong style="color:${FC}">${new Date(streakStart+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</strong></p>`
-    : '';
-  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:var(--fs-xl);cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">‹</button>`;
+  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:9px;font-weight:700;color:var(--txt2,#999);padding-bottom:2px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
+  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8249;</button>`;
   const nextBtn = isCurMo
-    ? `<button style="background:none;border:none;font-size:var(--fs-xl);cursor:default;color:var(--txt,#444);padding:4px 14px;line-height:1;opacity:.25">›</button>`
-    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:var(--fs-xl);cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">›</button>`;
+    ? `<button style="background:none;border:none;font-size:16px;cursor:default;color:var(--txt,#444);padding:2px 10px;line-height:1;opacity:.25">&#8250;</button>`
+    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8250;</button>`;
   return `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
       ${prevBtn}
-      <span style="font-weight:700;font-size:var(--fs-base);color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
+      <span style="font-weight:700;font-size:12px;color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
       ${nextBtn}
     </div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr)">${hdrs}</div>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${cells}</div>
-    ${streakLine}`;
+    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${cells}</div>`;
 }
 
 function _buildStreakCal(){
