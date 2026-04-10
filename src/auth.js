@@ -721,7 +721,7 @@ function supabaseInit(){
           const _tsDates = [];
           for(let i=0;i<_tsN;i++) _tsDates.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
           localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates));
-          show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
+          show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
@@ -1839,7 +1839,7 @@ async function _updateStreak(){
     if(actDates.length > 365) actDates.shift();
     localStorage.setItem('wb_act_dates', JSON.stringify(actDates));
   }
-  _renderStreak();
+  _renderCalBtn();
   // Supabase sync — signed-in users only
   if(!_supa || !_supaUser) return;
   try{
