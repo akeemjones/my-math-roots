@@ -182,10 +182,10 @@ const SPOT_TOURS = {
       tip: 'This bar shows how many lessons you\'ve finished across all 10 units. Watch it grow as you learn!'
     },
     {
-      sel: '#streak-badge',
+      sel: '#cal-btn',
       emoji: '🔥',
-      title: 'Daily Streak',
-      tip: 'Complete a lesson every day to build your streak! Tap the flame to open your streak calendar — see every day you practiced, your current run, and your all-time best. Only visible when signed in.'
+      title: 'Streak Calendar',
+      tip: 'Tap to see your streak calendar! Track your daily practice, view quiz scores for any day, and earn milestone badges as your streak grows. Only visible when signed in.'
     },
     {
       sel: '#ugrid .cs',
