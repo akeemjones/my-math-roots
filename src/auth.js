@@ -1610,31 +1610,36 @@ function _buildStreakCal(){
 
   const FC = '#ff7700';
   const isDark = document.body.classList.contains('dark');
-  const _bt = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.95)';
-  const _bl = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.75)';
-  const _br = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.30)';
   const _bg = isDark
     ? 'background:rgba(255,255,255,.07);box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.12)'
-    : 'background:linear-gradient(145deg,rgba(255,255,255,0.92) 0%,rgba(240,248,255,0.82) 55%,rgba(235,252,245,0.78) 100%);box-shadow:0 -8px 40px rgba(60,120,200,0.18),0 -2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
+    : 'background:linear-gradient(145deg,rgba(255,255,255,0.93) 0%,rgba(240,248,255,0.85) 55%,rgba(235,252,245,0.80) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18)';
+  const _bdr = isDark
+    ? 'border:1.5px solid rgba(255,255,255,0.12)'
+    : 'border:1.5px solid rgba(255,255,255,0.85)';
+
+  const ms = _getMilestone(STREAK.current);
+  const msBadge = ms
+    ? `<div style="margin-top:2px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:8px;font-weight:800;letter-spacing:.4px;color:#fff;background:${ms.gradient}">${ms.label}</span></div>`
+    : '';
 
   modal.innerHTML = `
-  <div style="${_bg};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-top:1.5px solid ${_bt};border-left:1.5px solid ${_bl};border-right:1.5px solid ${_br};border-radius:28px;width:100%;max-width:400px;padding:20px 16px 32px;overflow-y:auto;max-height:88vh">
-    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:12px;justify-content:center;width:100%">
-        ${_fireSvg('scah',36,48)}
-        <div style="text-align:center">
-          <div style="font-size:var(--fs-3xl);font-weight:900;color:${FC};line-height:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${STREAK.current}</div>
-          <div style="font-size:var(--fs-xs);font-weight:700;color:var(--txt2,#888);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;white-space:nowrap;font-family:'Nunito',sans-serif">Day Streak &nbsp;·&nbsp; Best: ${STREAK.longest}</div>
-        </div>
+  <div style="${_bg};${_bdr};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-radius:24px;width:100%;max-width:340px;padding:12px 12px 16px">
+    <div style="width:32px;height:3px;background:rgba(0,0,0,.12);border-radius:2px;margin:0 auto 10px"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:linear-gradient(135deg,rgba(255,119,0,.08),rgba(255,60,0,.04));border-radius:14px;border:1px solid rgba(255,119,0,.10);margin-bottom:10px">
+      ${_fireSvg('scah',32,40)}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:28px;font-weight:900;color:${FC};line-height:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${STREAK.current}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--txt2,#888);text-transform:uppercase;letter-spacing:.4px">Day Streak &middot; Best: ${STREAK.longest}</div>
+        ${msBadge}
       </div>
-      <button data-action="_closeStreakCal" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:var(--fs-base);cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center">✕</button>
     </div>
     <div id="scal-viewport" style="overflow:hidden;position:relative">
       <div id="scal-slide" style="position:relative;will-change:transform">
         ${_buildCalGridHTML(_scDate)}
       </div>
     </div>
+    <div id="scal-day-panel"></div>
+    <div style="text-align:center;margin-top:6px;font-size:9px;color:rgba(0,0,0,.25);font-weight:600">Tap outside or swipe down to close</div>
   </div>`;
 }
 
