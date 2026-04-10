@@ -1338,41 +1338,76 @@ function _fireSvg(pfx, w, h){
 }
 
 function _showDayDetail(dateStr){
-  const modal = document.getElementById('scal-modal');
-  if(!modal) return;
-  modal.dataset.calView = 'day';
-  const sheet = modal.querySelector('div');
-  if(!sheet) return;
+  const panel = document.getElementById('scal-day-panel');
+  if(!panel) return;
 
   const formatted = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  const dateLabel = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const dateLabel = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   const dayScores = SCORES.filter(s => s.date === formatted);
 
+  if(dayScores.length === 0){
+    panel.innerHTML = `<div style="margin-top:8px;padding:10px;text-align:center;font-size:10px;color:var(--txt2,#888);background:rgba(0,0,0,.03);border-radius:12px">No quiz records for this day.</div>`;
+    return;
+  }
+
+  const total = dayScores.length;
+  const avgPct = Math.round(dayScores.reduce((s,e)=>s+e.pct,0)/total);
+
+  const appTime = safeLoad('wb_apptime', { dailySecs:{} });
+  const daySecs = appTime.dailySecs?.[dateStr] || 0;
+  const timeStr = daySecs >= 60 ? Math.round(daySecs/60)+'m' : (daySecs > 0 ? daySecs+'s' : '—');
+
   const typeLabel = t => t==='lesson'?'Lesson':t==='unit_quiz'?'Unit Quiz':t==='final'?'Final Test':'Quiz';
-  const typeColor = t => t==='lesson'?'#4a90d9':t==='unit_quiz'?'#27ae60':'#ff7700';
+  const barColor = t => t==='lesson'?'#4a90d9':t==='unit_quiz'?'#27ae60':'#ff7700';
+  const scoreColor = p => p>=90?'#27ae60':p>=80?'#4a90d9':'#e06000';
 
-  let items = dayScores.length === 0
-    ? `<div style="text-align:center;padding:28px 16px;color:var(--txt2,#888);font-size:var(--fs-base)">No quiz records found for this day.</div>`
-    : dayScores.map(s => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.05);border-radius:14px;margin-bottom:8px">
-        <div style="width:5px;min-width:5px;height:38px;border-radius:3px;background:${_escHtml(s.color||typeColor(s.type))}"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:var(--fs-sm);color:var(--txt,#333);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escHtml(s.label||s.qid)}</div>
-          <div style="font-size:var(--fs-xs);color:var(--txt2,#888);margin-top:2px">${typeLabel(s.type)} &nbsp;·&nbsp; ${_escHtml(s.stars)} &nbsp;·&nbsp; ${_escHtml(s.time||'')}</div>
-        </div>
-        <div style="font-size:var(--fs-md);font-weight:900;color:${s.pct===100?'#27ae60':s.pct>=80?'#4a90d9':'#e06000'};font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${s.pct}%</div>
-      </div>`).join('');
-
-  sheet.innerHTML = `
-    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-      <button data-action="_buildStreakCal" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:var(--fs-lg);cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center;flex-shrink:0">‹</button>
-      <div>
-        <div style="font-weight:800;font-size:var(--fs-base);color:var(--txt,#333)">${dateLabel}</div>
-        <div style="font-size:var(--fs-xs);color:var(--txt2,#888);margin-top:1px">${dayScores.length} activit${dayScores.length===1?'y':'ies'} completed</div>
+  const items = dayScores.map(s => `
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(0,0,0,.04);border-radius:10px;margin-top:4px">
+      <div style="width:3px;min-width:3px;height:28px;border-radius:2px;background:${barColor(s.type)}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt,#333)">${_escHtml(s.label||s.qid)}</div>
+        <div style="font-size:9px;color:var(--txt2,#888)">${typeLabel(s.type)} &middot; ${_escHtml(s.time||'')}</div>
       </div>
-    </div>
-    ${items}`;
+      <div style="font-size:13px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:${scoreColor(s.pct)}">${s.pct}%</div>
+    </div>`).join('');
+
+  panel.innerHTML = `
+    <div style="margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.03);border-radius:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:800;color:var(--txt,#333)">${dateLabel}</span>
+        <span style="font-size:9px;color:var(--txt2,#888)">${total} activit${total===1?'y':'ies'}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#4a90d9">${total}</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Quizzes</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#27ae60">${avgPct}%</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Avg</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#ff7700">${timeStr}</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Time</div>
+        </div>
+      </div>
+      <div id="scal-expand-items" style="display:none">${items}</div>
+      <div id="scal-expand-btn" data-action="_toggleDayExpand" style="padding:6px 10px;background:rgba(255,255,255,.5);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:10px;font-weight:700;color:var(--txt2,#666)">View details</span>
+        <span id="scal-expand-arrow" style="font-size:10px;color:var(--txt2,#aaa)">&#9662;</span>
+      </div>
+    </div>`;
+}
+
+function _toggleDayExpand(){
+  const items = document.getElementById('scal-expand-items');
+  const btn = document.getElementById('scal-expand-btn');
+  const arrow = document.getElementById('scal-expand-arrow');
+  if(!items || !btn) return;
+  const open = items.style.display !== 'none';
+  items.style.display = open ? 'none' : 'block';
+  if(arrow) arrow.innerHTML = open ? '&#9662;' : '&#9652;';
+  btn.querySelector('span').textContent = open ? 'View details' : 'Hide details';
 }
 
 function _renderCalBtn(){
