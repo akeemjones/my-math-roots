@@ -32,6 +32,9 @@ function show(id){
   // Profile button only appears on the home (hero) screen
   const prof = document.getElementById('prof-btn');
   if(prof) prof.style.display = (id === 'home') ? '' : 'none';
+  // Calendar button only appears on the home screen
+  const calBtn = document.getElementById('cal-btn');
+  if(calBtn) calBtn.style.display = (id === 'home' && typeof _supaUser !== 'undefined' && _supaUser) ? 'flex' : 'none';
   // Update profile button emoji/visibility when landing on home
   if(id === 'home' && typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   // Pre-fill remembered email on login screen — SEC-9: read from encrypted store
