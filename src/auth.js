@@ -8,6 +8,24 @@ let _supa      = null;
 let _supaUser  = null;
 let _authLoading = false;
 
+let _sessionToken = localStorage.getItem('mmr_session_token') || null;
+
+function _isStudentSession(){
+  return !!(localStorage.getItem('mmr_active_student_id') && _sessionToken);
+}
+
+function _handleSessionExpiry(error){
+  var msg = (error && error.message) || String(error || '');
+  if(msg.indexOf('invalid_session') !== -1){
+    _sessionToken = null;
+    localStorage.removeItem('mmr_session_token');
+    showLockToast('Session expired — please log in again.');
+    show('login-screen');
+    return true;
+  }
+  return false;
+}
+
 function _lsSetRole(role) {
   localStorage.setItem('mmr_user_role', role);
   var btnStudent = document.getElementById('ls-role-student');
@@ -152,6 +170,8 @@ function _lsRenderStudentCard() {
     var _nativeInp = document.getElementById('ls-pin-native');
     if(_nativeInp) setTimeout(function(){ _nativeInp.focus(); }, 60);
   }
+  // Re-adapt outer height after student card body changes
+  if(typeof _lsAdaptHeight === 'function') _lsAdaptHeight();
 }
 
 async function _lsFamilyCodeSetup() {
@@ -199,10 +219,7 @@ function _lsSelectAvatar(studentId) {
 }
 
 function _lsPinKey(digit) {
-  // Silently ignore input while locked out
-  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
-  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
-  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
+  // Lockout is enforced server-side by verify_student_pin (returns locked_until + attempts_left)
   if (_lsPinBuffer.length >= 4) return;
   _lsPinBuffer.push(String(digit));
   var dots = document.getElementById('ls-pin-dots');
@@ -235,10 +252,6 @@ function _lsPinBackspace() {
 
 // Handles input from the native numpad on the login screen
 function _lsPinNativeInput() {
-  // Ignore while locked out
-  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
-  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
-  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
 
   var inp = document.getElementById('ls-pin-native');
   if (!inp) return;
@@ -562,6 +575,13 @@ function _lsCarouselGo(idx) {
   // Hide guest button on Parent/Teacher card — dashboard requires an account
   var guestBtn = document.getElementById('ls-guest-btn');
   if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
+  // Adapt outer height to active card so the Student card doesn't show empty space
+  _lsAdaptHeight();
+}
+function _lsAdaptHeight(){
+  var outer = document.querySelector('.ls-carousel-outer');
+  var card  = document.getElementById('ls-card-' + (_lsCardIdx || 0));
+  if(outer && card) outer.style.height = card.scrollHeight + 'px';
 }
 
 function _lsInitCarousel() {
@@ -1001,6 +1021,17 @@ async function _lsSubmit(){
 async function _syncStudentSettings(studentId) {
   if (!_supa || !studentId || studentId === 'local') return;
   try {
+    // Single RPC replaces 3 separate calls — 1 round trip instead of 3
+    var result = await _supa.rpc('get_all_student_settings', { p_student_id: studentId });
+    if (result.data) {
+      if (result.data.unlock) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(result.data.unlock));
+      if (result.data.timer)  localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(result.data.timer));
+      if (result.data.a11y)   localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(result.data.a11y));
+      return;
+    }
+  } catch(e) { /* fall through to legacy 3-call approach */ }
+  // Fallback: 3 separate RPCs (until migration 009 is applied)
+  try {
     var results = await Promise.all([
       _supa.rpc('get_unlock_settings', { p_student_id: studentId }),
       _supa.rpc('get_timer_settings',  { p_student_id: studentId }),
@@ -1161,8 +1192,10 @@ async function _pullStudentProgress(studentId) {
   } catch(e) { /* offline — progress stays as-is */ }
 }
 
+let _syncing = false; // debounce flag — prevents monkey-patched saves from pushing during pull
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
+  _syncing = true;
   // Skip sync if we already pulled within the last 5 minutes (handles page refreshes
   // and brief re-opens without hammering Supabase on every session restore).
   const _syncKey = 'wb_last_sync_' + _supaUser.id;
@@ -1170,9 +1203,11 @@ async function _pullOnLogin(){
   if(Date.now() - _lastSync < 5 * 60 * 1000) return;
   try{
     // Single RPC call replaces 3 separate queries — 1 round trip instead of 3.
+    // Pass active student_id so cloud returns per-student progress (not shared parent row)
     const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
+    const _activeStudId = localStorage.getItem('mmr_active_student_id') || null;
     const { data: syncData, error: rpcErr } = await Promise.race([
-      _supa.rpc('get_user_sync_data'),
+      _supa.rpc('get_user_sync_data', _activeStudId ? { p_student_id: _activeStudId } : {}),
       _timeout
     ]);
     if(rpcErr) throw rpcErr;
@@ -1282,6 +1317,7 @@ async function _pullOnLogin(){
     }
 
     // Push local-only data back to cloud so both sides converge
+    _syncing = false;
     _pushDone();
     _pushScores();
     _pushMastery();
@@ -1289,16 +1325,17 @@ async function _pullOnLogin(){
     updateSyncLabel();
     buildHome();
     await _lsCheckOnboarding();
-  } catch(e){ console.warn('[Supabase] pull error', e); }
+  } catch(e){ console.warn('[Supabase] pull error', e); } finally { _syncing = false; }
 }
 
 async function _pushDone(){
   if(!_supa || !_supaUser) return;
   try{
+    const _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, done_json:DONE, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, done_json:DONE, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushDone timeout')),8000))
     ]);
@@ -1309,10 +1346,11 @@ async function _pushMastery(){
   if(!_supa || !_supaUser) return;
   try{
     const mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
+    const _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, mastery_json:mastery, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, mastery_json:mastery, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushMastery timeout')),8000))
     ]);
@@ -1323,10 +1361,11 @@ async function _pushAppTime(){
   if(!_supa || !_supaUser) return;
   try{
     const appTime = (typeof APP_TIME !== 'undefined') ? APP_TIME : {};
+    const _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, apptime_json:appTime, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, apptime_json:appTime, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushAppTime timeout')),8000))
     ]);
@@ -1840,14 +1879,15 @@ async function _cloudDeleteScore(localId){
 }
 
 // Monkey-patch save functions to push to cloud on every local save
+// Checks _syncing to avoid duplicate pushes during _pullOnLogin merge
 const _origSaveDone = saveDone;
-saveDone = function(){ _origSaveDone(); _pushDone(); };
+saveDone = function(){ _origSaveDone(); if(!_syncing) _pushDone(); };
 const _origSaveSc = saveSc;
-saveSc = function(){ _origSaveSc(); _pushScores(); };
+saveSc = function(){ _origSaveSc(); if(!_syncing) _pushScores(); };
 const _origSaveMastery = saveMastery;
-saveMastery = function(){ _origSaveMastery(); _pushMastery(); };
+saveMastery = function(){ _origSaveMastery(); if(!_syncing) _pushMastery(); };
 const _origSaveAppTime = saveAppTime;
-saveAppTime = function(){ _origSaveAppTime(); _pushAppTime(); };
+saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _pushAppTime(); };
 
 async function syncNow(){
   if(!_supa || !_supaUser){ showLockToast('Not signed in.'); return; }
@@ -1950,9 +1990,23 @@ function _clearUserData(){
   // Stop unlock live-sync so it doesn't fire after sign-out
   _stopUnlockSync();
 
+  // ── Wipe in-memory progress state ─────────────────────────────
+  Object.keys(MASTERY).forEach(k => delete MASTERY[k]);
+  STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+  APP_TIME.totalSecs = 0; APP_TIME.sessions = 0;
+  Object.keys(APP_TIME.dailySecs).forEach(k => delete APP_TIME.dailySecs[k]);
+
   // ── Wipe user-specific localStorage ──────────────────────────
-  // Progress & scores live in localStorage — preserved across parent sign-out
-  // so the next student PIN login finds them intact.
+  // Progress & scores — clear to prevent cross-family data leakage on shared devices.
+  // Pull-on-login will repopulate from Supabase for the next user.
+  localStorage.removeItem('wb_done5');
+  localStorage.removeItem('wb_sc5');
+  localStorage.removeItem('wb_mastery');
+  localStorage.removeItem('wb_apptime');
+  localStorage.removeItem('wb_streak');
+  localStorage.removeItem('wb_act_dates');
+  localStorage.removeItem('mmr_session_token');
+  _sessionToken = null;
   // Paused quiz state
   localStorage.removeItem('wb_paused_quiz');
   // Parent-managed unlocks and PIN
