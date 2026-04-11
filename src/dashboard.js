@@ -1910,12 +1910,9 @@ async function dbPinSave() {
   if (btn) btn.textContent = 'Saving...';
 
   try {
-    var encoder = new TextEncoder();
-    var hashBuf = await crypto.subtle.digest('SHA-256', encoder.encode(_pinResetBuffer.join('') + 'mymathroots_pin_salt_2025'));
-    var newHash = Array.from(new Uint8Array(hashBuf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-
+    // Server bcrypt-hashes the new PIN and invalidates existing sessions
     var result = await Promise.race([
-      _supa.from('student_profiles').update({ pin_hash: newHash, updated_at: new Date().toISOString() }).eq('id', _pinResetStudentId),
+      _supa.rpc('reset_student_pin', { p_student_id: _pinResetStudentId, p_new_pin: _pinResetBuffer.join('') }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
     if (result.error) throw result.error;
