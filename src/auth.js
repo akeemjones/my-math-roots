@@ -1114,15 +1114,23 @@ async function _syncPinHash() {
 // RPC so it works with only the anon key.  Results are merged into DONE / SCORES
 // (same logic as _pullOnLogin) and home is rebuilt once data arrives.
 async function _pullStudentProgress(studentId) {
-  if (!_supa || !studentId || studentId === 'local') return;
+  if (!_supa || !studentId || studentId === 'local' || !_sessionToken) return;
   try {
-    var result = await _supa.rpc('get_student_progress_by_pin', { p_student_id: studentId });
-    if (result.error || !result.data) return;
+    var result = await Promise.race([
+      _supa.rpc('pull_student_progress', { p_student_id: studentId, p_session_token: _sessionToken }),
+      new Promise(function(_, rej) { setTimeout(function() { rej(new Error('pull timeout')); }, 8000); })
+    ]);
+    if (result.error) {
+      if (_handleSessionExpiry(result.error)) return;
+      console.warn('[Supabase] pull error', result.error);
+      return;
+    }
+    if (!result.data) return;
     var data = result.data;
     var changed = false;
 
     // Merge done_json
-    var doneJson = data.progress && data.progress.done_json;
+    var doneJson = data.profile && data.profile.done_json;
     if (doneJson && typeof doneJson === 'object' && !Array.isArray(doneJson)) {
       var safe = {};
       var keys = Object.keys(doneJson);
@@ -1133,12 +1141,12 @@ async function _pullStudentProgress(studentId) {
         }
       }
       Object.assign(DONE, safe);
-      localStorage.setItem('wb_done5', JSON.stringify(DONE));
+      saveDone();
       changed = true;
     }
 
     // Merge mastery_json
-    var masteryJson = data.progress && data.progress.mastery_json;
+    var masteryJson = data.profile && data.profile.mastery_json;
     if (masteryJson && typeof masteryJson === 'object' && typeof MASTERY !== 'undefined') {
       var mkeys = Object.keys(masteryJson);
       for (var mi = 0; mi < mkeys.length; mi++) {
@@ -1152,6 +1160,42 @@ async function _pullStudentProgress(studentId) {
         }
       }
       if (changed && typeof saveMastery === 'function') saveMastery();
+    }
+
+    // Merge streak
+    var prof = data.profile;
+    if (prof) {
+      if (typeof prof.streak_current === 'number' && prof.streak_current > (STREAK.current || 0)) {
+        STREAK.current = prof.streak_current; changed = true;
+      }
+      if (typeof prof.streak_longest === 'number' && prof.streak_longest > (STREAK.longest || 0)) {
+        STREAK.longest = prof.streak_longest; changed = true;
+      }
+      if (prof.streak_last_date) {
+        STREAK.lastDate = prof.streak_last_date;
+      }
+      localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+    }
+
+    // Merge apptime
+    var appJson = data.profile && data.profile.apptime_json;
+    if (appJson && typeof appJson === 'object') {
+      var appChanged = false;
+      if (typeof appJson.totalSecs === 'number' && appJson.totalSecs > (APP_TIME.totalSecs || 0)) {
+        APP_TIME.totalSecs = appJson.totalSecs; appChanged = true;
+      }
+      if (typeof appJson.sessions === 'number' && appJson.sessions > (APP_TIME.sessions || 0)) {
+        APP_TIME.sessions = appJson.sessions; appChanged = true;
+      }
+      if (appJson.dailySecs && typeof appJson.dailySecs === 'object') {
+        APP_TIME.dailySecs = APP_TIME.dailySecs || {};
+        for (var d in appJson.dailySecs) {
+          if (typeof appJson.dailySecs[d] === 'number' && appJson.dailySecs[d] > (APP_TIME.dailySecs[d] || 0)) {
+            APP_TIME.dailySecs[d] = appJson.dailySecs[d]; appChanged = true;
+          }
+        }
+      }
+      if (appChanged && typeof saveAppTime === 'function') saveAppTime();
     }
 
     // Merge scores (append-only by local_id)
@@ -1182,14 +1226,27 @@ async function _pullStudentProgress(studentId) {
         SCORES.push.apply(SCORES, incoming);
         SCORES.sort(function(a, b) { return b.id - a.id; });
         if (SCORES.length > 200) SCORES.length = 200;
-        localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
+        saveSc();
         changed = true;
       }
     }
 
+    // Apply unlock settings from cloud (parent is authoritative)
+    if (data.profile && data.profile.unlock_settings) {
+      localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(data.profile.unlock_settings));
+    }
+    if (data.profile && data.profile.a11y_json) {
+      localStorage.setItem('wb_a11y_' + studentId, JSON.stringify(data.profile.a11y_json));
+    }
+
     // Rebuild home to reflect the newly-loaded progress
     if (changed && typeof buildHome === 'function') buildHome();
-  } catch(e) { /* offline — progress stays as-is */ }
+
+    // Push merged state back to cloud so both sides converge
+    triggerCloudSync();
+  } catch(e) {
+    if (!_handleSessionExpiry(e)) { /* offline — progress stays as-is */ }
+  }
 }
 
 let _syncing = false; // debounce flag — prevents monkey-patched saves from pushing during pull
