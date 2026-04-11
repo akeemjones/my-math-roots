@@ -1229,7 +1229,7 @@ async function _pullStudentProgress(studentId) {
   }
 }
 
-let _syncing = false; // debounce flag — prevents monkey-patched saves from pushing during pull
+let _syncing = false; // prevents monkey-patched saves from pushing during _pullOnLogin merge
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
   _syncing = true;
