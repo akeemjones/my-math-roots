@@ -296,6 +296,7 @@ async function _psCheckPin(){
     show('home');
     buildHome();
     _syncStudentSettings(profile.id).then(function(){ buildHome(); });
+    _pullStudentProgress(profile.id);
     _startUnlockSync(profile.id);
 
   } catch(e){

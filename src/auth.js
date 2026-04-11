@@ -1041,7 +1041,8 @@ async function _refreshUnlockSettings(studentId) {
   var cachedStr = localStorage.getItem('wb_unlock_' + studentId);
   try {
     var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId, p_session_token: _sessionToken });
-    if (result.error || !result.data) return;
+    if (result.error) { _handleSessionExpiry(result.error); return; }
+    if (!result.data) return;
     var freshStr = JSON.stringify(result.data);
     if (freshStr === cachedStr) return; // nothing changed
     localStorage.setItem('wb_unlock_' + studentId, freshStr);
@@ -1051,7 +1052,7 @@ async function _refreshUnlockSettings(studentId) {
         typeof buildHome === 'function') {
       buildHome();
     }
-  } catch(e) { /* offline — keep cached */ }
+  } catch(e) { if (!_handleSessionExpiry(e)) { /* offline — keep cached */ } }
 }
 
 function _startUnlockSync(studentId) {
