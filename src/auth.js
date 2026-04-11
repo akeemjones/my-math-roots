@@ -513,31 +513,23 @@ async function _lsObSave() {
   if (saveBtn) { saveBtn.textContent = 'Saving...'; saveBtn.style.pointerEvents = 'none'; }
 
   try {
-    var pinHash = await _hashPin(_obPinBuffer.join(''));
     var avatarColors = _AVATAR_COLORS[_obSelectedEmoji] || { from: '#f59e0b', to: '#f97316' };
     var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
-    var username = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 20) || 'student';
 
-    var insertResult = await Promise.race([
-      _supa.from('student_profiles').insert({
-        parent_id: _supaUser.id,
-        username: username,
-        display_name: name,
-        age: ageVal,
-        avatar_emoji: _obSelectedEmoji,
-        avatar_color_from: avatarColors.from,
-        avatar_color_to: avatarColors.to,
-        pin_hash: pinHash,
-      }).select('id').single(),
+    // Server bcrypt-hashes the PIN and auto-generates family code
+    var createResult = await Promise.race([
+      _supa.rpc('create_student_profile', {
+        p_display_name: name,
+        p_avatar_emoji: _obSelectedEmoji,
+        p_avatar_color_from: avatarColors.from,
+        p_avatar_color_to: avatarColors.to,
+        p_age: ageVal,
+        p_pin: _obPinBuffer.join('')
+      }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
-    if (insertResult.error) throw insertResult.error;
-
-    var codeResult = await Promise.race([
-      _supa.rpc('ensure_family_code', { p_parent_id: _supaUser.id }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
-    ]);
-    var familyCode = (codeResult && codeResult.data) ? codeResult.data : 'MMR-????';
+    if (createResult.error) throw createResult.error;
+    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????';
 
     var step1 = document.getElementById('ls-onboard-step1');
     var step2 = document.getElementById('ls-onboard-step2');
