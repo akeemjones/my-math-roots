@@ -1019,19 +1019,7 @@ async function _syncStudentSettings(studentId) {
       if (result.data.unlock) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(result.data.unlock));
       if (result.data.timer)  localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(result.data.timer));
       if (result.data.a11y)   localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(result.data.a11y));
-      return;
     }
-  } catch(e) { /* fall through to legacy 3-call approach */ }
-  // Fallback: 3 separate RPCs (until migration 009 is applied)
-  try {
-    var results = await Promise.all([
-      _supa.rpc('get_unlock_settings', { p_student_id: studentId }),
-      _supa.rpc('get_timer_settings',  { p_student_id: studentId }),
-      _supa.rpc('get_a11y_settings',   { p_student_id: studentId }),
-    ]);
-    if (results[0].data) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(results[0].data));
-    if (results[1].data) localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(results[1].data));
-    if (results[2].data) localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(results[2].data));
   } catch(e) { /* offline — use cached values */ }
 }
 
@@ -1052,7 +1040,7 @@ async function _refreshUnlockSettings(studentId) {
   if (!_supa || !studentId || studentId === 'local') return;
   var cachedStr = localStorage.getItem('wb_unlock_' + studentId);
   try {
-    var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId });
+    var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId, p_session_token: _sessionToken });
     if (result.error || !result.data) return;
     var freshStr = JSON.stringify(result.data);
     if (freshStr === cachedStr) return; // nothing changed
