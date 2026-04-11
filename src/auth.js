@@ -1318,56 +1318,120 @@ async function _pullOnLogin(){
 
     // Push local-only data back to cloud so both sides converge
     _syncing = false;
-    _pushDone();
-    _pushScores();
-    _pushMastery();
-    _pushAppTime();
+    if(_isStudentSession()){
+      triggerCloudSync();
+    } else {
+      _pushDoneParent();
+      _pushScores();
+      _pushMasteryParent();
+      _pushAppTimeParent();
+    }
     updateSyncLabel();
     buildHome();
     await _lsCheckOnboarding();
   } catch(e){ console.warn('[Supabase] pull error', e); } finally { _syncing = false; }
 }
 
-async function _pushDone(){
+// ── Unified push pipeline (student sessions) ────────────────────────────
+// All local state is sent in a single push_student_progress RPC call.
+// Debounced at 500ms so rapid saves (quiz finish = done + mastery + apptime + score)
+// coalesce into one network call.
+let _pushInFlight = false;
+let _pushPending  = false;
+let _pushTimer    = null;
+
+function triggerCloudSync(){
+  if(!_supa || !_isStudentSession()) return;
+  if(_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(_pushAll, 500);
+}
+
+async function _pushAll(){
+  _pushTimer = null;
+  if(!_supa || !_isStudentSession()) return;
+  if(_pushInFlight){ _pushPending = true; return; }
+  _pushInFlight = true;
+  try{
+    var studentId = localStorage.getItem('mmr_active_student_id');
+    var result = await Promise.race([
+      _supa.rpc('push_student_progress', {
+        p_student_id:       studentId,
+        p_session_token:    _sessionToken,
+        p_mastery_json:     (typeof MASTERY !== 'undefined') ? MASTERY : {},
+        p_streak_current:   STREAK.current || 0,
+        p_streak_longest:   STREAK.longest || 0,
+        p_streak_last_date: STREAK.lastDate || '',
+        p_apptime_json:     (typeof APP_TIME !== 'undefined') ? APP_TIME : {},
+        p_done_json:        DONE,
+        p_act_dates_json:   safeLoad('wb_act_dates', []),
+        p_settings_json:    safeLoad('wb_settings', {}),
+        p_a11y_json:        safeLoad('wb_a11y', {}),
+        p_scores:           SCORES.map(function(s){
+          return {
+            local_id: s.id, qid: s.qid || '', label: s.label || '', type: s.type || '',
+            score: s.score || 0, total: s.total || 0, pct: s.pct || 0,
+            stars: s.stars || '', unit_idx: s.unitIdx ?? 0, color: s.color || '',
+            student_name: s.name || '', time_taken: s.timeTaken || 0,
+            answers: s.answers || [], date_str: s.date || '', time_str: s.time || '',
+            quit: !!s.quit, abandoned: !!s.abandoned
+          };
+        })
+      }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAll timeout')); }, 12000); })
+    ]);
+    if(result.error){
+      if(_handleSessionExpiry(result.error)) return;
+      console.warn('[Supabase] pushAll error', result.error);
+    }
+  } catch(e){
+    if(!_handleSessionExpiry(e)) console.warn('[Supabase] pushAll error', e);
+  } finally {
+    _pushInFlight = false;
+    if(_pushPending){ _pushPending = false; triggerCloudSync(); }
+  }
+}
+
+// ── Parent-path push functions (authenticated via Supabase Auth, no session token) ──
+async function _pushDoneParent(){
   if(!_supa || !_supaUser) return;
   try{
-    const _sid = localStorage.getItem('mmr_active_student_id') || null;
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
         { user_id:_supaUser.id, student_id:_sid, done_json:DONE, updated_at:new Date().toISOString() },
         { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushDone timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushDone timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushDone error', e); }
 }
 
-async function _pushMastery(){
+async function _pushMasteryParent(){
   if(!_supa || !_supaUser) return;
   try{
-    const mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
-    const _sid = localStorage.getItem('mmr_active_student_id') || null;
+    var mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
         { user_id:_supaUser.id, student_id:_sid, mastery_json:mastery, updated_at:new Date().toISOString() },
         { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushMastery timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushMastery error', e); }
 }
 
-async function _pushAppTime(){
+async function _pushAppTimeParent(){
   if(!_supa || !_supaUser) return;
   try{
-    const appTime = (typeof APP_TIME !== 'undefined') ? APP_TIME : {};
-    const _sid = localStorage.getItem('mmr_active_student_id') || null;
+    var appTime = (typeof APP_TIME !== 'undefined') ? APP_TIME : {};
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
         { user_id:_supaUser.id, student_id:_sid, apptime_json:appTime, updated_at:new Date().toISOString() },
         { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushAppTime timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAppTime timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushAppTime error', e); }
 }
@@ -1878,24 +1942,29 @@ async function _cloudDeleteScore(localId){
   } catch(e){ console.warn('[Supabase] cloudDeleteScore error', e); }
 }
 
-// Monkey-patch save functions to push to cloud on every local save
-// Checks _syncing to avoid duplicate pushes during _pullOnLogin merge
+// Monkey-patch save functions to push to cloud on every local save.
+// Student sessions use the unified push pipeline; parent sessions use individual pushes.
 const _origSaveDone = saveDone;
-saveDone = function(){ _origSaveDone(); if(!_syncing) _pushDone(); };
+saveDone = function(){ _origSaveDone(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushDoneParent(); };
 const _origSaveSc = saveSc;
-saveSc = function(){ _origSaveSc(); if(!_syncing) _pushScores(); };
+saveSc = function(){ _origSaveSc(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushScores(); };
 const _origSaveMastery = saveMastery;
-saveMastery = function(){ _origSaveMastery(); if(!_syncing) _pushMastery(); };
+saveMastery = function(){ _origSaveMastery(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushMasteryParent(); };
 const _origSaveAppTime = saveAppTime;
-saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _pushAppTime(); };
+saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushAppTimeParent(); };
 
 async function syncNow(){
-  if(!_supa || !_supaUser){ showLockToast('Not signed in.'); return; }
+  if(!_supa){ showLockToast('Not signed in.'); return; }
   showLockToast('Syncing…');
-  await _pushDone();
-  await _pushScores();
-  await _pushMastery();
-  await _pushAppTime();
+  if(_isStudentSession()){
+    if(_pushTimer) clearTimeout(_pushTimer);
+    await _pushAll();
+  } else if(_supaUser){
+    await _pushDoneParent();
+    await _pushScores();
+    await _pushMasteryParent();
+    await _pushAppTimeParent();
+  }
   updateSyncLabel();
   showLockToast('Synced! ✅');
 }
