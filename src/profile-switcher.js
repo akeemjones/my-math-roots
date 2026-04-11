@@ -231,9 +231,8 @@ async function _psCheckPin(){
   var profile  = profiles.find(function(p){ return p.id === _psTargetProfileId; });
   if(!profile){ _psPinBuffer = []; return; }
 
-  var entered  = _psPinBuffer.join('');
+  var _pinRaw  = _psPinBuffer.join('');
   _psPinBuffer = [];
-  var hash     = await _hashPin(entered);
 
   var msgEl = document.getElementById('ps-pin-msg');
 
@@ -247,7 +246,7 @@ async function _psCheckPin(){
 
   try{
     var result = await Promise.race([
-      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin_hash: hash }),
+      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin: _pinRaw }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
 
@@ -267,7 +266,7 @@ async function _psCheckPin(){
     }
 
     // ── Wrong PIN ────────────────────────────────────────────────────────
-    if(!vr || !vr.ok){
+    if(!vr || !vr.success){
       if(msgEl) msgEl.textContent = (vr && vr.attempts_left === 0)
         ? 'Locked for 5 minutes.'
         : 'Wrong PIN — try again.';
@@ -279,6 +278,8 @@ async function _psCheckPin(){
     }
 
     // ── SUCCESS ──────────────────────────────────────────────────────────
+    _sessionToken = vr.session_token;
+    localStorage.setItem('mmr_session_token', vr.session_token);
     localStorage.setItem('mmr_active_student_id', profile.id);
     localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
