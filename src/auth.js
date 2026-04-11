@@ -304,9 +304,6 @@ async function _lsStudentLogin() {
   var entered = _lsPinBuffer.join('');
   _lsPinBuffer = [];
 
-  // Hash client-side so raw PIN never leaves device, then verify server-side
-  var enteredHash = await _hashPin(entered);
-
   if (!_supa) {
     if (msg) msg.textContent = 'No connection — check your internet.';
     return;
@@ -318,7 +315,7 @@ async function _lsStudentLogin() {
 
   try {
     var result = await Promise.race([
-      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin_hash: enteredHash }),
+      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin: entered }),
       new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 8000); })
     ]);
 
@@ -338,7 +335,7 @@ async function _lsStudentLogin() {
     }
 
     // ── Wrong PIN ────────────────────────────────────────────────────────
-    if (!vr || !vr.ok) {
+    if (!vr || !vr.success) {
       var left = (vr && vr.attempts_left != null) ? vr.attempts_left : null;
       if (msg) {
         msg.textContent = (left === 0)
@@ -355,6 +352,9 @@ async function _lsStudentLogin() {
     // Clean up old localStorage lockout keys
     localStorage.removeItem(_STU_FAIL_COUNT);
     localStorage.removeItem(_STU_FAIL_KEY);
+    // Store server-issued session token for authenticated RPCs
+    _sessionToken = vr.session_token;
+    localStorage.setItem('mmr_session_token', vr.session_token);
     localStorage.setItem('mmr_active_student_id', profile.id);
     localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
