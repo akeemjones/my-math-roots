@@ -2283,7 +2283,18 @@ async function _parentGateEmailSignIn(){
   if(msg){ msg.style.color='#4a90d9'; msg.textContent='Signing in\u2026'; }
   try{
     var res = await _supa.auth.signInWithPassword({ email: email, password: pw });
-    if(res.error){ if(msg){ msg.style.color='#e74c3c'; msg.textContent= res.error.message; } return; }
+    if(res.error){
+      if(msg){
+        var _errMap = {
+          'Invalid login credentials': 'Incorrect email or password.',
+          'Email not confirmed': 'Please confirm your email before signing in.',
+          'Too many requests': 'Too many attempts. Please wait a moment and try again.'
+        };
+        msg.style.color = '#e74c3c';
+        msg.textContent = _errMap[res.error.message] || 'Sign in failed. Please check your details and try again.';
+      }
+      return;
+    }
     localStorage.setItem('mmr_user_role', 'parent');
     var modal = document.getElementById('parent-gate-modal');
     if(modal) modal.remove();
@@ -2295,7 +2306,6 @@ async function _parentGateEmailSignIn(){
 
 async function _parentGateGoogle(){
   if(!_supa) return;
-  localStorage.setItem('mmr_user_role', 'parent');
   sessionStorage.setItem('mmr_post_auth_redirect', '/dashboard/');
   try{
     await _supa.auth.signInWithOAuth({
