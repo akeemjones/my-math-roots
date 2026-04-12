@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { stackNavigate } from '$lib/services/navStack';
-  import { unitsData, activeStudent, done, scores, streak, familyProfiles, activeStudentId, guestMode, unlockSettings } from '$lib/stores';
-  import { verifyStudentPin } from '$lib/services/auth';
-  import UnitCard from '$lib/components/home/UnitCard.svelte';
-  import StreakCalendar from '$lib/components/home/StreakCalendar.svelte';
-  import { isScrollHintSeen, markScrollHintSeen } from '$lib/services/tour';
+  import { stackNavigate } from '$lib/ui/services/navStack';
+  import { unitsData, activeStudent, done, scores, streak, familyProfiles, activeStudentId, guestMode, unlockSettings } from '$lib/core/stores';
+  import { verifyStudentPin } from '$lib/core/services/auth';
+  import UnitCard from '$lib/ui/components/home/UnitCard.svelte';
+  import StreakCalendar from '$lib/ui/components/home/StreakCalendar.svelte';
+  import { isScrollHintSeen, markScrollHintSeen } from '$lib/ui/services/tour';
   // ── Computed progress ────────────────────────────────────────────────────────
 
   // Check if a quiz has been passed (done_json flag OR score entry with 80%+)

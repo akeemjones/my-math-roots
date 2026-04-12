@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { signInWithGoogle } from '$lib/services/auth';
-  import { verifyStudentPin } from '$lib/services/auth';
-  import { supabase } from '$lib/supabase';
-  import { familyProfiles, activeStudentId, guestMode, scores, done, mastery, streak, actDates, appTime, initialPullDone } from '$lib/stores';
-  import { navStack } from '$lib/services/navStack';
-  import type { StudentProfile } from '$lib/types';
+  import { signInWithGoogle } from '$lib/core/services/auth';
+  import { verifyStudentPin } from '$lib/core/services/auth';
+  import { supabase } from '$lib/core/supabase';
+  import { familyProfiles, activeStudentId, guestMode, scores, done, mastery, streak, actDates, appTime, initialPullDone } from '$lib/core/stores';
+  import { navStack } from '$lib/ui/services/navStack';
+  import type { StudentProfile } from '$lib/core/types';
 
   // ── Carousel ────────────────────────────────────────────────────────────────
   let activeCard = $state(0); // 0=student (default, matches legacy), 1=parent

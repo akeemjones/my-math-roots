@@ -32,11 +32,15 @@ function show(id){
   // Profile button only appears on the home (hero) screen
   const prof = document.getElementById('prof-btn');
   if(prof) prof.style.display = (id === 'home') ? '' : 'none';
-  // Calendar button only appears on the home screen
+  // Calendar button: home screen only, signed-in users only (not guests)
   const calBtn = document.getElementById('cal-btn');
-  if(calBtn) calBtn.style.display = (id === 'home' && typeof _supaUser !== 'undefined' && _supaUser) ? 'flex' : 'none';
+  var _navRole = localStorage.getItem('mmr_user_role');
+  var _navIsLoggedIn = !!_supaUser || _navRole === 'student' || _navRole === 'parent';
+  if(calBtn) calBtn.style.display = (id === 'home' && _navIsLoggedIn) ? 'flex' : 'none';
   // Update profile button emoji/visibility when landing on home
   if(id === 'home' && typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
+  // Adapt carousel height to active card when login screen shows
+  if(id === 'login-screen' && typeof _lsAdaptHeight === 'function') _lsAdaptHeight();
   // Pre-fill remembered email on login screen — SEC-9: read from encrypted store
   if(id === 'login-screen'){
     const emailInp = document.getElementById('ls-email');
@@ -126,6 +130,8 @@ function isUnitQuizUnlocked(unitIdx){
   function cleanup(){
     document.body.classList.remove('swiping');
     _skipNextHomeBuild=false; // safety reset if swipe was cancelled
+    // Clear ghost-click guard (set on committed swipes); 120ms covers the browser's synthetic-click window
+    if(window._mmrSwipeActive) setTimeout(()=>{ window._mmrSwipeActive=false; }, 120);
     if(curEl){ curEl.classList.remove('swipe-active'); css(curEl, {transition:'',transform:'',boxShadow:'',zIndex:''}); }
     if(prevEl){
       prevEl.classList.remove('swipe-peek');
@@ -261,6 +267,8 @@ function isUnitQuizUnlocked(unitIdx){
     const ease = `${ANIM_MS}ms cubic-bezier(.25,.46,.45,.94)`;
 
     if(commit){
+      // Suppress ghost click that fires ~300ms after touchend on the newly-revealed screen
+      window._mmrSwipeActive = true;
       css(curEl, {transition:`transform ${ease}`, transform:`translateX(${W()}px)`});
       if(prevEl) css(prevEl, {transition:`transform ${ease}`,
                                transform:'translateX(0%)'});

@@ -8,6 +8,24 @@ let _supa      = null;
 let _supaUser  = null;
 let _authLoading = false;
 
+let _sessionToken = localStorage.getItem('mmr_session_token') || null;
+
+function _isStudentSession(){
+  return !!(localStorage.getItem('mmr_active_student_id') && _sessionToken);
+}
+
+function _handleSessionExpiry(error){
+  var msg = (error && error.message) || String(error || '');
+  if(msg.indexOf('invalid_session') !== -1){
+    _sessionToken = null;
+    localStorage.removeItem('mmr_session_token');
+    showLockToast('Session expired — please log in again.');
+    show('login-screen');
+    return true;
+  }
+  return false;
+}
+
 function _lsSetRole(role) {
   localStorage.setItem('mmr_user_role', role);
   var btnStudent = document.getElementById('ls-role-student');
@@ -152,6 +170,8 @@ function _lsRenderStudentCard() {
     var _nativeInp = document.getElementById('ls-pin-native');
     if(_nativeInp) setTimeout(function(){ _nativeInp.focus(); }, 60);
   }
+  // Re-adapt outer height after student card body changes
+  if(typeof _lsAdaptHeight === 'function') _lsAdaptHeight();
 }
 
 async function _lsFamilyCodeSetup() {
@@ -199,10 +219,7 @@ function _lsSelectAvatar(studentId) {
 }
 
 function _lsPinKey(digit) {
-  // Silently ignore input while locked out
-  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
-  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
-  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
+  // Lockout is enforced server-side by verify_student_pin (returns locked_until + attempts_left)
   if (_lsPinBuffer.length >= 4) return;
   _lsPinBuffer.push(String(digit));
   var dots = document.getElementById('ls-pin-dots');
@@ -235,10 +252,6 @@ function _lsPinBackspace() {
 
 // Handles input from the native numpad on the login screen
 function _lsPinNativeInput() {
-  // Ignore while locked out
-  var _failCount = parseInt(localStorage.getItem(_STU_FAIL_COUNT) || '0');
-  var _failTs    = parseInt(localStorage.getItem(_STU_FAIL_KEY)   || '0');
-  if (_failCount >= _STU_MAX_FAILS && (Date.now() - _failTs) < _STU_LOCK_MS) return;
 
   var inp = document.getElementById('ls-pin-native');
   if (!inp) return;
@@ -291,9 +304,6 @@ async function _lsStudentLogin() {
   var entered = _lsPinBuffer.join('');
   _lsPinBuffer = [];
 
-  // Hash client-side so raw PIN never leaves device, then verify server-side
-  var enteredHash = await _hashPin(entered);
-
   if (!_supa) {
     if (msg) msg.textContent = 'No connection — check your internet.';
     return;
@@ -305,7 +315,7 @@ async function _lsStudentLogin() {
 
   try {
     var result = await Promise.race([
-      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin_hash: enteredHash }),
+      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin: entered }),
       new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 8000); })
     ]);
 
@@ -325,7 +335,7 @@ async function _lsStudentLogin() {
     }
 
     // ── Wrong PIN ────────────────────────────────────────────────────────
-    if (!vr || !vr.ok) {
+    if (!vr || !vr.success) {
       var left = (vr && vr.attempts_left != null) ? vr.attempts_left : null;
       if (msg) {
         msg.textContent = (left === 0)
@@ -342,6 +352,9 @@ async function _lsStudentLogin() {
     // Clean up old localStorage lockout keys
     localStorage.removeItem(_STU_FAIL_COUNT);
     localStorage.removeItem(_STU_FAIL_KEY);
+    // Store server-issued session token for authenticated RPCs
+    _sessionToken = vr.session_token;
+    localStorage.setItem('mmr_session_token', vr.session_token);
     localStorage.setItem('mmr_active_student_id', profile.id);
     localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
@@ -500,31 +513,23 @@ async function _lsObSave() {
   if (saveBtn) { saveBtn.textContent = 'Saving...'; saveBtn.style.pointerEvents = 'none'; }
 
   try {
-    var pinHash = await _hashPin(_obPinBuffer.join(''));
     var avatarColors = _AVATAR_COLORS[_obSelectedEmoji] || { from: '#f59e0b', to: '#f97316' };
     var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
-    var username = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 20) || 'student';
 
-    var insertResult = await Promise.race([
-      _supa.from('student_profiles').insert({
-        parent_id: _supaUser.id,
-        username: username,
-        display_name: name,
-        age: ageVal,
-        avatar_emoji: _obSelectedEmoji,
-        avatar_color_from: avatarColors.from,
-        avatar_color_to: avatarColors.to,
-        pin_hash: pinHash,
-      }).select('id').single(),
+    // Server bcrypt-hashes the PIN and auto-generates family code
+    var createResult = await Promise.race([
+      _supa.rpc('create_student_profile', {
+        p_display_name: name,
+        p_avatar_emoji: _obSelectedEmoji,
+        p_avatar_color_from: avatarColors.from,
+        p_avatar_color_to: avatarColors.to,
+        p_age: ageVal,
+        p_pin: _obPinBuffer.join('')
+      }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
-    if (insertResult.error) throw insertResult.error;
-
-    var codeResult = await Promise.race([
-      _supa.rpc('ensure_family_code', { p_parent_id: _supaUser.id }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
-    ]);
-    var familyCode = (codeResult && codeResult.data) ? codeResult.data : 'MMR-????';
+    if (createResult.error) throw createResult.error;
+    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????';
 
     var step1 = document.getElementById('ls-onboard-step1');
     var step2 = document.getElementById('ls-onboard-step2');
@@ -562,6 +567,13 @@ function _lsCarouselGo(idx) {
   // Hide guest button on Parent/Teacher card — dashboard requires an account
   var guestBtn = document.getElementById('ls-guest-btn');
   if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
+  // Adapt outer height to active card so the Student card doesn't show empty space
+  _lsAdaptHeight();
+}
+function _lsAdaptHeight(){
+  var outer = document.querySelector('.ls-carousel-outer');
+  var card  = document.getElementById('ls-card-' + (_lsCardIdx || 0));
+  if(outer && card) outer.style.height = card.scrollHeight + 'px';
 }
 
 function _lsInitCarousel() {
@@ -735,7 +747,13 @@ function supabaseInit(){
       // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
-      show('dashboard-screen'); _dbInit();
+      var _postRedirect = sessionStorage.getItem('mmr_post_auth_redirect');
+      if(_postRedirect){
+        sessionStorage.removeItem('mmr_post_auth_redirect');
+        window.location.href = _postRedirect;
+      } else {
+        window.location.href = '/dashboard/';
+      }
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');
@@ -1001,14 +1019,13 @@ async function _lsSubmit(){
 async function _syncStudentSettings(studentId) {
   if (!_supa || !studentId || studentId === 'local') return;
   try {
-    var results = await Promise.all([
-      _supa.rpc('get_unlock_settings', { p_student_id: studentId }),
-      _supa.rpc('get_timer_settings',  { p_student_id: studentId }),
-      _supa.rpc('get_a11y_settings',   { p_student_id: studentId }),
-    ]);
-    if (results[0].data) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(results[0].data));
-    if (results[1].data) localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(results[1].data));
-    if (results[2].data) localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(results[2].data));
+    // Single RPC replaces 3 separate calls — 1 round trip instead of 3
+    var result = await _supa.rpc('get_all_student_settings', { p_student_id: studentId });
+    if (result.data) {
+      if (result.data.unlock) localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(result.data.unlock));
+      if (result.data.timer)  localStorage.setItem('wb_timer_'  + studentId, JSON.stringify(result.data.timer));
+      if (result.data.a11y)   localStorage.setItem('wb_a11y_'   + studentId, JSON.stringify(result.data.a11y));
+    }
   } catch(e) { /* offline — use cached values */ }
 }
 
@@ -1029,8 +1046,9 @@ async function _refreshUnlockSettings(studentId) {
   if (!_supa || !studentId || studentId === 'local') return;
   var cachedStr = localStorage.getItem('wb_unlock_' + studentId);
   try {
-    var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId });
-    if (result.error || !result.data) return;
+    var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId, p_session_token: _sessionToken });
+    if (result.error) { _handleSessionExpiry(result.error); return; }
+    if (!result.data) return;
     var freshStr = JSON.stringify(result.data);
     if (freshStr === cachedStr) return; // nothing changed
     localStorage.setItem('wb_unlock_' + studentId, freshStr);
@@ -1040,7 +1058,7 @@ async function _refreshUnlockSettings(studentId) {
         typeof buildHome === 'function') {
       buildHome();
     }
-  } catch(e) { /* offline — keep cached */ }
+  } catch(e) { if (!_handleSessionExpiry(e)) { /* offline — keep cached */ } }
 }
 
 function _startUnlockSync(studentId) {
@@ -1083,15 +1101,23 @@ async function _syncPinHash() {
 // RPC so it works with only the anon key.  Results are merged into DONE / SCORES
 // (same logic as _pullOnLogin) and home is rebuilt once data arrives.
 async function _pullStudentProgress(studentId) {
-  if (!_supa || !studentId || studentId === 'local') return;
+  if (!_supa || !studentId || studentId === 'local' || !_sessionToken) return;
   try {
-    var result = await _supa.rpc('get_student_progress_by_pin', { p_student_id: studentId });
-    if (result.error || !result.data) return;
+    var result = await Promise.race([
+      _supa.rpc('pull_student_progress', { p_student_id: studentId, p_session_token: _sessionToken }),
+      new Promise(function(_, rej) { setTimeout(function() { rej(new Error('pull timeout')); }, 8000); })
+    ]);
+    if (result.error) {
+      if (_handleSessionExpiry(result.error)) return;
+      console.warn('[Supabase] pull error', result.error);
+      return;
+    }
+    if (!result.data) return;
     var data = result.data;
     var changed = false;
 
     // Merge done_json
-    var doneJson = data.progress && data.progress.done_json;
+    var doneJson = data.profile && data.profile.done_json;
     if (doneJson && typeof doneJson === 'object' && !Array.isArray(doneJson)) {
       var safe = {};
       var keys = Object.keys(doneJson);
@@ -1102,12 +1128,12 @@ async function _pullStudentProgress(studentId) {
         }
       }
       Object.assign(DONE, safe);
-      localStorage.setItem('wb_done5', JSON.stringify(DONE));
+      saveDone();
       changed = true;
     }
 
     // Merge mastery_json
-    var masteryJson = data.progress && data.progress.mastery_json;
+    var masteryJson = data.profile && data.profile.mastery_json;
     if (masteryJson && typeof masteryJson === 'object' && typeof MASTERY !== 'undefined') {
       var mkeys = Object.keys(masteryJson);
       for (var mi = 0; mi < mkeys.length; mi++) {
@@ -1121,6 +1147,42 @@ async function _pullStudentProgress(studentId) {
         }
       }
       if (changed && typeof saveMastery === 'function') saveMastery();
+    }
+
+    // Merge streak
+    var prof = data.profile;
+    if (prof) {
+      if (typeof prof.streak_current === 'number' && prof.streak_current > (STREAK.current || 0)) {
+        STREAK.current = prof.streak_current; changed = true;
+      }
+      if (typeof prof.streak_longest === 'number' && prof.streak_longest > (STREAK.longest || 0)) {
+        STREAK.longest = prof.streak_longest; changed = true;
+      }
+      if (prof.streak_last_date) {
+        STREAK.lastDate = prof.streak_last_date;
+      }
+      localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+    }
+
+    // Merge apptime
+    var appJson = data.profile && data.profile.apptime_json;
+    if (appJson && typeof appJson === 'object') {
+      var appChanged = false;
+      if (typeof appJson.totalSecs === 'number' && appJson.totalSecs > (APP_TIME.totalSecs || 0)) {
+        APP_TIME.totalSecs = appJson.totalSecs; appChanged = true;
+      }
+      if (typeof appJson.sessions === 'number' && appJson.sessions > (APP_TIME.sessions || 0)) {
+        APP_TIME.sessions = appJson.sessions; appChanged = true;
+      }
+      if (appJson.dailySecs && typeof appJson.dailySecs === 'object') {
+        APP_TIME.dailySecs = APP_TIME.dailySecs || {};
+        for (var d in appJson.dailySecs) {
+          if (typeof appJson.dailySecs[d] === 'number' && appJson.dailySecs[d] > (APP_TIME.dailySecs[d] || 0)) {
+            APP_TIME.dailySecs[d] = appJson.dailySecs[d]; appChanged = true;
+          }
+        }
+      }
+      if (appChanged && typeof saveAppTime === 'function') saveAppTime();
     }
 
     // Merge scores (append-only by local_id)
@@ -1151,18 +1213,33 @@ async function _pullStudentProgress(studentId) {
         SCORES.push.apply(SCORES, incoming);
         SCORES.sort(function(a, b) { return b.id - a.id; });
         if (SCORES.length > 200) SCORES.length = 200;
-        localStorage.setItem('wb_sc5', JSON.stringify(SCORES));
+        saveSc();
         changed = true;
       }
     }
 
+    // Apply unlock settings from cloud (parent is authoritative)
+    if (data.profile && data.profile.unlock_settings) {
+      localStorage.setItem('wb_unlock_' + studentId, JSON.stringify(data.profile.unlock_settings));
+    }
+    if (data.profile && data.profile.a11y_json) {
+      localStorage.setItem('wb_a11y_' + studentId, JSON.stringify(data.profile.a11y_json));
+    }
+
     // Rebuild home to reflect the newly-loaded progress
     if (changed && typeof buildHome === 'function') buildHome();
-  } catch(e) { /* offline — progress stays as-is */ }
+
+    // Push merged state back to cloud so both sides converge
+    triggerCloudSync();
+  } catch(e) {
+    if (!_handleSessionExpiry(e)) { /* offline — progress stays as-is */ }
+  }
 }
 
+let _syncing = false; // prevents monkey-patched saves from pushing during _pullOnLogin merge
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
+  _syncing = true;
   // Skip sync if we already pulled within the last 5 minutes (handles page refreshes
   // and brief re-opens without hammering Supabase on every session restore).
   const _syncKey = 'wb_last_sync_' + _supaUser.id;
@@ -1170,9 +1247,11 @@ async function _pullOnLogin(){
   if(Date.now() - _lastSync < 5 * 60 * 1000) return;
   try{
     // Single RPC call replaces 3 separate queries — 1 round trip instead of 3.
+    // Pass active student_id so cloud returns per-student progress (not shared parent row)
     const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
+    const _activeStudId = localStorage.getItem('mmr_active_student_id') || null;
     const { data: syncData, error: rpcErr } = await Promise.race([
-      _supa.rpc('get_user_sync_data'),
+      _supa.rpc('get_user_sync_data', _activeStudId ? { p_student_id: _activeStudId } : {}),
       _timeout
     ]);
     if(rpcErr) throw rpcErr;
@@ -1282,53 +1361,121 @@ async function _pullOnLogin(){
     }
 
     // Push local-only data back to cloud so both sides converge
-    _pushDone();
-    _pushScores();
-    _pushMastery();
-    _pushAppTime();
+    _syncing = false;
+    if(_isStudentSession()){
+      triggerCloudSync();
+    } else {
+      _pushDoneParent();
+      _pushScores();
+      _pushMasteryParent();
+      _pushAppTimeParent();
+    }
     updateSyncLabel();
     buildHome();
     await _lsCheckOnboarding();
-  } catch(e){ console.warn('[Supabase] pull error', e); }
+  } catch(e){ console.warn('[Supabase] pull error', e); } finally { _syncing = false; }
 }
 
-async function _pushDone(){
+// ── Unified push pipeline (student sessions) ────────────────────────────
+// All local state is sent in a single push_student_progress RPC call.
+// Debounced at 500ms so rapid saves (quiz finish = done + mastery + apptime + score)
+// coalesce into one network call.
+let _pushInFlight = false;
+let _pushPending  = false;
+let _pushTimer    = null;
+
+function triggerCloudSync(){
+  if(!_supa || !_isStudentSession()) return;
+  if(_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(_pushAll, 500);
+}
+
+async function _pushAll(){
+  _pushTimer = null;
+  if(!_supa || !_isStudentSession()) return;
+  if(_pushInFlight){ _pushPending = true; return; }
+  _pushInFlight = true;
+  try{
+    var studentId = localStorage.getItem('mmr_active_student_id');
+    var result = await Promise.race([
+      _supa.rpc('push_student_progress', {
+        p_student_id:       studentId,
+        p_session_token:    _sessionToken,
+        p_mastery_json:     (typeof MASTERY !== 'undefined') ? MASTERY : {},
+        p_streak_current:   STREAK.current || 0,
+        p_streak_longest:   STREAK.longest || 0,
+        p_streak_last_date: STREAK.lastDate || '',
+        p_apptime_json:     (typeof APP_TIME !== 'undefined') ? APP_TIME : {},
+        p_done_json:        DONE,
+        p_act_dates_json:   safeLoad('wb_act_dates', []),
+        p_settings_json:    safeLoad('wb_settings', {}),
+        p_a11y_json:        safeLoad('wb_a11y', {}),
+        p_scores:           SCORES.map(function(s){
+          return {
+            local_id: s.id, qid: s.qid || '', label: s.label || '', type: s.type || '',
+            score: s.score || 0, total: s.total || 0, pct: s.pct || 0,
+            stars: s.stars || '', unit_idx: s.unitIdx ?? 0, color: s.color || '',
+            student_name: s.name || '', time_taken: s.timeTaken || 0,
+            answers: s.answers || [], date_str: s.date || '', time_str: s.time || '',
+            quit: !!s.quit, abandoned: !!s.abandoned
+          };
+        })
+      }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAll timeout')); }, 12000); })
+    ]);
+    if(result.error){
+      if(_handleSessionExpiry(result.error)) return;
+      console.warn('[Supabase] pushAll error', result.error);
+    }
+  } catch(e){
+    if(!_handleSessionExpiry(e)) console.warn('[Supabase] pushAll error', e);
+  } finally {
+    _pushInFlight = false;
+    if(_pushPending){ _pushPending = false; triggerCloudSync(); }
+  }
+}
+
+// ── Parent-path push functions (authenticated via Supabase Auth, no session token) ──
+async function _pushDoneParent(){
   if(!_supa || !_supaUser) return;
   try{
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, done_json:DONE, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, done_json:DONE, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushDone timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushDone timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushDone error', e); }
 }
 
-async function _pushMastery(){
+async function _pushMasteryParent(){
   if(!_supa || !_supaUser) return;
   try{
-    const mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
+    var mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, mastery_json:mastery, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, mastery_json:mastery, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushMastery timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushMastery error', e); }
 }
 
-async function _pushAppTime(){
+async function _pushAppTimeParent(){
   if(!_supa || !_supaUser) return;
   try{
-    const appTime = (typeof APP_TIME !== 'undefined') ? APP_TIME : {};
+    var appTime = (typeof APP_TIME !== 'undefined') ? APP_TIME : {};
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, apptime_json:appTime, updated_at:new Date().toISOString() },
-        { onConflict:'user_id' }
+        { user_id:_supaUser.id, student_id:_sid, apptime_json:appTime, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id' }
       ),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('pushAppTime timeout')),8000))
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAppTime timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushAppTime error', e); }
 }
@@ -1413,14 +1560,19 @@ function _toggleDayExpand(){
 function _renderCalBtn(){
   const btn = document.getElementById('cal-btn');
   if(!btn) return;
-  if(!_supaUser){ btn.style.display = 'none'; return; }
+  var _calIsLoggedIn = !!_supaUser || localStorage.getItem('mmr_user_role') === 'student' || localStorage.getItem('mmr_user_role') === 'parent';
+  if(!_calIsLoggedIn){ btn.style.display = 'none'; return; }
+  // Only show calendar button on home screen
+  const _curScreen = typeof ALL_SCREENS !== 'undefined' && ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
+  if(_curScreen !== 'home'){ btn.style.display = 'none'; return; }
   btn.style.display = 'flex';
+  // Stack prof-btn below cal-btn if both are visible — use data, not DOM state
+  const _calRole = localStorage.getItem('mmr_user_role');
+  const _calProfs = (function(){ try{ return JSON.parse(localStorage.getItem('mmr_family_profiles')||'[]'); }catch(e){ return []; }})();
   const prof = document.getElementById('prof-btn');
-  if(prof && prof.style.display !== 'none'){
-    btn.classList.add('cal-btn--stacked');
-  } else {
-    btn.classList.remove('cal-btn--stacked');
-  }
+  const profShouldStack = _calRole === 'student' && _calProfs.length >= 2;
+  if(prof) prof.classList.toggle('prof-btn--stacked', profShouldStack);
+  btn.classList.remove('cal-btn--stacked');
   _updateCalDot();
 }
 
@@ -1454,7 +1606,7 @@ function _openStreakCal(){
   if(!modal){
     modal = document.createElement('div');
     modal.id = 'scal-modal';
-    Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9950' /* --z-calendar */,display:'none',alignItems:'center',justifyContent:'center',padding:'20px'});
+    Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9950' /* --z-calendar */,display:'none',alignItems:'center',justifyContent:'center',padding:'20px',background:'rgba(0,0,0,0.35)'});
     modal.addEventListener('click', e => {
       if(e.target !== modal) return;
       _closeStreakCal();
@@ -1589,7 +1741,7 @@ function _buildCalGridHTML(date){
 
   const pad = n => String(n).padStart(2,'0');
   let cells = '';
-  for(let i=0;i<firstDow;i++) cells += '<div style="height:30px"></div>';
+  for(let i=0;i<firstDow;i++) cells += '<div style="height:38px"></div>';
 
   for(let d=1; d<=daysInMo; d++){
     const ds = `${y}-${pad(mo+1)}-${pad(d)}`;
@@ -1611,26 +1763,26 @@ function _buildCalGridHTML(date){
     if(isToday && !isAct){ pipBg=`border:2px solid ${inStreak?col:FC};`; pipTxt=inStreak?col:FC; }
     else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2px #fff,0 0 0 3.5px ${col};`; }
 
-    const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:18px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
-    const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:18px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
+    const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
     const fw = (isAct||isToday) ? '700' : '400';
-    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:30px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:30px"`;
-    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
+    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:38px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:38px"`;
+    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
   }
 
   const totalCells = firstDow + daysInMo;
   const padEnd = 42 - totalCells;
-  for(let i=0;i<padEnd;i++) cells += '<div style="height:30px"></div>';
+  for(let i=0;i<padEnd;i++) cells += '<div style="height:38px"></div>';
 
-  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:9px;font-weight:700;color:var(--txt2,#999);padding-bottom:2px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
-  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8249;</button>`;
+  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:12px;font-weight:700;color:var(--txt2,#999);padding-bottom:4px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
+  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8249;</button>`;
   const nextBtn = isCurMo
-    ? `<button style="background:none;border:none;font-size:16px;cursor:default;color:var(--txt,#444);padding:2px 10px;line-height:1;opacity:.25">&#8250;</button>`
-    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8250;</button>`;
+    ? `<button style="background:none;border:none;font-size:22px;cursor:default;color:var(--txt,#444);padding:2px 10px;line-height:1;opacity:.25">&#8250;</button>`
+    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8250;</button>`;
   return `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
       ${prevBtn}
-      <span style="font-weight:700;font-size:12px;color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
+      <span style="font-weight:700;font-size:15px;color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
       ${nextBtn}
     </div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr)">${hdrs}</div>
@@ -1657,7 +1809,7 @@ function _buildStreakCal(){
     : '';
 
   modal.innerHTML = `
-  <div style="${_bg};${_bdr};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-radius:24px;width:100%;max-width:340px;padding:12px 12px 16px">
+  <div style="${_bg};${_bdr};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-radius:24px;width:100%;max-width:400px;padding:16px 16px 20px">
     <div style="width:32px;height:3px;background:rgba(0,0,0,.12);border-radius:2px;margin:0 auto 10px"></div>
     <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:linear-gradient(135deg,rgba(255,119,0,.08),rgba(255,60,0,.04));border-radius:14px;border:1px solid rgba(255,119,0,.10);margin-bottom:10px">
       ${_fireSvg('scah',32,40)}
@@ -1901,23 +2053,29 @@ async function _cloudDeleteScore(localId){
   } catch(e){ console.warn('[Supabase] cloudDeleteScore error', e); }
 }
 
-// Monkey-patch save functions to push to cloud on every local save
+// Monkey-patch save functions to push to cloud on every local save.
+// Student sessions use the unified push pipeline; parent sessions use individual pushes.
 const _origSaveDone = saveDone;
-saveDone = function(){ _origSaveDone(); _pushDone(); };
+saveDone = function(){ _origSaveDone(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushDoneParent(); };
 const _origSaveSc = saveSc;
-saveSc = function(){ _origSaveSc(); _pushScores(); };
+saveSc = function(){ _origSaveSc(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushScores(); };
 const _origSaveMastery = saveMastery;
-saveMastery = function(){ _origSaveMastery(); _pushMastery(); };
+saveMastery = function(){ _origSaveMastery(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushMasteryParent(); };
 const _origSaveAppTime = saveAppTime;
-saveAppTime = function(){ _origSaveAppTime(); _pushAppTime(); };
+saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushAppTimeParent(); };
 
 async function syncNow(){
-  if(!_supa || !_supaUser){ showLockToast('Not signed in.'); return; }
+  if(!_supa){ showLockToast('Not signed in.'); return; }
   showLockToast('Syncing…');
-  await _pushDone();
-  await _pushScores();
-  await _pushMastery();
-  await _pushAppTime();
+  if(_isStudentSession()){
+    if(_pushTimer) clearTimeout(_pushTimer);
+    await _pushAll();
+  } else if(_supaUser){
+    await _pushDoneParent();
+    await _pushScores();
+    await _pushMasteryParent();
+    await _pushAppTimeParent();
+  }
   updateSyncLabel();
   showLockToast('Synced! ✅');
 }
@@ -2012,9 +2170,23 @@ function _clearUserData(){
   // Stop unlock live-sync so it doesn't fire after sign-out
   _stopUnlockSync();
 
+  // ── Wipe in-memory progress state ─────────────────────────────
+  Object.keys(MASTERY).forEach(k => delete MASTERY[k]);
+  STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+  APP_TIME.totalSecs = 0; APP_TIME.sessions = 0;
+  Object.keys(APP_TIME.dailySecs).forEach(k => delete APP_TIME.dailySecs[k]);
+
   // ── Wipe user-specific localStorage ──────────────────────────
-  // Progress & scores live in localStorage — preserved across parent sign-out
-  // so the next student PIN login finds them intact.
+  // Progress & scores — clear to prevent cross-family data leakage on shared devices.
+  // Pull-on-login will repopulate from Supabase for the next user.
+  localStorage.removeItem('wb_done5');
+  localStorage.removeItem('wb_sc5');
+  localStorage.removeItem('wb_mastery');
+  localStorage.removeItem('wb_apptime');
+  localStorage.removeItem('wb_streak');
+  localStorage.removeItem('wb_act_dates');
+  localStorage.removeItem('mmr_session_token');
+  _sessionToken = null;
   // Paused quiz state
   localStorage.removeItem('wb_paused_quiz');
   // Parent-managed unlocks and PIN
@@ -2065,6 +2237,92 @@ function updateAccountUI(){
     const isEmail = _supaUser?.app_metadata?.provider === 'email';
     pwWrap.style.display = isEmail ? 'block' : 'none';
   }
+}
+
+function _goParentDashboard(){
+  if(_supaUser){
+    window.location.href = '/dashboard/';
+  } else {
+    _showParentSignInGate();
+  }
+}
+
+function _showParentSignInGate(){
+  if(document.getElementById('parent-gate-modal')) return;
+  var overlay = _makeNudgeOverlay('parent-gate-modal', true);
+  if(!overlay) return;
+  var isDark = document.body.classList.contains('dark');
+  var _bg = isDark
+    ? 'background:#0d1e35;box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
+    : 'background:#fff;box-shadow:0 8px 40px rgba(60,120,200,0.18),0 2px 12px rgba(0,0,0,0.08)';
+  overlay.innerHTML = '<div style="width:100%;max-width:360px;border-radius:24px;padding:28px 24px 22px;'+_bg+';backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">'
+    + '<div style="text-align:center;margin-bottom:22px">'
+    +   '<div style="font-size:2.2rem;margin-bottom:8px">📊</div>'
+    +   '<div style="font-family:\'Boogaloo\',\'Arial Rounded MT Bold\',sans-serif;font-size:var(--fs-lg);color:var(--txt,#222);line-height:1.2">Parent Dashboard</div>'
+    +   '<div style="font-size:var(--fs-sm);color:var(--txt2,#666);margin-top:8px;line-height:1.55">Sign in to view progress, manage locks,<br>and access parent controls.</div>'
+    + '</div>'
+    + '<div id="parent-gate-msg" style="font-size:var(--fs-sm);color:#e74c3c;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
+    + '<button data-action="_parentGateGoogle" style="width:100%;padding:13px;border-radius:14px;border:1.5px solid #ddd;background:#fff;color:#333;font-family:\'Boogaloo\',\'Arial Rounded MT Bold\',sans-serif;font-size:var(--fs-base);cursor:pointer;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box">'
+    +   '<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>'
+    +   ' Continue with Google'
+    + '</button>'
+    + '<div style="text-align:center;margin:4px 0 12px;font-size:var(--fs-sm);color:var(--txt2,#888)">— or sign in with email —</div>'
+    + '<input id="parent-gate-email" type="email" inputmode="email" autocomplete="email" placeholder="Email address"'
+    +   ' style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #ddd;font-size:var(--fs-base);margin-bottom:10px;box-sizing:border-box;font-family:inherit;color:var(--txt,#222);background:var(--bg2,#f9f9f9)">'
+    + '<input id="parent-gate-pw" type="password" autocomplete="current-password" placeholder="Password"'
+    +   ' style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #ddd;font-size:var(--fs-base);margin-bottom:14px;box-sizing:border-box;font-family:inherit;color:var(--txt,#222);background:var(--bg2,#f9f9f9)">'
+    + '<button data-action="_parentGateEmailSignIn" style="width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff;font-family:\'Boogaloo\',\'Arial Rounded MT Bold\',sans-serif;font-size:var(--fs-base);cursor:pointer;margin-bottom:10px;box-sizing:border-box">Sign In →</button>'
+    + '<button data-action="_parentGateClose" style="width:100%;padding:10px;background:none;border:none;color:var(--txt2,#888);font-size:var(--fs-sm);cursor:pointer;text-decoration:underline;font-family:inherit">Cancel</button>'
+    + '</div>';
+}
+
+async function _parentGateEmailSignIn(){
+  var email = (document.getElementById('parent-gate-email') ? document.getElementById('parent-gate-email').value : '').trim();
+  var pw    = document.getElementById('parent-gate-pw') ? document.getElementById('parent-gate-pw').value : '';
+  var msg   = document.getElementById('parent-gate-msg');
+  if(!email || !pw){ if(msg){ msg.style.color='#e74c3c'; msg.textContent='Please enter your email and password.'; } return; }
+  if(!_supa){ if(msg){ msg.style.color='#e74c3c'; msg.textContent='Connection error. Please try again.'; } return; }
+  if(msg){ msg.style.color='#4a90d9'; msg.textContent='Signing in\u2026'; }
+  try{
+    var res = await _supa.auth.signInWithPassword({ email: email, password: pw });
+    if(res.error){
+      if(msg){
+        var _errMap = {
+          'Invalid login credentials': 'Incorrect email or password.',
+          'Email not confirmed': 'Please confirm your email before signing in.',
+          'Too many requests': 'Too many attempts. Please wait a moment and try again.'
+        };
+        msg.style.color = '#e74c3c';
+        msg.textContent = _errMap[res.error.message] || 'Sign in failed. Please check your details and try again.';
+      }
+      return;
+    }
+    localStorage.setItem('mmr_user_role', 'parent');
+    var modal = document.getElementById('parent-gate-modal');
+    if(modal) modal.remove();
+    window.location.href = '/dashboard/';
+  } catch(e){
+    if(msg){ msg.style.color='#e74c3c'; msg.textContent='Sign in failed. Please try again.'; }
+  }
+}
+
+async function _parentGateGoogle(){
+  if(!_supa) return;
+  sessionStorage.setItem('mmr_post_auth_redirect', '/dashboard/');
+  try{
+    await _supa.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: location.origin + '/' }
+    });
+  } catch(e){
+    var msg = document.getElementById('parent-gate-msg');
+    if(msg){ msg.style.color='#e74c3c'; msg.textContent='Google sign-in failed. Please try again.'; }
+  }
+}
+
+function _parentGateClose(){
+  var modal = document.getElementById('parent-gate-modal');
+  if(modal) modal.remove();
 }
 
 async function _signOut(){

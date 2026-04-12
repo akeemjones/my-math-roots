@@ -5,10 +5,10 @@
 
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { stackNavigate, stackBack } from '$lib/services/navStack';
+  import { stackNavigate, stackBack } from '$lib/ui/services/navStack';
   import { page } from '$app/stores';
-  import { unitsData, scores, hasPassed, bestScore, settings, unlockSettings } from '$lib/stores';
-  import { loadUnit } from '$lib/boot';
+  import { unitsData, scores, hasPassed, bestScore, settings, unlockSettings } from '$lib/core/stores';
+  import { loadUnit } from '$lib/core/boot';
 
   const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:middle;display:inline-block"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
 

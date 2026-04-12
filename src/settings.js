@@ -1,3 +1,13 @@
+function toggleSound(){
+  const isOn = localStorage.getItem('wb_sound') !== 'off';
+  setSound(isOn ? 'off' : 'on');
+}
+
+function toggleTheme(){
+  const current = localStorage.getItem('wb_theme') || 'auto';
+  setTheme(current === 'dark' ? 'auto' : 'dark');
+}
+
 // ════════════════════════════════════════
 //  ACCESSIBILITY SETTINGS
 // ════════════════════════════════════════
@@ -768,22 +778,26 @@ function _syncA11yUI(){
 // ════════════════════════════════════════
 function setSound(mode){
   localStorage.setItem(SOUND_KEY, mode);
-  document.getElementById('sound-on').classList.toggle('active', mode==='on');
-  document.getElementById('sound-off').classList.toggle('active', mode==='off');
+  const soundToggle = document.getElementById('sound-toggle');
+  if(soundToggle){
+    const soundOn = mode === 'on';
+    soundToggle.classList.toggle('on', soundOn);
+    soundToggle.setAttribute('aria-pressed', String(soundOn));
+  }
 }
 
 function setTheme(mode){
   const effectiveDark = mode==='dark' || (mode==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', effectiveDark);
-  // Update active button state if settings screen is open
-  const lb = document.getElementById('theme-light');
-  const db = document.getElementById('theme-dark');
-  const ab = document.getElementById('theme-auto');
-  if(lb && db && ab){
-    lb.classList.toggle('active', mode==='light');
-    db.classList.toggle('active', mode==='dark');
-    ab.classList.toggle('active', mode==='auto');
-  }
+  // Sync theme toggles — only the selected one is "on"
+  ['auto','light','dark'].forEach(function(m){
+    const btn = document.getElementById('theme-'+m);
+    if(btn){
+      const active = m === mode;
+      btn.classList.toggle('on', active);
+      btn.setAttribute('aria-pressed', String(active));
+    }
+  });
   if(mode==='auto'){ localStorage.removeItem('wb_theme'); }
   else { localStorage.setItem('wb_theme', mode); }
 }
@@ -926,7 +940,8 @@ const _PIN_LOCKOUT_MS = 30000; // 30 seconds
 
 // Tamper-resistant lockout: sign count+ts so clearing localStorage doesn't bypass
 function _lockoutSig(count, ts){
-  const secret = localStorage.getItem('wb_app_secret') || 'fallback';
+  let secret = localStorage.getItem('wb_app_secret');
+  if(!secret){ secret = crypto.randomUUID(); localStorage.setItem('wb_app_secret', secret); }
   const str = count + ':' + ts + ':mymathroots_lockout_v2:' + secret;
   let hash = 0;
   for(let i = 0; i < str.length; i++){
@@ -1615,13 +1630,15 @@ function goSettings(){
   updateAccountUI();
   const cfg = loadSettings();
   document.getElementById('set-student').value = cfg.studentName || '';
-  const mode = localStorage.getItem('wb_theme') || 'auto';
-  document.getElementById('theme-light').classList.toggle('active', mode==='light');
-  document.getElementById('theme-dark').classList.toggle('active', mode==='dark');
-  document.getElementById('theme-auto').classList.toggle('active', mode==='auto');
-  const snd = isSoundEnabled() ? 'on' : 'off';
-  document.getElementById('sound-on').classList.toggle('active', snd==='on');
-  document.getElementById('sound-off').classList.toggle('active', snd==='off');
+  // Sound toggle
+  const soundToggle = document.getElementById('sound-toggle');
+  if(soundToggle){
+    const soundOn = localStorage.getItem('wb_sound') !== 'off';
+    soundToggle.classList.toggle('on', soundOn);
+    soundToggle.setAttribute('aria-pressed', String(soundOn));
+  }
+  // Sync theme segmented buttons to stored value
+  setTheme(localStorage.getItem('wb_theme') || 'auto');
   // Reset parent panel (PIN entry is now in the modal)
   const ppanel = document.getElementById('parent-panel');
   if(ppanel) ppanel.style.display = 'none';

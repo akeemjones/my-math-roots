@@ -1061,7 +1061,7 @@ function startFinalTestBalanced(){
       const allQs = [];
       UNITS_DATA.forEach(function(u){
         const bank = u.unitQuiz || u.testBank || [];
-        if(!bank.length){ console.warn('[MMR] No bank for unit:', u.name || u.id); return; }
+        if(!bank.length){ return; }
         const sample = _weightedSample(bank, Math.min(5, bank.length), 'balanced');
         sample.forEach(function(q){ allQs.push(q); });
       });

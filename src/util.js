@@ -286,7 +286,8 @@ async function _migrateEmailStorage(){
 
 // SEC-2: Score signing — prevents tampered localStorage scores from reaching Supabase
 function _scoreSig(entry){
-  const secret = localStorage.getItem('wb_app_secret') || 'fallback';
+  let secret = localStorage.getItem('wb_app_secret');
+  if(!secret){ secret = crypto.randomUUID(); localStorage.setItem('wb_app_secret', secret); }
   const str = (entry.qid||'') + ':' + (entry.pct||0) + ':' + (entry.id||0) + ':' + secret;
   let hash = 0;
   for(let i = 0; i < str.length; i++){

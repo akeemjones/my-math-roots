@@ -24,7 +24,7 @@ const _APP_GLOBALS = [
   '_oneTapRetries','_ONE_TAP_MAX_RETRIES','_initOneTap','_lsOAuth','_lsSwitchTab',
   '_lsForgotPassword','_lsTogglePw','_turnstileToken','_onTurnstileSuccess',
   '_onTurnstileExpired','_resetTurnstile','_lsSubmit','_pullOnLogin','_pushDone',
-  '_fireSvg','_showDayDetail','_renderCalBtn','_scDate','_scalSwipeX','_openStreakCal',
+  '_fireSvg','_showDayDetail','_renderCalBtn','_updateCalDot','_getMilestone','_toggleDayExpand','_scDate','_scalSwipeX','_openStreakCal',
   '_closeStreakCal','_streakCalNav','_buildStreakCal','_checkSoftGate','_showSoftGate',
   '_submitSoftGate','_skipSoftGate','_proceedAsGuest','_guestConsentContinue','_showSignupNudge',
   '_updateStreak','_pushScores','_cloudDeleteAllScores',
@@ -60,7 +60,7 @@ const _APP_GLOBALS = [
   'openAccessModal','closeAccessModal',
   '_accessConfirmType','_showAccessConfirm','_cancelAccessConfirm','_executeAccessConfirm',
   'openPinModal','closePinModal','openTimerModal','closeTimerModal',
-  'openA11yModal','closeA11yModal','_syncA11yUI','setSound','setTheme','applyStoredTheme',
+  'openA11yModal','closeA11yModal','_syncA11yUI','setSound','toggleSound','toggleTheme','setTheme','applyStoredTheme',
   'APP_VERSION','TIMER_KEY','QUIZ_PAUSE_KEY','SOUND_KEY','isSoundEnabled',
   'LESSON_TIMER_KEY','UNIT_TIMER_KEY','FINAL_TIMER_KEY','PIN_CHANGED_KEY',
   'getLessonTimerSecs','getUnitTimerSecs','getFinalTimerSecs',
@@ -227,7 +227,7 @@ function _autoApplyUpdate(){
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').then(reg => {
     window._swReg = reg; // expose for pull-to-refresh
-    setInterval(()=>reg.update(), 60000);
+    // Check for SW updates when user returns to tab (no polling interval — saves battery on mobile)
     document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) reg.update(); });
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
@@ -238,7 +238,7 @@ if('serviceWorker' in navigator){
       });
     });
     if(reg.waiting && navigator.serviceWorker.controller){ _autoApplyUpdate(); }
-  }).catch(e => console.log('SW registration failed:', e));
+  }).catch(() => {});
   navigator.serviceWorker.addEventListener('controllerchange', ()=>window.location.reload());
 }
 
