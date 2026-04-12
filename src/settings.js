@@ -789,13 +789,15 @@ function setSound(mode){
 function setTheme(mode){
   const effectiveDark = mode==='dark' || (mode==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', effectiveDark);
-  // Update theme toggle state if settings screen is open
-  const themeToggle = document.getElementById('theme-toggle');
-  if(themeToggle){
-    const isDark = mode === 'dark';
-    themeToggle.classList.toggle('on', isDark);
-    themeToggle.setAttribute('aria-pressed', String(isDark));
-  }
+  // Sync theme toggles — only the selected one is "on"
+  ['auto','light','dark'].forEach(function(m){
+    const btn = document.getElementById('theme-'+m);
+    if(btn){
+      const active = m === mode;
+      btn.classList.toggle('on', active);
+      btn.setAttribute('aria-pressed', String(active));
+    }
+  });
   if(mode==='auto'){ localStorage.removeItem('wb_theme'); }
   else { localStorage.setItem('wb_theme', mode); }
 }
@@ -1635,13 +1637,8 @@ function goSettings(){
     soundToggle.classList.toggle('on', soundOn);
     soundToggle.setAttribute('aria-pressed', String(soundOn));
   }
-  // Theme toggle
-  const themeToggle = document.getElementById('theme-toggle');
-  if(themeToggle){
-    const isDark = (localStorage.getItem('wb_theme') || 'auto') === 'dark';
-    themeToggle.classList.toggle('on', isDark);
-    themeToggle.setAttribute('aria-pressed', String(isDark));
-  }
+  // Sync theme segmented buttons to stored value
+  setTheme(localStorage.getItem('wb_theme') || 'auto');
   // Reset parent panel (PIN entry is now in the modal)
   const ppanel = document.getElementById('parent-panel');
   if(ppanel) ppanel.style.display = 'none';

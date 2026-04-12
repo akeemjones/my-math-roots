@@ -2444,6 +2444,8 @@ body.dark .cal-btn{
 button:focus-visible.cal-btn{ outline:3px solid rgba(74,144,217,0.7); outline-offset:2px; }
 .cal-btn.cal-btn--stacked{
   top:calc(14px + env(safe-area-inset-top) + 50px + 10px); }
+.prof-btn.prof-btn--stacked{
+  top:calc(14px + env(safe-area-inset-top) + 50px + 10px); }
 .cal-dot{
   position:absolute; top:2px; right:2px;
   width:10px; height:10px; border-radius:50%;

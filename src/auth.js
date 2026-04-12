@@ -1565,12 +1565,13 @@ function _renderCalBtn(){
   const _curScreen = typeof ALL_SCREENS !== 'undefined' && ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
   if(_curScreen !== 'home'){ btn.style.display = 'none'; return; }
   btn.style.display = 'flex';
+  // Stack prof-btn below cal-btn if both are visible — use data, not DOM state
+  const _calRole = localStorage.getItem('mmr_user_role');
+  const _calProfs = (function(){ try{ return JSON.parse(localStorage.getItem('mmr_family_profiles')||'[]'); }catch(e){ return []; }})();
   const prof = document.getElementById('prof-btn');
-  if(prof && prof.style.display !== 'none'){
-    btn.classList.add('cal-btn--stacked');
-  } else {
-    btn.classList.remove('cal-btn--stacked');
-  }
+  const profShouldStack = _calRole === 'student' && _calProfs.length >= 2;
+  if(prof) prof.classList.toggle('prof-btn--stacked', profShouldStack);
+  btn.classList.remove('cal-btn--stacked');
   _updateCalDot();
 }
 

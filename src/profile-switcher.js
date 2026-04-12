@@ -35,7 +35,7 @@ function _psUpdateProfileBtn(){
   // Hide if not a student with 2+ profiles (single-profile: no point switching)
   if(role !== 'student' || profiles.length < 2){
     btn.style.display = 'none';
-    if(calBtn) calBtn.classList.remove('cal-btn--stacked');
+    btn.classList.remove('prof-btn--stacked');
     return;
   }
   btn.style.display = 'flex';
@@ -48,8 +48,8 @@ function _psUpdateProfileBtn(){
     btn.innerHTML = '<span style="font-size:1.2rem;line-height:1">👤</span>';
     btn.setAttribute('aria-label', 'Switch profile');
   }
-  // Stack calendar button below the profile button
-  if(calBtn && calBtn.style.display !== 'none') calBtn.classList.add('cal-btn--stacked');
+  // Stack prof-btn below cal-btn when both visible
+  btn.classList.add('prof-btn--stacked');
 }
 
 // ── Build profile-list HTML ───────────────────────────────────────────────
