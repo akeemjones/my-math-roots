@@ -35,10 +35,10 @@ function saveSigned(key, value){
   localStorage.setItem(key, JSON.stringify({ d, s: _signData(d) }));
 }
 
-const DONE   = safeLoad('wb_done5', {});
+const DONE   = safeLoadSigned('wb_done5', {});
 const SCORES = safeLoadSigned('wb_sc5', []);
 function safeLoad(k,d){ try{ return JSON.parse(localStorage.getItem(k)||'null')||d; } catch{ return d; } }
-function saveDone(){  localStorage.setItem('wb_done5',   JSON.stringify(DONE)); }
+function saveDone(){ saveSigned('wb_done5', DONE); }
 function saveSc(){ saveSigned('wb_sc5', SCORES); }
 
 // ── SCORES validation wrapper ──
@@ -133,7 +133,6 @@ function saveAppTime(){
 
 // ── Debug helper ──
 function _stateDebug(){
-  console.log('[state] DONE keys:', Object.keys(DONE).length,
-    '| SCORES:', SCORES.length,
-    '| STREAK:', JSON.stringify(STREAK));
+  // no-op in production
+  void DONE; void SCORES; void STREAK;
 }

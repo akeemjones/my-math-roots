@@ -31,9 +31,11 @@ function _psUpdateProfileBtn(){
   if(!btn) return;
   var profiles = _psGetProfiles();
   var role     = localStorage.getItem('mmr_user_role');
+  var calBtn = document.getElementById('cal-btn');
   // Hide if not a student with 2+ profiles (single-profile: no point switching)
   if(role !== 'student' || profiles.length < 2){
     btn.style.display = 'none';
+    if(calBtn) calBtn.classList.remove('cal-btn--stacked');
     return;
   }
   var activeId = localStorage.getItem('mmr_active_student_id');
@@ -45,6 +47,8 @@ function _psUpdateProfileBtn(){
     btn.innerHTML = '<span style="font-size:1.2rem;line-height:1">👤</span>';
     btn.setAttribute('aria-label', 'Switch profile');
   }
+  // Stack calendar button below the profile button
+  if(calBtn && calBtn.style.display !== 'none') calBtn.classList.add('cal-btn--stacked');
 }
 
 // ── Build profile-list HTML ───────────────────────────────────────────────

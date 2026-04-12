@@ -733,7 +733,7 @@ function supabaseInit(){
           const _tsDates = [];
           for(let i=0;i<_tsN;i++) _tsDates.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
           localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates));
-          show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
+          show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
@@ -1479,52 +1479,113 @@ function _fireSvg(pfx, w, h){
 }
 
 function _showDayDetail(dateStr){
-  const modal = document.getElementById('scal-modal');
-  if(!modal) return;
-  modal.dataset.calView = 'day';
-  const sheet = modal.querySelector('div');
-  if(!sheet) return;
+  const panel = document.getElementById('scal-day-panel');
+  if(!panel) return;
 
   const formatted = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  const dateLabel = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const dateLabel = new Date(dateStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   const dayScores = SCORES.filter(s => s.date === formatted);
 
+  if(dayScores.length === 0){
+    panel.innerHTML = `<div style="margin-top:8px;padding:10px;text-align:center;font-size:10px;color:var(--txt2,#888);background:rgba(0,0,0,.03);border-radius:12px">No quiz records for this day.</div>`;
+    return;
+  }
+
+  const total = dayScores.length;
+  const avgPct = Math.round(dayScores.reduce((s,e)=>s+e.pct,0)/total);
+
+  const appTime = safeLoad('wb_apptime', { dailySecs:{} });
+  const daySecs = appTime.dailySecs?.[dateStr] || 0;
+  const timeStr = daySecs >= 60 ? Math.round(daySecs/60)+'m' : (daySecs > 0 ? daySecs+'s' : '—');
+
   const typeLabel = t => t==='lesson'?'Lesson':t==='unit_quiz'?'Unit Quiz':t==='final'?'Final Test':'Quiz';
-  const typeColor = t => t==='lesson'?'#4a90d9':t==='unit_quiz'?'#27ae60':'#ff7700';
+  const barColor = t => t==='lesson'?'#4a90d9':t==='unit_quiz'?'#27ae60':'#ff7700';
+  const scoreColor = p => p>=90?'#27ae60':p>=80?'#4a90d9':'#e06000';
 
-  let items = dayScores.length === 0
-    ? `<div style="text-align:center;padding:28px 16px;color:var(--txt2,#888);font-size:var(--fs-base)">No quiz records found for this day.</div>`
-    : dayScores.map(s => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.05);border-radius:14px;margin-bottom:8px">
-        <div style="width:5px;min-width:5px;height:38px;border-radius:3px;background:${_escHtml(s.color||typeColor(s.type))}"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:var(--fs-sm);color:var(--txt,#333);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escHtml(s.label||s.qid)}</div>
-          <div style="font-size:var(--fs-xs);color:var(--txt2,#888);margin-top:2px">${typeLabel(s.type)} &nbsp;·&nbsp; ${_escHtml(s.stars)} &nbsp;·&nbsp; ${_escHtml(s.time||'')}</div>
-        </div>
-        <div style="font-size:var(--fs-md);font-weight:900;color:${s.pct===100?'#27ae60':s.pct>=80?'#4a90d9':'#e06000'};font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${s.pct}%</div>
-      </div>`).join('');
-
-  sheet.innerHTML = `
-    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-      <button data-action="_buildStreakCal" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:var(--fs-lg);cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center;flex-shrink:0">‹</button>
-      <div>
-        <div style="font-weight:800;font-size:var(--fs-base);color:var(--txt,#333)">${dateLabel}</div>
-        <div style="font-size:var(--fs-xs);color:var(--txt2,#888);margin-top:1px">${dayScores.length} activit${dayScores.length===1?'y':'ies'} completed</div>
+  const items = dayScores.map(s => `
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(0,0,0,.04);border-radius:10px;margin-top:4px">
+      <div style="width:3px;min-width:3px;height:28px;border-radius:2px;background:${barColor(s.type)}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt,#333)">${_escHtml(s.label||s.qid)}</div>
+        <div style="font-size:9px;color:var(--txt2,#888)">${typeLabel(s.type)} &middot; ${_escHtml(s.time||'')}</div>
       </div>
-    </div>
-    ${items}`;
+      <div style="font-size:13px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:${scoreColor(s.pct)}">${s.pct}%</div>
+    </div>`).join('');
+
+  panel.innerHTML = `
+    <div style="margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.03);border-radius:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:800;color:var(--txt,#333)">${dateLabel}</span>
+        <span style="font-size:9px;color:var(--txt2,#888)">${total} activit${total===1?'y':'ies'}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#4a90d9">${total}</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Quizzes</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#27ae60">${avgPct}%</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Avg</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:5px 2px;background:rgba(255,255,255,.6);border-radius:8px">
+          <div style="font-size:14px;font-weight:900;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;color:#ff7700">${timeStr}</div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2,#888)">Time</div>
+        </div>
+      </div>
+      <div id="scal-expand-items" style="display:none">${items}</div>
+      <div id="scal-expand-btn" data-action="_toggleDayExpand" style="padding:6px 10px;background:rgba(255,255,255,.5);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:10px;font-weight:700;color:var(--txt2,#666)">View details</span>
+        <span id="scal-expand-arrow" style="font-size:10px;color:var(--txt2,#aaa)">&#9662;</span>
+      </div>
+    </div>`;
 }
 
-function _renderStreak(){
-  const el = document.getElementById('streak-badge');
-  if(!el) return;
-  if(!STREAK.current){ el.style.display = 'none'; return; }
-  el.style.display = 'inline-block';
-  el.style.cursor = 'pointer';
-  el.onclick = _openStreakCal;
-  const best = STREAK.longest > STREAK.current ? ` <span style="opacity:.65;font-weight:400">· Best: ${STREAK.longest}</span>` : '';
-  el.innerHTML = `${_fireSvg('sfb',22,30)} <strong>${STREAK.current}-day streak</strong>${best}`;
+function _toggleDayExpand(){
+  const items = document.getElementById('scal-expand-items');
+  const btn = document.getElementById('scal-expand-btn');
+  const arrow = document.getElementById('scal-expand-arrow');
+  if(!items || !btn) return;
+  const open = items.style.display !== 'none';
+  items.style.display = open ? 'none' : 'block';
+  if(arrow) arrow.innerHTML = open ? '&#9662;' : '&#9652;';
+  btn.querySelector('span').textContent = open ? 'View details' : 'Hide details';
+}
+
+function _renderCalBtn(){
+  const btn = document.getElementById('cal-btn');
+  if(!btn) return;
+  if(!_supaUser){ btn.style.display = 'none'; return; }
+  // Only show calendar button on home screen
+  const _curScreen = typeof ALL_SCREENS !== 'undefined' && ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
+  if(_curScreen !== 'home'){ btn.style.display = 'none'; return; }
+  btn.style.display = 'flex';
+  const prof = document.getElementById('prof-btn');
+  if(prof && prof.style.display !== 'none'){
+    btn.classList.add('cal-btn--stacked');
+  } else {
+    btn.classList.remove('cal-btn--stacked');
+  }
+  _updateCalDot();
+}
+
+function _updateCalDot(){
+  const dot = document.getElementById('cal-dot');
+  if(!dot) return;
+  const todayStr = new Date().toISOString().slice(0,10);
+  const actDates = safeLoad('wb_act_dates', []);
+  if(actDates.indexOf(todayStr) !== -1){
+    dot.classList.add('cal-dot--active');
+  } else {
+    dot.classList.remove('cal-dot--active');
+  }
+}
+
+function _getMilestone(streak){
+  if(streak >= 30) return { label: 'MATH LEGEND', gradient: 'linear-gradient(135deg,#ffd700,#ff8c00)' };
+  if(streak >= 14) return { label: 'SUPER STUDENT', gradient: 'linear-gradient(135deg,#a29bfe,#6c5ce7)' };
+  if(streak >= 7) return { label: 'WEEK WARRIOR', gradient: 'linear-gradient(135deg,#ff9500,#ff5a00)' };
+  if(streak >= 3) return { label: 'GETTING STARTED', gradient: 'linear-gradient(135deg,#74b9ff,#0984e3)' };
+  return null;
 }
 
 // ── STREAK CALENDAR ───────────────────────────────────────────────────────────
@@ -1537,11 +1598,10 @@ function _openStreakCal(){
   if(!modal){
     modal = document.createElement('div');
     modal.id = 'scal-modal';
-    Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9950' /* --z-calendar */,display:'none',alignItems:'center',justifyContent:'center',padding:'20px'});
+    Object.assign(modal.style,{position:'fixed',inset:'0',zIndex:'9950' /* --z-calendar */,display:'none',alignItems:'center',justifyContent:'center',padding:'20px',background:'rgba(0,0,0,0.35)'});
     modal.addEventListener('click', e => {
       if(e.target !== modal) return;
-      if(modal.dataset.calView === 'day') _buildStreakCal();
-      else _closeStreakCal();
+      _closeStreakCal();
     });
 
     // iOS-style drag-to-swipe month navigation
@@ -1609,7 +1669,7 @@ function _openStreakCal(){
         slide.style.transform = `translateX(${_scalDir===1 ? -vpW : vpW}px)`;
         if(peek){ peek.style.transition = `transform 0.25s ${ease}`; peek.style.transform = 'translateX(0)'; }
         const commitDir = _scalDir; _scalDir = 0;
-        setTimeout(() => { _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+commitDir, 1); _buildStreakCal(); }, 250);
+        setTimeout(() => { _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+commitDir, 1); _buildStreakCal(); var dp = document.getElementById('scal-day-panel'); if(dp) dp.innerHTML = ''; }, 250);
       } else {
         slide.style.transition = `transform 0.25s ${ease}`;
         slide.style.transform = 'translateX(0)';
@@ -1645,6 +1705,7 @@ function _streakCalNav(dir){
   setTimeout(() => {
     _scDate = new Date(_scDate.getFullYear(), _scDate.getMonth()+dir, 1);
     _buildStreakCal();
+    var dp = document.getElementById('scal-day-panel'); if(dp) dp.innerHTML = '';
     const newSlide = document.getElementById('scal-slide');
     if(newSlide){
       newSlide.style.transition = 'none';
@@ -1672,12 +1733,13 @@ function _buildCalGridHTML(date){
 
   const pad = n => String(n).padStart(2,'0');
   let cells = '';
-  for(let i=0;i<firstDow;i++) cells += '<div style="height:40px"></div>';
+  for(let i=0;i<firstDow;i++) cells += '<div style="height:38px"></div>';
 
   for(let d=1; d<=daysInMo; d++){
     const ds = `${y}-${pad(mo+1)}-${pad(d)}`;
     const isAct = actSet.has(ds);
     const isToday = ds === todayStr;
+    const isFuture = ds > todayStr;
     const inStreak = streakStart && ds >= streakStart && ds <= todayStr;
     const dow = (firstDow + d - 1) % 7;
     const prev = d>1 ? `${y}-${pad(mo+1)}-${pad(d-1)}` : null;
@@ -1685,40 +1747,38 @@ function _buildCalGridHTML(date){
     const prevConn = prev && actSet.has(prev) && dow !== 0;
     const nextConn = next && actSet.has(next) && dow !== 6;
     const col = inStreak ? FC : GC;
-    const colL = inStreak ? 'rgba(255,119,0,.2)' : 'rgba(39,174,96,.2)';
+    const colL = inStreak ? 'rgba(255,119,0,.15)' : 'rgba(39,174,96,.15)';
+
     let pipBg='', pipTxt='var(--txt,#333)', pipEx='';
-    if(isAct){ pipBg=`background:${col};`; pipTxt='#fff'; }
+    if(isFuture){ pipTxt='var(--txt,#333);opacity:.3'; }
+    else if(isAct){ pipBg=`background:${col};`; pipTxt='#fff'; }
     if(isToday && !isAct){ pipBg=`border:2px solid ${inStreak?col:FC};`; pipTxt=inStreak?col:FC; }
-    else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px ${col};`; }
+    else if(isToday && isAct){ pipEx=`box-shadow:0 0 0 2px #fff,0 0 0 3.5px ${col};`; }
+
     const bL = (isAct&&prevConn) ? `<div style="position:absolute;left:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
     const bR = (isAct&&nextConn) ? `<div style="position:absolute;right:0;width:50%;height:24px;top:50%;transform:translateY(-50%);background:${colL}"></div>` : '';
     const fw = (isAct||isToday) ? '700' : '400';
-    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:40px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:40px"`;
-    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
+    const clickAttr = isAct ? `data-action="_showDayDetail" data-arg="${ds}" style="position:relative;display:flex;align-items:center;justify-content:center;height:38px;cursor:pointer"` : `style="position:relative;display:flex;align-items:center;justify-content:center;height:38px"`;
+    cells += `<div ${clickAttr}>${bL}${bR}<div style="position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:${fw};color:${pipTxt};font-family:'Nunito',sans-serif;${pipBg}${pipEx}">${d}</div></div>`;
   }
 
-  // Pad to always 42 cells (6 rows × 7 cols) so the grid height never changes between months
   const totalCells = firstDow + daysInMo;
   const padEnd = 42 - totalCells;
-  for(let i=0;i<padEnd;i++) cells += '<div style="height:40px"></div>';
+  for(let i=0;i<padEnd;i++) cells += '<div style="height:38px"></div>';
 
-  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:var(--fs-xs);font-weight:700;color:var(--txt2,#999);padding-bottom:6px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
-  const streakLine = streakStart
-    ? `<p style="text-align:center;font-size:var(--fs-sm);color:var(--txt2,#888);margin:14px 0 0;font-family:'Nunito',sans-serif">Streak started <strong style="color:${FC}">${new Date(streakStart+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</strong></p>`
-    : '';
-  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:var(--fs-xl);cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">‹</button>`;
+  const hdrs = ['S','M','T','W','T','F','S'].map(x=>`<div style="text-align:center;font-size:12px;font-weight:700;color:var(--txt2,#999);padding-bottom:4px;font-family:'Nunito',sans-serif">${x}</div>`).join('');
+  const prevBtn = `<button data-action="_streakCalNav" data-arg="-1" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8249;</button>`;
   const nextBtn = isCurMo
-    ? `<button style="background:none;border:none;font-size:var(--fs-xl);cursor:default;color:var(--txt,#444);padding:4px 14px;line-height:1;opacity:.25">›</button>`
-    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:var(--fs-xl);cursor:pointer;color:var(--txt,#444);padding:4px 14px;line-height:1">›</button>`;
+    ? `<button style="background:none;border:none;font-size:22px;cursor:default;color:var(--txt,#444);padding:2px 10px;line-height:1;opacity:.25">&#8250;</button>`
+    : `<button data-action="_streakCalNav" data-arg="1" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--txt,#444);padding:2px 10px;line-height:1">&#8250;</button>`;
   return `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
       ${prevBtn}
-      <span style="font-weight:700;font-size:var(--fs-base);color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
+      <span style="font-weight:700;font-size:15px;color:var(--txt,#333);font-family:'Nunito',sans-serif">${monthLabel}</span>
       ${nextBtn}
     </div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr)">${hdrs}</div>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${cells}</div>
-    ${streakLine}`;
+    <div style="display:grid;grid-template-columns:repeat(7,1fr)">${cells}</div>`;
 }
 
 function _buildStreakCal(){
@@ -1728,31 +1788,36 @@ function _buildStreakCal(){
 
   const FC = '#ff7700';
   const isDark = document.body.classList.contains('dark');
-  const _bt = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.95)';
-  const _bl = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.75)';
-  const _br = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.30)';
   const _bg = isDark
     ? 'background:rgba(255,255,255,.07);box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.12)'
-    : 'background:linear-gradient(145deg,rgba(255,255,255,0.92) 0%,rgba(240,248,255,0.82) 55%,rgba(235,252,245,0.78) 100%);box-shadow:0 -8px 40px rgba(60,120,200,0.18),0 -2px 12px rgba(0,0,0,0.08),inset 0 1.5px 0 rgba(255,255,255,0.98)';
+    : 'background:linear-gradient(145deg,rgba(255,255,255,0.93) 0%,rgba(240,248,255,0.85) 55%,rgba(235,252,245,0.80) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18)';
+  const _bdr = isDark
+    ? 'border:1.5px solid rgba(255,255,255,0.12)'
+    : 'border:1.5px solid rgba(255,255,255,0.85)';
+
+  const ms = _getMilestone(STREAK.current);
+  const msBadge = ms
+    ? `<div style="margin-top:2px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:8px;font-weight:800;letter-spacing:.4px;color:#fff;background:${ms.gradient}">${ms.label}</span></div>`
+    : '';
 
   modal.innerHTML = `
-  <div style="${_bg};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-top:1.5px solid ${_bt};border-left:1.5px solid ${_bl};border-right:1.5px solid ${_br};border-radius:28px;width:100%;max-width:400px;padding:20px 16px 32px;overflow-y:auto;max-height:88vh">
-    <div style="width:40px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 18px"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:12px;justify-content:center;width:100%">
-        ${_fireSvg('scah',36,48)}
-        <div style="text-align:center">
-          <div style="font-size:var(--fs-3xl);font-weight:900;color:${FC};line-height:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${STREAK.current}</div>
-          <div style="font-size:var(--fs-xs);font-weight:700;color:var(--txt2,#888);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;white-space:nowrap;font-family:'Nunito',sans-serif">Day Streak &nbsp;·&nbsp; Best: ${STREAK.longest}</div>
-        </div>
+  <div style="${_bg};${_bdr};backdrop-filter:blur(28px) saturate(160%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(160%) brightness(1.04);border-radius:24px;width:100%;max-width:400px;padding:16px 16px 20px">
+    <div style="width:32px;height:3px;background:rgba(0,0,0,.12);border-radius:2px;margin:0 auto 10px"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:linear-gradient(135deg,rgba(255,119,0,.08),rgba(255,60,0,.04));border-radius:14px;border:1px solid rgba(255,119,0,.10);margin-bottom:10px">
+      ${_fireSvg('scah',32,40)}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:28px;font-weight:900;color:${FC};line-height:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">${STREAK.current}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--txt2,#888);text-transform:uppercase;letter-spacing:.4px">Day Streak &middot; Best: ${STREAK.longest}</div>
+        ${msBadge}
       </div>
-      <button data-action="_closeStreakCal" style="background:rgba(0,0,0,.07);border:none;width:34px;height:34px;border-radius:50%;font-size:var(--fs-base);cursor:pointer;color:var(--txt2,#666);display:flex;align-items:center;justify-content:center">✕</button>
     </div>
     <div id="scal-viewport" style="overflow:hidden;position:relative">
       <div id="scal-slide" style="position:relative;will-change:transform">
         ${_buildCalGridHTML(_scDate)}
       </div>
     </div>
+    <div id="scal-day-panel"></div>
+    <div style="text-align:center;margin-top:6px;font-size:9px;color:rgba(0,0,0,.25);font-weight:600">Tap outside or swipe down to close</div>
   </div>`;
 }
 
@@ -1918,7 +1983,7 @@ async function _updateStreak(){
     if(actDates.length > 365) actDates.shift();
     localStorage.setItem('wb_act_dates', JSON.stringify(actDates));
   }
-  _renderStreak();
+  _renderCalBtn();
   // Supabase sync — signed-in users only
   if(!_supa || !_supaUser) return;
   try{
@@ -2163,6 +2228,17 @@ function updateAccountUI(){
   if(pwWrap){
     const isEmail = _supaUser?.app_metadata?.provider === 'email';
     pwWrap.style.display = isEmail ? 'block' : 'none';
+  }
+}
+
+function _goParentDashboard(){
+  if(_supaUser){
+    // Parent is authenticated with Supabase — go directly to dashboard
+    show('dashboard-screen');
+  } else {
+    // Student PIN session or guest — require actual parent sign-in
+    show('login-screen');
+    typeof _lsSwitchTab === 'function' && _lsSwitchTab('login');
   }
 }
 

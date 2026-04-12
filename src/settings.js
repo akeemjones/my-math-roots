@@ -926,7 +926,8 @@ const _PIN_LOCKOUT_MS = 30000; // 30 seconds
 
 // Tamper-resistant lockout: sign count+ts so clearing localStorage doesn't bypass
 function _lockoutSig(count, ts){
-  const secret = localStorage.getItem('wb_app_secret') || 'fallback';
+  let secret = localStorage.getItem('wb_app_secret');
+  if(!secret){ secret = crypto.randomUUID(); localStorage.setItem('wb_app_secret', secret); }
   const str = count + ':' + ts + ':mymathroots_lockout_v2:' + secret;
   let hash = 0;
   for(let i = 0; i < str.length; i++){

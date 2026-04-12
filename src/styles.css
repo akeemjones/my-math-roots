@@ -63,12 +63,12 @@
   --modal-bg:linear-gradient(145deg,rgba(255,255,255,.92) 0%,rgba(240,248,255,.82) 55%,rgba(235,252,245,.78) 100%);
   --modal-blur:blur(28px) saturate(160%) brightness(1.04);
   --rad:22px; --shad:0 6px 28px rgba(0,0,0,.16);
-  --bg:#e4eeff; --bg2:#fff; --bg3:#eef3ff; --bg4:#f4f7ff;
+  --bg:#ffffff; --bg2:#fff; --bg3:#ffffff; --bg4:#ffffff;
   --txt:#1a2535; --txt2:#5a7080; --txt3:#3d4f60;
   --border:rgba(0,0,0,.11); --border2:rgba(0,0,0,.16);
-  --bar-bg:rgba(255,255,255,.18); --card-bg:#fff;
-  --inp-border:rgba(0,0,0,.13); --home-grad:linear-gradient(155deg,#f9fcff 0%,#eef7ff 45%,#eafaf2 100%);
-  --app-bg-svg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Ccircle cx='30' cy='30' r='22' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='30' y='30' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e74c3c' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='110' cy='20' r='16' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='110' y='20' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E7%3C/text%3E%3Crect x='185' y='8' width='40' height='40' rx='10' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='205' y='28' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='22' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='295' cy='25' r='20' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='295' y='25' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%2327ae60' opacity='.34'%3E12%3C/text%3E%3Ccircle cx='380' cy='35' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='380' y='35' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%238e44ad' opacity='.34'%3E%C3%B7%3C/text%3E%3Ccircle cx='60' cy='105' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='60' y='105' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23e67e22' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='160' cy='95' r='22' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='160' y='95' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%231abc9c' opacity='.34'%3E%3D%3C/text%3E%3Ccircle cx='250' cy='110' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='250' y='110' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E5%3C/text%3E%3Crect x='320' y='88' width='38' height='38' rx='10' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='339' y='107' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23f1c40f' opacity='.34'%3E%E2%98%85%3C/text%3E%3Ccircle cx='20' cy='195' r='20' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='20' y='195' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%234a90d9' opacity='.34'%3E3%3C/text%3E%3Ccircle cx='120' cy='185' r='16' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='120' y='185' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%2327ae60' opacity='.34'%3E%2B%3C/text%3E%3Ccircle cx='210' cy='200' r='22' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='210' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%238e44ad' opacity='.34'%3E10%3C/text%3E%3Ccircle cx='310' cy='190' r='18' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='310' y='190' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e67e22' opacity='.34'%3E%E2%88%92%3C/text%3E%3Ccircle cx='395' cy='200' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='395' y='200' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BC%3C/text%3E%3Ccircle cx='55' cy='290' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='55' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E8%3C/text%3E%3Crect x='145' y='272' width='36' height='36' rx='9' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='163' y='290' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%234a90d9' opacity='.34'%3E%C3%97%3C/text%3E%3Ccircle cx='255' cy='285' r='20' fill='%23f1c40f' opacity='.24'/%3E%3Ctext x='255' y='285' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%23f1c40f' opacity='.34'%3E6%3C/text%3E%3Ccircle cx='350' cy='295' r='18' fill='%2327ae60' opacity='.24'/%3E%3Ctext x='350' y='295' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%2327ae60' opacity='.34'%3E%3D%3C/text%3E%3Ccircle cx='30' cy='385' r='18' fill='%238e44ad' opacity='.24'/%3E%3Ctext x='30' y='385' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%238e44ad' opacity='.34'%3E9%3C/text%3E%3Ccircle cx='130' cy='378' r='22' fill='%23e67e22' opacity='.24'/%3E%3Ctext x='130' y='378' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='20' fill='%23e67e22' opacity='.34'%3E%C3%B7%3C/text%3E%3Ccircle cx='230' cy='390' r='16' fill='%231abc9c' opacity='.24'/%3E%3Ctext x='230' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='14' fill='%231abc9c' opacity='.34'%3E%C2%BD%3C/text%3E%3Ccircle cx='320' cy='380' r='20' fill='%23e74c3c' opacity='.24'/%3E%3Ctext x='320' y='380' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='18' fill='%23e74c3c' opacity='.34'%3E2%3C/text%3E%3Ccircle cx='400' cy='390' r='16' fill='%234a90d9' opacity='.24'/%3E%3Ctext x='400' y='390' text-anchor='middle' dominant-baseline='central' font-family='Arial' font-size='16' fill='%234a90d9' opacity='.34'%3E%2B%3C/text%3E%3C/svg%3E");
+  --bar-bg:rgba(255,255,255,.95); --card-bg:#fff;
+  --inp-border:rgba(0,0,0,.13); --home-grad:linear-gradient(#ffffff,#ffffff);
+  --app-bg-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22480%22%3E%3Ctext%20x%3D%2235%22%20y%3D%2240%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2222%22%20fill%3D%22%23e74c3c%22%20opacity%3D%220.28%22%3E%2B%3C%2Ftext%3E%3Ctext%20x%3D%22105%22%20y%3D%2230%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%23f39c12%22%20opacity%3D%220.28%22%3E7%3C%2Ftext%3E%3Ctext%20x%3D%22185%22%20y%3D%2245%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E%C3%97%3C%2Ftext%3E%3Cpolygon%20points%3D%22270%2C5%20250%2C45%20290%2C45%22%20fill%3D%22none%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22355%22%20y%3D%2235%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%C3%B7%3C%2Ftext%3E%3Ctext%20x%3D%22430%22%20y%3D%2228%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23e67e22%22%20opacity%3D%220.28%22%3E3%3C%2Ftext%3E%3Crect%20x%3D%2222%22%20y%3D%2282%22%20width%3D%2236%22%20height%3D%2236%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%239b59b6%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22120%22%20y%3D%22110%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2222%22%20fill%3D%22%23e74c3c%22%20opacity%3D%220.28%22%3E%3D%3C%2Ftext%3E%3Ctext%20x%3D%22200%22%20y%3D%2295%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%23f39c12%22%20opacity%3D%220.28%22%3E5%3C%2Ftext%3E%3Ctext%20x%3D%22280%22%20y%3D%22105%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2222%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E%E2%88%92%3C%2Ftext%3E%3Ccircle%20cx%3D%22360%22%20cy%3D%22100%22%20r%3D%2214%22%20fill%3D%22none%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22440%22%20y%3D%22110%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%C2%BD%3C%2Ftext%3E%3Ctext%20x%3D%2230%22%20y%3D%22180%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E9%3C%2Ftext%3E%3Cpolygon%20points%3D%22110%2C159%20126%2C175%20110%2C191%2094%2C175%22%20fill%3D%22none%22%20stroke%3D%22%23e74c3c%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22190%22%20y%3D%22185%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E%2B%3C%2Ftext%3E%3Ctext%20x%3D%22265%22%20y%3D%22170%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2214%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E12%3C%2Ftext%3E%3Cline%20x1%3D%22340%22%20y1%3D%22175%22%20x2%3D%22380%22%20y2%3D%22175%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22340%22%20y1%3D%22175%22%20x2%3D%22340%22%20y2%3D%22169%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22350%22%20y1%3D%22175%22%20x2%3D%22350%22%20y2%3D%22169%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22360%22%20y1%3D%22175%22%20x2%3D%22360%22%20y2%3D%22169%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22370%22%20y1%3D%22175%22%20x2%3D%22370%22%20y2%3D%22169%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22380%22%20y1%3D%22175%22%20x2%3D%22380%22%20y2%3D%22169%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22440%22%20y%3D%22180%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%23e67e22%22%20opacity%3D%220.28%22%3E%C3%97%3C%2Ftext%3E%3Ctext%20x%3D%2250%22%20y%3D%22255%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%C3%B7%3C%2Ftext%3E%3Ctext%20x%3D%22130%22%20y%3D%22248%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E4%3C%2Ftext%3E%3Cpolygon%20points%3D%22210%2C232%20192%2C268%20228%2C268%22%20fill%3D%22none%22%20stroke%3D%22%23e74c3c%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22290%22%20y%3D%22260%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2222%22%20fill%3D%22%23f39c12%22%20opacity%3D%220.28%22%3E%3D%3C%2Ftext%3E%3Ctext%20x%3D%22370%22%20y%3D%22245%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E8%3C%2Ftext%3E%3Crect%20x%3D%22429%22%20y%3D%22234%22%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%22330%22%20r%3D%2214%22%20fill%3D%22none%22%20stroke%3D%22%23f39c12%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22115%22%20y%3D%22335%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%E2%88%92%3C%2Ftext%3E%3Ctext%20x%3D%22195%22%20y%3D%22325%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%23e67e22%22%20opacity%3D%220.28%22%3E6%3C%2Ftext%3E%3Ctext%20x%3D%22270%22%20y%3D%22340%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%C2%BC%3C%2Ftext%3E%3Cpolygon%20points%3D%22350%2C314%20366%2C330%20350%2C346%20334%2C330%22%20fill%3D%22none%22%20stroke%3D%22%23e74c3c%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22435%22%20y%3D%22335%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E%2B%3C%2Ftext%3E%3Ctext%20x%3D%2245%22%20y%3D%22410%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E2%3C%2Ftext%3E%3Cline%20x1%3D%22115%22%20y1%3D%22405%22%20x2%3D%22151%22%20y2%3D%22405%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22115%22%20y1%3D%22405%22%20x2%3D%22115%22%20y2%3D%22399%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22124%22%20y1%3D%22405%22%20x2%3D%22124%22%20y2%3D%22399%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22133%22%20y1%3D%22405%22%20x2%3D%22133%22%20y2%3D%22399%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22142%22%20y1%3D%22405%22%20x2%3D%22142%22%20y2%3D%22399%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22151%22%20y1%3D%22405%22%20x2%3D%22151%22%20y2%3D%22399%22%20stroke%3D%22%233498db%22%20stroke-width%3D%221%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22200%22%20y%3D%22415%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%23e74c3c%22%20opacity%3D%220.28%22%3E%C3%97%3C%2Ftext%3E%3Ctext%20x%3D%22280%22%20y%3D%22405%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2214%22%20fill%3D%22%23f39c12%22%20opacity%3D%220.28%22%3E10%3C%2Ftext%3E%3Ccircle%20cx%3D%22360%22%20cy%3D%22415%22%20r%3D%2214%22%20fill%3D%22none%22%20stroke%3D%22%239b59b6%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22440%22%20y%3D%22408%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2222%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E%3D%3C%2Ftext%3E%3Ctext%20x%3D%2270%22%20y%3D%22460%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%23e67e22%22%20opacity%3D%220.28%22%3E%C3%B7%3C%2Ftext%3E%3Cpolygon%20points%3D%22160%2C439%20144%2C471%20176%2C471%22%20fill%3D%22none%22%20stroke%3D%22%239b59b6%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22250%22%20y%3D%22465%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2218%22%20fill%3D%22%233498db%22%20opacity%3D%220.28%22%3E1%3C%2Ftext%3E%3Crect%20x%3D%22326%22%20y%3D%22444%22%20width%3D%2228%22%20height%3D%2228%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%23e74c3c%22%20stroke-width%3D%221.5%22%20opacity%3D%220.20%22%2F%3E%3Ctext%20x%3D%22420%22%20y%3D%22462%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22%27Comic%20Sans%20MS%27%2C%27Chalkboard%20SE%27%2Csans-serif%22%20font-size%3D%2220%22%20fill%3D%22%239b59b6%22%20opacity%3D%220.28%22%3E%E2%88%92%3C%2Ftext%3E%3C%2Fsvg%3E");
 }
 body.dark{
   --bg:#08121e; --bg2:#182438; --bg3:#1c2c40; --bg4:#182033;
@@ -80,7 +80,7 @@ body.dark{
   --inp-border:rgba(255,255,255,.18); --home-grad:linear-gradient(155deg,#0d1e35 0%,#152846 45%,#0a2418 100%);
   --shad:0 6px 28px rgba(0,0,0,.5);
 }
-body.dark{ background-color:#0a2418; }
+body.dark{ background-color:#08121e; }
 body.dark .op{
   background:rgba(255,255,255,.06);
   border-top-color:rgba(255,255,255,.20);
@@ -279,7 +279,7 @@ body.dark #a11y-modal > div {
 *{ box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 input[type="range"]{ touch-action:pan-x; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-body{ font-family:'Nunito',sans-serif; font-size:20px; background-color:#eafaf2;
+body{ font-family:'Nunito',sans-serif; font-size:20px; background-color:#ffffff;
       color:var(--txt); overflow:hidden; height:100%; width:100%;
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
@@ -302,11 +302,11 @@ button{ -webkit-appearance:none; font-family:inherit;
 .sc{ display:none; position:fixed; inset:0; overflow-y:auto; overflow-x:hidden;
      -webkit-overflow-scrolling:touch;
      background-image:var(--app-bg-svg), var(--home-grad);
-     background-size:420px 420px, 100% 100%; background-repeat:repeat, no-repeat;
+     background-size:480px 480px, 100% 100%; background-repeat:repeat, no-repeat;
      z-index:var(--z-screen); overscroll-behavior:contain; }
 /* Login screen: vibrant gradient so white card/title have proper contrast */
 #login-screen{
-  background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1d7a49 100%);
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1a4a7a 100%);
   background-size:420px 420px, 100% 100%;
   background-repeat:repeat, no-repeat;
   overflow:hidden; /* prevent parent card from scrolling */
@@ -314,7 +314,7 @@ button{ -webkit-appearance:none; font-family:inherit;
   padding-top:env(safe-area-inset-top,0px);
 }
 body.dark #login-screen{
-  background-image:var(--app-bg-svg), linear-gradient(155deg,#0d2a5a 0%,#0a3320 100%);
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#0d2a5a 0%,#0a1e3a 100%);
 }
 /* Lock all interaction on screens while tutorial/onboarding overlay is up */
 body.tut-active .sc,
@@ -326,14 +326,14 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 /* During swipe, stamp the full background onto curEl so backdrop-filter
    children can't see prevEl bleeding through */
 .sc.swipe-active{ background-image:var(--app-bg-svg), var(--home-grad) !important;
-     background-size:420px 420px, 100% 100% !important; background-repeat:repeat, no-repeat !important; }
+     background-size:480px 480px, 100% 100% !important; background-repeat:repeat, no-repeat !important; }
 .sc.on{ display:block; }
 
 /* ── TOP BAR ── */
 .bar{ position:sticky; top:0; z-index:var(--z-sticky); background:var(--bar-bg);
       border-bottom:1px solid rgba(255,255,255,0.35);
       padding:12px 16px; padding-top:calc(12px + env(safe-area-inset-top));
-      display:flex; align-items:center; gap:10px; position:relative;
+      display:flex; align-items:center; gap:10px;
       box-shadow:0 2px 18px rgba(0,0,0,.08), inset 0 -1px 0 rgba(255,255,255,0.2); }
 .bar-back{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-md);
            padding:8px 10px 8px 4px; border-radius:8px; border:none;
@@ -367,7 +367,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
   max-width:43%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* ── HOME ── */
-#home{ background:transparent;
+#home{ background-color:transparent;
        overflow-y:auto; overflow-x:hidden;
        -webkit-overflow-scrolling:touch;
        position:fixed; inset:0; }
@@ -1419,7 +1419,7 @@ img[data-coin]:active{ transform:scale(.95); }
 .cog-ico{ display:inline-block; transition:transform .35s ease; line-height:1; }
 
 /* ── SETTINGS SCREEN ── */
-#settings-screen{ background:transparent; }
+#settings-screen{ background-color:transparent; }
 #settings-screen .sc-in{ max-width:680px; margin:0 auto; padding:20px 16px env(safe-area-inset-bottom); }
 .set-section{ background:rgba(255,255,255,.30);
   border-radius:var(--rad); overflow:hidden; margin-bottom:16px;
@@ -2034,7 +2034,7 @@ body.dark .nudge-overlay {
   #results-screen .sc-in{ max-width:600px; }
   #settings-screen .sc-in{ max-width:600px; }
   #lesson-screen .sc-in{ max-width:600px; }
-  body{ background:var(--bg2); }
+  body{ background:var(--bg); }
 }
 
 /* ── REDUCED MOTION ── */
@@ -2047,19 +2047,6 @@ body.dark .nudge-overlay {
   }
 }
 
-/* ── STREAK BADGE INTERACTION ── */
-#streak-badge{
-  transition:transform .15s ease, box-shadow .15s ease;
-}
-#streak-badge:active{
-  transform:scale(.93);
-  box-shadow:0 1px 4px rgba(255,100,0,0.18);
-}
-@keyframes streak-pulse{
-  0%,100%{ opacity:1; }
-  50%{ opacity:0.75; }
-}
-#streak-badge{ animation:streak-pulse 3s ease-in-out infinite; }
 
 /* ── FOCUS-VISIBLE — keyboard-only focus ring ── */
 :focus-visible{
@@ -2199,6 +2186,11 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   padding-top:max(14px,env(safe-area-inset-top,0px));
 }
 #dashboard-screen .db-header-title { font-size:1.1rem; font-weight:700; letter-spacing:.5px; }
+#dashboard-screen .db-header-btns { display:flex; gap:8px; align-items:center; }
+#dashboard-screen .db-app-btn {
+  background:rgba(255,255,255,.9); border:none; border-radius:20px;
+  color:#1565C0; padding:6px 14px; font-size:.85rem; font-weight:700; cursor:pointer;
+}
 #dashboard-screen .db-signout-btn {
   background:rgba(255,255,255,.2); border:none; border-radius:20px;
   color:#fff; padding:6px 14px; font-size:.85rem; cursor:pointer;
@@ -2403,6 +2395,31 @@ body.dark .prof-btn{
   border-left-color:rgba(255,255,255,.14); }
 @media (hover:hover){ .prof-btn:hover{ box-shadow:0 5px 20px rgba(0,0,0,.2); } }
 button:focus-visible.prof-btn{ outline:3px solid rgba(74,144,217,0.7); outline-offset:2px; }
+/* ── CALENDAR BUTTON (stacks below prof-btn) ── */
+.cal-btn{
+  position:fixed; top:calc(14px + env(safe-area-inset-top)); left:16px;
+  z-index:var(--z-fixed-btn); width:50px; height:50px; border-radius:50%; border:none;
+  background:rgba(255,255,255,0.85);
+  border:1.5px solid rgba(255,255,255,0.82);
+  box-shadow:0 4px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.95);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:transform .2s, box-shadow .2s; -webkit-tap-highlight-color:transparent;
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.cal-btn:active{ transform:scale(.93); }
+body.dark .cal-btn{
+  background:rgba(255,255,255,.08);
+  border-top-color:rgba(255,255,255,.20);
+  border-left-color:rgba(255,255,255,.14); }
+@media (hover:hover){ .cal-btn:hover{ box-shadow:0 5px 20px rgba(0,0,0,.2); } }
+button:focus-visible.cal-btn{ outline:3px solid rgba(74,144,217,0.7); outline-offset:2px; }
+.cal-btn.cal-btn--stacked{
+  top:calc(14px + env(safe-area-inset-top) + 50px + 10px); }
+.cal-dot{
+  position:absolute; top:2px; right:2px;
+  width:10px; height:10px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.9);
+  background:#ddd; pointer-events:none; }
+.cal-dot.cal-dot--active{ background:#27ae60; }
 
 /* ══════════════════════════════════════════
    PROFILE SWITCHER BOTTOM SHEET

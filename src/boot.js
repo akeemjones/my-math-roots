@@ -24,7 +24,7 @@ const _APP_GLOBALS = [
   '_oneTapRetries','_ONE_TAP_MAX_RETRIES','_initOneTap','_lsOAuth','_lsSwitchTab',
   '_lsForgotPassword','_lsTogglePw','_turnstileToken','_onTurnstileSuccess',
   '_onTurnstileExpired','_resetTurnstile','_lsSubmit','_pullOnLogin','_pushDone',
-  '_fireSvg','_showDayDetail','_renderStreak','_scDate','_scalSwipeX','_openStreakCal',
+  '_fireSvg','_showDayDetail','_renderCalBtn','_updateCalDot','_getMilestone','_toggleDayExpand','_scDate','_scalSwipeX','_openStreakCal',
   '_closeStreakCal','_streakCalNav','_buildStreakCal','_checkSoftGate','_showSoftGate',
   '_submitSoftGate','_skipSoftGate','_proceedAsGuest','_guestConsentContinue','_showSignupNudge',
   '_updateStreak','_pushScores','_cloudDeleteAllScores',
@@ -187,7 +187,7 @@ setTimeout(() => {
       const _tsDates2 = [];
       for(let i=0;i<_tsN2;i++) _tsDates2.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
       localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates2));
-      show('home'); buildHome(); _renderStreak(); _installHistoryGuard();
+      show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
     } else {
       show('login-screen');
       _lsInitCarousel();
@@ -227,7 +227,7 @@ function _autoApplyUpdate(){
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').then(reg => {
     window._swReg = reg; // expose for pull-to-refresh
-    setInterval(()=>reg.update(), 60000);
+    // Check for SW updates when user returns to tab (no polling interval — saves battery on mobile)
     document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) reg.update(); });
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
@@ -238,7 +238,7 @@ if('serviceWorker' in navigator){
       });
     });
     if(reg.waiting && navigator.serviceWorker.controller){ _autoApplyUpdate(); }
-  }).catch(e => console.log('SW registration failed:', e));
+  }).catch(() => {});
   navigator.serviceWorker.addEventListener('controllerchange', ()=>window.location.reload());
 }
 

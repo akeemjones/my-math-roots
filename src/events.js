@@ -169,11 +169,14 @@
     _spotDone:              ()    => typeof _spotDone === 'function' && _spotDone(),
 
     // ── Streak calendar ──────────────────────────────────────────────────────
+    openCalendar:           ()    => _openStreakCal(),
     _openStreakCal:         ()    => _openStreakCal(),
     _closeStreakCal:        ()    => _closeStreakCal(),
     _buildStreakCal:        ()    => _buildStreakCal(),
     _streakCalNav:          (a)   => _streakCalNav(Number(a)),
     _showDayDetail:         (a)   => _showDayDetail(a),
+    _toggleDayExpand:       ()    => typeof _toggleDayExpand === 'function' && _toggleDayExpand(),
+    _openParentAuth:        ()    => typeof _openParentAuth === 'function' && _openParentAuth(),
 
     // ── Pin-lockout poll ─────────────────────────────────────────────────────
     _upmCheck:              ()    => typeof _upmCheck === 'function' && _upmCheck(),
@@ -210,12 +213,17 @@
 
     // ── Login-screen compound: show login-screen and switch to login tab ──────
     _showLoginScreen:       ()    => { show('login-screen'); typeof _lsSwitchTab === 'function' && _lsSwitchTab('login'); },
+
+    // ── Parent Dashboard: soft gate for guests, go straight to dashboard if signed in ──
+    _goParentDashboard:     ()    => typeof _goParentDashboard === 'function' && _goParentDashboard(),
   };
 
   // ── Click dispatcher (capture phase beats stopPropagation on children) ──
   document.addEventListener('click', function _clickDispatch(e){
     const el = e.target.closest('[data-action]');
     if(!el) return;
+    // Ignore ghost clicks that fire after a swipe gesture completes
+    if(window._mmrSwipeActive) return;
     // data-self-only: only fire when the click target IS the element (backdrop-close pattern)
     if('selfOnly' in el.dataset && e.target !== el) return;
     const action = el.dataset.action;
@@ -231,15 +239,32 @@
   }, true);
 
   // ── Enter-key submit ──────────────────────────────────────────────────────
-  // Replaces: onkeydown="if(event.key==='Enter')_lsSubmit()"
-  // Activate with: data-submit-on="enter"
+  // Replaces: onkeydown="if(event.key==='Enter')fnName()"
+  // Activate with: data-submit-on="enter" (calls _lsSubmit) or data-enter-action="actionName"
   document.addEventListener('keydown', function _keyDispatch(e){
     if(e.key !== 'Enter') return;
     const el = e.target;
+    // data-enter-action: generic enter-key dispatch to any registered action
+    const enterAction = el.dataset.enterAction;
+    if(enterAction){
+      e.preventDefault();
+      const fn = _ACTIONS[enterAction] || (typeof window[enterAction] === 'function' ? window[enterAction] : null);
+      if(fn) fn();
+      return;
+    }
     if(el.id === 'ls-password' || el.dataset.submitOn === 'enter'){
       e.preventDefault();
       if(typeof _lsSubmit === 'function') _lsSubmit();
     }
+  });
+
+  // ── Numeric-only input filtering ─────────────────────────────────────────
+  // Replaces: oninput="this.value=this.value.replace(/[^0-9]/g,'')..."
+  // Activate with: data-numeric on an <input>. Respects maxlength attribute.
+  document.addEventListener('input', function _numericFilter(e){
+    if(!('numeric' in e.target.dataset)) return;
+    const max = e.target.maxLength > 0 ? e.target.maxLength : Infinity;
+    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, max);
   });
 
   // ── Input event dispatch ──────────────────────────────────────────────────

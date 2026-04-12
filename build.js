@@ -231,8 +231,11 @@ async function build(){
   // ── Step 5: Copy netlify.toml ──
   // JS is now an external file (/app.js) served from 'self', so no inline sha256 hash is needed.
   // 'unsafe-inline' is kept in script-src for HTML onclick= event handler attributes.
-  const netlifyToml = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
-  fs.writeFileSync(path.join(DIST, 'netlify.toml'), netlifyToml, 'utf8');
+  // Strip the [build] block — dist/ is the pre-built output; Netlify should serve it
+  // directly without re-running a build. The root netlify.toml [build] config is for v2.
+  const netlifyTomlRaw = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
+  const netlifyTomlDist = netlifyTomlRaw.replace(/^\[build\][^\[]+/m, '').trimStart();
+  fs.writeFileSync(path.join(DIST, 'netlify.toml'), netlifyTomlDist, 'utf8');
   console.log(`🔒 CSP:     script-src 'self' (app.js external, onclick= requires unsafe-inline)`);
 
   // ── Copy supporting files ──

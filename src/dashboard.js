@@ -1699,6 +1699,13 @@ function renderDashboard() {
   var hdrTitle = document.querySelector('.db-header-title');
   if (hdrTitle) hdrTitle.textContent = '📊 Parent Dashboard';
 
+  // Show "Go to [name]'s App" button in header
+  var appBtn = document.getElementById('db-app-btn');
+  if (appBtn) {
+    appBtn.textContent = '▶ ' + _esc(student.name) + '\u2019s App';
+    appBtn.style.display = '';
+  }
+
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
@@ -2333,6 +2340,7 @@ function _renderDashboardOnly() {
 // data-action="fnName"  data-arg="val"  data-arg2="val2"
 if (typeof document !== 'undefined') {
   var _DB_ACTIONS = {
+    dbGoToApp:               function()     { show('home'); },
     dbSignOut:               function()     { dbSignOut(); },
     openQuizReview:          function(a)    { openQuizReview(Number(a)); },
     closeQuizReview:         function()     { closeQuizReview(); },
