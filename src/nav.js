@@ -34,7 +34,9 @@ function show(id){
   if(prof) prof.style.display = (id === 'home') ? '' : 'none';
   // Calendar button: home screen only, signed-in users only (not guests)
   const calBtn = document.getElementById('cal-btn');
-  if(calBtn) calBtn.style.display = (id === 'home' && _supaUser) ? 'flex' : 'none';
+  var _navRole = localStorage.getItem('mmr_user_role');
+  var _navIsLoggedIn = !!_supaUser || _navRole === 'student' || _navRole === 'parent';
+  if(calBtn) calBtn.style.display = (id === 'home' && _navIsLoggedIn) ? 'flex' : 'none';
   // Update profile button emoji/visibility when landing on home
   if(id === 'home' && typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   // Adapt carousel height to active card when login screen shows

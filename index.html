@@ -474,6 +474,17 @@
 
 
 
+    <!-- Accessibility -->
+    <div class="set-section">
+      <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span> Accessibility</div>
+      <div class="set-body">
+        <p class="set-body-p">Adjust display and interaction options for students with accessibility needs.</p>
+        <button class="set-save" style="background:linear-gradient(135deg,#2980b9,#1a5276);box-shadow:0 4px 0 rgba(0,0,0,.15);" data-action="openA11yModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> Accessibility Controls
+        </button>
+      </div>
+    </div>
+
     <!-- Install App -->
     <div class="set-section">
       <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Install App on iPhone or iPad</div>
@@ -1042,7 +1053,10 @@
 <div id="dashboard-screen" class="sc">
   <header class="db-header">
     <div class="db-header-title">&#x1F4CA; Parent Dashboard</div>
-    <button class="db-signout-btn" data-action="dbSignOut">Sign Out</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="db-app-btn" class="db-app-btn" data-action="dbGoToApp" style="display:none">&#9654; App</button>
+      <button class="db-signout-btn" data-action="dbSignOut">Sign Out</button>
+    </div>
   </header>
   <main class="db-main" id="db-root">
     <p class="db-empty" style="margin-top:40px;text-align:center">Loading…</p>

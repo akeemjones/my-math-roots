@@ -1560,7 +1560,8 @@ function _toggleDayExpand(){
 function _renderCalBtn(){
   const btn = document.getElementById('cal-btn');
   if(!btn) return;
-  if(!_supaUser){ btn.style.display = 'none'; return; }
+  var _calIsLoggedIn = !!_supaUser || localStorage.getItem('mmr_user_role') === 'student' || localStorage.getItem('mmr_user_role') === 'parent';
+  if(!_calIsLoggedIn){ btn.style.display = 'none'; return; }
   // Only show calendar button on home screen
   const _curScreen = typeof ALL_SCREENS !== 'undefined' && ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
   if(_curScreen !== 'home'){ btn.style.display = 'none'; return; }

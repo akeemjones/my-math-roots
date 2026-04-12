@@ -1356,22 +1356,44 @@ function _dbToggleA11y(key) {
 }
 
 function _renderA11ySection() {
-  var isMock = (_activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2');
-  var inner = isMock
-    ? '<p class="db-empty">Accessibility settings require a connected student profile.</p>'
-    : '<div class="db-toggle-row">'
-        + '<div><strong>Aa Large Text</strong><br><span class="db-toggle-sub">Increases font size for the student</span></div>'
-        + '<button id="db-a11y-largeText-btn" class="db-toggle-btn' + (_a11yDraft.largeText ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="largeText">'
-        + (_a11yDraft.largeText ? 'ON' : 'OFF') + '</button>'
-        + '</div>'
-        + '<div class="db-toggle-row">'
-        + '<div><strong>◑ High Contrast</strong><br><span class="db-toggle-sub">Increases color contrast for readability</span></div>'
-        + '<button id="db-a11y-highContrast-btn" class="db-toggle-btn' + (_a11yDraft.highContrast ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="highContrast">'
-        + (_a11yDraft.highContrast ? 'ON' : 'OFF') + '</button>'
-        + '</div>'
-        + '<div id="db-a11y-msg" class="db-ctrl-msg"></div>'
-        + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSaveA11y">Save Accessibility</button></div>';
-  return '<section class="db-section"><h2 class="db-sec-h">♿ Accessibility</h2>' + inner + '</section>';
+  var _a11yCfg = (function(){ try{ return JSON.parse(localStorage.getItem('wb_a11y')||'{}'); }catch(e){ return {}; }})();
+  var _cbOn  = !!_a11yCfg.colorblind;
+  var _rmOn  = !!_a11yCfg.reduceMotion;
+  var _tsOn  = !!_a11yCfg.textSelect;
+  var _fcOn  = !!_a11yCfg.focus;
+  var _srOn  = !!_a11yCfg.screenreader;
+  var inner =
+    '<div class="db-toggle-row">'
+      + '<div><strong>Colorblind-friendly answers</strong><br><span class="db-toggle-sub">Adds \u2713/\u2717 symbols and border patterns to quiz answers (not just color)</span></div>'
+      + '<button class="db-toggle-btn' + (_cbOn ? ' db-toggle-on' : '') + '" data-action="toggleA11y" data-arg="colorblind">' + (_cbOn ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>Reduce motion</strong><br><span class="db-toggle-sub">Turns off slide animations, bouncing, and transitions</span></div>'
+      + '<button class="db-toggle-btn' + (_rmOn ? ' db-toggle-on' : '') + '" data-action="toggleA11y" data-arg="reduceMotion">' + (_rmOn ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>Text selection</strong><br><span class="db-toggle-sub">Allows selecting quiz question and answer text (helpful for dyslexia tools)</span></div>'
+      + '<button class="db-toggle-btn' + (_tsOn ? ' db-toggle-on' : '') + '" data-action="toggleA11y" data-arg="textSelect">' + (_tsOn ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>Focus indicators</strong><br><span class="db-toggle-sub">Shows visible outlines when navigating with a keyboard</span></div>'
+      + '<button class="db-toggle-btn' + (_fcOn ? ' db-toggle-on' : '') + '" data-action="toggleA11y" data-arg="focus">' + (_fcOn ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>Screen reader support</strong><br><span class="db-toggle-sub">Adds descriptive labels and live announcements for VoiceOver / TalkBack</span></div>'
+      + '<button class="db-toggle-btn' + (_srOn ? ' db-toggle-on' : '') + '" data-action="toggleA11y" data-arg="screenreader">' + (_srOn ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>Aa Large Text</strong><br><span class="db-toggle-sub">Increases font size for the student</span></div>'
+      + '<button id="db-a11y-largeText-btn" class="db-toggle-btn' + (_a11yDraft.largeText ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="largeText">' + (_a11yDraft.largeText ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div class="db-toggle-row">'
+      + '<div><strong>&#9681; High Contrast</strong><br><span class="db-toggle-sub">Increases color contrast for readability</span></div>'
+      + '<button id="db-a11y-highContrast-btn" class="db-toggle-btn' + (_a11yDraft.highContrast ? ' db-toggle-on' : '') + '" data-action="_dbToggleA11y" data-arg="highContrast">' + (_a11yDraft.highContrast ? 'ON' : 'OFF') + '</button>'
+    + '</div>'
+    + '<div id="db-a11y-msg" class="db-ctrl-msg"></div>'
+    + '<div class="db-ctrl-btns"><button class="db-ctrl-save" data-action="_dbSaveA11y">Save Accessibility</button></div>';
+  return '<section class="db-section"><h2 class="db-sec-h">&#9855; Accessibility</h2>' + inner + '</section>';
 }
 
 // ── Change PIN section ────────────────────────────────────────────────────
@@ -1723,7 +1745,6 @@ function renderDashboard() {
     _renderUnlockSection() +
     _renderTimerSection() +
     _renderA11ySection() +
-    _renderPinSection() +
     _renderRemindersSection() +
     _renderPasswordSection() +
     _renderFeedbackSection() +

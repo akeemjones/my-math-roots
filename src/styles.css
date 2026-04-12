@@ -2243,7 +2243,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   font-size:1.5rem; color:#1565C0; text-align:center; margin:12px 0 4px;
 }
 #dashboard-screen .db-section {
-  background:#fff; border-radius:16px; padding:16px; margin-bottom:12px;
+  background:#fff; color:#263238; border-radius:16px; padding:16px; margin-bottom:12px;
   box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
 #dashboard-screen .db-sec-h { font-size:1rem; font-weight:700; color:#37474f; margin-bottom:12px; }
@@ -2372,7 +2372,8 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 #dashboard-screen .db-ctrl-reset { background:#fce4ec; color:#c62828; border:none; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
 #dashboard-screen .db-toggle-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f0; }
 #dashboard-screen .db-toggle-row:last-of-type { border-bottom:none; }
-#dashboard-screen .db-toggle-sub { font-size:.75rem; color:#90a4ae; }
+#dashboard-screen .db-toggle-row strong { font-size:.82rem; }
+#dashboard-screen .db-toggle-sub { font-size:.72rem; color:#90a4ae; }
 #dashboard-screen .db-toggle-btn { background:#cfd8dc; color:#fff; border:none; border-radius:20px; padding:6px 14px; font-size:.8rem; font-weight:700; cursor:pointer; min-width:48px; transition:background .15s; }
 #dashboard-screen .db-toggle-btn.db-toggle-on { background:#43a047; }
 #dashboard-screen .db-unit-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
