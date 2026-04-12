@@ -1416,7 +1416,8 @@ img[data-coin]:active{ transform:scale(.95); }
 .cog-btn:hover{ box-shadow:0 5px 20px rgba(0,0,0,.2); }
 /* cog-ico hover rotate moved to @media (hover:hover) */
 .cog-btn:active{ transform:scale(.93); }
-.cog-ico{ display:inline-block; transition:transform .35s ease; line-height:1; }
+.cog-ico{ display:block; transition:transform .35s ease; }
+.cog-btn:active .cog-ico{ transform:rotate(30deg); }
 
 /* ── SETTINGS SCREEN ── */
 #settings-screen{ background-color:transparent; }
