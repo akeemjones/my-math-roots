@@ -38,6 +38,7 @@ function _psUpdateProfileBtn(){
     if(calBtn) calBtn.classList.remove('cal-btn--stacked');
     return;
   }
+  btn.style.display = 'flex';
   var activeId = localStorage.getItem('mmr_active_student_id');
   var profile  = profiles.find(function(p){ return p.id === activeId; });
   if(profile){
