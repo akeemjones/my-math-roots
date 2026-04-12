@@ -217,6 +217,10 @@
 
     // ── Parent Dashboard: soft gate for guests, go straight to dashboard if signed in ──
     _goParentDashboard:     ()    => typeof _goParentDashboard === 'function' && _goParentDashboard(),
+    _showParentSignInGate:  ()    => typeof _showParentSignInGate === 'function' && _showParentSignInGate(),
+    _parentGateEmailSignIn: ()    => typeof _parentGateEmailSignIn === 'function' && _parentGateEmailSignIn(),
+    _parentGateGoogle:      ()    => typeof _parentGateGoogle === 'function' && _parentGateGoogle(),
+    _parentGateClose:       ()    => typeof _parentGateClose === 'function' && _parentGateClose(),
   };
 
   // ── Click dispatcher (capture phase beats stopPropagation on children) ──
