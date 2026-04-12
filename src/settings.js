@@ -1,6 +1,11 @@
 function toggleSound(){
-  var isOn = localStorage.getItem('wb_sound') !== 'off';
+  const isOn = localStorage.getItem('wb_sound') !== 'off';
   setSound(isOn ? 'off' : 'on');
+}
+
+function toggleTheme(){
+  const current = localStorage.getItem('wb_theme') || 'auto';
+  setTheme(current === 'dark' ? 'auto' : 'dark');
 }
 
 // ════════════════════════════════════════
@@ -773,9 +778,9 @@ function _syncA11yUI(){
 // ════════════════════════════════════════
 function setSound(mode){
   localStorage.setItem(SOUND_KEY, mode);
-  var soundToggle = document.getElementById('sound-toggle');
+  const soundToggle = document.getElementById('sound-toggle');
   if(soundToggle){
-    var soundOn = mode === 'on';
+    const soundOn = mode === 'on';
     soundToggle.classList.toggle('on', soundOn);
     soundToggle.setAttribute('aria-pressed', String(soundOn));
   }
@@ -784,14 +789,12 @@ function setSound(mode){
 function setTheme(mode){
   const effectiveDark = mode==='dark' || (mode==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', effectiveDark);
-  // Update active button state if settings screen is open
-  const lb = document.getElementById('theme-light');
-  const db = document.getElementById('theme-dark');
-  const ab = document.getElementById('theme-auto');
-  if(lb && db && ab){
-    lb.classList.toggle('active', mode==='light');
-    db.classList.toggle('active', mode==='dark');
-    ab.classList.toggle('active', mode==='auto');
+  // Update theme toggle state if settings screen is open
+  const themeToggle = document.getElementById('theme-toggle');
+  if(themeToggle){
+    const isDark = mode === 'dark';
+    themeToggle.classList.toggle('on', isDark);
+    themeToggle.setAttribute('aria-pressed', String(isDark));
   }
   if(mode==='auto'){ localStorage.removeItem('wb_theme'); }
   else { localStorage.setItem('wb_theme', mode); }
@@ -1625,16 +1628,19 @@ function goSettings(){
   updateAccountUI();
   const cfg = loadSettings();
   document.getElementById('set-student').value = cfg.studentName || '';
-  const mode = localStorage.getItem('wb_theme') || 'auto';
-  document.getElementById('theme-light').classList.toggle('active', mode==='light');
-  document.getElementById('theme-dark').classList.toggle('active', mode==='dark');
-  document.getElementById('theme-auto').classList.toggle('active', mode==='auto');
   // Sound toggle
-  var soundToggle = document.getElementById('sound-toggle');
+  const soundToggle = document.getElementById('sound-toggle');
   if(soundToggle){
-    var soundOn = localStorage.getItem('wb_sound') !== 'off';
+    const soundOn = localStorage.getItem('wb_sound') !== 'off';
     soundToggle.classList.toggle('on', soundOn);
     soundToggle.setAttribute('aria-pressed', String(soundOn));
+  }
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  if(themeToggle){
+    const isDark = (localStorage.getItem('wb_theme') || 'auto') === 'dark';
+    themeToggle.classList.toggle('on', isDark);
+    themeToggle.setAttribute('aria-pressed', String(isDark));
   }
   // Reset parent panel (PIN entry is now in the modal)
   const ppanel = document.getElementById('parent-panel');

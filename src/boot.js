@@ -60,7 +60,7 @@ const _APP_GLOBALS = [
   'openAccessModal','closeAccessModal',
   '_accessConfirmType','_showAccessConfirm','_cancelAccessConfirm','_executeAccessConfirm',
   'openPinModal','closePinModal','openTimerModal','closeTimerModal',
-  'openA11yModal','closeA11yModal','_syncA11yUI','setSound','setTheme','applyStoredTheme',
+  'openA11yModal','closeA11yModal','_syncA11yUI','setSound','toggleSound','toggleTheme','setTheme','applyStoredTheme',
   'APP_VERSION','TIMER_KEY','QUIZ_PAUSE_KEY','SOUND_KEY','isSoundEnabled',
   'LESSON_TIMER_KEY','UNIT_TIMER_KEY','FINAL_TIMER_KEY','PIN_CHANGED_KEY',
   'getLessonTimerSecs','getUnitTimerSecs','getFinalTimerSecs',

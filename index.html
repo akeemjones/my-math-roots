@@ -437,17 +437,13 @@
     <div class="set-section">
       <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span> Appearance</div>
       <div class="set-body">
-        <div class="set-lbl" style="margin-bottom:12px">Choose how the app looks</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button class="theme-btn" id="theme-auto" data-action="setTheme" data-arg="auto">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> Auto
-          </button>
-          <button class="theme-btn" id="theme-light" data-action="setTheme" data-arg="light">
-            ☀️ Light Mode
-          </button>
-          <button class="theme-btn" id="theme-dark" data-action="setTheme" data-arg="dark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark Mode
-          </button>
+        <div class="set-row-toggle">
+          <div class="set-col">
+            <div class="set-lbl">Dark Mode</div>
+            <div class="set-desc" style="font-size:var(--fs-xs);color:var(--txt2);margin-top:2px">Off follows your device setting</div>
+          </div>
+          <button type="button" class="set-ios-toggle" id="theme-toggle"
+                  data-action="toggleTheme" role="switch" aria-pressed="false" aria-label="Dark mode"></button>
         </div>
       </div>
     </div>
@@ -461,7 +457,7 @@
             <div class="set-lbl">Quiz &amp; navigation sounds</div>
           </div>
           <button type="button" class="set-ios-toggle" id="sound-toggle"
-                  data-action="toggleSound" role="switch" aria-pressed="true" aria-label="Sound effects"></button>
+                  data-action="toggleSound" role="switch" aria-pressed="false" aria-label="Sound effects"></button>
         </div>
       </div>
     </div>
