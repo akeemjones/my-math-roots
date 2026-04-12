@@ -1,3 +1,8 @@
+function toggleSound(){
+  var isOn = localStorage.getItem('wb_sound') !== 'off';
+  setSound(isOn ? 'off' : 'on');
+}
+
 // ════════════════════════════════════════
 //  ACCESSIBILITY SETTINGS
 // ════════════════════════════════════════
@@ -768,8 +773,12 @@ function _syncA11yUI(){
 // ════════════════════════════════════════
 function setSound(mode){
   localStorage.setItem(SOUND_KEY, mode);
-  document.getElementById('sound-on').classList.toggle('active', mode==='on');
-  document.getElementById('sound-off').classList.toggle('active', mode==='off');
+  var soundToggle = document.getElementById('sound-toggle');
+  if(soundToggle){
+    var soundOn = mode === 'on';
+    soundToggle.classList.toggle('on', soundOn);
+    soundToggle.setAttribute('aria-pressed', String(soundOn));
+  }
 }
 
 function setTheme(mode){
@@ -1620,9 +1629,13 @@ function goSettings(){
   document.getElementById('theme-light').classList.toggle('active', mode==='light');
   document.getElementById('theme-dark').classList.toggle('active', mode==='dark');
   document.getElementById('theme-auto').classList.toggle('active', mode==='auto');
-  const snd = isSoundEnabled() ? 'on' : 'off';
-  document.getElementById('sound-on').classList.toggle('active', snd==='on');
-  document.getElementById('sound-off').classList.toggle('active', snd==='off');
+  // Sound toggle
+  var soundToggle = document.getElementById('sound-toggle');
+  if(soundToggle){
+    var soundOn = localStorage.getItem('wb_sound') !== 'off';
+    soundToggle.classList.toggle('on', soundOn);
+    soundToggle.setAttribute('aria-pressed', String(soundOn));
+  }
   // Reset parent panel (PIN entry is now in the modal)
   const ppanel = document.getElementById('parent-panel');
   if(ppanel) ppanel.style.display = 'none';

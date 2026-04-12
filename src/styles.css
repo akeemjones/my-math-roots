@@ -1944,6 +1944,35 @@ body.a11y-screenreader .qreveal-sr { clip:auto !important; position:static !impo
 .a11y-toggle::before { content:'Off'; }
 .a11y-toggle.active::before { content:'On'; }
 
+/* ── Settings iOS toggle row ──────────────────────────────────────────── */
+.set-row-toggle{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.set-col{ flex:1; min-width:0; }
+.set-ios-toggle{
+  flex-shrink:0; position:relative;
+  width:51px; height:31px; border-radius:31px;
+  background:#e5e5ea; border:none; cursor:pointer;
+  transition:background .2s; -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.set-ios-toggle::after{
+  content:''; position:absolute;
+  top:2px; left:2px;
+  width:27px; height:27px; border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 5px rgba(0,0,0,.3);
+  transition:transform .2s;
+}
+.set-ios-toggle.on{
+  background:#34c759;
+}
+.set-ios-toggle.on::after{
+  transform:translateX(20px);
+}
+body.dark .set-ios-toggle{ background:#3a3a3c; }
+body.dark .set-ios-toggle.on{ background:#30d158; }
+
 /* ── DESKTOP-ONLY HOVER TRANSFORMS ──
    On mobile, :hover fires on touch and can get "stuck" showing the
    scaled/translated state. Wrap all transform hovers in @media (hover:hover)

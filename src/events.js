@@ -154,6 +154,7 @@
     closeInstall:           ()    => closeInstall(),
     switchInstallTab:       (a)   => switchInstallTab(a),
     setSound:               (a)   => setSound(a),
+    toggleSound:            ()    => typeof toggleSound === 'function' && toggleSound(),
     setTheme:               (a)   => setTheme(a),
     toggleA11y:             (a)   => toggleA11y(a),
     generateAIReport:       ()    => typeof generateAIReport === 'function' && generateAIReport(),
