@@ -2224,20 +2224,23 @@ async function supaSignOut(){
 }
 
 function updateAccountUI(){
-  // "Logged in" means either a Supabase session (parent) OR a PIN student session
-  const _role      = localStorage.getItem('mmr_user_role');
+  const _role = localStorage.getItem('mmr_user_role');
   const isLoggedIn = !!_supaUser || _role === 'student';
+  // A "real account" means a live Supabase session (aud:'authenticated').
+  // Preview stubs and guest/student-role sessions are NOT real accounts.
+  const isRealAccount = !!(_supaUser && _supaUser.aud === 'authenticated');
   const nudge = document.getElementById('guest-account-nudge');
   if(nudge) nudge.style.display = isLoggedIn ? 'none' : 'block';
+  // Always show the sign-in/out button so guests can always reach the login screen
   const signout = document.getElementById('signout-btn-wrap');
-  if(signout) signout.style.display = isLoggedIn ? 'block' : 'none';
-  // Dashboard button only for Supabase-authenticated users — not for guest/student-role sessions
+  if(signout) signout.style.display = 'block';
+  // Dashboard button only for real Supabase accounts
   const dashBtn = document.getElementById('parent-dash-btn');
-  if(dashBtn) dashBtn.style.display = _supaUser ? '' : 'none';
-  // Sign Out → Sign In for guests (no Supabase account, just student-role session)
+  if(dashBtn) dashBtn.style.display = isRealAccount ? '' : 'none';
+  // Sign Out for real accounts, Sign In for everyone else
   const signoutBtn = document.querySelector('#signout-btn-wrap [data-action="_signOut"], #signout-btn-wrap [data-action="_showLoginScreen"]');
   if(signoutBtn){
-    if(_supaUser){
+    if(isRealAccount){
       signoutBtn.textContent = 'Sign Out';
       signoutBtn.dataset.action = '_signOut';
       signoutBtn.style.borderColor = '#e74c3c';
