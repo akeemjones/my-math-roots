@@ -133,6 +133,25 @@ function playConfettiBurst(){
   } catch(e){}
 }
 
+function playHintReveal(){
+  try {
+    const ctx = _getAudio();
+    if(!ctx) return;
+    [[330, 0, 0.08], [440, 0.08, 0.08]].forEach(([freq, start, dur]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.value = freq;
+      const t = ctx.currentTime + start;
+      g.gain.setValueAtTime(0.12, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t);
+      o.stop(t + dur + 0.02);
+    });
+  } catch(e){}
+}
+
 // ════════════════════════════════════════
 //  QUIZ ENGINE
 // ════════════════════════════════════════
@@ -306,7 +325,7 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
   const n = type==='final' ? 50 : type==='unit' ? 25 : 8;
   const qs = _prebuiltQs || _weightedSample(bank, n, type);
 
-  CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type };
+  CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0 };
   _quizStartedAt = Date.now();
 
   document.getElementById('quiz-title').innerHTML = label;
@@ -387,6 +406,7 @@ function _renderQ(){
   nb.innerHTML = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
 
   // Use inline onclick with data-index — no addEventListener stacking
+  qz._hintRevealed = false;
   document.getElementById('qcard').innerHTML =
     '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
     '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+(q.s?'<div class="q-visual">'+q.s+'</div>':'')+
@@ -395,6 +415,10 @@ function _renderQ(){
         '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>'
       ).join('')+
     '</div>'+
+    (q.h ? '<div id="qhint" role="note" aria-live="polite">'+
+      '<button id="qhint-btn" class="hint-btn" type="button" data-action="_toggleHint" aria-label="Need a hint?" aria-expanded="false">💡 Need a Hint?</button>'+
+      '<div class="hint-content" aria-hidden="true">'+_escHtml(q.h)+'</div>'+
+    '</div>' : '')+
     '<div class="reveal" id="qreveal" role="status" aria-live="polite" aria-atomic="true"></div>';
 
   // Store correct text for answer checking
@@ -459,7 +483,15 @@ function _pickAnswer(btnIdx){
         (!isOk ? '<div class="rev-tip">'+_escHtml(nudge)+'</div>' : '');
     }
 
-    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs});
+    // Disable hint button after answering
+    const hintEl = document.getElementById('qhint');
+    if(hintEl){
+      hintEl.classList.add('hint-answered');
+      const hintBtn = document.getElementById('qhint-btn');
+      if(hintBtn){ hintBtn.setAttribute('aria-disabled','true'); hintBtn.setAttribute('tabindex','-1'); }
+    }
+
+    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs, hintUsed:qz._hintRevealed||false});
 
     const nb = document.getElementById('next-btn');
     if(nb){
@@ -491,6 +523,33 @@ function prevQ(){
   if(!qz || qz.viewIdx <= 0) return;
   qz.viewIdx--;
   _renderQ();
+}
+
+function _toggleHint(){
+  const qz = CUR.quiz;
+  if(!qz) return;
+  const hintEl = document.getElementById('qhint');
+  const btn = document.getElementById('qhint-btn');
+  const content = hintEl && hintEl.querySelector('.hint-content');
+  if(!hintEl || !btn || !content) return;
+
+  if(hintEl.classList.contains('hint-show')){
+    // Collapse — no charge, no sound
+    hintEl.classList.remove('hint-show');
+    btn.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-hidden', 'true');
+  } else {
+    // Expand
+    hintEl.classList.add('hint-show');
+    btn.setAttribute('aria-expanded', 'true');
+    content.removeAttribute('aria-hidden');
+    // Only charge the first reveal
+    if(!qz._hintRevealed){
+      qz._hintRevealed = true;
+      qz.hintsUsed = (qz.hintsUsed || 0) + 1;
+      playHintReveal();
+    }
+  }
 }
 
 function quitQuiz(){
@@ -616,7 +675,9 @@ function _finishQuiz(){
   const qz = CUR.quiz;
   const u = CUR.unitIdx != null ? UNITS_DATA[CUR.unitIdx] : { color:'#6c5ce7', name:'Final Test', id:'final' };
   const total = qz.questions.length;
-  const pct = Math.floor(qz.score/total*100);
+  const rawPct = Math.floor(qz.score/total*100);
+  const hintsUsed = qz.hintsUsed || 0;
+  const pct = Math.max(0, rawPct - hintsUsed * 2);
 
   // ── Capture first-time pass BEFORE adding to SCORES ──
   const _isPassing = pct >= 80;
@@ -634,11 +695,12 @@ function _finishQuiz(){
   const autoEntry = {
     qid: qz.id, label: qz.label, type: qz.type,
     score: qz.score, total, pct,
+    rawPct, penPct: pct, hintsUsed,
     stars: pct===100?'⭐⭐⭐':pct>=90?'⭐⭐⭐':pct>=80?'⭐⭐':pct>=60?'⭐':'',
     unitIdx: CUR.unitIdx, color: u.color,
     name: studentName, id: Date.now(),
     timeTaken,
-    answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs})) : [],
+    answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
@@ -738,6 +800,7 @@ function _finishQuiz(){
     <div class="r-pct">${pct}%</div>
     <div class="r-msg">${msg}</div>
     <div class="r-stars">${stars}</div>
+    ${hintsUsed > 0 ? `<div class="hint-penalty-note">💡 You used ${hintsUsed} hint${hintsUsed===1?'':'s'} — score adjusted by -${hintsUsed*2}%. Unadjusted: ${rawPct}%.</div>` : ''}
     <div style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);color:var(--txt2);margin-top:6px">⏱ ${timeStr}</div>
     ${unlockMsg}
     ${_guidedRemediation(qz, pct, u)}`;

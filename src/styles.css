@@ -835,6 +835,35 @@ body.a11y-colorblind .abtn.correct{ border:3px solid #27ae60!important; color:#1
 body.a11y-colorblind .abtn.wrong{ border:3px dashed #e74c3c!important; color:#8b1a0f!important; }
 .agrid .abtn:disabled{ cursor:default; transform:none; }
 
+/* ── Hint button ──────────────────────────────────────────────── */
+#qhint{ margin-top:10px; }
+.hint-btn{
+  display:block; width:100%;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base);
+  padding:10px 16px; border-radius:12px;
+  background:rgba(255,255,255,0.85);
+  border:2px dashed rgba(74,144,217,0.5);
+  color:#3b82f6; cursor:pointer; text-align:left;
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.hint-btn:hover:not(:disabled){ background:rgba(239,246,255,0.95); border-color:#3b82f6; }
+#qhint .hint-content{
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height 0.25s ease-in, opacity 0.25s ease-in; }
+#qhint.hint-show .hint-content{ max-height:200px; opacity:1; }
+body.a11y-reduce-motion #qhint .hint-content{ transition:none; }
+.hint-content{
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base);
+  color:#1e40af; background:rgba(239,246,255,0.92);
+  border-left:3px solid #3b82f6; border-radius:0 10px 10px 0;
+  padding:10px 14px; margin-top:8px; }
+#qhint.hint-answered{ pointer-events:none; opacity:0.45; }
+body.a11y-focus #qhint-btn:focus{
+  outline:3px solid rgba(74,144,217,0.7); outline-offset:2px; }
+.hint-penalty-note{
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+  font-size:var(--fs-sm); color:var(--txt2);
+  text-align:center; margin-top:6px; }
+
 /* Reveal box — shown immediately after answering */
 .reveal{ border-radius:14px; padding:10px 14px; margin-top:10px; display:none; }
 .reveal.show{ display:block; animation:pop .25s ease; }

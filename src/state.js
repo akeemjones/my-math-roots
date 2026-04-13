@@ -97,7 +97,7 @@ function _updateMastery(answers){
     const k = _qKey(a.t);
     const m = MASTERY[k] || { attempts:0, correct:0, lastSeen:0 };
     m.attempts++;
-    if(a.ok) m.correct++;
+    if(a.ok && !a.hintUsed) m.correct++;
     m.lastSeen = now;
     MASTERY[k] = m;
   });

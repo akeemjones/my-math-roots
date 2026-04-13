@@ -2,7 +2,7 @@
 //  QUESTION FACTORY
 //  q(text, options[4], correctIndex 0-3, explanation)
 // ════════════════════════════════════════
-function q(t,o,a,e,s){return{t,o,a,e,s};}
+function q(t,o,a,e,s,h){return{t,o,a,e,s,h:h!==undefined?h:null};}
 
 // ════════════════════════════════════════
 //  UI ICONS (inline SVG)
