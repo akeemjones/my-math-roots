@@ -511,10 +511,36 @@ function renderEx(ex, i){
   return `<div class="ex" style="--exc:${ex.c};--exbg:${ex.c}0d">
     <div class="ex-tag">Example ${i+1}: ${ex.tag}</div>
     <div class="ex-problem">${ex.p}</div>
-    ${ex.vis ? `<div class="vis-box">${makeVis(ex.vis)}</div>` : ''}
+    ${ex.v ? _buildVisualHTML(ex.v) : ex.vis ? `<div class="vis-box">${makeVis(ex.vis)}</div>` : ''}
     <div class="ex-steps">${ex.s.replace(/\n/g,'<br>')}</div>
     <div class="ex-answer">${ex.a}</div>
   </div>`;
+}
+
+// Build a short fingerprint from an example's numbers to detect near-duplicates
+function _exFingerprint(ex){
+  const nums = (ex.p || '').match(/\d+/g) || [];
+  return (ex.tag || '').replace(/\W+/g,'').substring(0,6) + ':' + nums.slice(0,3).join('_');
+}
+
+// Pick one fresh generated example, skipping recently-seen ones (DOM-based ring buffer)
+function _generateOneExample(lessonId, color, listEl){
+  const seen = (listEl.dataset.seenEx || '').split(',').filter(Boolean);
+  for(let attempt = 0; attempt < 3; attempt++){
+    const batch = generateExamples(lessonId, color);
+    if(!batch || !batch.length) return null;
+    const candidate = batch[Math.floor(Math.random() * batch.length)];
+    const fp = _exFingerprint(candidate);
+    if(!seen.includes(fp)){
+      seen.push(fp);
+      if(seen.length > 12) seen.shift(); // keep ring buffer small
+      listEl.dataset.seenEx = seen.join(',');
+      return candidate;
+    }
+  }
+  // Retries exhausted — return without dedup rather than returning nothing
+  const batch = generateExamples(lessonId, color);
+  return batch && batch.length ? batch[Math.floor(Math.random() * batch.length)] : null;
 }
 
 function refreshExamples(unitIdx, lessonIdx){
@@ -522,20 +548,27 @@ function refreshExamples(unitIdx, lessonIdx){
   const l = u.lessons[lessonIdx];
   const list = document.getElementById('ex-list');
   if(!list) return;
-  if(l.examples.length){
-    const idx = parseInt(list.dataset.exIdx||'1') % l.examples.length;
-    const batch = l.examples.slice(idx, idx+1);
-    list.dataset.exIdx = String(idx+1);
-    list.innerHTML = batch.map((ex,i)=>renderEx(ex,idx+i)).join('');
-    list.style.opacity='0';
-    setTimeout(()=>{ list.style.transition='opacity .3s'; list.style.opacity='1'; },10);
-    return;
+
+  const batch = [];
+
+  // Slot 1: rotate through static examples; fallback to dynamic when exhausted
+  if(l.examples && l.examples.length){
+    const idx = parseInt(list.dataset.exIdx || '0') % l.examples.length;
+    batch.push(l.examples[idx]);
+    list.dataset.exIdx = String(idx + 1);
+  } else {
+    const fallback = _generateOneExample(l.id, u.color, list);
+    if(fallback) batch.push(fallback);
   }
-  const generated = generateExamples(l.id, u.color);
-  if(!generated) return;
-  list.innerHTML = generated.map((ex,i)=>renderEx(ex,i)).join('');
-  list.style.opacity='0';
-  setTimeout(()=>{ list.style.transition='opacity .3s'; list.style.opacity='1'; },10);
+
+  // Slot 2: always a freshly generated example
+  const fresh = _generateOneExample(l.id, u.color, list);
+  if(fresh) batch.push(fresh);
+
+  if(!batch.length) return;
+  list.innerHTML = batch.map((ex, i) => renderEx(ex, i)).join('');
+  list.style.opacity = '0';
+  setTimeout(() => { list.style.transition = 'opacity .3s'; list.style.opacity = '1'; }, 10);
 }
 
 function generateExamples(lessonId, color){
@@ -545,6 +578,8 @@ function generateExamples(lessonId, color){
   if(lessonId==='u1l1'){
     const a=r(1,15),b=r(1,9),big=Math.max(a,b),sm=Math.min(a,b);
     const a2=r(5,20),b2=r(1,8);
+    const a3=r(3,12),b3=r(1,6),big3=Math.max(a3,b3),sm3=Math.min(a3,b3);
+    const m1=r(2,9),m2=r(1,9),msum=m1+m2;
     return [
       {c:color,tag:'Counting ON to Add',p:`${big} + ${sm} = ?`,
        s:`Start at ${big}, count on ${sm} more: ${Array.from({length:sm},(_,i)=>big+i+1).join(' → ')}`,
@@ -555,21 +590,36 @@ function generateExamples(lessonId, color){
       {c:'#c0392b',tag:'Counting BACK to Subtract',p:`${a2+b2} - ${b2} = ?`,
        s:`Start at ${a2+b2}, count back ${b2}: ${Array.from({length:b2},(_,i)=>a2+b2-i-1).join(' → ')}`,
        a:`${a2+b2} - ${b2} = ${a2} ✅`,vis:`sub:${emoji}:${a2+b2}:${b2}`},
+      {c:color,tag:'Counting ON with Bigger Numbers',p:`${big3+10} + ${sm3} = ?`,
+       s:`Start at ${big3+10}, count on ${sm3}: ${Array.from({length:sm3},(_,i)=>big3+10+i+1).join(' → ')}`,
+       a:`${big3+10} + ${sm3} = ${big3+10+sm3} ✅`},
+      {c:'#c0392b',tag:'Counting BACK to Subtract',p:`${big3+sm3} - ${sm3} = ?`,
+       s:`Start at ${big3+sm3}, count back ${sm3}: ${Array.from({length:sm3},(_,i)=>big3+sm3-i-1).join(' → ')}`,
+       a:`${big3+sm3} - ${sm3} = ${big3} ✅`},
+      {c:color,tag:'Missing Addend',p:`${m1} + ___ = ${msum}`,
+       s:`Start at ${m1}, count on until you reach ${msum}: ${Array.from({length:m2},(_,i)=>m1+i+1).join(' → ')}`,
+       a:`${m1} + ${m2} = ${msum} ✅`},
     ];
   }
 
   if(lessonId==='u1l2'){
-    const n=r(2,12), nd=r(2,11);
+    const n=r(2,12), nd=r(2,11), n2=r(2,10), nd2=r(3,9);
     return [
       {c:color,tag:'Doubles Fact',p:`${n} + ${n} = ?`,
        s:`${n} doubled = ${n*2}. Both groups are the same!`,
        a:`${n} + ${n} = ${n*2} ✅`,vis:`doubles:${emoji}:${n}`},
-      {c:color,tag:'Near Double',p:`${nd} + ${nd+1} = ?`,
+      {c:color,tag:'Doubles Fact',p:`${n2} + ${n2} = ?`,
+       s:`${n2} + ${n2} = ${n2*2}. Double means two equal groups!`,
+       a:`${n2} + ${n2} = ${n2*2} ✅`,vis:`doubles:${emoji}:${n2}`},
+      {c:color,tag:'Near Double (+1)',p:`${nd} + ${nd+1} = ?`,
        s:`Use ${nd}+${nd}=${nd*2}, then add 1 more → ${nd*2+1}`,
        a:`${nd} + ${nd+1} = ${nd*2+1} ✅`},
-      {c:color,tag:'Near Double',p:`${nd+1} + ${nd} = ?`,
-       s:`Use ${nd}+${nd}=${nd*2}, then add 1 more → ${nd*2+1}`,
-       a:`${nd+1} + ${nd} = ${nd*2+1} ✅`},
+      {c:color,tag:'Near Double (+1)',p:`${nd2+1} + ${nd2} = ?`,
+       s:`Use ${nd2}+${nd2}=${nd2*2}, then add 1 more → ${nd2*2+1}`,
+       a:`${nd2+1} + ${nd2} = ${nd2*2+1} ✅`},
+      {c:'#c0392b',tag:'Use Doubles to Subtract',p:`${n*2} - ${n} = ?`,
+       s:`${n*2} is double ${n}, so half of ${n*2} = ${n}`,
+       a:`${n*2} - ${n} = ${n} ✅`},
     ];
   }
 
@@ -579,6 +629,9 @@ function generateExamples(lessonId, color){
     const rest=add>need?add-need:0;
     const base2=r(6,8), add2=r(3,6);
     const need2=10-base2, rest2=add2>need2?add2-need2:0;
+    const base3=r(7,9), add3=r(3,8);
+    const need3=10-base3, rest3=add3>need3?add3-need3:0;
+    const s1=r(11,18), s2=r(2,9), sd=s1-s2;
     return [
       {c:color,tag:'Make a Ten',p:`${base} + ${add} = ?`,
        s:`${base} needs ${need} to reach 10.\n${base}+${need}=10, then +${rest>0?rest:'0'}=${base+add}`,
@@ -586,12 +639,22 @@ function generateExamples(lessonId, color){
       {c:color,tag:'Make a Ten',p:`${base2} + ${add2} = ?`,
        s:`${base2} needs ${need2} to reach 10.\n${base2}+${need2}=10, then +${rest2>0?rest2:'0'}=${base2+add2}`,
        a:`${base2} + ${add2} = ${base2+add2} ✅`,vis:`tenframe:${base2}`},
+      {c:color,tag:'Break Apart to Make 10',p:`${base3} + ${add3} = ?`,
+       s:`Break ${add3} into ${need3} and ${rest3>0?rest3:0}\n${base3}+${need3}=10, then 10+${rest3>0?rest3:0}=${base3+add3}`,
+       a:`${base3} + ${add3} = ${base3+add3} ✅`},
+      {c:'#c0392b',tag:'Subtract Through 10',p:`${s1} - ${s2} = ?`,
+       s:`${s1} - ${s1-10} = 10\n10 - ${s2-(s1-10)} = ${sd}`,
+       a:`${s1} - ${s2} = ${sd} ✅`},
+      {c:color,tag:'Word Problem',p:`You have ${base} cards. Your friend gives you ${add} more. How many?`,
+       s:`${base} + ${add}: make a ten first!\n${base}+${need}=10, +${rest>0?rest:'0'}=${base+add}`,
+       a:`${base+add} cards ✅`},
     ];
   }
 
   if(lessonId==='u1l4'){
     const a=r(2,9), b=r(2,9), sum=a+b;
     const a2=r(3,8), b2=r(3,8), sum2=a2+b2;
+    const a3=r(2,7), b3=r(2,7), sum3=a3+b3;
     return [
       {c:color,tag:`Fact Family: ${a}, ${b}, ${sum}`,p:'4 related facts:',
        s:`[ ${a} + ${b} = ${sum} ]\n[ ${b} + ${a} = ${sum} ]\n[ ${sum} − ${a} = ${b} ]\n[ ${sum} − ${b} = ${a} ]`,
@@ -599,43 +662,97 @@ function generateExamples(lessonId, color){
       {c:color,tag:`Fact Family: ${a2}, ${b2}, ${sum2}`,p:'4 related facts:',
        s:`[ ${a2} + ${b2} = ${sum2} ]\n[ ${b2} + ${a2} = ${sum2} ]\n[ ${sum2} − ${a2} = ${b2} ]\n[ ${sum2} − ${b2} = ${a2} ]`,
        a:`The 3 numbers are ${a2}, ${b2}, and ${sum2} ✅`},
+      {c:color,tag:'Missing Number',p:`${a3} + ___ = ${sum3}`,
+       s:`Use the fact family!\n${sum3} − ${a3} = ${b3}`,
+       a:`The missing number is ${b3} ✅`},
+      {c:color,tag:'Turnaround Facts',p:`If ${a} + ${b} = ${sum}, what is ${b} + ${a}?`,
+       s:`Addition works both ways!\n${a}+${b} and ${b}+${a} both equal ${sum}`,
+       a:`${b} + ${a} = ${sum} ✅`},
+      {c:'#c0392b',tag:'Related Subtraction',p:`If ${a2} + ${b2} = ${sum2}, what is ${sum2} − ${b2}?`,
+       s:`Use the fact family: addition and subtraction are related.\n${sum2} − ${b2} = ${a2}`,
+       a:`${sum2} − ${b2} = ${a2} ✅`},
     ];
   }
 
   if(lessonId==='u2l1'){
-    const h=r(1,9),t=r(0,9),o=r(0,9);
+    // Visual-first: generate config first, then derive question text from the config
+    const hundreds=r(1,9), tens=r(0,9), ones=r(0,9);
+    const num=hundreds*100+tens*10+ones;
+    const vObj={type:'base10',config:{hundreds,tens,ones}};
+
     const h2=r(1,9),t2=r(0,9),o2=r(0,9);
+    const num2=h2*100+t2*10+o2;
+    // Second visual: build-a-number uses base10 visual too
+    const vObj2={type:'base10',config:{hundreds:h2,tens:t2,ones:o2}};
+
+    const n3=r(100,999), h3=Math.floor(n3/100), t3=Math.floor((n3%100)/10), o3=n3%10;
     return [
-      {c:color,tag:'Place Value',p:`What is the value of each digit in ${h}${t}${o}?`,
-       s:`Hundreds: ${h} → ${h*100}\nTens: ${t} → ${t*10}\nOnes: ${o} → ${o}`,
-       a:`${h*100} + ${t*10} + ${o} = ${h*100+t*10+o} ✅`},
-      {c:color,tag:'Place Value',p:`What is the value of each digit in ${h2}${t2}${o2}?`,
-       s:`Hundreds: ${h2} → ${h2*100}\nTens: ${t2} → ${t2*10}\nOnes: ${o2} → ${o2}`,
-       a:`${h2*100} + ${t2*10} + ${o2} = ${h2*100+t2*10+o2} ✅`},
+      // Visual-first: config → question text, steps, and answer all derived from it
+      {c:color,tag:'Read Base-10 Blocks',
+       p:`What number do the base-10 blocks show?`,
+       s:`Count the blocks:\n${hundreds} hundred${hundreds!==1?'s':''}  = ${hundreds*100}\n${tens} ten${tens!==1?'s':''} = ${tens*10}\n${ones} one${ones!==1?'s':''} = ${ones}`,
+       a:`${hundreds*100} + ${tens*10} + ${ones} = ${num} ✅`,
+       v:vObj},
+      {c:color,tag:'Build a Number',
+       p:`${h2} hundreds + ${t2} tens + ${o2} ones = ?`,
+       s:`${h2} × 100 = ${h2*100}\n${t2} × 10 = ${t2*10}\n${o2} × 1 = ${o2}`,
+       a:`${h2*100} + ${t2*10} + ${o2} = ${num2} ✅`,
+       v:vObj2},
+      {c:color,tag:'Which Digit?',
+       p:`In ${n3}, what digit is in the tens place?`,
+       s:`Ones place: ${o3} (far right)\nTens place: ${t3} (middle)\nHundreds place: ${h3} (far left)`,
+       a:`The tens digit is ${t3} ✅`},
+      {c:color,tag:'How Many Tens?',
+       p:`How many tens are in ${hundreds}${tens}${ones}?`,
+       s:`Look at the tens place: ${tens}\n${tens} tens = ${tens*10}`,
+       a:`${tens} tens (value = ${tens*10}) ✅`},
+      {c:color,tag:'Place Value',
+       p:`What is the value of the ${h3} in ${n3}?`,
+       s:`${h3} is in the hundreds place\n${h3} hundreds = ${h3*100}`,
+       a:`${h3*100} ✅`},
     ];
   }
 
   if(lessonId==='u2l2'){
     const n=r(100,999), h=Math.floor(n/100), t=Math.floor((n%100)/10), o=n%10;
     const n2=r(100,999), h2=Math.floor(n2/100), t2=Math.floor((n2%100)/10), o2=n2%10;
+    const n3=r(100,999), h3=Math.floor(n3/100), t3=Math.floor((n3%100)/10), o3=n3%10;
     return [
       {c:color,tag:'Expanded Form',p:`Write ${n} in expanded form`,
        s:`${h} hundreds + ${t} tens + ${o} ones`,a:`${h*100} + ${t*10} + ${o} = ${n} ✅`},
       {c:color,tag:'Standard Form',p:`${h2*100} + ${t2*10} + ${o2} = ?`,
        s:`${h2} hundreds, ${t2} tens, ${o2} ones`,a:`${n2} ✅`},
+      {c:color,tag:'Expanded Form',p:`Write ${n3} in expanded form`,
+       s:`${h3} hundreds + ${t3} tens + ${o3} ones`,a:`${h3*100} + ${t3*10} + ${o3} = ${n3} ✅`},
+      {c:color,tag:'Word Form',p:`Write ${n} in words`,
+       s:`${h} hundreds = ${['','one','two','three','four','five','six','seven','eight','nine'][h]} hundred\n${t} tens + ${o} ones = ${n%100===0?'':n%100<20?['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'][n%100]:['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'][t]+(o?' '+['','one','two','three','four','five','six','seven','eight','nine'][o]:'')}`,
+       a:`${n} ✅`},
+      {c:color,tag:'Missing Value',p:`___ + ${t2*10} + ${o2} = ${n2}`,
+       s:`The missing part is the hundreds.\n${n2} − ${t2*10} − ${o2} = ${h2*100}`,
+       a:`${h2*100} + ${t2*10} + ${o2} = ${n2} ✅`},
     ];
   }
 
   if(lessonId==='u2l3'){
     const a=r(100,999), b=r(100,999);
     const a2=r(100,999), b2=r(100,999);
+    const c1=r(100,999), c2=r(100,999), c3=r(100,999);
     return [
       {c:color,tag:'Compare Numbers',p:`${a} vs ${b}: which is ${a>b?'greater':'less'}?`,
-       s:'Hundreds: '+Math.floor(a/100)+' vs '+Math.floor(b/100)+(Math.floor(a/100)===Math.floor(b/100)?' (same! tens: '+Math.floor((a%100)/10)+' vs '+Math.floor((b%100)/10)+')':''),
+       s:'Hundreds: '+Math.floor(a/100)+' vs '+Math.floor(b/100)+(Math.floor(a/100)===Math.floor(b/100)?' (same! check tens: '+Math.floor((a%100)/10)+' vs '+Math.floor((b%100)/10)+')':''),
        a:`${a} ${a>b?'>':'<'} ${b} ✅`},
       {c:color,tag:'Order Numbers',p:`Order from least to greatest: ${[a2,b2,Math.floor((a2+b2)/2)].join(', ')}`,
        s:`Compare hundreds first, then tens, then ones`,
        a:`${[a2,b2,Math.floor((a2+b2)/2)].sort((x,y)=>x-y).join(', ')} ✅`},
+      {c:color,tag:'Compare Numbers',p:`${c1} ___ ${c2}: fill in > or <`,
+       s:'Start at hundreds: '+Math.floor(c1/100)+' vs '+Math.floor(c2/100)+(Math.floor(c1/100)===Math.floor(c2/100)?' (same! check tens)':''),
+       a:`${c1} ${c1>c2?'>':'<'} ${c2} ✅`},
+      {c:color,tag:'Greatest and Least',p:`Which is greatest: ${c1}, ${c2}, or ${c3}?`,
+       s:`Compare hundreds first: ${Math.floor(c1/100)}, ${Math.floor(c2/100)}, ${Math.floor(c3/100)}`,
+       a:`${Math.max(c1,c2,c3)} is greatest ✅`},
+      {c:color,tag:'Order Numbers',p:`Order from greatest to least: ${c1}, ${c2}, ${c3}`,
+       s:`Compare digit by digit, starting with hundreds`,
+       a:`${[c1,c2,c3].sort((x,y)=>y-x).join(', ')} ✅`},
     ];
   }
 
@@ -643,11 +760,20 @@ function generateExamples(lessonId, color){
     const skip=r(0,3), rules=[2,5,10,100], rule=rules[skip];
     const start=r(1,20)*rule, steps=5;
     const seq=Array.from({length:steps},(_,i)=>start+i*rule);
+    const skip2=r(0,2), rules2=[2,5,10], rule2=rules2[skip2];
+    const start2=r(1,15)*rule2, steps2=6;
+    const seq2=Array.from({length:steps2},(_,i)=>start2+i*rule2);
     return [
       {c:color,tag:`Skip Count by ${rule}s`,p:`Continue: ${seq.slice(0,3).join(', ')}, ___`,
        s:`Each number increases by ${rule}`,a:`${seq.join(', ')} ✅`},
       {c:color,tag:`Skip Count by ${rule}s`,p:`Fill in: ${seq[0]}, ___, ${seq[2]}, ___, ${seq[4]}`,
        s:`Count by ${rule}s: add ${rule} each time`,a:`${seq.join(', ')} ✅`},
+      {c:color,tag:`Skip Count by ${rule2}s`,p:`What comes next? ${seq2.slice(0,4).join(', ')}, ___`,
+       s:`The pattern adds ${rule2} each time`,a:`Next: ${seq2[4]} ✅`},
+      {c:'#c0392b',tag:'Skip Count Backward',p:`Count back by ${rule}s: ${seq[4]}, ${seq[3]}, ${seq[2]}, ___`,
+       s:`Subtract ${rule} each time`,a:`${seq[1]}, ${seq[0]} ✅`},
+      {c:color,tag:'Find the Rule',p:`2, 4, 6, 8, 10 — what is the skip-count rule?`,
+       s:`Each number is 2 more than the last`,a:`Skip count by 2s ✅`},
     ];
   }
 
@@ -656,7 +782,6 @@ function generateExamples(lessonId, color){
     const aO=a%10, bO=b%10, aT=Math.floor(a/10), bT=Math.floor(b/10);
     const onesSum=aO+bO, needsCarry=onesSum>=10;
     const onesDigit=sum%10, tensDigit=Math.floor(sum/10);
-    // carry 1 goes OVER the tens column (c1), not the ones column
     const carryRow=needsCarry?'<tr class="cm-carry"><td></td><td>1</td><td></td></tr>':'';
     const tableHtml='<table class="col-math">'+carryRow+
       '<tr><td></td><td>'+aT+'</td><td>'+aO+'</td></tr>'+
@@ -680,11 +805,18 @@ function generateExamples(lessonId, color){
     const step2=carry2
       ? 'Ones: '+a2O+'+'+b2O+'='+ones2+' → write <b>'+sum2%10+'</b>, carry <b>1</b> to tens<br>Tens: '+a2T+'+'+b2T+'+1(carried) = <b>'+Math.floor(sum2/10)+'</b>'
       : 'Ones: '+a2O+'+'+b2O+'='+sum2%10+'<br>Tens: '+a2T+'+'+b2T+' = '+Math.floor(sum2/10);
+    const wp1=r(20,60),wp2=r(10,40),wps=wp1+wp2;
     return [
       {c:color, tag:needsCarry?'With Regrouping (Carrying)':'No Regrouping',
        p:`${a} + ${b} = ?`, s:tableHtml+'<br>'+stepText, a:`${a} + ${b} = ${sum} ✅`},
-      {c:color, tag:needsCarry?'With Regrouping (Carrying)':'No Regrouping',
+      {c:color, tag:carry2?'With Regrouping (Carrying)':'No Regrouping',
        p:`${a2} + ${b2} = ?`, s:table2+'<br>'+step2, a:`${a2} + ${b2} = ${sum2} ✅`},
+      {c:color, tag:'Addition Word Problem',
+       p:`${wp1} apples + ${wp2} apples = ?`,
+       s:`Line up ones and tens:\n${wp1} + ${wp2} = ${wps}`,a:`${wps} apples ✅`},
+      {c:color, tag:'Check Your Work',
+       p:`Is ${a} + ${b} = ${sum+1}? Check!`,
+       s:`${a} + ${b} = ${sum}, not ${sum+1}\nAlways recheck your carrying!`,a:`No! The answer is ${sum} ✅`},
     ];
   }
 
@@ -692,35 +824,60 @@ function generateExamples(lessonId, color){
     const a=r(31,99), b=r(11,a-10);
     const diff=a-b;
     const needsBorrow=(a%10)<(b%10);
+    const a2=r(40,90), b2=r(10,a2-10), diff2=a2-b2;
+    const nb2=(a2%10)<(b2%10);
     return [
       {c:color,tag:needsBorrow?'With Borrowing':'No Borrowing',p:`${a} - ${b} = ?`,
        s:'Ones: '+(needsBorrow?(a%10)+'<'+(b%10)+' borrow!':(a%10)+'-'+(b%10)+'='+(diff%10))+'. Tens: '+(needsBorrow?Math.floor(a/10)+'-1-'+Math.floor(b/10):Math.floor(a/10)+'-'+Math.floor(b/10))+'='+Math.floor(diff/10),
        a:`${a} - ${b} = ${diff} ✅`,vis:`sub:${emoji}:${a}:${b}`},
-      {c:color,tag:'Practice',p:`${a} - ${Math.floor(b/2)} = ?`,
-       a:`${a} - ${Math.floor(b/2)} = ${a-Math.floor(b/2)} ✅`},
+      {c:color,tag:nb2?'With Borrowing':'No Borrowing',p:`${a2} - ${b2} = ?`,
+       s:'Ones: '+(nb2?(a2%10)+'<'+(b2%10)+' → borrow from tens!':(a2%10)+'-'+(b2%10)+'='+(diff2%10))+'\nTens: '+(nb2?Math.floor(a2/10)+'-1-'+Math.floor(b2/10):Math.floor(a2/10)+'-'+Math.floor(b2/10))+' = '+Math.floor(diff2/10),
+       a:`${a2} - ${b2} = ${diff2} ✅`},
+      {c:color,tag:'Subtraction Word Problem',p:`You had ${a} stickers. You gave away ${b}. How many left?`,
+       s:`"How many left" → SUBTRACT\n${a} − ${b} = ${diff}`,a:`${diff} stickers ✅`},
+      {c:color,tag:'Check with Addition',p:`${a} - ${b} = ${diff}. Check your answer!`,
+       s:`Add to check: ${diff} + ${b} = ${a}\nIf it equals the starting number, you are right!`,a:`${diff} + ${b} = ${a} ✅`},
+      {c:color,tag:'Practice',p:`${a2} - ${Math.floor(b2/2)} = ?`,
+       s:`Subtract ones first, then tens`,
+       a:`${a2} - ${Math.floor(b2/2)} = ${a2-Math.floor(b2/2)} ✅`},
     ];
   }
 
   if(lessonId==='u3l3'){
     const a=r(1,9),b=r(1,9),cc=r(1,9);
-    // find a pair that makes 10
     const p1=r(1,9), p2=10-p1, p3=r(1,8);
+    const q1=r(1,8), q2=10-q1, q3=r(2,9);
     return [
       {c:color,tag:'Make a 10 First',p:`${p1} + ${p2} + ${p3} = ?`,
        s:`${p1}+${p2}=10 (make a ten!)\n10+${p3}=${10+p3}`,a:`${p1}+${p2}+${p3}=${10+p3} ✅`},
       {c:color,tag:'Use Doubles',p:`${a} + ${a} + ${cc} = ?`,
        s:`${a}+${a}=${a*2} (doubles!)\n${a*2}+${cc}=${a*2+cc}`,a:`${a}+${a}+${cc}=${a*2+cc} ✅`},
+      {c:color,tag:'Make a 10 First',p:`${q1} + ${q3} + ${q2} = ?`,
+       s:`Look for a pair that makes 10: ${q1}+${q2}=10\n10+${q3}=${10+q3}`,a:`${q1}+${q3}+${q2}=${10+q3} ✅`},
+      {c:color,tag:'Add Three Numbers',p:`${r(2,5)} + ${r(2,5)} + ${r(2,5)} = ?`,
+       s:`Add the first two, then add the third.\nOr look for pairs that make 10!`,a:`Add step by step ✅`},
+      {c:color,tag:'Word Problem',p:`Sam has ${p1} red, ${p2} blue, and ${p3} green marbles. Total?`,
+       s:`${p1}+${p2}=10 (make a ten!)\n10+${p3}=${10+p3}`,a:`${10+p3} marbles ✅`},
     ];
   }
 
   if(lessonId==='u3l4'){
     const x=r(20,90), y=r(10,50);
     const x2=r(50,150), y2=r(20,80);
+    const x3=r(10,40), y3=r(10,40);
+    const items=['stickers','marbles','cards','coins','books'][r(0,4)];
+    const items2=['birds','fish','butterflies','bees','ants'][r(0,4)];
     return [
-      {c:color,tag:'Adding Story',p:`Sam had ${x} stickers. Got ${y} more. How many total?`,
-       s:`"How many total" → ADD\n${x} + ${y} = ${x+y}`,a:`${x+y} stickers ✅`},
-      {c:color,tag:'Subtracting Story',p:`There were ${x2} birds. ${y2} flew away. How many left?`,
-       s:`"How many left" → SUBTRACT\n${x2} - ${y2} = ${x2-y2}`,a:`${x2-y2} birds ✅`},
+      {c:color,tag:'Adding Story',p:`Sam had ${x} ${items}. Got ${y} more. How many total?`,
+       s:`"How many total" → ADD\n${x} + ${y} = ${x+y}`,a:`${x+y} ${items} ✅`},
+      {c:color,tag:'Subtracting Story',p:`There were ${x2} ${items2}. ${y2} flew away. How many left?`,
+       s:`"How many left" → SUBTRACT\n${x2} - ${y2} = ${x2-y2}`,a:`${x2-y2} ${items2} ✅`},
+      {c:color,tag:'Comparing Story',p:`Ana has ${x3} ${items}. Ben has ${x3+y3} ${items}. How many more does Ben have?`,
+       s:`"How many more" → SUBTRACT\n${x3+y3} - ${x3} = ${y3}`,a:`${y3} more ${items} ✅`},
+      {c:color,tag:'Two-Step Story',p:`${x3} red and ${y3} blue ${items}. Give away ${r(1,Math.min(x3,y3))}. How many left?`,
+       s:`Step 1: Add ${x3}+${y3}=${x3+y3}\nStep 2: Subtract`,a:`Add first, then subtract ✅`},
+      {c:color,tag:'Choose the Operation',p:`"How many altogether?" Do you add or subtract?`,
+       s:`Key words:\n"altogether" "total" "in all" → ADD\n"left" "fewer" "difference" → SUBTRACT`,a:`ADD ✅`},
     ];
   }
 
@@ -732,7 +889,6 @@ function generateExamples(lessonId, color){
     const onesSum=aO+bO, carryToTens=onesSum>=10?1:0;
     const tensSum=aT+bT+carryToTens, carryToHunds=tensSum>=10?1:0;
     const onesD=sum%10, tensD=Math.floor((sum%100)/10), hundsD=Math.floor(sum/100);
-    // carry 1 from ones goes over tens (c2), carry 1 from tens goes over hundreds (c1)
     const c1=carryToHunds?'1':'', c2=carryToTens?'1':'';
     const carryRow=(c1||c2)?'<tr class="cm-carry"><td></td><td>'+c1+'</td><td>'+c2+'</td><td></td></tr>':'';
     const tableHtml='<table class="col-math">'+carryRow+
@@ -758,74 +914,145 @@ function generateExamples(lessonId, color){
     let steps2='Ones: '+a2O+'+'+b2O+'='+ones2+(ct2?' → write <b>'+sum2%10+'</b>, carry <b>1</b>':' = <b>'+sum2%10+'</b>')+'<br>';
     steps2+='Tens: '+a2T+'+'+b2T+(ct2?'+1(carry)':'')+'='+tens2+(ch2?' → write <b>'+Math.floor((sum2%100)/10)+'</b>, carry <b>1</b>':' = <b>'+Math.floor((sum2%100)/10)+'</b>')+'<br>';
     steps2+='Hundreds: '+a2H+'+'+b2H+(ch2?'+1(carry)':'')+'= <b>'+Math.floor(sum2/100)+'</b>';
+    const wp=r(100,400),wp2r=r(100,400);
     return [
       {c:color, tag:'3-Digit Addition with Carrying',
        p:`${a} + ${b} = ?`, s:tableHtml+'<br>'+steps, a:`${a} + ${b} = ${sum} ✅`},
       {c:color, tag:'3-Digit Addition with Carrying',
        p:`${a2} + ${b2} = ?`, s:table2+'<br>'+steps2, a:`${a2} + ${b2} = ${sum2} ✅`},
+      {c:color, tag:'Word Problem',
+       p:`A school has ${wp} boys and ${wp2r} girls. How many students?`,
+       s:`Add: ${wp} + ${wp2r}\nLine up ones, tens, hundreds. Carry when a column is 10 or more.`,
+       a:`${wp} + ${wp2r} = ${wp+wp2r} students ✅`},
+      {c:color, tag:'Check with Estimation',
+       p:`${a} + ${b} = ${sum}. Does that make sense?`,
+       s:`Round: ${Math.round(a/100)*100} + ${Math.round(b/100)*100} = ${Math.round(a/100)*100+Math.round(b/100)*100}\nClose to ${sum}? Yes!`,
+       a:`Estimate ${Math.round(a/100)*100+Math.round(b/100)*100} is close to ${sum} ✅`},
     ];
   }
 
   if(lessonId==='u4l2'){
-    const a=r(400,900), b=r(100,a-100);
+    const a=r(400,900), b=r(100,a-100), diff=a-b;
+    const needsB=(a%10)<(b%10);
+    const a2=r(300,800), b2=r(100,a2-100), diff2=a2-b2;
     return [
       {c:color,tag:'3-Digit Subtraction',p:`${a} - ${b} = ?`,
-       s:`Start with ones, borrow if needed\nThen tens, then hundreds`,
-       a:`${a} - ${b} = ${a-b} ✅`},
+       s:`Start with ones${needsB?', borrow if needed':''}\nThen tens, then hundreds`,
+       a:`${a} - ${b} = ${diff} ✅`},
+      {c:color,tag:'3-Digit Subtraction',p:`${a2} - ${b2} = ?`,
+       s:`Ones: ${a2%10} - ${b2%10}${(a2%10)<(b2%10)?' → borrow!':''}\nTens: then subtract tens\nHundreds: subtract hundreds`,
+       a:`${a2} - ${b2} = ${diff2} ✅`},
+      {c:color,tag:'Word Problem',p:`A store had ${a} items. Sold ${b}. How many left?`,
+       s:`"How many left" → SUBTRACT\n${a} − ${b} = ${diff}`,a:`${diff} items left ✅`},
+      {c:color,tag:'Check with Addition',p:`Is ${a} - ${b} = ${diff}? Check!`,
+       s:`Add to check: ${diff} + ${b} = ${a}\nIt matches, so the answer is correct!`,a:`${diff} + ${b} = ${a} ✅`},
+      {c:color,tag:'Zeros in Subtraction',p:`${Math.ceil(a/100)*100} - ${b} = ?`,
+       s:`When there are zeros, you may need to borrow across columns`,
+       a:`${Math.ceil(a/100)*100} - ${b} = ${Math.ceil(a/100)*100-b} ✅`},
     ];
   }
 
   if(lessonId==='u4l3'){
     const a=r(100,900), b=r(100,900);
     const ar=Math.round(a/100)*100, br=Math.round(b/100)*100;
+    const c1v=r(100,900), c2v=r(100,900);
+    const c1r=Math.round(c1v/100)*100, c2r=Math.round(c2v/100)*100;
+    const t1=r(10,90), t2=r(10,90);
+    const t1r=Math.round(t1/10)*10, t2r=Math.round(t2/10)*10;
     return [
       {c:color,tag:'Estimate by Rounding',p:`Estimate ${a} + ${b}`,
        s:`Round ${a} → ${ar}\nRound ${b} → ${br}\n${ar} + ${br} = ${ar+br}`,
        a:`About ${ar+br} ✅`},
-      {c:color,tag:'Estimate',p:`Estimate ${Math.max(a,b)} - ${Math.min(a,b)}`,
-       s:`Round to nearest 100 and subtract`,
-       a:`About ${Math.round(Math.abs(a-b)/100)*100} ✅`},
+      {c:color,tag:'Estimate Subtraction',p:`Estimate ${Math.max(a,b)} - ${Math.min(a,b)}`,
+       s:`Round ${Math.max(a,b)} → ${Math.round(Math.max(a,b)/100)*100}\nRound ${Math.min(a,b)} → ${Math.round(Math.min(a,b)/100)*100}`,
+       a:`About ${Math.round(Math.max(a,b)/100)*100 - Math.round(Math.min(a,b)/100)*100} ✅`},
+      {c:color,tag:'Round to Nearest 100',p:`Round ${c1v} to the nearest hundred`,
+       s:`Look at the tens digit: ${Math.floor((c1v%100)/10)}\nIf 5 or more → round up. If less than 5 → round down.`,
+       a:`${c1v} rounds to ${c1r} ✅`},
+      {c:color,tag:'Round to Nearest 10',p:`Round ${t1} to the nearest ten`,
+       s:`Look at the ones digit: ${t1%10}\nIf 5 or more → round up. If less than 5 → round down.`,
+       a:`${t1} rounds to ${t1r} ✅`},
+      {c:color,tag:'Estimate a Sum',p:`About how much is ${c1v} + ${c2v}?`,
+       s:`Round each: ${c1r} + ${c2r} = ${c1r+c2r}\nEstimating helps check your exact answer!`,
+       a:`About ${c1r+c2r} ✅`},
     ];
   }
 
   if(lessonId==='u5l1'){
+    const coins=[{n:'penny',v:1},{n:'nickel',v:5},{n:'dime',v:10},{n:'quarter',v:25}];
+    const c1=coins[r(0,3)], c2=coins[r(0,3)];
     return [
       {c:color,tag:'Coin Values',p:'How much is each coin worth?',
        s:`Penny = 1¢\nNickel = 5¢\nDime = 10¢\nQuarter = 25¢`,a:'1¢, 5¢, 10¢, 25¢ ✅'},
+      {c:color,tag:'Coin Value',p:`How much is a ${c1.n} worth?`,
+       s:`A ${c1.n} = ${c1.v}¢`,a:`${c1.v}¢ ✅`},
+      {c:color,tag:'Compare Coins',p:`Which is worth more: a ${c1.n} or a ${c2.n}?`,
+       s:`${c1.n} = ${c1.v}¢, ${c2.n} = ${c2.v}¢`,a:`${c1.v>=c2.v?c1.n:c2.n} (${Math.max(c1.v,c2.v)}¢) ✅`},
+      {c:color,tag:'How Many?',p:`How many nickels make a quarter?`,
+       s:`Quarter = 25¢, Nickel = 5¢\n25 ÷ 5 = 5`,a:`5 nickels ✅`},
+      {c:color,tag:'Coin Match',p:`${r(2,4)} dimes = how many cents?`,
+       s:`Each dime = 10¢`,a:`${r(2,4)*10}¢ ✅`},
     ];
   }
 
   if(lessonId==='u5l2'){
-    const coins=[[25,'Q'],[10,'D'],[10,'D'],[5,'N'],[1,'P'],[1,'P']];
-    const pick=coins.slice(0,r(2,5));
-    const total=pick.reduce((s,c)=>s+c[0],0);
-    const coins2=[[25,'Q'],[25,'Q'],[10,'D'],[5,'N']];
-    const total2=coins2.reduce((s,c)=>s+c[0],0);
+    const allCoins=[[25,'Quarter'],[10,'Dime'],[5,'Nickel'],[1,'Penny']];
+    const pick1=[], pick2=[];
+    for(let i=0;i<r(3,5);i++) pick1.push(allCoins[r(0,3)]);
+    for(let i=0;i<r(3,5);i++) pick2.push(allCoins[r(0,3)]);
+    pick1.sort((a,b)=>b[0]-a[0]); pick2.sort((a,b)=>b[0]-a[0]);
+    const total1=pick1.reduce((s,c)=>s+c[0],0);
+    const total2=pick2.reduce((s,c)=>s+c[0],0);
     return [
-      {c:color,tag:'Count Coins',p:`Count: ${pick.map(c=>c[1]).join(', ')}`,
-       s:`Count biggest first:\n${pick.map((c,i)=>pick.slice(0,i+1).reduce((s,x)=>s+x[0],0)+'¢').join(' → ')}`,
-       a:`Total = ${total}¢ ✅`},
-      {c:color,tag:'Count Coins',p:`Count: Q, Q, D, N`,
-       s:`25 → 50 → 60 → 65`,a:`Total = ${total2}¢ ✅`},
+      {c:color,tag:'Count Coins',p:`Count: ${pick1.map(c=>c[1]).join(', ')}`,
+       s:`Count biggest first:\n${pick1.map((c,i)=>pick1.slice(0,i+1).reduce((s,x)=>s+x[0],0)+'¢').join(' → ')}`,
+       a:`Total = ${total1}¢ ✅`},
+      {c:color,tag:'Count Coins',p:`Count: ${pick2.map(c=>c[1]).join(', ')}`,
+       s:`Start with the largest coin and add:\n${pick2.map((c,i)=>pick2.slice(0,i+1).reduce((s,x)=>s+x[0],0)+'¢').join(' → ')}`,
+       a:`Total = ${total2}¢ ✅`},
+      {c:color,tag:'Count Coins',p:`2 quarters + 1 dime + 3 pennies = ?`,
+       s:`25+25=50, +10=60, +1+1+1=63`,a:`63¢ ✅`},
+      {c:color,tag:'Make an Amount',p:`Show 47¢ using the fewest coins`,
+       s:`1 quarter (25¢) + 2 dimes (20¢) + 2 pennies (2¢) = 47¢`,a:`Q, D, D, P, P = 47¢ ✅`},
+      {c:color,tag:'Compare Amounts',p:`Who has more: ${total1}¢ or ${total2}¢?`,
+       s:`Compare: ${total1}¢ vs ${total2}¢`,a:`${total1>=total2?total1:total2}¢ is more ✅`},
     ];
   }
 
   if(lessonId==='u5l3'){
-    const d=r(1,9), c2=r(1,99);
+    const d=r(1,9), c2=r(10,99);
     const amt=d*100+c2;
+    const d2=r(1,5), c3=r(10,99);
     return [
       {c:color,tag:'Dollars and Cents',p:`Write $${d}.${String(c2).padStart(2,'0')} as cents`,
        s:`$${d} = ${d*100}¢\n+ ${c2}¢ = ${amt}¢`,a:`${amt}¢ ✅`},
       {c:color,tag:'Making Change',p:`Item costs $${d}.${String(c2).padStart(2,'0')}. You pay $${d+1}.00. Change?`,
-       s:`${(d+1)*100} - ${amt} = ${(d+1)*100-amt}¢`,a:`${(d+1)*100-amt}¢ ✅`},
+       s:`${(d+1)*100} - ${amt} = ${(d+1)*100-amt}¢`,a:`${(d+1)*100-amt}¢ change ✅`},
+      {c:color,tag:'Cents to Dollars',p:`${d2*100+c3}¢ = how many dollars and cents?`,
+       s:`${d2*100+c3}¢ → $${d2}.${String(c3).padStart(2,'0')}\n100¢ = $1.00`,a:`$${d2}.${String(c3).padStart(2,'0')} ✅`},
+      {c:color,tag:'Add Money',p:`$${d}.${String(c2).padStart(2,'0')} + $${d2}.${String(c3).padStart(2,'0')} = ?`,
+       s:`Add cents: ${c2}+${c3}=${c2+c3}${c2+c3>=100?' (carry $1)':''}\nAdd dollars: ${d}+${d2}=${d+d2}`,
+       a:`$${((amt+d2*100+c3)/100).toFixed(2)} ✅`},
+      {c:color,tag:'Compare Prices',p:`Which costs more: $${d}.${String(c2).padStart(2,'0')} or $${d2}.${String(c3).padStart(2,'0')}?`,
+       s:`Compare dollars first, then cents`,a:`$${Math.max(amt,d2*100+c3)/100 === amt/100 ? d+'.'+String(c2).padStart(2,'0') : d2+'.'+String(c3).padStart(2,'0')} ✅`},
     ];
   }
 
   if(lessonId==='u5l4'){
+    const items=[{n:'new toy',t:'want'},{n:'food',t:'need'},{n:'warm coat',t:'need'},{n:'video game',t:'want'},{n:'water',t:'need'},{n:'candy',t:'want'}];
+    const it1=items[r(0,5)], it2=items[r(0,5)];
+    const sv=r(2,5), wk=r(3,8);
     return [
-      {c:color,tag:'Need vs Want',p:'Is food a NEED or a WANT?',s:'You cannot survive without food.',a:'NEED ✅'},
-      {c:color,tag:'Saving',p:`Save $${r(2,5)} per week for ${r(3,6)} weeks. Total?`,
-       s:`$${r(2,5)} × ${r(3,6)} weeks`,a:`Multiply to find total savings ✅`},
+      {c:color,tag:'Need vs Want',p:`Is a ${it1.n} a NEED or a WANT?`,
+       s:it1.t==='need'?'You cannot survive without this.':'This is nice to have, but not necessary to survive.',a:`${it1.t.toUpperCase()} ✅`},
+      {c:color,tag:'Need vs Want',p:`Is a ${it2.n} a NEED or a WANT?`,
+       s:it2.t==='need'?'You need this to live safely and healthy.':'You can live without this — it is a want.',a:`${it2.t.toUpperCase()} ✅`},
+      {c:color,tag:'Saving',p:`Save $${sv} per week for ${wk} weeks. Total?`,
+       s:`$${sv} × ${wk} = $${sv*wk}`,a:`$${sv*wk} saved ✅`},
+      {c:color,tag:'Spending Choice',p:`You have $${sv*wk}. A toy costs $${sv*wk-r(1,5)}. Can you buy it?`,
+       s:`Compare what you have to the price.\n$${sv*wk} is enough if the toy costs less.`,a:`Yes! ✅`},
+      {c:color,tag:'Earning and Saving',p:`You earn $${sv} and spend $${r(1,sv-1)}. How much do you save?`,
+       s:`Save = Earn − Spend\n$${sv} − $${r(1,sv-1)}`,a:`You save some for later! ✅`},
     ];
   }
 
@@ -847,10 +1074,16 @@ function generateExamples(lessonId, color){
     };
     const hdr=`<rect x="4" y="2" width="272" height="14" fill="#e8f4ff" rx="3"/><text x="8" y="12" font-size="7" fill="#333" font-weight="bold">Color</text><text x="55" y="12" font-size="7" fill="#333" font-weight="bold">Tally Marks</text><text x="272" y="12" text-anchor="end" font-size="7" fill="#333" font-weight="bold">Total</text>`;
     const chartSvg=`<svg width="280" height="124" viewBox="0 0 280 124" style="display:block;margin:8px auto;border-radius:8px;background:#f9f9f9">${hdr}${tallyRow(labels[0],counts[0],0)}${tallyRow(labels[1],counts[1],1)}${tallyRow(labels[2],counts[2],2)}</svg>`;
+    const total=counts[0]+counts[1]+counts[2];
+    const minI=counts.indexOf(Math.min(...counts));
     return [
       {c:color,tag:'Read Tally Chart',p:`${labels[0]}:${counts[0]}, ${labels[1]}:${counts[1]}, ${labels[2]}:${counts[2]}. Which has the most?`,
        s:chartSvg,
        a:`${labels[counts.indexOf(Math.max(...counts))]} = ${Math.max(...counts)} (most) ✅`},
+      {c:color,tag:'Tally Chart Total',p:`How many in all? Red:${counts[0]}, Blue:${counts[1]}, Green:${counts[2]}`,
+       s:`Add all: ${counts[0]}+${counts[1]}+${counts[2]}=${total}`,a:`${total} total ✅`},
+      {c:color,tag:'Tally Chart Compare',p:`How many more ${labels[counts.indexOf(Math.max(...counts))]} than ${labels[minI]}?`,
+       s:`${Math.max(...counts)} − ${Math.min(...counts)} = ${Math.max(...counts)-Math.min(...counts)}`,a:`${Math.max(...counts)-Math.min(...counts)} more ✅`},
     ];
   }
 
@@ -863,9 +1096,14 @@ function generateExamples(lessonId, color){
     for(let v=0;v<=8;v+=2){const y=108-v*10;yax+=`<line x1="27" y1="${y}" x2="30" y2="${y}" stroke="#555" stroke-width="1"/><text x="25" y="${y+3}" text-anchor="end" font-size="6" fill="#555">${v}</text>`;}
     for(let i=0;i<3;i++){const bh=vals[i]*10,bt=108-bh;bars+=`<rect x="${bxs[i]}" y="${bt}" width="40" height="${bh}" fill="${clrs[i]}" rx="2"/><text x="${bxs[i]+20}" y="117" text-anchor="middle" font-size="7" fill="#333">${labs[i]}</text><text x="${bxs[i]+20}" y="${bt-2}" text-anchor="middle" font-size="7" fill="#333">${vals[i]}</text>`;}
     const barSvg=`<svg width="520" height="312" viewBox="0 0 220 130" style="display:block;margin:8px auto;border-radius:8px;background:#f9f9f9"><text x="110" y="9" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">Pets Survey</text>${yax}${bars}</svg>`;
+    const total=vals[0]+vals[1]+vals[2];
     return [
       {c:color,tag:'Read Bar Graph',p:`Dogs:${vals[0]}, Cats:${vals[1]}, Fish:${vals[2]}. Most popular?`,
        s:barSvg,a:`${labs[vals.indexOf(Math.max(...vals))]} = ${Math.max(...vals)} (most) ✅`},
+      {c:color,tag:'Bar Graph Total',p:`How many pets in all?`,
+       s:`Add all bars: ${vals[0]}+${vals[1]}+${vals[2]}=${total}`,a:`${total} pets total ✅`},
+      {c:color,tag:'Bar Graph Compare',p:`How many more ${labs[vals.indexOf(Math.max(...vals))]} than ${labs[vals.indexOf(Math.min(...vals))]}?`,
+       s:`${Math.max(...vals)} − ${Math.min(...vals)} = ${Math.max(...vals)-Math.min(...vals)}`,a:`${Math.max(...vals)-Math.min(...vals)} more ✅`},
     ];
   }
 
@@ -875,9 +1113,16 @@ function generateExamples(lessonId, color){
     const sd=symData[r(0,3)];
     const picStr=sd.s.repeat(pics);
     const picSvg=`<svg width="500" height="144" viewBox="0 0 280 72" style="display:block;margin:6px auto;border-radius:6px;background:#f9f9f9"><rect x="4" y="2" width="272" height="15" fill="#e8f4ff" rx="3"/><text x="8" y="13" font-size="8" fill="#333" font-weight="bold">Key: ${sd.s} = ${key} ${sd.n}</text><line x1="4" y1="17" x2="276" y2="17" stroke="#ddd" stroke-width="1"/><text x="8" y="43" font-size="8" fill="#333" font-weight="bold">Sam</text><text x="65" y="47" font-size="16">${picStr}</text><line x1="4" y1="62" x2="276" y2="62" stroke="#ddd" stroke-width="1"/></svg>`;
+    const pics2=r(2,5);
     return [
       {c:color,tag:'Read Pictograph',p:`Key: ${sd.s} = ${key} ${sd.n}. Sam has ${pics} ${sd.s}. How many ${sd.n} total?`,
        s:picSvg,a:`${pics} × ${key} = ${pics*key} ${sd.n} ✅`},
+      {c:color,tag:'Pictograph Compare',p:`Sam has ${pics} ${sd.s} and Alex has ${pics2} ${sd.s}. Key: ${sd.s} = ${key}. Who has more?`,
+       s:`Sam: ${pics}×${key}=${pics*key}\nAlex: ${pics2}×${key}=${pics2*key}`,
+       a:`${pics>=pics2?'Sam':'Alex'} has more (${Math.max(pics*key,pics2*key)}) ✅`},
+      {c:color,tag:'Pictograph Total',p:`Sam: ${pics} ${sd.s}, Alex: ${pics2} ${sd.s}. Key: ${sd.s} = ${key}. Total?`,
+       s:`${pics}×${key} + ${pics2}×${key} = ${pics*key+pics2*key}`,
+       a:`${pics*key+pics2*key} ${sd.n} total ✅`},
     ];
   }
 
@@ -890,71 +1135,120 @@ function generateExamples(lessonId, color){
     for(let i=0;i<4;i++){marks+=`<line x1="${lxs[i]}" y1="83" x2="${lxs[i]}" y2="89" stroke="#555" stroke-width="1.5"/><text x="${lxs[i]}" y="99" text-anchor="middle" font-size="9" fill="#333">${vvals[i]}</text>`;for(let j=0;j<cnts[i];j++)marks+=`<text x="${lxs[i]}" y="${76-j*13}" text-anchor="middle" font-size="12" fill="#229954" font-weight="bold">×</text>`;}
     const lpSvg=`<svg width="400" height="216" viewBox="0 0 200 108" style="display:block;margin:8px auto;border-radius:8px;background:#f9f9f9"><text x="100" y="11" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">Survey Results</text><line x1="12" y1="86" x2="192" y2="86" stroke="#333" stroke-width="2"/>${marks}<text x="100" y="106" text-anchor="middle" font-size="7" fill="#888">Values</text></svg>`;
     const mi=cnts.indexOf(Math.max(...cnts));
+    const total=cnts.reduce((s,c)=>s+c,0);
     return [
       {c:color,tag:'Read Line Plot',p:`Which value has the most × marks?`,
        s:lpSvg,a:`Value ${vvals[mi]} has ${cnts[mi]} marks — the most! ✅`},
+      {c:color,tag:'Line Plot Total',p:`How many data points in all?`,
+       s:`Add all marks: ${cnts.join('+')} = ${total}`,a:`${total} data points ✅`},
+      {c:color,tag:'Line Plot Compare',p:`How many more × at ${vvals[mi]} than ${vvals[cnts.indexOf(Math.min(...cnts))]}?`,
+       s:`${Math.max(...cnts)} − ${Math.min(...cnts)} = ${Math.max(...cnts)-Math.min(...cnts)}`,a:`${Math.max(...cnts)-Math.min(...cnts)} more ✅`},
     ];
   }
 
   if(lessonId==='u7l1'){
     const len=r(2,30);
+    const len2=r(3,20), len3=r(3,20);
     return [
       {c:color,tag:'Measure Length',p:`A pencil ends at ${len} on the ruler. How long?`,
        s:`Always start at 0\nRead where it ends`,a:`${len} inches ✅`},
       {c:color,tag:'Compare',p:`Pencil: ${len} inches. Crayon: ${len+r(1,5)} inches. Which is longer?`,
-       s:`Compare: ${len} vs ${len+r(1,5)}`,a:`Crayon is longer ✅`},
+       s:`Compare the numbers: ${len} vs ${len+r(1,5)}`,a:`Crayon is longer ✅`},
+      {c:color,tag:'Add Lengths',p:`A ribbon is ${len2} inches. Another is ${len3} inches. Total length?`,
+       s:`Add: ${len2} + ${len3} = ${len2+len3}`,a:`${len2+len3} inches ✅`},
+      {c:color,tag:'How Much Longer?',p:`String A: ${Math.max(len2,len3)} in. String B: ${Math.min(len2,len3)} in. Difference?`,
+       s:`Subtract: ${Math.max(len2,len3)} − ${Math.min(len2,len3)} = ${Math.abs(len2-len3)}`,a:`${Math.abs(len2-len3)} inches longer ✅`},
+      {c:color,tag:'Choose a Unit',p:`Would you measure a desk in inches or feet?`,
+       s:`Small things → inches\nBigger things → feet\n1 foot = 12 inches`,a:`Feet ✅`},
     ];
   }
 
   if(lessonId==='u7l2'){
     const h=r(1,12), m=[0,15,30,45][r(0,3)];
     const mName={0:'on the hour',15:'quarter past',30:'half past',45:'quarter to '+(h%12+1)};
+    const h2=r(1,12), m2=[0,15,30,45][r(0,3)];
+    const hp=r(1,12);
     return [
       {c:color,tag:'Read a Clock',p:`What time does the clock show?`,
        s:`Short hand = hours → ${h}\nLong hand = minutes → ${m}`,
        a:`${h}:${String(m).padStart(2,'0')} (${mName[m]}) ✅`,vis:`clock:${h}:${m}`},
-      {c:color,tag:'Half Past',p:`Half past ${r(1,12)} means?`,
-       s:`Half past = 30 minutes after the hour`,a:`${r(1,12)}:30 ✅`},
+      {c:color,tag:'Read a Clock',p:`Hour hand at ${h2}, minute hand at ${m2}. Time?`,
+       s:`Short hand → ${h2}\nLong hand → ${m2}`,
+       a:`${h2}:${String(m2).padStart(2,'0')} ✅`},
+      {c:color,tag:'Half Past',p:`Half past ${hp} means?`,
+       s:`Half past = 30 minutes after the hour`,a:`${hp}:30 ✅`},
+      {c:color,tag:'Quarter Past',p:`Quarter past ${hp} means?`,
+       s:`Quarter past = 15 minutes after the hour`,a:`${hp}:15 ✅`},
+      {c:color,tag:'Elapsed Time',p:`Start at ${h}:00. Wait 30 minutes. What time?`,
+       s:`${h}:00 + 30 minutes = ${h}:30`,a:`${h}:30 ✅`},
     ];
   }
 
   if(lessonId==='u7l3'){
     const temp=r(20,100);
+    const cups=r(2,8);
     return [
       {c:color,tag:'Temperature',p:`It is ${temp}°F outside. What should you wear?`,
        s:`Below 40°F → heavy coat\n40-65°F → light jacket\nAbove 65°F → light clothes`,
        a:`${temp>65?'Light clothes':temp>40?'Light jacket':'Heavy coat'} ✅`},
       {c:color,tag:'Liquid Measurement',p:`2 cups = ? pints`,s:`2 cups = 1 pint`,a:`1 pint ✅`},
+      {c:color,tag:'Liquid Measurement',p:`${cups} cups = ? pints`,
+       s:`2 cups = 1 pint\n${cups} cups = ${cups} ÷ 2 = ${Math.floor(cups/2)} pint${Math.floor(cups/2)!==1?'s':''}${cups%2?' and 1 cup':''}`,
+       a:`${Math.floor(cups/2)} pint${Math.floor(cups/2)!==1?'s':''}${cups%2?' and 1 cup':''} ✅`},
+      {c:color,tag:'Weight',p:`Which is heavier: a feather or a book?`,
+       s:`A book is much heavier than a feather.\nWe measure weight in ounces and pounds.`,a:`A book ✅`},
+      {c:color,tag:'Choose a Tool',p:`To measure how hot soup is, use a ___`,
+       s:`Temperature → thermometer\nLength → ruler\nWeight → scale`,a:`Thermometer ✅`},
     ];
   }
 
   if(lessonId==='u8l1'){
     const denom=r(2,8), num=r(1,denom);
+    const d2=r(2,6), n2=r(1,d2);
     return [
       {c:color,tag:'Name a Fraction',p:`A shape is cut into ${denom} equal parts. ${num} are colored. Fraction?`,
        s:`Numerator (colored) = ${num}\nDenominator (total) = ${denom}`,a:`${num}/${denom} ✅`},
-      {c:color,tag:'Fraction',p:`What does 3/4 mean?`,
-       s:`3 = parts colored (numerator)\n4 = total equal parts (denominator)`,a:`3 out of 4 equal parts ✅`},
+      {c:color,tag:'Fraction Meaning',p:`What does ${n2}/${d2} mean?`,
+       s:`${n2} = parts colored (numerator)\n${d2} = total equal parts (denominator)`,a:`${n2} out of ${d2} equal parts ✅`},
+      {c:color,tag:'Name the Fraction',p:`A pizza has ${d2} slices. You eat ${n2}. What fraction did you eat?`,
+       s:`You ate ${n2} out of ${d2} slices`,a:`${n2}/${d2} ✅`},
+      {c:color,tag:'Whole and Parts',p:`If you color ALL ${denom} parts, what fraction?`,
+       s:`All parts colored = whole\n${denom}/${denom} = 1 whole`,a:`${denom}/${denom} = 1 whole ✅`},
+      {c:color,tag:'Unit Fraction',p:`What is a unit fraction?`,
+       s:`A fraction with 1 on top: 1/2, 1/3, 1/4...\nThe numerator is always 1`,a:`1 part out of the total ✅`},
     ];
   }
 
   if(lessonId==='u8l2'){
     const d=[2,4,8][r(0,2)];
+    const d2=[2,4,8][r(0,2)];
     return [
       {c:color,tag:'Halves, Fourths, Eighths',p:`A pie cut into ${d} equal parts. Each piece is?`,
        s:`1 out of ${d} equal parts`,a:`1/${d} ✅`},
       {c:color,tag:'Equal Parts',p:`4/8 = ?`,s:`4 out of 8 = half\n4/8 = 1/2`,a:`1/2 ✅`},
+      {c:color,tag:'Equivalent Fractions',p:`2/4 = ?`,s:`2 out of 4 = half\n2/4 = 1/2`,a:`1/2 ✅`},
+      {c:color,tag:'Parts of a Whole',p:`A shape has ${d2} equal parts. You color ${d2/2}. What fraction?`,
+       s:`${d2/2} out of ${d2} parts = half`,a:`${d2/2}/${d2} = 1/2 ✅`},
+      {c:color,tag:'Real Life',p:`You cut a sandwich into 4 pieces and eat 1. What fraction is left?`,
+       s:`Ate 1/4, so 4/4 − 1/4 = 3/4 left`,a:`3/4 left ✅`},
     ];
   }
 
   if(lessonId==='u8l3'){
     const d=4, n1=r(1,3), n2=r(1,3);
     const [lo,hi]=[Math.min(n1,n2),Math.max(n1,n2)];
+    const d2=[3,6,8][r(0,2)], na=r(1,d2-1), nb=r(1,d2-1);
     return [
       {c:color,tag:'Compare Fractions',p:`Which is larger: ${lo}/${d} or ${hi}/${d}?`,
        s:`Same denominator → compare numerators\n${lo} < ${hi}`,a:`${hi}/${d} is larger ✅`},
       {c:color,tag:'Compare',p:`Which is larger: 1/2 or 1/4?`,
        s:`Same numerator → smaller denominator = bigger piece\n2 < 4, so 1/2 > 1/4`,a:`1/2 is larger ✅`},
+      {c:color,tag:'Compare Same Denominator',p:`${Math.min(na,nb)}/${d2} ___ ${Math.max(na,nb)}/${d2}`,
+       s:`Same denominator (${d2}), so compare tops:\n${Math.min(na,nb)} < ${Math.max(na,nb)}`,a:`${Math.min(na,nb)}/${d2} < ${Math.max(na,nb)}/${d2} ✅`},
+      {c:color,tag:'Compare to 1/2',p:`Is ${r(1,3)}/8 more or less than 1/2?`,
+       s:`1/2 = 4/8. Compare numerators.`,a:`Less than 1/2 ✅`},
+      {c:color,tag:'Order Fractions',p:`Put in order: 3/4, 1/4, 2/4`,
+       s:`Same denominator → order numerators: 1 < 2 < 3`,a:`1/4, 2/4, 3/4 ✅`},
     ];
   }
 
@@ -962,64 +1256,114 @@ function generateExamples(lessonId, color){
     const shapes=[{n:'Triangle',s:3},{n:'Square',s:4},{n:'Pentagon',s:5},{n:'Hexagon',s:6}];
     const sh=shapes[r(0,3)];
     const sh2=shapes[r(0,3)];
+    const sh3=shapes[r(0,3)];
     return [
       {c:color,tag:'Identify Shape',p:`A shape has ${sh.s} sides and ${sh.s} corners. Name it.`,
        s:`Count sides: ${sh.s}\nCount corners: ${sh.s}`,a:`${sh.n} ✅`},
       {c:color,tag:'Compare Shapes',p:`${sh.n} has ${sh.s} sides. ${sh2.n} has ${sh2.s} sides. More sides?`,
        s:`${sh.s} vs ${sh2.s}`,a:`${sh.s>sh2.s?sh.n:sh2.n} has more sides ✅`},
+      {c:color,tag:'Shape Properties',p:`How many sides does a ${sh3.n} have?`,
+       s:`Count each straight edge`,a:`${sh3.s} sides ✅`},
+      {c:color,tag:'Real World Shapes',p:`A stop sign is what shape?`,
+       s:`Count the sides: 8 sides\n8 sides = octagon`,a:`Octagon ✅`},
+      {c:color,tag:'Sides and Corners',p:`Does a ${sh.n} have more sides or corners?`,
+       s:`Every shape has the same number of sides and corners!`,a:`Same: ${sh.s} of each ✅`},
     ];
   }
 
   if(lessonId==='u9l2'){
-    const solids=[{n:'Cube',f:6,v:8,e:12},{n:'Sphere',f:1,v:0,e:0},{n:'Cone',f:2,v:1,e:1}];
-    const sol=solids[r(0,2)];
+    const solids=[{n:'Cube',f:6,v:8,e:12},{n:'Sphere',f:1,v:0,e:0},{n:'Cone',f:2,v:1,e:1},{n:'Cylinder',f:3,v:0,e:2},{n:'Rectangular Prism',f:6,v:8,e:12}];
+    const sol=solids[r(0,4)];
+    const sol2=solids[r(0,4)];
+    const realWorld=[{obj:'soup can',shape:'Cylinder'},{obj:'dice',shape:'Cube'},{obj:'ice cream cone',shape:'Cone'},{obj:'basketball',shape:'Sphere'},{obj:'cereal box',shape:'Rectangular Prism'}];
+    const rw=realWorld[r(0,4)];
     return [
       {c:color,tag:'3D Shape',p:`A ${sol.n} has how many faces?`,
-       s:`Count the flat faces`,a:`${sol.f} face${sol.f!==1?'s':''} ✅`},
-      {c:color,tag:'Real World',p:`A soup can looks like which 3D shape?`,s:`Round, 2 flat ends`,a:`Cylinder ✅`},
+       s:`Count the flat surfaces`,a:`${sol.f} face${sol.f!==1?'s':''} ✅`},
+      {c:color,tag:'3D Shape Properties',p:`A ${sol2.n}: faces? edges? vertices?`,
+       s:`Faces (flat): ${sol2.f}\nEdges (where faces meet): ${sol2.e}\nVertices (corners): ${sol2.v}`,
+       a:`${sol2.f} faces, ${sol2.e} edges, ${sol2.v} vertices ✅`},
+      {c:color,tag:'Real World',p:`A ${rw.obj} looks like which 3D shape?`,
+       s:`Think about its shape: flat? round? pointy?`,a:`${rw.shape} ✅`},
+      {c:color,tag:'Compare 3D Shapes',p:`Can a ${sol.n} roll?`,
+       s:`Shapes with curved surfaces can roll.\nFlat surfaces = slide, don't roll.`,
+       a:`${sol.f<=2||sol.n==='Sphere'||sol.n==='Cylinder'?'Yes':'No'}! ✅`},
     ];
   }
 
   if(lessonId==='u9l3'){
+    const symShapes=[{n:'square',l:4},{n:'circle',l:'unlimited'},{n:'rectangle',l:2},{n:'triangle (equilateral)',l:3}];
+    const ss=symShapes[r(0,3)];
+    const ss2=symShapes[r(0,3)];
     return [
-      {c:color,tag:'Line of Symmetry',p:`Does a square have a line of symmetry?`,
-       s:`Fold it — do both halves match?\nSquare has 4 lines of symmetry`,a:`Yes! ✅`},
-      {c:color,tag:'Symmetry',p:`How many lines of symmetry does a circle have?`,
-       s:`A circle is the same all the way around`,a:`Unlimited! ✅`},
+      {c:color,tag:'Line of Symmetry',p:`Does a ${ss.n} have a line of symmetry?`,
+       s:`Fold it — do both halves match?\nA ${ss.n} has ${ss.l} line${ss.l!==1?'s':''} of symmetry`,a:`Yes! ${ss.l} line${ss.l!==1?'s':''} ✅`},
+      {c:color,tag:'Symmetry Count',p:`How many lines of symmetry does a ${ss2.n} have?`,
+       s:`A line of symmetry divides a shape into two matching halves`,a:`${ss2.l} ✅`},
+      {c:color,tag:'Symmetry Check',p:`Is a line down the middle of the letter A a line of symmetry?`,
+       s:`Fold the A in half vertically — both sides match!`,a:`Yes! ✅`},
+      {c:color,tag:'Draw Symmetry',p:`Where would you draw a line of symmetry on a heart?`,
+       s:`Down the middle, from top to bottom\nBoth halves are mirror images`,a:`Vertical line down the center ✅`},
+      {c:color,tag:'Not Symmetric',p:`Does the letter F have a line of symmetry?`,
+       s:`Try folding — no fold makes matching halves`,a:`No! ✅`},
     ];
   }
 
   if(lessonId==='u10l1'){
     const g=r(2,5), n=r(2,6);
+    const g2=r(2,4), n2=r(2,5);
+    const g3=r(3,5), n3=r(2,6);
     return [
       {c:color,tag:'Equal Groups',p:`${g} groups of ${n}. How many total?`,
        s:`${Array(g).fill(n).join(' + ')} = ${g*n}`,a:`${g*n} ✅`,vis:`groups:${emoji}:${g}:${n}`},
       {c:color,tag:'Array',p:`An array has ${g} rows and ${n} columns. Total?`,
        s:`${g} rows × ${n} columns = ${g*n}`,a:`${g*n} ✅`},
+      {c:color,tag:'Equal Groups',p:`${g2} bags with ${n2} apples each. Total apples?`,
+       s:`${g2} groups of ${n2}: ${Array(g2).fill(n2).join(' + ')} = ${g2*n2}`,a:`${g2*n2} apples ✅`,vis:`groups:${emoji}:${g2}:${n2}`},
+      {c:color,tag:'Array Word Problem',p:`${g3} rows of ${n3} chairs. How many chairs?`,
+       s:`${g3} × ${n3} = ${g3*n3}\nRows × columns = total`,a:`${g3*n3} chairs ✅`},
+      {c:color,tag:'Draw an Array',p:`Show 3 × 4 as an array`,
+       s:`3 rows, 4 in each row:\n• • • •\n• • • •\n• • • •`,a:`3 × 4 = 12 ✅`},
     ];
   }
 
   if(lessonId==='u10l2'){
     const n=r(2,6), t=r(2,5);
+    const n2=r(2,5), t2=r(3,6);
+    const n3=r(2,9), t3=r(2,5);
     return [
       {c:color,tag:'Repeated Addition',p:`${n} added ${t} times = ?`,
        s:`${Array(t).fill(n).join(' + ')} = ${n*t}`,a:`${n*t} ✅`},
       {c:color,tag:'Skip Count',p:`Skip count by ${n}: ${Array(t).fill(0).map((_,i)=>(i+1)*n).join(', ')}`,
        s:`Each jump adds ${n}`,a:`${n*t} after ${t} jumps ✅`},
+      {c:color,tag:'Repeated Addition',p:`${n2} + ${n2} + ${n2} + ${n2} = ?`,
+       s:`${n2} added 4 times = ${n2} × 4 = ${n2*4}`,a:`${n2*4} ✅`},
+      {c:color,tag:'Multiplication as Skip Counting',p:`Skip count by ${n3}s, ${t3} times`,
+       s:`${Array(t3).fill(0).map((_,i)=>(i+1)*n3).join(', ')}`,a:`${n3*t3} ✅`},
+      {c:color,tag:'Word Problem',p:`${t2} friends each bring ${n2} cookies. Total cookies?`,
+       s:`${n2} + ${n2} repeated ${t2} times = ${n2} × ${t2} = ${n2*t2}`,a:`${n2*t2} cookies ✅`},
     ];
   }
 
   if(lessonId==='u10l3'){
-    const total=r(2,5)*r(2,5), by=r(2,5);
-    const safe=by>0?Math.floor(total/by)*by:total;
+    const by=r(2,5), each=r(2,5), total=by*each;
+    const by2=r(2,5), each2=r(2,5), total2=by2*each2;
+    const by3=r(2,4), each3=r(2,6), total3=by3*each3;
     return [
-      {c:color,tag:'Sharing Equally',p:`${safe} items shared between ${by} friends. Each gets?`,
-       s:`${safe} ÷ ${by} = ?\nThink: ${by} × ? = ${safe}`,a:`${safe/by} each ✅`},
-      {c:color,tag:'Division',p:`${r(2,5)*4} ÷ 4 = ?`,s:`Think: 4 × ? = ${r(2,5)*4}`,a:`${r(2,5)} ✅`},
+      {c:color,tag:'Sharing Equally',p:`${total} items shared between ${by} friends. Each gets?`,
+       s:`${total} ÷ ${by} = ?\nThink: ${by} × ? = ${total}`,a:`${each} each ✅`},
+      {c:color,tag:'Division',p:`${total2} ÷ ${by2} = ?`,
+       s:`Think: ${by2} × ? = ${total2}\n${by2} × ${each2} = ${total2}`,a:`${each2} ✅`},
+      {c:color,tag:'Division Word Problem',p:`${total3} stickers shared equally among ${by3} kids. How many each?`,
+       s:`${total3} ÷ ${by3} = ${each3}`,a:`${each3} stickers each ✅`},
+      {c:color,tag:'Relate to Multiplication',p:`If ${by} × ${each} = ${total}, then ${total} ÷ ${by} = ?`,
+       s:`Division is the opposite of multiplication!\n${total} ÷ ${by} = ${each}`,a:`${each} ✅`},
+      {c:color,tag:'Equal Groups (Division)',p:`${total2} apples in groups of ${each2}. How many groups?`,
+       s:`${total2} ÷ ${each2} = ${by2} groups`,a:`${by2} groups ✅`},
     ];
   }
 
-  return null; // no generator for this lesson — keep original
+  return null;
 }
 
 // ════════════════════════════════════════
@@ -1420,9 +1764,12 @@ function _renderLesson(unitIdx, lessonIdx){
         onclick="refreshExamples(${unitIdx},${lessonIdx})">✨ New Examples</button>
     </div>
     <div class="ex-list" id="ex-list" data-ex-idx="1">`;
-  l.examples.slice(0,1).forEach((ex, i) => {
-    html += renderEx(ex, i);
-  });
+  // Prefer dynamic generator for fresh examples on every lesson open
+  // Show 1 example initially: prefer first static (curated), fallback to dynamic
+  const _initEx = (l.examples && l.examples.length)
+    ? l.examples[0]
+    : (generateExamples(l.id, u.color) || [])[0];
+  if(_initEx) html += renderEx(_initEx, 0);
   html += `</div></div>`;
 
   // Practice section — interactive MC drills from qBank (no score, no timer)
