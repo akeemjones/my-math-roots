@@ -1042,6 +1042,8 @@ function generateExamples(lessonId, color){
     const items=[{n:'new toy',t:'want'},{n:'food',t:'need'},{n:'warm coat',t:'need'},{n:'video game',t:'want'},{n:'water',t:'need'},{n:'candy',t:'want'}];
     const it1=items[r(0,5)], it2=items[r(0,5)];
     const sv=r(2,5), wk=r(3,8);
+    const toyPrice=r(sv*wk-3,sv*wk+3);
+    const spent=r(1,sv-1);
     return [
       {c:color,tag:'Need vs Want',p:`Is a ${it1.n} a NEED or a WANT?`,
        s:it1.t==='need'?'You cannot survive without this.':'This is nice to have, but not necessary to survive.',a:`${it1.t.toUpperCase()} ✅`},
@@ -1049,10 +1051,11 @@ function generateExamples(lessonId, color){
        s:it2.t==='need'?'You need this to live safely and healthy.':'You can live without this — it is a want.',a:`${it2.t.toUpperCase()} ✅`},
       {c:color,tag:'Saving',p:`Save $${sv} per week for ${wk} weeks. Total?`,
        s:`$${sv} × ${wk} = $${sv*wk}`,a:`$${sv*wk} saved ✅`},
-      {c:color,tag:'Spending Choice',p:`You have $${sv*wk}. A toy costs $${sv*wk-r(1,5)}. Can you buy it?`,
-       s:`Compare what you have to the price.\n$${sv*wk} is enough if the toy costs less.`,a:`Yes! ✅`},
-      {c:color,tag:'Earning and Saving',p:`You earn $${sv} and spend $${r(1,sv-1)}. How much do you save?`,
-       s:`Save = Earn − Spend\n$${sv} − $${r(1,sv-1)}`,a:`You save some for later! ✅`},
+      {c:color,tag:'Spending Choice',p:`You have $${sv*wk}. A toy costs $${toyPrice}. Can you buy it?`,
+       s:`Compare: you have $${sv*wk}, toy costs $${toyPrice}\n${toyPrice<=sv*wk?'$'+sv*wk+' ≥ $'+toyPrice+' → yes!':'$'+sv*wk+' < $'+toyPrice+' → not enough.'}`,
+       a:`${toyPrice<=sv*wk?'Yes':'No'}! ✅`},
+      {c:color,tag:'Earning and Saving',p:`You earn $${sv} and spend $${spent}. How much do you save?`,
+       s:`Save = Earn − Spend\n$${sv} − $${spent} = $${sv-spent}`,a:`$${sv-spent} saved ✅`},
     ];
   }
 
@@ -1076,14 +1079,28 @@ function generateExamples(lessonId, color){
     const chartSvg=`<svg width="280" height="124" viewBox="0 0 280 124" style="display:block;margin:8px auto;border-radius:8px;background:#f9f9f9">${hdr}${tallyRow(labels[0],counts[0],0)}${tallyRow(labels[1],counts[1],1)}${tallyRow(labels[2],counts[2],2)}</svg>`;
     const total=counts[0]+counts[1]+counts[2];
     const minI=counts.indexOf(Math.min(...counts));
+    const readMarksN=r(3,14);
+    const rmFull=Math.floor(readMarksN/5),rmRem=readMarksN%5;
+    const rmSK='stroke="#555" stroke-width="2" stroke-linecap="round"';
+    let rmLines='';
+    for(let g=0;g<rmFull;g++){const sx=12+g*44;for(let k=0;k<4;k++)rmLines+=`<line x1="${sx+k*9}" y1="8" x2="${sx+k*9}" y2="28" ${rmSK}/>`;rmLines+=`<line x1="${sx-2}" y1="28" x2="${sx+28}" y2="8" ${rmSK}/>`;}
+    for(let j=0;j<rmRem;j++){const sx=12+rmFull*44;rmLines+=`<line x1="${sx+j*9}" y1="8" x2="${sx+j*9}" y2="28" ${rmSK}/>`;}
+    const rmW=Math.max(60,12+rmFull*44+(rmRem>0?rmRem*9+16:0));
+    const readMarksSvg=`<svg width="${rmW*2}" height="80" viewBox="0 0 ${rmW} 40" style="display:block;margin:8px auto;border-radius:6px;background:#f9f9f9">${rmLines}<text x="${rmW/2}" y="38" text-anchor="middle" font-size="8" fill="#555">${readMarksN} marks total</text></svg>`;
     return [
       {c:color,tag:'Read Tally Chart',p:`${labels[0]}:${counts[0]}, ${labels[1]}:${counts[1]}, ${labels[2]}:${counts[2]}. Which has the most?`,
        s:chartSvg,
        a:`${labels[counts.indexOf(Math.max(...counts))]} = ${Math.max(...counts)} (most) ✅`},
       {c:color,tag:'Tally Chart Total',p:`How many in all? Red:${counts[0]}, Blue:${counts[1]}, Green:${counts[2]}`,
-       s:`Add all: ${counts[0]}+${counts[1]}+${counts[2]}=${total}`,a:`${total} total ✅`},
+       s:chartSvg,a:`${counts[0]}+${counts[1]}+${counts[2]} = ${total} total ✅`},
       {c:color,tag:'Tally Chart Compare',p:`How many more ${labels[counts.indexOf(Math.max(...counts))]} than ${labels[minI]}?`,
-       s:`${Math.max(...counts)} − ${Math.min(...counts)} = ${Math.max(...counts)-Math.min(...counts)}`,a:`${Math.max(...counts)-Math.min(...counts)} more ✅`},
+       s:chartSvg,a:`${Math.max(...counts)} − ${Math.min(...counts)} = ${Math.max(...counts)-Math.min(...counts)} more ✅`},
+      {c:color,tag:'Least Popular',p:`${labels[0]}:${counts[0]}, ${labels[1]}:${counts[1]}, ${labels[2]}:${counts[2]}. Which has the fewest?`,
+       s:chartSvg,
+       a:`${labels[minI]} = ${Math.min(...counts)} (fewest) ✅`},
+      {c:color,tag:'Read the Marks',p:`A group has ${readMarksN} tally marks. How do you count them?`,
+       s:readMarksSvg,
+       a:`Count groups of 5, then add leftover singles (${rmFull} group${rmFull!==1?'s':''} of 5 + ${rmRem} extra = ${readMarksN}) ✅`},
     ];
   }
 
@@ -1101,9 +1118,14 @@ function generateExamples(lessonId, color){
       {c:color,tag:'Read Bar Graph',p:`Dogs:${vals[0]}, Cats:${vals[1]}, Fish:${vals[2]}. Most popular?`,
        s:barSvg,a:`${labs[vals.indexOf(Math.max(...vals))]} = ${Math.max(...vals)} (most) ✅`},
       {c:color,tag:'Bar Graph Total',p:`How many pets in all?`,
-       s:`Add all bars: ${vals[0]}+${vals[1]}+${vals[2]}=${total}`,a:`${total} pets total ✅`},
+       s:barSvg,a:`${vals[0]}+${vals[1]}+${vals[2]} = ${total} pets total ✅`},
       {c:color,tag:'Bar Graph Compare',p:`How many more ${labs[vals.indexOf(Math.max(...vals))]} than ${labs[vals.indexOf(Math.min(...vals))]}?`,
-       s:`${Math.max(...vals)} − ${Math.min(...vals)} = ${Math.max(...vals)-Math.min(...vals)}`,a:`${Math.max(...vals)-Math.min(...vals)} more ✅`},
+       s:barSvg,a:`${Math.max(...vals)} − ${Math.min(...vals)} = ${Math.max(...vals)-Math.min(...vals)} more ✅`},
+      {c:color,tag:'Least Popular',p:`Dogs:${vals[0]}, Cats:${vals[1]}, Fish:${vals[2]}. Which is least popular?`,
+       s:barSvg,a:`${labs[vals.indexOf(Math.min(...vals))]} = ${Math.min(...vals)} (fewest) ✅`},
+      {c:color,tag:'Bar Graph Difference',p:`How many more ${labs[1]} than ${labs[2]}?`,
+       s:barSvg,
+       a:`${vals[1]} − ${vals[2]} = ${Math.abs(vals[1]-vals[2])} → ${Math.abs(vals[1]-vals[2])} ${vals[1]>=vals[2]?'more':'fewer'} Cats than Fish ✅`},
     ];
   }
 
@@ -1114,15 +1136,31 @@ function generateExamples(lessonId, color){
     const picStr=sd.s.repeat(pics);
     const picSvg=`<svg width="500" height="144" viewBox="0 0 280 72" style="display:block;margin:6px auto;border-radius:6px;background:#f9f9f9"><rect x="4" y="2" width="272" height="15" fill="#e8f4ff" rx="3"/><text x="8" y="13" font-size="8" fill="#333" font-weight="bold">Key: ${sd.s} = ${key} ${sd.n}</text><line x1="4" y1="17" x2="276" y2="17" stroke="#ddd" stroke-width="1"/><text x="8" y="43" font-size="8" fill="#333" font-weight="bold">Sam</text><text x="65" y="47" font-size="16">${picStr}</text><line x1="4" y1="62" x2="276" y2="62" stroke="#ddd" stroke-width="1"/></svg>`;
     const pics2=r(2,5);
+    const pics3=r(2,5);
+    const picStr2=sd.s.repeat(pics2);
+    const picStr3=sd.s.repeat(pics3);
+    const twoSvg=`<svg width="500" height="144" viewBox="0 0 280 72" style="display:block;margin:6px auto;border-radius:6px;background:#f9f9f9"><rect x="4" y="2" width="272" height="15" fill="#e8f4ff" rx="3"/><text x="8" y="13" font-size="8" fill="#333" font-weight="bold">Key: ${sd.s} = ${key} ${sd.n}</text><line x1="4" y1="17" x2="276" y2="17" stroke="#ddd" stroke-width="1"/><text x="8" y="35" font-size="8" fill="#333" font-weight="bold">Sam</text><text x="65" y="39" font-size="14">${picStr}</text><line x1="4" y1="45" x2="276" y2="45" stroke="#ddd" stroke-width="0.5"/><text x="8" y="61" font-size="8" fill="#333" font-weight="bold">Alex</text><text x="65" y="65" font-size="14">${picStr2}</text><line x1="4" y1="71" x2="276" y2="71" stroke="#ddd" stroke-width="0.5"/></svg>`;
+    const invAmt=r(2,6)*key;
+    const threeNames=['Sam','Alex','Jordan'];
+    const threePics=[pics,pics2,pics3];
+    const threeTotals=threePics.map(p=>p*key);
+    const threeMaxI=threeTotals.indexOf(Math.max(...threeTotals));
+    const threeSvg=`<svg width="500" height="200" viewBox="0 0 280 100" style="display:block;margin:6px auto;border-radius:6px;background:#f9f9f9"><rect x="4" y="2" width="272" height="15" fill="#e8f4ff" rx="3"/><text x="8" y="13" font-size="8" fill="#333" font-weight="bold">Key: ${sd.s} = ${key} ${sd.n}</text><line x1="4" y1="17" x2="276" y2="17" stroke="#ddd" stroke-width="1"/><text x="8" y="35" font-size="8" fill="#333" font-weight="bold">Sam</text><text x="65" y="39" font-size="14">${picStr}</text><line x1="4" y1="45" x2="276" y2="45" stroke="#ddd" stroke-width="0.5"/><text x="8" y="61" font-size="8" fill="#333" font-weight="bold">Alex</text><text x="65" y="65" font-size="14">${picStr2}</text><line x1="4" y1="71" x2="276" y2="71" stroke="#ddd" stroke-width="0.5"/><text x="8" y="87" font-size="8" fill="#333" font-weight="bold">Jordan</text><text x="65" y="91" font-size="14">${picStr3}</text><line x1="4" y1="97" x2="276" y2="97" stroke="#ddd" stroke-width="0.5"/></svg>`;
     return [
       {c:color,tag:'Read Pictograph',p:`Key: ${sd.s} = ${key} ${sd.n}. Sam has ${pics} ${sd.s}. How many ${sd.n} total?`,
        s:picSvg,a:`${pics} × ${key} = ${pics*key} ${sd.n} ✅`},
       {c:color,tag:'Pictograph Compare',p:`Sam has ${pics} ${sd.s} and Alex has ${pics2} ${sd.s}. Key: ${sd.s} = ${key}. Who has more?`,
-       s:`Sam: ${pics}×${key}=${pics*key}\nAlex: ${pics2}×${key}=${pics2*key}`,
-       a:`${pics>=pics2?'Sam':'Alex'} has more (${Math.max(pics*key,pics2*key)}) ✅`},
+       s:twoSvg,
+       a:`Sam: ${pics}×${key}=${pics*key} | Alex: ${pics2}×${key}=${pics2*key} → ${pics>=pics2?'Sam':'Alex'} has more ✅`},
       {c:color,tag:'Pictograph Total',p:`Sam: ${pics} ${sd.s}, Alex: ${pics2} ${sd.s}. Key: ${sd.s} = ${key}. Total?`,
-       s:`${pics}×${key} + ${pics2}×${key} = ${pics*key+pics2*key}`,
-       a:`${pics*key+pics2*key} ${sd.n} total ✅`},
+       s:twoSvg,
+       a:`${pics}×${key} + ${pics2}×${key} = ${pics*key+pics2*key} ${sd.n} total ✅`},
+      {c:color,tag:'Pictograph Inverse',p:`Key: ${sd.s} = ${key} ${sd.n}. How many ${sd.s} represent ${invAmt} ${sd.n}?`,
+       s:picSvg,
+       a:`${invAmt} ÷ ${key} = ${invAmt/key} → ${invAmt/key} ${sd.s} symbols ✅`},
+      {c:color,tag:'Three Students',p:`Sam: ${pics} ${sd.s}, Alex: ${pics2} ${sd.s}, Jordan: ${pics3} ${sd.s}. Key: ${sd.s} = ${key}. Who has most?`,
+       s:threeSvg,
+       a:`${threeNames[threeMaxI]} has the most (${Math.max(...threeTotals)}) ✅`},
     ];
   }
 
@@ -1140,9 +1178,15 @@ function generateExamples(lessonId, color){
       {c:color,tag:'Read Line Plot',p:`Which value has the most × marks?`,
        s:lpSvg,a:`Value ${vvals[mi]} has ${cnts[mi]} marks — the most! ✅`},
       {c:color,tag:'Line Plot Total',p:`How many data points in all?`,
-       s:`Add all marks: ${cnts.join('+')} = ${total}`,a:`${total} data points ✅`},
+       s:lpSvg,a:`${cnts.join('+')} = ${total} data points ✅`},
       {c:color,tag:'Line Plot Compare',p:`How many more × at ${vvals[mi]} than ${vvals[cnts.indexOf(Math.min(...cnts))]}?`,
-       s:`${Math.max(...cnts)} − ${Math.min(...cnts)} = ${Math.max(...cnts)-Math.min(...cnts)}`,a:`${Math.max(...cnts)-Math.min(...cnts)} more ✅`},
+       s:lpSvg,a:`${Math.max(...cnts)} − ${Math.min(...cnts)} = ${Math.max(...cnts)-Math.min(...cnts)} more ✅`},
+      {c:color,tag:'Find the Range',p:`The line plot shows values from ${vvals[0]} to ${vvals[3]}. What is the range?`,
+       s:lpSvg,
+       a:`Range = greatest − least: ${vvals[3]} − ${vvals[0]} = ${vvals[3]-vvals[0]} ✅`},
+      {c:color,tag:'Least Common',p:`Which value has the fewest × marks?`,
+       s:lpSvg,
+       a:`Value ${vvals[cnts.indexOf(Math.min(...cnts))]} has ${Math.min(...cnts)} mark${Math.min(...cnts)!==1?'s':''} — the fewest! ✅`},
     ];
   }
 
@@ -1186,17 +1230,30 @@ function generateExamples(lessonId, color){
 
   if(lessonId==='u7l3'){
     const temp=r(20,100);
+    const temp2=r(20,100);
     const cups=r(2,8);
+    const pints=r(2,6);
+    const quarts=r(2,4);
+    const convTypes=[
+      {q:`${cups*2} cups = ? pints`,s:`2 cups = 1 pint\n${cups*2} ÷ 2 = ${cups}`,a:`${cups} pint${cups!==1?'s':''} ✅`},
+      {q:`${pints} pints = ? cups`,s:`1 pint = 2 cups\n${pints} × 2 = ${pints*2}`,a:`${pints*2} cups ✅`},
+      {q:`${quarts} quarts = ? pints`,s:`1 quart = 2 pints\n${quarts} × 2 = ${quarts*2}`,a:`${quarts*2} pints ✅`},
+    ];
+    const conv=convTypes[r(0,2)];
+    const conv2=convTypes[r(0,2)];
+    const wItems=[{h:'bowling ball',l:'cotton ball'},{h:'brick',l:'feather'},{h:'dictionary',l:'tissue'},{h:'watermelon',l:'pencil'}];
+    const wi=wItems[r(0,3)];
     return [
       {c:color,tag:'Temperature',p:`It is ${temp}°F outside. What should you wear?`,
-       s:`Below 40°F → heavy coat\n40-65°F → light jacket\nAbove 65°F → light clothes`,
+       s:`Below 40°F → heavy coat\n40–65°F → light jacket\nAbove 65°F → light clothes`,
        a:`${temp>65?'Light clothes':temp>40?'Light jacket':'Heavy coat'} ✅`},
-      {c:color,tag:'Liquid Measurement',p:`2 cups = ? pints`,s:`2 cups = 1 pint`,a:`1 pint ✅`},
-      {c:color,tag:'Liquid Measurement',p:`${cups} cups = ? pints`,
-       s:`2 cups = 1 pint\n${cups} cups = ${cups} ÷ 2 = ${Math.floor(cups/2)} pint${Math.floor(cups/2)!==1?'s':''}${cups%2?' and 1 cup':''}`,
-       a:`${Math.floor(cups/2)} pint${Math.floor(cups/2)!==1?'s':''}${cups%2?' and 1 cup':''} ✅`},
-      {c:color,tag:'Weight',p:`Which is heavier: a feather or a book?`,
-       s:`A book is much heavier than a feather.\nWe measure weight in ounces and pounds.`,a:`A book ✅`},
+      {c:color,tag:'Temperature',p:`It is ${temp2}°F. Is it hot, warm, or cold?`,
+       s:`Below 32°F → freezing\n32–59°F → cold\n60–79°F → warm\n80°F+ → hot`,
+       a:`${temp2>=80?'Hot':temp2>=60?'Warm':temp2>=32?'Cold':'Freezing'} ✅`},
+      {c:color,tag:'Liquid Measurement',p:conv.q,s:conv.s,a:conv.a},
+      {c:color,tag:'Liquid Measurement',p:conv2.q,s:conv2.s,a:conv2.a},
+      {c:color,tag:'Weight',p:`Which is heavier: a ${wi.h} or a ${wi.l}?`,
+       s:`Compare their sizes and materials.\nWe measure weight in ounces (light) and pounds (heavy).`,a:`A ${wi.h} ✅`},
       {c:color,tag:'Choose a Tool',p:`To measure how hot soup is, use a ___`,
        s:`Temperature → thermometer\nLength → ruler\nWeight → scale`,a:`Thermometer ✅`},
     ];
