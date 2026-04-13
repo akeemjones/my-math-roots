@@ -2231,6 +2231,24 @@ function updateAccountUI(){
   if(nudge) nudge.style.display = isLoggedIn ? 'none' : 'block';
   const signout = document.getElementById('signout-btn-wrap');
   if(signout) signout.style.display = isLoggedIn ? 'block' : 'none';
+  // Dashboard button only for Supabase-authenticated users — not for guest/student-role sessions
+  const dashBtn = document.getElementById('parent-dash-btn');
+  if(dashBtn) dashBtn.style.display = _supaUser ? '' : 'none';
+  // Sign Out → Sign In for guests (no Supabase account, just student-role session)
+  const signoutBtn = document.querySelector('#signout-btn-wrap [data-action="_signOut"], #signout-btn-wrap [data-action="_showLoginScreen"]');
+  if(signoutBtn){
+    if(_supaUser){
+      signoutBtn.textContent = 'Sign Out';
+      signoutBtn.dataset.action = '_signOut';
+      signoutBtn.style.borderColor = '#e74c3c';
+      signoutBtn.style.color = '#e74c3c';
+    } else {
+      signoutBtn.textContent = 'Sign In';
+      signoutBtn.dataset.action = '_showLoginScreen';
+      signoutBtn.style.borderColor = '#4a90d9';
+      signoutBtn.style.color = '#4a90d9';
+    }
+  }
   // Show Change Password only for email/password accounts (not Google OAuth)
   const pwWrap = document.getElementById('pc-change-pw-wrap');
   if(pwWrap){

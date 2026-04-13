@@ -1436,7 +1436,7 @@ img[data-coin]:active{ transform:scale(.95); }
 
 /* COG BUTTON */
 .cog-btn{ position:fixed; top:calc(14px + env(safe-area-inset-top)); right:16px;
-  z-index:var(--z-fixed-btn); width:50px; height:50px; border-radius:50%; border:none;
+  z-index:var(--z-fixed-btn); width:44px; height:44px; border-radius:50%; border:none;
   background:rgba(255,255,255,0.85);
   border:1.5px solid rgba(255,255,255,0.82);
   box-shadow:0 4px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.95);
@@ -2442,7 +2442,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 ══════════════════════════════════════════ */
 .prof-btn{
   position:fixed; top:calc(14px + env(safe-area-inset-top)); left:16px;
-  z-index:var(--z-fixed-btn); width:50px; height:50px; border-radius:50%; border:none;
+  z-index:var(--z-fixed-btn); width:44px; height:44px; border-radius:50%; border:none;
   background:rgba(255,255,255,0.85);
   border:1.5px solid rgba(255,255,255,0.82);
   box-shadow:0 4px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.95);
@@ -2458,7 +2458,7 @@ button:focus-visible.prof-btn{ outline:3px solid rgba(74,144,217,0.7); outline-o
 /* ── CALENDAR BUTTON (stacks below prof-btn) ── */
 .cal-btn{
   position:fixed; top:calc(14px + env(safe-area-inset-top)); left:16px;
-  z-index:var(--z-fixed-btn); width:50px; height:50px; border-radius:50%; border:none;
+  z-index:var(--z-fixed-btn); width:44px; height:44px; border-radius:50%; border:none;
   background:rgba(255,255,255,0.85);
   border:1.5px solid rgba(255,255,255,0.82);
   box-shadow:0 4px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.95);
@@ -2473,9 +2473,9 @@ body.dark .cal-btn{
 @media (hover:hover){ .cal-btn:hover{ box-shadow:0 5px 20px rgba(0,0,0,.2); } }
 button:focus-visible.cal-btn{ outline:3px solid rgba(74,144,217,0.7); outline-offset:2px; }
 .cal-btn.cal-btn--stacked{
-  top:calc(14px + env(safe-area-inset-top) + 50px + 10px); }
+  top:calc(14px + env(safe-area-inset-top) + 44px + 10px); }
 .prof-btn.prof-btn--stacked{
-  top:calc(14px + env(safe-area-inset-top) + 50px + 10px); }
+  top:calc(14px + env(safe-area-inset-top) + 44px + 10px); }
 .cal-dot{
   position:absolute; top:2px; right:2px;
   width:10px; height:10px; border-radius:50%;
