@@ -1037,7 +1037,7 @@ function buildPracticeQ(pid, q){
   // q.t and q.o may contain SVG/HTML (e.g. clock diagrams) — render as-is; these are authored data, not user input
   const qText = q.t && q.t.includes('<') ? q.t : _escHtml(q.t);
   return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-    <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.s?`<div class="q-visual">${q.s}</div>`:''}
+    <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
     <div class="pq-choices">
       ${opts.map((text, i) =>
         `<button class="pq-choice" type="button" id="${pid}-c${i}" onclick="_pickPracticeAns('${pid}',${i})">${_escHtml(text)}</button>`

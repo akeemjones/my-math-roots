@@ -376,7 +376,7 @@ function _renderQ(){
     nb.innerHTML = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
     document.getElementById('qcard').innerHTML =
       '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-      '<div class="q-text">'+_qText(q.t)+'</div>'+(q.s?'<div class="q-visual">'+q.s+'</div>':'')+
+      '<div class="q-text">'+_qText(q.t)+'</div>'+(q.v?_buildVisualHTML(q.v):(q.s?'<div class="q-visual">'+q.s+'</div>':''))+
       '<div style="font-size:var(--fs-sm);color:var(--txt2);margin-bottom:10px">' + _ICO.eyeOn + ' Review — answer locked</div>'+
       '<div class="agrid">'+
         (past && past.opts ? past.opts : q.o).map(text=>{
@@ -409,7 +409,7 @@ function _renderQ(){
   qz._hintRevealed = false;
   document.getElementById('qcard').innerHTML =
     '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+(q.s?'<div class="q-visual">'+q.s+'</div>':'')+
+    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+(q.v?_buildVisualHTML(q.v):(q.s?'<div class="q-visual">'+q.s+'</div>':''))+
     '<div class="agrid" role="group" aria-label="Answer choices">'+
       opts.map((opt,i)=>
         '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>'

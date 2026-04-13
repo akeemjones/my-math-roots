@@ -75,7 +75,7 @@ async function build(){
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
     'data/shared.js','util.js','state.js','auth.js','nav.js','home.js','unit.js',
-    'quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
+    'visuals.js','quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
     name: f,
