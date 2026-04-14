@@ -2227,20 +2227,28 @@ async function supaSignOut(){
 
 function updateAccountUI(){
   const _role = localStorage.getItem('mmr_user_role');
-  const isLoggedIn = !!_supaUser || _role === 'student';
-  // A "real account" means a live Supabase session (aud:'authenticated').
-  // Preview stubs and guest/student-role sessions are NOT real accounts.
   const isRealAccount = !!(_supaUser && _supaUser.aud === 'authenticated');
-  // Always show the sign-in/out button so guests can always reach the login screen
+  const isStudent = !isRealAccount && _role === 'student';
+  // Always show the sign-in/out button wrap
   const signout = document.getElementById('signout-btn-wrap');
   if(signout) signout.style.display = 'block';
-  // Dashboard button only for real Supabase accounts
+  // Dashboard button: visible for real accounts and student sessions
   const dashBtn = document.getElementById('parent-dash-btn');
-  if(dashBtn) dashBtn.style.display = isRealAccount ? '' : 'none';
-  // Sign Out for real accounts, Sign In for everyone else
+  if(dashBtn){
+    if(isRealAccount){
+      dashBtn.style.display = '';
+      dashBtn.textContent = 'Dashboard';
+    } else if(isStudent){
+      dashBtn.style.display = '';
+      dashBtn.textContent = 'Switch to Dashboard';
+    } else {
+      dashBtn.style.display = 'none';
+    }
+  }
+  // Auth button: Sign Out (red) for real accounts and students, Sign In (blue) for guests
   const signoutBtn = document.querySelector('#signout-btn-wrap [data-action="_signOut"], #signout-btn-wrap [data-action="_showLoginScreen"]');
   if(signoutBtn){
-    if(isRealAccount){
+    if(isRealAccount || isStudent){
       signoutBtn.textContent = 'Sign Out';
       signoutBtn.dataset.action = '_signOut';
       signoutBtn.style.borderColor = '#e74c3c';
@@ -2252,7 +2260,7 @@ function updateAccountUI(){
       signoutBtn.style.color = '#4a90d9';
     }
   }
-  // Show Change Password only for email/password accounts (not Google OAuth)
+  // Change Password only for email/password Supabase accounts
   const pwWrap = document.getElementById('pc-change-pw-wrap');
   if(pwWrap){
     const isEmail = _supaUser?.app_metadata?.provider === 'email';
@@ -2262,7 +2270,9 @@ function updateAccountUI(){
 
 function _goParentDashboard(){
   if(_supaUser){
-    window.location.href = '/dashboard/';
+    show('dashboard-screen');
+    _dbInit();
+    _installHistoryGuard();
   } else {
     _showParentSignInGate();
   }
@@ -2272,6 +2282,10 @@ function _showParentSignInGate(){
   if(document.getElementById('parent-gate-modal')) return;
   var overlay = _makeNudgeOverlay('parent-gate-modal', true);
   if(!overlay) return;
+  // Pre-position login carousel on parent slide (index 1) so if the
+  // modal is dismissed and the user reaches the login screen it shows
+  // the parent tab, not the student tab.
+  if(typeof _lsCarouselGo === 'function') _lsCarouselGo(1);
   var isDark = document.body.classList.contains('dark');
   var _bg = isDark
     ? 'background:#0d1e35;box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.08)'
