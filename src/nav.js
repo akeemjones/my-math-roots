@@ -97,8 +97,9 @@ function isUnitQuizUnlocked(unitIdx){
   // Current screen → { prev screen id, back function }
   // prev:null means "root screen" — absorb the gesture, no animation
   const MAP = {
-    'home':           { prev:null,              back:null },
-    'login-screen':   { prev:null,              back:null },
+    'home':              { prev:null,              back:null },
+    'login-screen':      { prev:null,              back:null },
+    'dashboard-screen':  { prev:null,              back:null },
     'unit-screen':    { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
     'lesson-screen':  { prev:'unit-screen',     back:()=>goUnit() },
     'results-screen': { prev:'unit-screen',     back:()=>afterResults() },

@@ -546,7 +546,7 @@ async function _lsObSave() {
 function _lsObDone() {
   var modal = document.getElementById('ls-onboard-modal');
   if (modal) modal.remove();
-  show('dashboard-screen'); _dbInit();
+  show('dashboard-screen'); _dbInit(); _installHistoryGuard();
 }
 
 function _lsCarouselGo(idx) {
@@ -718,7 +718,7 @@ function supabaseInit(){
         await _pullOnLogin();
         // Any live Supabase session belongs to a parent — students use PIN only
         localStorage.setItem('mmr_user_role', 'parent');
-        show('dashboard-screen'); _dbInit();
+        show('dashboard-screen'); _dbInit(); _installHistoryGuard();
         _dismissSplash();
         return;
       } else {
