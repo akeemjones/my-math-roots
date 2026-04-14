@@ -3,6 +3,14 @@
   publish   = "dist"
   functions = "netlify/functions"
 
+# ── SPA catch-all — serve index.html for any path Netlify can't find a file for
+# Real assets (sw.js, manifest.json, data/*.js, icons) are served directly;
+# only truly missing paths (e.g. /dashboard/) fall through to the app.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
 # ── Security Headers ─────────────────────────────────────────────────────────
 [[headers]]
   for = "/*"
