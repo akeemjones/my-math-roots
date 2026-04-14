@@ -2230,8 +2230,6 @@ function updateAccountUI(){
   // A "real account" means a live Supabase session (aud:'authenticated').
   // Preview stubs and guest/student-role sessions are NOT real accounts.
   const isRealAccount = !!(_supaUser && _supaUser.aud === 'authenticated');
-  const nudge = document.getElementById('guest-account-nudge');
-  if(nudge) nudge.style.display = isLoggedIn ? 'none' : 'block';
   // Always show the sign-in/out button so guests can always reach the login screen
   const signout = document.getElementById('signout-btn-wrap');
   if(signout) signout.style.display = 'block';
