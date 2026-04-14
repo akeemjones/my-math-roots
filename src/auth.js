@@ -782,6 +782,7 @@ function _continueAsGuest() {
 
 function _proceedAsGuest() {
   document.getElementById('soft-gate-modal')?.remove();
+  localStorage.removeItem('mmr_user_role');
   buildHome();
   show('home');
   // Lock the screen immediately if install/tutorial hasn't been shown yet,
