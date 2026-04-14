@@ -2205,6 +2205,7 @@ function _clearUserData(){
   localStorage.removeItem('mmr_family_profiles');
   localStorage.removeItem('mmr_active_student_id');
   localStorage.removeItem('mmr_last_student_id');
+  localStorage.removeItem('mmr_user_role');
   localStorage.removeItem(_STU_FAIL_KEY);
   localStorage.removeItem(_STU_FAIL_COUNT);
   _lsFamilyProfiles = null;
