@@ -919,17 +919,25 @@ async function generateAIReport() {
 }
 
 function _renderAIReportView(text, name) {
-  var colours = ['#1565C0','#2e7d32','#e65100','#673ab7','#00838f','#b71c1c'];
-  var parts   = text.split(/^## /m).filter(Boolean);
-  var html    = '<div class="db-ai-sections">';
+  // Name-keyed colours: robust against LLM heading re-ordering or extra headings.
+  // Fallback array covers any unexpected sections Gemini might emit.
+  var SECTION_COLOURS = {
+    'Overview':               '#1565C0',
+    'Strengths':              '#2e7d32',
+    'Areas to Grow':          '#e65100',
+    'Recommended Next Steps': '#673ab7',
+  };
+  var FALLBACK_COLOURS = ['#1565C0','#2e7d32','#e65100','#673ab7','#00838f','#b71c1c'];
+  var parts = text.split(/^## /m).filter(Boolean);
+  var html  = '<div class="db-ai-sections">';
   parts.forEach(function(part, idx) {
     var nl  = part.indexOf('\n');
     var hdr = nl > -1 ? part.slice(0, nl).trim() : part.trim();
-    var bod = nl > -1 ? part.slice(nl+1).trim()  : '';
-    var col = colours[idx % colours.length];
-    html += '<div class="db-ai-section" style="border-left:3px solid '+col+'">'
-      + '<div class="db-ai-section-title" style="color:'+col+'">'+_esc(hdr)+'</div>'
-      + '<div class="db-ai-section-body">'+bod.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'
+    var bod = nl > -1 ? part.slice(nl + 1).trim() : '';
+    var col = SECTION_COLOURS[hdr] || FALLBACK_COLOURS[idx % FALLBACK_COLOURS.length];
+    html += '<div class="db-ai-section" style="border-left:3px solid ' + col + '">'
+      + '<div class="db-ai-section-title" style="color:' + col + '">' + _esc(hdr) + '</div>'
+      + '<div class="db-ai-section-body">' + bod.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div>'
       + '</div>';
   });
   html += '</div>';
