@@ -87,6 +87,7 @@ function openPrReview(scoreId){
   document.getElementById('sc-lightbox-body').innerHTML = r.bodyHtml;
   document.getElementById('sc-lightbox-body').scrollTop = 0;
   lb.classList.add('open', 'pr-above');
+  if(typeof _lockScroll === 'function') _lockScroll();
   if(typeof _animateModalOpen === 'function') _animateModalOpen('sc-lightbox');
   // Strip pr-above when lightbox closes so z-index returns to normal
   const _origClose = document.querySelector('#sc-lightbox .sc-lightbox-close');

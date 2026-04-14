@@ -118,11 +118,12 @@ function openScLightbox(i){
   document.getElementById('sc-lightbox-body').innerHTML = r.bodyHtml;
   document.getElementById('sc-lightbox-body').scrollTop = 0;
   document.getElementById('sc-lightbox').classList.add('open');
+  _lockScroll();
   _animateModalOpen('sc-lightbox');
 }
 
 function closeScLightbox(){
-  _animateModalClose('sc-lightbox', ()=>{ document.getElementById('sc-lightbox').classList.remove('open'); });
+  _animateModalClose('sc-lightbox', ()=>{ document.getElementById('sc-lightbox').classList.remove('open'); _unlockScroll(); });
 }
 
 function delScore(id){ const i=SCORES.findIndex(s=>s.id===id); if(i>-1){SCORES.splice(i,1);saveSc();_cloudDeleteScore(id);buildHistory();} }
