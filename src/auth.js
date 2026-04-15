@@ -2098,10 +2098,7 @@ async function syncNow(){
     if(_pushTimer) clearTimeout(_pushTimer);
     await _pushAll();
   } else if(_supaUser){
-    await _pushDoneParent();
-    await _pushScores();
-    await _pushMasteryParent();
-    await _pushAppTimeParent();
+    await _pushAllParent();
   }
   updateSyncLabel();
   showLockToast('Synced! ✅');
