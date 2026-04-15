@@ -1238,6 +1238,7 @@ async function _pullStudentProgress(studentId) {
 }
 
 let _syncing = false; // prevents monkey-patched saves from pushing during _pullOnLogin merge
+let _pullSucceeded = false; // set true after a successful cloud pull; gates overwrite-style pushes
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
   _syncing = true;
@@ -1363,6 +1364,7 @@ async function _pullOnLogin(){
     }
 
     // Push local-only data back to cloud so both sides converge
+    _pullSucceeded = true;
     _syncing = false;
     if(_isStudentSession()){
       triggerCloudSync();
@@ -1441,6 +1443,7 @@ async function _pushAll(){
 // ── Parent-path push functions (authenticated via Supabase Auth, no session token) ──
 async function _pushDoneParent(){
   if(!_supa || !_supaUser) return;
+  if(!_pullSucceeded) return; // don't overwrite cloud until local is confirmed current
   try{
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
@@ -1455,6 +1458,7 @@ async function _pushDoneParent(){
 
 async function _pushMasteryParent(){
   if(!_supa || !_supaUser) return;
+  if(!_pullSucceeded) return; // don't overwrite cloud until local is confirmed current
   try{
     var mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
@@ -2167,6 +2171,7 @@ function _clearUserData(){
   Object.keys(DONE).forEach(k => delete DONE[k]);
   CUR.unitIdx = 0; CUR.lessonIdx = 0; CUR.quiz = null;
   _supaUser = null;
+  _pullSucceeded = false;
   _carouselInited = false;
   // Clear parent session timer to prevent leaked interval
   if(typeof _parentTimerInterval !== 'undefined') clearInterval(_parentTimerInterval);
