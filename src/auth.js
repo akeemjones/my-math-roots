@@ -1373,10 +1373,7 @@ async function _pullOnLogin(){
     if(_isStudentSession()){
       triggerCloudSync();
     } else {
-      _pushDoneParent();
-      _pushScores();
-      _pushMasteryParent();
-      _pushAppTimeParent();
+      _triggerParentSync();
     }
     updateSyncLabel();
     buildHome();
@@ -1393,10 +1390,29 @@ let _pushInFlight = false;
 let _pushPending  = false;
 let _pushTimer    = null;
 
+let _parentPushTimer = null; // debounce timer for parent push pipeline
+
 function triggerCloudSync(){
   if(!_supa || !_isStudentSession()) return;
   if(_pushTimer) clearTimeout(_pushTimer);
   _pushTimer = setTimeout(_pushAll, 500);
+}
+
+function _triggerParentSync(){
+  if(!_supa || !_supaUser || _isStudentSession()) return;
+  if(_parentPushTimer) clearTimeout(_parentPushTimer);
+  _parentPushTimer = setTimeout(_pushAllParent, 500);
+}
+
+async function _pushAllParent(){
+  _parentPushTimer = null;
+  if(!_supa || !_supaUser || _isStudentSession()) return;
+  await Promise.all([
+    _pushDoneParent(),
+    _pushMasteryParent(),
+    _pushScores(),
+    _pushAppTimeParent(),
+  ]);
 }
 
 async function _pushAll(){
@@ -2067,13 +2083,13 @@ async function _cloudDeleteScore(localId){
 // Monkey-patch save functions to push to cloud on every local save.
 // Student sessions use the unified push pipeline; parent sessions use individual pushes.
 const _origSaveDone = saveDone;
-saveDone = function(){ _origSaveDone(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushDoneParent(); };
+saveDone = function(){ _origSaveDone(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _triggerParentSync(); };
 const _origSaveSc = saveSc;
-saveSc = function(){ _origSaveSc(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushScores(); };
+saveSc = function(){ _origSaveSc(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _triggerParentSync(); };
 const _origSaveMastery = saveMastery;
-saveMastery = function(){ _origSaveMastery(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushMasteryParent(); };
+saveMastery = function(){ _origSaveMastery(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _triggerParentSync(); };
 const _origSaveAppTime = saveAppTime;
-saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _pushAppTimeParent(); };
+saveAppTime = function(){ _origSaveAppTime(); if(!_syncing) _isStudentSession() ? triggerCloudSync() : _triggerParentSync(); };
 
 async function syncNow(){
   if(!_supa){ showLockToast('Not signed in.'); return; }
