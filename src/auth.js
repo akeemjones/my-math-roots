@@ -765,6 +765,25 @@ function supabaseInit(){
   });
 }
 
+// ── MULTI-TAB SYNC ────────────────────────
+// When another tab pushes to cloud, signal this tab to re-pull so both stay current.
+(function(){
+  if(typeof BroadcastChannel === 'undefined') return; // Safari < 15.4: no-op
+  var _bc = new BroadcastChannel('mmr_sync');
+  _bc.onmessage = function(ev){
+    if(ev.data === 'pushed' && _supaUser && !_syncing){
+      _pullOnLogin();
+    }
+  };
+  // Patch _triggerParentSync to notify other tabs after this tab pushes
+  var _origTriggerParentSync = _triggerParentSync;
+  _triggerParentSync = function(){
+    _origTriggerParentSync();
+    // Notify after debounce + estimated network time
+    setTimeout(function(){ _bc.postMessage('pushed'); }, 1100);
+  };
+})();
+
 // ── ANONYMOUS SESSION TRACKING ───────────
 // _trackAnonSession() REMOVED — COPPA compliance.
 // This K-5 app must not generate persistent device identifiers or log
