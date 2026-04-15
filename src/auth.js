@@ -718,7 +718,7 @@ function supabaseInit(){
         await _pullOnLogin();
         // Any live Supabase session belongs to a parent — students use PIN only
         localStorage.setItem('mmr_user_role', 'parent');
-        show('dashboard-screen'); _dbInit(); _installHistoryGuard();
+        show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
         _dismissSplash();
         return;
       } else {
@@ -752,7 +752,7 @@ function supabaseInit(){
         sessionStorage.removeItem('mmr_post_auth_redirect');
         window.location.href = _postRedirect;
       } else {
-        window.location.href = '/dashboard/';
+        show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
       }
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
@@ -1241,6 +1241,7 @@ let _syncing = false; // prevents monkey-patched saves from pushing during _pull
 async function _pullOnLogin(){
   if(!_supa || !_supaUser) return;
   _syncing = true;
+  try{
   // Skip sync if we already pulled within the last 5 minutes (handles page refreshes
   // and brief re-opens without hammering Supabase on every session restore).
   const _syncKey = 'wb_last_sync_' + _supaUser.id;
@@ -1375,6 +1376,7 @@ async function _pullOnLogin(){
     buildHome();
     await _lsCheckOnboarding();
   } catch(e){ console.warn('[Supabase] pull error', e); } finally { _syncing = false; }
+  } finally { _syncing = false; }
 }
 
 // ── Unified push pipeline (student sessions) ────────────────────────────
