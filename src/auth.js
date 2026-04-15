@@ -1249,6 +1249,10 @@ async function _pullOnLogin(){
   const _lastSync = parseInt(localStorage.getItem(_syncKey) || '0');
   if(Date.now() - _lastSync < 5 * 60 * 1000) return;
   try{
+    // Clear stale/guest local DONE before merging cloud data — prevents guest progress
+    // from being pushed to the parent's cloud account on first login on a shared device.
+    Object.keys(DONE).forEach(function(k){ delete DONE[k]; });
+    localStorage.setItem('wb_done5', JSON.stringify(DONE));
     // Single RPC call replaces 3 separate queries — 1 round trip instead of 3.
     // Pass active student_id so cloud returns per-student progress (not shared parent row)
     const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
