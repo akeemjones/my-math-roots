@@ -151,6 +151,103 @@ function playHintReveal(){
     });
   } catch(e){}
 }
+// ── Distractor-Mapped Adaptive Engine — session state ──────────────────────
+let errorProfile = {};
+let isPaused = false;
+const INTERVENTION_THRESHOLD = 3;
+
+const MINI_LESSONS = {
+  err_count_inclusive: {
+    title: 'Counting On — Where to Start',
+    text: 'Don\'t count the number you start on. Put your finger on 8, then jump: 9, 10, 11.',
+    mode: 'passive',
+    visual: {
+      type: 'numberLine',
+      config: { min: 0, max: 15, ticks: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], jumps: [{ from: 8, to: 11, label: '+3' }], mark: 11 }
+    }
+  },
+  err_off_by_one: {
+    title: 'Almost There — Check Your Landing Spot',
+    text: 'Count each jump out loud and stop right when you finish. Say the last number — that\'s your answer.',
+    mode: 'passive',
+    visual: {
+      type: 'numberLine',
+      config: { min: 0, max: 12, ticks: [0,1,2,3,4,5,6,7,8,9,10,11,12], jumps: [{ from: 5, to: 8, label: '+3' }], mark: 8 }
+    }
+  },
+  err_wrong_operation: {
+    title: 'Which Operation Do I Use?',
+    text: 'Find the sign in the problem. Plus (+) means put groups together. Minus (\u2212) means take one group away.',
+    mode: 'passive',
+    visual: {
+      type: 'array',
+      config: { rows: 2, cols: 5, filled: 10 }
+    }
+  },
+  err_forgot_carry: {
+    title: 'Don\'t Forget to Carry',
+    text: 'When ones add up to 10 or more, trade 10 ones for 1 ten. Write the leftover ones and move the ten over.',
+    mode: 'passive',
+    visual: {
+      type: 'base10',
+      config: { hundreds: 0, tens: 1, ones: 14 }
+    }
+  },
+  err_forgot_borrow: {
+    title: 'Borrowing — Break a Ten Apart',
+    text: 'If the top ones digit is too small, break 1 ten into 10 ones. Cross out the tens digit and make it one less.',
+    mode: 'passive',
+    visual: {
+      type: 'base10',
+      config: { hundreds: 0, tens: 2, ones: 3 }
+    }
+  },
+  err_place_value_confusion: {
+    title: 'Tens and Ones Are Different',
+    text: 'The tens digit tells how many groups of 10. The ones digit tells how many singles. Read each column on its own.',
+    mode: 'passive',
+    visual: {
+      type: 'base10',
+      config: { hundreds: 0, tens: 3, ones: 5 }
+    }
+  },
+  err_skip_count_error: {
+    title: 'Skip Counting — Keep the Same Jump',
+    text: 'Every hop must be the same size. Tap the number line and say each landing number out loud: 2, 4, 6, 8.',
+    mode: 'passive',
+    visual: {
+      type: 'numberLine',
+      config: { min: 0, max: 20, ticks: [0,2,4,6,8,10,12,14,16,18,20], jumps: [{ from: 0, to: 2, label: '+2' }, { from: 2, to: 4, label: '+2' }, { from: 4, to: 6, label: '+2' }] }
+    }
+  },
+  err_double_count: {
+    title: 'Count Each One Only Once',
+    text: 'Touch each thing once and slide it to the side after you count it. That way nothing gets counted twice.',
+    mode: 'passive',
+    visual: {
+      type: 'array',
+      config: { rows: 2, cols: 4, filled: 7, missingMark: true }
+    }
+  },
+  err_magnitude_error: {
+    title: 'How Big Is the Number?',
+    text: 'Cover the choices and guess the answer first. If your pick is much bigger or smaller than your guess, try again.',
+    mode: 'passive',
+    visual: {
+      type: 'base10',
+      config: { hundreds: 0, tens: 2, ones: 0 }
+    }
+  },
+  err_inverse_confusion: {
+    title: 'Adding Goes Up, Subtracting Goes Down',
+    text: 'Plus moves you right on the number line. Minus moves you left. Point in the direction the sign tells you.',
+    mode: 'passive',
+    visual: {
+      type: 'numberLine',
+      config: { min: 0, max: 10, ticks: [0,1,2,3,4,5,6,7,8,9,10], jumps: [{ from: 3, to: 7, label: '+4' }], mark: 7 }
+    }
+  }
+};
 
 // ════════════════════════════════════════
 //  QUIZ ENGINE
@@ -327,6 +424,8 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
 
   CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0 };
   _quizStartedAt = Date.now();
+  errorProfile = {};
+  isPaused = false;
 
   document.getElementById('quiz-title').innerHTML = label;
   document.getElementById('quiz-back').style.color = color;
@@ -369,8 +468,9 @@ function _renderQ(){
 
   if(isReview){
     // Read-only: render past answered question
+    const _ov = item => (item && typeof item === 'object') ? item.val : item;
     const past = qz.answers[qIdx];
-    const correct = past ? past.correct : q.o[q.a];
+    const correct = past ? past.correct : _ov(q.o[q.a]);
     const chosen = past ? past.chosen : null;
     nb.style.display = 'block';
     nb.innerHTML = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
@@ -379,7 +479,7 @@ function _renderQ(){
       '<div class="q-text">'+_qText(q.t)+'</div>'+(q.v?_buildVisualHTML(q.v):(q.s?'<div class="q-visual">'+q.s+'</div>':''))+
       '<div style="font-size:var(--fs-sm);color:var(--txt2);margin-bottom:10px">' + _ICO.eyeOn + ' Review — answer locked</div>'+
       '<div class="agrid">'+
-        (past && past.opts ? past.opts : q.o).map(text=>{
+        (past && past.opts ? past.opts : q.o.map(_ov)).map(text=>{
           let cls = 'abtn';
           let prefix = '';
           if(text === correct){ cls += ' correct'; if(document.body.classList.contains('a11y-colorblind')) prefix = '✓ '; }
@@ -398,9 +498,12 @@ function _renderQ(){
   }
 
   // Normal mode — unanswered current question
-  const opts = _shuffle([...q.o].map((text,i)=>({text,i})));
+  // Preserve existing option order on retry (intervention loop); shuffle only on first render
+  // Support both plain string options and {val, tag} object options
+  const _optVal = item => typeof item === 'object' ? item.val : item;
+  const opts = qz._opts || _shuffle([...q.o].map((item,i)=>({text:_optVal(item),i})));
   qz._opts = opts;
-  const correct = q.o[q.a];
+  const correct = _optVal(q.o[q.a]);
 
   nb.style.display = 'none';
   nb.innerHTML = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
@@ -430,6 +533,7 @@ function _renderQ(){
 
 function _pickAnswer(btnIdx){
   const qz = CUR.quiz;
+  if(isPaused) return;
   if(!qz || qz._answered) return;
   qz._answered = true;
 
@@ -437,6 +541,7 @@ function _pickAnswer(btnIdx){
   const correct = qz._correct;
   const isOk = chosen === correct;
   const q = qz.questions[qz.idx];
+  _handleAnswer(qz._opts[btnIdx].i);
   const qTimeSecs = qz._qStartedAt ? Math.round((Date.now() - qz._qStartedAt) / 1000) : null;
 
   // Disable all buttons immediately, show neutral "selected" on tapped button
@@ -502,6 +607,93 @@ function _pickAnswer(btnIdx){
   }, 120);
 }
 
+// ── Distractor-Mapped Adaptive Engine ──────────────────────────────────────
+// Tracks error patterns by distractor tag and triggers micro-interventions
+// when a student repeatedly selects the same type of wrong answer.
+
+function _handleAnswer(selectedIndex){
+  var qz = CUR.quiz;
+  if(!qz) return;
+  var q = qz.questions[qz.idx];
+  if(!q) return;
+
+  // Correct answer — nothing to track
+  if(selectedIndex === q.a) return; // TODO: hook success UI here
+
+  var option = q.o[selectedIndex];
+  var tag = (option && typeof option === 'object') ? option.tag : null;
+  if(!tag) return;
+
+  errorProfile[tag] = (errorProfile[tag] || 0) + 1;
+
+  if(errorProfile[tag] >= INTERVENTION_THRESHOLD){
+    _pauseForIntervention(tag);
+    errorProfile[tag] = 0;
+  }
+  // TODO: hook incorrect UI here
+}
+
+function _pauseForIntervention(errorTag){
+  isPaused = true;
+  var lesson = MINI_LESSONS[errorTag];
+  var title   = lesson ? lesson.title : 'Let\'s Review';
+  var text    = lesson ? lesson.text  : 'Take a moment to review the concept before trying again.';
+  var visualHTML = '';
+  if(lesson){
+    console.log("Intervention:", lesson.title);
+    try { visualHTML = _buildVisualHTML(lesson.visual); } catch(e){ console.warn("Visual render failed for:", errorTag); }
+  } else {
+    console.log("Triggering generic intervention...");
+  }
+
+  // Remove any existing overlay
+  var existing = document.querySelector('[data-focus-overlay]');
+  if(existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.setAttribute('data-focus-overlay', '1');
+  overlay.style.cssText = [
+    'position:fixed','inset:0','z-index:99999',
+    'background:rgba(255,255,255,0.97)',
+    'display:flex','flex-direction:column',
+    'align-items:center','justify-content:center',
+    'padding:32px','box-sizing:border-box',
+    'font-family:sans-serif','color:#1a1a2e'
+  ].join(';');
+
+  overlay.innerHTML =
+    '<div style="max-width:520px;width:100%;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);padding:32px;text-align:center;">'+
+      '<div style="font-size:2rem;margin-bottom:8px;">💡</div>'+
+      '<h2 style="margin:0 0 12px;font-size:1.3rem;color:#2d3a8c;">'+_escHtml(title)+'</h2>'+
+      '<p style="margin:0 0 20px;font-size:1.05rem;line-height:1.5;color:#444;">'+_escHtml(text)+'</p>'+
+      (visualHTML ? '<div style="margin:0 0 20px;">'+visualHTML+'</div>' : '')+
+      '<button id="focus-overlay-got-it" style="'+
+        'background:#4f46e5;color:#fff;border:none;border-radius:12px;'+
+        'padding:14px 36px;font-size:1rem;font-weight:700;cursor:pointer;'+
+        'box-shadow:0 4px 14px rgba(79,70,229,0.35);">'+
+        'Got it — try again! →'+
+      '</button>'+
+    '</div>';
+
+  console.log("Mounting Focus Overlay");
+  document.body.appendChild(overlay);
+
+  document.getElementById('focus-overlay-got-it').addEventListener('click', function(){
+    overlay.remove();
+    _resumeQuiz();
+  });
+}
+
+function _resumeQuiz(){
+  isPaused = false;
+  var qz = CUR.quiz;
+  if(!qz) return;
+  qz._answered = false;
+  // Re-render the SAME question without advancing index.
+  // _opts is preserved so answer order stays stable (no reshuffle on retry).
+  _renderQ();
+}
+
 function nextQ(){
   const qz = CUR.quiz;
   if(!qz) return;
@@ -513,6 +705,7 @@ function nextQ(){
     // At current unanswered question — advance to next
     qz.idx++;
     qz.viewIdx = qz.idx;
+    qz._opts = null; // clear so next question gets fresh shuffled options
     if(qz.idx >= qz.questions.length) _finishQuiz();
     else _renderQ();
   }

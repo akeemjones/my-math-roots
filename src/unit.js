@@ -1432,8 +1432,9 @@ function generateExamples(lessonId, color){
 const _PQ_EMOJIS = ['🍎','🌟','🎈','🐸','🍪','🦋','🍓','🎮','🐶','🌈','🍦','🚀','🎯','🏆','💡','🐝'];
 
 function buildPracticeQ(pid, q){
-  const opts = _shuffle([...q.o].map(text => text));
-  const correctText = q.o[q.a];
+  const _ov = item => (item && typeof item === 'object') ? item.val : item;
+  const opts = _shuffle([...q.o].map(_ov));
+  const correctText = _ov(q.o[q.a]);
   const emoji = _PQ_EMOJIS[Math.floor(Math.random() * _PQ_EMOJIS.length)];
   // q.t and q.o may contain SVG/HTML (e.g. clock diagrams) — render as-is; these are authored data, not user input
   const qText = q.t && q.t.includes('<') ? q.t : _escHtml(q.t);
