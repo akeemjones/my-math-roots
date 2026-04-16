@@ -748,8 +748,7 @@ function supabaseInit(){
       // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
-      var _postRedirect = sessionStorage.getItem('mmr_post_auth_redirect');
-      if(_postRedirect) sessionStorage.removeItem('mmr_post_auth_redirect');
+      sessionStorage.removeItem('mmr_post_auth_redirect'); // clear any stale redirect value
       show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
@@ -2383,7 +2382,6 @@ async function _parentGateEmailSignIn(){
 
 async function _parentGateGoogle(){
   if(!_supa) return;
-  sessionStorage.setItem('mmr_post_auth_redirect', 'dashboard-screen');
   try{
     await _supa.auth.signInWithOAuth({
       provider: 'google',
