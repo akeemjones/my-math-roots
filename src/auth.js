@@ -768,7 +768,7 @@ function supabaseInit(){
   var _bc = new BroadcastChannel('mmr_sync');
   _bc.onmessage = function(ev){
     if(ev.data === 'pushed' && _supaUser && !_syncing){
-      _pullOnLogin();
+      _pullOnLogin(true);
     }
   };
   // Patch _triggerParentSync to notify other tabs after this tab pushes
@@ -1254,7 +1254,7 @@ async function _pullStudentProgress(studentId) {
 
 let _syncing = false; // prevents monkey-patched saves from pushing during _pullOnLogin merge
 let _pullSucceeded = false; // set true after a successful cloud pull; gates overwrite-style pushes
-async function _pullOnLogin(){
+async function _pullOnLogin(force){
   if(!_supa || !_supaUser) return;
   _syncing = true;
   try{
@@ -1262,7 +1262,7 @@ async function _pullOnLogin(){
   // and brief re-opens without hammering Supabase on every session restore).
   const _syncKey = 'wb_last_sync_' + _supaUser.id;
   const _lastSync = parseInt(localStorage.getItem(_syncKey) || '0');
-  if(Date.now() - _lastSync < 5 * 60 * 1000) return;
+  if(!force && Date.now() - _lastSync < 5 * 60 * 1000) return;
   try{
     // Clear stale/guest local DONE before merging cloud data — prevents guest progress
     // from being pushed to the parent's cloud account on first login on a shared device.
