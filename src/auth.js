@@ -572,8 +572,9 @@ function _lsCarouselGo(idx) {
 }
 function _lsAdaptHeight(){
   var outer = document.querySelector('.ls-carousel-outer');
-  var card  = document.getElementById('ls-card-' + (_lsCardIdx || 0));
-  if(outer && card) outer.style.height = card.scrollHeight + 'px';
+  var card0 = document.getElementById('ls-card-0');
+  var card1 = document.getElementById('ls-card-1');
+  if(outer && card0 && card1) outer.style.height = Math.max(card0.scrollHeight, card1.scrollHeight) + 'px';
 }
 
 function _lsInitCarousel() {

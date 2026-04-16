@@ -37,7 +37,7 @@ Add a third state for student sessions. The `signout-btn-wrap` flex row renders:
 | Role | `#parent-dash-btn` (left) | Auth button (right) |
 |---|---|---|
 | Parent — `isRealAccount` | Label: **Dashboard** · Action: `_goParentDashboard` · colour: purple | Label: **Sign Out** · Action: `_signOut` · colour: red |
-| Student — `role === 'student'` | Label: **Switch to Dashboard** · Action: `_goParentDashboard` · colour: purple | Label: **Sign Out** · Action: `_signOut` · colour: blue |
+| Student — `role === 'student'` | Label: **Switch to Dashboard** · Action: `_goParentDashboard` · colour: purple | Label: **Sign Out** · Action: `_signOut` · colour: red |
 | Guest — no role | Hidden | Label: **Sign In** · Action: `_showLoginScreen` · colour: blue |
 
 Both buttons in the student row are visible. The dashboard button label distinguishes intent: "Dashboard" for parents (they own the session), "Switch to Dashboard" for students (signals a role change is needed).

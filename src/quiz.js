@@ -155,6 +155,44 @@ function playHintReveal(){
 let errorProfile = {};
 let isPaused = false;
 const INTERVENTION_THRESHOLD = 3;
+const INTERVENTION_EVENTS_KEY = "mmr_intervention_events_v1";
+
+// ── Intervention telemetry ────────────────────────────────────────────────
+let interventionEvents = [];
+let activeIntervention = null;
+let interventionSessionId = "";
+
+function _readInterventionEvents() {
+  try {
+    const raw = localStorage.getItem(INTERVENTION_EVENTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.warn("Failed to read intervention events", e);
+    return [];
+  }
+}
+
+function _writeInterventionEvents(events) {
+  try {
+    localStorage.setItem(INTERVENTION_EVENTS_KEY, JSON.stringify(events));
+  } catch (e) {
+    console.warn("Failed to write intervention events", e);
+  }
+}
+
+function _appendInterventionEvent(event) {
+  const MAX_EVENTS = 500;
+  // Stamp a unique client_id (Supabase dedup key) and synced flag on first write.
+  if (!event.clientId) {
+    event.clientId = (event.sessionId || '') + '_' + (event.type || '') + '_' + (event.timestamp || Date.now());
+  }
+  if (event.synced === undefined) event.synced = false;
+  const events = _readInterventionEvents();
+  events.push(event);
+  if (events.length > MAX_EVENTS) events.splice(0, events.length - MAX_EVENTS);
+  _writeInterventionEvents(events);
+}
 
 const MINI_LESSONS = {
   err_count_inclusive: {
@@ -426,6 +464,9 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
   _quizStartedAt = Date.now();
   errorProfile = {};
   isPaused = false;
+  interventionEvents = _readInterventionEvents();
+  activeIntervention = null;
+  interventionSessionId = "sess_" + Date.now();
 
   document.getElementById('quiz-title').innerHTML = label;
   document.getElementById('quiz-back').style.color = color;
@@ -617,8 +658,33 @@ function _handleAnswer(selectedIndex){
   var q = qz.questions[qz.idx];
   if(!q) return;
 
+  var _ov = function(item){ return (item && typeof item === 'object') ? item.val : item; };
+
+  // ── Log intervention resolution if returning from an intervention ──
+  if(activeIntervention){
+    var retryCorrect = selectedIndex === q.a;
+    var resolvedEvt = {
+      type: 'resolved',
+      timestamp: Date.now(),
+      sessionId: interventionSessionId,
+      questionId: activeIntervention.questionId,
+      unitId: activeIntervention.unitId,
+      lessonId: activeIntervention.lessonId,
+      questionText: activeIntervention.questionText,
+      errorTag: activeIntervention.errorTag,
+      resolvedCorrectly: retryCorrect,
+      retryChosenValue: _ov(q.o[selectedIndex]),
+      correctValue: _ov(q.o[q.a]),
+      lessonTitle: activeIntervention.lessonTitle
+    };
+    interventionEvents.push(resolvedEvt);
+    _appendInterventionEvent(resolvedEvt);
+    console.log("Intervention event:", resolvedEvt);
+    activeIntervention = null;
+  }
+
   // Correct answer — nothing to track
-  if(selectedIndex === q.a) return; // TODO: hook success UI here
+  if(selectedIndex === q.a) return;
 
   var option = q.o[selectedIndex];
   var tag = (option && typeof option === 'object') ? option.tag : null;
@@ -627,15 +693,46 @@ function _handleAnswer(selectedIndex){
   errorProfile[tag] = (errorProfile[tag] || 0) + 1;
 
   if(errorProfile[tag] >= INTERVENTION_THRESHOLD){
-    _pauseForIntervention(tag);
+    _pauseForIntervention(tag, selectedIndex);
     errorProfile[tag] = 0;
   }
-  // TODO: hook incorrect UI here
 }
 
-function _pauseForIntervention(errorTag){
+function _pauseForIntervention(errorTag, selectedIndex){
   isPaused = true;
+
+  var qz = CUR.quiz;
+  var q = qz ? qz.questions[qz.idx] : null;
+  var _ov = function(item){ return (item && typeof item === 'object') ? item.val : item; };
+
+  // ── Log triggered intervention event ──
   var lesson = MINI_LESSONS[errorTag];
+  var triggeredEvt = {
+    type: 'triggered',
+    timestamp: Date.now(),
+    sessionId: interventionSessionId,
+    questionId: q ? (q.id || null) : null,
+    unitId: CUR.unit || null,
+    lessonId: CUR.lesson || null,
+    questionText: q ? (q.t || '') : '',
+    errorTag: errorTag,
+    chosenValue: (q && selectedIndex != null) ? _ov(q.o[selectedIndex]) : null,
+    correctValue: q ? _ov(q.o[q.a]) : null,
+    lessonTitle: lesson ? (lesson.title || '') : ''
+  };
+  interventionEvents.push(triggeredEvt);
+  _appendInterventionEvent(triggeredEvt);
+  console.log("Intervention event:", triggeredEvt);
+
+  activeIntervention = {
+    questionId: triggeredEvt.questionId,
+    unitId: triggeredEvt.unitId,
+    lessonId: triggeredEvt.lessonId,
+    questionText: triggeredEvt.questionText,
+    errorTag: errorTag,
+    lessonTitle: triggeredEvt.lessonTitle
+  };
+
   var title   = lesson ? lesson.title : 'Let\'s Review';
   var text    = lesson ? lesson.text  : 'Take a moment to review the concept before trying again.';
   var visualHTML = '';
@@ -654,23 +751,27 @@ function _pauseForIntervention(errorTag){
   overlay.setAttribute('data-focus-overlay', '1');
   overlay.style.cssText = [
     'position:fixed','inset:0','z-index:99999',
-    'background:rgba(255,255,255,0.97)',
+    'background:var(--modal-bg, rgba(255,255,255,0.82))',
+    'backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
+    '-webkit-backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
     'display:flex','flex-direction:column',
     'align-items:center','justify-content:center',
     'padding:32px','box-sizing:border-box',
-    'font-family:sans-serif','color:#1a1a2e'
+    'font-family:var(--ff, "Boogaloo","Arial Rounded MT Bold",sans-serif)',
+    'color:var(--txt, #1a2535)'
   ].join(';');
 
   overlay.innerHTML =
-    '<div style="max-width:520px;width:100%;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);padding:32px;text-align:center;">'+
+    '<div style="max-width:520px;width:100%;background:var(--card-bg, #fff);opacity:0.92;border-radius:var(--rad, 22px);box-shadow:var(--shad, 0 6px 28px rgba(0,0,0,.16));padding:32px;text-align:center;border:1px solid var(--border, rgba(0,0,0,.11));">'+
       '<div style="font-size:2rem;margin-bottom:8px;">💡</div>'+
-      '<h2 style="margin:0 0 12px;font-size:1.3rem;color:#2d3a8c;">'+_escHtml(title)+'</h2>'+
-      '<p style="margin:0 0 20px;font-size:1.05rem;line-height:1.5;color:#444;">'+_escHtml(text)+'</p>'+
+      '<h2 style="margin:0 0 12px;font-size:1.3rem;color:var(--txt, #2d3a8c);font-family:var(--ff, \'Boogaloo\',sans-serif);">'+_escHtml(title)+'</h2>'+
+      '<p style="margin:0 0 20px;font-size:1.05rem;line-height:1.5;color:var(--txt2, #5a7080);font-family:var(--ff2, \'Nunito\',sans-serif);">'+_escHtml(text)+'</p>'+
       (visualHTML ? '<div style="margin:0 0 20px;">'+visualHTML+'</div>' : '')+
       '<button id="focus-overlay-got-it" style="'+
-        'background:#4f46e5;color:#fff;border:none;border-radius:12px;'+
+        'background:linear-gradient(135deg,#4f46e5,#6c5ce7);color:#fff;border:none;border-radius:var(--rad-md, 14px);'+
         'padding:14px 36px;font-size:1rem;font-weight:700;cursor:pointer;'+
-        'box-shadow:0 4px 14px rgba(79,70,229,0.35);">'+
+        'font-family:var(--ff, \'Boogaloo\',sans-serif);'+
+        'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s;">'+
         'Got it — try again! →'+
       '</button>'+
     '</div>';

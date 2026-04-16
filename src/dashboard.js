@@ -1022,6 +1022,9 @@ var _managedProfiles = [];
 var _parentFamilyCode = null;
 var _pinResetStudentId = null;
 var _pinResetBuffer = [];
+// null = not yet fetched; [] or array = fetched (may be empty). Populated by
+// _loadRemoteInterventionData(); renderDashboard() prefers this over localStorage.
+var _remoteInterventionEvents = null;
 
 // ── Units metadata (for Access Controls lesson drawer) ────────────────────
 var _UNITS_META = [
@@ -1693,6 +1696,67 @@ function _changelogHtml() {
     + '</ul></div>';
 }
 
+// ── Intervention Insights ─────────────────────────────────────────────────
+
+function _getInterventionEvents() {
+  try {
+    var raw = localStorage.getItem('mmr_intervention_events_v1');
+    var parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function _summarizeInterventions(events) {
+  var byTag = {};
+  var total = 0;
+  var resolved = 0;
+  events.forEach(function(e) {
+    if (e.type === 'triggered') {
+      total++;
+      if (!byTag[e.errorTag]) byTag[e.errorTag] = { count: 0, resolved: 0 };
+      byTag[e.errorTag].count++;
+    }
+    if (e.type === 'resolved') {
+      if (e.resolvedCorrectly) resolved++;
+      if (byTag[e.errorTag] && e.resolvedCorrectly) byTag[e.errorTag].resolved++;
+    }
+  });
+  return {
+    total: total,
+    recoveryRate: total ? Math.round((resolved / total) * 100) : 0,
+    byTag: byTag,
+  };
+}
+
+function _renderInterventionInsights(events) {
+  if (!events.length) return '';
+  var summary = _summarizeInterventions(events);
+  var tags = Object.keys(summary.byTag)
+    .map(function(tag) { return [tag, summary.byTag[tag]]; })
+    .sort(function(a, b) { return b[1].count - a[1].count; })
+    .slice(0, 5);
+  var items = tags.map(function(pair) {
+    var tag = pair[0], data = pair[1];
+    var tagLabel = tag || 'unknown';
+    var rateColor = data.count > 0 && (data.resolved / data.count) >= 0.7 ? '#2e7d32' : '#e65100';
+    return '<div class="db-intervention-item">'
+      + '<span class="db-intervention-tag">' + _esc(tagLabel) + '</span>'
+      + '<span class="db-intervention-count" style="color:' + rateColor + '">' + data.count + 'x</span>'
+      + '</div>';
+  }).join('');
+  var rateColor = summary.recoveryRate >= 70 ? '#2e7d32' : summary.recoveryRate >= 40 ? '#e65100' : '#c62828';
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">&#x1F9E0; Learning Insights</h2>'
+    + '<div class="db-intervention-box">'
+    + '<div class="db-intervention-rate">Recovery Rate: <strong style="color:' + rateColor + '">' + summary.recoveryRate + '%</strong>'
+    + ' <span style="font-size:.78rem;color:#90a4ae">(' + summary.total + ' intervention' + (summary.total !== 1 ? 's' : '') + ')</span></div>'
+    + (items ? '<div class="db-intervention-tags">' + items + '</div>' : '')
+    + '</div>'
+    + '</section>';
+}
+
 function renderDashboard() {
   var root = document.getElementById('db-root');
   if (!root) return;
@@ -1721,6 +1785,10 @@ function renderDashboard() {
   var weak     = _computeWeakAreas(skills);
   var activity = _computeActivityData(scores, 7);
   var review   = _computeReviewQueue(mastery, qTextMap);
+  // Prefer Supabase-fetched events (cross-device); fall back to localStorage.
+  var interventionEvents = _remoteInterventionEvents !== null
+    ? _remoteInterventionEvents
+    : _getInterventionEvents();
 
   _prStatsHtml  = '';
   _prReportText = '';
@@ -1747,6 +1815,7 @@ function renderDashboard() {
     _renderRecentQuizzes(scores) +
     _renderSkills(skills) +
     _renderWeak(weak) +
+    _renderInterventionInsights(interventionEvents) +
     _renderPracticeSpotlight(mastery, scores) +
     _renderReview(review) +
     _renderActivity(activity) +
@@ -1770,6 +1839,7 @@ function switchStudent(id) {
   _activeId = id;
   _unlockDirty = false;
   _activeDrawerUnit = -1;
+  _remoteInterventionEvents = null;
   // If this is a managed profile whose scores haven't loaded yet, fetch them now
   if (id !== 'local' && _students[id] && !_students[id]._scoresLoaded) {
     _loadManagedStudentScores(id);
@@ -1778,7 +1848,10 @@ function switchStudent(id) {
     _loadUnlockSettings(id),
     _loadTimerSettings(id),
     _loadA11ySettings(id),
-  ]).then(function() { renderDashboard(); });
+  ]).then(function() {
+    renderDashboard();
+    if (id !== 'local') _loadRemoteInterventionData(id);
+  });
 }
 
 function dbSignOut() {
@@ -2282,6 +2355,81 @@ function _loadManagedStudentScores(studentId) {
     .catch(function() { /* offline — leave empty */ });
 }
 
+// ── Intervention Telemetry Sync ───────────────────────────────────────────
+// Upload unsynced events → Supabase, then mark them synced in localStorage.
+// Fire-and-forget; never throws; safe to call when offline.
+async function _syncPendingInterventionEvents(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return;
+  var events = _readInterventionEvents();
+  var pending = events.filter(function(e) { return !e.synced && e.clientId; });
+  if (!pending.length) return;
+  try {
+    var rows = pending.map(function(e) {
+      return {
+        client_id:          e.clientId,
+        student_id:         studentId,
+        session_id:         e.sessionId  || '',
+        event_type:         e.type       || '',
+        error_tag:          e.errorTag   || null,
+        question_id:        e.questionId || null,
+        resolved_correctly: e.resolvedCorrectly != null ? e.resolvedCorrectly : null,
+        occurred_at:        new Date(e.timestamp || Date.now()).toISOString(),
+      };
+    });
+    var result = await _supa
+      .from('intervention_events')
+      .upsert(rows, { onConflict: 'client_id', ignoreDuplicates: true });
+    if (result.error) return; // silent — will retry next session
+    // Mark uploaded events as synced in localStorage
+    var syncedIds = {};
+    pending.forEach(function(e) { syncedIds[e.clientId] = true; });
+    var updated = _readInterventionEvents().map(function(e) {
+      if (e.clientId && syncedIds[e.clientId]) e.synced = true;
+      return e;
+    });
+    _writeInterventionEvents(updated);
+  } catch(e) { /* network failure — will retry next session */ }
+}
+
+// Fetch all intervention events for a student from Supabase.
+// Returns normalized array on success, null on failure (caller falls back to localStorage).
+async function _fetchInterventionEventsFromSupabase(studentId) {
+  if (!_supa || !studentId || studentId === 'local') return null;
+  try {
+    var result = await Promise.race([
+      _supa
+        .from('intervention_events')
+        .select('event_type, error_tag, session_id, resolved_correctly, occurred_at')
+        .eq('student_id', studentId)
+        .order('occurred_at', { ascending: false })
+        .limit(500),
+      new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 5000); })
+    ]);
+    if (result.error || !result.data) return null;
+    return result.data.map(function(r) {
+      return {
+        type:              r.event_type,
+        errorTag:          r.error_tag,
+        sessionId:         r.session_id,
+        resolvedCorrectly: r.resolved_correctly,
+        timestamp:         new Date(r.occurred_at).getTime(),
+      };
+    });
+  } catch(e) { return null; }
+}
+
+// Sync unsynced local events then fetch remote events for the given student.
+// On success, updates _remoteInterventionEvents and re-renders the dashboard.
+function _loadRemoteInterventionData(studentId) {
+  _syncPendingInterventionEvents(studentId);
+  _fetchInterventionEventsFromSupabase(studentId).then(function(events) {
+    if (events !== null) {
+      _remoteInterventionEvents = events;
+      renderDashboard();
+    }
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────
 
 // Called by auth.js after show('dashboard-screen') — _supa is already initialized.
@@ -2290,6 +2438,7 @@ function _dbInit() {
   _activeId = 'local';
   _managedProfiles = [];
   _parentFamilyCode = null;
+  _remoteInterventionEvents = null;
   // Reset UI to loading state
   var root = document.getElementById('db-root');
   if (root) root.innerHTML = '<p class="db-empty" style="margin-top:40px;text-align:center">Loading\u2026</p>';
@@ -2342,6 +2491,8 @@ function _dbInit() {
           _managedProfiles.forEach(function(p) {
             _loadManagedStudentScores(p.id);
           });
+          // Sync + fetch intervention telemetry for the active student
+          if (_activeId !== 'local') _loadRemoteInterventionData(_activeId);
         })
         .catch(function() {
           clearTimeout(_dbInitTimer);
