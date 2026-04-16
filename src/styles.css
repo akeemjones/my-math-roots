@@ -203,8 +203,7 @@ body.dark .cs-done .cs-card{
   box-shadow:0 6px 20px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08); }
 body.dark .cs-locked-slide .cs-lock-card{
   background:rgba(10,22,42,0.90) !important;
-  border-top-color:rgba(255,255,255,.12);
-  border-left-color:rgba(255,255,255,.10);
+  border-color:rgba(255,255,255,.12);
   box-shadow:0 4px 18px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07); }
 body.dark .rev-section{
   background:rgba(12,22,42,0.84);
@@ -515,8 +514,8 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 body .cs-active .cs-card{
   border-radius:var(--rad-xl);
   background:rgba(255,255,255,0.96);
-  box-shadow:0 12px 40px rgba(0,0,0,.18), inset 0 1.5px 0 rgba(255,255,255,.98), inset 0 8px 0 0 var(--uc,#ccc);
-  border:1.5px solid rgba(255,255,255,.50);
+  box-shadow:0 12px 40px rgba(0,0,0,.18), inset 0 1.5px 0 rgba(255,255,255,.98);
+  border:2px solid var(--uc,#ff8c00);
   padding:16px 18px 14px; cursor:pointer;
   position:relative; overflow:hidden;
   transition:transform .15s; }
@@ -526,7 +525,7 @@ body .cs-active .cs-card{
 body .cs-done .cs-card{
   border-radius:22px;
   background:rgba(255,255,255,0.94);
-  box-shadow:0 6px 20px rgba(0,0,0,.11), inset 0 1px 0 rgba(255,255,255,.95), inset 0 5px 0 0 var(--uc,#ccc);
+  box-shadow:0 6px 20px rgba(0,0,0,.11), inset 0 1px 0 rgba(255,255,255,.95);
   border:1.5px solid rgba(255,255,255,.45);
   padding:16px 18px 14px; cursor:pointer;
   opacity:.92; }
@@ -534,17 +533,14 @@ body.dark .cs-done .cs-card{
   opacity:1;
   box-shadow:0 0 0 1px var(--uc,#ccc), 0 6px 24px rgba(0,0,0,.4); }
 body.dark .cs-active .cs-card{
-  box-shadow:0 0 0 1px var(--uc,#ccc), 0 12px 40px rgba(0,0,0,.5), 0 0 24px color-mix(in srgb, var(--uc,#ccc) 25%, transparent); }
+  box-shadow:0 0 0 2px var(--uc,#ccc), 0 12px 40px rgba(0,0,0,.5); }
 
 /* Locked card */
 body .cs-locked-slide .cs-lock-card{
   border-radius:18px;
   background:rgba(255,255,255,0.92);
   box-shadow:0 4px 18px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.92);
-  border-top:1.5px solid rgba(255,255,255,.88);
-  border-left:1.5px solid rgba(255,255,255,.65);
-  border-right:1.5px solid rgba(255,255,255,.22);
-  border-bottom:2px solid rgba(255,193,7,.35);
+  border:1.5px solid rgba(0,0,0,.06);
   padding:13px 16px; cursor:pointer;
   display:flex; align-items:center; gap:12px;
   opacity:.88; }
