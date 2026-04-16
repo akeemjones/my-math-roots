@@ -364,7 +364,7 @@ button{ -webkit-appearance:none; font-family:inherit;
      z-index:var(--z-screen); overscroll-behavior:contain; }
 /* Login screen: vibrant gradient so white card/title have proper contrast */
 #login-screen{
-  background-image:var(--app-bg-svg), linear-gradient(155deg,#ff8c00 0%,#c67000 100%);
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1a4a7a 100%);
   background-size:420px 420px, 100% 100%;
   background-repeat:repeat, no-repeat;
   overflow:hidden; /* prevent parent card from scrolling */
@@ -372,7 +372,7 @@ button{ -webkit-appearance:none; font-family:inherit;
   padding-top:env(safe-area-inset-top,0px);
 }
 body.dark #login-screen{
-  background-image:var(--app-bg-svg), linear-gradient(155deg,#3a2310 0%,#1a0f08 100%);
+  background-image:var(--app-bg-svg), linear-gradient(155deg,#0d2a5a 0%,#0a1e3a 100%);
 }
 /* Lock all interaction on screens while tutorial/onboarding overlay is up */
 body.tut-active .sc,
