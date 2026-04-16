@@ -1698,6 +1698,25 @@ function _changelogHtml() {
 
 // ── Intervention Insights ─────────────────────────────────────────────────
 
+// Parent-facing labels for distractor error tags. Keep each under ~24 chars
+// so they fit in the pill badges. `null` falls back to "Other".
+var _INTERVENTION_TAG_LABELS = {
+  err_count_inclusive:       'Counting start point',
+  err_off_by_one:            'Off by one',
+  err_wrong_operation:       'Wrong operation (+/\u2212)',
+  err_forgot_carry:          'Forgot to carry',
+  err_forgot_borrow:         'Forgot to borrow',
+  err_place_value_confusion: 'Place value mix-up',
+  err_skip_count_error:      'Skip-count mistakes',
+  err_double_count:          'Counted twice',
+  err_magnitude_error:       'Answer size off',
+  err_inverse_confusion:     'Add vs. subtract direction'
+};
+
+function _friendlyInterventionTag(tag) {
+  return _INTERVENTION_TAG_LABELS[tag] || 'Other';
+}
+
 function _getInterventionEvents() {
   try {
     var raw = localStorage.getItem('mmr_intervention_events_v1');
@@ -1739,7 +1758,7 @@ function _renderInterventionInsights(events) {
     .slice(0, 5);
   var items = tags.map(function(pair) {
     var tag = pair[0], data = pair[1];
-    var tagLabel = tag || 'unknown';
+    var tagLabel = _friendlyInterventionTag(tag);
     var rateColor = data.count > 0 && (data.resolved / data.count) >= 0.7 ? '#2e7d32' : '#e65100';
     return '<div class="db-intervention-item">'
       + '<span class="db-intervention-tag">' + _esc(tagLabel) + '</span>'
