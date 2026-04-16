@@ -749,12 +749,8 @@ function supabaseInit(){
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
       var _postRedirect = sessionStorage.getItem('mmr_post_auth_redirect');
-      if(_postRedirect){
-        sessionStorage.removeItem('mmr_post_auth_redirect');
-        show('dashboard-screen'); _dbInit(); _installHistoryGuard();
-      } else {
-        show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
-      }
+      if(_postRedirect) sessionStorage.removeItem('mmr_post_auth_redirect');
+      show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');
@@ -2379,7 +2375,7 @@ async function _parentGateEmailSignIn(){
     localStorage.setItem('mmr_user_role', 'parent');
     var modal = document.getElementById('parent-gate-modal');
     if(modal) modal.remove();
-    show('dashboard-screen'); _dbInit(); _installHistoryGuard();
+    show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
   } catch(e){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='Sign in failed. Please try again.'; }
   }
