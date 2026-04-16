@@ -1173,7 +1173,7 @@ function buildRevSection(title, items, color, collapsed){
           <div class="ri-q">${_qText(a.t)}</div>
           ${a.ok
             ? `<div class="ri-a" style="color:#27ae60">Your answer: ${_escHtml(a.chosen)} ✅</div>`
-            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#7f8c8d">${_escHtml(a.chosen)}</span></div>
+            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#546e7a">${_escHtml(a.chosen)}</span></div>
                <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> ${_escHtml(a.correct)} ✅</div>`}
           <div class="ri-e">${_ICO.lightbulb} ${_escHtml(a.exp)}</div>
         </div>
