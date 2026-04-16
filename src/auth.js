@@ -751,7 +751,7 @@ function supabaseInit(){
       var _postRedirect = sessionStorage.getItem('mmr_post_auth_redirect');
       if(_postRedirect){
         sessionStorage.removeItem('mmr_post_auth_redirect');
-        window.location.href = _postRedirect;
+        show('dashboard-screen'); _dbInit(); _installHistoryGuard();
       } else {
         show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
       }
@@ -2379,7 +2379,7 @@ async function _parentGateEmailSignIn(){
     localStorage.setItem('mmr_user_role', 'parent');
     var modal = document.getElementById('parent-gate-modal');
     if(modal) modal.remove();
-    window.location.href = '/dashboard/';
+    show('dashboard-screen'); _dbInit(); _installHistoryGuard();
   } catch(e){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='Sign in failed. Please try again.'; }
   }
@@ -2387,7 +2387,7 @@ async function _parentGateEmailSignIn(){
 
 async function _parentGateGoogle(){
   if(!_supa) return;
-  sessionStorage.setItem('mmr_post_auth_redirect', '/dashboard/');
+  sessionStorage.setItem('mmr_post_auth_redirect', 'dashboard-screen');
   try{
     await _supa.auth.signInWithOAuth({
       provider: 'google',
