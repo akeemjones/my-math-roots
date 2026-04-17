@@ -698,6 +698,127 @@ function _handleAnswer(selectedIndex){
   }
 }
 
+// ── Dynamic intervention content builder ─────────────────────────────────
+// Returns {title, text, visualHTML} based on error tag + live question data.
+// K-specific tags (err_off_by_one, err_same, err_over_count, err_less, err_more)
+// are handled dynamically using actual values. All other tags fall back to
+// the static MINI_LESSONS table (Grade 2 content).
+function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
+  var vc       = (q && q.v && q.v.config) ? q.v.config : null;
+  var startCount = vc ? (vc.count || null) : null;
+  var emoji    = (vc && vc.emoji) ? vc.emoji : null;
+  var correctNum = parseInt(correctVal, 10);
+  var chosenNum  = parseInt(chosenVal,  10);
+
+  function emojiRow(n, em){
+    var s = '<span style="font-size:1.35rem;letter-spacing:3px">';
+    for(var i=0;i<n;i++) s += em;
+    return s + '</span>';
+  }
+
+  function dynamicNL(from, to){
+    var mn = Math.max(0, Math.min(from,to)-1);
+    var mx = Math.min(20, Math.max(from,to)+1);
+    var ticks=[];
+    for(var i=mn;i<=mx;i++) ticks.push(i);
+    var lbl = to>from ? '+1' : '\u22121';
+    try{ return _buildVisualHTML({type:'numberLine',config:{min:mn,max:mx,ticks:ticks,jumps:[{from:from,to:to,label:lbl}],mark:to}}); }
+    catch(e){ return ''; }
+  }
+
+  var title='', text='', visualHTML='';
+
+  if(errorTag === 'err_off_by_one'){
+    title = 'Almost! You Were Just One Off';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      var dir = correctNum > chosenNum ? 'forward' : 'back';
+      text = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Take one step ' + dir + ' from ' + chosenVal + '!';
+    } else {
+      text = 'You were so close! Count each step out loud and stop at the right number.';
+    }
+    if(startCount !== null && !isNaN(correctNum)){
+      visualHTML = dynamicNL(startCount, correctNum);
+    } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      visualHTML = dynamicNL(chosenNum, correctNum);
+    }
+
+  } else if(errorTag === 'err_same'){
+    title = 'Remember to Change the Count!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      var isMore = correctNum > chosenNum;
+      text = 'You picked ' + chosenVal + ' \u2014 that\'s what you started with. Add ' + (isMore ? 'one more' : 'take one less') + ': ' + chosenVal + ' \u2192 ' + correctVal + '.';
+      if(emoji && correctNum >= 1 && correctNum <= 12){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(chosenNum, emoji)
+          + '<span style="font-size:1.25rem;margin:0 10px">\u2192</span>'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">'
+          + chosenVal + ' \u2192 ' + correctVal
+          + '</span></div>';
+      }
+    } else {
+      text = 'Don\'t keep the same number \u2014 change it by one!';
+    }
+
+  } else if(errorTag === 'err_over_count'){
+    title = 'Too Many \u2014 Stop Earlier!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ', but that\'s too many. Count carefully and stop at ' + correctVal + '.';
+      if(emoji && correctNum >= 1 && correctNum <= 12){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Stop here: ' + correctVal + '</span>'
+          + '</div>';
+      }
+    } else {
+      text = 'You went too far! Count carefully and stop at the right number.';
+    }
+
+  } else if(errorTag === 'err_less'){
+    title = 'Look for the BIGGER Group!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' \u2014 that\'s the smaller number. The bigger number is ' + correctVal + '.';
+    } else {
+      text = 'MORE means the bigger number. Count both groups and pick the larger one!';
+    }
+    if(vc && vc.leftCount !== undefined){
+      var lc=vc.leftCount, rc=vc.rightCount, le=vc.leftObj||'\u2b50', re=vc.rightObj||'\u2b50';
+      visualHTML = '<div style="display:flex;gap:20px;justify-content:center;align-items:flex-end">'
+        + '<div style="text-align:center">' + emojiRow(lc,le) + '<br><span style="font-size:0.85rem">' + lc + '</span></div>'
+        + '<span style="font-size:1.1rem;padding-bottom:4px">vs</span>'
+        + '<div style="text-align:center">' + emojiRow(rc,re) + '<br><span style="font-size:0.85rem">' + rc + '</span></div>'
+        + '</div>';
+    }
+
+  } else if(errorTag === 'err_more'){
+    title = 'Look for the SMALLER Group!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' \u2014 that\'s the bigger number. The smaller number is ' + correctVal + '.';
+    } else {
+      text = 'FEWER means the smaller number. Count both groups and pick the smaller one!';
+    }
+    if(vc && vc.leftCount !== undefined){
+      var lc2=vc.leftCount, rc2=vc.rightCount, le2=vc.leftObj||'\u2b50', re2=vc.rightObj||'\u2b50';
+      visualHTML = '<div style="display:flex;gap:20px;justify-content:center;align-items:flex-end">'
+        + '<div style="text-align:center">' + emojiRow(lc2,le2) + '<br><span style="font-size:0.85rem">' + lc2 + '</span></div>'
+        + '<span style="font-size:1.1rem;padding-bottom:4px">vs</span>'
+        + '<div style="text-align:center">' + emojiRow(rc2,re2) + '<br><span style="font-size:0.85rem">' + rc2 + '</span></div>'
+        + '</div>';
+    }
+
+  } else {
+    // Fall back to static MINI_LESSONS for Grade 2 error tags
+    var lesson = MINI_LESSONS[errorTag];
+    title = lesson ? lesson.title : 'Let\'s Review';
+    text  = lesson ? lesson.text  : 'Take a moment to review this concept before trying again.';
+    if(lesson){
+      try{ visualHTML = _buildVisualHTML(lesson.visual); }catch(e){ console.warn('Visual render failed:', errorTag); }
+    }
+  }
+
+  return {title:title, text:text, visualHTML:visualHTML};
+}
+
 function _pauseForIntervention(errorTag, selectedIndex){
   isPaused = true;
 
@@ -705,8 +826,14 @@ function _pauseForIntervention(errorTag, selectedIndex){
   var q = qz ? qz.questions[qz.idx] : null;
   var _ov = function(item){ return (item && typeof item === 'object') ? item.val : item; };
 
+  var correctVal = q ? _ov(q.o[q.a]) : null;
+  var chosenVal  = (q && selectedIndex != null) ? _ov(q.o[selectedIndex]) : null;
+  var content    = _buildInterventionContent(errorTag, q, correctVal, chosenVal);
+  var title      = content.title;
+  var text       = content.text;
+  var visualHTML = content.visualHTML;
+
   // ── Log triggered intervention event ──
-  var lesson = MINI_LESSONS[errorTag];
   var triggeredEvt = {
     type: 'triggered',
     timestamp: Date.now(),
@@ -716,9 +843,9 @@ function _pauseForIntervention(errorTag, selectedIndex){
     lessonId: CUR.lesson || null,
     questionText: q ? (q.t || '') : '',
     errorTag: errorTag,
-    chosenValue: (q && selectedIndex != null) ? _ov(q.o[selectedIndex]) : null,
-    correctValue: q ? _ov(q.o[q.a]) : null,
-    lessonTitle: lesson ? (lesson.title || '') : ''
+    chosenValue: chosenVal,
+    correctValue: correctVal,
+    lessonTitle: title
   };
   interventionEvents.push(triggeredEvt);
   _appendInterventionEvent(triggeredEvt);
@@ -730,18 +857,10 @@ function _pauseForIntervention(errorTag, selectedIndex){
     lessonId: triggeredEvt.lessonId,
     questionText: triggeredEvt.questionText,
     errorTag: errorTag,
-    lessonTitle: triggeredEvt.lessonTitle
+    lessonTitle: title
   };
 
-  var title   = lesson ? lesson.title : 'Let\'s Review';
-  var text    = lesson ? lesson.text  : 'Take a moment to review the concept before trying again.';
-  var visualHTML = '';
-  if(lesson){
-    console.log("Intervention:", lesson.title);
-    try { visualHTML = _buildVisualHTML(lesson.visual); } catch(e){ console.warn("Visual render failed for:", errorTag); }
-  } else {
-    console.log("Triggering generic intervention...");
-  }
+  console.log("Intervention:", title);
 
   // Remove any existing overlay
   var existing = document.querySelector('[data-focus-overlay]');
