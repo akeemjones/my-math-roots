@@ -1626,6 +1626,44 @@ function _closeParentAuth(){
 }
 
 
+function _refreshGradeList(){
+  var active = localStorage.getItem('mmr_grade') || '2';
+  var lbl = document.getElementById('grade-picker-label');
+  if(lbl) lbl.textContent = active === 'K' ? 'Kindergarten' : 'Grade ' + active;
+  document.querySelectorAll('.grade-picker-opt[data-grade]').forEach(function(btn){
+    btn.classList.toggle('grade-picker-active', btn.dataset.grade === active);
+  });
+}
+
+function toggleGradePicker(){
+  var picker = document.getElementById('grade-picker');
+  if(!picker) return;
+  var isOpen = picker.classList.toggle('open');
+  if(isOpen){
+    setTimeout(function(){
+      document.addEventListener('click', function _closeGP(e){
+        if(!picker.contains(e.target)){ picker.classList.remove('open'); document.removeEventListener('click',_closeGP); }
+      });
+    }, 0);
+  }
+}
+
+function pickGrade(val){
+  var picker = document.getElementById('grade-picker');
+  if(picker) picker.classList.remove('open');
+  switchGradeUI(val);
+}
+
+function switchGradeUI(newGrade){
+  var current = localStorage.getItem('mmr_grade') || '2';
+  if(newGrade === current) return;
+  var quizActive = typeof CUR !== 'undefined' && CUR.quiz !== null;
+  if(quizActive){
+    if(!confirm('Switching grades will exit your current quiz session. Continue?')) return;
+  }
+  if(typeof switchGrade === 'function') switchGrade(newGrade);
+}
+
 function goSettings(){
   playTap();
   updateAccountUI();
@@ -1656,6 +1694,7 @@ function goSettings(){
   // Clean up timer picker scroll listeners
   if(window._tpCleanups){ window._tpCleanups.forEach(fn=>fn()); window._tpCleanups = []; }
   _syncA11yUI();
+  _refreshGradeList();
   show('settings-screen');
 }
 

@@ -739,6 +739,11 @@ function supabaseInit(){
           for(let i=0;i<_tsN;i++) _tsDates.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
           localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates));
           show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+        } else if(localStorage.getItem('wb_guest_mode')) {
+          // Resume guest session after grade-switch reload
+          buildHome(); show('home');
+          _dismissSplash();
+          return;
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
@@ -750,6 +755,7 @@ function supabaseInit(){
       }
     } else if(event === 'SIGNED_IN'){
       // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
+      localStorage.removeItem('wb_guest_mode');
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
       sessionStorage.removeItem('mmr_post_auth_redirect'); // clear any stale redirect value
@@ -802,6 +808,7 @@ function _continueAsGuest() {
 function _proceedAsGuest() {
   document.getElementById('soft-gate-modal')?.remove();
   localStorage.removeItem('mmr_user_role');
+  localStorage.setItem('wb_guest_mode', '1');
   buildHome();
   show('home');
   // Lock the screen immediately if install/tutorial hasn't been shown yet,
@@ -1124,7 +1131,11 @@ async function _pullStudentProgress(studentId) {
   if (!_supa || !studentId || studentId === 'local' || !_sessionToken) return;
   try {
     var result = await Promise.race([
-      _supa.rpc('pull_student_progress', { p_student_id: studentId, p_session_token: _sessionToken }),
+      _supa.rpc('pull_student_progress', {
+        p_student_id:    studentId,
+        p_session_token: _sessionToken,
+        p_grade:         localStorage.getItem('mmr_grade') || '2'
+      }),
       new Promise(function(_, rej) { setTimeout(function() { rej(new Error('pull timeout')); }, 8000); })
     ]);
     if (result.error) {
@@ -1284,7 +1295,9 @@ async function _pullOnLogin(force){
     const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
     const _activeStudId = localStorage.getItem('mmr_active_student_id') || null;
     const { data: syncData, error: rpcErr } = await Promise.race([
-      _supa.rpc('get_user_sync_data', _activeStudId ? { p_student_id: _activeStudId } : {}),
+      _supa.rpc('get_user_sync_data', _activeStudId
+        ? { p_student_id: _activeStudId, p_grade: localStorage.getItem('mmr_grade') || '2' }
+        : { p_grade: localStorage.getItem('mmr_grade') || '2' }),
       _timeout
     ]);
     if(rpcErr) throw rpcErr;
@@ -1451,6 +1464,7 @@ async function _pushAll(){
     var result = await Promise.race([
       _supa.rpc('push_student_progress', {
         p_student_id:       studentId,
+        p_grade:            localStorage.getItem('mmr_grade') || '2',
         p_session_token:    _sessionToken,
         p_mastery_json:     (typeof MASTERY !== 'undefined') ? MASTERY : {},
         p_streak_current:   STREAK.current || 0,
@@ -1494,8 +1508,8 @@ async function _pushDoneParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, done_json:DONE, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', done_json:DONE, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushDone timeout')); },8000); })
     ]);
@@ -1510,8 +1524,8 @@ async function _pushMasteryParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, mastery_json:mastery, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', mastery_json:mastery, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })
     ]);
@@ -1525,8 +1539,8 @@ async function _pushAppTimeParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, apptime_json:appTime, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', apptime_json:appTime, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAppTime timeout')); },8000); })
     ]);
@@ -2434,3 +2448,38 @@ function updateSyncLabel(){
 
 let CUR = { unitIdx:0, lessonIdx:0, quiz:null };
 // quiz: { questions[], shuffled[], idx, score, answers[], id, label, type, returnTo }
+
+// ── Grade switch helper ─────────────────────────────────────────────────────
+var _gradeSwitching = false;
+
+function _showGradeSwitchOverlay(newGrade){
+  var label = newGrade === 'K' ? 'Kindergarten' : 'Grade ' + newGrade;
+  var lbl = document.getElementById('gso-label');
+  if(lbl) lbl.textContent = 'Switching to ' + label + '\u2026';
+  var overlay = document.getElementById('grade-switch-overlay');
+  if(overlay) overlay.classList.add('gso-active');
+  // Store label so boot splash can echo it
+  localStorage.setItem('wb_grade_switch_label', label);
+}
+
+async function switchGrade(newGrade){
+  if(_gradeSwitching) return;
+  var current = localStorage.getItem('mmr_grade') || '2';
+  if(newGrade === current) return;
+  _gradeSwitching = true;
+  if(typeof _pushAll === 'function'){
+    try{
+      if(typeof _pushTimer !== 'undefined' && _pushTimer){ clearTimeout(_pushTimer); _pushTimer = null; }
+      await Promise.race([
+        _pushAll(),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('switch push timeout')); }, 5000); })
+      ]);
+    } catch(e){ console.warn('[grade switch] push failed, proceeding anyway', e); }
+  }
+  _showGradeSwitchOverlay(newGrade);
+  await new Promise(function(resolve){ setTimeout(resolve, 280); });
+  localStorage.setItem('mmr_grade', newGrade);
+  // Preserve guest mode across reload so boot.js fast-path fires
+  if(!_supaUser) localStorage.setItem('wb_guest_mode', '1');
+  location.reload();
+}

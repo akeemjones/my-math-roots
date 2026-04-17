@@ -31,7 +31,7 @@ const _APP_GLOBALS = [
   '_cloudDeleteScore','_origSaveDone','_origSaveSc','_origSaveMastery','_origSaveAppTime',
   '_pushMastery','_pushAppTime','syncNow','openAuthModal',
   'closeAuthModal','_switchAuthTab','submitAuth','_clearUserData','supaSignOut',
-  'updateAccountUI','_signOut','updateSyncLabel','CUR',
+  'updateAccountUI','_signOut','updateSyncLabel','CUR','switchGrade',
   // nav.js
   'ALL_SCREENS','show','isUnitUnlocked','isLessonUnlocked','isUnitQuizUnlocked',
   // home.js
@@ -71,7 +71,7 @@ const _APP_GLOBALS = [
   'getPin','isParentUnlocked','_setParentSession','_clearParentSession',
   '_PIN_FAIL_KEY','_PIN_FAIL_COUNT_KEY','_PIN_LOCKOUT_SIG_KEY','_PIN_MAX_ATTEMPTS',
   '_authClosing','_authPinBlurHandler','_openParentAuth','_closeParentAuth',
-  'goSettings','_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
+  'goSettings','toggleGradePicker','pickGrade','_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
   'openForgotPin','closeForgotPin','refreshForgotProblem','checkForgotAnswer',
   'showInstall','_upmUnitIdx','_upmMode','_upmCheck','_upmPoll','_startUpmPoll',
   '_stopUpmPoll','_upmBind','_lpmUnitIdx','_lpmLessonIdx',
@@ -166,7 +166,21 @@ if(vEl) vEl.textContent = APP_VERSION;
 if(!localStorage.getItem('wb_app_secret')){
   localStorage.setItem('wb_app_secret', crypto.randomUUID());
 }
-supabaseInit();
+// Boot-side polish: echo grade-switch label in splash if coming from a switch
+(function(){
+  var _gsl = localStorage.getItem('wb_grade_switch_label');
+  if(_gsl){
+    localStorage.removeItem('wb_grade_switch_label');
+    var _splEl = document.querySelector('#auth-splash div[style*="font-size:var(--fs-2xl)"]');
+    if(_splEl) _splEl.textContent = 'Loading ' + _gsl + '\u2026';
+  }
+})();
+// Guest fast-path: skip Supabase auth entirely on grade-switch reload
+if(localStorage.getItem('wb_guest_mode') === '1'){
+  buildHome(); show('home'); _dismissSplash();
+} else {
+  supabaseInit();
+}
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});
 // Clear old tutorial flag so users see the improved v2 tutorial
@@ -178,8 +192,9 @@ setTimeout(() => {
     _dismissSplash();
     const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
-      // Logged-in user whose data load hung — show home with whatever local data we have
       show('home'); buildHome(); _installHistoryGuard();
+    } else if(localStorage.getItem('wb_guest_mode') === '1'){
+      buildHome(); show('home');
     } else if(_isLocal2 && new URLSearchParams(location.search).get('preview') === '1'){
       const _tsN2 = parseInt(new URLSearchParams(location.search).get('testStreak')) || 7;
       _supaUser = { id:'preview', email:'preview@test.com' };

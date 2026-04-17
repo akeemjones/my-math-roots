@@ -55,6 +55,18 @@
 </div>
 
 
+<!-- Grade-switch transition overlay -->
+<div id="grade-switch-overlay" aria-live="polite">
+  <div class="gso-card">
+    <div class="gso-label" id="gso-label">Switching grades…</div>
+    <div class="gso-dots">
+      <div class="gso-dot"></div>
+      <div class="gso-dot"></div>
+      <div class="gso-dot"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════
      AUTH SPLASH — shown while Supabase resolves session, fades out
 ════════════════════════════════════════ -->
@@ -432,6 +444,23 @@
         <div class="set-row">
           <div class="set-lbl">Student Name <small>shown in score history</small></div>
           <input class="set-inp" id="set-student" type="text" placeholder="e.g. Emma" maxlength="30" oninput="autoSaveSettings()">
+        </div>
+        <div class="set-row" style="margin-top:10px">
+          <div class="set-lbl">Grade Level</div>
+          <div class="grade-picker" id="grade-picker">
+            <button class="grade-picker-btn" id="grade-picker-btn" type="button" onclick="toggleGradePicker()">
+              <span id="grade-picker-label">Grade 2</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="grade-picker-list" id="grade-picker-list">
+              <button class="grade-picker-opt" data-grade="K" type="button" onclick="pickGrade('K')">Kindergarten</button>
+              <div class="grade-picker-opt grade-picker-soon">Grade 1 <span class="grade-soon-tag">Soon</span></div>
+              <button class="grade-picker-opt" data-grade="2" type="button" onclick="pickGrade('2')">Grade 2</button>
+              <div class="grade-picker-opt grade-picker-soon">Grade 3 <span class="grade-soon-tag">Soon</span></div>
+              <div class="grade-picker-opt grade-picker-soon">Grade 4 <span class="grade-soon-tag">Soon</span></div>
+              <div class="grade-picker-opt grade-picker-soon">Grade 5 <span class="grade-soon-tag">Soon</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

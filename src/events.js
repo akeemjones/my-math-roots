@@ -155,6 +155,7 @@
     closeInstall:           ()    => closeInstall(),
     switchInstallTab:       (a)   => switchInstallTab(a),
     toggleSound:            ()    => typeof toggleSound === 'function' && toggleSound(),
+    switchGradeUI:          (a)   => switchGradeUI(a),
     toggleTheme:            ()    => typeof toggleTheme === 'function' && toggleTheme(),
     setTheme:               (a)   => setTheme(a),
     toggleA11y:             (a)   => toggleA11y(a),
