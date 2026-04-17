@@ -121,7 +121,7 @@ function openUnit(idx){
   const hasPausedUQ = !!pausedUQ;
   const uqBtn = document.getElementById('uq-btn');
   const uqResumeArea = document.getElementById('uq-resume-area');
-  uqBtn.querySelector('h3').style.color = uqUnlocked ? u.color : '#aab';
+  document.getElementById('uq-h3').style.color = uqUnlocked ? u.color : '#aab';
   if(uqUnlocked && hasPausedUQ){
     // Show resume banner, hide the start button
     const pq = pausedUQ;
@@ -163,7 +163,7 @@ function openUnit(idx){
     uqResumeArea.innerHTML = '';
     uqBtn.style.display = '';
     document.getElementById('uq-ico').innerHTML = _ICO.lock;
-    uqBtn.querySelector('p').textContent = 'Complete all lessons with 80%+ to unlock';
+    document.getElementById('uq-p').textContent = 'Complete all lessons with 80%+ to unlock';
     uqBtn.style.opacity = '.6';
     uqBtn.onclick = () => showLockToast('Get 80%+ on all lessons to unlock the unit quiz!', true);
   }
