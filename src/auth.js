@@ -2450,9 +2450,23 @@ let CUR = { unitIdx:0, lessonIdx:0, quiz:null };
 // quiz: { questions[], shuffled[], idx, score, answers[], id, label, type, returnTo }
 
 // ── Grade switch helper ─────────────────────────────────────────────────────
+var _gradeSwitching = false;
+
+function _showGradeSwitchOverlay(newGrade){
+  var label = newGrade === 'K' ? 'Kindergarten' : 'Grade ' + newGrade;
+  var lbl = document.getElementById('gso-label');
+  if(lbl) lbl.textContent = 'Switching to ' + label + '\u2026';
+  var overlay = document.getElementById('grade-switch-overlay');
+  if(overlay) overlay.classList.add('gso-active');
+  // Store label so boot splash can echo it
+  localStorage.setItem('wb_grade_switch_label', label);
+}
+
 async function switchGrade(newGrade){
+  if(_gradeSwitching) return;
   var current = localStorage.getItem('mmr_grade') || '2';
   if(newGrade === current) return;
+  _gradeSwitching = true;
   if(typeof _pushAll === 'function'){
     try{
       if(typeof _pushTimer !== 'undefined' && _pushTimer){ clearTimeout(_pushTimer); _pushTimer = null; }
@@ -2462,6 +2476,8 @@ async function switchGrade(newGrade){
       ]);
     } catch(e){ console.warn('[grade switch] push failed, proceeding anyway', e); }
   }
+  _showGradeSwitchOverlay(newGrade);
+  await new Promise(function(resolve){ setTimeout(resolve, 280); });
   localStorage.setItem('mmr_grade', newGrade);
   // Preserve guest mode across reload so boot.js fast-path fires
   if(!_supaUser) localStorage.setItem('wb_guest_mode', '1');

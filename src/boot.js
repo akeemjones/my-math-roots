@@ -166,6 +166,15 @@ if(vEl) vEl.textContent = APP_VERSION;
 if(!localStorage.getItem('wb_app_secret')){
   localStorage.setItem('wb_app_secret', crypto.randomUUID());
 }
+// Boot-side polish: echo grade-switch label in splash if coming from a switch
+(function(){
+  var _gsl = localStorage.getItem('wb_grade_switch_label');
+  if(_gsl){
+    localStorage.removeItem('wb_grade_switch_label');
+    var _splEl = document.querySelector('#auth-splash div[style*="font-size:var(--fs-2xl)"]');
+    if(_splEl) _splEl.textContent = 'Loading ' + _gsl + '\u2026';
+  }
+})();
 // Guest fast-path: skip Supabase auth entirely on grade-switch reload
 if(localStorage.getItem('wb_guest_mode') === '1'){
   buildHome(); show('home'); _dismissSplash();
