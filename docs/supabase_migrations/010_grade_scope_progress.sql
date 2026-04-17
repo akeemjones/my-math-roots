@@ -7,6 +7,8 @@ ALTER TABLE student_progress
   ADD COLUMN IF NOT EXISTS grade TEXT NOT NULL DEFAULT '2';
 
 -- 2. Backfill any rows that pre-date this migration
+-- Safety-net only: the NOT NULL DEFAULT '2' above already fills existing rows.
+-- This UPDATE is a no-op in practice but is kept as an explicit audit trail.
 UPDATE student_progress SET grade = '2' WHERE grade IS NULL OR grade = '';
 
 -- 3. Drop the old (user_id, student_id) unique constraint from migration 008
@@ -95,6 +97,10 @@ AS $$
 $$;
 */
 
+DO $$ BEGIN
+  RAISE NOTICE 'ACTION REQUIRED: push_student_progress must be updated manually in Supabase Dashboard → Database → Functions. See the skeleton above for the 4 diff points to apply.';
+END $$;
+
 
 -- 7. Update pull_student_progress RPC — add p_grade parameter
 -- Apply these diffs in Supabase Dashboard → Database → Functions → pull_student_progress → Edit:
@@ -108,6 +114,10 @@ $$;
 --     WHERE sp.student_id = p_student_id::uuid AND sp.grade = p_grade
 --
 -- Leave any fallback SELECT (student_id IS NULL) unchanged.
+
+DO $$ BEGIN
+  RAISE NOTICE 'ACTION REQUIRED: pull_student_progress must be updated manually in Supabase Dashboard → Database → Functions. See the 2 diff points above.';
+END $$;
 
 
 -- 8. Update get_user_sync_data RPC — add p_grade parameter (full replacement)
