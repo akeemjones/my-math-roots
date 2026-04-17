@@ -166,7 +166,12 @@ if(vEl) vEl.textContent = APP_VERSION;
 if(!localStorage.getItem('wb_app_secret')){
   localStorage.setItem('wb_app_secret', crypto.randomUUID());
 }
-supabaseInit();
+// Guest fast-path: skip Supabase auth entirely on grade-switch reload
+if(localStorage.getItem('wb_guest_mode') === '1'){
+  buildHome(); show('home'); _dismissSplash();
+} else {
+  supabaseInit();
+}
 // SEC-9: Migrate any legacy plain-text email in localStorage to AES-GCM encrypted form
 _migrateEmailStorage().catch(()=>{});
 // Clear old tutorial flag so users see the improved v2 tutorial
@@ -178,8 +183,9 @@ setTimeout(() => {
     _dismissSplash();
     const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
-      // Logged-in user whose data load hung — show home with whatever local data we have
       show('home'); buildHome(); _installHistoryGuard();
+    } else if(localStorage.getItem('wb_guest_mode') === '1'){
+      buildHome(); show('home');
     } else if(_isLocal2 && new URLSearchParams(location.search).get('preview') === '1'){
       const _tsN2 = parseInt(new URLSearchParams(location.search).get('testStreak')) || 7;
       _supaUser = { id:'preview', email:'preview@test.com' };

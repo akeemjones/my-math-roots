@@ -2463,5 +2463,7 @@ async function switchGrade(newGrade){
     } catch(e){ console.warn('[grade switch] push failed, proceeding anyway', e); }
   }
   localStorage.setItem('mmr_grade', newGrade);
+  // Preserve guest mode across reload so boot.js fast-path fires
+  if(!_supaUser) localStorage.setItem('wb_guest_mode', '1');
   location.reload();
 }
