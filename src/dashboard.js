@@ -967,11 +967,11 @@ function _genReportFooter() {
   if (onCooldown) {
     var nextDate = new Date(nextAvail).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
     return '<div style="text-align:center">'
-      + '<button class="db-ai-gen-btn" disabled style="opacity:0.45;cursor:not-allowed">📋 Generate AI Report</button>'
+      + '<button class="db-ai-gen-btn" disabled style="opacity:0.45;cursor:not-allowed">📋 Generate Report</button>'
       + '<div class="db-ai-powered">Next report available ' + nextDate + '</div></div>';
   }
   return '<div style="text-align:center">'
-    + '<button class="db-ai-gen-btn" data-action="generateAIReport">📋 Generate AI Report</button>'
+    + '<button class="db-ai-gen-btn" data-action="generateAIReport">📋 Generate Report</button>'
     + '<div class="db-ai-powered">Powered by Gemini</div></div>';
 }
 
