@@ -14,3 +14,18 @@ dist/
 app/.svelte-kit/
 app/build/
 app/node_modules/
+
+# Local agent/tool artifacts
+.claude/
+.playwright-mcp/
+CLAUDE.md
+src/CLAUDE.md
+docs/superpowers/plans/2026-04-15-edge-case-hardening.md
+
+# One-off extraction / backup artifacts
+extract_u1.js
+tag_u1_numeric.js
+u1_extraction_summary.txt
+u1_questions.json
+scripts/u1-hints.json
+*.bak
