@@ -2441,3 +2441,20 @@ function updateSyncLabel(){
 
 let CUR = { unitIdx:0, lessonIdx:0, quiz:null };
 // quiz: { questions[], shuffled[], idx, score, answers[], id, label, type, returnTo }
+
+// ── Grade switch helper ─────────────────────────────────────────────────────
+async function switchGrade(newGrade){
+  var current = localStorage.getItem('mmr_grade') || '2';
+  if(newGrade === current) return;
+  if(typeof _pushAll === 'function'){
+    try{
+      if(typeof _pushTimer !== 'undefined' && _pushTimer){ clearTimeout(_pushTimer); _pushTimer = null; }
+      await Promise.race([
+        _pushAll(),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('switch push timeout')); }, 5000); })
+      ]);
+    } catch(e){ console.warn('[grade switch] push failed, proceeding anyway', e); }
+  }
+  localStorage.setItem('mmr_grade', newGrade);
+  location.reload();
+}

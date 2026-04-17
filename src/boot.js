@@ -31,7 +31,7 @@ const _APP_GLOBALS = [
   '_cloudDeleteScore','_origSaveDone','_origSaveSc','_origSaveMastery','_origSaveAppTime',
   '_pushMastery','_pushAppTime','syncNow','openAuthModal',
   'closeAuthModal','_switchAuthTab','submitAuth','_clearUserData','supaSignOut',
-  'updateAccountUI','_signOut','updateSyncLabel','CUR',
+  'updateAccountUI','_signOut','updateSyncLabel','CUR','switchGrade',
   // nav.js
   'ALL_SCREENS','show','isUnitUnlocked','isLessonUnlocked','isUnitQuizUnlocked',
   // home.js
