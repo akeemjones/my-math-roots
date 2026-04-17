@@ -1763,10 +1763,9 @@ body.dark #upm-pin-inp.set-inp:focus, body.dark #new-pin-inp.set-inp:focus {
 .tut-btns{ display:flex;gap:10px;justify-content:center; }
 .tut-btn-next{
   font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);
-  padding:13px 32px;border-radius:50px;border:none;
-  background:linear-gradient(135deg,var(--accent),#27ae60);
-  color:var(--accent-ink);cursor:pointer;touch-action:manipulation;
-  box-shadow:0 4px 0 rgba(0,0,0,.15);flex:1;
+  padding:13px 32px;border-radius:50px;
+  background:#fff;color:var(--accent);border:2px solid var(--accent);
+  cursor:pointer;touch-action:manipulation;box-shadow:none;flex:1;
 }
 .tut-btn-skip{
   font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);
@@ -1834,10 +1833,9 @@ body.dark #spot-card{
 }
 .spot-next-btn{
   font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);
-  padding:9px 20px;border-radius:50px;border:none;
-  background:linear-gradient(135deg,var(--accent),#27ae60);
-  color:var(--accent-ink);cursor:pointer;touch-action:manipulation;
-  box-shadow:0 3px 0 rgba(0,0,0,.15);
+  padding:9px 20px;border-radius:50px;
+  background:#fff;color:var(--accent);border:2px solid var(--accent);
+  cursor:pointer;touch-action:manipulation;box-shadow:none;
 }
 .spot-skip-btn{
   font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);
