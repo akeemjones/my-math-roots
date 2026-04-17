@@ -1628,16 +1628,8 @@ function _closeParentAuth(){
 
 function _refreshGradeList(){
   var active = localStorage.getItem('mmr_grade') || '2';
-  var rows = document.querySelectorAll('#grade-list .grade-list-row:not(.grade-row-soon)');
-  rows.forEach(function(row){
-    var g = row.dataset.grade;
-    var isActive = g === active;
-    row.classList.toggle('grade-active', isActive);
-    var badge = document.getElementById('grade-badge-' + g);
-    var check = document.getElementById('grade-check-' + g);
-    if(badge) badge.classList.toggle('hidden', !isActive);
-    if(check) check.classList.toggle('hidden', isActive);
-  });
+  var sel = document.getElementById('grade-select');
+  if(sel) sel.value = active;
 }
 
 function switchGradeUI(newGrade){

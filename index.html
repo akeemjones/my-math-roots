@@ -433,6 +433,17 @@
           <div class="set-lbl">Student Name <small>shown in score history</small></div>
           <input class="set-inp" id="set-student" type="text" placeholder="e.g. Emma" maxlength="30" oninput="autoSaveSettings()">
         </div>
+        <div class="set-row" style="margin-top:10px">
+          <div class="set-lbl">Grade Level</div>
+          <select id="grade-select" class="set-inp" onchange="switchGradeUI(this.value)">
+            <option value="K">Kindergarten</option>
+            <option value="1" disabled>Grade 1 — Coming soon</option>
+            <option value="2">Grade 2</option>
+            <option value="3" disabled>Grade 3 — Coming soon</option>
+            <option value="4" disabled>Grade 4 — Coming soon</option>
+            <option value="5" disabled>Grade 5 — Coming soon</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -473,60 +484,6 @@
     </div>
 
 
-
-    <!-- Grade Level -->
-    <div class="set-section">
-      <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span> Grade Level</div>
-      <div class="set-body">
-        <p class="set-body-p">Switch grades to access different content. Each grade keeps its own separate progress.</p>
-        <div id="grade-list">
-          <div class="grade-list-row" data-grade="K" data-arg="K" data-action="switchGradeUI">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Kindergarten</div>
-              <div class="grade-list-sub">Counting &amp; early numbers</div>
-            </div>
-            <span class="grade-list-badge grade-badge-active hidden" id="grade-badge-K">ACTIVE</span>
-            <span class="grade-list-check hidden" id="grade-check-K">✓</span>
-          </div>
-          <div class="grade-list-row grade-row-soon" data-grade="1">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Grade 1</div>
-              <div class="grade-list-sub">Coming soon</div>
-            </div>
-            <span class="grade-list-badge grade-badge-soon">SOON</span>
-          </div>
-          <div class="grade-list-row" data-grade="2" data-arg="2" data-action="switchGradeUI">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Grade 2</div>
-              <div class="grade-list-sub">Addition, subtraction &amp; place value</div>
-            </div>
-            <span class="grade-list-badge grade-badge-active hidden" id="grade-badge-2">ACTIVE</span>
-            <span class="grade-list-check hidden" id="grade-check-2">✓</span>
-          </div>
-          <div class="grade-list-row grade-row-soon" data-grade="3">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Grade 3</div>
-              <div class="grade-list-sub">Coming soon</div>
-            </div>
-            <span class="grade-list-badge grade-badge-soon">SOON</span>
-          </div>
-          <div class="grade-list-row grade-row-soon" data-grade="4">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Grade 4</div>
-              <div class="grade-list-sub">Coming soon</div>
-            </div>
-            <span class="grade-list-badge grade-badge-soon">SOON</span>
-          </div>
-          <div class="grade-list-row grade-row-soon" data-grade="5">
-            <div class="grade-list-info">
-              <div class="grade-list-name">Grade 5</div>
-              <div class="grade-list-sub">Coming soon</div>
-            </div>
-            <span class="grade-list-badge grade-badge-soon">SOON</span>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Accessibility -->
     <div class="set-section">
