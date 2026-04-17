@@ -246,7 +246,7 @@
 
     </div>
     <div class="scores-link">
-      <button class="big-btn" style="background:linear-gradient(135deg,#ffd700,#ff8c00);box-shadow:0 5px 0 #c67000" data-action="goHistory">
+      <button class="big-btn" style="background:var(--accent);color:var(--accent-ink);box-shadow:0 5px 0 var(--accent-700)" data-action="goHistory">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Score History
       </button>
     </div>
@@ -479,7 +479,7 @@
       <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span> Accessibility</div>
       <div class="set-body">
         <p class="set-body-p">Adjust display and interaction options for students with accessibility needs.</p>
-        <button class="set-save" style="background:linear-gradient(135deg,var(--accent-600),var(--accent-700));box-shadow:0 4px 0 rgba(0,0,0,.15);color:var(--accent-ink);" data-action="openA11yModal">
+        <button class="set-save" data-action="openA11yModal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> Accessibility Controls
         </button>
       </div>
@@ -492,7 +492,7 @@
         <p style="font-size:var(--fs-sm);margin-bottom:8px">
           Add this app to your iPhone or iPad home screen for a full-screen, offline experience — no App Store needed.
         </p>
-        <button class="set-save" style="background:linear-gradient(135deg,var(--accent-600),var(--accent-700));box-shadow:0 4px 0 rgba(0,0,0,.15);color:var(--accent-ink);" data-action="showInstall">
+        <button class="set-save" data-action="showInstall">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> How to Install
         </button>
       </div>
@@ -671,8 +671,8 @@
       <button type="button" data-action="checkForgotAnswer"
         style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);padding:12px 20px;
           border-radius:50px;border:none;cursor:pointer;
-          background:linear-gradient(135deg,#27ae60,#1a7a45);color:#fff;
-          box-shadow:0 3px 0 #0f5c32;white-space:nowrap">
+          background:var(--accent);color:var(--accent-ink);
+          box-shadow:0 3px 0 var(--accent-700);white-space:nowrap">
         ✓ Check
       </button>
     </div>
@@ -968,7 +968,7 @@
     <div id="pin-change-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);min-height:1.2rem;margin-bottom:10px;color:#e74c3c"></div>
     <div class="restart-modal-btns">
       <button class="restart-confirm-no" data-action="closePinModal">Cancel</button>
-      <button class="restart-confirm-yes" style="background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff" data-action="changePin">Save PIN</button>
+      <button class="restart-confirm-yes" style="background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 0 var(--accent-700)" data-action="changePin">Save PIN</button>
     </div>
   </div>
 </div>

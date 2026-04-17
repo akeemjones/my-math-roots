@@ -1675,9 +1675,8 @@ body.dark #upm-pin-inp.set-inp:focus, body.dark #new-pin-inp.set-inp:focus {
 }
 .set-save{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-md); padding:13px 32px;
   border-radius:var(--rad-pill); border:none; cursor:pointer;
-  background:linear-gradient(135deg,#27ae60,#1a7a45); color:#fff;
-  box-shadow:0 4px 0 #0f5c32, inset 0 1px 0 rgba(255,255,255,0.35);
-  border-top:1px solid rgba(255,255,255,0.4);
+  background:var(--accent); color:var(--accent-ink);
+  box-shadow:0 4px 0 var(--accent-700);
   transition:transform .15s; margin-top:4px;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 /* set-save hover transform moved to @media (hover:hover) */
@@ -1716,7 +1715,7 @@ body.dark #upm-pin-inp.set-inp:focus, body.dark #new-pin-inp.set-inp:focus {
 .install-step small{ font-size:var(--fs-sm);color:var(--txt2); }
 .install-close{ width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);
   padding:15px;border-radius:50px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--accent),#27ae60);color:var(--accent-ink);
+  background:var(--accent);color:var(--accent-ink);
   box-shadow:0 5px 0 rgba(0,0,0,.15);margin-top:16px; }
 
 /* ── Tutorial overlay ── */
@@ -2174,7 +2173,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   color:var(--txt);
 }
 .ai-report-pdf-btn{
-  background:linear-gradient(135deg, var(--accent-600), var(--accent-700));
+  background:var(--accent);
   color:var(--accent-ink);
   box-shadow:0 3px 0 rgba(0,0,0,.18);
 }
@@ -2413,7 +2412,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 #dashboard-screen .db-sec-body { font-size:.85rem; color:var(--neutral-600); margin-bottom:10px; }
 #dashboard-screen .db-ctrl-msg { font-size:.82rem; min-height:1.2rem; margin:6px 0; text-align:center; }
 #dashboard-screen .db-ctrl-btns { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
-#dashboard-screen .db-ctrl-save { flex:1; background:linear-gradient(135deg, var(--accent-600), var(--accent-700)); color:var(--accent-ink); border:none; border-radius:12px; padding:10px 16px; font-size:.9rem; font-weight:700; cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.15); min-width:120px; }
+#dashboard-screen .db-ctrl-save { flex:1; background:var(--accent); color:var(--accent-ink); border:none; border-radius:12px; padding:10px 16px; font-size:.9rem; font-weight:700; cursor:pointer; box-shadow:0 3px 0 var(--accent-700); min-width:120px; }
 #dashboard-screen .db-ctrl-relock { background:var(--accent-100); color:var(--accent-800); border:none; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
 #dashboard-screen .db-ctrl-reset { background:#fce4ec; color:#c62828; border:none; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
 #dashboard-screen .db-toggle-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
