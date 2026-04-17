@@ -739,6 +739,11 @@ function supabaseInit(){
           for(let i=0;i<_tsN;i++) _tsDates.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10));
           localStorage.setItem('wb_act_dates', JSON.stringify(_tsDates));
           show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+        } else if(localStorage.getItem('wb_guest_mode')) {
+          // Resume guest session after grade-switch reload
+          show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+          _dismissSplash();
+          return;
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
@@ -750,6 +755,7 @@ function supabaseInit(){
       }
     } else if(event === 'SIGNED_IN'){
       // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
+      localStorage.removeItem('wb_guest_mode');
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
       sessionStorage.removeItem('mmr_post_auth_redirect'); // clear any stale redirect value
@@ -802,6 +808,7 @@ function _continueAsGuest() {
 function _proceedAsGuest() {
   document.getElementById('soft-gate-modal')?.remove();
   localStorage.removeItem('mmr_user_role');
+  localStorage.setItem('wb_guest_mode', '1');
   buildHome();
   show('home');
   // Lock the screen immediately if install/tutorial hasn't been shown yet,

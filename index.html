@@ -435,14 +435,16 @@
         </div>
         <div class="set-row" style="margin-top:10px">
           <div class="set-lbl">Grade Level</div>
-          <select id="grade-select" class="set-inp" onchange="switchGradeUI(this.value)">
-            <option value="K">Kindergarten</option>
-            <option value="1" disabled>Grade 1 — Coming soon</option>
-            <option value="2">Grade 2</option>
-            <option value="3" disabled>Grade 3 — Coming soon</option>
-            <option value="4" disabled>Grade 4 — Coming soon</option>
-            <option value="5" disabled>Grade 5 — Coming soon</option>
-          </select>
+          <div class="set-select-wrap">
+            <select id="grade-select" class="set-inp set-select" onchange="switchGradeUI(this.value)">
+              <option value="K">Kindergarten</option>
+              <option value="1" disabled>Grade 1 — Coming soon</option>
+              <option value="2">Grade 2</option>
+              <option value="3" disabled>Grade 3 — Coming soon</option>
+              <option value="4" disabled>Grade 4 — Coming soon</option>
+              <option value="5" disabled>Grade 5 — Coming soon</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
