@@ -35,11 +35,29 @@ function saveSigned(key, value){
   localStorage.setItem(key, JSON.stringify({ d, s: _signData(d) }));
 }
 
-const DONE   = safeLoadSigned('wb_done5', {});
-const SCORES = safeLoadSigned('wb_sc5', []);
+// ── Grade-scoped key prefix ───────────────────────────────────────────────
+const _ACTIVE_GRADE  = localStorage.getItem('mmr_grade') || '2';
+const _DONE_KEY      = 'wb_done5_'   + _ACTIVE_GRADE;
+const _SCORES_KEY    = 'wb_sc5_'     + _ACTIVE_GRADE;
+const _MASTERY_KEY   = 'wb_mastery_' + _ACTIVE_GRADE;
+
+// One-time migration: copy legacy unnamespaced Grade 2 data into namespaced key
+// so existing users are not affected when upgrading. No-op for new installs.
+(function _migrateGrade2Keys(){
+  if (_ACTIVE_GRADE !== '2') return;
+  ['wb_done5', 'wb_sc5', 'wb_mastery'].forEach(function(old, i){
+    var namespaced = [_DONE_KEY, _SCORES_KEY, _MASTERY_KEY][i];
+    if (!localStorage.getItem(namespaced) && localStorage.getItem(old)) {
+      localStorage.setItem(namespaced, localStorage.getItem(old));
+    }
+  });
+})();
+
+const DONE   = safeLoadSigned(_DONE_KEY, {});
+const SCORES = safeLoadSigned(_SCORES_KEY, []);
 function safeLoad(k,d){ try{ return JSON.parse(localStorage.getItem(k)||'null')||d; } catch{ return d; } }
-function saveDone(){ saveSigned('wb_done5', DONE); }
-function saveSc(){ saveSigned('wb_sc5', SCORES); }
+function saveDone(){ saveSigned(_DONE_KEY, DONE); }
+function saveSc(){ saveSigned(_SCORES_KEY, SCORES); }
 
 // ── SCORES validation wrapper ──
 // Wrap push/unshift to validate entries and auto-cap at 200
@@ -81,8 +99,8 @@ const _SCORES_REQUIRED = ['qid','score','total','pct'];
 // ── MASTERY — per-question performance tracking (adaptive learning) ──
 // Key: 31-hash of question text → base36 string
 // Value: { attempts: N, correct: N, lastSeen: timestamp }
-const MASTERY = safeLoad('wb_mastery', {});
-function saveMastery(){ localStorage.setItem('wb_mastery', JSON.stringify(MASTERY)); }
+const MASTERY = safeLoad(_MASTERY_KEY, {});
+function saveMastery(){ localStorage.setItem(_MASTERY_KEY, JSON.stringify(MASTERY)); }
 
 function _qKey(text){
   let h = 0;
