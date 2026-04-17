@@ -1626,6 +1626,30 @@ function _closeParentAuth(){
 }
 
 
+function _refreshGradeList(){
+  var active = localStorage.getItem('mmr_grade') || '2';
+  var rows = document.querySelectorAll('#grade-list .grade-list-row:not(.grade-row-soon)');
+  rows.forEach(function(row){
+    var g = row.dataset.grade;
+    var isActive = g === active;
+    row.classList.toggle('grade-active', isActive);
+    var badge = document.getElementById('grade-badge-' + g);
+    var check = document.getElementById('grade-check-' + g);
+    if(badge) badge.classList.toggle('hidden', !isActive);
+    if(check) check.classList.toggle('hidden', isActive);
+  });
+}
+
+function switchGradeUI(newGrade){
+  var current = localStorage.getItem('mmr_grade') || '2';
+  if(newGrade === current) return;
+  var quizActive = typeof CUR !== 'undefined' && CUR.quiz !== null;
+  if(quizActive){
+    if(!confirm('Switching grades will exit your current quiz session. Continue?')) return;
+  }
+  if(typeof switchGrade === 'function') switchGrade(newGrade);
+}
+
 function goSettings(){
   playTap();
   updateAccountUI();
@@ -1656,6 +1680,7 @@ function goSettings(){
   // Clean up timer picker scroll listeners
   if(window._tpCleanups){ window._tpCleanups.forEach(fn=>fn()); window._tpCleanups = []; }
   _syncA11yUI();
+  _refreshGradeList();
   show('settings-screen');
 }
 
