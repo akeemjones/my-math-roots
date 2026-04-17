@@ -741,7 +741,7 @@ function supabaseInit(){
           show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
         } else if(localStorage.getItem('wb_guest_mode')) {
           // Resume guest session after grade-switch reload
-          show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+          buildHome(); show('home');
           _dismissSplash();
           return;
         } else {

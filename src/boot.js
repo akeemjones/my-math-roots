@@ -71,7 +71,7 @@ const _APP_GLOBALS = [
   'getPin','isParentUnlocked','_setParentSession','_clearParentSession',
   '_PIN_FAIL_KEY','_PIN_FAIL_COUNT_KEY','_PIN_LOCKOUT_SIG_KEY','_PIN_MAX_ATTEMPTS',
   '_authClosing','_authPinBlurHandler','_openParentAuth','_closeParentAuth',
-  'goSettings','_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
+  'goSettings','toggleGradePicker','pickGrade','_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
   'openForgotPin','closeForgotPin','refreshForgotProblem','checkForgotAnswer',
   'showInstall','_upmUnitIdx','_upmMode','_upmCheck','_upmPoll','_startUpmPoll',
   '_stopUpmPoll','_upmBind','_lpmUnitIdx','_lpmLessonIdx',

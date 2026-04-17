@@ -435,15 +435,19 @@
         </div>
         <div class="set-row" style="margin-top:10px">
           <div class="set-lbl">Grade Level</div>
-          <div class="set-select-wrap">
-            <select id="grade-select" class="set-inp set-select" onchange="switchGradeUI(this.value)">
-              <option value="K">Kindergarten</option>
-              <option value="1" disabled>Grade 1 — Coming soon</option>
-              <option value="2">Grade 2</option>
-              <option value="3" disabled>Grade 3 — Coming soon</option>
-              <option value="4" disabled>Grade 4 — Coming soon</option>
-              <option value="5" disabled>Grade 5 — Coming soon</option>
-            </select>
+          <div class="grade-picker" id="grade-picker">
+            <button class="grade-picker-btn" id="grade-picker-btn" type="button" onclick="toggleGradePicker()">
+              <span id="grade-picker-label">Grade 2</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="grade-picker-list" id="grade-picker-list">
+              <button class="grade-picker-opt" data-grade="K" type="button" onclick="pickGrade('K')">Kindergarten</button>
+              <div class="grade-picker-opt grade-picker-soon">Grade 1 <span class="grade-soon-tag">Soon</span></div>
+              <button class="grade-picker-opt" data-grade="2" type="button" onclick="pickGrade('2')">Grade 2</button>
+              <div class="grade-picker-opt grade-picker-soon">Grade 3 <span class="grade-soon-tag">Soon</span></div>
+              <div class="grade-picker-opt grade-picker-soon">Grade 4 <span class="grade-soon-tag">Soon</span></div>
+              <div class="grade-picker-opt grade-picker-soon">Grade 5 <span class="grade-soon-tag">Soon</span></div>
+            </div>
           </div>
         </div>
       </div>
