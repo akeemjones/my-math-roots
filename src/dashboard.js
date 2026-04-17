@@ -2539,7 +2539,7 @@ function _renderDashboardOnly() {
 // data-action="fnName"  data-arg="val"  data-arg2="val2"
 if (typeof document !== 'undefined') {
   var _DB_ACTIONS = {
-    dbGoToApp:               function()     { show('home'); },
+    dbGoToApp:               function()     { var _activeId = localStorage.getItem('mmr_active_student_id'); if(_activeId) localStorage.setItem('mmr_user_role','student'); show('home'); },
     dbSignOut:               function()     { dbSignOut(); },
     openQuizReview:          function(a)    { openQuizReview(Number(a)); },
     closeQuizReview:         function()     { closeQuizReview(); },

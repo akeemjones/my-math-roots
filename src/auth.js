@@ -366,6 +366,10 @@ async function _lsStudentLogin() {
     var freshScores = safeLoadSigned('wb_sc5', []);
     SCORES.length = 0;
     freshScores.forEach(function(s) { SCORES.push(s); });
+    // Clear stale streak/calendar from previous student; pull will restore correct values
+    STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+    localStorage.setItem('wb_streak', JSON.stringify({ current: 0, longest: 0, lastDate: null }));
+    localStorage.setItem('wb_act_dates', JSON.stringify([]));
 
     show('home');
     buildHome();
@@ -1178,6 +1182,13 @@ async function _pullStudentProgress(studentId) {
         STREAK.lastDate = prof.streak_last_date;
       }
       localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+      // Overwrite local activity dates with server version (authoritative per student)
+      if (Array.isArray(prof.act_dates_json)) {
+        var _safeActDates = prof.act_dates_json.filter(function(d){
+          return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+        });
+        localStorage.setItem('wb_act_dates', JSON.stringify(_safeActDates));
+      }
     }
 
     // Merge apptime
@@ -1839,11 +1850,11 @@ function _buildStreakCal(){
   const FC = '#ff7700';
   const isDark = document.body.classList.contains('dark');
   const _bg = isDark
-    ? 'background:rgba(255,255,255,.07);box-shadow:0 8px 40px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,0.12)'
-    : 'background:linear-gradient(145deg,rgba(255,255,255,0.93) 0%,rgba(240,248,255,0.85) 55%,rgba(235,252,245,0.80) 100%);box-shadow:0 8px 40px rgba(60,120,200,0.18)';
+    ? 'background:#1c2e48;box-shadow:0 8px 40px rgba(0,0,0,.55)'
+    : 'background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.12)';
   const _bdr = isDark
-    ? 'border:1.5px solid rgba(255,255,255,0.12)'
-    : 'border:1.5px solid rgba(255,255,255,0.85)';
+    ? 'border:1.5px solid rgba(255,255,255,0.10)'
+    : 'border:1.5px solid rgba(0,0,0,.06)';
 
   const ms = _getMilestone(STREAK.current);
   const msBadge = ms

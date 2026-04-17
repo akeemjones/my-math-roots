@@ -4,8 +4,13 @@
 function _showLockedSheet(unitIdx, lockedIdx){
   const u = UNITS_DATA[unitIdx];
   const locked = u.lessons[lockedIdx];
-  const prevIdx = lockedIdx - 1;
-  const prev = u.lessons[prevIdx];
+
+  // Find the last lesson that is actually unlocked (may not be lockedIdx-1)
+  let gatewayIdx = 0;
+  for (let j = lockedIdx - 1; j >= 0; j--) {
+    if (isLessonUnlocked(unitIdx, j)) { gatewayIdx = j; break; }
+  }
+  const prev = u.lessons[gatewayIdx];
   const prevBest = SCORES.filter(s => s.qid === 'lq_'+prev.id).sort((a,b)=>b.pct-a.pct)[0];
   const prevPct = prevBest ? prevBest.pct : 0;
 
@@ -32,7 +37,7 @@ function _showLockedSheet(unitIdx, lockedIdx){
       </div>
       <div class="locked-sheet-score" style="color:${pctColor}">${pctLabel}</div>
       <div class="locked-sheet-enc">${encouragement}</div>
-      <button class="locked-sheet-cta" style="background:${u.color}" onclick="_closeLockedSheet();openLesson(${unitIdx},${prevIdx})">
+      <button class="locked-sheet-cta" style="background:${u.color}" onclick="_closeLockedSheet();openLesson(${unitIdx},${gatewayIdx})">
         ${prevPct > 0 ? '🔄 Try That Quiz Again' : '📖 Go to ' + prev.title}
       </button>
       <button class="locked-sheet-dismiss" onclick="_closeLockedSheet()">Come Back Later</button>
@@ -107,7 +112,7 @@ function openUnit(idx){
         <div class="lcard-badges">
           <span class="cs-lock-hint" data-locked-lesson="${idx}_${i}">${_ICO.lock}</span>
         </div>`;
-      card.onclick = () => _showLockedSheet(idx, i);
+      card.onclick = () => { _shakeLocked(card); _showLockedSheet(idx, i); };
     }
     lc.appendChild(card);
   });

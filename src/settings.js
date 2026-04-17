@@ -1630,7 +1630,17 @@ function goSettings(){
   playTap();
   updateAccountUI();
   const cfg = loadSettings();
-  document.getElementById('set-student').value = cfg.studentName || '';
+  let _settingsName = cfg.studentName || '';
+  if(!_settingsName){
+    // Fall back to active student's display_name from profile data
+    try {
+      const _activeId = localStorage.getItem('mmr_active_student_id');
+      const _profiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]');
+      const _activeProfile = _profiles.find(function(p){ return p.id === _activeId; });
+      if(_activeProfile && _activeProfile.display_name) _settingsName = _activeProfile.display_name;
+    } catch(e){}
+  }
+  document.getElementById('set-student').value = _settingsName;
   // Sound toggle
   const soundToggle = document.getElementById('sound-toggle');
   if(soundToggle){

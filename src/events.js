@@ -103,7 +103,7 @@
     startFinalTest:         ()    => startFinalTest(),
     startFinalTestBalanced: ()    => startFinalTestBalanced(),
     // showLockToast: second arg is boolean — coerce string "true"/"false"
-    showLockToast:          (a,b) => showLockToast(a, b === 'true'),
+    showLockToast:          (a,b,el) => showLockToast(a, b === 'true', el),
 
     // ── Unit / lesson ────────────────────────────────────────────────────────
     openLesson:             (a,b) => openLesson(Number(a), Number(b)),

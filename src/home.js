@@ -48,9 +48,9 @@ function buildHome(instant){
     if(!unlocked){
       slide.className = 'cs cs-locked-slide';
       slide.style.marginBottom = '8px';
-      slide.innerHTML = `<div class="cs-lock-card"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
+      slide.innerHTML = `<div class="cs-lock-card" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
         <div class="cs-lock-ico"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</div>
-        <div class="cs-lock-info" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true">
+        <div class="cs-lock-info">
           <div class="cs-lock-label">Unit ${i+1}</div>
           <div class="cs-lock-name">${u.name}</div>
         </div>
@@ -201,9 +201,9 @@ function refreshHomeState(){
       slide.style.animation = 'none';
       if(newState === 'locked'){
         slide.style.removeProperty('--uc'); slide.style.marginBottom = '8px';
-        slide.innerHTML = `<div class="cs-lock-card"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
+        slide.innerHTML = `<div class="cs-lock-card" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true"${_sr('role="region" aria-label="Unit '+(i+1)+', '+u.name+', locked"')}>
           <div class="cs-lock-ico"${_sr('aria-hidden="true"')}>${u.svg||u.icon}</div>
-          <div class="cs-lock-info" data-action="showLockToast" data-arg="Finish Unit ${i} with 80%+ to unlock!" data-arg2="true">
+          <div class="cs-lock-info">
             <div class="cs-lock-label">Unit ${i+1}</div>
             <div class="cs-lock-name">${u.name}</div>
           </div>
@@ -368,10 +368,25 @@ function goHistory(){
 
 
 // ════════════════════════════════════════
+//  LOCK SHAKE UTILITY
+// ════════════════════════════════════════
+function _shakeLocked(el){
+  if(!el) return;
+  el.classList.remove('locked-shake');
+  void el.offsetWidth;
+  el.classList.add('locked-shake');
+  el.addEventListener('animationend', ()=> el.classList.remove('locked-shake'), { once: true });
+}
+
+// ════════════════════════════════════════
 //  LOCK TOAST
 // ════════════════════════════════════════
-function showLockToast(msg, isLock=false){
-  if(isLock) playWrong();
+function showLockToast(msg, isLock=false, triggerEl=null){
+  if(isLock){
+    playWrong();
+    const card = triggerEl ? (triggerEl.closest('.cs-lock-card') || triggerEl) : null;
+    _shakeLocked(card);
+  }
   let t = document.getElementById('lock-toast');
   if(!t){ t=document.createElement('div'); t.id='lock-toast'; t.className='lock-toast'; document.body.appendChild(t); }
   t.innerHTML = _ICO.lock + ' ' + msg;

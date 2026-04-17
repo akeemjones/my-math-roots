@@ -411,9 +411,6 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
        overflow-y:auto; overflow-x:hidden;
        -webkit-overflow-scrolling:touch;
        position:fixed; inset:0; }
-#home::after{ content:''; position:absolute; bottom:0; left:0; right:0; height:90px;
-  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,45 Q300,0 600,45 Q900,90 1200,45 L1200,90 L0,90Z' fill='%23a8ddb5'/%3E%3C/svg%3E")
-  bottom/cover no-repeat; pointer-events:none; z-index:var(--z-deco); }
 .home-in{ position:relative; z-index:var(--z-relative); max-width:640px; margin:0 auto;
           width:100%; height:100dvh;
           display:flex; flex-direction:column; }
@@ -811,6 +808,16 @@ button.lq-start-btn:active{ transform:translateY(3px); box-shadow:0 3px 0 rgba(0
 .q-timer.warn{ background:#fff3cd; color:var(--accent-800); }
 .q-timer.danger{ background:#fdecea; color:#e74c3c; animation:timerPulse .6s infinite; }
 @keyframes timerPulse{ 0%,100%{opacity:1;} 50%{opacity:.5;} }
+@keyframes mmr-shake{
+  0%,100%{ transform:translateX(0); }
+  15%    { transform:translateX(-7px); }
+  30%    { transform:translateX(6px); }
+  45%    { transform:translateX(-5px); }
+  60%    { transform:translateX(4px); }
+  75%    { transform:translateX(-2px); }
+}
+.locked-shake{ animation:mmr-shake 0.42s cubic-bezier(0.16,1,0.3,1) both; }
+@media(prefers-reduced-motion:reduce){ .locked-shake{ animation:none; } }
 .qmeta{ display:flex; justify-content:space-between; align-items:center;
          flex-wrap:wrap; gap:8px; margin-bottom:10px; }
 .q-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base); }

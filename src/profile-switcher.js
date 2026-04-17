@@ -295,6 +295,10 @@ async function _psCheckPin(){
     var freshScores = safeLoadSigned('wb_sc5', []);
     SCORES.length = 0;
     freshScores.forEach(function(s){ SCORES.push(s); });
+    // Clear stale streak/calendar from previous student; pull will restore correct values
+    STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+    localStorage.setItem('wb_streak', JSON.stringify({ current: 0, longest: 0, lastDate: null }));
+    localStorage.setItem('wb_act_dates', JSON.stringify([]));
 
     closeProfileSwitcher();
     _psUpdateProfileBtn();
