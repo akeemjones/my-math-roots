@@ -2293,6 +2293,33 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
   box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
 #dashboard-screen .db-sec-h { font-family:var(--font-parent); font-size:var(--db-text-base); font-weight:700; color:var(--neutral-700); margin-bottom:12px; letter-spacing:.2px; text-transform:uppercase; }
+.db-info-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  background:none; border:none; padding:0 3px; cursor:pointer;
+  font-size:.85rem; color:var(--neutral-400); vertical-align:middle;
+  position:relative; transition:color .15s; border-radius:50%;
+}
+.db-info-btn:hover, .db-info-btn:focus-visible { color:var(--accent); outline:none; }
+.db-info-btn::after {
+  content:attr(data-tip);
+  position:absolute; left:50%; bottom:calc(100% + 8px);
+  transform:translateX(-50%) translateY(4px);
+  width:240px; padding:9px 11px;
+  background:var(--neutral-900); color:var(--neutral-50);
+  font-size:.72rem; font-family:var(--font-parent); font-weight:400;
+  line-height:1.5; text-transform:none; letter-spacing:0;
+  border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.22);
+  opacity:0; pointer-events:none; white-space:normal; z-index:200;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.db-info-btn::before {
+  content:''; position:absolute; left:50%; bottom:calc(100% + 2px);
+  transform:translateX(-50%); border:5px solid transparent;
+  border-top-color:var(--neutral-900); opacity:0; pointer-events:none;
+  transition:opacity .18s ease;
+}
+.db-info-btn:hover::after, .db-info-btn:focus-visible::after { opacity:1; transform:translateX(-50%) translateY(0); }
+.db-info-btn:hover::before, .db-info-btn:focus-visible::before { opacity:1; }
 #dashboard-screen .db-empty { font-size:var(--db-text-base); color:var(--neutral-500); text-align:center; padding:8px 0; }
 #dashboard-screen .db-last-active { font-size:var(--db-text-xs); color:var(--neutral-500); text-align:right; margin-top:8px; }
 #dashboard-screen .db-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }

@@ -1767,7 +1767,7 @@ function _renderInterventionInsights(events) {
   }).join('');
   var rateColor = summary.recoveryRate >= 70 ? '#2e7d32' : summary.recoveryRate >= 40 ? '#e65100' : '#c62828';
   return '<section class="db-section">'
-    + '<h2 class="db-sec-h">&#x1F9E0; Learning Insights</h2>'
+    + '<h2 class="db-sec-h">&#x1F9E0; Learning Insights <button class="db-info-btn" tabindex="0" aria-label="About Learning Insights" data-tip="Skills listed here needed extra practice during quizzes. Recovery Rate shows how often your child corrected a mistake on the very next try.">ⓘ</button></h2>'
     + '<div class="db-intervention-box">'
     + '<div class="db-intervention-rate">Recovery Rate: <strong style="color:' + rateColor + '">' + summary.recoveryRate + '%</strong>'
     + ' <span style="font-size:.78rem;color:#90a4ae">(' + summary.total + ' intervention' + (summary.total !== 1 ? 's' : '') + ')</span></div>'
