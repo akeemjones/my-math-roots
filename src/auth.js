@@ -1124,7 +1124,11 @@ async function _pullStudentProgress(studentId) {
   if (!_supa || !studentId || studentId === 'local' || !_sessionToken) return;
   try {
     var result = await Promise.race([
-      _supa.rpc('pull_student_progress', { p_student_id: studentId, p_session_token: _sessionToken }),
+      _supa.rpc('pull_student_progress', {
+        p_student_id:    studentId,
+        p_session_token: _sessionToken,
+        p_grade:         localStorage.getItem('mmr_grade') || '2'
+      }),
       new Promise(function(_, rej) { setTimeout(function() { rej(new Error('pull timeout')); }, 8000); })
     ]);
     if (result.error) {
@@ -1284,7 +1288,9 @@ async function _pullOnLogin(force){
     const _timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('pull_timeout')), 5000));
     const _activeStudId = localStorage.getItem('mmr_active_student_id') || null;
     const { data: syncData, error: rpcErr } = await Promise.race([
-      _supa.rpc('get_user_sync_data', _activeStudId ? { p_student_id: _activeStudId } : {}),
+      _supa.rpc('get_user_sync_data', _activeStudId
+        ? { p_student_id: _activeStudId, p_grade: localStorage.getItem('mmr_grade') || '2' }
+        : { p_grade: localStorage.getItem('mmr_grade') || '2' }),
       _timeout
     ]);
     if(rpcErr) throw rpcErr;
@@ -1451,6 +1457,7 @@ async function _pushAll(){
     var result = await Promise.race([
       _supa.rpc('push_student_progress', {
         p_student_id:       studentId,
+        p_grade:            localStorage.getItem('mmr_grade') || '2',
         p_session_token:    _sessionToken,
         p_mastery_json:     (typeof MASTERY !== 'undefined') ? MASTERY : {},
         p_streak_current:   STREAK.current || 0,
@@ -1494,8 +1501,8 @@ async function _pushDoneParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, done_json:DONE, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', done_json:DONE, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushDone timeout')); },8000); })
     ]);
@@ -1510,8 +1517,8 @@ async function _pushMasteryParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, mastery_json:mastery, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', mastery_json:mastery, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })
     ]);
@@ -1525,8 +1532,8 @@ async function _pushAppTimeParent(){
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, apptime_json:appTime, updated_at:new Date().toISOString() },
-        { onConflict:'user_id,student_id' }
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', apptime_json:appTime, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAppTime timeout')); },8000); })
     ]);
