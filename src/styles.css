@@ -1599,12 +1599,13 @@ body.dark .grade-picker-opt + .grade-picker-opt{ border-top-color:rgba(255,255,2
 /* ── Grade-switch transition overlay ── */
 #grade-switch-overlay{
   position:fixed; inset:0; z-index:calc(var(--z-splash) - 1);
-  background:rgba(8,18,40,.82);
-  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   display:flex; align-items:center; justify-content:center;
   opacity:0; pointer-events:none;
   transition:opacity .22s ease; }
-#grade-switch-overlay.gso-active{ opacity:1; pointer-events:auto; }
+#grade-switch-overlay.gso-active{
+  opacity:1; pointer-events:auto;
+  background:rgba(8,18,40,.82);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
 .gso-card{
   background:rgba(255,255,255,.10);
   border:1.5px solid rgba(255,255,255,.18);
