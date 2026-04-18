@@ -12,14 +12,16 @@
 let _visUid = 0;
 
 // ── Entry point called from quiz.js _renderQ() ───────────────────────────────
-// Returns '<div class="q-visual">…</div>' or '' when v is absent/invalid.
+// Returns HTML string (div or button wrapper) or '' when v is absent/invalid.
 function _buildVisualHTML(v) {
   if (!v || !v.type || !v.config) return '';
+  if (v.type === 'comparison') return drawComparison(v.config, null, null);
+  if (v.type === 'objectSet')  return drawObjectSet(v.config, null);
+  if (v.type === 'twoGroups')  return drawTwoGroups(v.config);
   let svg = '';
-  if      (v.type === 'base10')      svg = drawBase10(v.config);
-  else if (v.type === 'numberLine')  svg = drawNumberLine(v.config);
-  else if (v.type === 'array')       svg = drawArray(v.config);
-  else if (v.type === 'comparison')  svg = drawComparison(v.config);
+  if      (v.type === 'base10')     svg = drawBase10(v.config);
+  else if (v.type === 'numberLine') svg = drawNumberLine(v.config);
+  else if (v.type === 'array')      svg = drawArray(v.config);
   return svg ? '<div class="q-visual">' + svg + '</div>' : '';
 }
 
@@ -218,48 +220,66 @@ function drawNumberLine(cfg) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  drawComparison({ left:{label,barLen,color}, right:{label,barLen,color} })
+//  drawComparison({ left:{label,barLen,color}, right:{label,barLen,color} },
+//                 leftArgIdx, rightArgIdx [, highlightSide])
 //
-//  Renders two horizontal bars aligned at the left edge, with labels below.
-//  barLen: 1–10 (relative units — no numbers shown to students).
-//  Used for K measurement comparison questions (length, height, capacity, weight).
+//  barLen: integer 1–10 — proportional bar width (barLen * 14px, max 140px)
+//  label:  display text shown below bar (may have leading emoji)
+//
+//  leftArgIdx / rightArgIdx: shuffled button indices from _renderQ().
+//    Numbers → wraps each panel in a clickable <button id="abtn-N">
+//    null    → renders static <div class="q-visual vcmp">
+//
+//  highlightSide: 'left'|'right'|null — used only for static mode (null indices).
+//    Highlights correct panel green + ✓ for intervention review.
 // ═══════════════════════════════════════════════════════════════════════════════
-function drawComparison(cfg) {
-  const uid    = 'vis-' + (++_visUid);
-  const L      = cfg.left  || {};
-  const R      = cfg.right || {};
-  const UNIT   = 20;   // px per barLen unit
-  const BAR_H  = 28;   // bar height
-  const LBL_H  = 20;   // label row height
-  const ROW_H  = BAR_H + LBL_H;
-  const GAP    = 10;   // gap between the two rows
-  const PAD    = 14;   // outer padding
-  const TICK_W = 3;    // left-edge alignment marker width
+function drawComparison(cfg, leftArgIdx, rightArgIdx, highlightSide) {
+  var uid   = 'vis-' + (++_visUid);
+  var left  = cfg.left  || {};
+  var right = cfg.right || {};
+  var isClickable = leftArgIdx != null && rightArgIdx != null;
 
-  const lLen   = Math.max(1, Math.min(10, +L.barLen || 5));
-  const rLen   = Math.max(1, Math.min(10, +R.barLen || 3));
-  const lColor = L.color || '#3b82f6';
-  const rColor = R.color || '#ef4444';
-  const lLabel = _escHtml(L.label || '');
-  const rLabel = _escHtml(R.label || '');
+  function _hBar(item) {
+    var W = 160, H = 52;
+    var barW = Math.max(10, (+item.barLen || 5) * 14);
+    return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'"'+
+           ' focusable="false" aria-hidden="true" style="display:block">'+
+      '<line x1="6" y1="8" x2="6" y2="44" stroke="'+(item.color||'#3b82f6')+'"'+
+            ' stroke-width="2.5" stroke-linecap="round" opacity="0.65"/>'+
+      '<rect x="6" y="18" width="'+barW+'" height="16" rx="5"'+
+            ' fill="'+(item.color||'#3b82f6')+'" opacity="0.82"/>'+
+      '</svg>';
+  }
 
-  const W  = PAD + TICK_W + Math.max(lLen, rLen) * UNIT + PAD;
-  const H  = PAD + ROW_H + GAP + ROW_H + PAD;
-  const bx = PAD + TICK_W;   // bar left edge x
-  const y1 = PAD;             // top bar y
-  const y2 = PAD + ROW_H + GAP;  // bottom bar y
+  var lSVG = _hBar(left);
+  var rSVG = _hBar(right);
+  var lLbl = _escHtml(left.label  || '');
+  var rLbl = _escHtml(right.label || '');
+  var ariaLbl = _escHtml('Compare ' + (left.label||'left') + ' and ' + (right.label||'right'));
 
-  const ariaLabel = cfg.label || ((L.label || 'left') + ' compared with ' + (R.label || 'right'));
-
-  const parts = [
-    `<line x1="${PAD + TICK_W / 2}" y1="${PAD}" x2="${PAD + TICK_W / 2}" y2="${H - PAD}" stroke="currentColor" stroke-width="${TICK_W}" opacity="0.15"/>`,
-    `<rect x="${bx}" y="${y1}" width="${lLen * UNIT}" height="${BAR_H}" fill="${lColor}" opacity="0.72" rx="5"/>`,
-    `<text x="${bx}" y="${y1 + BAR_H + 14}" font-size="12" font-family="sans-serif" fill="currentColor" opacity="0.85">${lLabel}</text>`,
-    `<rect x="${bx}" y="${y2}" width="${rLen * UNIT}" height="${BAR_H}" fill="${rColor}" opacity="0.72" rx="5"/>`,
-    `<text x="${bx}" y="${y2 + BAR_H + 14}" font-size="12" font-family="sans-serif" fill="currentColor" opacity="0.85">${rLabel}</text>`,
-  ];
-
-  return `<svg role="img" aria-labelledby="${uid}" focusable="false" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto"><title id="${uid}">${_escHtml(ariaLabel)}</title>${parts.join('')}</svg>`;
+  if (isClickable) {
+    return '<div class="vcmp" id="'+uid+'" aria-label="'+ariaLbl+'">'+
+      '<button class="vchoice" id="abtn-'+leftArgIdx+'" type="button"'+
+              ' data-action="_pickAnswer" data-arg="'+leftArgIdx+'"'+
+              ' aria-label="'+lLbl+'">'+
+        lSVG+'<span class="vchoice-label">'+lLbl+'</span>'+
+      '</button>'+
+      '<button class="vchoice" id="abtn-'+rightArgIdx+'" type="button"'+
+              ' data-action="_pickAnswer" data-arg="'+rightArgIdx+'"'+
+              ' aria-label="'+rLbl+'">'+
+        rSVG+'<span class="vchoice-label">'+rLbl+'</span>'+
+      '</button>'+
+    '</div>';
+  } else {
+    var lClass = 'vchoice-static' + (highlightSide === 'left'  ? ' vchoice-hl-correct' : highlightSide ? ' vchoice-hl-faded' : '');
+    var rClass = 'vchoice-static' + (highlightSide === 'right' ? ' vchoice-hl-correct' : highlightSide ? ' vchoice-hl-faded' : '');
+    var lTick  = highlightSide === 'left'  ? '<span class="vchoice-tick">✓</span>' : '';
+    var rTick  = highlightSide === 'right' ? '<span class="vchoice-tick">✓</span>' : '';
+    return '<div class="q-visual vcmp" id="'+uid+'" aria-label="'+ariaLbl+'">'+
+      '<div class="'+lClass+'">'+lSVG+'<span class="vchoice-label">'+lLbl+'</span>'+lTick+'</div>'+
+      '<div class="'+rClass+'">'+rSVG+'<span class="vchoice-label">'+rLbl+'</span>'+rTick+'</div>'+
+    '</div>';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -306,4 +326,53 @@ function drawArray(cfg) {
   const label = cfg.label || `${rows} rows and ${cols} columns of dots, ${filled} of ${total} filled`;
 
   return `<svg role="img" aria-labelledby="${uid}" focusable="false" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto"><title id="${uid}">${_escHtml(label)}</title>${parts.join('')}</svg>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  drawObjectSet({count, emoji, layout}, argIdx)
+//
+//  count: number of objects (1–20)   emoji: display character
+//  layout: 'grid' | 'line'  (ignored for answer buttons — always compact)
+//  argIdx: null → static question visual  |  number → clickable answer button
+// ─────────────────────────────────────────────────────────────────────────────
+function drawObjectSet(config, argIdx) {
+  var count   = +config.count || 0;
+  var emoji   = config.emoji  || '●';
+  var isBtn   = argIdx != null;
+  var MAX_ROW = isBtn ? 5 : (config.layout === 'line' ? 20 : 5);
+  var rows = [], rem = count;
+  while (rem > 0) {
+    var n = Math.min(rem, MAX_ROW);
+    rows.push(Array(n).fill(emoji).join('\u200B'));
+    rem -= n;
+  }
+  var gridHTML = '<div class="obj-set-grid">' +
+    rows.map(function(r){ return '<div class="obj-row">' + r + '</div>'; }).join('') +
+    '</div>';
+  if (isBtn) {
+    return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
+           ' data-action="_pickAnswer" data-arg="'+argIdx+'"'+
+           ' aria-label="'+count+' '+_escHtml(emoji)+'">'+
+      gridHTML+
+      '<span class="vchoice-label">'+count+'</span>'+
+    '</button>';
+  }
+  return '<div class="q-visual obj-set-visual">'+gridHTML+'</div>';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  drawTwoGroups({leftCount, leftObj, rightCount, rightObj, op})
+//
+//  Static question visual only. Answer buttons rendered via drawObjectSet()
+//  in _renderQ(). op: 'add' | 'subtract'
+// ─────────────────────────────────────────────────────────────────────────────
+function drawTwoGroups(config) {
+  var lEmoji = (config.leftObj  || '●').repeat(+(config.leftCount)  || 0);
+  var rEmoji = (config.rightObj || '●').repeat(+(config.rightCount) || 0);
+  var opStr  = config.op === 'subtract' ? '−' : '+';
+  return '<div class="q-visual two-groups-visual">'+
+    '<div class="tg-group">'+lEmoji+'</div>'+
+    '<div class="tg-op">'+opStr+'</div>'+
+    '<div class="tg-group">'+rEmoji+'</div>'+
+  '</div>';
 }
