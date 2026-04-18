@@ -42,6 +42,23 @@ const _UNITS_DATA_K = [
     ],
     _loaded: false
   }
+  ,
+  {
+    id: 'ku3',
+    name: 'Addition & Subtraction',
+    icon: '➕',
+    svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#E91E63" opacity="0.12"/><text x="30" y="40" text-anchor="middle" font-size="28" font-family="sans-serif">➕</text></svg>',
+    color: '#E91E63',
+    gp: 3,
+    teks: 'TEKS K.3A, K.3B, K.3C, K.3D',
+    lessons: [
+      {id:'ku3l1', title:'Adding Numbers',     icon:'➕', desc:'Join two groups and count the total'},
+      {id:'ku3l2', title:'Subtracting Numbers', icon:'➖', desc:'Take away from a group and find what is left'},
+      {id:'ku3l3', title:'Word Problems',       icon:'📖', desc:'Solve joining, separating, and missing part stories'},
+      {id:'ku3l4', title:'Explain Thinking',    icon:'💡', desc:'Choose the right operation and explain your reasoning'}
+    ],
+    _loaded: false
+  }
 ];
 
 // ── K lazy-load infrastructure ───────────────────────────────────────────────

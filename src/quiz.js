@@ -806,6 +806,55 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
         + '</div>';
     }
 
+  } else if(errorTag === 'err_keep_start'){
+    title = 'That\'s the Starting Number — What Changed?';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' — that\'s where you started. Something was added or taken away, so the answer changes to ' + correctVal + '.';
+    } else {
+      text = 'When you add or subtract, the answer is different from where you started!';
+    }
+    if(emoji && correctNum >= 1 && correctNum <= 12){
+      visualHTML = '<div style="text-align:center;line-height:2.2">'
+        + emojiRow(correctNum, emoji)
+        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Answer: ' + correctVal + '</span>'
+        + '</div>';
+    }
+
+  } else if(errorTag === 'err_add_instead'){
+    title = 'You Added — But This One Subtracts!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' by adding, but the problem asks you to take away. Start at the big number and count back to get ' + correctVal + '.';
+    } else {
+      text = 'Look for take-away words: "left", "ate", "flew away", "popped". Those mean subtract!';
+    }
+
+  } else if(errorTag === 'err_sub_instead'){
+    title = 'You Subtracted — But This One Adds!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' by taking away, but the problem asks you to join groups. Count both groups together to get ' + correctVal + '.';
+    } else {
+      text = 'Look for joining words: "more", "joined", "gave", "in all". Those mean add!';
+    }
+
+  } else if(errorTag === 'err_count_all'){
+    title = 'Count Back — Don\'t Count All!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You counted all the objects and got ' + chosenVal + '. But we need to take some away! Start at the big number and count back to find ' + correctVal + '.';
+    } else {
+      text = 'When you subtract, start at the big number and count backwards — don\'t restart from 1!';
+    }
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      visualHTML = dynamicNL(chosenNum, correctNum);
+    }
+
+  } else if(errorTag === 'err_keep_total'){
+    title = 'That\'s the Total — Find the Missing Part!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ' — that\'s the whole amount. We already know the total! We need to find the missing piece, which is ' + correctVal + '.';
+    } else {
+      text = 'In a missing part problem, you already have the total. Use subtraction to find what is missing!';
+    }
+
   } else {
     // Fall back to static MINI_LESSONS for Grade 2 error tags
     var lesson = MINI_LESSONS[errorTag];
