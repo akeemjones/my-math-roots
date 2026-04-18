@@ -953,6 +953,57 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       text = 'Make sure you count every single object \u2014 touch each one and do not stop early!';
     }
 
+  } else if(errorTag === 'err_longer_shorter'){
+    title = 'Check Which End Sticks Out Farther!';
+    if(_ACTIVE_GRADE === 'K'){
+      text = 'To find the LONGER object, line them up at one end and look at the other end — the longer one sticks out farther! The SHORTER one does not reach as far.';
+      visualHTML = '<div style="text-align:center;font-family:var(--ff2,\'Nunito\',sans-serif);font-size:0.92rem;line-height:2.2">'
+        + '<div style="display:inline-block;text-align:left">'
+        + '<div><span style="display:inline-block;background:#2196F3;height:10px;width:120px;border-radius:4px;vertical-align:middle"></span> <span style="color:#2196F3;font-weight:700">← longer</span></div>'
+        + '<div style="margin-top:6px"><span style="display:inline-block;background:#90CAF9;height:10px;width:70px;border-radius:4px;vertical-align:middle"></span> <span style="color:#5a7080">← shorter</span></div>'
+        + '</div>'
+        + '<div style="margin-top:6px;color:#5a7080;font-size:0.8rem">Line up at one end — the longer one reaches farther!</div>'
+        + '</div>';
+    } else {
+      text = 'Compare by lining objects up at one end. The object that extends farther is longer; the one that does not reach as far is shorter.';
+    }
+
+  } else if(errorTag === 'err_heavier_lighter'){
+    title = 'Check Which Feels Heavier to Lift!';
+    if(_ACTIVE_GRADE === 'K'){
+      text = 'HEAVIER means it weighs MORE — it would be harder to lift. LIGHTER means it weighs LESS — easy to lift or even float! Think about picking each object up in real life.';
+      visualHTML = '<div style="text-align:center;font-size:1.5rem;line-height:2.4;font-family:var(--ff2,\'Nunito\',sans-serif)">'
+        + '🪨 &nbsp;vs&nbsp; 🪶'
+        + '<br><span style="font-size:0.82rem;color:#5a7080">rock (heavier) &nbsp;vs&nbsp; feather (lighter)<br>The heavier one pulls your arm DOWN!</span>'
+        + '</div>';
+    } else {
+      text = 'Heavier means more weight — it pushes down harder on a scale. Lighter means less weight. Compare by picking objects up or using a balance scale.';
+    }
+
+  } else if(errorTag === 'err_shape_orient'){
+    title = 'Shapes Stay the Same When You Turn Them!';
+    if(_ACTIVE_GRADE === 'K'){
+      text = 'A triangle is STILL a triangle even if it points left, right, or upside-down. Count its corners and sides — they never change!';
+      visualHTML = '<div style="text-align:center;font-size:1.4rem;line-height:2.4">'
+        + '🔺 &nbsp;▷&nbsp; 🔻'
+        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">pointing up &nbsp;→&nbsp; sideways &nbsp;→&nbsp; upside-down<br>All are still triangles!</span>'
+        + '</div>';
+    } else {
+      text = 'Shapes keep their name no matter how they are turned or flipped. Count the sides and corners to identify a shape.';
+    }
+
+  } else if(errorTag === 'err_wrong_solid'){
+    title = 'Flat Shape or Solid Shape?';
+    if(_ACTIVE_GRADE === 'K'){
+      text = 'A circle is flat — you draw it on paper. A sphere is 3D — you can hold it like a ball! Always ask: can I hold it in my hand?';
+      visualHTML = '<div style="text-align:center;font-size:1.6rem;line-height:2.4">'
+        + '🔵 &nbsp;vs&nbsp; ⚽'
+        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">circle (flat, 2D) &nbsp;vs&nbsp; sphere (solid, 3D)</span>'
+        + '</div>';
+    } else {
+      text = 'A 2D shape is flat — you draw it on paper. A 3D solid takes up space and has volume — you can hold it. Look carefully at the object.';
+    }
+
   } else if(errorTag === 'err_random'){
     title = 'Look Carefully and Try Again!';
     if(!isNaN(correctNum)){

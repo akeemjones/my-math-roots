@@ -93,6 +93,40 @@ const _UNITS_DATA_K = [
     ],
     _loaded: false
   }
+  ,
+  {
+    id: 'ku6',
+    name: 'Geometry — Shapes & Solids',
+    icon: '🔺',
+    svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#2196F3" opacity="0.12"/><text x="30" y="40" text-anchor="middle" font-size="26" font-family="sans-serif" fill="#2196F3" font-weight="bold">🔺</text></svg>',
+    color: '#2196F3',
+    gp: 6,
+    teks: 'TEKS K.6A, K.6B, K.6C, K.6D, K.6E, K.6F',
+    lessons: [
+      {id:'ku6l1', title:'Flat Shapes (2D)',          icon:'🔵', desc:'Identify circles, triangles, rectangles, and squares'},
+      {id:'ku6l2', title:'Solid Shapes (3D)',          icon:'📦', desc:'Identify spheres, cones, cylinders, and cubes in the real world'},
+      {id:'ku6l3', title:'Sides & Corners',            icon:'📐', desc:'Count and compare sides and corners of 2D shapes'},
+      {id:'ku6l4', title:'Sort & Create Shapes',       icon:'🎨', desc:'Sort shapes by attributes and create your own shapes'}
+    ],
+    _loaded: false
+  }
+  ,
+  {
+    id: 'ku7',
+    name: 'Measurement — Comparing & Ordering',
+    icon: '📏',
+    svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FF5722" opacity="0.12"/><text x="30" y="40" text-anchor="middle" font-size="26" font-family="sans-serif" fill="#FF5722" font-weight="bold">📏</text></svg>',
+    color: '#FF5722',
+    gp: 7,
+    teks: 'TEKS K.7A, K.7B',
+    lessons: [
+      {id:'ku7l1', title:'Comparing Length & Height', icon:'📐', desc:'Find out which object is longer, shorter, taller, or the same'},
+      {id:'ku7l2', title:'Comparing Weight & Capacity', icon:'⚖️', desc:'Compare how heavy things are and how much they hold'},
+      {id:'ku7l3', title:'Ordering by Size',           icon:'🔢', desc:'Put objects in order from shortest to longest or lightest to heaviest'},
+      {id:'ku7l4', title:'Measurable Attributes',      icon:'🔍', desc:'Name the attribute being measured: length, weight, or capacity'}
+    ],
+    _loaded: false
+  }
 ];
 
 // ── K lazy-load infrastructure ───────────────────────────────────────────────

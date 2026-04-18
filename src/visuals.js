@@ -16,9 +16,10 @@ let _visUid = 0;
 function _buildVisualHTML(v) {
   if (!v || !v.type || !v.config) return '';
   let svg = '';
-  if      (v.type === 'base10')     svg = drawBase10(v.config);
-  else if (v.type === 'numberLine') svg = drawNumberLine(v.config);
-  else if (v.type === 'array')      svg = drawArray(v.config);
+  if      (v.type === 'base10')      svg = drawBase10(v.config);
+  else if (v.type === 'numberLine')  svg = drawNumberLine(v.config);
+  else if (v.type === 'array')       svg = drawArray(v.config);
+  else if (v.type === 'comparison')  svg = drawComparison(v.config);
   return svg ? '<div class="q-visual">' + svg + '</div>' : '';
 }
 
@@ -214,6 +215,51 @@ function drawNumberLine(cfg) {
   const label = cfg.label || ariaLabel;
 
   return `<svg role="img" aria-labelledby="${uid}" focusable="false" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto"><title id="${uid}">${_escHtml(label)}</title>${parts.join('')}</svg>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  drawComparison({ left:{label,barLen,color}, right:{label,barLen,color} })
+//
+//  Renders two horizontal bars aligned at the left edge, with labels below.
+//  barLen: 1–10 (relative units — no numbers shown to students).
+//  Used for K measurement comparison questions (length, height, capacity, weight).
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawComparison(cfg) {
+  const uid    = 'vis-' + (++_visUid);
+  const L      = cfg.left  || {};
+  const R      = cfg.right || {};
+  const UNIT   = 20;   // px per barLen unit
+  const BAR_H  = 28;   // bar height
+  const LBL_H  = 20;   // label row height
+  const ROW_H  = BAR_H + LBL_H;
+  const GAP    = 10;   // gap between the two rows
+  const PAD    = 14;   // outer padding
+  const TICK_W = 3;    // left-edge alignment marker width
+
+  const lLen   = Math.max(1, Math.min(10, +L.barLen || 5));
+  const rLen   = Math.max(1, Math.min(10, +R.barLen || 3));
+  const lColor = L.color || '#3b82f6';
+  const rColor = R.color || '#ef4444';
+  const lLabel = _escHtml(L.label || '');
+  const rLabel = _escHtml(R.label || '');
+
+  const W  = PAD + TICK_W + Math.max(lLen, rLen) * UNIT + PAD;
+  const H  = PAD + ROW_H + GAP + ROW_H + PAD;
+  const bx = PAD + TICK_W;   // bar left edge x
+  const y1 = PAD;             // top bar y
+  const y2 = PAD + ROW_H + GAP;  // bottom bar y
+
+  const ariaLabel = cfg.label || ((L.label || 'left') + ' compared with ' + (R.label || 'right'));
+
+  const parts = [
+    `<line x1="${PAD + TICK_W / 2}" y1="${PAD}" x2="${PAD + TICK_W / 2}" y2="${H - PAD}" stroke="currentColor" stroke-width="${TICK_W}" opacity="0.15"/>`,
+    `<rect x="${bx}" y="${y1}" width="${lLen * UNIT}" height="${BAR_H}" fill="${lColor}" opacity="0.72" rx="5"/>`,
+    `<text x="${bx}" y="${y1 + BAR_H + 14}" font-size="12" font-family="sans-serif" fill="currentColor" opacity="0.85">${lLabel}</text>`,
+    `<rect x="${bx}" y="${y2}" width="${rLen * UNIT}" height="${BAR_H}" fill="${rColor}" opacity="0.72" rx="5"/>`,
+    `<text x="${bx}" y="${y2 + BAR_H + 14}" font-size="12" font-family="sans-serif" fill="currentColor" opacity="0.85">${rLabel}</text>`,
+  ];
+
+  return `<svg role="img" aria-labelledby="${uid}" focusable="false" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto"><title id="${uid}">${_escHtml(ariaLabel)}</title>${parts.join('')}</svg>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
