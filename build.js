@@ -74,7 +74,7 @@ async function build(){
   const fontsCss   = fs.readFileSync(path.join(ROOT, 'src',  'styles-fonts.css'),       'utf8');
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
-    'data/shared.js','util.js','state.js','auth.js','nav.js','home.js','unit.js',
+    'data/shared.js','data/shared_k.js','util.js','state.js','auth.js','nav.js','home.js','unit.js',
     'visuals.js','quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
@@ -254,6 +254,18 @@ async function build(){
     const uSrc = path.join(ROOT, 'src', 'data', 'u' + n + '.js');
     fs.copyFileSync(uSrc, path.join(DATA_DIR, 'u' + n + '.js'));
     console.log(`📋 Copied:  data/u${n}.js`);
+  }
+
+  // ── Copy K unit data files to dist/data/k/ ──
+  const K_DATA_DIR = path.join(DIST, 'data', 'k');
+  if (!fs.existsSync(K_DATA_DIR)) fs.mkdirSync(K_DATA_DIR, { recursive: true });
+  const K_UNIT_NUMS = [1, 2]; // extend as new K units are added
+  for (const n of K_UNIT_NUMS) {
+    const kSrc = path.join(ROOT, 'src', 'data', 'k', 'u' + n + '.js');
+    if (fs.existsSync(kSrc)) {
+      fs.copyFileSync(kSrc, path.join(K_DATA_DIR, 'u' + n + '.js'));
+      console.log(`📋 Copied:  data/k/u${n}.js`);
+    }
   }
 
   // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed
