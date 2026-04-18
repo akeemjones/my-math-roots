@@ -736,7 +736,12 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     } else {
       text = 'You were so close! Count each step out loud and stop at the right number.';
     }
-    if(startCount !== null && !isNaN(correctNum)){
+    if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
+      visualHTML = '<div style="text-align:center;line-height:2.2">'
+        + emojiRow(correctNum, emoji)
+        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+        + '</div>';
+    } else if(startCount !== null && !isNaN(correctNum)){
       visualHTML = dynamicNL(startCount, correctNum);
     } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
       visualHTML = dynamicNL(chosenNum, correctNum);
@@ -747,7 +752,7 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     if(!isNaN(correctNum) && !isNaN(chosenNum)){
       var isMore = correctNum > chosenNum;
       text = 'You picked ' + chosenVal + ' \u2014 that\'s what you started with. Add ' + (isMore ? 'one more' : 'take one less') + ': ' + chosenVal + ' \u2192 ' + correctVal + '.';
-      if(emoji && correctNum >= 1 && correctNum <= 12){
+      if(emoji && correctNum >= 1 && correctNum <= 20){
         visualHTML = '<div style="text-align:center;line-height:2.2">'
           + emojiRow(chosenNum, emoji)
           + '<span style="font-size:1.25rem;margin:0 10px">\u2192</span>'
@@ -764,7 +769,7 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     title = 'Too Many \u2014 Stop Earlier!';
     if(!isNaN(correctNum) && !isNaN(chosenNum)){
       text = 'You picked ' + chosenVal + ', but that\'s too many. Count carefully and stop at ' + correctVal + '.';
-      if(emoji && correctNum >= 1 && correctNum <= 12){
+      if(emoji && correctNum >= 1 && correctNum <= 20){
         visualHTML = '<div style="text-align:center;line-height:2.2">'
           + emojiRow(correctNum, emoji)
           + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Stop here: ' + correctVal + '</span>'
@@ -853,6 +858,58 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       text = 'You picked ' + chosenVal + ' — that\'s the whole amount. We already know the total! We need to find the missing piece, which is ' + correctVal + '.';
     } else {
       text = 'In a missing part problem, you already have the total. Use subtraction to find what is missing!';
+    }
+
+  } else if(errorTag === 'err_teen'){
+    title = 'Teen Numbers \u2014 10 and Some More!';
+    if(!isNaN(correctNum) && correctNum >= 11 && correctNum <= 19){
+      var extras = correctNum - 10;
+      var em = emoji || '\u2b50';
+      text = correctVal + ' is 10 and ' + extras + ' more. Look at the groups below!';
+      visualHTML =
+        '<div style="text-align:center;line-height:1.9">' +
+          '<div style="display:inline-flex;gap:10px;align-items:center;justify-content:center">' +
+            '<div style="border:2px solid #FF9800;border-radius:8px;padding:4px 6px;line-height:1.6">' +
+              '<div style="font-size:1.25rem;letter-spacing:2px">' + em.repeat(5) + '</div>' +
+              '<div style="font-size:1.25rem;letter-spacing:2px">' + em.repeat(5) + '</div>' +
+            '</div>' +
+            '<span style="font-size:1.1rem;font-weight:700">+</span>' +
+            '<div style="border:2px dashed #FF9800;border-radius:8px;padding:4px 6px;line-height:1.6">' +
+              '<div style="font-size:1.25rem;letter-spacing:2px">' + em.repeat(extras) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<br><span style="font-size:0.85rem;color:#5a7080">10 + ' + extras + ' = ' + correctVal + ' \u2713</span>' +
+        '</div>';
+    } else {
+      text = 'Teen numbers are made of 10 and some extras. Count the 10 first, then count the rest!';
+    }
+
+  } else if(errorTag === 'err_under_count'){
+    title = 'You Stopped Too Early \u2014 Keep Going!';
+    if(!isNaN(correctNum) && !isNaN(chosenNum)){
+      text = 'You picked ' + chosenVal + ', but keep counting! There are ' + correctVal + ' altogether.';
+      if(emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count all the way to ' + correctVal + '!</span>'
+          + '</div>';
+      }
+    } else {
+      text = 'Make sure you count every single object \u2014 touch each one and do not stop early!';
+    }
+
+  } else if(errorTag === 'err_random'){
+    title = 'Look Carefully and Try Again!';
+    if(!isNaN(correctNum)){
+      text = 'That was not right. Count carefully \u2014 the answer is ' + correctVal + '.';
+      if(emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+          + '</div>';
+      }
+    } else {
+      text = 'That was not right \u2014 read the question again and think it through!';
     }
 
   } else {

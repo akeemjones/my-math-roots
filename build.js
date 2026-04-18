@@ -259,7 +259,7 @@ async function build(){
   // ── Copy K unit data files to dist/data/k/ ──
   const K_DATA_DIR = path.join(DIST, 'data', 'k');
   if (!fs.existsSync(K_DATA_DIR)) fs.mkdirSync(K_DATA_DIR, { recursive: true });
-  const K_UNIT_NUMS = [1, 2, 3]; // extend as new K units are added
+  const K_UNIT_NUMS = [1, 2, 3, 4]; // extend as new K units are added
   for (const n of K_UNIT_NUMS) {
     const kSrc = path.join(ROOT, 'src', 'data', 'k', 'u' + n + '.js');
     if (fs.existsSync(kSrc)) {
