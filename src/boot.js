@@ -6,6 +6,8 @@
 const _APP_GLOBALS = [
   // data/shared.js
   'q','_ICO','UNITS_DATA','_unitLoadPromises','_mergeUnitData','_loadUnit',
+  // data/shared_k.js
+  '_UNITS_DATA_K','_kUnitLoadPromises','_mergeKUnitData','_loadKUnit','_applyKindergartenGrade',
   // util.js
 
   '_sr','_shuffle','_sanitize','_escHtml','_validEmail','_friendlyError','_rateLimit',
