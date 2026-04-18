@@ -726,8 +726,10 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     catch(e){ return ''; }
   }
 
-  // K-only: show counting sequence with missing spot and correct answer below
-  function kSequenceFallback(qText, correct){
+  // K-only: show counting sequence with missing spot and correct answer below.
+  // countOnFrom: if provided and differs from correct, appends a step-progression
+  // arrow chain (e.g. 16 → 17 → 18 ✓) instead of a bare number.
+  function kSequenceFallback(qText, correct, countOnFrom){
     var nums = (qText || '').match(/\d+/g);
     var seq = (nums && nums.length >= 2) ? nums.map(Number) : [correct-3, correct-2, correct-1];
     seq = seq.filter(function(n){ return n >= 0; });
@@ -735,35 +737,63 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       return '<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#2d4a5a">' + n + '</span>';
     });
     cells.push('<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#FF9800;border:2px dashed #FF9800;border-radius:6px;padding:0 4px">?</span>');
+    var answerHTML;
+    if(countOnFrom !== undefined && countOnFrom !== correct && !isNaN(countOnFrom)){
+      var isUp = correct > countOnFrom;
+      var steps = [];
+      for(var si = countOnFrom; isUp ? si <= correct : si >= correct; isUp ? si++ : si--) steps.push(si);
+      answerHTML = '<div style="font-size:1.2rem;font-weight:700;color:#2d7d46;margin-top:2px">' + steps.join(' \u2192 ') + ' \u2713</div>';
+    } else {
+      answerHTML = '<div style="font-size:1.3rem;font-weight:700;color:#2d7d46">' + correct + ' \u2713</div>';
+    }
     return '<div style="text-align:center;font-family:var(--ff2,\'Nunito\',sans-serif)">'
       + '<div style="display:flex;gap:6px;justify-content:center;align-items:center">' + cells.join('') + '</div>'
       + '<div style="margin-top:4px;font-size:1.1rem;color:#FF9800">\u2193</div>'
-      + '<div style="font-size:1.3rem;font-weight:700;color:#2d7d46">' + correct + ' \u2713</div>'
+      + answerHTML
       + '</div>';
   }
 
   var title='', text='', visualHTML='';
 
   if(errorTag === 'err_off_by_one'){
-    title = 'Almost! You Were Just One Off';
-    if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      var dir = correctNum > chosenNum ? 'forward' : 'back';
-      text = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Take one step ' + dir + ' from ' + chosenVal + '!';
+    if(_ACTIVE_GRADE === 'K' && !isNaN(correctNum) && !isNaN(chosenNum)){
+      // K: step-aware language — never say "one step" when diff > 1
+      var kDiff = Math.abs(correctNum - chosenNum);
+      var kUp   = correctNum > chosenNum;
+      if(kDiff === 1){
+        title = 'Almost! You Were Just One Off';
+        text  = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Count ' + (kUp ? 'one more' : 'one less') + ': ' + chosenVal + ' \u2192 ' + correctVal + '!';
+      } else {
+        title = 'Keep Counting!';
+        text  = 'Keep counting from ' + chosenVal + '! Count ' + (kUp ? 'up' : 'back') + ' until you reach ' + correctVal + '.';
+      }
+      if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+          + '</div>';
+      } else {
+        // Sequence visual; when diff > 1 also show the step chain
+        visualHTML = kSequenceFallback(q && q.t, correctNum, kDiff > 1 ? chosenNum : undefined);
+      }
     } else {
-      text = 'You were so close! Count each step out loud and stop at the right number.';
-    }
-    if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
-      visualHTML = '<div style="text-align:center;line-height:2.2">'
-        + emojiRow(correctNum, emoji)
-        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
-        + '</div>';
-    } else if(_ACTIVE_GRADE === 'K' && !isNaN(correctNum)){
-      // K: no number lines — show counting sequence with missing spot
-      visualHTML = kSequenceFallback(q && q.t, correctNum);
-    } else if(startCount !== null && !isNaN(correctNum)){
-      visualHTML = dynamicNL(startCount, correctNum);
-    } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      visualHTML = dynamicNL(chosenNum, correctNum);
+      title = 'Almost! You Were Just One Off';
+      if(!isNaN(correctNum) && !isNaN(chosenNum)){
+        var dir = correctNum > chosenNum ? 'forward' : 'back';
+        text = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Take one step ' + dir + ' from ' + chosenVal + '!';
+      } else {
+        text = 'You were so close! Count each step out loud and stop at the right number.';
+      }
+      if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+          + '</div>';
+      } else if(startCount !== null && !isNaN(correctNum)){
+        visualHTML = dynamicNL(startCount, correctNum);
+      } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
+        visualHTML = dynamicNL(chosenNum, correctNum);
+      }
     }
 
   } else if(errorTag === 'err_same'){
@@ -1005,8 +1035,21 @@ function _pauseForIntervention(errorTag, selectedIndex){
     'color:var(--txt, #1a2535)'
   ].join(';');
 
+  // Render the current question's visual (objectSet, twoGroups, etc.) for context
+  var qVisualHTML = '';
+  if(q && q.v){
+    try{ qVisualHTML = _buildVisualHTML(q.v); }catch(e){}
+  }
+  var qSection = q ?
+    '<div style="background:var(--bg2,#f4f7fa);border-radius:var(--rad-sm,12px);padding:14px 16px;margin-bottom:18px;text-align:left;">'+
+      '<div style="font-size:0.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2,#5a7080);margin-bottom:6px;font-family:var(--ff2,\'Nunito\',sans-serif)">The question</div>'+
+      '<p style="margin:0 0 '+(qVisualHTML?'10px':'0')+';font-size:1rem;font-weight:600;line-height:1.4;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(q.t)+'</p>'+
+      (qVisualHTML ? '<div style="margin-top:4px">'+qVisualHTML+'</div>' : '')+
+    '</div>' : '';
+
   overlay.innerHTML =
     '<div style="max-width:520px;width:100%;background:var(--card-bg, #fff);opacity:0.92;border-radius:var(--rad, 22px);box-shadow:var(--shad, 0 6px 28px rgba(0,0,0,.16));padding:32px;text-align:center;border:1px solid var(--border, rgba(0,0,0,.11));">'+
+      qSection+
       '<div style="font-size:2rem;margin-bottom:8px;">💡</div>'+
       '<h2 style="margin:0 0 12px;font-size:1.3rem;color:var(--txt, #2d3a8c);font-family:var(--ff, \'Boogaloo\',sans-serif);">'+_escHtml(title)+'</h2>'+
       '<p style="margin:0 0 20px;font-size:1.05rem;line-height:1.5;color:var(--txt2, #5a7080);font-family:var(--ff2, \'Nunito\',sans-serif);">'+_escHtml(text)+'</p>'+
