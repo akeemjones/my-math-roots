@@ -2463,6 +2463,7 @@ function _showGradeSwitchOverlay(newGrade){
 }
 
 async function switchGrade(newGrade){
+  console.log('GRADE CLICKED:', newGrade);
   if(_gradeSwitching) return;
   var current = localStorage.getItem('mmr_grade') || '2';
   if(newGrade === current) return;
@@ -2479,6 +2480,7 @@ async function switchGrade(newGrade){
   _showGradeSwitchOverlay(newGrade);
   await new Promise(function(resolve){ setTimeout(resolve, 280); });
   localStorage.setItem('mmr_grade', newGrade);
+  console.log('GRADE SAVED:', localStorage.getItem('mmr_grade'));
   // Preserve guest mode across reload so boot.js fast-path fires
   if(!_supaUser) localStorage.setItem('wb_guest_mode', '1');
   location.reload();
