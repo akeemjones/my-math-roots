@@ -573,24 +573,18 @@ function _renderQ(){
       _visualBlock = drawComparison(_cfg, null, null);
     }
 
-  } else if (_vt === 'objectSet' || _vt === 'twoGroups') {
-    // Show the question visual statically; render each numeric answer option as a mini emoji panel.
-    const _vCfg    = q.v.config;
-    const _btnEmoji = _vt === 'twoGroups'
-      ? (_vCfg.rightObj || _vCfg.leftObj || '●')
-      : (_vCfg.emoji || '●');
-    _visualBlock  = _vt === 'objectSet' ? drawObjectSet(_vCfg, null) : drawTwoGroups(_vCfg);
-    _agridOpts    = [];  // all opts become visual buttons
-    _visualBlock += '<div class="vcmp" role="group" aria-label="Answer choices">' +
-      opts.map(function(opt) {
-        const i = opts.indexOf(opt);
-        const n = parseInt(opt.text);
-        if (!isNaN(n) && n >= 0 && n <= 20) {
-          return drawObjectSet({count: n, emoji: _btnEmoji, layout: 'line'}, i);
-        }
-        return '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'">'+_escHtml(opt.text)+'</button>';
-      }).join('') +
-    '</div>';
+  } else if (_vt === 'objectSet') {
+    _visualBlock = drawObjectSet(q.v.config, null);
+    // answers go to agrid as plain number buttons
+
+  } else if (_vt === 'twoGroups') {
+    if (_ACTIVE_GRADE === 'K') {
+      _agridOpts   = [];
+      _visualBlock = _buildKManip(q.v.config, opts);
+    } else {
+      _visualBlock = _buildVisualHTML(q.v);
+      // answers go to agrid as plain number buttons
+    }
 
   } else {
     _visualBlock = q.v ? _buildVisualHTML(q.v) : (q.s ? '<div class="q-visual">'+q.s+'</div>' : '');
@@ -747,6 +741,132 @@ function _handleAnswer(selectedIndex){
     _pauseForIntervention(tag, selectedIndex);
     errorProfile[tag] = 0;
   }
+}
+
+// ── K Counting Manipulative ──────────────────────────────────────────────────
+// Renders an interactive "tap to build/remove" area for twoGroups questions in K.
+// Addition: student taps a source object to add one at a time to the answer area.
+// Subtraction: answer area starts with leftCount objects; student taps to remove.
+var _kManipCounter = 0;
+
+function _buildKManip(cfg, opts) {
+  _kManipCounter = 0;
+  var emoji  = cfg.leftObj || '⭐';
+  var lCount = +(cfg.leftCount  || 0);
+  var rCount = +(cfg.rightCount || 0);
+  var isAdd  = cfg.op !== 'subtract';
+  var max    = isAdd ? Math.min(20, lCount + rCount + 3) : lCount;
+  var lEmoji = (cfg.leftObj  || '⭐').repeat(lCount);
+  var rEmoji = (cfg.rightObj || cfg.leftObj || '⭐').repeat(rCount);
+
+  var ctx = '<div class="k-manip-ctx">'
+    + '<span class="k-mc-group">' + lEmoji + '</span>'
+    + '<span class="k-mc-op">'   + (isAdd ? '+' : '\u2212') + '</span>'
+    + '<span class="k-mc-group">' + rEmoji + '</span>'
+    + '</div>';
+
+  var hint = '<div class="k-manip-hint">'
+    + (isAdd ? 'Tap ' + emoji + ' to add \u2022 tap your answer to remove'
+             : 'Tap a ' + emoji + ' to take it away')
+    + '</div>';
+
+  var src = isAdd
+    ? '<button class="k-manip-src" data-action="_kManipAdd" aria-label="Add one">' + emoji + '</button>'
+    : '';
+
+  var areaInner = '';
+  if (!isAdd) {
+    for (var i = 0; i < lCount; i++) {
+      var id = ++_kManipCounter;
+      areaInner += '<button class="k-manip-obj" id="kobj-' + id + '"'
+        + ' data-action="_kManipRemove" data-arg="' + id + '"'
+        + ' aria-label="Remove one">' + emoji + '</button>';
+    }
+  }
+
+  var startN = isAdd ? 0 : lCount;
+  var lbl    = isAdd ? ' added' : ' left';
+
+  return '<div class="k-manip" data-emoji="' + _escHtml(emoji) + '" data-max="' + max + '">'
+    + ctx + hint + src
+    + '<div class="k-manip-area" id="k-area">' + areaInner + '</div>'
+    + '<div class="k-manip-footer">'
+    +   '<div class="k-manip-count"><span id="k-ct">' + startN + '</span>' + lbl + '</div>'
+    +   '<button class="k-submit-btn" data-action="_kManipSubmit">\u2713 Submit</button>'
+    + '</div>'
+    + '</div>';
+}
+
+function _kManipAdd() {
+  if (isPaused || (CUR.quiz && CUR.quiz._answered)) return;
+  var area  = document.getElementById('k-area');
+  if (!area) return;
+  var manip = area.closest('.k-manip');
+  var emoji = (manip && manip.dataset.emoji) || '⭐';
+  var max   = parseInt((manip && manip.dataset.max) || '20');
+  var cur   = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
+  if (cur >= max) return;
+  var id = ++_kManipCounter;
+  var btn = document.createElement('button');
+  btn.className          = 'k-manip-obj';
+  btn.id                 = 'kobj-' + id;
+  btn.dataset.action     = '_kManipRemove';
+  btn.dataset.arg        = String(id);
+  btn.setAttribute('aria-label', 'Remove one');
+  btn.textContent        = emoji;
+  area.appendChild(btn);
+  _kManipUpdateCount();
+}
+
+function _kManipRemove(id) {
+  if (isPaused || (CUR.quiz && CUR.quiz._answered)) return;
+  var obj = document.getElementById('kobj-' + id);
+  if (!obj || obj.dataset.removing) return;
+  obj.dataset.removing = '1';
+  obj.classList.add('removing');
+  _kManipUpdateCount();
+  setTimeout(function() { if (obj.parentNode) obj.parentNode.removeChild(obj); }, 180);
+}
+
+function _kManipUpdateCount() {
+  var area = document.getElementById('k-area');
+  if (!area) return;
+  var n  = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
+  var ct = document.getElementById('k-ct');
+  if (ct) ct.textContent = String(n);
+}
+
+function _kManipSubmit() {
+  if (isPaused || !CUR.quiz || CUR.quiz._answered) return;
+  var area = document.getElementById('k-area');
+  if (!area) return;
+  var count = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
+  // Freeze UI
+  area.querySelectorAll('.k-manip-obj').forEach(function(o) { o.disabled = true; });
+  var src = document.querySelector('.k-manip-src');
+  if (src) src.disabled = true;
+  var sub = document.querySelector('.k-submit-btn');
+  if (sub) sub.disabled = true;
+  // Map student's count → shuffled option index
+  var opts = CUR.quiz._opts;
+  var idx  = -1;
+  for (var i = 0; i < opts.length; i++) {
+    if (parseInt(opts[i].text) === count) { idx = i; break; }
+  }
+  if (idx === -1) {
+    // Count not in options — map to closest wrong answer
+    var corr = parseInt(CUR.quiz._correct);
+    var best = Infinity;
+    for (var j = 0; j < opts.length; j++) {
+      var v = parseInt(opts[j].text);
+      if (v !== corr) {
+        var d = Math.abs(v - count);
+        if (d < best) { best = d; idx = j; }
+      }
+    }
+    if (idx === -1) idx = 0;
+  }
+  _pickAnswer(idx);
 }
 
 // ── Dynamic intervention content builder ─────────────────────────────────
@@ -1014,8 +1134,7 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       };
       var _lsHL = (_cmpLabel(_lsCfg.left.label) === correctVal || _lsCfg.left.label === correctVal)
         ? 'left' : 'right';
-      visualHTML = drawComparison(_lsCfg, null, null, _lsHL) +
-        '<div style="text-align:center;font-family:Boogaloo,sans-serif;font-size:15px;color:#27ae60;margin-top:4px">This one is longer ✓</div>';
+      visualHTML = drawComparison(_lsCfg, null, null, _lsHL);
     } else {
       text = 'Compare by lining objects up at one end. The object that extends farther is longer; the one that does not reach as far is shorter.';
     }
@@ -1030,8 +1149,7 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       };
       var _hlHL = (_cmpLabel(_hlCfg.left.label) === correctVal || _hlCfg.left.label === correctVal)
         ? 'left' : 'right';
-      visualHTML = drawComparison(_hlCfg, null, null, _hlHL) +
-        '<div style="text-align:center;font-family:Boogaloo,sans-serif;font-size:15px;color:#27ae60;margin-top:4px">This one is heavier ✓</div>';
+      visualHTML = drawComparison(_hlCfg, null, null, _hlHL);
     } else {
       text = 'Heavier means more weight — it pushes down harder on a scale. Lighter means less weight. Compare by picking objects up or using a balance scale.';
     }
@@ -1430,12 +1548,10 @@ function _finishQuiz(){
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
-  if(_supaUser || autoEntry.qid === 'lq_u1l1'){
-    if(_supaUser) autoEntry._sig = _scoreSig(autoEntry);
-    SCORES.unshift(autoEntry);
-    if(SCORES.length>200) SCORES.pop();
-    saveSc();
-  }
+  if(_supaUser) autoEntry._sig = _scoreSig(autoEntry);
+  SCORES.unshift(autoEntry);
+  if(SCORES.length>200) SCORES.pop();
+  saveSc();
   if(qz.answers && qz.answers.length) _updateMastery(qz.answers);
 
   // ── Streak rule: first-time pass OR all content complete ──
@@ -1760,12 +1876,10 @@ function confirmQuit(){
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
-  if(_supaUser || quitEntry.qid === 'lq_u1l1'){
-    if(_supaUser) quitEntry._sig = _scoreSig(quitEntry);
-    SCORES.unshift(quitEntry);
-    if(SCORES.length > 200) SCORES.pop();
-    saveSc();
-  }
+  if(_supaUser) quitEntry._sig = _scoreSig(quitEntry);
+  SCORES.unshift(quitEntry);
+  if(SCORES.length > 200) SCORES.pop();
+  saveSc();
   // Clear pause, stop timer, navigate back — no pause saved
   _clearTimer();
   if(qz.id) _clearPausedQuiz(qz.id);
@@ -1796,12 +1910,10 @@ function confirmRestart(){
       date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
       time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
     };
-    if(_supaUser || abandonedEntry.qid === 'lq_u1l1'){
-      if(_supaUser) abandonedEntry._sig = _scoreSig(abandonedEntry);
-      SCORES.unshift(abandonedEntry);
-      if(SCORES.length > 200) SCORES.pop();
-      saveSc();
-    }
+    if(_supaUser) abandonedEntry._sig = _scoreSig(abandonedEntry);
+    SCORES.unshift(abandonedEntry);
+    if(SCORES.length > 200) SCORES.pop();
+    saveSc();
   }
   if(qz.id) _clearPausedQuiz(qz.id);
   let bank;

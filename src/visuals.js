@@ -361,18 +361,36 @@ function drawObjectSet(config, argIdx) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  drawTwoGroups({leftCount, leftObj, rightCount, rightObj, op})
+//  drawTwoGroups({leftCount, leftObj, rightCount, rightObj, op},
+//               leftArgIdx, rightArgIdx)
 //
-//  Static question visual only. Answer buttons rendered via drawObjectSet()
-//  in _renderQ(). op: 'add' | 'subtract'
+//  leftArgIdx / rightArgIdx: shuffled button indices from _renderQ().
+//    Numbers → wraps each group in a clickable <button id="abtn-N">
+//    null    → renders static <div class="q-visual two-groups-visual">
+//  op: 'add' | 'subtract'
 // ─────────────────────────────────────────────────────────────────────────────
-function drawTwoGroups(config) {
-  var lEmoji = (config.leftObj  || '●').repeat(+(config.leftCount)  || 0);
-  var rEmoji = (config.rightObj || '●').repeat(+(config.rightCount) || 0);
+function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
+  var lCount = +(config.leftCount)  || 0;
+  var rCount = +(config.rightCount) || 0;
+  var lEmoji = (config.leftObj  || '●').repeat(lCount);
+  var rEmoji = (config.rightObj || '●').repeat(rCount);
   var opStr  = config.op === 'subtract' ? '−' : '+';
+
+  function _groupBtn(emoji, count, argIdx) {
+    return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
+           ' data-action="_pickAnswer" data-arg="'+argIdx+'"'+
+           ' aria-label="'+count+'">'+
+      '<div class="tg-group">'+emoji+'</div>'+
+      '<span class="vchoice-label">'+count+'</span>'+
+    '</button>';
+  }
+
+  var leftHTML  = leftArgIdx  != null ? _groupBtn(lEmoji, lCount, leftArgIdx)  : '<div class="tg-group">'+lEmoji+'</div>';
+  var rightHTML = rightArgIdx != null ? _groupBtn(rEmoji, rCount, rightArgIdx) : '<div class="tg-group">'+rEmoji+'</div>';
+
   return '<div class="q-visual two-groups-visual">'+
-    '<div class="tg-group">'+lEmoji+'</div>'+
+    leftHTML+
     '<div class="tg-op">'+opStr+'</div>'+
-    '<div class="tg-group">'+rEmoji+'</div>'+
+    rightHTML+
   '</div>';
 }
