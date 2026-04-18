@@ -1007,14 +1007,15 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
   } else if(errorTag === 'err_longer_shorter'){
     title = 'Check Which End Sticks Out Farther!';
     if(_ACTIVE_GRADE === 'K'){
-      text = 'To find the LONGER object, line them up at one end and look at the other end — the longer one sticks out farther! The SHORTER one does not reach as far.';
-      visualHTML = '<div style="text-align:center;font-family:var(--ff2,\'Nunito\',sans-serif);font-size:0.92rem;line-height:2.2">'
-        + '<div style="display:inline-block;text-align:left">'
-        + '<div><span style="display:inline-block;background:#2196F3;height:10px;width:120px;border-radius:4px;vertical-align:middle"></span> <span style="color:#2196F3;font-weight:700">← longer</span></div>'
-        + '<div style="margin-top:6px"><span style="display:inline-block;background:#90CAF9;height:10px;width:70px;border-radius:4px;vertical-align:middle"></span> <span style="color:#5a7080">← shorter</span></div>'
-        + '</div>'
-        + '<div style="margin-top:6px;color:#5a7080;font-size:0.8rem">Line up at one end — the longer one reaches farther!</div>'
-        + '</div>';
+      text = 'Look at the bars. The longer one reaches farther!';
+      var _lsCfg = (q && q.v && q.v.type === 'comparison') ? q.v.config : {
+        left:  {label:'longer object',  barLen:8, color:'#2196F3'},
+        right: {label:'shorter object', barLen:4, color:'#90CAF9'}
+      };
+      var _lsHL = (_cmpLabel(_lsCfg.left.label) === correctVal || _lsCfg.left.label === correctVal)
+        ? 'left' : 'right';
+      visualHTML = drawComparison(_lsCfg, null, null, _lsHL) +
+        '<div style="text-align:center;font-family:Boogaloo,sans-serif;font-size:15px;color:#27ae60;margin-top:4px">This one is longer ✓</div>';
     } else {
       text = 'Compare by lining objects up at one end. The object that extends farther is longer; the one that does not reach as far is shorter.';
     }
@@ -1022,11 +1023,15 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
   } else if(errorTag === 'err_heavier_lighter'){
     title = 'Check Which Feels Heavier to Lift!';
     if(_ACTIVE_GRADE === 'K'){
-      text = 'HEAVIER means it weighs MORE — it would be harder to lift. LIGHTER means it weighs LESS — easy to lift or even float! Think about picking each object up in real life.';
-      visualHTML = '<div style="text-align:center;font-size:1.5rem;line-height:2.4;font-family:var(--ff2,\'Nunito\',sans-serif)">'
-        + '🪨 &nbsp;vs&nbsp; 🪶'
-        + '<br><span style="font-size:0.82rem;color:#5a7080">rock (heavier) &nbsp;vs&nbsp; feather (lighter)<br>The heavier one pulls your arm DOWN!</span>'
-        + '</div>';
+      text = 'The heavier object makes the scale go down on that side.';
+      var _hlCfg = (q && q.v && q.v.type === 'comparison') ? q.v.config : {
+        left:  {label:'heavier object', barLen:7, color:'#f59e0b'},
+        right: {label:'lighter object', barLen:3, color:'#fcd34d'}
+      };
+      var _hlHL = (_cmpLabel(_hlCfg.left.label) === correctVal || _hlCfg.left.label === correctVal)
+        ? 'left' : 'right';
+      visualHTML = drawComparison(_hlCfg, null, null, _hlHL) +
+        '<div style="text-align:center;font-family:Boogaloo,sans-serif;font-size:15px;color:#27ae60;margin-top:4px">This one is heavier ✓</div>';
     } else {
       text = 'Heavier means more weight — it pushes down harder on a scale. Lighter means less weight. Compare by picking objects up or using a balance scale.';
     }
