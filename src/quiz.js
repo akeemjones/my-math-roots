@@ -2,6 +2,10 @@
 // plain text is HTML-escaped to prevent XSS.
 function _qText(t){ return (typeof t === 'string' && t.includes('<svg')) ? t : _escHtml(t); }
 
+// Strip leading emoji / non-word chars from comparison config labels.
+// '🚌 bus' → 'bus', used to match label text against option vals.
+function _cmpLabel(s){ return s ? s.replace(/^[^\w\u00C0-\u024F]+/,'').trim() : s; }
+
 
 // ════════════════════════════════════════
 //  SOUND ENGINE (Web Audio API)
@@ -549,16 +553,63 @@ function _renderQ(){
   nb.style.display = 'none';
   nb.innerHTML = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
 
+  // Build visual block and filter which options go in .agrid vs. visual buttons
+  let _visualBlock = '';
+  let _agridOpts   = opts;
+  const _vt = q.v && q.v.type;
+
+  if (_vt === 'comparison') {
+    // Find shuffled positions of the two named objects; render them as clickable bar buttons.
+    // Config labels may have leading emoji ('🚌 bus') — _cmpLabel strips to 'bus' for matching.
+    const _cfg = q.v.config;
+    const _lTxt = _cmpLabel(_cfg.left.label);
+    const _rTxt = _cmpLabel(_cfg.right.label);
+    const _lIdx = opts.findIndex(o => o.text === _lTxt || o.text === _cfg.left.label);
+    const _rIdx = opts.findIndex(o => o.text === _rTxt || o.text === _cfg.right.label);
+    if (_lIdx !== -1 && _rIdx !== -1) {
+      _visualBlock = drawComparison(_cfg, _lIdx, _rIdx);
+      _agridOpts   = opts.filter((_,i) => i !== _lIdx && i !== _rIdx);
+    } else {
+      _visualBlock = drawComparison(_cfg, null, null);
+    }
+
+  } else if (_vt === 'objectSet' || _vt === 'twoGroups') {
+    // Show the question visual statically; render each numeric answer option as a mini emoji panel.
+    const _vCfg    = q.v.config;
+    const _btnEmoji = _vt === 'twoGroups'
+      ? (_vCfg.rightObj || _vCfg.leftObj || '●')
+      : (_vCfg.emoji || '●');
+    _visualBlock  = _vt === 'objectSet' ? drawObjectSet(_vCfg, null) : drawTwoGroups(_vCfg);
+    _agridOpts    = [];  // all opts become visual buttons
+    _visualBlock += '<div class="vcmp" role="group" aria-label="Answer choices">' +
+      opts.map(function(opt) {
+        const i = opts.indexOf(opt);
+        const n = parseInt(opt.text);
+        if (!isNaN(n) && n >= 0 && n <= 20) {
+          return drawObjectSet({count: n, emoji: _btnEmoji, layout: 'line'}, i);
+        }
+        return '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'">'+_escHtml(opt.text)+'</button>';
+      }).join('') +
+    '</div>';
+
+  } else {
+    _visualBlock = q.v ? _buildVisualHTML(q.v) : (q.s ? '<div class="q-visual">'+q.s+'</div>' : '');
+  }
+
   // Use inline onclick with data-index — no addEventListener stacking
   qz._hintRevealed = false;
   document.getElementById('qcard').innerHTML =
     '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+(q.v?_buildVisualHTML(q.v):(q.s?'<div class="q-visual">'+q.s+'</div>':''))+
-    '<div class="agrid" role="group" aria-label="Answer choices">'+
-      opts.map((opt,i)=>
-        '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>'
-      ).join('')+
-    '</div>'+
+    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+
+    _visualBlock+
+    (_agridOpts.length > 0 ?
+      '<div class="agrid" role="group" aria-label="Answer choices">'+
+        _agridOpts.map(opt => {
+          const i = opts.indexOf(opt);
+          return '<button class="abtn" type="button" data-action="_pickAnswer" data-arg="'+i+'" id="abtn-'+i+'" aria-label="Answer: '+_escHtml(opt.text)+'">'+_escHtml(opt.text)+'</button>';
+        }).join('')+
+      '</div>'
+    : '')+
     (q.h ? '<div id="qhint" role="note" aria-live="polite">'+
       '<button id="qhint-btn" class="hint-btn" type="button" data-action="_toggleHint" aria-label="Need a hint?" aria-expanded="false">💡 Need a Hint?</button>'+
       '<div class="hint-content" aria-hidden="true">'+_escHtml(q.h)+'</div>'+
