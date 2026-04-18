@@ -726,6 +726,22 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     catch(e){ return ''; }
   }
 
+  // K-only: show counting sequence with missing spot and correct answer below
+  function kSequenceFallback(qText, correct){
+    var nums = (qText || '').match(/\d+/g);
+    var seq = (nums && nums.length >= 2) ? nums.map(Number) : [correct-3, correct-2, correct-1];
+    seq = seq.filter(function(n){ return n >= 0; });
+    var cells = seq.map(function(n){
+      return '<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#2d4a5a">' + n + '</span>';
+    });
+    cells.push('<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#FF9800;border:2px dashed #FF9800;border-radius:6px;padding:0 4px">?</span>');
+    return '<div style="text-align:center;font-family:var(--ff2,\'Nunito\',sans-serif)">'
+      + '<div style="display:flex;gap:6px;justify-content:center;align-items:center">' + cells.join('') + '</div>'
+      + '<div style="margin-top:4px;font-size:1.1rem;color:#FF9800">\u2193</div>'
+      + '<div style="font-size:1.3rem;font-weight:700;color:#2d7d46">' + correct + ' \u2713</div>'
+      + '</div>';
+  }
+
   var title='', text='', visualHTML='';
 
   if(errorTag === 'err_off_by_one'){
@@ -741,6 +757,9 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
         + emojiRow(correctNum, emoji)
         + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
         + '</div>';
+    } else if(_ACTIVE_GRADE === 'K' && !isNaN(correctNum)){
+      // K: no number lines — show counting sequence with missing spot
+      visualHTML = kSequenceFallback(q && q.t, correctNum);
     } else if(startCount !== null && !isNaN(correctNum)){
       visualHTML = dynamicNL(startCount, correctNum);
     } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
