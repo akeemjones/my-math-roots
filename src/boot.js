@@ -6,6 +6,8 @@
 const _APP_GLOBALS = [
   // data/shared.js
   'q','_ICO','UNITS_DATA','_unitLoadPromises','_mergeUnitData','_loadUnit',
+  // data/shared_k.js
+  '_UNITS_DATA_K','_kUnitLoadPromises','_mergeKUnitData','_loadKUnit','_applyKindergartenGrade',
   // util.js
 
   '_sr','_shuffle','_sanitize','_escHtml','_validEmail','_friendlyError','_rateLimit',
@@ -158,6 +160,12 @@ if (location.hostname === 'localhost') {
 
 applyStoredTheme();
 applyA11y();
+// Apply grade data before first render so UNITS_DATA is correct for all paths
+(function _applyGradeData(){
+  var _g = localStorage.getItem('mmr_grade') || '2';
+  console.log('BOOT GRADE:', _g);
+  if(_g === 'K'){ console.log('APPLYING GRADE:', 'K'); _applyKindergartenGrade(); }
+})();
 buildHome();
 // Set version display
 const vEl = document.getElementById('app-version');
@@ -177,6 +185,7 @@ if(!localStorage.getItem('wb_app_secret')){
 })();
 // Guest fast-path: skip Supabase auth entirely on grade-switch reload
 if(localStorage.getItem('wb_guest_mode') === '1'){
+  console.log('GRADE SAVED:', localStorage.getItem('mmr_grade'));
   buildHome(); show('home'); _dismissSplash();
 } else {
   supabaseInit();
