@@ -76,6 +76,23 @@ const _UNITS_DATA_K = [
     ],
     _loaded: false
   }
+  ,
+  {
+    id: 'ku5',
+    name: 'Counting, Cardinality & Problem Solving',
+    icon: '🧮',
+    svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#9C27B0" opacity="0.12"/><text x="30" y="40" text-anchor="middle" font-size="22" font-family="sans-serif" fill="#9C27B0" font-weight="bold">🧮</text></svg>',
+    color: '#9C27B0',
+    gp: 5,
+    teks: 'TEKS K.2C, K.2D, K.3A, K.3B, K.3C',
+    lessons: [
+      {id:'ku5l1', title:'Counting Strategies',             icon:'👆', desc:'Use touch-counting and organized groups to count sets up to 20'},
+      {id:'ku5l2', title:'Quick Look: Subitize',             icon:'👀', desc:'Instantly recognize how many — no counting needed!'},
+      {id:'ku5l3', title:'Story Problems: Join & Separate',  icon:'📖', desc:'Solve joining and separating story problems within 10'},
+      {id:'ku5l4', title:'Explain Your Math',                icon:'💬', desc:'Choose the right operation and explain your thinking'}
+    ],
+    _loaded: false
+  }
 ];
 
 // ── K lazy-load infrastructure ───────────────────────────────────────────────

@@ -726,25 +726,73 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     catch(e){ return ''; }
   }
 
+  // K-only: show counting sequence with missing spot and correct answer below.
+  // Always shows the 3 numbers before correct, then [?], then the answer.
+  // countOnFrom: if provided and differs from correct, appends a step-progression
+  // arrow chain (e.g. 16 → 17 → 18 ✓) instead of a bare number.
+  function kSequenceFallback(qText, correct, countOnFrom){
+    var seq = [correct-3, correct-2, correct-1].filter(function(n){ return n >= 0; });
+    var cells = seq.map(function(n){
+      return '<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#2d4a5a">' + n + '</span>';
+    });
+    cells.push('<span style="display:inline-block;min-width:2.4rem;text-align:center;font-size:1.3rem;font-weight:700;color:#FF9800;border:2px dashed #FF9800;border-radius:6px;padding:0 4px">?</span>');
+    var answerHTML;
+    if(countOnFrom !== undefined && countOnFrom !== correct && !isNaN(countOnFrom)){
+      var isUp = correct > countOnFrom;
+      var steps = [];
+      for(var si = countOnFrom; isUp ? si <= correct : si >= correct; isUp ? si++ : si--) steps.push(si);
+      answerHTML = '<div style="font-size:1.2rem;font-weight:700;color:#2d7d46;margin-top:2px">' + steps.join(' \u2192 ') + ' \u2713</div>';
+    } else {
+      answerHTML = '<div style="font-size:1.3rem;font-weight:700;color:#2d7d46">' + correct + ' \u2713</div>';
+    }
+    return '<div style="text-align:center;font-family:var(--ff2,\'Nunito\',sans-serif)">'
+      + '<div style="display:flex;gap:6px;justify-content:center;align-items:center">' + cells.join('') + '</div>'
+      + '<div style="margin-top:4px;font-size:1.1rem;color:#FF9800">\u2193</div>'
+      + answerHTML
+      + '</div>';
+  }
+
   var title='', text='', visualHTML='';
 
   if(errorTag === 'err_off_by_one'){
-    title = 'Almost! You Were Just One Off';
-    if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      var dir = correctNum > chosenNum ? 'forward' : 'back';
-      text = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Take one step ' + dir + ' from ' + chosenVal + '!';
+    if(_ACTIVE_GRADE === 'K' && !isNaN(correctNum) && !isNaN(chosenNum)){
+      // K: step-aware language — never say "one step" when diff > 1
+      var kDiff = Math.abs(correctNum - chosenNum);
+      var kUp   = correctNum > chosenNum;
+      if(kDiff === 1){
+        title = 'Almost! You Were Just One Off';
+        text  = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Count ' + (kUp ? 'one more' : 'one less') + ': ' + chosenVal + ' \u2192 ' + correctVal + '!';
+      } else {
+        title = 'Keep Counting!';
+        text  = 'Keep counting from ' + chosenVal + '! Count ' + (kUp ? 'up' : 'back') + ' until you reach ' + correctVal + '.';
+      }
+      if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+          + '</div>';
+      } else {
+        // Sequence visual; when diff > 1 also show the step chain
+        visualHTML = kSequenceFallback(q && q.t, correctNum, kDiff > 1 ? chosenNum : undefined);
+      }
     } else {
-      text = 'You were so close! Count each step out loud and stop at the right number.';
-    }
-    if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
-      visualHTML = '<div style="text-align:center;line-height:2.2">'
-        + emojiRow(correctNum, emoji)
-        + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
-        + '</div>';
-    } else if(startCount !== null && !isNaN(correctNum)){
-      visualHTML = dynamicNL(startCount, correctNum);
-    } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      visualHTML = dynamicNL(chosenNum, correctNum);
+      title = 'Almost! You Were Just One Off';
+      if(!isNaN(correctNum) && !isNaN(chosenNum)){
+        var dir = correctNum > chosenNum ? 'forward' : 'back';
+        text = 'You picked ' + chosenVal + ', but the answer is ' + correctVal + '. Take one step ' + dir + ' from ' + chosenVal + '!';
+      } else {
+        text = 'You were so close! Count each step out loud and stop at the right number.';
+      }
+      if(q && q.v && q.v.type === 'objectSet' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count: ' + correctVal + ' \u2713</span>'
+          + '</div>';
+      } else if(startCount !== null && !isNaN(correctNum)){
+        visualHTML = dynamicNL(startCount, correctNum);
+      } else if(!isNaN(correctNum) && !isNaN(chosenNum)){
+        visualHTML = dynamicNL(chosenNum, correctNum);
+      }
     }
 
   } else if(errorTag === 'err_same'){
@@ -842,14 +890,21 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     }
 
   } else if(errorTag === 'err_count_all'){
-    title = 'Count Back — Don\'t Count All!';
+    title = 'Count Back \u2014 Don\'t Count All!';
     if(!isNaN(correctNum) && !isNaN(chosenNum)){
       text = 'You counted all the objects and got ' + chosenVal + '. But we need to take some away! Start at the big number and count back to find ' + correctVal + '.';
+      if(_ACTIVE_GRADE === 'K' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count back \u2014 ' + correctVal + ' are left \u2713</span>'
+          + '</div>';
+      } else if(_ACTIVE_GRADE === 'K'){
+        visualHTML = kSequenceFallback(q && q.t, correctNum, chosenNum > correctNum ? chosenNum : undefined);
+      } else {
+        visualHTML = dynamicNL(chosenNum, correctNum);
+      }
     } else {
-      text = 'When you subtract, start at the big number and count backwards — don\'t restart from 1!';
-    }
-    if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      visualHTML = dynamicNL(chosenNum, correctNum);
+      text = 'When you subtract, start at the big number and count backwards \u2014 don\'t restart from 1!';
     }
 
   } else if(errorTag === 'err_keep_total'){
@@ -986,19 +1041,64 @@ function _pauseForIntervention(errorTag, selectedIndex){
     'color:var(--txt, #1a2535)'
   ].join(';');
 
+  // ── Standard intervention shell ──────────────────────────────────────────
+  // Layout is always the same (5 sections). Teaching content is situation-specific
+  // (supplied by _buildInterventionContent via title / text / visualHTML).
+  var LABEL_STYLE = 'font-size:0.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;'+
+    'color:var(--txt2,#5a7080);margin-bottom:6px;font-family:var(--ff2,\'Nunito\',sans-serif)';
+  var DIVIDER = '<hr style="border:none;border-top:1px solid var(--border,rgba(0,0,0,.09));margin:14px 0">';
+
+  // § 2 — THE QUESTION
+  var qVisualHTML = '';
+  if(q && q.v){ try{ qVisualHTML = _buildVisualHTML(q.v); }catch(e){} }
+  var qSection = q ?
+    '<div style="background:var(--bg2,#f4f7fa);border-radius:var(--rad-sm,12px);padding:12px 14px;text-align:left;">'+
+      '<div style="'+LABEL_STYLE+'">The question</div>'+
+      '<p style="margin:0 0 '+(qVisualHTML?'8px':'0')+';font-size:1rem;font-weight:600;line-height:1.4;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(q.t)+'</p>'+
+      (qVisualHTML ? '<div style="margin-top:4px">'+qVisualHTML+'</div>' : '')+
+    '</div>' : '';
+
+  // § 3 — LET'S FIX IT  (situation-specific text from _buildInterventionContent)
+  var fixSection = text ?
+    '<div style="text-align:left;">'+
+      '<div style="'+LABEL_STYLE+'">Let\'s fix it</div>'+
+      '<p style="margin:0;font-size:1rem;line-height:1.5;color:var(--txt2,#5a7080);font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(text)+'</p>'+
+    '</div>' : '';
+
+  // § 4 — TRY IT THIS WAY  (situation-specific visual from _buildInterventionContent)
+  var trySection = visualHTML ?
+    '<div>'+
+      '<div style="'+LABEL_STYLE+';text-align:left">Try it this way</div>'+
+      '<div style="padding:10px 0">'+visualHTML+'</div>'+
+    '</div>' : '';
+
   overlay.innerHTML =
-    '<div style="max-width:520px;width:100%;background:var(--card-bg, #fff);opacity:0.92;border-radius:var(--rad, 22px);box-shadow:var(--shad, 0 6px 28px rgba(0,0,0,.16));padding:32px;text-align:center;border:1px solid var(--border, rgba(0,0,0,.11));">'+
-      '<div style="font-size:2rem;margin-bottom:8px;">💡</div>'+
-      '<h2 style="margin:0 0 12px;font-size:1.3rem;color:var(--txt, #2d3a8c);font-family:var(--ff, \'Boogaloo\',sans-serif);">'+_escHtml(title)+'</h2>'+
-      '<p style="margin:0 0 20px;font-size:1.05rem;line-height:1.5;color:var(--txt2, #5a7080);font-family:var(--ff2, \'Nunito\',sans-serif);">'+_escHtml(text)+'</p>'+
-      (visualHTML ? '<div style="margin:0 0 20px;">'+visualHTML+'</div>' : '')+
-      '<button id="focus-overlay-got-it" style="'+
-        'background:linear-gradient(135deg,#4f46e5,#6c5ce7);color:#fff;border:none;border-radius:var(--rad-md, 14px);'+
-        'padding:14px 36px;font-size:1rem;font-weight:700;cursor:pointer;'+
-        'font-family:var(--ff, \'Boogaloo\',sans-serif);'+
-        'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s;">'+
-        'Got it — try again! →'+
-      '</button>'+
+    '<div style="max-width:520px;width:100%;background:var(--card-bg,#fff);border-radius:var(--rad,22px);'+
+      'box-shadow:var(--shad,0 6px 28px rgba(0,0,0,.16));padding:28px 28px 24px;'+
+      'border:1px solid var(--border,rgba(0,0,0,.11));display:flex;flex-direction:column;gap:0">'+
+      // § 1 — Title
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'+
+        '<span style="font-size:1.6rem;line-height:1">💡</span>'+
+        '<h2 style="margin:0;font-size:1.2rem;color:var(--txt,#2d3a8c);font-family:var(--ff,\'Boogaloo\',sans-serif);text-align:left">'+_escHtml(title)+'</h2>'+
+      '</div>'+
+      // § 2 — The question
+      qSection+
+      (qSection && fixSection ? DIVIDER : '')+
+      // § 3 — Let's fix it
+      fixSection+
+      (fixSection && trySection ? DIVIDER : '')+
+      // § 4 — Try it this way
+      trySection+
+      // § 5 — Retry button
+      '<div style="margin-top:18px;text-align:center">'+
+        '<button id="focus-overlay-got-it" style="'+
+          'background:linear-gradient(135deg,#4f46e5,#6c5ce7);color:#fff;border:none;'+
+          'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;'+
+          'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);'+
+          'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">'+
+          'Got it \u2014 try again! \u2192'+
+        '</button>'+
+      '</div>'+
     '</div>';
 
   console.log("Mounting Focus Overlay");
