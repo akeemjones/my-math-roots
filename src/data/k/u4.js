@@ -134,6 +134,24 @@ _mergeKUnitData(3, {
           v: null,
           o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'}],
           a:2, e:'17 comes before 18!', d:'m', s:null, h:'Count back from 18'
+        },
+        {
+          t: 'How many 🦊 are here?',
+          v: {type:'objectSet', config:{count:12, emoji:'🦊', layout:'grid'}},
+          o: [{val:'10',tag:'err_under_count'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
+          a:2, e:'12 foxes!', d:'e', s:null, h:'Count every fox — do not skip any'
+        },
+        {
+          t: 'What number comes after 11?',
+          v: null,
+          o: [{val:'10',tag:'err_under_count'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
+          a:2, e:'12 comes after 11!', d:'e', s:null, h:'Count on one step from 11'
+        },
+        {
+          t: '17, 18, __ — what comes next?',
+          v: null,
+          o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
+          a:2, e:'19 comes after 18!', d:'m', s:null, h:'Count forward from 18'
         }
       ]
     },
@@ -269,6 +287,24 @@ _mergeKUnitData(3, {
           v: null,
           o: [{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
           a:2, e:'Nineteen = 19!', d:'m', s:null, h:'Nineteen: ten and nine more'
+        },
+        {
+          t: '12 = 10 + how many extras?',
+          v: {type:'objectSet', config:{count:12, emoji:'🐢', layout:'grid'}},
+          o: [{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}],
+          a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'
+        },
+        {
+          t: '14 = 10 + how many extras?',
+          v: {type:'objectSet', config:{count:14, emoji:'🐛', layout:'grid'}},
+          o: [{val:'2',tag:'err_teen'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
+          a:2, e:'14 = 10 + 4!', d:'m', s:null, h:'Count the extras past the first 10'
+        },
+        {
+          t: 'Which number is "thirteen"?',
+          v: null,
+          o: [{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}],
+          a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'
         }
       ]
     },
@@ -411,6 +447,24 @@ _mergeKUnitData(3, {
           v: {type:'twoGroups', config:{leftCount:13, leftObj:'🐶', rightCount:13, rightObj:'🐱', op:'compare'}},
           o: [{val:'No, 🐶 has more',tag:'err_same'},{val:'Yes, both have 13'},{val:'No, 🐱 has more',tag:'err_same'},{val:'No, they are different',tag:'err_same'}],
           a:1, e:'Both groups have 13 — they are equal!', d:'m', s:null, h:'Count each group — are they the same?'
+        },
+        {
+          t: 'Which is greater: 14 or 20?',
+          v: null,
+          o: [{val:'14',tag:'err_less'},{val:'20'},{val:'17',tag:'err_same'},{val:'34',tag:'err_off_by_one'}],
+          a:1, e:'20 is greater — it comes later when you count!', d:'e', s:null, h:'Which number is bigger?'
+        },
+        {
+          t: 'Which group has MORE — 🐙 or 🦈?',
+          v: {type:'twoGroups', config:{leftCount:20, leftObj:'🐙', rightCount:11, rightObj:'🦈', op:'compare'}},
+          o: [{val:'11',tag:'err_less'},{val:'20'},{val:'15',tag:'err_same'},{val:'31',tag:'err_off_by_one'}],
+          a:1, e:'20 is more than 11!', d:'m', s:null, h:'Count each side carefully'
+        },
+        {
+          t: 'Which is less: 15 or 19?',
+          v: null,
+          o: [{val:'19',tag:'err_more'},{val:'15'},{val:'17',tag:'err_same'},{val:'4',tag:'err_off_by_one'}],
+          a:1, e:'15 is less — it comes before 19!', d:'m', s:null, h:'Which comes earlier in counting?'
         }
       ]
     },
@@ -547,6 +601,24 @@ _mergeKUnitData(3, {
           v: null,
           o: [{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_same'},{val:'14',tag:'err_teen'}],
           a:1, e:'13 - 1 = 12!', d:'e', s:null, h:'Count back one from 13'
+        },
+        {
+          t: 'There are 11 🌺. One more blooms. How many now?',
+          v: {type:'objectSet', config:{count:11, emoji:'🌺', layout:'grid'}},
+          o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
+          a:2, e:'11 + 1 = 12!', d:'e', s:null, h:'Add one more flower'
+        },
+        {
+          t: 'There are 15 🐦. One flies away. How many are left?',
+          v: {type:'objectSet', config:{count:15, emoji:'🐦', layout:'grid'}},
+          o: [{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
+          a:1, e:'15 - 1 = 14!', d:'m', s:null, h:'One flies away — count back one'
+        },
+        {
+          t: 'One more than 17 is…?',
+          v: null,
+          o: [{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
+          a:2, e:'17 + 1 = 18!', d:'m', s:null, h:'Count forward one step from 17'
         }
       ]
     }
@@ -567,10 +639,10 @@ _mergeKUnitData(3, {
       a:2, e:'17 apples!', d:'m', s:null, h:'Count carefully row by row'
     },
     {
-      t: 'What number comes before 20?',
+      t: '19, __, 17 — what number is missing?',
       v: null,
-      o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
-      a:2, e:'19 comes before 20!', d:'m', s:null, h:'Count back one step from 20'
+      o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'18'},{val:'20',tag:'err_same'}],
+      a:2, e:'18 goes between 19 and 17 when counting back!', d:'m', s:null, h:'Count backward from 19'
     },
     {
       t: '15, 16, __, 18 — what number is missing?',
@@ -580,7 +652,7 @@ _mergeKUnitData(3, {
     },
     // ── L2: Read and Represent 11–20 ─────────────────────────────────────────
     {
-      t: 'How many 🌟 are there?',
+      t: 'Count the 🌟 stars. How many?',
       v: {type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}},
       o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'15 stars — ten and five more!', d:'e', s:null, h:'Count past 10'
@@ -605,7 +677,7 @@ _mergeKUnitData(3, {
     },
     // ── L3: More, Less, and Equal ─────────────────────────────────────────────
     {
-      t: 'Which group has MORE — 🐶 or 🐱?',
+      t: 'Which side has MORE — 🐶 or 🐱?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐶', rightCount:15, rightObj:'🐱', op:'compare'}},
       o: [{val:'8',tag:'err_less'},{val:'15'},{val:'11',tag:'err_same'},{val:'23',tag:'err_off_by_one'}],
       a:1, e:'15 is more than 8!', d:'e', s:null, h:'Count each group'
@@ -648,7 +720,7 @@ _mergeKUnitData(3, {
       a:2, e:'16 + 1 = 17!', d:'m', s:null, h:'Add one more to the group'
     },
     {
-      t: 'One less than 20 is…?',
+      t: 'What is one less than 20?',
       v: null,
       o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
       a:2, e:'20 - 1 = 19!', d:'m', s:null, h:'Count back one from 20'
