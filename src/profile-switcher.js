@@ -289,10 +289,10 @@ async function _psCheckPin(){
     localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
 
-    var freshDone = safeLoad('wb_done5', {});
+    var freshDone = safeLoad(_DONE_KEY, {});
     Object.keys(DONE).forEach(function(k){ delete DONE[k]; });
     Object.assign(DONE, freshDone);
-    var freshScores = safeLoadSigned('wb_sc5', []);
+    var freshScores = safeLoadSigned(_SCORES_KEY, []);
     SCORES.length = 0;
     freshScores.forEach(function(s){ SCORES.push(s); });
     // Clear stale streak/calendar from previous student; pull will restore correct values

@@ -16,6 +16,8 @@ function buildHome(instant){
   const pct = allL ? Math.round(doneL/allL*100) : 0;
   document.getElementById('op-fill').style.width = pct+'%';
   document.getElementById('op-lbl').textContent = `${doneL} of ${allL} lessons completed — ${pct}%`;
+  var _histLink = document.getElementById('history-link');
+  if(_histLink) _histLink.style.display = (_supaUser || _isStudentSession()) ? '' : 'none';
 
   const allUnlockedEarly = UNITS_DATA.every((u,i) => isUnitUnlocked(i));
   const pausedFTEarly = getPausedQuiz('final_test');
@@ -363,6 +365,10 @@ function goHome(){
   _maybePushPrompt();
 }
 function goHistory(){
+  if(!_supaUser && !_isStudentSession()){
+    openAuthModal('Sign in to view your Score History and save your progress!');
+    return;
+  }
   playSwooshForward(); buildHistory(); show('history-screen');
 }
 

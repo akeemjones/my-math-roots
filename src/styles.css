@@ -916,6 +916,65 @@ body.dark .vchoice{ background:rgba(12,22,42,0.82);
 .tg-group{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
 .tg-op{ font-size:1.8rem; font-weight:700; color:var(--txt); font-family:'Boogaloo',sans-serif; }
 
+/* ── K Counting Manipulative ─────────────────────────────────────────── */
+.k-manip{ display:flex; flex-direction:column; align-items:center; gap:14px;
+          padding:16px 10px; width:100%; box-sizing:border-box; }
+.k-manip-ctx{ display:flex; align-items:center; gap:10px; justify-content:center;
+              flex-wrap:wrap; background:rgba(255,255,255,0.7);
+              border-radius:14px; padding:10px 16px;
+              box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.k-mc-group{ font-size:1.6rem; line-height:1.35; letter-spacing:2px; }
+.k-mc-op{ font-size:2rem; font-weight:700; color:var(--txt);
+          font-family:'Boogaloo',sans-serif; padding:0 4px; }
+.k-manip-hint{ font-size:1.05rem; color:var(--txt); opacity:0.75;
+               font-family:'Boogaloo',sans-serif; text-align:center; }
+.k-manip-src{ font-size:2rem; background:rgba(255,255,255,0.9);
+              border:2.5px dashed #aab; border-radius:18px;
+              padding:12px 28px; cursor:pointer;
+              box-shadow:0 3px 10px rgba(0,0,0,.08);
+              touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+              transition:transform .1s, box-shadow .1s; }
+.k-manip-src:hover:not(:disabled){ transform:scale(1.06);
+  box-shadow:0 6px 18px rgba(0,0,0,.13); }
+.k-manip-src:active:not(:disabled){ transform:scale(0.96); }
+.k-manip-src:disabled{ opacity:0.45; cursor:default; transform:none; }
+.k-manip-area{ min-height:80px; width:100%; max-width:420px;
+               background:rgba(255,255,255,0.82);
+               border:2.5px solid rgba(100,160,255,.35);
+               border-radius:18px; padding:12px 16px;
+               display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start;
+               align-content:flex-start; box-sizing:border-box;
+               box-shadow:inset 0 2px 6px rgba(0,0,0,.04); }
+.k-manip-area:empty::after{ content:'Tap to add \2728'; color:#aab; font-size:0.95rem;
+                             font-family:'Boogaloo',sans-serif; }
+.k-manip-obj{ font-size:1.9rem; cursor:pointer; line-height:1;
+              border:none; background:none; padding:4px;
+              border-radius:10px; touch-action:manipulation;
+              -webkit-tap-highlight-color:transparent;
+              transition:transform .1s, opacity .18s; }
+.k-manip-obj:hover:not([data-removing]){ transform:scale(1.18); }
+.k-manip-obj:active:not([data-removing]){ transform:scale(0.88); }
+.k-manip-obj.removing{ opacity:0; transform:scale(0.4); pointer-events:none; }
+.k-manip-footer{ display:flex; align-items:center; gap:18px; justify-content:center;
+                 margin-top:4px; }
+.k-manip-count{ font-family:'Boogaloo',sans-serif; font-size:1.5rem; color:#2980b9;
+                min-width:48px; text-align:center; }
+#k-ct{ font-size:2rem; font-weight:700; }
+.k-submit-btn{ background:linear-gradient(135deg,#27ae60,#2ecc71);
+               color:#fff; border:none; border-radius:22px;
+               padding:12px 36px; font-size:1.2rem; font-weight:700;
+               font-family:'Boogaloo',sans-serif; cursor:pointer;
+               box-shadow:0 4px 14px rgba(39,174,96,.38);
+               touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+               transition:transform .12s, box-shadow .12s; }
+.k-submit-btn:hover:not(:disabled){ transform:scale(1.05);
+  box-shadow:0 7px 20px rgba(39,174,96,.48); }
+.k-submit-btn:active:not(:disabled){ transform:scale(0.96); }
+.k-submit-btn:disabled{ opacity:0.5; cursor:default; transform:none; box-shadow:none; }
+body.dark .k-manip-ctx,
+body.dark .k-manip-area{ background:rgba(12,22,42,0.7); border-color:rgba(255,255,255,.14); }
+body.dark .k-manip-src{ background:rgba(12,22,42,0.8); border-color:rgba(255,255,255,.22); }
+
 /* ── Hint button ──────────────────────────────────────────────── */
 #qhint{ margin-top:10px; }
 .hint-btn{
