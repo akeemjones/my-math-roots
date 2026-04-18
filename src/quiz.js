@@ -890,14 +890,21 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     }
 
   } else if(errorTag === 'err_count_all'){
-    title = 'Count Back — Don\'t Count All!';
+    title = 'Count Back \u2014 Don\'t Count All!';
     if(!isNaN(correctNum) && !isNaN(chosenNum)){
       text = 'You counted all the objects and got ' + chosenVal + '. But we need to take some away! Start at the big number and count back to find ' + correctVal + '.';
+      if(_ACTIVE_GRADE === 'K' && emoji && correctNum >= 1 && correctNum <= 20){
+        visualHTML = '<div style="text-align:center;line-height:2.2">'
+          + emojiRow(correctNum, emoji)
+          + '<br><span style="font-size:0.82rem;color:#5a7080;font-family:var(--ff2,\'Nunito\',sans-serif)">Count back \u2014 ' + correctVal + ' are left \u2713</span>'
+          + '</div>';
+      } else if(_ACTIVE_GRADE === 'K'){
+        visualHTML = kSequenceFallback(q && q.t, correctNum, chosenNum > correctNum ? chosenNum : undefined);
+      } else {
+        visualHTML = dynamicNL(chosenNum, correctNum);
+      }
     } else {
-      text = 'When you subtract, start at the big number and count backwards — don\'t restart from 1!';
-    }
-    if(!isNaN(correctNum) && !isNaN(chosenNum)){
-      visualHTML = dynamicNL(chosenNum, correctNum);
+      text = 'When you subtract, start at the big number and count backwards \u2014 don\'t restart from 1!';
     }
 
   } else if(errorTag === 'err_keep_total'){
