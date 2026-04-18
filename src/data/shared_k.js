@@ -59,6 +59,23 @@ const _UNITS_DATA_K = [
     ],
     _loaded: false
   }
+  ,
+  {
+    id: 'ku4',
+    name: 'Teen Numbers & Counting to 20',
+    icon: '🔟',
+    svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FF9800" opacity="0.12"/><text x="30" y="40" text-anchor="middle" font-size="20" font-family="sans-serif" fill="#FF9800" font-weight="bold">20</text></svg>',
+    color: '#FF9800',
+    gp: 4,
+    teks: 'TEKS K.2A, K.2B, K.2E, K.2F',
+    lessons: [
+      {id:'ku4l1', title:'Count to 20',             icon:'🔢', desc:'Count forward and backward all the way to 20'},
+      {id:'ku4l2', title:'Read and Represent 11–20', icon:'🌟', desc:'Match numerals 11–20 to sets and pictures'},
+      {id:'ku4l3', title:'More, Less, and Equal',    icon:'⚖️', desc:'Compare groups and numbers within 20'},
+      {id:'ku4l4', title:'One More / One Less',       icon:'➕', desc:'Find one more or one less for numbers up to 20'}
+    ],
+    _loaded: false
+  }
 ];
 
 // ── K lazy-load infrastructure ───────────────────────────────────────────────
