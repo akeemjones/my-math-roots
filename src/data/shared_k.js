@@ -145,9 +145,10 @@ function _loadKUnit(idx){
   if(_kUnitLoadPromises[idx]) return _kUnitLoadPromises[idx];
   _kUnitLoadPromises[idx] = new Promise(function(resolve, reject){
     var s = document.createElement('script');
-    s.src = '/data/k/u' + (idx + 1) + '.js';
+    var unitNum = parseInt(u.id.slice(2)); // 'ku6' → 6, 'ku7' → 7
+    s.src = '/data/k/u' + unitNum + '.js';
     s.onload = resolve;
-    s.onerror = function(){ reject(new Error('Failed to load K unit ' + (idx + 1))); };
+    s.onerror = function(){ reject(new Error('Failed to load K unit ' + unitNum)); };
     document.head.appendChild(s);
   });
   return _kUnitLoadPromises[idx];
