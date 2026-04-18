@@ -869,6 +869,53 @@ body.a11y-colorblind .abtn.correct{ border:3px solid #27ae60!important; color:#1
 body.a11y-colorblind .abtn.wrong{ border:3px dashed #e74c3c!important; color:#8b1a0f!important; }
 .agrid .abtn:disabled{ cursor:default; transform:none; }
 
+/* ── Comparison visual — clickable bar panels ─────────────────────── */
+.vcmp{ display:flex; gap:16px; justify-content:center; align-items:flex-end;
+       padding:16px 8px; margin-bottom:16px; flex-wrap:wrap; }
+.vchoice{ display:flex; flex-direction:column; align-items:center; gap:8px;
+          padding:12px 10px; border-radius:16px;
+          background:rgba(255,255,255,0.94);
+          border-top:1.5px solid rgba(255,255,255,.92);
+          border-left:1.5px solid rgba(255,255,255,.72);
+          border-right:1.5px solid rgba(255,255,255,.28);
+          border-bottom:3px solid var(--border2);
+          cursor:pointer; color:var(--txt); text-align:center;
+          font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+          font-size:var(--fs-base);
+          transition:transform .12s, border-color .15s, background .15s;
+          box-shadow:0 6px 18px rgba(0,0,0,.10),inset 0 1.5px 0 rgba(255,255,255,.98);
+          touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.vchoice:hover:not(:disabled){ background:rgba(255,255,255,0.92);
+  box-shadow:0 10px 28px rgba(0,0,0,.16),inset 0 1.5px 0 rgba(255,255,255,1); }
+.vchoice:active:not(:disabled){ transform:scale(0.97); }
+.vchoice.selected{ background:rgba(255,140,0,.12); border-color:rgba(255,140,0,.65);
+                   transform:scale(0.97); }
+.vchoice.correct{ background:rgba(39,174,96,.15); border-color:#27ae60; }
+.vchoice.wrong{   background:rgba(231,76,60,.15);  border-color:#e74c3c; }
+.vchoice:disabled{ cursor:default; transform:none; }
+body.a11y-colorblind .vchoice.correct{ border:3px solid #27ae60!important; color:#1a6e3c!important; }
+body.a11y-colorblind .vchoice.wrong{   border:3px dashed #e74c3c!important; color:#8b1a0f!important; }
+body.dark .vchoice{ background:rgba(12,22,42,0.82);
+  border-top-color:rgba(255,255,255,.12); border-left-color:rgba(255,255,255,.08); }
+.vchoice-label{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+                font-size:var(--fs-base); color:var(--txt); }
+.vchoice-static{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px; }
+.vchoice-hl-correct{ background:rgba(39,174,96,.10)!important;
+  border:2px solid #27ae60!important; border-radius:12px; }
+.vchoice-hl-faded{ opacity:0.38; }
+.vchoice-tick{ display:block; font-size:1.1rem; color:#27ae60; font-weight:700; margin-top:2px; }
+
+/* ── ObjectSet visual — emoji grid ──────────────────────────────────── */
+.obj-set-visual{ padding:12px 8px; }
+.obj-set-grid{ display:flex; flex-direction:column; gap:4px; align-items:center; }
+.obj-row{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
+
+/* ── TwoGroups visual ────────────────────────────────────────────────── */
+.two-groups-visual{ display:flex; align-items:center; gap:12px; justify-content:center;
+                    padding:12px 8px; flex-wrap:wrap; }
+.tg-group{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
+.tg-op{ font-size:1.8rem; font-weight:700; color:var(--txt); font-family:'Boogaloo',sans-serif; }
+
 /* ── Hint button ──────────────────────────────────────────────── */
 #qhint{ margin-top:10px; }
 .hint-btn{
