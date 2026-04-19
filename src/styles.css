@@ -911,10 +911,15 @@ body.dark .vchoice{ background:rgba(12,22,42,0.82);
 .obj-row{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
 
 /* ── TwoGroups visual ────────────────────────────────────────────────── */
-.two-groups-visual{ display:flex; align-items:center; gap:12px; justify-content:center;
-                    padding:12px 8px; flex-wrap:wrap; }
+.two-groups-visual{ display:flex; flex-direction:column; align-items:center; gap:12px; justify-content:center;
+                    padding:12px 8px; }
 .tg-group{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
 .tg-op{ font-size:1.8rem; font-weight:700; color:var(--txt); font-family:'Boogaloo',sans-serif; }
+.two-groups-compare{ flex-direction:column; align-items:stretch; gap:10px; }
+.two-groups-compare .vchoice{ width:100%; min-height:80px; justify-content:center; flex-direction:column; align-items:center; }
+.two-groups-compare .vchoice .tg-group{ display:flex; flex-wrap:wrap; justify-content:center; gap:2px; font-size:1.6rem; line-height:1.5; }
+.two-groups-compare .vchoice-label{ font-size:1.4rem; }
+.two-groups-compare .tg-op{ width:100%; text-align:center; }
 
 /* ── K Counting Manipulative ─────────────────────────────────────────── */
 .k-manip{ display:flex; flex-direction:column; align-items:center; gap:14px;
@@ -1213,6 +1218,7 @@ span.cca-hi-red{background:#fde8e8;border-radius:5px;color:#c0392b}
         border-top:1px solid rgba(255,255,255,0.4);
         transition:transform .15s,box-shadow .15s; }
 .rbtn:hover{ box-shadow:0 6px 0 rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,0.35); }
+.rbtn-next{ display:block; width:100%; font-size:var(--fs-xl); padding:18px 26px; margin-bottom:12px; border-radius:var(--rad); text-align:center; }
 
 /* Review section */
 .rev-section{ background:rgba(255,255,255,0.95);
@@ -1420,6 +1426,8 @@ img[data-coin]:active{ transform:scale(.95); }
 .pq-choice:disabled{ cursor:default; }
 .pq-choice.pq-c-correct{ background:#eafaf1; border-color:#27ae60; color:#1a6e3c; font-weight:700; }
 .pq-choice.pq-c-wrong{ background:#fdecea; border-color:#e74c3c; color:#a93226; font-weight:700; }
+.pq-vgroup-btn.pq-c-correct{ background:#eafaf1!important; border-color:#27ae60!important; }
+.pq-vgroup-btn.pq-c-wrong{ background:#fdecea!important; border-color:#e74c3c!important; }
 .pq-drill-fb{ margin-top:8px; }
 .pq-drill-result{ border-radius:12px; padding:10px 14px; animation:pop .25s ease; }
 .pq-drill-result.ok{ background:rgba(39,174,96,.12); border:2px solid #27ae60; }

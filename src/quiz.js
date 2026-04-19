@@ -579,9 +579,19 @@ function _renderQ(){
 
   } else if (_vt === 'twoGroups') {
     if (_ACTIVE_GRADE === 'K' && q.v.config.op === 'compare') {
-      // Compare questions: static two-group visual + agrid answer buttons
-      _visualBlock = drawTwoGroups(q.v.config, null, null);
-      // _agridOpts stays as opts (all 4 number choices shown as buttons)
+      var _cmpCfg     = q.v.config;
+      var _leftVal    = String(_cmpCfg.leftCount  || 0);
+      var _rightVal   = String(_cmpCfg.rightCount || 0);
+      var _leftOptIdx  = opts.findIndex(function(o){ return o.text === _leftVal; });
+      var _rightOptIdx = opts.findIndex(function(o){ return o.text === _rightVal; });
+      if (_leftOptIdx !== -1 && _rightOptIdx !== -1) {
+        // "Which shows more/fewer?" — two emoji groups become tappable answer buttons
+        _agridOpts   = [];
+        _visualBlock = drawTwoGroups(_cmpCfg, _leftOptIdx, _rightOptIdx);
+      } else {
+        // Equality questions with text options — static visual + full agrid
+        _visualBlock = drawTwoGroups(_cmpCfg, null, null);
+      }
     } else if (_ACTIVE_GRADE === 'K') {
       _agridOpts   = [];
       _visualBlock = _buildKManip(q.v.config, opts);
@@ -786,13 +796,13 @@ function _buildKManip(cfg, opts) {
     + (isAdd ? 'Tap ' + _escHtml(emoji) + ' to add \u2022 tap your answer to remove' : 'Tap an object to take it away')
     + '</div>';
 
-  return '<div class="k-manip" data-emoji="' + _escHtml(emoji) + '" data-max="' + max + '" data-count="' + startN + '">'
+  return '<div class="k-manip" data-emoji="' + _escHtml(emoji) + '" data-max="' + max + '" data-count="' + startN + '" data-mode="' + (isAdd ? 'add' : 'subtract') + '">'
     + '<button class="k-manip-tool" data-action="_kManipAdd" aria-label="Add one">' + _escHtml(emoji) + '</button>'
     + hint
     + '<div class="k-manip-answer" id="k-area">' + ansObjs + '</div>'
     + '<div class="k-manip-footer">'
     +   '<div class="k-manip-count"><span id="k-ct">' + startN + '</span>' + lbl + '</div>'
-    +   '<button class="k-submit-btn" data-action="_kManipSubmit"' + (startN === 0 ? ' disabled' : '') + '>\u2713 Submit</button>'
+    +   '<button class="k-submit-btn" data-action="_kManipSubmit"' + (isAdd && startN === 0 ? ' disabled' : '') + '>\u2713 Submit</button>'
     + '</div>'
     + '</div>';
 }
@@ -833,7 +843,8 @@ function _renderManipulative() {
   var ct = document.getElementById('k-ct');
   if (ct) ct.textContent = String(count);
   var sub = document.querySelector('.k-submit-btn');
-  if (sub) sub.disabled = (count === 0);
+  var mode = manip.dataset.mode;
+  if (sub) sub.disabled = (mode !== 'subtract' && count === 0);
 }
 
 function _kManipSubmit() {
@@ -1688,12 +1699,12 @@ function _finishQuiz(){
     const nextIdx = CUR.lessonIdx + 1;
     if(pct>=80 && nextIdx < u.lessons.length){
       const nl = u.lessons[nextIdx];
-      nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
+      nextBtn = `<button class="rbtn rbtn-next" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
         data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${nextIdx}">
         Next Lesson: ${nl.icon} ${nl.title} →
       </button>`;
     } else if(pct>=80 && nextIdx >= u.lessons.length){
-      nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
+      nextBtn = `<button class="rbtn rbtn-next" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
         data-action="goUnit">
         📝 Go to Unit Quiz →
       </button>`;
@@ -1701,7 +1712,7 @@ function _finishQuiz(){
   } else if(qz.type==='unit' && pct>=80){
     const nextUnitIdx = CUR.unitIdx + 1;
     if(nextUnitIdx < UNITS_DATA.length){
-      nextBtn = `<button class="rbtn" style="background:linear-gradient(135deg,${UNITS_DATA[nextUnitIdx].color},${UNITS_DATA[nextUnitIdx].color}aa)"
+      nextBtn = `<button class="rbtn rbtn-next" style="background:linear-gradient(135deg,${UNITS_DATA[nextUnitIdx].color},${UNITS_DATA[nextUnitIdx].color}aa)"
         data-action="openUnit" data-arg="${nextUnitIdx}">
         Next Unit: <span style="display:inline-block;width:1.2em;height:1.2em;vertical-align:middle">${UNITS_DATA[nextUnitIdx].svg||UNITS_DATA[nextUnitIdx].icon}</span> ${UNITS_DATA[nextUnitIdx].name} →
       </button>`;
@@ -1715,8 +1726,10 @@ function _finishQuiz(){
   elBtns.innerHTML = `
     ${nextBtn}
     ${weakBtn}
-    <button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)" data-action="retryQuiz">Try Again ${_ICO.refresh}</button>
-    <button class="rbtn" style="background:linear-gradient(135deg,#7f8c8d,#636e72)" data-action="afterResults">${backLabel}</button>`;
+    <div class="rbtn-row">
+      <button class="rbtn" style="background:linear-gradient(135deg,${u.color},${u.color}aa)" data-action="retryQuiz">Try Again ${_ICO.refresh}</button>
+      <button class="rbtn" style="background:linear-gradient(135deg,#7f8c8d,#636e72)" data-action="afterResults">${backLabel}</button>
+    </div>`;
 
   CUR.pendingScore = {qid:qz.id, label:qz.label, type:qz.type, score:qz.score, total, pct, stars,
     unitIdx:CUR.unitIdx, color:u.color,

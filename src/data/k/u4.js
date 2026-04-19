@@ -529,34 +529,34 @@ _mergeKUnitData(3, {
         // ── Abstract comparison (v:null) ─────────────────────────────────────
         {
           t: 'Which is greater: 11 or 19?',
-          v: null,
-          o: [{val:'11',tag:'err_less'},{val:'19'},{val:'15',tag:'err_same'},{val:'8',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:11,leftObj:'🔵',rightCount:19,rightObj:'🔵',op:'compare'}},
+          o: [{val:'11',tag:'err_less'},{val:'19'}],
           a:1, e:'19 is greater — it comes later when you count!', d:'e', s:null, h:'Which number comes later when you count?'
         },
         {
           t: 'Which is less: 20 or 14?',
-          v: null,
-          o: [{val:'20',tag:'err_more'},{val:'14'},{val:'17',tag:'err_same'},{val:'7',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:20,leftObj:'🔵',rightCount:14,rightObj:'🔵',op:'compare'}},
+          o: [{val:'20',tag:'err_more'},{val:'14'}],
           a:1, e:'14 is less — it comes before 20!', d:'e', s:null, h:'Less = comes earlier in counting'
         },
         {
           t: 'Which is greater: 13 or 16?',
-          v: null,
-          o: [{val:'13',tag:'err_less'},{val:'16'},{val:'14',tag:'err_off_by_one'},{val:'29',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:13,leftObj:'🔵',rightCount:16,rightObj:'🔵',op:'compare'}},
+          o: [{val:'13',tag:'err_less'},{val:'16'}],
           a:1, e:'16 is greater than 13!', d:'m', s:null, h:'13 or 16 — which comes later?'
         },
         {
           t: 'Which is less: 18 or 12?',
-          v: null,
-          o: [{val:'18',tag:'err_more'},{val:'12'},{val:'15',tag:'err_same'},{val:'30',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:18,leftObj:'🔵',rightCount:12,rightObj:'🔵',op:'compare'}},
+          o: [{val:'18',tag:'err_more'},{val:'12'}],
           a:1, e:'12 is less than 18!', d:'m', s:null, h:'12 comes earlier in counting'
         },
         // ── Equal sets ───────────────────────────────────────────────────────
         {
           t: 'Are 15 and 15 equal?',
-          v: null,
-          o: [{val:'No, 15 is more',tag:'err_same'},{val:'Yes, they are equal'},{val:'No, 15 is less',tag:'err_same'},{val:'No, one is bigger',tag:'err_same'}],
-          a:1, e:'15 = 15 — equal means the same amount!', d:'e', s:null, h:'Same number = equal'
+          v: {type:'twoGroups',config:{leftCount:15,leftObj:'🔵',rightCount:15,rightObj:'🔵',op:'compare'}},
+          o: [{val:'Yes, they are equal'},{val:'No, not equal',tag:'err_not_equal'}],
+          a:0, e:'15 = 15 — equal means the same amount!', d:'e', s:null, h:'Same number = equal'
         },
         {
           t: 'Which two numbers are EQUAL?',
@@ -567,13 +567,13 @@ _mergeKUnitData(3, {
         {
           t: '🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶 vs 🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱 — are the groups equal?',
           v: {type:'twoGroups', config:{leftCount:13, leftObj:'🐶', rightCount:13, rightObj:'🐱', op:'compare'}},
-          o: [{val:'No, 🐶 has more',tag:'err_same'},{val:'Yes, both have 13'},{val:'No, 🐱 has more',tag:'err_same'},{val:'No, they are different',tag:'err_same'}],
-          a:1, e:'Both groups have 13 — they are equal!', d:'m', s:null, h:'Count each group — are they the same?'
+          o: [{val:'Yes, both have 13'},{val:'No, not equal',tag:'err_not_equal'}],
+          a:0, e:'Both groups have 13 — they are equal!', d:'m', s:null, h:'Count each group — are they the same?'
         },
         {
           t: 'Which is greater: 14 or 20?',
-          v: null,
-          o: [{val:'14',tag:'err_less'},{val:'20'},{val:'17',tag:'err_same'},{val:'34',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:14,leftObj:'🔵',rightCount:20,rightObj:'🔵',op:'compare'}},
+          o: [{val:'14',tag:'err_less'},{val:'20'}],
           a:1, e:'20 is greater — it comes later when you count!', d:'e', s:null, h:'Which number is bigger?'
         },
         {
@@ -584,9 +584,9 @@ _mergeKUnitData(3, {
         },
         {
           t: 'Which is less: 15 or 19?',
-          v: null,
-          o: [{val:'19',tag:'err_more'},{val:'15'},{val:'17',tag:'err_same'},{val:'4',tag:'err_off_by_one'}],
-          a:1, e:'15 is less — it comes before 19!', d:'m', s:null, h:'Which comes earlier in counting?'
+          v: {type:'twoGroups',config:{leftCount:15,leftObj:'🔵',rightCount:19,rightObj:'🔵',op:'compare'}},
+          o: [{val:'15'},{val:'19',tag:'err_more'}],
+          a:0, e:'15 is less — it comes before 19!', d:'m', s:null, h:'Which comes earlier in counting?'
         },
         // ── NEW questions (appended) ─────────────────────────────────────────
         {
@@ -627,8 +627,8 @@ _mergeKUnitData(3, {
         },
         {
           t: 'Which is greater: 16 or 17?',
-          v: null,
-          o: [{val:'16',tag:'err_less'},{val:'17'},{val:'16 and 17 are equal',tag:'err_same'},{val:'Not sure',tag:'err_off_by_one'}],
+          v: {type:'twoGroups',config:{leftCount:16,leftObj:'🔵',rightCount:17,rightObj:'🔵',op:'compare'}},
+          o: [{val:'16',tag:'err_less'},{val:'17'}],
           a:1, e:'17 is greater — it comes after 16!', d:'h', s:null, h:'Which comes later when you count?'
         },
         {

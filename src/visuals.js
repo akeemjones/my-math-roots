@@ -381,14 +381,14 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
            ' data-action="_pickAnswer" data-arg="'+argIdx+'"'+
            ' aria-label="'+count+'">'+
       '<div class="tg-group">'+emoji+'</div>'+
-      '<span class="vchoice-label">'+count+'</span>'+
     '</button>';
   }
 
   var leftHTML  = leftArgIdx  != null ? _groupBtn(lEmoji, lCount, leftArgIdx)  : '<div class="tg-group">'+lEmoji+'</div>';
   var rightHTML = rightArgIdx != null ? _groupBtn(rEmoji, rCount, rightArgIdx) : '<div class="tg-group">'+rEmoji+'</div>';
 
-  return '<div class="q-visual two-groups-visual">'+
+  var wrapClass = 'q-visual two-groups-visual' + (leftArgIdx != null && rightArgIdx != null ? ' two-groups-compare' : '');
+  return '<div class="'+wrapClass+'">'+
     leftHTML+
     '<div class="tg-op">'+opStr+'</div>'+
     rightHTML+

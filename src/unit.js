@@ -1443,6 +1443,33 @@ function buildPracticeQ(pid, q){
   const emoji = _PQ_EMOJIS[Math.floor(Math.random() * _PQ_EMOJIS.length)];
   // q.t and q.o may contain SVG/HTML (e.g. clock diagrams) — render as-is; these are authored data, not user input
   const qText = q.t && q.t.includes('<') ? q.t : _escHtml(q.t);
+
+  // twoGroups compare with numeric options — render vertical emoji group buttons
+  if (q.v && q.v.type === 'twoGroups' && q.v.config && q.v.config.op === 'compare') {
+    const cfg = q.v.config;
+    const lCount = cfg.leftCount || 0;
+    const rCount = cfg.rightCount || 0;
+    if (opts.includes(String(lCount)) && opts.includes(String(rCount))) {
+      const lEmoji = (cfg.leftObj  || '●').repeat(lCount);
+      const rEmoji = (cfg.rightObj || '●').repeat(rCount);
+      return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
+        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="q-visual two-groups-visual two-groups-compare">
+          <button class="vchoice pq-vgroup-btn" type="button" data-value="${lCount}" onclick="_pickPracticeVisualAns('${pid}','${lCount}')">
+            <div class="tg-group">${lEmoji}</div>
+            <span class="vchoice-label">${lCount}</span>
+          </button>
+          <div class="tg-op">vs</div>
+          <button class="vchoice pq-vgroup-btn" type="button" data-value="${rCount}" onclick="_pickPracticeVisualAns('${pid}','${rCount}')">
+            <div class="tg-group">${rEmoji}</div>
+            <span class="vchoice-label">${rCount}</span>
+          </button>
+        </div>
+        <div class="pq-drill-fb" id="${pid}-fb"></div>
+      </div>`;
+    }
+  }
+
   return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
     <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
     <div class="pq-choices">
@@ -1452,6 +1479,33 @@ function buildPracticeQ(pid, q){
     </div>
     <div class="pq-drill-fb" id="${pid}-fb"></div>
   </div>`;
+}
+
+function _pickPracticeVisualAns(pid, value){
+  const card = document.getElementById(pid);
+  if(!card || card.dataset.answered) return;
+  card.dataset.answered = '1';
+  const correct = card.dataset.correct;
+  const exp = card.dataset.exp;
+  const isOk = String(value) === String(correct);
+  card.querySelectorAll('.pq-vgroup-btn').forEach(btn => {
+    btn.disabled = true;
+    if(String(btn.dataset.value) === String(correct)) btn.classList.add('pq-c-correct');
+  });
+  if(!isOk){
+    const clicked = card.querySelector(`.pq-vgroup-btn[data-value="${value}"]`);
+    if(clicked) clicked.classList.add('pq-c-wrong');
+  }
+  const fb = document.getElementById(pid+'-fb');
+  if(fb){
+    fb.innerHTML = `<div class="pq-drill-result ${isOk?'ok':'no'}">
+      <div class="pq-dr-h">${isOk ? '🎉 Correct!' : '😊 Not quite...'}</div>
+      ${!isOk ? `<div class="pq-dr-correct">✅ Answer: ${_escHtml(correct)}</div>` : ''}
+      <div class="pq-dr-exp">${_ICO.lightbulb} ${_escHtml(exp)}</div>
+    </div>`;
+  }
+  if(isOk){ if(typeof confetti==='function') confetti(10); if(typeof playCorrect==='function') playCorrect(); }
+  else { if(typeof playWrong==='function') playWrong(); }
 }
 
 function _pickPracticeAns(pid, btnIdx){

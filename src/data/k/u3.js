@@ -252,171 +252,171 @@ _mergeKUnitData(2, {
       ],
       qBank: [
         {
-          t: '🍎🍎🍎🍎🍎 − 🍎🍎 = ?',
-          v: {type:'objectSet', config:{count:5, emoji:'🍎', layout:'line'}},
+          t: '5 🍎, take away 2. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:5, leftObj:'🍎', rightCount:2, rightObj:'🍎', op:'subtract'}},
           o: [{val:'2',tag:'err_count_all'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_keep_start'}],
           a:1, e:'5 - 2 = 3!', d:'e', s:null, h:'Start at 5 and count back 2'
         },
         {
-          t: '🧩🧩🧩🧩🧩🧩 − 🧩🧩🧩 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🧩', layout:'line'}},
+          t: '6 🧩, take away 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🧩', rightCount:3, rightObj:'🧩', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'6',tag:'err_keep_start'},{val:'9',tag:'err_add_instead'}],
           a:1, e:'6 - 3 = 3!', d:'e', s:null, h:'Start at 6 and count back 3'
         },
         {
-          t: '🐦🐦🐦🐦🐦🐦🐦🐦 − 🐦🐦🐦 = ?',
-          v: {type:'objectSet', config:{count:8, emoji:'🐦', layout:'line'}},
+          t: '8 🐦, take away 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐦', rightCount:3, rightObj:'🐦', op:'subtract'}},
           o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'8',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
           a:1, e:'8 - 3 = 5!', d:'m', s:null, h:'Start at 8 and count back 3: seven, six, five'
         },
         {
-          t: '🌻🌻🌻🌻 − 🌻 = ?',
-          v: {type:'objectSet', config:{count:4, emoji:'🌻', layout:'line'}},
+          t: '4 🌻, take away 1. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🌻', rightCount:1, rightObj:'🌻', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
           a:1, e:'4 - 1 = 3!', d:'e', s:null, h:'1 less than 4 is 3'
         },
         {
-          t: '🍪🍪🍪🍪🍪🍪🍪 − 🍪🍪🍪🍪 = ?',
-          v: {type:'objectSet', config:{count:7, emoji:'🍪', layout:'grid'}},
+          t: '7 🍪, take away 4. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🍪', rightCount:4, rightObj:'🍪', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
           a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Count back 4 from 7'
         },
         {
-          t: '🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟 − 🌟🌟🌟🌟🌟 = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'🌟', layout:'grid'}},
+          t: '10 🌟, take away 5. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'🌟', rightCount:5, rightObj:'🌟', op:'subtract'}},
           o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'10',tag:'err_keep_start'},{val:'15',tag:'err_add_instead'}],
           a:1, e:'10 - 5 = 5!', d:'m', s:null, h:'Count back 5 from 10: nine, eight, seven, six, five'
         },
         {
-          t: '🐝🐝🐝🐝🐝🐝🐝🐝🐝 − 🐝🐝 = ?',
-          v: {type:'objectSet', config:{count:9, emoji:'🐝', layout:'grid'}},
+          t: '9 🐝, take away 2. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🐝', rightCount:2, rightObj:'🐝', op:'subtract'}},
           o: [{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'9',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
           a:1, e:'9 - 2 = 7!', d:'m', s:null, h:'Count back 2 from 9: eight, seven'
         },
         {
-          t: '🍩🍩🍩 − 🍩🍩🍩 = ?',
-          v: {type:'objectSet', config:{count:3, emoji:'🍩', layout:'line'}},
+          t: '3 🍩, take away all 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:3, leftObj:'🍩', rightCount:3, rightObj:'🍩', op:'subtract'}},
           o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'3',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
           a:0, e:'When you take all away, 0 are left! 3 - 3 = 0', d:'m', s:null, h:'Take away all 3 from 3'
         },
         {
-          t: '🌮🌮🌮🌮🌮🌮 − 🌮🌮 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🌮', layout:'line'}},
+          t: '6 🌮, take away 2. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🌮', rightCount:2, rightObj:'🌮', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'6',tag:'err_keep_start'},{val:'8',tag:'err_add_instead'}],
           a:1, e:'6 - 2 = 4!', d:'e', s:null, h:'Count back 2 from 6: five, four'
         },
         {
-          t: '🍒🍒🍒🍒🍒🍒🍒🍒 − 🍒🍒🍒🍒🍒🍒 = ?',
-          v: {type:'objectSet', config:{count:8, emoji:'🍒', layout:'grid'}},
+          t: '8 🍒, take away 6. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍒', rightCount:6, rightObj:'🍒', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'8',tag:'err_keep_start'},{val:'14',tag:'err_add_instead'}],
           a:1, e:'8 - 6 = 2!', d:'m', s:null, h:'Count back 6 from 8: seven, six, five, four, three, two'
         },
         {
-          t: '🌟🌟🌟🌟🌟 − 🌟🌟🌟 = ?',
-          v: {type:'objectSet', config:{count:5, emoji:'🌟', layout:'line'}},
+          t: '5 🌟, take away 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:5, leftObj:'🌟', rightCount:3, rightObj:'🌟', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'5',tag:'err_keep_start'},{val:'8',tag:'err_add_instead'}],
           a:1, e:'5 - 3 = 2!', d:'e', s:null, h:'Count back 3 from 5: four, three, two'
         },
         {
-          t: '🍇🍇🍇🍇🍇🍇🍇 − 🍇🍇🍇🍇 = ?',
-          v: {type:'objectSet', config:{count:7, emoji:'🍇', layout:'grid'}},
+          t: '7 🍇, take away 4. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🍇', rightCount:4, rightObj:'🍇', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
           a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Count back 4 from 7'
         },
         {
-          t: '🎀🎀🎀🎀 − 🎀🎀 = ?',
-          v: {type:'objectSet', config:{count:4, emoji:'🎀', layout:'line'}},
+          t: '4 🎀, take away 2. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🎀', rightCount:2, rightObj:'🎀', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'4',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
           a:1, e:'4 - 2 = 2!', d:'e', s:null, h:'Count back 2 from 4: three, two'
         },
         {
-          t: '🏐🏐🏐🏐🏐🏐🏐🏐🏐🏐 − 🏐🏐🏐 = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'🏐', layout:'grid'}},
+          t: '10 🏐, take away 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'🏐', rightCount:3, rightObj:'🏐', op:'subtract'}},
           o: [{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'10',tag:'err_keep_start'},{val:'13',tag:'err_add_instead'}],
           a:1, e:'10 - 3 = 7!', d:'m', s:null, h:'Count back 3 from 10: nine, eight, seven'
         },
         {
-          t: '🐠🐠🐠🐠🐠🐠 − 🐠🐠🐠🐠🐠🐠 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🐠', layout:'line'}},
+          t: '6 🐠, take away all 6. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🐠', rightCount:6, rightObj:'🐠', op:'subtract'}},
           o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'6',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
           a:0, e:'When all are taken out, 0 are left! 6 - 6 = 0', d:'m', s:null, h:'Take all 6 away from 6'
         },
         // ── NEW L2 questions ─────────────────────────────────────────────────
         {
-          t: '🐧🐧🐧🐧 − 🐧 = ?',
-          v: {type:'objectSet', config:{count:4, emoji:'🐧', layout:'line'}},
+          t: '4 🐧, take away 1. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🐧', rightCount:1, rightObj:'🐧', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
           a:1, e:'4 - 1 = 3!', d:'e', s:null, h:'1 less than 4 is 3'
         },
         {
-          t: '🌼🌼🌼 − 🌼 = ?',
-          v: {type:'objectSet', config:{count:3, emoji:'🌼', layout:'line'}},
+          t: '3 🌼, take away 1. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌼', rightCount:1, rightObj:'🌼', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_keep_start'},{val:'4',tag:'err_add_instead'}],
           a:1, e:'3 - 1 = 2!', d:'e', s:null, h:'1 less than 3 is 2'
         },
         {
-          t: '🌈🌈 − 🌈 = ?',
-          v: {type:'objectSet', config:{count:2, emoji:'🌈', layout:'line'}},
+          t: '2 🌈, take away 1. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:2, leftObj:'🌈', rightCount:1, rightObj:'🌈', op:'subtract'}},
           o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'2',tag:'err_keep_start'},{val:'3',tag:'err_add_instead'}],
           a:1, e:'2 - 1 = 1!', d:'e', s:null, h:'1 less than 2 is 1'
         },
         {
-          t: '🎀🎀🎀🎀🎀🎀🎀 − 🎀🎀🎀 = ?',
-          v: {type:'objectSet', config:{count:7, emoji:'🎀', layout:'grid'}},
+          t: '7 🎀, take away 3. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🎀', rightCount:3, rightObj:'🎀', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'7',tag:'err_keep_start'},{val:'10',tag:'err_add_instead'}],
           a:1, e:'7 - 3 = 4!', d:'m', s:null, h:'Count back 3 from 7: six, five, four'
         },
         {
-          t: '🍦🍦🍦🍦🍦🍦🍦🍦 − 🍦🍦🍦🍦 = ?',
-          v: {type:'objectSet', config:{count:8, emoji:'🍦', layout:'grid'}},
+          t: '8 🍦, take away 4. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍦', rightCount:4, rightObj:'🍦', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'8',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
           a:1, e:'8 - 4 = 4!', d:'m', s:null, h:'Count back 4 from 8: seven, six, five, four'
         },
         {
-          t: '🌺🌺🌺🌺🌺🌺🌺🌺🌺 − 🌺🌺🌺🌺🌺 = ?',
-          v: {type:'objectSet', config:{count:9, emoji:'🌺', layout:'grid'}},
+          t: '9 🌺, take away 5. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🌺', rightCount:5, rightObj:'🌺', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'9',tag:'err_keep_start'},{val:'14',tag:'err_add_instead'}],
           a:1, e:'9 - 5 = 4!', d:'m', s:null, h:'Count back 5 from 9: eight, seven, six, five, four'
         },
         {
-          t: '🐟🐟🐟🐟🐟🐟 − 🐟🐟🐟🐟 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🐟', layout:'line'}},
+          t: '6 🐟, take away 4. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🐟', rightCount:4, rightObj:'🐟', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'6',tag:'err_keep_start'},{val:'10',tag:'err_add_instead'}],
           a:1, e:'6 - 4 = 2!', d:'m', s:null, h:'Count back 4 from 6: five, four, three, two'
         },
         {
-          t: '🧩🧩🧩🧩🧩🧩🧩 − 🧩🧩🧩🧩🧩 = ?',
-          v: {type:'objectSet', config:{count:7, emoji:'🧩', layout:'grid'}},
+          t: '7 🧩, take away 5. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🧩', rightCount:5, rightObj:'🧩', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'7',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
           a:1, e:'7 - 5 = 2!', d:'m', s:null, h:'Count back 5 from 7: six, five, four, three, two'
         },
         {
-          t: '🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎 − 🍎🍎🍎🍎🍎🍎🍎🍎 = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'🍎', layout:'grid'}},
+          t: '10 🍎, take away 8. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'🍎', rightCount:8, rightObj:'🍎', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'10',tag:'err_keep_start'}],
           a:1, e:'10 - 8 = 2!', d:'h', s:null, h:'Count back 8 from 10: nine, eight, seven, six, five, four, three, two'
         },
         {
-          t: '🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟 − 🌟🌟🌟🌟🌟🌟🌟🌟🌟 = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'🌟', layout:'grid'}},
+          t: '10 🌟, take away 9. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'🌟', rightCount:9, rightObj:'🌟', op:'subtract'}},
           o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'10',tag:'err_keep_start'}],
           a:1, e:'10 - 9 = 1!', d:'h', s:null, h:'Count back 9 from 10 — you land on 1'
         },
         {
-          t: '🎈🎈🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈🎈🎈🎈🎈🎈🎈 = ?',
-          v: {type:'objectSet', config:{count:9, emoji:'🎈', layout:'grid'}},
+          t: '9 🎈, take away 8. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🎈', rightCount:8, rightObj:'🎈', op:'subtract'}},
           o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'9',tag:'err_keep_start'}],
           a:1, e:'9 - 8 = 1!', d:'h', s:null, h:'Count back 8 from 9 — only 1 step away from 9'
         },
         {
-          t: '🦋🦋🦋🦋 − 🦋🦋🦋🦋 = ?',
-          v: {type:'objectSet', config:{count:4, emoji:'🦋', layout:'line'}},
+          t: '4 🦋, take away all 4. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🦋', rightCount:4, rightObj:'🦋', op:'subtract'}},
           o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'4',tag:'err_keep_start'},{val:'8',tag:'err_add_instead'}],
           a:0, e:'When you take all away, none are left! 4 - 4 = 0', d:'h', s:null, h:'Taking away all leaves zero'
         },
         {
-          t: '🐥🐥🐥🐥🐥 − 🐥🐥🐥🐥🐥 = ?',
-          v: {type:'objectSet', config:{count:5, emoji:'🐥', layout:'line'}},
+          t: '5 🐥, take away all 5. How many are left?',
+          v: {type:'twoGroups', config:{leftCount:5, leftObj:'🐥', rightCount:5, rightObj:'🐥', op:'subtract'}},
           o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'5',tag:'err_keep_start'},{val:'10',tag:'err_add_instead'}],
           a:0, e:'When you take all away, none are left! 5 - 5 = 0', d:'h', s:null, h:'A number minus itself always equals zero'
         }
@@ -482,13 +482,13 @@ _mergeKUnitData(2, {
         },
         {
           t: '🐟🐟🐟🐟🐟🐟🐟🐟 − 🐟🐟🐟 = ?',
-          v: {type:'objectSet', config:{count:8, emoji:'🐟', layout:'grid'}},
+          v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐟', rightCount:3, rightObj:'🐟', op:'subtract'}},
           o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'8',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
           a:1, e:'8 - 3 = 5!', d:'e', s:null, h:'Swam away = subtract'
         },
         {
           t: '🧁🧁🧁🧁🧁🧁 − 🧁🧁 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🧁', layout:'line'}},
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🧁', rightCount:2, rightObj:'🧁', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'6',tag:'err_keep_start'},{val:'8',tag:'err_add_instead'}],
           a:1, e:'6 - 2 = 4!', d:'e', s:null, h:'Ate = subtract'
         },
@@ -500,7 +500,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈 = ?',
-          v: {type:'objectSet', config:{count:7, emoji:'🎈', layout:'line'}},
+          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🎈', rightCount:2, rightObj:'🎈', op:'subtract'}},
           o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'7',tag:'err_keep_start'},{val:'9',tag:'err_add_instead'}],
           a:1, e:'7 - 2 = 5!', d:'e', s:null, h:'Popped = subtract'
         },
@@ -512,7 +512,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ − ⭐⭐⭐⭐ = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'⭐', layout:'grid'}},
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'⭐', rightCount:4, rightObj:'⭐', op:'subtract'}},
           o: [{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'10',tag:'err_keep_start'},{val:'14',tag:'err_add_instead'}],
           a:1, e:'10 - 4 = 6!', d:'m', s:null, h:'Gave away = subtract'
         },
@@ -536,7 +536,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '🏊🏊🏊🏊🏊🏊🏊🏊🏊 − 🏊🏊🏊🏊🏊🏊 = ?',
-          v: {type:'objectSet', config:{count:9, emoji:'🏊', layout:'grid'}},
+          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🏊', rightCount:6, rightObj:'🏊', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'9',tag:'err_keep_start'},{val:'15',tag:'err_add_instead'}],
           a:1, e:'9 - 6 = 3!', d:'m', s:null, h:'Got out = subtract'
         },
@@ -560,7 +560,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '🧒🧒🧒🧒🧒🧒 − 🧒🧒 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🧒', layout:'line'}},
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🧒', rightCount:2, rightObj:'🧒', op:'subtract'}},
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'6',tag:'err_keep_start'},{val:'8',tag:'err_add_instead'}],
           a:1, e:'6 - 2 = 4!', d:'e', s:null, h:'Went to recess = subtract'
         },
@@ -573,7 +573,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '🌸🌸🌸🌸 − 🌸🌸 = ?',
-          v: {type:'objectSet', config:{count:4, emoji:'🌸', layout:'line'}},
+          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🌸', rightCount:2, rightObj:'🌸', op:'subtract'}},
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'4',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
           a:1, e:'4 - 2 = 2!', d:'e', s:null, h:'Taken out = subtract'
         },
@@ -591,13 +591,13 @@ _mergeKUnitData(2, {
         },
         {
           t: '🦋🦋🦋🦋🦋🦋🦋🦋🦋 − 🦋🦋🦋🦋 = ?',
-          v: {type:'objectSet', config:{count:9, emoji:'🦋', layout:'grid'}},
+          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🦋', rightCount:4, rightObj:'🦋', op:'subtract'}},
           o: [{val:'4',tag:'err_keep_start'},{val:'5'},{val:'9',tag:'err_keep_total'},{val:'13',tag:'err_add_instead'}],
           a:1, e:'9 - 4 = 5!', d:'m', s:null, h:'Flew away = subtract'
         },
         {
           t: '🔵🔵🔵🔵🔵🔵 − 🔵🔵🔵 = ?',
-          v: {type:'objectSet', config:{count:6, emoji:'🔵', layout:'line'}},
+          v: {type:'twoGroups', config:{leftCount:6, leftObj:'🔵', rightCount:3, rightObj:'🔵', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'6',tag:'err_keep_start'},{val:'9',tag:'err_add_instead'}],
           a:1, e:'6 - 3 = 3!', d:'m', s:null, h:'Fall off = subtract'
         },
@@ -615,7 +615,7 @@ _mergeKUnitData(2, {
         },
         {
           t: '🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆 − 🦆🦆🦆🦆🦆🦆🦆 = ?',
-          v: {type:'objectSet', config:{count:10, emoji:'🦆', layout:'grid'}},
+          v: {type:'twoGroups', config:{leftCount:10, leftObj:'🦆', rightCount:7, rightObj:'🦆', op:'subtract'}},
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'10',tag:'err_keep_start'},{val:'17',tag:'err_add_instead'}],
           a:1, e:'10 - 7 = 3!', d:'h', s:null, h:'Fly away = subtract'
         },
@@ -863,25 +863,25 @@ _mergeKUnitData(2, {
     // ── L2 Subtraction (4) ───────────────────────────────────────────────────
     {
       t: '🌈🌈🌈🌈🌈🌈🌈🌈🌈 − 🌈🌈🌈 = ?',
-      v: {type:'objectSet', config:{count:9, emoji:'🌈', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:9, leftObj:'🌈', rightCount:3, rightObj:'🌈', op:'subtract'}},
       o: [{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'9',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'9 - 3 = 6!', d:'m', s:null, h:'Count back 3 from 9'
     },
     {
       t: '🍦🍦🍦🍦🍦🍦🍦 − 🍦🍦🍦🍦🍦 = ?',
-      v: {type:'objectSet', config:{count:7, emoji:'🍦', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:7, leftObj:'🍦', rightCount:5, rightObj:'🍦', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'7',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'7 - 5 = 2!', d:'e', s:null, h:'Eaten = subtract'
     },
     {
       t: '🏀🏀🏀🏀🏀🏀🏀🏀🏀🏀 − 🏀🏀🏀 = ?',
-      v: {type:'objectSet', config:{count:10, emoji:'🏀', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:10, leftObj:'🏀', rightCount:7, rightObj:'🏀', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_count_all'},{val:'10',tag:'err_keep_start'}],
       a:1, e:'10 - 7 = 3!', d:'m', s:null, h:'Count back 7 from 10'
     },
     {
       t: '🎵🎵🎵🎵🎵🎵 − 🎵🎵🎵🎵 = ?',
-      v: {type:'objectSet', config:{count:6, emoji:'🎵', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:6, leftObj:'🎵', rightCount:4, rightObj:'🎵', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'6',tag:'err_keep_start'},{val:'10',tag:'err_add_instead'}],
       a:1, e:'6 - 4 = 2!', d:'e', s:null, h:'Erased = subtract'
     },
@@ -894,7 +894,7 @@ _mergeKUnitData(2, {
     },
     {
       t: '☁️☁️☁️☁️☁️☁️☁️☁️☁️☁️ − ☁️☁️☁️☁️☁️☁️ = ?',
-      v: {type:'objectSet', config:{count:10, emoji:'☁️', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:10, leftObj:'☁️', rightCount:6, rightObj:'☁️', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'10',tag:'err_keep_start'},{val:'16',tag:'err_add_instead'}],
       a:1, e:'10 - 6 = 4!', d:'m', s:null, h:'Blew away = subtract'
     },
@@ -996,57 +996,57 @@ _mergeKUnitData(2, {
     // L2 easy (3)
     {
       t: '🍓🍓🍓🍓🍓 − 🍓 = ?',
-      v: {type:'objectSet', config:{count:5, emoji:'🍓', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:5, leftObj:'🍓', rightCount:1, rightObj:'🍓', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
       a:1, e:'5 - 1 = 4!', d:'e', s:null, h:'1 less than 5 is 4'
     },
     {
       t: '🌼🌼🌼🌼 − 🌼🌼 = ?',
-      v: {type:'objectSet', config:{count:4, emoji:'🌼', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:4, leftObj:'🌼', rightCount:2, rightObj:'🌼', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'4',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
       a:1, e:'4 - 2 = 2!', d:'e', s:null, h:'Count back 2 from 4: three, two'
     },
     {
       t: '🐣🐣🐣 − 🐣🐣 = ?',
-      v: {type:'objectSet', config:{count:3, emoji:'🐣', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐣', rightCount:2, rightObj:'🐣', op:'subtract'}},
       o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
       a:1, e:'3 - 2 = 1!', d:'e', s:null, h:'Count back 2 from 3: two, one'
     },
     // L2 medium (4)
     {
       t: '🍒🍒🍒🍒🍒🍒🍒🍒 − 🍒🍒🍒 = ?',
-      v: {type:'objectSet', config:{count:8, emoji:'🍒', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍒', rightCount:3, rightObj:'🍒', op:'subtract'}},
       o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'8',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'8 - 3 = 5!', d:'m', s:null, h:'Count back 3 from 8: seven, six, five'
     },
     {
       t: '🌺🌺🌺🌺🌺🌺🌺 − 🌺🌺🌺🌺 = ?',
-      v: {type:'objectSet', config:{count:7, emoji:'🌺', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:7, leftObj:'🌺', rightCount:4, rightObj:'🌺', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Count back 4 from 7'
     },
     {
       t: '🦋🦋🦋🦋🦋🦋 − 🦋🦋🦋 = ?',
-      v: {type:'objectSet', config:{count:6, emoji:'🦋', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:6, leftObj:'🦋', rightCount:3, rightObj:'🦋', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'6',tag:'err_keep_start'},{val:'9',tag:'err_add_instead'}],
       a:1, e:'6 - 3 = 3!', d:'m', s:null, h:'Count back 3 from 6: five, four, three'
     },
     {
       t: '🎈🎈🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈🎈🎈🎈🎈 = ?',
-      v: {type:'objectSet', config:{count:9, emoji:'🎈', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:9, leftObj:'🎈', rightCount:6, rightObj:'🎈', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'9',tag:'err_keep_start'},{val:'15',tag:'err_add_instead'}],
       a:1, e:'9 - 6 = 3!', d:'m', s:null, h:'Count back 6 from 9: eight, seven, six, five, four, three'
     },
     // L2 hard (2)
     {
       t: '🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋 − 🍋🍋🍋 = ?',
-      v: {type:'objectSet', config:{count:10, emoji:'🍋', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:10, leftObj:'🍋', rightCount:7, rightObj:'🍋', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'10',tag:'err_keep_start'}],
       a:1, e:'10 - 7 = 3!', d:'h', s:null, h:'Count back 7 from 10: nine, eight, seven, six, five, four, three'
     },
     {
       t: '🐧🐧🐧🐧🐧🐧🐧🐧 − 🐧🐧🐧🐧🐧🐧🐧🐧 = ?',
-      v: {type:'objectSet', config:{count:8, emoji:'🐧', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐧', rightCount:8, rightObj:'🐧', op:'subtract'}},
       o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'8',tag:'err_keep_start'},{val:'16',tag:'err_add_instead'}],
       a:0, e:'When you take all away, none are left! 8 - 8 = 0', d:'h', s:null, h:'Taking away all leaves zero'
     },
@@ -1059,7 +1059,7 @@ _mergeKUnitData(2, {
     },
     {
       t: '🌟🌟🌟 − 🌟🌟 = ?',
-      v: {type:'objectSet', config:{count:3, emoji:'🌟', layout:'line'}},
+      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌟', rightCount:2, rightObj:'🌟', op:'subtract'}},
       o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
       a:1, e:'3 - 2 = 1!', d:'e', s:null, h:'Fade away = subtract'
     },
@@ -1072,13 +1072,13 @@ _mergeKUnitData(2, {
     },
     {
       t: '🍪🍪🍪🍪🍪🍪🍪🍪 − 🍪🍪🍪🍪 = ?',
-      v: {type:'objectSet', config:{count:8, emoji:'🍪', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍪', rightCount:4, rightObj:'🍪', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'8',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'8 - 4 = 4!', d:'m', s:null, h:'Eaten = subtract'
     },
     {
       t: '🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈🎈🎈 = ?',
-      v: {type:'objectSet', config:{count:7, emoji:'🎈', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:7, leftObj:'🎈', rightCount:4, rightObj:'🎈', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Pop = subtract'
     },
@@ -1097,7 +1097,7 @@ _mergeKUnitData(2, {
     },
     {
       t: '🖍🖍🖍🖍🖍🖍🖍🖍🖍🖍 − 🖍🖍🖍 = ?',
-      v: {type:'objectSet', config:{count:10, emoji:'🖍', layout:'grid'}},
+      v: {type:'twoGroups', config:{leftCount:10, leftObj:'🖍', rightCount:3, rightObj:'🖍', op:'subtract'}},
       o: [{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_off_by_one'},{val:'7'},{val:'13',tag:'err_add_instead'}],
       a:2, e:'10 - 3 = 7, so 7 crayons were given away!', d:'h', s:null, h:'Think: 10 - ? = 3'
     },
