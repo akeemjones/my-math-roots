@@ -1313,7 +1313,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
           'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;'+
           'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);'+
           'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">'+
-          'Got it \u2014 try again! \u2192'+
+          (_ACTIVE_GRADE === 'K' ? 'Got it \u2014 try a similar one! \u2192' : 'Got it \u2014 try again! \u2192')+
         '</button>'+
       '</div>'+
     '</div>';
@@ -1332,8 +1332,35 @@ function _resumeQuiz(){
   var qz = CUR.quiz;
   if(!qz) return;
   qz._answered = false;
-  // Re-render the SAME question without advancing index.
-  // _opts is preserved so answer order stays stable (no reshuffle on retry).
+
+  // K grade: swap in a similar question instead of repeating the one whose answer was just revealed.
+  if(_ACTIVE_GRADE === 'K' && qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null){
+    var curQ    = qz.questions[qz.idx];
+    var curType = curQ && curQ.v && curQ.v.type;
+    var curText = curQ && curQ.t;
+    try {
+      var l    = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
+      var bank = (l.qBank || l.quiz || []);
+      // Candidates: same visual type, different question text, not already in current quiz set
+      var usedTexts = qz.questions.map(function(q){ return q.t; });
+      var pool = bank.filter(function(q){
+        var qType = q.v && q.v.type;
+        return qType === curType && q.t !== curText && usedTexts.indexOf(q.t) === -1;
+      });
+      // Fall back to any same-type question not identical to the current one
+      if(pool.length === 0){
+        pool = bank.filter(function(q){
+          return q.v && q.v.type === curType && q.t !== curText;
+        });
+      }
+      if(pool.length > 0){
+        var pick = pool[Math.floor(Math.random() * pool.length)];
+        qz.questions[qz.idx] = pick;
+        qz._opts = null; // force fresh option shuffle for new question
+      }
+    } catch(e){ /* silent — fall through to re-render current question */ }
+  }
+
   _renderQ();
 }
 
