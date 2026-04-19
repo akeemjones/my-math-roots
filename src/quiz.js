@@ -792,7 +792,7 @@ function _buildKManip(cfg, opts) {
     + '<div class="k-manip-area" id="k-area">' + areaInner + '</div>'
     + '<div class="k-manip-footer">'
     +   '<div class="k-manip-count"><span id="k-ct">' + startN + '</span>' + lbl + '</div>'
-    +   '<button class="k-submit-btn" data-action="_kManipSubmit">\u2713 Submit</button>'
+    +   '<button class="k-submit-btn" data-action="_kManipSubmit"' + (startN === 0 ? ' disabled' : '') + '>\u2713 Submit</button>'
     + '</div>'
     + '</div>';
 }
@@ -834,6 +834,8 @@ function _kManipUpdateCount() {
   var n  = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
   var ct = document.getElementById('k-ct');
   if (ct) ct.textContent = String(n);
+  var sub = document.querySelector('.k-submit-btn');
+  if (sub) sub.disabled = (n === 0);
 }
 
 function _kManipSubmit() {
