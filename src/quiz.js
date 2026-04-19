@@ -574,13 +574,8 @@ function _renderQ(){
     }
 
   } else if (_vt === 'objectSet') {
-    if (_ACTIVE_GRADE === 'K') {
-      _agridOpts   = [];
-      _visualBlock = _buildKManip(q.v.config, opts);
-    } else {
-      _visualBlock = drawObjectSet(q.v.config, null);
-      // answers go to agrid as plain number buttons
-    }
+    _visualBlock = drawObjectSet(q.v.config, null);
+    // answers go to agrid as plain number buttons
 
   } else if (_vt === 'twoGroups') {
     if (_ACTIVE_GRADE === 'K') {
