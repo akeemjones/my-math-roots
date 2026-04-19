@@ -574,8 +574,13 @@ function _renderQ(){
     }
 
   } else if (_vt === 'objectSet') {
-    _visualBlock = drawObjectSet(q.v.config, null);
-    // answers go to agrid as plain number buttons
+    if (_ACTIVE_GRADE === 'K') {
+      _agridOpts   = [];
+      _visualBlock = _buildKManip(q.v.config, opts);
+    } else {
+      _visualBlock = drawObjectSet(q.v.config, null);
+      // answers go to agrid as plain number buttons
+    }
 
   } else if (_vt === 'twoGroups') {
     if (_ACTIVE_GRADE === 'K') {
@@ -744,52 +749,48 @@ function _handleAnswer(selectedIndex){
 }
 
 // ── K Counting Manipulative ──────────────────────────────────────────────────
-// Renders an interactive "tap to build/remove" area for twoGroups questions in K.
-// Addition: student taps a source object to add one at a time to the answer area.
-// Subtraction: answer area starts with leftCount objects; student taps to remove.
-var _kManipCounter = 0;
+// Context row is display-only. The single .k-manip-tool button is the ONLY add source.
+// Subtraction: answer area pre-filled; tap any answer object to remove one.
+// Supports twoGroups cfg ({leftCount,leftObj,rightCount,rightObj,op})
+// and objectSet cfg ({count,emoji}).
+// State lives on .k-manip as data-count.
 
 function _buildKManip(cfg, opts) {
-  _kManipCounter = 0;
-  var emoji  = cfg.leftObj || '⭐';
-  var lCount = +(cfg.leftCount  || 0);
-  var rCount = +(cfg.rightCount || 0);
-  var isAdd  = cfg.op !== 'subtract';
-  var max    = isAdd ? Math.min(20, lCount + rCount + 3) : lCount;
-  var lEmoji = (cfg.leftObj  || '⭐').repeat(lCount);
-  var rEmoji = (cfg.rightObj || cfg.leftObj || '⭐').repeat(rCount);
+  var isTwoGroups = (cfg.leftCount !== undefined);
+  var emoji, lCount, rCount, isAdd, startN, max, lbl;
 
-  var ctx = '<div class="k-manip-ctx">'
-    + '<span class="k-mc-group">' + lEmoji + '</span>'
-    + '<span class="k-mc-op">'   + (isAdd ? '+' : '\u2212') + '</span>'
-    + '<span class="k-mc-group">' + rEmoji + '</span>'
-    + '</div>';
-
-  var hint = '<div class="k-manip-hint">'
-    + (isAdd ? 'Tap ' + emoji + ' to add \u2022 tap your answer to remove'
-             : 'Tap a ' + emoji + ' to take it away')
-    + '</div>';
-
-  var src = isAdd
-    ? '<button class="k-manip-src" data-action="_kManipAdd" aria-label="Add one">' + emoji + '</button>'
-    : '';
-
-  var areaInner = '';
-  if (!isAdd) {
-    for (var i = 0; i < lCount; i++) {
-      var id = ++_kManipCounter;
-      areaInner += '<button class="k-manip-obj" id="kobj-' + id + '"'
-        + ' data-action="_kManipRemove" data-arg="' + id + '"'
-        + ' aria-label="Remove one">' + emoji + '</button>';
-    }
+  if (isTwoGroups) {
+    emoji    = cfg.leftObj  || '⭐';
+    lCount   = +(cfg.leftCount  || 0);
+    rCount   = +(cfg.rightCount || 0);
+    isAdd    = cfg.op !== 'subtract';
+    startN   = isAdd ? 0 : lCount;
+    max      = isAdd ? Math.min(20, lCount + rCount + 3) : lCount;
+    lbl      = isAdd ? ' added' : ' left';
+  } else {
+    emoji    = cfg.emoji || '⭐';
+    lCount   = +(cfg.count || 0);
+    rCount   = 0;
+    isAdd    = true;
+    startN   = 0;
+    max      = Math.min(20, lCount + 3);
+    lbl      = ' counted';
   }
 
-  var startN = isAdd ? 0 : lCount;
-  var lbl    = isAdd ? ' added' : ' left';
+  // Answer area — pre-filled for subtraction
+  var ansObjs = '';
+  for (var k = 0; k < startN; k++) {
+    ansObjs += '<button class="k-ans-obj" data-action="_kManipRemove" aria-label="Remove one">' + _escHtml(emoji) + '</button>';
+  }
 
-  return '<div class="k-manip" data-emoji="' + _escHtml(emoji) + '" data-max="' + max + '">'
-    + ctx + hint + src
-    + '<div class="k-manip-area" id="k-area">' + areaInner + '</div>'
+  var hint = '<div class="k-manip-hint">'
+    + (isAdd ? 'Tap ' + _escHtml(emoji) + ' to add \u2022 tap your answer to remove' : 'Tap an object to take it away')
+    + '</div>';
+
+  return '<div class="k-manip" data-emoji="' + _escHtml(emoji) + '" data-max="' + max + '" data-count="' + startN + '">'
+    + '<button class="k-manip-tool" data-action="_kManipAdd" aria-label="Add one">' + _escHtml(emoji) + '</button>'
+    + hint
+    + '<div class="k-manip-answer" id="k-area">' + ansObjs + '</div>'
     + '<div class="k-manip-footer">'
     +   '<div class="k-manip-count"><span id="k-ct">' + startN + '</span>' + lbl + '</div>'
     +   '<button class="k-submit-btn" data-action="_kManipSubmit"' + (startN === 0 ? ' disabled' : '') + '>\u2713 Submit</button>'
@@ -799,56 +800,50 @@ function _buildKManip(cfg, opts) {
 
 function _kManipAdd() {
   if (isPaused || (CUR.quiz && CUR.quiz._answered)) return;
+  var manip = document.querySelector('.k-manip');
+  if (!manip) return;
+  var count = parseInt(manip.dataset.count || '0');
+  var max   = parseInt(manip.dataset.max   || '20');
+  if (count >= max) return;
+  manip.dataset.count = String(count + 1);
+  _renderManipulative();
+}
+
+function _kManipRemove() {
+  if (isPaused || (CUR.quiz && CUR.quiz._answered)) return;
+  var manip = document.querySelector('.k-manip');
+  if (!manip) return;
+  var count = parseInt(manip.dataset.count || '0');
+  if (count <= 0) return;
+  manip.dataset.count = String(count - 1);
+  _renderManipulative();
+}
+
+function _renderManipulative() {
+  var manip = document.querySelector('.k-manip');
+  if (!manip) return;
+  var count = parseInt(manip.dataset.count || '0');
+  var emoji = manip.dataset.emoji || '⭐';
   var area  = document.getElementById('k-area');
   if (!area) return;
-  var manip = area.closest('.k-manip');
-  var emoji = (manip && manip.dataset.emoji) || '⭐';
-  var max   = parseInt((manip && manip.dataset.max) || '20');
-  var cur   = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
-  if (cur >= max) return;
-  var id = ++_kManipCounter;
-  var btn = document.createElement('button');
-  btn.className          = 'k-manip-obj';
-  btn.id                 = 'kobj-' + id;
-  btn.dataset.action     = '_kManipRemove';
-  btn.dataset.arg        = String(id);
-  btn.setAttribute('aria-label', 'Remove one');
-  btn.textContent        = emoji;
-  area.appendChild(btn);
-  _kManipUpdateCount();
-}
-
-function _kManipRemove(id) {
-  if (isPaused || (CUR.quiz && CUR.quiz._answered)) return;
-  var obj = document.getElementById('kobj-' + id);
-  if (!obj || obj.dataset.removing) return;
-  obj.dataset.removing = '1';
-  obj.classList.add('removing');
-  _kManipUpdateCount();
-  setTimeout(function() { if (obj.parentNode) obj.parentNode.removeChild(obj); }, 180);
-}
-
-function _kManipUpdateCount() {
-  var area = document.getElementById('k-area');
-  if (!area) return;
-  var n  = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
+  var html = '';
+  for (var i = 0; i < count; i++) {
+    html += '<button class="k-ans-obj" data-action="_kManipRemove" aria-label="Remove one">' + emoji + '</button>';
+  }
+  area.innerHTML = html;
   var ct = document.getElementById('k-ct');
-  if (ct) ct.textContent = String(n);
+  if (ct) ct.textContent = String(count);
   var sub = document.querySelector('.k-submit-btn');
-  if (sub) sub.disabled = (n === 0);
+  if (sub) sub.disabled = (count === 0);
 }
 
 function _kManipSubmit() {
   if (isPaused || !CUR.quiz || CUR.quiz._answered) return;
-  var area = document.getElementById('k-area');
-  if (!area) return;
-  var count = area.querySelectorAll('.k-manip-obj:not([data-removing])').length;
+  var manip = document.querySelector('.k-manip');
+  if (!manip) return;
+  var count = parseInt(manip.dataset.count || '0');
   // Freeze UI
-  area.querySelectorAll('.k-manip-obj').forEach(function(o) { o.disabled = true; });
-  var src = document.querySelector('.k-manip-src');
-  if (src) src.disabled = true;
-  var sub = document.querySelector('.k-submit-btn');
-  if (sub) sub.disabled = true;
+  manip.querySelectorAll('.k-manip-tool, .k-ans-obj, .k-submit-btn').forEach(function(b) { b.disabled = true; });
   // Map student's count → shuffled option index
   var opts = CUR.quiz._opts;
   var idx  = -1;

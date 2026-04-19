@@ -95,6 +95,9 @@
     clearScratchPad:        ()    => clearScratchPad(),
     setScratchColor:        (a, b, el) => setScratchColor(a, el),
     setScratchTool:         (a)   => setScratchTool(a),
+    _kManipAdd:             ()    => _kManipAdd(),
+    _kManipRemove:          ()    => _kManipRemove(),
+    _kManipSubmit:          ()    => _kManipSubmit(),
 
     // ── Home ────────────────────────────────────────────────────────────────
     openUnit:               (a)   => openUnit(Number(a)),
