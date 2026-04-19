@@ -460,7 +460,7 @@ _mergeKUnitData(4, {
           c: '#9C27B0',
           tag: 'Join Story',
           p: '3 frogs are on a log. 4 more frogs jump on. How many frogs in all?',
-          v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐸', rightCount:4, rightObj:'🐸', op:'compare'}},
+          v: {type:'objectSet', config:{count:7, emoji:'🐸', layout:'grid'}},
           s: 'Join the groups: 3 + 4 = 7',
           a: '7 frogs ✅'
         },
@@ -490,25 +490,25 @@ _mergeKUnitData(4, {
         // ── Join stories ─────────────────────────────────────────────────────
         {
           t: '1 🐝 and 2 more 🐝 join. How many bees in all?',
-          v: {type:'twoGroups', config:{leftCount:1, leftObj:'🐝', rightCount:2, rightObj:'🐝', op:'compare'}},
+          v: {type:'objectSet', config:{count:3, emoji:'🐝', layout:'grid'}},
           o: [{val:'1',tag:'err_sub_instead'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
           a:2, e:'1 + 2 = 3 bees!', d:'e', s:null, h:'Join both groups together'
         },
         {
           t: '2 🐱 cats and 2 more 🐱 join. How many cats in all?',
-          v: {type:'twoGroups', config:{leftCount:2, leftObj:'🐱', rightCount:2, rightObj:'🐱', op:'compare'}},
+          v: {type:'objectSet', config:{count:4, emoji:'🐱', layout:'grid'}},
           o: [{val:'0',tag:'err_sub_instead'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
           a:2, e:'2 + 2 = 4 cats!', d:'e', s:null, h:'Two groups of 2 join together'
         },
         {
           t: '3 🦊 foxes and 2 more 🦊 join. How many foxes in all?',
-          v: {type:'twoGroups', config:{leftCount:3, leftObj:'🦊', rightCount:2, rightObj:'🦊', op:'compare'}},
+          v: {type:'objectSet', config:{count:5, emoji:'🦊', layout:'grid'}},
           o: [{val:'1',tag:'err_sub_instead'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
           a:2, e:'3 + 2 = 5 foxes!', d:'e', s:null, h:'Count both groups together'
         },
         {
           t: 'There are 4 🌟 stars. 3 more appear. How many stars now?',
-          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🌟', rightCount:3, rightObj:'🌟', op:'compare'}},
+          v: {type:'objectSet', config:{count:7, emoji:'🌟', layout:'grid'}},
           o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
           a:2, e:'4 + 3 = 7 stars!', d:'e', s:null, h:'Join both groups'
         },
@@ -520,25 +520,25 @@ _mergeKUnitData(4, {
         },
         {
           t: '3 🐢 turtles and 4 more 🐢 crawl over. How many in all?',
-          v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐢', rightCount:4, rightObj:'🐢', op:'compare'}},
+          v: {type:'objectSet', config:{count:7, emoji:'🐢', layout:'grid'}},
           o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
           a:2, e:'3 + 4 = 7 turtles!', d:'m', s:null, h:'Add both groups together'
         },
         {
           t: 'There are 2 🐱 cats. 6 more come in. How many cats now?',
-          v: {type:'twoGroups', config:{leftCount:2, leftObj:'🐱', rightCount:6, rightObj:'🐱', op:'compare'}},
+          v: {type:'objectSet', config:{count:8, emoji:'🐱', layout:'grid'}},
           o: [{val:'4',tag:'err_sub_instead'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
           a:2, e:'2 + 6 = 8 cats!', d:'m', s:null, h:'More cats join — add them!'
         },
         {
           t: '1 🐶 puppy and 8 more 🐶 run in. How many puppies in all?',
-          v: {type:'twoGroups', config:{leftCount:1, leftObj:'🐶', rightCount:8, rightObj:'🐶', op:'compare'}},
+          v: {type:'objectSet', config:{count:9, emoji:'🐶', layout:'grid'}},
           o: [{val:'7',tag:'err_sub_instead'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
           a:2, e:'1 + 8 = 9 puppies!', d:'m', s:null, h:'Join: 1 and 8 more'
         },
         {
           t: '4 🐠 fish and 6 more 🐠 swim in. How many fish in all?',
-          v: {type:'twoGroups', config:{leftCount:4, leftObj:'🐠', rightCount:6, rightObj:'🐠', op:'compare'}},
+          v: {type:'objectSet', config:{count:10, emoji:'🐠', layout:'grid'}},
           o: [{val:'2',tag:'err_sub_instead'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
           a:2, e:'4 + 6 = 10 fish!', d:'m', s:null, h:'Join: 4 and 6 more'
         },
@@ -550,7 +550,7 @@ _mergeKUnitData(4, {
         },
         {
           t: '5 🐦 birds and 5 more 🐦 land. How many birds now?',
-          v: {type:'twoGroups', config:{leftCount:5, leftObj:'🐦', rightCount:5, rightObj:'🐦', op:'compare'}},
+          v: {type:'objectSet', config:{count:10, emoji:'🐦', layout:'grid'}},
           o: [{val:'0',tag:'err_sub_instead'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
           a:2, e:'5 + 5 = 10 birds!', d:'m', s:null, h:'Two equal groups — join them!'
         },
@@ -960,7 +960,7 @@ _mergeKUnitData(4, {
     // ── L3: Story Problems ────────────────────────────────────────────────────
     {
       t: '4 🐠 are in a pond. 3 more swim in. How many fish in all?',
-      v: {type:'twoGroups', config:{leftCount:4, leftObj:'🐠', rightCount:3, rightObj:'🐠', op:'compare'}},
+      v: {type:'objectSet', config:{count:7, emoji:'🐠', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'4 + 3 = 7 fish!', d:'e', s:null, h:'"Swim in" = join'
     },
@@ -984,7 +984,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '3 🍰 cakes and 5 more 🍰 are baked. How many cakes in all?',
-      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🍰', rightCount:5, rightObj:'🍰', op:'compare'}},
+      v: {type:'objectSet', config:{count:8, emoji:'🍰', layout:'grid'}},
       o: [{val:'2',tag:'err_sub_instead'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'3 + 5 = 8 cakes!', d:'e', s:null, h:'Join both groups'
     },
@@ -1125,7 +1125,7 @@ _mergeKUnitData(4, {
     // ── L3 Story Problems — 8 new ────────────────────────────────────────────
     {
       t: '2 🐶 and 3 more 🐶 run in. How many dogs?',
-      v: {type:'twoGroups', config:{leftCount:2, leftObj:'🐶', rightCount:3, rightObj:'🐶', op:'compare'}},
+      v: {type:'objectSet', config:{count:5, emoji:'🐶', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'2 + 3 = 5 dogs!', d:'e', s:null, h:'Join both groups'
     },
@@ -1137,7 +1137,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '3 🌼 flowers and 4 more grow. How many in all?',
-      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌼', rightCount:4, rightObj:'🌼', op:'compare'}},
+      v: {type:'objectSet', config:{count:7, emoji:'🌼', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'3 + 4 = 7 flowers!', d:'m', s:null, h:'"More grow" = join'
     },
@@ -1149,7 +1149,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '2 🦁 lions and 5 more join. How many in all?',
-      v: {type:'twoGroups', config:{leftCount:2, leftObj:'🦁', rightCount:5, rightObj:'🦁', op:'compare'}},
+      v: {type:'objectSet', config:{count:7, emoji:'🦁', layout:'grid'}},
       o: [{val:'3',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'2 + 5 = 7 lions!', d:'m', s:null, h:'"Join" = add'
     },
@@ -1161,7 +1161,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '5 🌙 moons and 4 more appear. How many in all?',
-      v: {type:'twoGroups', config:{leftCount:5, leftObj:'🌙', rightCount:4, rightObj:'🌙', op:'compare'}},
+      v: {type:'objectSet', config:{count:9, emoji:'🌙', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
       a:2, e:'5 + 4 = 9 moons!', d:'h', s:null, h:'"More appear" = join'
     },
@@ -1187,7 +1187,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '4 🎨 cans and 3 more are added. Which sentence?',
-      v: {type:'twoGroups', config:{leftCount:4, leftObj:'🎨', rightCount:3, rightObj:'🎨', op:'compare'}},
+      v: {type:'objectSet', config:{count:7, emoji:'🎨', layout:'grid'}},
       o: [{val:'4 − 3 = 1',tag:'err_sub_instead'},{val:'4 + 3 = 7'},{val:'4 + 2 = 6',tag:'err_off_by_one'},{val:'7 − 4 = 3',tag:'err_sub_instead'}],
       a:1, e:'"Added" = join! 4 + 3 = 7 ✅', d:'m', s:null, h:'"Added" = more = add'
     },
@@ -1199,7 +1199,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '3 🐸 frogs and 1 more jumps in. Which sentence?',
-      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐸', rightCount:1, rightObj:'🐸', op:'compare'}},
+      v: {type:'objectSet', config:{count:4, emoji:'🐸', layout:'grid'}},
       o: [{val:'3 − 1 = 2',tag:'err_sub_instead'},{val:'3 + 1 = 4'},{val:'3 + 2 = 5',tag:'err_off_by_one'},{val:'4 − 3 = 1',tag:'err_sub_instead'}],
       a:1, e:'"Jumps in" = join! 3 + 1 = 4 ✅', d:'m', s:null, h:'"Jumps in" = more come = add'
     },
@@ -1217,7 +1217,7 @@ _mergeKUnitData(4, {
     },
     {
       t: '3 🚂 trains. 6 more arrive. Which is correct?',
-      v: {type:'twoGroups', config:{leftCount:3, leftObj:'🚂', rightCount:6, rightObj:'🚂', op:'compare'}},
+      v: {type:'objectSet', config:{count:9, emoji:'🚂', layout:'grid'}},
       o: [{val:'6 − 3 = 3',tag:'err_sub_instead'},{val:'3 + 5 = 8',tag:'err_off_by_one'},{val:'9 − 6 = 3',tag:'err_sub_instead'},{val:'3 + 6 = 9'}],
       a:3, e:'"Arrive" = join! 3 + 6 = 9 ✅', d:'h', s:null, h:'"Arrive" = more come = add'
     }
