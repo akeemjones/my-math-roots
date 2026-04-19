@@ -1193,6 +1193,28 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       text = 'A 2D shape is flat — you draw it on paper. A 3D solid takes up space and has volume — you can hold it. Look carefully at the object.';
     }
 
+  } else if(errorTag === 'err_shape_sort'){
+    title = 'Let\'s Count the Corners!';
+    var CORNER_MAP = {circle:0, triangle:3, square:4, rectangle:4};
+    var namedShapes = Object.keys(CORNER_MAP).filter(function(s){
+      return q && q.t && q.t.toLowerCase().indexOf(s) !== -1;
+    });
+    if(namedShapes.length){
+      var rows = namedShapes.map(function(s){
+        return '<tr>'
+          + '<td style="padding:6px 14px;font-weight:700;text-transform:capitalize;font-family:var(--ff2,\'Nunito\',sans-serif)">' + s + '</td>'
+          + '<td style="padding:6px 14px;font-weight:700;color:#2d7d46;font-family:var(--ff2,\'Nunito\',sans-serif)">' + CORNER_MAP[s] + ' corner' + (CORNER_MAP[s] !== 1 ? 's' : '') + '</td>'
+          + '</tr>';
+      });
+      visualHTML = '<table style="border-collapse:collapse;margin:0 auto;font-size:1rem;background:var(--bg2,#f4f7fa);border-radius:10px;overflow:hidden">'
+        + rows.join('') + '</table>';
+      var sorted = namedShapes.slice().sort(function(a,b){ return CORNER_MAP[a]-CORNER_MAP[b]; });
+      text = 'Count the corners for each shape, then put them in order: '
+        + sorted.map(function(s){ return s + ' (' + CORNER_MAP[s] + ')'; }).join(' \u2192 ') + '.';
+    } else {
+      text = 'Count the corners of each shape from fewest to most, then find which comes first or last!';
+    }
+
   } else if(errorTag === 'err_random'){
     title = 'Look Carefully and Try Again!';
     if(!isNaN(correctNum)){

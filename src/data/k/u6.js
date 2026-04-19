@@ -696,60 +696,70 @@ _mergeKUnitData(5, {
       qBank: [
         // ── easy — sorting basics, drawing ───────────────────────────────────
         {
+          type:'classify',
           t: 'Which group has shapes with 4 sides?',
           v: null,
           o: [{val:'circles only',tag:'err_random'},{val:'triangles only',tag:'err_random'},{val:'squares and rectangles'},{val:'circles and triangles',tag:'err_random'}],
           a:2, e:'Squares and rectangles! Both have 4 sides.', d:'e', s:null, h:'Which shapes have 4 sides?'
         },
         {
+          type:'classify',
           t: 'Which group has shapes with 3 corners?',
           v: null,
           o: [{val:'circles only',tag:'err_random'},{val:'triangles only'},{val:'squares only',tag:'err_random'},{val:'rectangles only',tag:'err_random'}],
           a:1, e:'Triangles only! Triangles have 3 corners.', d:'e', s:null, h:'Which shape always has 3 corners?'
         },
         {
+          type:'sort-most',
           t: 'Sort by sides: circle (0), triangle (3), rectangle (4). Which has the MOST sides?',
           v: null,
-          o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'they are the same',tag:'err_random'}],
+          o: [{val:'circle',tag:'err_shape_sort'},{val:'triangle',tag:'err_shape_sort'},{val:'rectangle'},{val:'they are the same',tag:'err_random'}],
           a:2, e:'Rectangle! It has 4 sides — the most.', d:'e', s:null, h:'0, 3, 4 — which is biggest?'
         },
         {
+          type:'sort-fewest',
           t: 'Sort by sides: circle (0), triangle (3), rectangle (4). Which has the FEWEST sides?',
           v: null,
-          o: [{val:'circle'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle',tag:'err_random'},{val:'they are the same',tag:'err_random'}],
+          o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'},{val:'they are the same',tag:'err_random'}],
           a:0, e:'Circle! It has 0 sides — the fewest.', d:'e', s:null, h:'0, 3, 4 — which is smallest?'
         },
         {
+          type:'classify',
           t: 'Which shapes would you put in the "4 corners" group?',
           v: null,
           o: [{val:'circles and triangles',tag:'err_random'},{val:'triangles only',tag:'err_random'},{val:'squares and rectangles'},{val:'circles only',tag:'err_random'}],
           a:2, e:'Squares and rectangles! Both have 4 corners.', d:'e', s:null, h:'Which shapes have 4 corners?'
         },
         {
+          type:'draw-create',
           t: 'To draw a triangle, how many straight lines do you need?',
           v: null,
           o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_random'}],
           a:1, e:'3 lines! One for each side of the triangle.', d:'e', s:null, h:'Count the sides of a triangle — one line for each side'
         },
         {
+          type:'draw-create',
           t: 'To draw a square, how many straight lines do you need?',
           v: null,
           o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
           a:2, e:'4 lines! One for each side of the square.', d:'e', s:null, h:'Count the sides of a square — one line for each side'
         },
         {
+          type:'classify',
           t: 'Which shapes have curved sides?',
           v: null,
           o: [{val:'squares and rectangles',tag:'err_random'},{val:'triangles and squares',tag:'err_random'},{val:'circles'},{val:'triangles only',tag:'err_random'}],
           a:2, e:'Circles! Circles have a curved side — no straight lines.', d:'e', s:null, h:'Which shape is round with no straight edges?'
         },
         {
+          type:'classify',
           t: 'Which group of shapes all have exactly 4 corners?',
           v: null,
           o: [{val:'triangle and circle',tag:'err_random'},{val:'square and rectangle'},{val:'triangle and square',tag:'err_random'},{val:'circle and rectangle',tag:'err_random'}],
           a:1, e:'Square and rectangle! Both always have 4 corners.', d:'e', s:null, h:'Which shapes have 4 corners each?'
         },
         {
+          type:'draw-create',
           t: 'Which shape can you make by drawing 3 connected straight lines?',
           v: null,
           o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
@@ -757,60 +767,70 @@ _mergeKUnitData(5, {
         },
         // ── medium — sorting rules, 2D vs 3D, creating ───────────────────────
         {
+          type:'sort-last',
           t: 'Sort from fewest to most corners. Which shape comes LAST: circle, triangle, rectangle?',
           v: null,
-          o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'square',tag:'err_random'}],
-          a:2, e:'Rectangle! Circle has 0, triangle has 3, rectangle has 4 — most!', d:'m', s:null, h:'0, 3, 4 — which comes last?'
+          o: [{val:'circle',tag:'err_shape_sort'},{val:'triangle',tag:'err_shape_sort'},{val:'rectangle'},{val:'they are the same',tag:'err_random'}],
+          a:2, e:'Rectangle! Circle has 0, triangle has 3, rectangle has 4 — most!', d:'m', s:null, h:'Circle = 0 corners, triangle = 3, rectangle = 4 — which is last?'
         },
         {
+          type:'classify',
           t: 'If you sort shapes into "round" and "not round", where does a triangle go?',
           v: null,
           o: [{val:'round',tag:'err_random'},{val:'not round'},{val:'both groups',tag:'err_random'},{val:'neither group',tag:'err_random'}],
           a:1, e:'Not round! A triangle has straight sides and corners.', d:'m', s:null, h:'Is a triangle curved or straight?'
         },
         {
+          type:'classify',
           t: 'Which shapes would you put in the "3 sides" group?',
           v: null,
           o: [{val:'circles',tag:'err_random'},{val:'squares',tag:'err_random'},{val:'triangles'},{val:'rectangles',tag:'err_random'}],
           a:2, e:'Triangles! They always have 3 sides.', d:'m', s:null, h:'Three sides — which shape is that?'
         },
         {
+          type:'draw-create',
           t: 'A shape has 4 equal sides. You build it with sticks. How many sticks do you need?',
           v: null,
           o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'},{val:'6',tag:'err_random'}],
           a:1, e:'4 sticks! One stick for each side of the square.', d:'m', s:null, h:'4 equal sides = 4 sticks'
         },
         {
+          type:'classify',
           t: 'You sort shapes as "flat" or "3D solid". Where does a cube go?',
           v: null,
           o: [{val:'flat',tag:'err_wrong_solid'},{val:'3D solid'},{val:'both',tag:'err_random'},{val:'neither',tag:'err_random'}],
           a:1, e:'3D solid! You can hold a cube in your hands.', d:'m', s:null, h:'Can you hold a cube in your hands?'
         },
         {
+          type:'classify',
           t: 'You sort shapes as "flat" or "3D solid". Where does a circle go?',
           v: null,
           o: [{val:'flat'},{val:'3D solid',tag:'err_wrong_solid'},{val:'both',tag:'err_random'},{val:'neither',tag:'err_random'}],
           a:0, e:'Flat! A circle is drawn on paper — it has no depth.', d:'m', s:null, h:'Can you hold a circle or is it just drawn?'
         },
         {
+          type:'classify',
           t: 'Which shapes go together because they have ROUND sides?',
           v: null,
           o: [{val:'triangle and square',tag:'err_random'},{val:'circle and sphere'},{val:'square and cube',tag:'err_random'},{val:'triangle and cone',tag:'err_random'}],
           a:1, e:'Circle and sphere! Both have round curved surfaces.', d:'m', s:null, h:'Which shapes are round?'
         },
         {
+          type:'classify',
           t: 'Sort into "fewer than 4 sides" and "4 or more sides". Where does a triangle go?',
           v: null,
           o: [{val:'4 or more sides',tag:'err_off_by_one'},{val:'fewer than 4 sides'},{val:'both groups',tag:'err_random'},{val:'neither group',tag:'err_random'}],
           a:1, e:'Fewer than 4 sides! Triangle has 3 sides — fewer than 4.', d:'m', s:null, h:'Triangle has 3 sides. Is 3 fewer than 4?'
         },
         {
+          type:'draw-create',
           t: 'A child wants to draw a rectangle. How many lines do they need to draw?',
           v: null,
           o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
           a:2, e:'4 lines! One for each side of the rectangle.', d:'m', s:null, h:'Count the sides of a rectangle — one line for each side'
         },
         {
+          type:'classify',
           t: 'Which two shapes both belong in the "no corners" group?',
           v: null,
           o: [{val:'square and rectangle',tag:'err_random'},{val:'triangle and circle',tag:'err_random'},{val:'circle and sphere'},{val:'triangle and rectangle',tag:'err_random'}],
@@ -818,48 +838,56 @@ _mergeKUnitData(5, {
         },
         // ── hard — orientation, multi-step sorting, attributes ───────────────
         {
+          type:'classify',
           t: 'A tilted triangle is sorted with which group?',
           v: null,
           o: [{val:'squares — it looks like one tilted',tag:'err_shape_orient'},{val:'triangles — shape does not change when tilted'},{val:'circles — it has round edges',tag:'err_random'},{val:'rectangles — it has 4 corners',tag:'err_random'}],
           a:1, e:'Triangles! Turning a shape does not change what it is.', d:'h', s:null, h:'Count the corners — does that change when tilted?'
         },
         {
+          type:'sort-count',
           t: 'Sort: circle, square, triangle, rectangle. How many shapes go in the "4 or more sides" group?',
           v: null,
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_random'}],
           a:1, e:'2 shapes! Square (4 sides) and rectangle (4 sides).', d:'h', s:null, h:'Circle = 0, triangle = 3, square = 4, rectangle = 4'
         },
         {
+          type:'compare',
           t: 'Which attribute can you use to sort circles, squares, and triangles into DIFFERENT groups?',
           v: null,
           o: [{val:'color',tag:'err_random'},{val:'size',tag:'err_random'},{val:'number of sides'},{val:'number of letters in the name',tag:'err_random'}],
           a:2, e:'Number of sides! Circle = 0, triangle = 3, square = 4 — all different!', d:'h', s:null, h:'What is different about circle, triangle, and square?'
         },
         {
+          type:'draw-create',
           t: 'A child draws 4 lines of equal length connected at corners. What shape did they make?',
           v: null,
           o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle',tag:'err_random'},{val:'square'}],
           a:3, e:'Square! 4 equal sides connected at corners = square.', d:'h', s:null, h:'4 equal sides all connected at corners — which shape?'
         },
         {
+          type:'sort-count',
           t: 'Sort 3D solids: sphere, cube, cone, cylinder. Which group has ONLY flat faces (no curved surface)?',
           v: null,
           o: [{val:'sphere and cylinder',tag:'err_wrong_solid'},{val:'cube only'},{val:'cone and cube',tag:'err_wrong_solid'},{val:'cylinder and cone',tag:'err_wrong_solid'}],
           a:1, e:'Cube only! All 6 of its faces are flat.', d:'h', s:null, h:'Which solid has ONLY flat faces?'
         },
         {
+          type:'draw-create',
           t: 'To make a circle, you draw a shape with ___?',
           v: null,
           o: [{val:'3 straight lines',tag:'err_random'},{val:'4 straight lines',tag:'err_random'},{val:'no straight lines — one curved line'},{val:'1 straight line',tag:'err_random'}],
           a:2, e:'No straight lines! A circle is one smooth curved line.', d:'h', s:null, h:'Is a circle made of straight lines or a curve?'
         },
         {
+          type:'sort-count',
           t: 'Sort: square, triangle, circle, rectangle. How many shapes have fewer than 4 corners?',
           v: null,
           o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_random'}],
           a:1, e:'2 shapes! Circle (0 corners) and triangle (3 corners).', d:'h', s:null, h:'Circle = 0, triangle = 3, square = 4, rectangle = 4'
         },
         {
+          type:'classify',
           t: 'A shape is sorted into the "more than 3 corners" group. What shape could it be?',
           v: null,
           o: [{val:'triangle',tag:'err_off_by_one'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'none of these',tag:'err_random'}],
@@ -1171,3 +1199,32 @@ _mergeKUnitData(5, {
     }
   ]
 });
+
+// Dev-only: confirm sort/order questions only use shapes named in the prompt as options.
+// Runs in preview mode (preview=1) to catch data errors early.
+(function(){
+  if(typeof location === 'undefined' || location.search.indexOf('preview=1') === -1) return;
+  var SHAPES = ['circle','triangle','square','rectangle','sphere','cube','cone','cylinder'];
+  var SORT_TYPES = ['sort-last','sort-first','sort-most','sort-fewest'];
+  // Access data via shared_k after _mergeKUnitData has run
+  setTimeout(function(){
+    if(typeof _UNITS_DATA_K === 'undefined') return;
+    var unit = _UNITS_DATA_K[5];
+    if(!unit) return;
+    var allQ = (unit.testBank || []).concat(
+      (unit.lessons || []).reduce(function(acc, l){ return acc.concat(l.qBank || []); }, [])
+    );
+    allQ.forEach(function(q){
+      if(!q.type || SORT_TYPES.indexOf(q.type) === -1) return;
+      var named = SHAPES.filter(function(s){ return q.t.toLowerCase().indexOf(s) !== -1; });
+      if(!named.length) return;
+      (q.o || []).forEach(function(opt){
+        var v = (opt && typeof opt === 'object') ? opt.val : opt;
+        if(SHAPES.indexOf(v) !== -1 && named.indexOf(v) === -1){
+          console.error('[u6 validation] Sort question uses shape "' + v + '" not named in prompt: ' + q.t);
+        }
+      });
+    });
+    console.log('[u6 validation] Sort question audit complete — 0 errors means all clear.');
+  }, 1500);
+})();
