@@ -322,6 +322,14 @@ function resumeQuiz(qid){
   _clearPausedQuiz(qid);
   CUR.unitIdx = p.unitIdx;
   CUR.lessonIdx = p.lessonIdx;
+  // Recover unitIdx+lessonIdx if missing — scan all units for matching quiz ID
+  if((CUR.lessonIdx == null || CUR.unitIdx == null) && p.type === 'lesson') {
+    UNITS_DATA.forEach(function(u, ui){
+      (u.lessons || []).forEach(function(l, li){
+        if(p.id === 'lq_'+l.id){ CUR.unitIdx = ui; CUR.lessonIdx = li; }
+      });
+    });
+  }
   const isFinal = p.type === 'final';
   const u = !isFinal && p.unitIdx != null ? UNITS_DATA[p.unitIdx] : null;
   const color = u ? u.color : '#6c5ce7';
@@ -1450,7 +1458,8 @@ function quitQuiz(){
     };
     _savePausedQuiz(CUR.quiz.id, paused);
   }
-  if(CUR.quiz && CUR.quiz.type==='lesson') openLesson(CUR.unitIdx, CUR.lessonIdx);
+  if(CUR.quiz && CUR.quiz.type==='lesson' && CUR.lessonIdx != null) openLesson(CUR.unitIdx, CUR.lessonIdx);
+  else if(CUR.quiz && CUR.quiz.type==='lesson') goUnit();
   else if(CUR.quiz && CUR.quiz.type==='final') goHome();
   else goUnit();
 }
@@ -1921,7 +1930,8 @@ function confirmQuit(){
   if(qz.id) _clearPausedQuiz(qz.id);
   CUR.quiz = null;
   playSwooshBack();
-  if(quitEntry.type === 'lesson') openLesson(CUR.unitIdx, CUR.lessonIdx);
+  if(quitEntry.type === 'lesson' && CUR.lessonIdx != null) openLesson(CUR.unitIdx, CUR.lessonIdx);
+  else if(quitEntry.type === 'lesson') goUnit();
   else if(quitEntry.type === 'final') goHome();
   else goUnit();
 }
