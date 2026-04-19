@@ -482,7 +482,7 @@ _mergeKUnitData(0, {
       practice: [
         {q:'What number comes after 10?',     a:'11', h:'Ten, then … 11!',              e:'11! The teen numbers start here! 🎉'},
         {q:'What number comes after 15?',     a:'16', h:'Count on: …14, 15, ___',       e:'16! You\'re counting to 20! 🔢'},
-        {q:'How many more to make 13?',     a:'3',  h:'10 + ___ = 13',               e:'3 more! Great number thinking! 🧠'}
+        {q:'How many more than 10 to make 13?',     a:'3',  h:'10 + ___ = 13',               e:'3 more! Great number thinking! 🧠'}
       ],
 
       qBank: [
@@ -536,7 +536,7 @@ _mergeKUnitData(0, {
           a:2, e:'12 comes right after 11!', d:'e', s:null, h:'Count on from 11: 11, ___'
         },
         {
-          t: 'How many more to make 13?',
+          t: 'How many more than 10 to make 13?',
           v: null,
           o: [{val:'1',tag:'err_teen'},{val:'2',tag:'err_teen'},{val:'3'},{val:'4',tag:'err_teen'}],
           a:2, e:'13 = 10 + 3 — ten and THREE more!', d:'m', s:null, h:'10 + ___ = 13'
@@ -569,13 +569,13 @@ _mergeKUnitData(0, {
           a:2, e:'13 comes right after 12!', d:'e', s:null, h:'Count on from 12: 12, ___'
         },
         {
-          t: 'How many more to make 11?',
+          t: 'How many more than 10 to make 11?',
           v: null,
           o: [{val:'1'},{val:'2',tag:'err_teen'},{val:'3',tag:'err_teen'},{val:'4',tag:'err_teen'}],
           a:0, e:'11 = 10 + 1 — ten and ONE more!', d:'e', s:null, h:'10 + ___ = 11'
         },
         {
-          t: 'How many more to make 14?',
+          t: 'How many more than 10 to make 14?',
           v: null,
           o: [{val:'3',tag:'err_teen'},{val:'4'},{val:'5',tag:'err_teen'},{val:'6',tag:'err_teen'}],
           a:1, e:'14 = 10 + 4 — ten and FOUR more!', d:'e', s:null, h:'10 + ___ = 14'
@@ -595,7 +595,7 @@ _mergeKUnitData(0, {
           a:2, e:'16! Count past 15!', d:'m', s:null, h:'More than 15!'
         },
         {
-          t: 'How many more to make 16?',
+          t: 'How many more than 10 to make 16?',
           v: null,
           o: [{val:'5',tag:'err_teen'},{val:'6'},{val:'7',tag:'err_teen'},{val:'8',tag:'err_teen'}],
           a:1, e:'16 = 10 + 6 — ten and SIX more!', d:'m', s:null, h:'10 + ___ = 16'
@@ -633,7 +633,7 @@ _mergeKUnitData(0, {
           a:2, e:'19! Almost all the way to 20!', d:'h', s:null, h:'Count carefully — more than 18!'
         },
         {
-          t: 'How many more to make 19?',
+          t: 'How many more than 10 to make 19?',
           v: null,
           o: [{val:'8',tag:'err_teen'},{val:'9'},{val:'10',tag:'err_teen'},{val:'11',tag:'err_teen'}],
           a:1, e:'19 = 10 + 9 — ten and NINE more!', d:'h', s:null, h:'10 + ___ = 19'
@@ -748,7 +748,7 @@ _mergeKUnitData(0, {
       a:2, e:'Count the balloons: 6!', d:'e', s:null, h:'Count in rows'
     },
     {
-      t: 'How many more to make 15?',
+      t: 'How many more than 10 to make 15?',
       v: null,
       o: [{val:'4',tag:'err_teen'},{val:'5'},{val:'6',tag:'err_teen'},{val:'7',tag:'err_teen'}],
       a:1, e:'15 = 10 + 5 — ten and FIVE more!', d:'m', s:null, h:'10 + ___ = 15'
@@ -964,7 +964,7 @@ _mergeKUnitData(0, {
       a:2, e:'15! Count: 14, 15, 16!', d:'m', s:null, h:'What comes between 14 and 16?'
     },
     {
-      t: 'How many more to make 12?',
+      t: 'How many more than 10 to make 12?',
       v: null,
       o: [{val:'1',tag:'err_teen'},{val:'2'},{val:'3',tag:'err_teen'},{val:'4',tag:'err_teen'}],
       a:1, e:'12 = 10 + 2 — ten and TWO more!', d:'m', s:null, h:'10 + ___ = 12'
@@ -978,7 +978,7 @@ _mergeKUnitData(0, {
       a:2, e:'19! One away from 20!', d:'h', s:null, h:'Count carefully past 18!'
     },
     {
-      t: 'How many more to make 18?',
+      t: 'How many more than 10 to make 18?',
       v: null,
       o: [{val:'7',tag:'err_teen'},{val:'8'},{val:'9',tag:'err_teen'},{val:'10',tag:'err_teen'}],
       a:1, e:'18 = 10 + 8 — ten and EIGHT more!', d:'h', s:null, h:'10 + ___ = 18'
