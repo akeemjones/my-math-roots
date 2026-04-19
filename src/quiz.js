@@ -578,7 +578,11 @@ function _renderQ(){
     // answers go to agrid as plain number buttons
 
   } else if (_vt === 'twoGroups') {
-    if (_ACTIVE_GRADE === 'K') {
+    if (_ACTIVE_GRADE === 'K' && q.v.config.op === 'compare') {
+      // Compare questions: static two-group visual + agrid answer buttons
+      _visualBlock = drawTwoGroups(q.v.config, null, null);
+      // _agridOpts stays as opts (all 4 number choices shown as buttons)
+    } else if (_ACTIVE_GRADE === 'K') {
       _agridOpts   = [];
       _visualBlock = _buildKManip(q.v.config, opts);
     } else {

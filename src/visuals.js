@@ -374,7 +374,7 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
   var rCount = +(config.rightCount) || 0;
   var lEmoji = (config.leftObj  || '●').repeat(lCount);
   var rEmoji = (config.rightObj || '●').repeat(rCount);
-  var opStr  = config.op === 'subtract' ? '−' : '+';
+  var opStr  = config.op === 'subtract' ? '−' : config.op === 'compare' ? 'vs' : '+';
 
   function _groupBtn(emoji, count, argIdx) {
     return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
