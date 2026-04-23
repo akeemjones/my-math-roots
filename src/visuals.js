@@ -11,6 +11,43 @@
 
 let _visUid = 0;
 
+// ── Geometry: renders 1–4 named 2D shapes as SVG stroke outlines ─────────────
+function drawShapes(cfg) {
+  if (!cfg || !cfg.items || !cfg.items.length) return '';
+  const items = cfg.items.slice(0, 4);
+  const rotation = cfg.rotation || 0;
+  const label = cfg.label || items.join(', ');
+  const cols = cfg.cols != null ? cfg.cols : (items.length <= 2 ? items.length : 2);
+
+  const SHAPE_DEFS = {
+    circle:    '<circle cx="40" cy="40" r="32"/>',
+    triangle:  '<polygon points="40,8 72,72 8,72"/>',
+    square:    '<rect x="8" y="8" width="64" height="64"/>',
+    rectangle: '<rect x="4" y="16" width="72" height="48"/>',
+  };
+
+  const cellSize = 80;
+  const gap = 12;
+  const rows = Math.ceil(items.length / cols);
+  const totalW = cols * cellSize + (cols - 1) * gap;
+  const totalH = rows * cellSize + (rows - 1) * gap;
+
+  let svgContent = '';
+  items.forEach(function(shape, i) {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = col * (cellSize + gap);
+    const y = row * (cellSize + gap);
+    const shapeEl = SHAPE_DEFS[shape] || '';
+    const transform = rotation !== 0
+      ? ' transform="translate(' + x + ',' + y + ') rotate(' + rotation + ',40,40)"'
+      : ' transform="translate(' + x + ',' + y + ')"';
+    svgContent += '<g' + transform + ' stroke="currentColor" fill="none" stroke-width="3.5" stroke-linejoin="round">' + shapeEl + '</g>';
+  });
+
+  return '<div class="q-visual"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalW + ' ' + totalH + '" style="max-width:' + totalW + 'px;width:100%;height:auto;display:block;margin:0 auto" aria-label="' + label + '" role="img">' + svgContent + '</svg></div>';
+}
+
 // ── Entry point called from quiz.js _renderQ() ───────────────────────────────
 // Returns HTML string (div or button wrapper) or '' when v is absent/invalid.
 function _buildVisualHTML(v) {
@@ -18,6 +55,7 @@ function _buildVisualHTML(v) {
   if (v.type === 'comparison') return drawComparison(v.config, null, null);
   if (v.type === 'objectSet')  return drawObjectSet(v.config, null);
   if (v.type === 'twoGroups')  return drawTwoGroups(v.config);
+  if (v.type === 'shapes')     return drawShapes(v.config);
   let svg = '';
   if      (v.type === 'base10')     svg = drawBase10(v.config);
   else if (v.type === 'numberLine') svg = drawNumberLine(v.config);
