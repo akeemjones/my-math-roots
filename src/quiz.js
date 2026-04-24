@@ -307,10 +307,14 @@ function startLessonQuiz(unitIdx, lessonIdx){
 function startUnitQuiz(unitIdx){
   _loadUnit(unitIdx).then(function(){
     const u = UNITS_DATA[unitIdx];
-    const bank = (u.quizBlueprint && typeof _buildKUnitQuiz === 'function')
-      ? _buildKUnitQuiz(u)
-      : (u.testBank || u.unitQuiz);
-    _runQuiz(bank, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx);
+    if(u.quizBlueprint && typeof _buildKUnitQuiz === 'function'){
+      // Blueprint sampler enforces per-lesson counts — bypass _runQuiz's
+      // _weightedSample by passing the bank as _prebuiltQs.
+      const prebuilt = _buildKUnitQuiz(u);
+      _runQuiz(u.testBank || u.unitQuiz, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx, prebuilt);
+    } else {
+      _runQuiz(u.testBank || u.unitQuiz, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx);
+    }
   }).catch(function(){ alert('Could not load quiz. Check your connection.'); });
 }
 
