@@ -581,6 +581,22 @@ function _renderQ(){
       _visualBlock = drawComparison(_cfg, null, null);
     }
 
+  } else if (_vt === 'shapes') {
+    // All N item names present in opts → tappable vchoice buttons (2–4 shapes).
+    // Anything else (numeric answers, no match) → static visual + agrid.
+    var _sCfg    = q.v.config;
+    var _sItems  = _sCfg.items || [];
+    var _allIdxs = _sItems.map(function(name) {
+      return opts.findIndex(function(o) { return o.text === name; });
+    });
+    var _allFound = _allIdxs.length >= 2 && _allIdxs.every(function(i) { return i !== -1; });
+    if (_allFound) {
+      _agridOpts   = [];
+      _visualBlock = drawShapes(_sCfg, _allIdxs);
+    } else {
+      _visualBlock = _buildVisualHTML(q.v);
+    }
+
   } else if (_vt === 'objectSet') {
     _visualBlock = drawObjectSet(q.v.config, null);
     // answers go to agrid as plain number buttons

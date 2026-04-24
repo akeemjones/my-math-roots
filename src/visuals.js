@@ -11,8 +11,26 @@
 
 let _visUid = 0;
 
-// ── Geometry: renders 1–4 named 2D shapes as SVG stroke outlines ─────────────
-function drawShapes(cfg) {
+// ── Geometry: renders 1–4 named 2D shapes as solid-filled SVGs ───────────────
+// Color mode is chosen by item count, with optional cfg overrides:
+//
+//   1 item     → CALM: one stable muted color per shape name.
+//   2 items    → VIVID: two distinct bright colors, offset by item combination.
+//   3–4 items  → MONO by default: all shapes the same neutral color.
+//               These are typically classify/sort grids where shape contour is
+//               already the discriminator and extra color adds noise.
+//
+//   cfg.mono  = true → force MONO regardless of count.
+//   cfg.vivid = true → force VIVID for 3-item comparison visuals where distinct
+//               color genuinely improves readability (rare; use deliberately).
+//               Has no effect on single-shape visuals (those stay CALM).
+//
+// Colors never correlate with answer position — offsets derive from item content.
+// Intervention visuals (quiz.js) don't call drawShapes, so this doesn't affect them.
+// lArgIdx / rArgIdx: when provided for a 2-item config, renders each shape as a
+// tappable vchoice button (same pattern as drawComparison / drawTwoGroups).
+// When omitted, renders a static SVG grid (normal display mode).
+function drawShapes(cfg, lArgIdx, rArgIdx) {
   if (!cfg || !cfg.items || !cfg.items.length) return '';
   const items = cfg.items.slice(0, 4);
   const rotation = cfg.rotation || 0;
@@ -26,6 +44,57 @@ function drawShapes(cfg) {
     rectangle: '<rect x="4" y="16" width="72" height="48"/>',
   };
 
+  // CALM: muted, readable tones for single-shape questions.
+  const CALM   = ['#6ba3d6','#e07b6b','#5db87a'];
+  // VIVID: bright, clearly distinct for two-shape comparisons.
+  const VIVID  = ['#3b82f6','#ef4444','#22c55e','#a855f7','#f97316','#ec4899'];
+  // MONO: one neutral that reads well on light and dark card backgrounds.
+  const MONO   = '#6b7db3';
+
+  // Deterministic seed: char-code sum of joined item names.
+  var seed = 0;
+  var key = items.join('');
+  for (var k = 0; k < key.length; k++) seed += key.charCodeAt(k);
+
+  // Choose color mode.
+  var useMono  = cfg.mono || (items.length >= 3 && !cfg.vivid);
+  var useCalm  = !useMono && items.length === 1;
+
+  function _color(i, shape) {
+    if (useMono) return MONO;
+    if (useCalm) {
+      var nh = 0;
+      for (var n = 0; n < shape.length; n++) nh += shape.charCodeAt(n);
+      return CALM[nh % CALM.length];
+    }
+    return VIVID[(seed + i) % VIVID.length];
+  }
+
+  // ── Tappable mode: N shapes as vchoice answer buttons ────────────────────────
+  // lArgIdx is an array of shuffled-opt indices, one per item.
+  if (Array.isArray(lArgIdx) && lArgIdx.length >= 2) {
+    var argIdxs = lArgIdx;
+    var btnSize   = items.length <= 2 ? 120 : 90;
+    var gridClass = items.length > 2 ? 'vcmp vcmp-grid' : 'vcmp';
+    var btns = items.map(function(shape, i) {
+      var color   = _color(i, shape);
+      var shapeEl = SHAPE_DEFS[shape] || '';
+      var rotatePart = rotation !== 0 ? ' transform="rotate(' + rotation + ',40,40)"' : '';
+      var shapeSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"' +
+        ' style="width:' + btnSize + 'px;height:' + btnSize + 'px;display:block" focusable="false" aria-hidden="true">' +
+        '<g fill="' + color + '"' + rotatePart + '>' + shapeEl + '</g>' +
+        '</svg>';
+      var argIdx = argIdxs[i];
+      return '<button class="vchoice" id="abtn-' + argIdx + '" type="button"' +
+        ' data-action="_pickAnswer" data-arg="' + argIdx + '" aria-label="' + _escHtml(shape) + '">' +
+        shapeSVG +
+        '<span class="vchoice-label">' + _escHtml(shape) + '</span>' +
+        '</button>';
+    }).join('');
+    return '<div class="' + gridClass + '">' + btns + '</div>';
+  }
+
+  // ── Static mode: single composite SVG ────────────────────────────────────────
   const cellSize = 80;
   const gap = 12;
   const rows = Math.ceil(items.length / cols);
@@ -39,10 +108,11 @@ function drawShapes(cfg) {
     const x = col * (cellSize + gap);
     const y = row * (cellSize + gap);
     const shapeEl = SHAPE_DEFS[shape] || '';
+    const color = _color(i, shape);
     const transform = rotation !== 0
       ? ' transform="translate(' + x + ',' + y + ') rotate(' + rotation + ',40,40)"'
       : ' transform="translate(' + x + ',' + y + ')"';
-    svgContent += '<g' + transform + ' stroke="currentColor" fill="none" stroke-width="3.5" stroke-linejoin="round">' + shapeEl + '</g>';
+    svgContent += '<g' + transform + ' fill="' + color + '" stroke="none">' + shapeEl + '</g>';
   });
 
   return '<div class="q-visual"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalW + ' ' + totalH + '" style="max-width:' + totalW + 'px;width:100%;height:auto;display:block;margin:0 auto" aria-label="' + label + '" role="img">' + svgContent + '</svg></div>';

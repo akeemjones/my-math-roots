@@ -45,22 +45,22 @@ _mergeKUnitData(5, {
       qBank: [
         // ── easy — basic shape identification ───────────────────────────────
         {
-          t: 'Which shape has no corners and no sides?',
-          v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
-          o: [{val:'circle'},{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
-          a:0, e:'A circle is perfectly round — no sides, no corners.', d:'e', s:null, h:'Round with no pointy corners at all'
+          t: 'Tap the shape with no corners.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
+          a:0, e:'A circle is round — no corners, no sides.', d:'e', s:null, h:'Which shape has no pointy corners?'
         },
         {
-          t: 'Which shape has 3 sides?',
-          v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
-          o: [{val:'triangle'},{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
-          a:0, e:'A triangle has 3 sides.', d:'e', s:null, h:'Count each straight side'
+          t: 'Tap the shape with 3 sides.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle',tag:'err_shape_sort'},{val:'triangle'},{val:'square',tag:'err_off_by_one'},{val:'rectangle',tag:'err_off_by_one'}],
+          a:1, e:'A triangle has 3 sides.', d:'e', s:null, h:'Count the sides on each shape.'
         },
         {
-          t: 'Which shape has 4 equal sides and 4 corners?',
-          v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
-          o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A square has 4 equal sides and 4 corners.', d:'e', s:null, h:'Count the sides — are they all the same length?'
+          t: 'Tap the shape with all sides equal.',
+          v: { type: 'shapes', config: { items: ['rectangle','square'], cols: 2, label: 'A rectangle and a square' } },
+          o: [{val:'rectangle',tag:'err_random'},{val:'square'}],
+          a:1, e:'A square has all 4 sides the same length.', d:'e', s:null, h:'Look at both — which has equal sides?'
         },
         {
           t: 'What shape is this?',
@@ -81,10 +81,10 @@ _mergeKUnitData(5, {
           a:2, e:'A square has 4 equal sides and 4 corners.', d:'e', s:null, h:'Count the sides — are they all the same length?'
         },
         {
-          t: 'Look at the pizza. What shape is it?',
+          t: 'Look at the pizza slice. What shape is it?',
           v: { type: 'objectSet', config: { count: 1, emoji: '🍕', layout: 'line' } },
-          o: [{val:'triangle',tag:'err_random'},{val:'circle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
-          a:1, e:'A pizza is round — a circle.', d:'e', s:null, h:'Is it round or has corners?'
+          o: [{val:'triangle'},{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
+          a:0, e:'A pizza slice has 3 sides — it is a triangle.', d:'e', s:null, h:'Count the straight sides on the slice.'
         },
         {
           t: 'Look at the book cover. What shape is it?',
@@ -99,10 +99,10 @@ _mergeKUnitData(5, {
           a:3, e:'A door is a rectangle — 4 corners, tall sides.', d:'e', s:null, h:'Is it round or does it have 4 corners?'
         },
         {
-          t: 'Which flat shape has 4 corners and all sides the SAME length?',
+          t: 'What shape is this?',
           v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
           o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A square has all 4 sides equal.', d:'e', s:null, h:'Count the sides — are they all the same length?'
+          a:2, e:'A square has 4 equal sides and 4 corners.', d:'e', s:null, h:'All 4 sides are the same length.'
         },
         // ── medium — shape in context, comparisons ───────────────────────────
         {
@@ -112,16 +112,16 @@ _mergeKUnitData(5, {
           a:0, e:'A clock face is round — a circle.', d:'m', s:null, h:'Is it round or has corners?'
         },
         {
-          t: 'Look at the warning sign. What shape is it?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🚸', layout: 'line' } },
+          t: 'What shape is this?',
+          v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
           o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
-          a:1, e:'A warning sign has 3 corners — a triangle.', d:'m', s:null, h:'Count the corners.'
+          a:1, e:'A triangle has 3 sides and 3 corners.', d:'m', s:null, h:'Count the corners.'
         },
         {
-          t: 'Look at the window. What shape is it?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🪟', layout: 'line' } },
+          t: 'What shape is this?',
+          v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
           o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle'}],
-          a:3, e:'A window is a rectangle — 4 corners.', d:'m', s:null, h:'4 corners, sides not all equal.'
+          a:3, e:'A rectangle has 4 corners and 4 sides.', d:'m', s:null, h:'Count the corners — tall and wide.'
         },
         {
           t: 'Which two shapes both have 4 corners?',
@@ -130,10 +130,10 @@ _mergeKUnitData(5, {
           a:0, e:'Square and rectangle both have 4 corners.', d:'m', s:null, h:'Count corners on each shape'
         },
         {
-          t: 'Which shape has MORE sides — a triangle or a rectangle?',
+          t: 'Tap the shape with more sides.',
           v: { type: 'shapes', config: { items: ['triangle','rectangle'], cols: 2, label: 'A triangle and a rectangle' } },
-          o: [{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'they are the same',tag:'err_random'},{val:'circle',tag:'err_random'}],
-          a:1, e:'A rectangle has 4 sides; a triangle has 3.', d:'m', s:null, h:'Count sides on each shape'
+          o: [{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'}],
+          a:1, e:'A rectangle has 4 sides; a triangle has 3.', d:'m', s:null, h:'Count sides on each shape.'
         },
         {
           t: 'How many sides does a rectangle have?',
@@ -148,16 +148,16 @@ _mergeKUnitData(5, {
           a:1, e:'A yield sign has 3 corners — a triangle.', d:'m', s:null, h:'Count each corner.'
         },
         {
-          t: 'Look at the cracker. What shape is it?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🟥', layout: 'line' } },
+          t: 'What shape is this?',
+          v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
           o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A cracker with 4 equal sides is a square.', d:'m', s:null, h:'Are all 4 sides the same length?'
+          a:2, e:'A square has 4 equal sides and 4 corners.', d:'m', s:null, h:'All 4 sides are the same length.'
         },
         {
-          t: 'Which shape has NO sides?',
-          v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
-          o: [{val:'square',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'rectangle',tag:'err_random'},{val:'circle'}],
-          a:3, e:'A circle is round with no sides.', d:'m', s:null, h:'Round shapes have no straight sides'
+          t: 'Tap the shape with no sides.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
+          a:0, e:'A circle is round with no straight sides.', d:'m', s:null, h:'Which shape has no straight edges?'
         },
         {
           t: 'Look at the ruler. What shape is it?',
@@ -179,10 +179,10 @@ _mergeKUnitData(5, {
           a:3, e:'Tilting does not change the shape — it is still a square.', d:'h', s:null, h:'Count the sides — do they change when tilted?'
         },
         {
-          t: 'A square is a special type of which other shape?',
-          v: null,
-          o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'cylinder',tag:'err_random'}],
-          a:2, e:'A square is a rectangle where all 4 sides are equal.', d:'h', s:null, h:'Both have 4 sides and 4 corners'
+          t: 'Tap the shape with sides all the same length.',
+          v: { type: 'shapes', config: { items: ['rectangle','square'], cols: 2, label: 'A rectangle and a square' } },
+          o: [{val:'rectangle',tag:'err_random'},{val:'square'}],
+          a:1, e:'A square has all 4 sides equal. A rectangle does not.', d:'h', s:null, h:'Look at the side lengths — which are all equal?'
         },
         {
           t: 'How many MORE sides does a square have than a triangle?',
@@ -191,22 +191,22 @@ _mergeKUnitData(5, {
           a:1, e:'Square has 4, triangle has 3. 4 − 3 = 1.', d:'h', s:null, h:'Square = 4 sides; triangle = 3 sides'
         },
         {
-          t: 'A rectangle and a square both have 4 sides. What makes them DIFFERENT?',
+          t: 'Tap the shape where the sides are NOT all equal.',
           v: { type: 'shapes', config: { items: ['rectangle','square'], cols: 2, label: 'A rectangle and a square' } },
-          o: [{val:'number of sides',tag:'err_random'},{val:'number of corners',tag:'err_random'},{val:'length of sides'},{val:'number of shapes',tag:'err_random'}],
-          a:2, e:'A square has all equal sides. A rectangle does not.', d:'h', s:null, h:'Compare the side lengths!'
+          o: [{val:'rectangle'},{val:'square',tag:'err_random'}],
+          a:0, e:'A rectangle has sides that are not all the same length.', d:'h', s:null, h:'Look at the longer and shorter sides.'
         },
         {
-          t: 'Which shape has FEWER corners — a triangle or a square?',
+          t: 'Tap the shape with fewer corners.',
           v: { type: 'shapes', config: { items: ['triangle','square'], cols: 2, label: 'A triangle and a square' } },
-          o: [{val:'triangle'},{val:'square',tag:'err_off_by_one'},{val:'they have the same',tag:'err_random'},{val:'circle',tag:'err_random'}],
-          a:0, e:'A triangle has 3 corners; a square has 4.', d:'h', s:null, h:'Triangle = 3 corners; square = 4 corners'
+          o: [{val:'triangle'},{val:'square',tag:'err_off_by_one'}],
+          a:0, e:'A triangle has 3 corners; a square has 4.', d:'h', s:null, h:'Count corners on each shape.'
         },
         {
-          t: 'A shape is ROUND with no corners and no sides. What is it?',
-          v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
-          o: [{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A circle is round with no corners and no sides.', d:'h', s:null, h:'Which shape is perfectly round with no corners?'
+          t: 'Tap the round shape.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle'},{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
+          a:0, e:'A circle is the only round shape — no corners, no sides.', d:'h', s:null, h:'Which shape has no straight sides or corners?'
         },
         {
           t: 'Which of these is NOT a 2D flat shape?',
@@ -525,23 +525,23 @@ _mergeKUnitData(5, {
           a:2, e:'A rectangle has 4 corners.', d:'e', s:null, h:'Count each corner of the rectangle'
         },
         {
-          t: 'A shape with 3 sides is called a ___?',
-          v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
-          o: [{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'triangle'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'Triangle! Three sides = triangle.', d:'e', s:null, h:'Three sides — tri means three!'
+          t: 'Tap the shape with 3 sides.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle',tag:'err_shape_sort'},{val:'triangle'},{val:'square',tag:'err_off_by_one'},{val:'rectangle',tag:'err_off_by_one'}],
+          a:1, e:'A triangle has 3 sides.', d:'e', s:null, h:'Count the straight sides on each shape.'
         },
         {
-          t: 'A shape with 4 equal sides is called a ___?',
+          t: 'What shape is this?',
           v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
           o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'rectangle',tag:'err_random'},{val:'square'}],
-          a:3, e:'Square! Four equal sides = square.', d:'e', s:null, h:'4 sides all the same length'
+          a:3, e:'A square has 4 equal sides.', d:'e', s:null, h:'All 4 sides are the same length.'
         },
         // ── medium — comparisons, identifying by attribute ───────────────────
         {
-          t: 'Which shape has MORE corners — a triangle or a rectangle?',
+          t: 'Tap the shape with more corners.',
           v: { type: 'shapes', config: { items: ['triangle','rectangle'], cols: 2, label: 'A triangle and a rectangle' } },
-          o: [{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'they have the same',tag:'err_random'},{val:'circle',tag:'err_random'}],
-          a:1, e:'A rectangle has 4 corners; a triangle has 3.', d:'m', s:null, h:'Triangle = 3 corners; rectangle = 4 corners'
+          o: [{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'}],
+          a:1, e:'A rectangle has 4 corners; a triangle has 3.', d:'m', s:null, h:'Count corners on each shape.'
         },
         {
           t: 'How many more sides does a square have than a triangle?',
@@ -556,16 +556,16 @@ _mergeKUnitData(5, {
           a:2, e:'Rectangle! It has 4 corners. (Square also has 4!)', d:'m', s:null, h:'Which shapes have 4 corners?'
         },
         {
-          t: 'A shape has 3 sides and 3 corners. What is it?',
-          v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
-          o: [{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'triangle'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'Triangle! 3 sides and 3 corners.', d:'m', s:null, h:'Which shape has exactly 3 sides and 3 corners?'
+          t: 'Tap the shape with 3 corners.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle',tag:'err_shape_sort'},{val:'triangle'},{val:'square',tag:'err_off_by_one'},{val:'rectangle',tag:'err_off_by_one'}],
+          a:1, e:'A triangle has 3 corners.', d:'m', s:null, h:'Count the pointy corners on each shape.'
         },
         {
-          t: 'Which shape has FEWER corners — a triangle or a square?',
+          t: 'Tap the shape with fewer corners.',
           v: { type: 'shapes', config: { items: ['triangle','square'], cols: 2, label: 'A triangle and a square' } },
-          o: [{val:'triangle'},{val:'square',tag:'err_off_by_one'},{val:'they have the same',tag:'err_random'},{val:'circle',tag:'err_random'}],
-          a:0, e:'A triangle has 3 corners; a square has 4.', d:'m', s:null, h:'Triangle = 3 corners; square = 4 corners'
+          o: [{val:'triangle'},{val:'square',tag:'err_off_by_one'}],
+          a:0, e:'A triangle has 3 corners; a square has 4.', d:'m', s:null, h:'Count corners on each shape.'
         },
         {
           t: 'How many more corners does a square have than a triangle?',
@@ -574,10 +574,10 @@ _mergeKUnitData(5, {
           a:1, e:'Square has 4; triangle has 3. 4 − 3 = 1.', d:'m', s:null, h:'Count each, then find the difference'
         },
         {
-          t: 'A shape has 4 sides but they are NOT all the same length. What is it?',
-          v: null,
-          o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle'}],
-          a:3, e:'A rectangle has 4 sides that are not all equal.', d:'m', s:null, h:'Which shape has 4 sides not all the same?'
+          t: 'Tap the rectangle.',
+          v: { type: 'shapes', config: { items: ['square','rectangle'], cols: 2, label: 'A square and a rectangle' } },
+          o: [{val:'square',tag:'err_random'},{val:'rectangle'}],
+          a:1, e:'A rectangle has 4 sides not all the same length.', d:'m', s:null, h:'The longer shape is the rectangle.'
         },
         {
           t: 'How many fewer corners does a triangle have than a rectangle?',
@@ -586,23 +586,23 @@ _mergeKUnitData(5, {
           a:1, e:'Rectangle has 4; triangle has 3. 4 − 3 = 1.', d:'m', s:null, h:'Rectangle = 4 corners; triangle = 3 corners'
         },
         {
-          t: 'Which shape has MORE sides — a square or a triangle?',
+          t: 'Tap the shape with more sides.',
           v: { type: 'shapes', config: { items: ['square','triangle'], cols: 2, label: 'A square and a triangle' } },
-          o: [{val:'triangle',tag:'err_off_by_one'},{val:'square'},{val:'they have the same',tag:'err_random'},{val:'circle',tag:'err_random'}],
-          a:1, e:'A square has 4 sides; a triangle has 3.', d:'m', s:null, h:'Square = 4 sides; triangle = 3 sides'
+          o: [{val:'square'},{val:'triangle',tag:'err_off_by_one'}],
+          a:0, e:'A square has 4 sides; a triangle has 3.', d:'m', s:null, h:'Count sides on each shape.'
         },
         {
-          t: 'A shape with 0 sides and 0 corners is a ___?',
-          v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
-          o: [{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A circle is round — no sides, no corners.', d:'m', s:null, h:'Round shape — no sides, no corners'
+          t: 'Tap the shape with 0 sides.',
+          v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+          o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
+          a:0, e:'A circle has no sides — it is just a curve.', d:'m', s:null, h:'Which shape has no straight edges?'
         },
         // ── hard — totals, comparisons, combined reasoning ───────────────────
         {
-          t: 'A shape has 4 corners and all sides the SAME length. What is it?',
+          t: 'What shape is this?',
           v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
           o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A square has 4 corners and all sides equal.', d:'h', s:null, h:'4 corners AND all sides the exact same length'
+          a:2, e:'A square has 4 corners and all sides the same length.', d:'h', s:null, h:'Count the sides — are they all equal?'
         },
         {
           t: 'How many total sides do 2 triangles have?',
@@ -617,10 +617,10 @@ _mergeKUnitData(5, {
           a:3, e:'Square has 4 corners + triangle has 3 corners = 7.', d:'h', s:null, h:'Square = 4 corners; triangle = 3 corners'
         },
         {
-          t: 'A shape has more than 3 corners but fewer than 5 corners. What is it?',
-          v: null,
-          o: [{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'circle',tag:'err_random'},{val:'pentagon',tag:'err_random'}],
-          a:1, e:'A rectangle has exactly 4 corners — more than 3, fewer than 5.', d:'h', s:null, h:'More than 3 but fewer than 5 — what number?'
+          t: 'What shape is this?',
+          v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
+          o: [{val:'triangle',tag:'err_random'},{val:'rectangle'},{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'}],
+          a:1, e:'A rectangle has 4 corners and 4 sides.', d:'h', s:null, h:'Count the corners — how many?'
         },
         {
           t: 'A triangle has 3 sides. A square has 4. How many sides do they have TOGETHER?',
@@ -629,10 +629,10 @@ _mergeKUnitData(5, {
           a:3, e:'3 sides + 4 sides = 7 sides together.', d:'h', s:null, h:'Add the sides: 3 + 4 = ?'
         },
         {
-          t: 'A shape with 4 sides and all sides equal has ___ corners?',
+          t: 'How many corners does a square have?',
           v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
           o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
-          a:2, e:'A square has 4 sides and 4 corners.', d:'h', s:null, h:'Every side meets a corner — count the sides!'
+          a:2, e:'A square has 4 corners.', d:'h', s:null, h:'Count each pointy corner.'
         },
         {
           t: 'How many total sides do 1 triangle and 1 rectangle have together?',
@@ -647,10 +647,10 @@ _mergeKUnitData(5, {
           a:3, e:'Each square has 4 corners. 4 + 4 = 8.', d:'h', s:null, h:'One square = 4 corners. Two squares = ?'
         },
         {
-          t: 'Which shape has MORE corners — a triangle or a circle?',
+          t: 'Tap the shape with more corners.',
           v: { type: 'shapes', config: { items: ['triangle','circle'], cols: 2, label: 'A triangle and a circle' } },
-          o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'they have the same',tag:'err_random'},{val:'neither has corners',tag:'err_random'}],
-          a:1, e:'A triangle has 3 corners; a circle has 0.', d:'h', s:null, h:'Circle = 0 corners; triangle = 3 corners'
+          o: [{val:'triangle'},{val:'circle',tag:'err_random'}],
+          a:0, e:'A triangle has 3 corners; a circle has 0.', d:'h', s:null, h:'Which shape has pointy corners?'
         }
       ]
     },
@@ -913,10 +913,10 @@ _mergeKUnitData(5, {
       a:2, e:'A circle is perfectly round with no corners.', d:'e', s:null, h:'Which shape is round?'
     },
     {
-      t: 'Look at the window. What shape is it?',
-      v: { type: 'objectSet', config: { count: 1, emoji: '🪟', layout: 'line' } },
+      t: 'What shape is this?',
+      v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle'}],
-      a:3, e:'A window is a rectangle — 4 sides, not all equal.', d:'e', s:null, h:'4 corners, sides not all the same.'
+      a:3, e:'A rectangle has 4 corners and 4 sides.', d:'e', s:null, h:'Count the corners — tall and wide.'
     },
     {
       t: 'Look at the coin. What shape is it?',
@@ -943,16 +943,16 @@ _mergeKUnitData(5, {
       a:2, e:'A kite has 4 sides. A rectangle does too.', d:'m', s:null, h:'Which shape has 4 sides?'
     },
     {
-      t: 'All squares have 4 equal sides. A shape with 4 equal sides is a ___?',
+      t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-      a:2, e:'A square has 4 equal sides.', d:'m', s:null, h:'4 sides all exactly the same length'
+      a:2, e:'A square has 4 equal sides.', d:'m', s:null, h:'All 4 sides are the same length.'
     },
     {
-      t: 'Which shape is both a rectangle AND has all sides equal?',
-      v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
-      o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle',tag:'err_random'},{val:'square'}],
-      a:3, e:'A square is a rectangle where all sides are equal.', d:'m', s:null, h:'4 equal sides AND 4 corners'
+      t: 'Tap the shape with all sides equal.',
+      v: { type: 'shapes', config: { items: ['square','rectangle'], cols: 2, label: 'A square and a rectangle' } },
+      o: [{val:'square'},{val:'rectangle',tag:'err_random'}],
+      a:0, e:'A square has all 4 sides the same length.', d:'m', s:null, h:'Which shape has equal sides?'
     },
     {
       t: 'Shapes do not change when you turn them. A turned triangle is still a ___?',
@@ -961,10 +961,10 @@ _mergeKUnitData(5, {
       a:1, e:'Turning never changes what a shape is.', d:'h', s:null, h:'Count the corners — do they change when turned?'
     },
     {
-      t: 'Which shape cannot be made with any straight lines?',
-      v: null,
-      o: [{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_random'}],
-      a:2, e:'A circle has no straight lines — just one smooth curve.', d:'m', s:null, h:'Which shape is made of curves, not lines?'
+      t: 'Tap the shape made of only curves.',
+      v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+      o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
+      a:0, e:'A circle is one smooth curve — no straight parts.', d:'m', s:null, h:'Which shape has no straight edges?'
     },
     {
       t: 'A shape has 3 corners. It has ___ sides?',
@@ -1053,10 +1053,10 @@ _mergeKUnitData(5, {
     },
     // ── Shape Attributes (K.6D) ───────────────────────────────────────────────
     {
-      t: 'Which shape has zero corners?',
-      v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
-      o: [{val:'square',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_random'}],
-      a:2, e:'A circle has no corners at all.', d:'e', s:null, h:'Round shapes have no corners'
+      t: 'Tap the shape with 0 corners.',
+      v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
+      o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
+      a:0, e:'A circle has no corners — it is perfectly round.', d:'e', s:null, h:'Which shape is perfectly round?'
     },
     {
       t: 'A triangle has ___ corners.',
@@ -1083,10 +1083,10 @@ _mergeKUnitData(5, {
       a:2, e:'A rectangle has 4 corners.', d:'m', s:null, h:'Touch each corner: 1, 2, 3, 4'
     },
     {
-      t: 'Which shape has 4 corners AND 4 sides of equal length?',
+      t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle',tag:'err_random'},{val:'square'}],
-      a:3, e:'A square has 4 corners and all sides equal.', d:'m', s:null, h:'Equal sides AND 4 corners'
+      a:3, e:'A square has 4 equal sides and 4 corners.', d:'m', s:null, h:'All 4 sides the same length.'
     },
     {
       t: 'A rectangle has 2 long sides and 2 short sides. How many sides total?',
@@ -1095,10 +1095,10 @@ _mergeKUnitData(5, {
       a:2, e:'2 long + 2 short = 4 sides total.', d:'m', s:null, h:'2 long + 2 short sides = ?'
     },
     {
-      t: 'A shape has more than 3 corners but fewer than 5. What is it?',
-      v: null,
-      o: [{val:'triangle',tag:'err_off_by_one'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'hexagon',tag:'err_random'}],
-      a:2, e:'A rectangle has exactly 4 corners.', d:'h', s:null, h:'More than 3 but fewer than 5 — what number?'
+      t: 'What shape is this?',
+      v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
+      o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'square',tag:'err_random'}],
+      a:2, e:'A rectangle has 4 corners and 4 sides.', d:'h', s:null, h:'Count the corners — how many?'
     },
     {
       t: 'How many corners do a triangle and a square have TOGETHER?',
