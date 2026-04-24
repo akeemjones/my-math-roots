@@ -661,93 +661,93 @@ _mergeKUnitData(0, {
     // ── ORIGINAL 15 questions (preserved verbatim) ──────────────────────────
 
     // L1 — Counting to 10
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🍎 do you see?',
       v: {type:'objectSet', config:{count:5, emoji:'🍎', layout:'grid'}},
       o: [{val:'3',tag:'err_under_count'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'Count: 1, 2, 3, 4, 5!', d:'e', s:null, h:'Touch each apple'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐦 do you see?',
       v: {type:'objectSet', config:{count:8, emoji:'🐦', layout:'grid'}},
       o: [{val:'6',tag:'err_under_count'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'Count carefully: 8 birds!', d:'e', s:null, h:'Go row by row'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'Which number comes after 7?',
       v: null,
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_over_count'}],
       a:2, e:'8 comes after 7!', d:'e', s:null, h:'Count up from 7: 7, ___'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🌸 do you see?',
       v: {type:'objectSet', config:{count:3, emoji:'🌸', layout:'line'}},
       o: [{val:'1',tag:'err_under_count'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'Count: 1, 2, 3!', d:'e', s:null, h:'Count left to right'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🌟 do you see?',
       v: {type:'objectSet', config:{count:10, emoji:'🌟', layout:'grid'}},
       o: [{val:'8',tag:'err_under_count'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'All the way to 10!', d:'m', s:null, h:'Count carefully to 10'
     },
     // L2 — Quick Look
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many dots?',
       v: {type:'objectSet', config:{count:2, emoji:'●', layout:'dice'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_subitize'}],
       a:1, e:'2 dots!', d:'e', s:null, h:'Look without counting'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🌟?',
       v: {type:'objectSet', config:{count:4, emoji:'🌟', layout:'dice'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'},{val:'2',tag:'err_subitize'}],
       a:1, e:'4 stars — one in each corner!', d:'e', s:null, h:'4 corners = 4 stars'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🌸?',
       v: {type:'objectSet', config:{count:6, emoji:'🌸', layout:'dice'}},
       o: [{val:'4',tag:'err_subitize'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 flowers — two columns of 3!', d:'e', s:null, h:'3 on each side'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🐝?',
       v: {type:'objectSet', config:{count:3, emoji:'🐝', layout:'dice'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_subitize'}],
       a:1, e:'3 bees — a diagonal line!', d:'e', s:null, h:'Look — a line of 3'
     },
     // L3 — Counting to 20
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🌺 do you see?',
       v: {type:'objectSet', config:{count:12, emoji:'🌺', layout:'grid'}},
       o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
       a:2, e:'12! Ten and two more!', d:'e', s:null, h:'Count past 10'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many ⭐ do you see?',
       v: {type:'objectSet', config:{count:15, emoji:'⭐', layout:'grid'}},
       o: [{val:'13',tag:'err_under_count'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'15! Ten and five more!', d:'e', s:null, h:'Keep counting past 10'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'What number comes after 13?',
       v: null,
       o: [{val:'12',tag:'err_off_by_one'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_over_count'}],
       a:2, e:'14 comes right after 13!', d:'e', s:null, h:'Count on from 13: 13, ___'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🐢 do you see?',
       v: {type:'objectSet', config:{count:18, emoji:'🐢', layout:'grid'}},
       o: [{val:'16',tag:'err_under_count'},{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
       a:2, e:'18! Almost to 20!', d:'m', s:null, h:'Count past 17'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🎈 do you see?',
       v: {type:'objectSet', config:{count:6, emoji:'🎈', layout:'grid'}},
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'Count the balloons: 6!', d:'e', s:null, h:'Count in rows'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many more than 10 to make 15?',
       v: null,
       o: [{val:'4',tag:'err_teen'},{val:'5'},{val:'6',tag:'err_teen'},{val:'7',tag:'err_teen'}],
@@ -757,31 +757,31 @@ _mergeKUnitData(0, {
     // ── NEW testBank questions — 35 additions ────────────────────────────────
 
     // L1 easy — 5 new questions, fresh emojis, counts 2–7
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐊 do you see?',
       v: {type:'objectSet', config:{count:2, emoji:'🐊', layout:'line'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_over_count'}],
       a:1, e:'Count: 1, 2 alligators!', d:'e', s:null, h:'Touch each alligator'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🦒 do you see?',
       v: {type:'objectSet', config:{count:4, emoji:'🦒', layout:'line'}},
       o: [{val:'2',tag:'err_under_count'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'Count: 1, 2, 3, 4 giraffes!', d:'e', s:null, h:'Count left to right'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐿 do you see?',
       v: {type:'objectSet', config:{count:5, emoji:'🐿', layout:'grid'}},
       o: [{val:'3',tag:'err_under_count'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'Count: 1, 2, 3, 4, 5 squirrels!', d:'e', s:null, h:'Touch each squirrel'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🍇 do you see?',
       v: {type:'objectSet', config:{count:6, emoji:'🍇', layout:'grid'}},
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'Count the grapes: 1, 2, 3, 4, 5, 6!', d:'e', s:null, h:'Count in rows'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐮 do you see?',
       v: {type:'objectSet', config:{count:7, emoji:'🐮', layout:'grid'}},
       o: [{val:'5',tag:'err_under_count'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
@@ -789,31 +789,31 @@ _mergeKUnitData(0, {
     },
 
     // L1 medium — 5 new questions, counts 7–10, ±1 distractors
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐯 do you see?',
       v: {type:'objectSet', config:{count:7, emoji:'🐯', layout:'grid'}},
       o: [{val:'5',tag:'err_under_count'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'7 tigers — count every one!', d:'m', s:null, h:'More than 6!'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐴 do you see?',
       v: {type:'objectSet', config:{count:8, emoji:'🐴', layout:'grid'}},
       o: [{val:'6',tag:'err_under_count'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'8 horses — go row by row!', d:'m', s:null, h:'There are 8 — count carefully'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🐨 do you see?',
       v: {type:'objectSet', config:{count:9, emoji:'🐨', layout:'grid'}},
       o: [{val:'7',tag:'err_under_count'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
       a:2, e:'9 koalas — count every koala!', d:'m', s:null, h:'More than 8!'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🦅 do you see?',
       v: {type:'objectSet', config:{count:10, emoji:'🦅', layout:'grid'}},
       o: [{val:'8',tag:'err_under_count'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'10 eagles — all the way to 10!', d:'m', s:null, h:'Count every eagle'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'Which number comes after 8?',
       v: null,
       o: [{val:'7',tag:'err_off_by_one'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_over_count'}],
@@ -821,19 +821,19 @@ _mergeKUnitData(0, {
     },
 
     // L1 hard — 3 new questions, count 9–10 with ±1 distractors + after 9
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🦜 do you see?',
       v: {type:'objectSet', config:{count:9, emoji:'🦜', layout:'grid'}},
       o: [{val:'7',tag:'err_off_by_one'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
       a:2, e:'9 parrots — count every feather!', d:'h', s:null, h:'Is it 8 or 9? Count again!'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'How many 🦩 do you see?',
       v: {type:'objectSet', config:{count:10, emoji:'🦩', layout:'grid'}},
       o: [{val:'8',tag:'err_off_by_one'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'10 flamingos — great counting to 10!', d:'h', s:null, h:'Count every flamingo carefully'
     },
-    {
+    {lessonId:'ku1l1', 
       t: 'Which number comes after 9?',
       v: null,
       o: [{val:'7',tag:'err_off_by_one'},{val:'8',tag:'err_off_by_one'},{val:'9',tag:'err_off_by_one'},{val:'10'}],
@@ -841,31 +841,31 @@ _mergeKUnitData(0, {
     },
 
     // L2 easy — 5 new questions, subitize 1–4
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🐦?',
       v: {type:'objectSet', config:{count:1, emoji:'🐦', layout:'dice'}},
       o: [{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_subitize'},{val:'4',tag:'err_subitize'}],
       a:0, e:'Just 1 bird — your brain saw it instantly!', d:'e', s:null, h:'Just one'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🍊?',
       v: {type:'objectSet', config:{count:2, emoji:'🍊', layout:'dice'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_subitize'}],
       a:1, e:'2 oranges — one on each side!', d:'e', s:null, h:'Look without counting'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🐸?',
       v: {type:'objectSet', config:{count:3, emoji:'🐸', layout:'dice'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_subitize'}],
       a:1, e:'3 frogs — a diagonal line!', d:'e', s:null, h:'Three in a row'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🌻?',
       v: {type:'objectSet', config:{count:4, emoji:'🌻', layout:'dice'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'},{val:'2',tag:'err_subitize'}],
       a:1, e:'4 sunflowers — one in each corner!', d:'e', s:null, h:'4 corners = 4'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🐹?',
       v: {type:'objectSet', config:{count:2, emoji:'🐹', layout:'line'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_subitize'}],
@@ -873,25 +873,25 @@ _mergeKUnitData(0, {
     },
 
     // L2 medium — 4 new questions, subitize 4–6
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🍔?',
       v: {type:'objectSet', config:{count:4, emoji:'🍔', layout:'grid'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'},{val:'6',tag:'err_subitize'}],
       a:1, e:'4 burgers — 4 corners!', d:'m', s:null, h:'Is it 3 or 4? Look for corners!'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🎈?',
       v: {type:'objectSet', config:{count:5, emoji:'🎈', layout:'dice'}},
       o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'},{val:'3',tag:'err_subitize'}],
       a:1, e:'5 balloons — corners plus the middle!', d:'m', s:null, h:'4 around the edge plus 1 center'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🌍?',
       v: {type:'objectSet', config:{count:6, emoji:'🌍', layout:'dice'}},
       o: [{val:'4',tag:'err_subitize'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 globes — two rows of 3!', d:'m', s:null, h:'3 on top, 3 on the bottom'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🍩?',
       v: {type:'objectSet', config:{count:5, emoji:'🍩', layout:'grid'}},
       o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'},{val:'3',tag:'err_subitize'}],
@@ -899,19 +899,19 @@ _mergeKUnitData(0, {
     },
 
     // L2 hard — 3 new questions, subitize 5–6 with tricky distractors
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🌮?',
       v: {type:'objectSet', config:{count:6, emoji:'🌮', layout:'grid'}},
       o: [{val:'4',tag:'err_subitize'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 tacos — 2 columns of 3!', d:'h', s:null, h:'Count the columns — how many in each?'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🎯?',
       v: {type:'objectSet', config:{count:5, emoji:'🎯', layout:'grid'}},
       o: [{val:'3',tag:'err_subitize'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'5 targets — corners plus the middle one!', d:'h', s:null, h:'Look for the center one'
     },
-    {
+    {lessonId:'ku1l2', 
       t: 'Quick Look! How many 🦊?',
       v: {type:'objectSet', config:{count:6, emoji:'🦊', layout:'line'}},
       o: [{val:'4',tag:'err_subitize'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
@@ -919,25 +919,25 @@ _mergeKUnitData(0, {
     },
 
     // L3 easy — 4 new questions, counts 11–13, after 12
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🐝 do you see?',
       v: {type:'objectSet', config:{count:11, emoji:'🐝', layout:'grid'}},
       o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
       a:2, e:'11! Ten and one more!', d:'e', s:null, h:'Count all the way past 10'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🌷 do you see?',
       v: {type:'objectSet', config:{count:12, emoji:'🌷', layout:'grid'}},
       o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
       a:2, e:'12! Ten and two more!', d:'e', s:null, h:'Count past 10'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🦆 do you see?',
       v: {type:'objectSet', config:{count:13, emoji:'🦆', layout:'grid'}},
       o: [{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
       a:2, e:'13! Ten and three more!', d:'e', s:null, h:'Keep counting past 10'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'What number comes after 12?',
       v: null,
       o: [{val:'11',tag:'err_off_by_one'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_over_count'}],
@@ -945,25 +945,25 @@ _mergeKUnitData(0, {
     },
 
     // L3 medium — 4 new questions, counts 14–17, sequences, "15 = 10 + ?"
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🐡 do you see?',
       v: {type:'objectSet', config:{count:14, emoji:'🐡', layout:'grid'}},
       o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
       a:2, e:'14! Keep counting past 10!', d:'m', s:null, h:'More than 13!'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🦋 do you see?',
       v: {type:'objectSet', config:{count:16, emoji:'🦋', layout:'grid'}},
       o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'16! Count past 15!', d:'m', s:null, h:'More than 15!'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'Which number goes in the blank? 14, ___, 16',
       v: null,
       o: [{val:'13',tag:'err_off_by_one'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'15! Count: 14, 15, 16!', d:'m', s:null, h:'What comes between 14 and 16?'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many more than 10 to make 12?',
       v: null,
       o: [{val:'1',tag:'err_teen'},{val:'2'},{val:'3',tag:'err_teen'},{val:'4',tag:'err_teen'}],
@@ -971,13 +971,13 @@ _mergeKUnitData(0, {
     },
 
     // L3 hard — 2 new questions, count 18–19, "18 = 10 + ?"
-    {
+    {lessonId:'ku1l3', 
       t: 'How many 🦁 do you see?',
       v: {type:'objectSet', config:{count:19, emoji:'🦁', layout:'grid'}},
       o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
       a:2, e:'19! One away from 20!', d:'h', s:null, h:'Count carefully past 18!'
     },
-    {
+    {lessonId:'ku1l3', 
       t: 'How many more than 10 to make 18?',
       v: null,
       o: [{val:'7',tag:'err_teen'},{val:'8'},{val:'9',tag:'err_teen'},{val:'10',tag:'err_teen'}],

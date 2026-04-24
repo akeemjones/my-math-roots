@@ -896,124 +896,124 @@ _mergeKUnitData(4, {
 
   testBank: [
     // ── L1: Counting Strategies ───────────────────────────────────────────────
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🍒 cherries. How many?',
       v: {type:'objectSet', config:{count:13, emoji:'🍒', layout:'grid'}},
       o: [{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
       a:2, e:'13 cherries!', d:'m', s:null, h:'Touch each cherry as you count'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'What number comes after 16?',
       v: null,
       o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
       a:2, e:'17 comes after 16!', d:'e', s:null, h:'Count on one step from 16'
     },
-    {
+    {lessonId:'ku1l6', 
       t: '9, 10, __, 12 — what number is missing?',
       v: null,
       o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'13',tag:'err_off_by_one'}],
       a:2, e:'11 goes between 10 and 12!', d:'m', s:null, h:'Count from 10'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'What number comes before 15?',
       v: null,
       o: [{val:'13',tag:'err_under_count'},{val:'14'},{val:'15',tag:'err_off_by_one'},{val:'16',tag:'err_off_by_one'}],
       a:1, e:'14 comes before 15!', d:'e', s:null, h:'Count back one step from 15'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'How many 🌺 flowers?',
       v: {type:'objectSet', config:{count:16, emoji:'🌺', layout:'grid'}},
       o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'16 flowers!', d:'m', s:null, h:'Touch every flower as you count'
     },
     // ── L2: Subitize ─────────────────────────────────────────────────────────
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🔴 dots?',
       v: {type:'objectSet', config:{count:3, emoji:'🔴', layout:'grid'}},
       o: [{val:'1',tag:'err_under_count'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'3 dots — triangle pattern!', d:'e', s:null, h:'Three in a triangle'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🌟 stars?',
       v: {type:'objectSet', config:{count:5, emoji:'🌟', layout:'grid'}},
       o: [{val:'3',tag:'err_under_count'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'5 stars — like a die face!', d:'e', s:null, h:'Five — dice pattern'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! 2 🐸 and 3 🐸. How many in all?',
       v: {type:'objectSet', config:{count:5, emoji:'🐸', layout:'grid'}},
       o: [{val:'2',tag:'err_under_count'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'2 + 3 = 5 frogs!', d:'h', s:null, h:'See both groups together'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🔵 dots?',
       v: {type:'objectSet', config:{count:6, emoji:'🔵', layout:'grid'}},
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 dots — two rows of 3!', d:'m', s:null, h:'Two rows of three = 6'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🌙 moons?',
       v: {type:'objectSet', config:{count:4, emoji:'🌙', layout:'grid'}},
       o: [{val:'2',tag:'err_under_count'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'4 moons — square pattern!', d:'e', s:null, h:'Four in a square'
     },
     // ── L3: Story Problems ────────────────────────────────────────────────────
-    {
+    {lessonId:'ku3l5', 
       t: '4 🐠 are in a pond. 3 more swim in. How many fish in all?',
       v: {type:'objectSet', config:{count:7, emoji:'🐠', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'4 + 3 = 7 fish!', d:'e', s:null, h:'"Swim in" = join'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '8 🍕 slices on a tray. 5 are eaten. How many are left?',
       v: {type:'objectSet', config:{count:8, emoji:'🍕', layout:'grid'}},
       o: [{val:'13',tag:'err_add_instead'},{val:'8',tag:'err_count_all'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'8 − 5 = 3 slices!', d:'h', s:null, h:'"Eaten" = take away'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '5 children on a slide. 2 go home. How many children are left?',
       v: null,
       o: [{val:'7',tag:'err_add_instead'},{val:'2',tag:'err_count_all'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'5 − 2 = 3 children!', d:'h', s:null, h:'"Go home" = take away'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '6 🐦 birds and 4 more 🐦 land on the fence. How many in all?',
       v: null,
       o: [{val:'2',tag:'err_sub_instead'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'6 + 4 = 10 birds!', d:'m', s:null, h:'"Land on" = join'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '3 🍰 cakes and 5 more 🍰 are baked. How many cakes in all?',
       v: {type:'objectSet', config:{count:8, emoji:'🍰', layout:'grid'}},
       o: [{val:'2',tag:'err_sub_instead'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'3 + 5 = 8 cakes!', d:'e', s:null, h:'Join both groups'
     },
     // ── L4: Explain Your Math ─────────────────────────────────────────────────
-    {
+    {lessonId:'ku3l6', 
       t: 'Maya has 5 pencils. She gets 3 more. Which number sentence matches?',
       v: null,
       o: [{val:'5 − 3 = 2',tag:'err_sub_instead'},{val:'5 + 3 = 8'},{val:'5 + 2 = 7',tag:'err_off_by_one'},{val:'3 − 5',tag:'err_sub_instead'}],
       a:1, e:'"Gets more" = add! 5 + 3 = 8 ✅', d:'e', s:null, h:'"Gets more" = join'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '9 birds on a fence. 3 fly off. Should you add or subtract?',
       v: null,
       o: [{val:'Add — 9 + 3 = 12',tag:'err_add_instead'},{val:'Subtract — 9 − 3 = 6'},{val:'Add — more birds',tag:'err_add_instead'},{val:'Subtract — 9 − 6 = 3',tag:'err_off_by_one'}],
       a:1, e:'"Fly off" = take away! 9 − 3 = 6 ✅', d:'e', s:null, h:'"Fly off" = subtract'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '4 red fish and 5 blue fish in a tank. Which is correct?',
       v: null,
       o: [{val:'5 − 4 = 1',tag:'err_sub_instead'},{val:'4 + 5 = 9'},{val:'4 + 4 = 8',tag:'err_off_by_one'},{val:'9 − 5 = 4',tag:'err_sub_instead'}],
       a:1, e:'Two groups together = add! 4 + 5 = 9 ✅', d:'h', s:null, h:'Two groups in the tank = join'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '10 🍓 strawberries. Eli eats 4. Which number sentence and answer?',
       v: null,
       o: [{val:'10 + 4 = 14',tag:'err_add_instead'},{val:'10 − 4 = 6'},{val:'10 − 5 = 5',tag:'err_off_by_one'},{val:'4 + 6 = 10',tag:'err_add_instead'}],
       a:1, e:'"Eats" = subtract! 10 − 4 = 6 ✅', d:'h', s:null, h:'"Eats" is a take-away word'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '7 kites in the sky. 2 float away. Which is correct?',
       v: null,
       o: [{val:'7 + 2 = 9',tag:'err_add_instead'},{val:'7 − 2 = 5'},{val:'7 − 3 = 4',tag:'err_off_by_one'},{val:'2 + 5 = 7',tag:'err_add_instead'}],
@@ -1023,49 +1023,49 @@ _mergeKUnitData(4, {
     // ── NEW testBank additions ────────────────────────────────────────────────
 
     // ── L1 Counting Strategies — 8 new ──────────────────────────────────────
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🦀 crabs. How many?',
       v: {type:'objectSet', config:{count:7, emoji:'🦀', layout:'grid'}},
       o: [{val:'5',tag:'err_under_count'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'7 crabs!', d:'e', s:null, h:'Touch each crab as you count'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'What number comes after 5?',
       v: null,
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 comes after 5!', d:'e', s:null, h:'Count on one step from 5'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🌵 cacti. How many?',
       v: {type:'objectSet', config:{count:12, emoji:'🌵', layout:'grid'}},
       o: [{val:'10',tag:'err_under_count'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
       a:2, e:'12 cacti!', d:'m', s:null, h:'Count in rows — do not skip any'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🎃 pumpkins. How many?',
       v: {type:'objectSet', config:{count:14, emoji:'🎃', layout:'grid'}},
       o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
       a:2, e:'14 pumpkins!', d:'m', s:null, h:'Touch each pumpkin carefully'
     },
-    {
+    {lessonId:'ku1l6', 
       t: '13, 14, __, 16 — what number is missing?',
       v: null,
       o: [{val:'13',tag:'err_under_count'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'15 goes between 14 and 16!', d:'m', s:null, h:'Count forward from 14'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🎸 guitars. How many?',
       v: {type:'objectSet', config:{count:15, emoji:'🎸', layout:'grid'}},
       o: [{val:'13',tag:'err_under_count'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_over_count'}],
       a:2, e:'15 guitars!', d:'m', s:null, h:'Count row by row to the end'
     },
-    {
+    {lessonId:'ku1l6', 
       t: 'Count the 🦕 dinosaurs. How many?',
       v: {type:'objectSet', config:{count:17, emoji:'🦕', layout:'grid'}},
       o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'19',tag:'err_over_count'}],
       a:2, e:'17 dinosaurs!', d:'h', s:null, h:'Count every dinosaur — do not stop early'
     },
-    {
+    {lessonId:'ku1l6', 
       t: '__, 18, 19 — what number is missing?',
       v: null,
       o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
@@ -1073,49 +1073,49 @@ _mergeKUnitData(4, {
     },
 
     // ── L2 Subitize — 8 new ──────────────────────────────────────────────────
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🟠?',
       v: {type:'objectSet', config:{count:2, emoji:'🟠', layout:'grid'}},
       o: [{val:'1',tag:'err_under_count'},{val:'2'},{val:'3',tag:'err_over_count'},{val:'4',tag:'err_over_count'}],
       a:1, e:'2 orange circles!', d:'e', s:null, h:'Two — a pair'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🐱?',
       v: {type:'objectSet', config:{count:3, emoji:'🐱', layout:'grid'}},
       o: [{val:'1',tag:'err_under_count'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'3 cats — triangle pattern!', d:'e', s:null, h:'Three — see the triangle'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🌈?',
       v: {type:'objectSet', config:{count:1, emoji:'🌈', layout:'grid'}},
       o: [{val:'1'},{val:'2',tag:'err_over_count'},{val:'3',tag:'err_over_count'},{val:'0',tag:'err_under_count'}],
       a:0, e:'Just 1 rainbow!', d:'e', s:null, h:'One — just one object'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🍉?',
       v: {type:'objectSet', config:{count:4, emoji:'🍉', layout:'grid'}},
       o: [{val:'2',tag:'err_under_count'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'4 watermelons — square pattern!', d:'m', s:null, h:'Four — like corners of a square'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🌊?',
       v: {type:'objectSet', config:{count:5, emoji:'🌊', layout:'grid'}},
       o: [{val:'3',tag:'err_under_count'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'5 waves — die pattern!', d:'m', s:null, h:'Five — like the middle of a dice'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! 🎀 — how many?',
       v: {type:'objectSet', config:{count:4, emoji:'🎀', layout:'grid'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'},{val:'6',tag:'err_over_count'}],
       a:1, e:'4 bows!', d:'m', s:null, h:'Four in a square pattern'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! How many 🍇?',
       v: {type:'objectSet', config:{count:6, emoji:'🍇', layout:'grid'}},
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
       a:2, e:'6 grapes — two rows of 3!', d:'h', s:null, h:'Six — two rows of three'
     },
-    {
+    {lessonId:'ku1l7', 
       t: 'Quick look! 🦆 — how many in all? (two rows)',
       v: {type:'objectSet', config:{count:6, emoji:'🦆', layout:'grid'}},
       o: [{val:'3',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'8',tag:'err_over_count'}],
@@ -1123,49 +1123,49 @@ _mergeKUnitData(4, {
     },
 
     // ── L3 Story Problems — 8 new ────────────────────────────────────────────
-    {
+    {lessonId:'ku3l5', 
       t: '2 🐶 and 3 more 🐶 run in. How many dogs?',
       v: {type:'objectSet', config:{count:5, emoji:'🐶', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'2 + 3 = 5 dogs!', d:'e', s:null, h:'Join both groups'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '4 🍓 on a plate. 1 is eaten. How many left?',
       v: {type:'objectSet', config:{count:4, emoji:'🍓', layout:'grid'}},
       o: [{val:'5',tag:'err_add_instead'},{val:'4',tag:'err_count_all'},{val:'3'},{val:'2',tag:'err_off_by_one'}],
       a:2, e:'4 − 1 = 3 strawberries!', d:'e', s:null, h:'"Eaten" = take away'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '3 🌼 flowers and 4 more grow. How many in all?',
       v: {type:'objectSet', config:{count:7, emoji:'🌼', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'3 + 4 = 7 flowers!', d:'m', s:null, h:'"More grow" = join'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '6 🐠 in a bowl. 2 swim out. How many left?',
       v: {type:'objectSet', config:{count:6, emoji:'🐠', layout:'grid'}},
       o: [{val:'8',tag:'err_add_instead'},{val:'6',tag:'err_count_all'},{val:'4'},{val:'3',tag:'err_off_by_one'}],
       a:2, e:'6 − 2 = 4 fish!', d:'m', s:null, h:'"Swim out" = take away'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '2 🦁 lions and 5 more join. How many in all?',
       v: {type:'objectSet', config:{count:7, emoji:'🦁', layout:'grid'}},
       o: [{val:'3',tag:'err_sub_instead'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'2 + 5 = 7 lions!', d:'m', s:null, h:'"Join" = add'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '8 🍇 on a vine. 3 fall off. How many left?',
       v: {type:'objectSet', config:{count:8, emoji:'🍇', layout:'grid'}},
       o: [{val:'11',tag:'err_add_instead'},{val:'8',tag:'err_count_all'},{val:'5'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'8 − 3 = 5 grapes!', d:'m', s:null, h:'"Fall off" = take away'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '5 🌙 moons and 4 more appear. How many in all?',
       v: {type:'objectSet', config:{count:9, emoji:'🌙', layout:'grid'}},
       o: [{val:'1',tag:'err_sub_instead'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
       a:2, e:'5 + 4 = 9 moons!', d:'h', s:null, h:'"More appear" = join'
     },
-    {
+    {lessonId:'ku3l5', 
       t: '10 🎈 at a party. 6 pop. How many are left?',
       v: {type:'objectSet', config:{count:10, emoji:'🎈', layout:'grid'}},
       o: [{val:'16',tag:'err_add_instead'},{val:'10',tag:'err_count_all'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
@@ -1173,49 +1173,49 @@ _mergeKUnitData(4, {
     },
 
     // ── L4 Explain Your Math — 8 new ─────────────────────────────────────────
-    {
+    {lessonId:'ku3l6', 
       t: 'Rosa has 3 stickers. She gets 2 more. Should she add or subtract?',
       v: null,
       o: [{val:'Subtract — she gives some away',tag:'err_sub_instead'},{val:'Add — she has more stickers now'},{val:'It does not matter',tag:'err_sub_instead'},{val:'Subtract — 3 − 2',tag:'err_sub_instead'}],
       a:1, e:'"Gets more" = bigger amount! Add: 3 + 2 = 5 ✅', d:'e', s:null, h:'"Gets more" = join = add'
     },
-    {
+    {lessonId:'ku3l6', 
       t: 'Jack has 7 grapes. He eats 3. Should he add or subtract?',
       v: null,
       o: [{val:'Add — 7 + 3 = 10',tag:'err_add_instead'},{val:'Subtract — he has fewer grapes'},{val:'Add — more grapes',tag:'err_add_instead'},{val:'It does not matter',tag:'err_add_instead'}],
       a:1, e:'"Eats" = fewer! Subtract: 7 − 3 = 4 ✅', d:'e', s:null, h:'Eating = going away = subtract'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '4 🎨 cans and 3 more are added. Which sentence?',
       v: {type:'objectSet', config:{count:7, emoji:'🎨', layout:'grid'}},
       o: [{val:'4 − 3 = 1',tag:'err_sub_instead'},{val:'4 + 3 = 7'},{val:'4 + 2 = 6',tag:'err_off_by_one'},{val:'7 − 4 = 3',tag:'err_sub_instead'}],
       a:1, e:'"Added" = join! 4 + 3 = 7 ✅', d:'m', s:null, h:'"Added" = more = add'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '6 🐟 in a tank. 2 swim out. Which sentence?',
       v: {type:'objectSet', config:{count:6, emoji:'🐟', layout:'grid'}},
       o: [{val:'6 + 2 = 8',tag:'err_add_instead'},{val:'6 − 2 = 4'},{val:'6 − 3 = 3',tag:'err_off_by_one'},{val:'2 + 4 = 6',tag:'err_add_instead'}],
       a:1, e:'"Swim out" = take away! 6 − 2 = 4 ✅', d:'m', s:null, h:'"Swim out" = go away = subtract'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '3 🐸 frogs and 1 more jumps in. Which sentence?',
       v: {type:'objectSet', config:{count:4, emoji:'🐸', layout:'grid'}},
       o: [{val:'3 − 1 = 2',tag:'err_sub_instead'},{val:'3 + 1 = 4'},{val:'3 + 2 = 5',tag:'err_off_by_one'},{val:'4 − 3 = 1',tag:'err_sub_instead'}],
       a:1, e:'"Jumps in" = join! 3 + 1 = 4 ✅', d:'m', s:null, h:'"Jumps in" = more come = add'
     },
-    {
+    {lessonId:'ku3l6', 
       t: 'Zoe says 5 + 3 = 7. Is she right?',
       v: null,
       o: [{val:'Yes, that is correct',tag:'err_add_instead'},{val:'No, 5 + 3 = 8'},{val:'No, 5 + 3 = 6',tag:'err_off_by_one'},{val:'Yes, 4 + 3 = 7 too',tag:'err_add_instead'}],
       a:1, e:'Count on 3 from 5: 6, 7, 8 — the answer is 8, not 7!', d:'m', s:null, h:'Count on 3 steps from 5'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '9 🍪 cookies. 4 are eaten. Which sentence and answer?',
       v: null,
       o: [{val:'9 + 4 = 13',tag:'err_add_instead'},{val:'9 − 5 = 4',tag:'err_off_by_one'},{val:'9 − 4 = 5'},{val:'4 + 5 = 9',tag:'err_add_instead'}],
       a:2, e:'"Eaten" = subtract! 9 − 4 = 5 ✅', d:'h', s:null, h:'"Eaten" is a take-away word'
     },
-    {
+    {lessonId:'ku3l6', 
       t: '3 🚂 trains. 6 more arrive. Which is correct?',
       v: {type:'objectSet', config:{count:9, emoji:'🚂', layout:'grid'}},
       o: [{val:'6 − 3 = 3',tag:'err_sub_instead'},{val:'3 + 5 = 8',tag:'err_off_by_one'},{val:'9 − 6 = 3',tag:'err_sub_instead'},{val:'3 + 6 = 9'}],

@@ -861,305 +861,305 @@ _mergeKUnitData(6, {
 
   testBank: [
     // ── Length & Height (K.7B) ────────────────────────────────────────────────
-    {
+    {lessonId:'ku6l1', 
       t: 'Which is longer?',
       v: {type:'comparison',config:{left:{label:'✏️ pencil',barLen:7,color:'#f59e0b'},right:{label:'🖍️ crayon',barLen:4,color:'#ec4899'}}},
       o: [{val:'pencil'},{val:'crayon',tag:'err_longer_shorter'},{val:'same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Pencil! The pencil bar is longer.', d:'e', s:null, h:'Which bar goes farther?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'A giraffe is taller than a horse. Which is SHORTER?',
       v: null,
       o: [{val:'giraffe',tag:'err_longer_shorter'},{val:'horse'},{val:'they are the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Horse! The giraffe is taller, so the horse is shorter.', d:'e', s:null, h:'If A is taller, the other must be ___?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Which is shorter — a worm or a ruler?',
       v: null,
       o: [{val:'worm'},{val:'ruler',tag:'err_longer_shorter'},{val:'they are the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Worm! A worm is tiny — much shorter than a ruler.', d:'e', s:null, h:'Which one is tiny and wiggly?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'A is longer than B. B is longer than C. Which is LONGEST?',
       v: null,
       o: [{val:'A'},{val:'B',tag:'err_random'},{val:'C',tag:'err_longer_shorter'},{val:'they are all the same',tag:'err_random'}],
       a:0, e:'A! A is longer than B and B is longer than C — A is the longest.', d:'e', s:null, h:'A is longer than both B and C'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Two ribbons side by side. The green ribbon sticks out farther. Which is LONGER?',
       v: null,
       o: [{val:'green ribbon'},{val:'red ribbon',tag:'err_longer_shorter'},{val:'they are the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Green ribbon! Sticks out farther = longer.', d:'e', s:null, h:'The ribbon that sticks out farther is ___?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Pat is taller than Sam. Sam is taller than Lee. Who is SHORTEST?',
       v: null,
       o: [{val:'Pat',tag:'err_longer_shorter'},{val:'Sam',tag:'err_random'},{val:'Lee'},{val:'they are all the same',tag:'err_random'}],
       a:2, e:'Lee! Lee is shorter than Sam, and Sam is shorter than Pat.', d:'m', s:null, h:'Who is shorter than everyone else?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Rope X is shorter than Rope Z. Rope Z is shorter than Rope Y. Which is LONGEST?',
       v: null,
       o: [{val:'Rope X',tag:'err_longer_shorter'},{val:'Rope Y'},{val:'Rope Z',tag:'err_random'},{val:'they are the same',tag:'err_random'}],
       a:1, e:'Rope Y! Rope Y is longer than Z, and Z is longer than X — Y is longest.', d:'m', s:null, h:'Which rope is longer than all the others?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Rope X is shorter than Rope Z. Rope Z is shorter than Rope Y. Which is SHORTEST?',
       v: null,
       o: [{val:'Rope X'},{val:'Rope Y',tag:'err_longer_shorter'},{val:'Rope Z',tag:'err_random'},{val:'they are the same',tag:'err_random'}],
       a:0, e:'Rope X! Rope X is shorter than Z, and Z is shorter than Y — X is shortest.', d:'m', s:null, h:'Which rope is shorter than all the others?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'If A is shorter than B, and B is shorter than C, which is LONGEST?',
       v: null,
       o: [{val:'A',tag:'err_longer_shorter'},{val:'B',tag:'err_random'},{val:'C'},{val:'they are all the same',tag:'err_random'}],
       a:2, e:'C! C is longer than B, and B is longer than A — C is the longest.', d:'m', s:null, h:'Who is longer than everyone else?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'A sunflower keeps growing taller every day. Is it now taller or shorter than it was last week?',
       v: null,
       o: [{val:'taller'},{val:'shorter',tag:'err_longer_shorter'},{val:'the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Taller! Growing means getting taller — not shorter.', d:'m', s:null, h:'If something grows, does it get taller or shorter?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Rod 1 is longer than Rod 2. Rod 2 equals Rod 3 in length. Is Rod 1 longer or shorter than Rod 3?',
       v: null,
       o: [{val:'longer'},{val:'shorter',tag:'err_longer_shorter'},{val:'the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Longer! Rod 2 = Rod 3, and Rod 1 is longer than Rod 2 — so Rod 1 is longer than Rod 3 too.', d:'h', s:null, h:'Rod 1 > Rod 2 = Rod 3 — what does that mean for Rod 1 vs Rod 3?'
     },
-    {
+    {lessonId:'ku6l1', 
       t: 'Five friends tallest to shortest: 1st, 2nd, 3rd, 4th, 5th. Friend B is 2nd. Is B taller or shorter than Friend D (4th)?',
       v: null,
       o: [{val:'taller'},{val:'shorter',tag:'err_longer_shorter'},{val:'the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Taller! In tallest→shortest order, 2nd is taller than 4th.', d:'h', s:null, h:'In tallest→shortest, does a smaller number mean taller?'
     },
     // ── Weight (K.7B) ─────────────────────────────────────────────────────────
-    {
+    {lessonId:'ku6l2', 
       t: 'Which is heavier — a bowling ball or a feather?',
       v: null,
       o: [{val:'bowling ball'},{val:'feather',tag:'err_heavier_lighter'},{val:'they weigh the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Bowling ball! It is very heavy — a feather floats in the air.', d:'e', s:null, h:'Which one would you need two hands to carry?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Which is lighter — a pillow or a brick?',
       v: null,
       o: [{val:'pillow'},{val:'brick',tag:'err_heavier_lighter'},{val:'they weigh the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Pillow! A pillow is soft and light — a brick is heavy.', d:'e', s:null, h:'Which one is soft, fluffy, and easy to carry?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'A truck is heavier than a car. A car is heavier than a bicycle. Which is LIGHTEST?',
       v: null,
       o: [{val:'truck',tag:'err_heavier_lighter'},{val:'car',tag:'err_random'},{val:'bicycle'},{val:'they all weigh the same',tag:'err_random'}],
       a:2, e:'Bicycle! It is lighter than a car, which is lighter than a truck.', d:'e', s:null, h:'Which is lighter than all the others?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'On a balance scale, the left side goes DOWN. Which side has the HEAVIER object?',
       v: null,
       o: [{val:'left side'},{val:'right side',tag:'err_heavier_lighter'},{val:'both sides are equal',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Left side! The heavier side pushes the balance down.', d:'e', s:null, h:'The heavier side of a balance always goes ___?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'A watermelon is heavier than a mango. A mango is heavier than a plum. Which is HEAVIEST?',
       v: null,
       o: [{val:'watermelon'},{val:'mango',tag:'err_random'},{val:'plum',tag:'err_heavier_lighter'},{val:'they all weigh the same',tag:'err_random'}],
       a:0, e:'Watermelon! It is heavier than mango, which is heavier than plum.', d:'m', s:null, h:'Which is heavier than all the others?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Box A weighs more than Box B. Box B weighs more than Box C. Which is LIGHTEST?',
       v: null,
       o: [{val:'Box A',tag:'err_heavier_lighter'},{val:'Box B',tag:'err_random'},{val:'Box C'},{val:'they all weigh the same',tag:'err_random'}],
       a:2, e:'Box C! It is lighter than B, which is lighter than A.', d:'m', s:null, h:'Which box is lighter than all the others?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'An empty lunchbox is lighter than a full one. Which is HEAVIER?',
       v: null,
       o: [{val:'empty lunchbox',tag:'err_heavier_lighter'},{val:'full lunchbox'},{val:'they weigh the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Full lunchbox! Food adds weight — the full one is heavier.', d:'m', s:null, h:'Which one has food inside that adds weight?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Bag 1 has 5 rocks. Bag 2 has 1 rock. Which bag is LIGHTER?',
       v: null,
       o: [{val:'Bag 1 (5 rocks)',tag:'err_heavier_lighter'},{val:'Bag 2 (1 rock)'},{val:'they weigh the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Bag 2! Fewer rocks = less weight — Bag 2 is lighter.', d:'m', s:null, h:'Fewer rocks means less weight — which bag has fewer?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Apple A weighs more than Apple B. Apple B weighs the same as Apple C. Is Apple A heavier or lighter than Apple C?',
       v: null,
       o: [{val:'heavier'},{val:'lighter',tag:'err_heavier_lighter'},{val:'the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Heavier! Apple B = Apple C, and A is heavier than B — so A is heavier than C too.', d:'h', s:null, h:'A > B = C, so how does A compare to C?'
     },
     // ── Capacity (K.7B) ───────────────────────────────────────────────────────
-    {
+    {lessonId:'ku6l2', 
       t: 'Which holds more — a bathtub or a cup?',
       v: null,
       o: [{val:'bathtub'},{val:'cup',tag:'err_random'},{val:'they hold the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Bathtub! It is enormous — it holds much more than a cup.', d:'e', s:null, h:'Which is much bigger on the inside?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Which holds less — a teacup or a swimming pool?',
       v: null,
       o: [{val:'teacup'},{val:'swimming pool',tag:'err_random'},{val:'they hold the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Teacup! It only holds a small amount — much less than a pool.', d:'e', s:null, h:'Which one is tiny compared to the other?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Jug A is much bigger than Jug B. Which holds MORE?',
       v: null,
       o: [{val:'Jug A'},{val:'Jug B',tag:'err_random'},{val:'they hold the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Jug A! A bigger container holds more.', d:'m', s:null, h:'Which jug is bigger on the inside?'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'You pour water from Container A into Container B and it overflows. Which holds LESS?',
       v: null,
       o: [{val:'Container A',tag:'err_random'},{val:'Container B'},{val:'they hold the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Container B! Water overflowed because B cannot hold as much as A.', d:'m', s:null, h:'If water overflows, the new container holds LESS than what was poured'
     },
-    {
+    {lessonId:'ku6l2', 
       t: 'Three containers: a big bucket, a medium bowl, and a tiny cup. Which holds the MOST?',
       v: null,
       o: [{val:'big bucket'},{val:'medium bowl',tag:'err_random'},{val:'tiny cup',tag:'err_random'},{val:'they hold the same',tag:'err_random'}],
       a:0, e:'Big bucket! The biggest container holds the most.', d:'m', s:null, h:'Which container is biggest on the inside?'
     },
     // ── Ordering (K.7B) ───────────────────────────────────────────────────────
-    {
+    {lessonId:'ku6l3', 
       t: 'Three children: Kim is tallest, Jay is in the middle, Ava is shortest. Who is in the MIDDLE?',
       v: null,
       o: [{val:'Kim',tag:'err_random'},{val:'Jay'},{val:'Ava',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Jay! The problem says Jay is in the middle.', d:'e', s:null, h:'The problem names who is in the middle — which child?'
     },
-    {
+    {lessonId:'ku6l3', 
       t: 'Three sticks: D is shortest, E is longest, F is in the middle. Order from shortest to longest. Which is SECOND?',
       v: null,
       o: [{val:'D',tag:'err_random'},{val:'E',tag:'err_longer_shorter'},{val:'F'},{val:'cannot tell',tag:'err_random'}],
       a:2, e:'F! Order is: D (shortest), F (middle), E (longest) — F is second.', d:'m', s:null, h:'D is first, E is last — which stick goes in the middle?'
     },
-    {
+    {lessonId:'ku6l3', 
       t: 'Objects from lightest to heaviest: cotton ball, apple, rock. Which is HEAVIEST?',
       v: null,
       o: [{val:'cotton ball',tag:'err_heavier_lighter'},{val:'apple',tag:'err_random'},{val:'rock'},{val:'cannot tell',tag:'err_random'}],
       a:2, e:'Rock! It comes last in lightest→heaviest order — it is the heaviest.', d:'m', s:null, h:'Last in lightest→heaviest order is the ___?'
     },
-    {
+    {lessonId:'ku6l3', 
       t: 'Four pencils from longest to shortest: W, X, Y, Z. Which is the SHORTEST?',
       v: null,
       o: [{val:'W',tag:'err_longer_shorter'},{val:'X',tag:'err_random'},{val:'Y',tag:'err_random'},{val:'Z'}],
       a:3, e:'Z! Last in longest→shortest order = the shortest.', d:'m', s:null, h:'Last in longest→shortest order = the shortest one'
     },
-    {
+    {lessonId:'ku6l3', 
       t: 'Three buckets: P holds the least, Q holds the most, R holds the middle amount. Order holds-least to holds-most. Which is LAST?',
       v: null,
       o: [{val:'P',tag:'err_random'},{val:'Q'},{val:'R',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Q! Q holds the most — it comes LAST in least-to-most order.', d:'m', s:null, h:'Last in holds-least→holds-most = the one that holds the MOST'
     },
     // ── Attributes (K.7A) ─────────────────────────────────────────────────────
-    {
+    {lessonId:'ku6l4', 
       t: 'You line two scarves up end to end to compare. What attribute are you comparing?',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'length'},{val:'capacity',tag:'err_random'},{val:'color',tag:'err_random'}],
       a:1, e:'Length! Lining up end to end compares length.', d:'e', s:null, h:'End to end — which attribute tells you which reaches farther?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'You fill two jars with water to compare which holds more. What attribute are you comparing?',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'length',tag:'err_random'},{val:'capacity'},{val:'color',tag:'err_random'}],
       a:2, e:'Capacity! Filling with water to compare holds more/less describes capacity.', d:'e', s:null, h:'Holds more or less — which attribute is that?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'You use a balance scale to find which toy is heavier. What attribute are you comparing?',
       v: null,
       o: [{val:'weight'},{val:'length',tag:'err_random'},{val:'capacity',tag:'err_random'},{val:'color',tag:'err_random'}],
       a:0, e:'Weight! A balance scale compares weight.', d:'e', s:null, h:'A balance scale tips toward the heavier side — which attribute?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Two boxes look the same size. One is much heavier. Which attribute is DIFFERENT?',
       v: null,
       o: [{val:'weight'},{val:'length',tag:'err_random'},{val:'capacity',tag:'err_random'},{val:'color',tag:'err_random'}],
       a:0, e:'Weight! Same size but different weight — weight is the attribute that differs.', d:'m', s:null, h:'Same size means same length. Which attribute can still be different?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Comparing "taller" and "shorter" is a comparison of ___?',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'height (length)'},{val:'capacity',tag:'err_random'},{val:'color',tag:'err_random'}],
       a:1, e:'Height (length)! Taller and shorter describe height, which is a type of length.', d:'m', s:null, h:'Taller and shorter — do those words describe how long/tall or how heavy?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'To compare which of two bags is heavier, the BEST strategy is ___?',
       v: null,
       o: [{val:'place them side by side',tag:'err_random'},{val:'fill them with water',tag:'err_random'},{val:'pick each one up'},{val:'look at their color',tag:'err_random'}],
       a:2, e:'Pick each one up! You can feel which is heavier when you lift them.', d:'m', s:null, h:'To compare weight, you need to feel how heavy each one is'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'You pour a full small cup into a large jug. The jug is still not full. The jug\'s ___ is greater than the cup\'s.',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'length',tag:'err_random'},{val:'capacity'},{val:'color',tag:'err_random'}],
       a:2, e:'Capacity! The jug holds more — it has a greater capacity than the cup.', d:'h', s:null, h:'The jug holds more water — which attribute describes how much something holds?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Which attribute is described by "holds more" and "holds less"?',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'length',tag:'err_random'},{val:'capacity'},{val:'height',tag:'err_random'}],
       a:2, e:'Capacity! Holds more/holds less describe how much a container can hold — that is capacity.', d:'h', s:null, h:'Holds more and holds less — what attribute is being measured?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'A scientist compares two fish tanks by filling them and seeing how much water each holds. She is comparing their ___?',
       v: null,
       o: [{val:'weight',tag:'err_random'},{val:'length',tag:'err_random'},{val:'capacity'},{val:'height',tag:'err_random'}],
       a:2, e:'Capacity! Filling to compare how much water they hold measures capacity.', d:'h', s:null, h:'Filling to measure how much fits inside — which attribute is that?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Which is longer — a river or a swimming pool?',
       v: null,
       o: [{val:'river'},{val:'swimming pool',tag:'err_longer_shorter'},{val:'they are the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'River! A river stretches for miles — much longer than a swimming pool.', d:'e', s:null, h:'Which one stretches on and on for miles?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'A finger is shorter than an arm. An arm is shorter than a leg. Which is LONGEST?',
       v: null,
       o: [{val:'finger',tag:'err_longer_shorter'},{val:'arm',tag:'err_random'},{val:'leg'},{val:'they are all the same',tag:'err_random'}],
       a:2, e:'Leg! A leg is longer than an arm, which is longer than a finger.', d:'m', s:null, h:'Which body part is longer than all the others?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Which is heavier — a car or a bicycle?',
       v: null,
       o: [{val:'car'},{val:'bicycle',tag:'err_heavier_lighter'},{val:'they weigh the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Car! A car weighs thousands of pounds — a bicycle is much lighter.', d:'e', s:null, h:'Which one would you need a huge crane to lift?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Three containers: a tiny cup, a big pitcher, and a medium bottle. Which holds the LEAST?',
       v: null,
       o: [{val:'tiny cup'},{val:'big pitcher',tag:'err_random'},{val:'medium bottle',tag:'err_random'},{val:'they hold the same',tag:'err_random'}],
       a:0, e:'Tiny cup! The smallest container holds the least.', d:'m', s:null, h:'Which container is smallest on the inside?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Four towers from shortest to tallest: A, B, C, D. Which tower is TALLEST?',
       v: null,
       o: [{val:'A',tag:'err_longer_shorter'},{val:'B',tag:'err_random'},{val:'C',tag:'err_random'},{val:'D'}],
       a:3, e:'D! Last in shortest→tallest order = the tallest one.', d:'m', s:null, h:'Last in shortest→tallest order = the tallest one'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'You compare two jars by pouring water into each one. The first jar is full but the second is not. Which holds MORE?',
       v: null,
       o: [{val:'first jar',tag:'err_random'},{val:'second jar'},{val:'they hold the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:1, e:'Second jar! It was not full — it can hold even more water than the first jar.', d:'h', s:null, h:'The jar that is NOT full still has room — which one holds more?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Sam is shorter than Robin. Robin is shorter than Morgan. Put them in order from TALLEST to SHORTEST.',
       v: null,
       o: [{val:'Morgan, Robin, Sam'},{val:'Sam, Robin, Morgan',tag:'err_longer_shorter'},{val:'Robin, Sam, Morgan',tag:'err_random'},{val:'Morgan, Sam, Robin',tag:'err_random'}],
       a:0, e:'Morgan, Robin, Sam! Morgan is tallest, then Robin, then Sam is shortest.', d:'h', s:null, h:'Morgan is tallest — who comes after Morgan in tallest→shortest order?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'A thin rod and a thick rod are the same LENGTH. Are they the same or different?',
       v: null,
       o: [{val:'same length'},{val:'the thin one is longer',tag:'err_random'},{val:'the thick one is longer',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],
       a:0, e:'Same length! Thick or thin does not change how long they are — they reach the same spot.', d:'h', s:null, h:'Length is about how far they reach — not how thick they are'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'A marble weighs more than a cotton ball. A cotton ball weighs more than a feather. Which is LIGHTEST?',
       v: null,
       o: [{val:'marble',tag:'err_heavier_lighter'},{val:'cotton ball',tag:'err_random'},{val:'feather'},{val:'they all weigh the same',tag:'err_random'}],
       a:2, e:'Feather! It is lighter than cotton ball, which is lighter than the marble.', d:'m', s:null, h:'Which is lighter than all the others?'
     },
-    {
+    {lessonId:'ku6l4', 
       t: 'Two children: Nia is taller than all other students. Ko is shorter than all other students. Who is TALLEST?',
       v: null,
       o: [{val:'Nia'},{val:'Ko',tag:'err_longer_shorter'},{val:'they are the same',tag:'err_random'},{val:'cannot tell',tag:'err_random'}],

@@ -846,100 +846,100 @@ _mergeKUnitData(3, {
 
   testBank: [
     // ── L1: Count to 20 ──────────────────────────────────────────────────────
-    {
+    {lessonId:'ku1l4', 
       t: 'What number comes after 13?',
       v: null,
       o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
       a:2, e:'14 comes after 13!', d:'e', s:null, h:'Count forward from 13'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'Count the 🍎 apples. How many?',
       v: {type:'objectSet', config:{count:17, emoji:'🍎', layout:'grid'}},
       o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
       a:2, e:'17 apples!', d:'m', s:null, h:'Count carefully row by row'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '19, __, 17 — what number is missing?',
       v: null,
       o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'18'},{val:'20',tag:'err_same'}],
       a:2, e:'18 goes between 19 and 17 when counting back!', d:'m', s:null, h:'Count backward from 19'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '15, 16, __, 18 — what number is missing?',
       v: null,
       o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'17'},{val:'19',tag:'err_off_by_one'}],
       a:2, e:'17 goes between 16 and 18!', d:'m', s:null, h:'What comes after 16?'
     },
     // ── L2: Read and Represent 11–20 ─────────────────────────────────────────
-    {
+    {lessonId:'ku1l5', 
       t: 'Count the 🌟 stars. How many?',
       v: {type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}},
       o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'15 stars — ten and five more!', d:'e', s:null, h:'Count past 10'
     },
-    {
+    {lessonId:'ku1l5', 
       t: '11 = 10 + how many extras?',
       v: {type:'objectSet', config:{count:11, emoji:'🌙', layout:'grid'}},
       o: [{val:'0',tag:'err_teen'},{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'11',tag:'err_teen'}],
       a:1, e:'11 = 10 + 1!', d:'e', s:null, h:'Count past the first 10'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'Which number is "fourteen"?',
       v: null,
       o: [{val:'4',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'40',tag:'err_teen'}],
       a:2, e:'Fourteen = 14!', d:'m', s:null, h:'Fourteen: ten and four more'
     },
-    {
+    {lessonId:'ku1l5', 
       t: '17 = 10 + how many extras?',
       v: null,
       o: [{val:'5',tag:'err_teen'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'17 = 10 + 7!', d:'m', s:null, h:'How many beyond 10?'
     },
     // ── L3: More, Less, and Equal ─────────────────────────────────────────────
-    {
+    {lessonId:'ku2l5', 
       t: 'Which side has MORE — 🐶 or 🐱?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐶', rightCount:15, rightObj:'🐱', op:'compare'}},
       o: [{val:'8',tag:'err_less'},{val:'15'},{val:'11',tag:'err_same'},{val:'23',tag:'err_off_by_one'}],
       a:1, e:'15 is more than 8!', d:'e', s:null, h:'Count each group'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Which is less: 17 or 11?',
       v: null,
       o: [{val:'17',tag:'err_more'},{val:'11'},{val:'14',tag:'err_same'},{val:'28',tag:'err_off_by_one'}],
       a:1, e:'11 is less than 17!', d:'e', s:null, h:'Which comes earlier in counting?'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Which group has FEWER — 🦋 or 🐝?',
       v: {type:'twoGroups', config:{leftCount:12, leftObj:'🦋', rightCount:18, rightObj:'🐝', op:'compare'}},
       o: [{val:'18',tag:'err_more'},{val:'12'},{val:'15',tag:'err_same'},{val:'6',tag:'err_off_by_one'}],
       a:1, e:'12 is fewer than 18!', d:'m', s:null, h:'Fewer = the smaller group'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Are 14 🌺 and 14 🌻 equal?',
       v: {type:'twoGroups', config:{leftCount:14, leftObj:'🌺', rightCount:14, rightObj:'🌻', op:'compare'}},
       o: [{val:'No, left has more',tag:'err_same'},{val:'Yes, both have 14'},{val:'No, right has more',tag:'err_same'},{val:'No, they are different',tag:'err_same'}],
       a:1, e:'Both are 14 — equal!', d:'m', s:null, h:'Count each group'
     },
     // ── L4: One More / One Less ───────────────────────────────────────────────
-    {
+    {lessonId:'ku2l6', 
       t: 'One more than 11 is…?',
       v: null,
       o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
       a:2, e:'11 + 1 = 12!', d:'e', s:null, h:'Count forward from 11'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'One less than 15 is…?',
       v: null,
       o: [{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
       a:1, e:'15 - 1 = 14!', d:'e', s:null, h:'Count back one from 15'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'There are 16 🌟. One more joins. How many now?',
       v: {type:'objectSet', config:{count:16, emoji:'🌟', layout:'grid'}},
       o: [{val:'15',tag:'err_off_by_one'},{val:'16',tag:'err_same'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
       a:2, e:'16 + 1 = 17!', d:'m', s:null, h:'Add one more to the group'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'What is one less than 20?',
       v: null,
       o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
@@ -947,214 +947,214 @@ _mergeKUnitData(3, {
     },
     // ── NEW testBank questions (appended) ────────────────────────────────────
     // L1 easy (3)
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🌈 are there?',
       v: {type:'objectSet', config:{count:11, emoji:'🌈', layout:'grid'}},
       o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
       a:2, e:'11 rainbows!', d:'e', s:null, h:'Count every one'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🎈 balloons do you see?',
       v: {type:'objectSet', config:{count:13, emoji:'🎈', layout:'grid'}},
       o: [{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
       a:2, e:'13 balloons!', d:'e', s:null, h:'Touch each balloon as you count'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'What number comes right after 10?',
       v: null,
       o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
       a:2, e:'11 comes right after 10!', d:'e', s:null, h:'Count on one step from 10'
     },
     // L1 medium (5)
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🦄 are in the group?',
       v: {type:'objectSet', config:{count:14, emoji:'🦄', layout:'grid'}},
       o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
       a:2, e:'14 unicorns!', d:'m', s:null, h:'Count row by row'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🌍 do you see?',
       v: {type:'objectSet', config:{count:16, emoji:'🌍', layout:'grid'}},
       o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'16 globes!', d:'m', s:null, h:'Count carefully past 15'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '12, 13, __, 15 — what number is missing?',
       v: null,
       o: [{val:'11',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'14 goes between 13 and 15!', d:'m', s:null, h:'What comes after 13?'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'What number comes before 14?',
       v: null,
       o: [{val:'12',tag:'err_under_count'},{val:'13'},{val:'14',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
       a:1, e:'13 comes before 14!', d:'m', s:null, h:'Count back one step from 14'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '13, 14, 15, __, 17 — what number is missing?',
       v: null,
       o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_same'},{val:'16'},{val:'18',tag:'err_off_by_one'}],
       a:2, e:'16 goes between 15 and 17!', d:'m', s:null, h:'What comes after 15?'
     },
     // L1 hard (4)
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🐗 are there?',
       v: {type:'objectSet', config:{count:17, emoji:'🐗', layout:'grid'}},
       o: [{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'},{val:'15',tag:'err_under_count'}],
       a:1, e:'17 boars — count every one!', d:'h', s:null, h:'Count carefully — do not miss any'
     },
-    {
+    {lessonId:'ku1l4', 
       t: 'How many 🎯 targets are here?',
       v: {type:'objectSet', config:{count:20, emoji:'🎯', layout:'grid'}},
       o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
       a:2, e:'20 targets — all the way to 20!', d:'h', s:null, h:'Count all the way to the end'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '17, 18, 19, __ — what comes next?',
       v: null,
       o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
       a:2, e:'20 comes after 19!', d:'h', s:null, h:'Count forward from 19'
     },
-    {
+    {lessonId:'ku1l4', 
       t: '20, 19, __, 17 — what is missing counting back?',
       v: null,
       o: [{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'20',tag:'err_same'}],
       a:1, e:'18 goes between 19 and 17 when counting back!', d:'h', s:null, h:'Count backward from 19'
     },
     // L2 easy (3)
-    {
+    {lessonId:'ku1l5', 
       t: '13 = 10 + how many extras? Count the 🌴.',
       v: {type:'objectSet', config:{count:13, emoji:'🌴', layout:'grid'}},
       o: [{val:'1',tag:'err_teen'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'13 = 10 + 3!', d:'e', s:null, h:'Count past 10 to 13'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'Which numeral is "thirteen"?',
       v: null,
       o: [{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}],
       a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'
     },
-    {
+    {lessonId:'ku1l5', 
       t: '12 = 10 + how many extras? Count the 🍭.',
       v: {type:'objectSet', config:{count:12, emoji:'🍭', layout:'grid'}},
       o: [{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}],
       a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'
     },
     // L2 medium (5)
-    {
+    {lessonId:'ku1l5', 
       t: 'How many 🌮 are there?',
       v: {type:'objectSet', config:{count:14, emoji:'🌮', layout:'grid'}},
       o: [{val:'12',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
       a:2, e:'14 tacos — ten and four more!', d:'m', s:null, h:'Count past 10'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'How many 🐘 elephants are here?',
       v: {type:'objectSet', config:{count:16, emoji:'🐘', layout:'grid'}},
       o: [{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'16 elephants — ten and six more!', d:'m', s:null, h:'Count carefully past 15'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'Which number is "sixteen"?',
       v: null,
       o: [{val:'6',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
       a:2, e:'Sixteen = 16!', d:'m', s:null, h:'Sixteen: ten and six more'
     },
-    {
+    {lessonId:'ku1l5', 
       t: '15 = 10 + how many extras?',
       v: null,
       o: [{val:'3',tag:'err_teen'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'15 = 10 + 5!', d:'m', s:null, h:'Count how many beyond 10'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'How many 🌾 are in the group?',
       v: {type:'objectSet', config:{count:15, emoji:'🌾', layout:'grid'}},
       o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'15 wheat stalks — ten and five more!', d:'m', s:null, h:'Count every stalk'
     },
     // L2 hard (3)
-    {
+    {lessonId:'ku1l5', 
       t: '18 = 10 + how many extras?',
       v: null,
       o: [{val:'6',tag:'err_teen'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'18 = 10 + 8!', d:'h', s:null, h:'Count how many beyond 10'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'How many 🦚 peacocks are here?',
       v: {type:'objectSet', config:{count:18, emoji:'🦚', layout:'grid'}},
       o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}],
       a:1, e:'18 peacocks — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'
     },
-    {
+    {lessonId:'ku1l5', 
       t: 'Which number is "nineteen"?',
       v: null,
       o: [{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
       a:2, e:'Nineteen = 19!', d:'h', s:null, h:'Nineteen: ten and nine more'
     },
     // L3 medium (3)
-    {
+    {lessonId:'ku2l5', 
       t: 'Which group has MORE — 🦢 or 🕊️?',
       v: {type:'twoGroups', config:{leftCount:10, leftObj:'🦢', rightCount:15, rightObj:'🕊️', op:'compare'}},
       o: [{val:'10',tag:'err_less'},{val:'15'},{val:'12',tag:'err_same'},{val:'25',tag:'err_off_by_one'}],
       a:1, e:'15 is more than 10!', d:'m', s:null, h:'Count each group — which is bigger?'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Which is greater: 14 or 18?',
       v: null,
       o: [{val:'14',tag:'err_less'},{val:'18'},{val:'16',tag:'err_same'},{val:'32',tag:'err_off_by_one'}],
       a:1, e:'18 is greater — it comes later when you count!', d:'m', s:null, h:'Which number comes later?'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Which group has FEWER — 🌷 or 🌼?',
       v: {type:'twoGroups', config:{leftCount:19, leftObj:'🌷', rightCount:13, rightObj:'🌼', op:'compare'}},
       o: [{val:'19',tag:'err_more'},{val:'13'},{val:'16',tag:'err_same'},{val:'32',tag:'err_off_by_one'}],
       a:1, e:'13 is fewer than 19!', d:'m', s:null, h:'Fewer = the smaller group'
     },
     // L3 hard (2)
-    {
+    {lessonId:'ku2l5', 
       t: 'Which group has MORE — 🦑 or 🦐?',
       v: {type:'twoGroups', config:{leftCount:16, leftObj:'🦑', rightCount:17, rightObj:'🦐', op:'compare'}},
       o: [{val:'16',tag:'err_less'},{val:'17'},{val:'16 and 17 are equal',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
       a:1, e:'17 is more than 16 — just 1 apart!', d:'h', s:null, h:'Count very carefully — they are close!'
     },
-    {
+    {lessonId:'ku2l5', 
       t: 'Which is greater: 19 or 18?',
       v: null,
       o: [{val:'18',tag:'err_less'},{val:'19'},{val:'18 and 19 are equal',tag:'err_same'},{val:'17',tag:'err_off_by_one'}],
       a:1, e:'19 is greater — it comes after 18!', d:'h', s:null, h:'Which comes later when you count?'
     },
     // L4 medium (3)
-    {
+    {lessonId:'ku2l6', 
       t: 'What is one more than 12?',
       v: null,
       o: [{val:'11',tag:'err_off_by_one'},{val:'12',tag:'err_same'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
       a:2, e:'12 + 1 = 13!', d:'m', s:null, h:'Count forward one step from 12'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'What is one less than 13?',
       v: null,
       o: [{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_same'},{val:'14',tag:'err_off_by_one'}],
       a:1, e:'13 - 1 = 12!', d:'m', s:null, h:'Count back one from 13'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'What is one more than 14?',
       v: null,
       o: [{val:'13',tag:'err_off_by_one'},{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
       a:2, e:'14 + 1 = 15!', d:'m', s:null, h:'Count forward one step from 14'
     },
     // L4 hard (3)
-    {
+    {lessonId:'ku2l6', 
       t: '18 + 1 = ?',
       v: null,
       o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
       a:2, e:'18 + 1 = 19!', d:'h', s:null, h:'Count forward one from 18'
     },
-    {
+    {lessonId:'ku2l6', 
       t: '19 take away 1 = ?',
       v: null,
       o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_same'},{val:'20',tag:'err_off_by_one'}],
       a:1, e:'19 - 1 = 18!', d:'h', s:null, h:'Count back one step from 19'
     },
-    {
+    {lessonId:'ku2l6', 
       t: 'Look at the 🎪 group below. What is one less than this group?',
       v: {type:'objectSet', config:{count:17, emoji:'🎪', layout:'grid'}},
       o: [{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_same'},{val:'18',tag:'err_off_by_one'}],

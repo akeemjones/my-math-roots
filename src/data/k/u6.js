@@ -100,9 +100,9 @@ _mergeKUnitData(5, {
         },
         {
           t: 'What shape is this?',
-          v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
-          o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'A square has 4 equal sides and 4 corners.', d:'e', s:null, h:'All 4 sides are the same length.'
+          v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
+          o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'square',tag:'err_random'}],
+          a:2, e:'A rectangle has 4 sides — 2 long and 2 short.', d:'e', s:null, h:'4 corners, but the sides are not all equal.'
         },
         // ── medium — shape in context, comparisons ───────────────────────────
         {
@@ -112,10 +112,10 @@ _mergeKUnitData(5, {
           a:0, e:'A clock face is round — a circle.', d:'m', s:null, h:'Is it round or has corners?'
         },
         {
-          t: 'What shape is this?',
-          v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
+          t: 'Look at the mountain. What shape is it?',
+          v: { type: 'objectSet', config: { count: 1, emoji: '🏔️', layout: 'line' } },
           o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
-          a:1, e:'A triangle has 3 sides and 3 corners.', d:'m', s:null, h:'Count the corners.'
+          a:1, e:'A mountain peak comes to a point — just like a triangle!', d:'m', s:null, h:'Count the sides going up and down.'
         },
         {
           t: 'What shape is this?',
@@ -346,7 +346,7 @@ _mergeKUnitData(5, {
         },
         {
           t: 'A globe is shaped like which solid?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🎱', layout: 'line' } },
+          v: { type: 'objectSet', config: { count: 1, emoji: '🌍', layout: 'line' } },
           o: [{val:'cube',tag:'err_wrong_solid'},{val:'cone',tag:'err_wrong_solid'},{val:'sphere'},{val:'cylinder',tag:'err_wrong_solid'}],
           a:2, e:'A sphere is round like a ball — and a globe!', d:'e', s:null, h:'A globe is perfectly round — which solid is that?'
         },
@@ -358,7 +358,7 @@ _mergeKUnitData(5, {
         },
         {
           t: 'A game die (like in board games) is shaped like which solid?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🧊', layout: 'line' } },
+          v: { type: 'objectSet', config: { count: 1, emoji: '🎲', layout: 'line' } },
           o: [{val:'cube'},{val:'cone',tag:'err_random'},{val:'sphere',tag:'err_random'},{val:'cylinder',tag:'err_random'}],
           a:0, e:'A cube has 6 flat square faces.', d:'e', s:null, h:'This solid has flat square faces on every side'
         },
@@ -449,10 +449,10 @@ _mergeKUnitData(5, {
           a:3, e:'A cylinder has two flat circles plus a curved middle.', d:'h', s:null, h:'Which has flat circles on both ends?'
         },
         {
-          t: 'A cube has 6 faces. What shape is each flat face?',
-          v: { type: 'objectSet', config: { count: 1, emoji: '🧊', layout: 'line' } },
-          o: [{val:'circle',tag:'err_wrong_solid'},{val:'triangle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
-          a:2, e:'All 6 faces of a cube are squares.', d:'h', s:null, h:'Look at one side of a cube'
+          t: 'Which solid has the most flat faces?',
+          v: null,
+          o: [{val:'sphere (0)',tag:'err_wrong_solid'},{val:'cone (1)',tag:'err_wrong_solid'},{val:'cylinder (2)',tag:'err_wrong_solid'},{val:'cube (6)'}],
+          a:3, e:'A cube has 6 flat faces — more than any other solid we know.', d:'h', s:null, h:'Sphere = 0, cone = 1, cylinder = 2, cube = 6'
         },
         {
           t: 'Which solid CANNOT roll?',
@@ -473,16 +473,28 @@ _mergeKUnitData(5, {
           a:2, e:'The bottom face of a cone is a circle.', d:'h', s:null, h:'Look at the round bottom of a cone'
         },
         {
-          t: 'Which solid has only a curved surface — no flat faces?',
+          t: 'A cube and a cylinder — which has MORE flat faces?',
           v: null,
-          o: [{val:'cube',tag:'err_random'},{val:'cone',tag:'err_wrong_solid'},{val:'cylinder',tag:'err_wrong_solid'},{val:'sphere'}],
-          a:3, e:'A sphere is totally curved — no flat part at all.', d:'h', s:null, h:'Totally curved with no flat part at all'
+          o: [{val:'cube'},{val:'cylinder',tag:'err_wrong_solid'},{val:'they have the same',tag:'err_random'},{val:'neither has flat faces',tag:'err_random'}],
+          a:0, e:'A cube has 6 flat faces; a cylinder has only 2.', d:'h', s:null, h:'Cube = 6 faces; cylinder = 2 faces'
         },
         {
           t: 'A cylinder can roll on its side. A cube cannot. Why?',
           v: null,
           o: [{val:'the cube is heavier',tag:'err_random'},{val:'the cylinder has a curved surface'},{val:'the cube has more faces',tag:'err_random'},{val:'the cylinder is smaller',tag:'err_random'}],
           a:1, e:'A curved surface lets the cylinder roll.', d:'h', s:null, h:'What does a curved surface allow?'
+        },
+        {
+          t: 'Which solid is most like a cylinder but has a pointy top instead of a flat circle?',
+          v: null,
+          o: [{val:'cube',tag:'err_random'},{val:'cone'},{val:'sphere',tag:'err_random'},{val:'cylinder itself',tag:'err_random'}],
+          a:1, e:'A cone has a round base like a cylinder — but comes to a point at the top instead!', d:'m', s:null, h:'It has a curved side and a round bottom — but pointy on top.'
+        },
+        {
+          t: 'A cone placed on a flat floor will roll in a circle. Why?',
+          v: { type: 'objectSet', config: { count: 1, emoji: '🍦', layout: 'line' } },
+          o: [{val:'it has no flat faces',tag:'err_wrong_solid'},{val:'one end is wider than the other'},{val:'it is the same width all the way',tag:'err_random'},{val:'it is too heavy to roll straight',tag:'err_random'}],
+          a:1, e:'A cone is wide at the bottom and narrows to a point — so it curves as it rolls.', d:'h', s:null, h:'Think about how wide the bottom is compared to the top.'
         }
       ]
     },
@@ -1024,104 +1036,103 @@ _mergeKUnitData(5, {
         // ── tapGroup: 5 required interactive variations ───────────────────────
         {
           id:'k-u6-l4-tg-01', type:'tapGroup', grade:'K', unit:6, lesson:4,
-          t:'Tap all the circles.',
-          prompt:'Tap all the circles.',
-          hint:'Circles are the round shapes!',
-          explanation:'Circles are round!',
+          t:'Tap shapes with more than 3 sides.',
+          prompt:'Tap shapes with more than 3 sides.',
+          hint:'Count the sides — is it more than 3?',
+          explanation:'Squares and rectangles have 4 sides — more than 3!',
           answer:{},
           v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'circle',   corners:0,correct:true},
-            {id:'s2',shape:'square',   corners:4,correct:false},
-            {id:'s3',shape:'circle',   corners:0,correct:true},
-            {id:'s4',shape:'triangle', corners:3,correct:false},
-            {id:'s5',shape:'rectangle',corners:4,correct:false}
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'circle',   corners:0,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
           ]}},
           visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'circle',   corners:0,correct:true},
-            {id:'s2',shape:'square',   corners:4,correct:false},
-            {id:'s3',shape:'circle',   corners:0,correct:true},
-            {id:'s4',shape:'triangle', corners:3,correct:false},
-            {id:'s5',shape:'rectangle',corners:4,correct:false}
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'circle',   corners:0,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
           ]}},
-          tags:['shapes','circle','identify','sort'],
-          difficulty:'easy', standard:'K.6E',
-          intervention:{ teach:{ text:'Circles are the round shapes!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['circle','identify'] } }
+          tags:['shapes','sort','sides','square','rectangle'],
+          difficulty:'medium', standard:'K.6E',
+          intervention:{ teach:{ text:'Squares have 4 sides, rectangles have 4 sides — both more than 3!', highlight:['square','rectangle'] }, retry:{ strategy:'similar', matchTags:['sort','sides'] } }
         },
         {
           id:'k-u6-l4-tg-02', type:'tapGroup', grade:'K', unit:6, lesson:4,
-          t:'Find the shapes with 4 corners.',
-          prompt:'Find the shapes with 4 corners.',
-          hint:'Count each corner: 1, 2, 3, 4!',
-          explanation:'Squares and rectangles have 4 corners!',
+          t:'Tap all the rectangles.',
+          prompt:'Tap all the rectangles.',
+          hint:'Rectangles have 4 corners — but the sides are NOT all the same length!',
+          explanation:'Rectangles have 4 corners — but their long sides and short sides are different lengths!',
           answer:{},
           v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s1',shape:'rectangle',corners:4,correct:true},
             {id:'s2',shape:'circle',   corners:0,correct:false},
             {id:'s3',shape:'rectangle',corners:4,correct:true},
-            {id:'s4',shape:'triangle', corners:3,correct:false},
-            {id:'s5',shape:'square',   corners:4,correct:true}
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'triangle', corners:3,correct:false}
           ]}},
           visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s1',shape:'rectangle',corners:4,correct:true},
             {id:'s2',shape:'circle',   corners:0,correct:false},
             {id:'s3',shape:'rectangle',corners:4,correct:true},
-            {id:'s4',shape:'triangle', corners:3,correct:false},
-            {id:'s5',shape:'square',   corners:4,correct:true}
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'triangle', corners:3,correct:false}
           ]}},
-          tags:['shapes','corners','square','rectangle','identify','sort'],
-          difficulty:'easy', standard:'K.6D',
-          distractors:{ type:'conceptual', rationale:'circle (0) tests zero-confusion; triangle (3) tests near-miss' },
-          intervention:{ teach:{ text:'Count each corner: 1, 2, 3, 4! Squares and rectangles both have 4.', highlight:['square','rectangle'] }, retry:{ strategy:'similar', matchTags:['corners','identify'] } }
+          tags:['shapes','rectangle','identify','sort'],
+          difficulty:'medium', standard:'K.6E',
+          intervention:{ teach:{ text:'Rectangles have 4 corners but their sides are not all equal!', highlight:['rectangle'] }, retry:{ strategy:'similar', matchTags:['rectangle','identify'] } }
         },
         {
           id:'k-u6-l4-tg-03', type:'tapGroup', grade:'K', unit:6, lesson:4,
-          t:'Tap the round shapes.',
-          prompt:'Tap the round shapes.',
-          hint:'Round shapes feel smooth — no pointy corners!',
-          explanation:'Circles are round — no corners!',
+          t:'Tap shapes with fewer than 4 sides.',
+          prompt:'Tap shapes with fewer than 4 sides.',
+          hint:'Circle has 0 sides, triangle has 3 — both fewer than 4!',
+          explanation:'Circle (0 sides) and triangle (3 sides) both have fewer than 4 sides!',
           answer:{},
           v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
             {id:'s1',shape:'circle',   corners:0,correct:true},
-            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s2',shape:'triangle', corners:3,correct:true},
             {id:'s3',shape:'square',   corners:4,correct:false},
-            {id:'s4',shape:'circle',   corners:0,correct:true},
-            {id:'s5',shape:'rectangle',corners:4,correct:false}
+            {id:'s4',shape:'rectangle',corners:4,correct:false},
+            {id:'s5',shape:'circle',   corners:0,correct:true}
           ]}},
           visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
             {id:'s1',shape:'circle',   corners:0,correct:true},
-            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s2',shape:'triangle', corners:3,correct:true},
             {id:'s3',shape:'square',   corners:4,correct:false},
-            {id:'s4',shape:'circle',   corners:0,correct:true},
-            {id:'s5',shape:'rectangle',corners:4,correct:false}
+            {id:'s4',shape:'rectangle',corners:4,correct:false},
+            {id:'s5',shape:'circle',   corners:0,correct:true}
           ]}},
-          tags:['shapes','corners','circle','identify','sort','zero'],
-          difficulty:'easy', standard:'K.6D',
-          intervention:{ teach:{ text:'Circles are round — no pointy corners!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['circle','identify'] } }
+          tags:['shapes','sort','sides','circle','triangle'],
+          difficulty:'medium', standard:'K.6E',
+          intervention:{ teach:{ text:'Circle has 0 sides, triangle has 3 sides — both fewer than 4!', highlight:['circle','triangle'] }, retry:{ strategy:'similar', matchTags:['sort','sides'] } }
         },
         {
           id:'k-u6-l4-tg-04', type:'tapGroup', grade:'K', unit:6, lesson:4,
-          t:'Tap all the triangles.',
-          prompt:'Tap all the triangles.',
-          hint:'Look for the pointy shapes!',
-          explanation:'Triangles are the pointy shapes!',
+          t:'Tap all the squares.',
+          prompt:'Tap all the squares.',
+          hint:'Squares have 4 equal sides — all the same length!',
+          explanation:'Squares have 4 equal sides — all the same length!',
           answer:{},
           v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s1',shape:'square',   corners:4,correct:true},
             {id:'s2',shape:'circle',   corners:0,correct:false},
-            {id:'s3',shape:'triangle', corners:3,correct:true},
-            {id:'s4',shape:'square',   corners:4,correct:false},
-            {id:'s5',shape:'triangle', corners:3,correct:true}
+            {id:'s3',shape:'rectangle',corners:4,correct:false},
+            {id:'s4',shape:'square',   corners:4,correct:true},
+            {id:'s5',shape:'triangle', corners:3,correct:false}
           ]}},
           visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
-            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s1',shape:'square',   corners:4,correct:true},
             {id:'s2',shape:'circle',   corners:0,correct:false},
-            {id:'s3',shape:'triangle', corners:3,correct:true},
-            {id:'s4',shape:'square',   corners:4,correct:false},
-            {id:'s5',shape:'triangle', corners:3,correct:true}
+            {id:'s3',shape:'rectangle',corners:4,correct:false},
+            {id:'s4',shape:'square',   corners:4,correct:true},
+            {id:'s5',shape:'triangle', corners:3,correct:false}
           ]}},
-          tags:['shapes','triangle','identify','sort','match'],
-          difficulty:'easy', standard:'K.6E',
-          intervention:{ teach:{ text:'Triangles are the pointy shapes!', highlight:['triangle'] }, retry:{ strategy:'similar', matchTags:['triangle','identify'] } }
+          tags:['shapes','square','identify','sort'],
+          difficulty:'medium', standard:'K.6E',
+          intervention:{ teach:{ text:'Squares have 4 equal sides — all the same length!', highlight:['square'] }, retry:{ strategy:'similar', matchTags:['square','identify'] } }
         },
         {
           id:'k-u6-l4-tg-05', type:'tapGroup', grade:'K', unit:6, lesson:4,
@@ -1153,298 +1164,298 @@ _mergeKUnitData(5, {
 
   testBank: [
     // ── 2D Shapes (K.6A) ─────────────────────────────────────────────────────
-    {
+    {lessonId:'ku5l1', 
       t: 'A triangle has ___ sides.',
       v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_random'}],
       a:1, e:'A triangle has 3 sides.', d:'e', s:null, h:'Count: 1 side, 2 sides, 3 sides'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Name the flat shape that is perfectly round.',
       v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
       o: [{val:'triangle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_random'}],
       a:2, e:'A circle is perfectly round with no corners.', d:'e', s:null, h:'Which shape is round?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'square',tag:'err_random'},{val:'rectangle'}],
       a:3, e:'A rectangle has 4 corners and 4 sides.', d:'e', s:null, h:'Count the corners — tall and wide.'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Look at the coin. What shape is it?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🪙', layout: 'line' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
       a:1, e:'A coin is round — a circle.', d:'e', s:null, h:'Is it round or has corners?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'A tile floor has square tiles. A square has how many sides?',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'A square has 4 sides.', d:'e', s:null, h:'Count each side of the square'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'A slice of pie has 3 sides. What shape is it?',
       v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
       o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'square',tag:'err_random'},{val:'rectangle',tag:'err_random'}],
       a:1, e:'A triangle has 3 sides.', d:'m', s:null, h:'Which shape has exactly 3 sides?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Look at the kite. Which shape also has 4 sides?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🪁', layout: 'line' } },
       o: [{val:'triangle',tag:'err_off_by_one'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'none of them',tag:'err_random'}],
       a:2, e:'A kite has 4 sides. A rectangle does too.', d:'m', s:null, h:'Which shape has 4 sides?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_random'},{val:'square'},{val:'rectangle',tag:'err_random'}],
       a:2, e:'A square has 4 equal sides.', d:'m', s:null, h:'All 4 sides are the same length.'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Tap the shape with all sides equal.',
       v: { type: 'shapes', config: { items: ['square','rectangle'], cols: 2, label: 'A square and a rectangle' } },
       o: [{val:'square'},{val:'rectangle',tag:'err_random'}],
       a:0, e:'A square has all 4 sides the same length.', d:'m', s:null, h:'Which shape has equal sides?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Shapes do not change when you turn them. A turned triangle is still a ___?',
       v: { type: 'shapes', config: { items: ['triangle'], rotation: 135, label: 'A tilted triangle' } },
       o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'square',tag:'err_shape_orient'},{val:'rectangle',tag:'err_shape_orient'}],
       a:1, e:'Turning never changes what a shape is.', d:'h', s:null, h:'Count the corners — do they change when turned?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'Tap the shape made of only curves.',
       v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
       o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
       a:0, e:'A circle is one smooth curve — no straight parts.', d:'m', s:null, h:'Which shape has no straight edges?'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'A shape has 3 corners. It has ___ sides?',
       v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_random'}],
       a:1, e:'A triangle has 3 corners AND 3 sides.', d:'m', s:null, h:'Corners and sides are equal in triangles'
     },
-    {
+    {lessonId:'ku5l1', 
       t: 'How many sides do 1 triangle and 1 circle have TOGETHER?',
       v: { type: 'shapes', config: { items: ['triangle','circle'], cols: 2, label: 'A triangle and a circle' } },
       o: [{val:'0',tag:'err_under_count'},{val:'1',tag:'err_under_count'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
       a:2, e:'Triangle has 3 sides; circle has 0. 3 + 0 = 3.', d:'h', s:null, h:'Triangle = 3 sides; circle = 0 sides'
     },
     // ── 3D Solids (K.6B, K.6C) ───────────────────────────────────────────────
-    {
+    {lessonId:'ku5l2', 
       t: 'A marble is shaped like which solid?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🎱', layout: 'line' } },
       o: [{val:'cube',tag:'err_wrong_solid'},{val:'cone',tag:'err_wrong_solid'},{val:'sphere'},{val:'cylinder',tag:'err_wrong_solid'}],
       a:2, e:'A sphere is perfectly round like a marble.', d:'e', s:null, h:'Perfectly round like a ball — which solid has no flat parts?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'A paper towel roll is shaped like which solid?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🥫', layout: 'line' } },
       o: [{val:'cube',tag:'err_random'},{val:'cone',tag:'err_random'},{val:'sphere',tag:'err_random'},{val:'cylinder'}],
       a:3, e:'A cylinder is a round tube with flat circles on top and bottom.', d:'e', s:null, h:'Round tube with flat circles on each end'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'A traffic cone is shaped like which solid?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🍦', layout: 'line' } },
       o: [{val:'cube',tag:'err_random'},{val:'cone'},{val:'sphere',tag:'err_random'},{val:'cylinder',tag:'err_random'}],
       a:1, e:'A cone has a pointy top and a flat circle at the bottom.', d:'e', s:null, h:'Pointy at the top, flat circle at the bottom'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'A building block (cube) — how many corners does it have?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🧊', layout: 'line' } },
       o: [{val:'4',tag:'err_off_by_one'},{val:'6',tag:'err_off_by_one'},{val:'8'},{val:'12',tag:'err_random'}],
       a:2, e:'A cube has 8 corners.', d:'m', s:null, h:'Count every pointy corner on a box'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'Which solid has 1 curved surface and no flat faces?',
       v: null,
       o: [{val:'cube',tag:'err_random'},{val:'cone',tag:'err_wrong_solid'},{val:'sphere'},{val:'cylinder',tag:'err_wrong_solid'}],
       a:2, e:'A sphere is all curved — no flat faces at all.', d:'m', s:null, h:'Totally round — no flat faces!'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'Which solid has exactly 1 flat face?',
       v: null,
       o: [{val:'sphere',tag:'err_random'},{val:'cone'},{val:'cylinder',tag:'err_off_by_one'},{val:'cube',tag:'err_random'}],
       a:1, e:'A cone has just one flat circle at the bottom.', d:'m', s:null, h:'Pointy top, one flat circle on the bottom'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'The flat end of a cylinder is shaped like a ___?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🥫', layout: 'line' } },
       o: [{val:'square',tag:'err_wrong_solid'},{val:'triangle',tag:'err_random'},{val:'circle'},{val:'rectangle',tag:'err_wrong_solid'}],
       a:2, e:'The top and bottom of a cylinder are circles.', d:'m', s:null, h:'Round end — what 2D shape is round?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'Which solid has 6 equal square faces?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🧊', layout: 'line' } },
       o: [{val:'sphere',tag:'err_random'},{val:'cone',tag:'err_random'},{val:'cylinder',tag:'err_random'},{val:'cube'}],
       a:3, e:'A cube has 6 flat square faces.', d:'m', s:null, h:'6 flat square faces — which solid?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'A sphere looks like a circle but is different because ___?',
       v: null,
       o: [{val:'it is flat',tag:'err_wrong_solid'},{val:'it has corners',tag:'err_random'},{val:'it is 3D — you can hold it'},{val:'it has 4 faces',tag:'err_random'}],
       a:2, e:'A sphere is 3D — you can hold it like a ball.', d:'h', s:null, h:'Can you hold it or is it flat on paper?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'A cone has 1 flat face. A cylinder has ___ flat faces?',
       v: null,
       o: [{val:'0',tag:'err_off_by_one'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'6',tag:'err_random'}],
       a:2, e:'A cylinder has 2 flat faces — one circle on top and one on the bottom.', d:'h', s:null, h:'Top circle + bottom circle = ?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'Which solid would you use to trace a circle?',
       v: null,
       o: [{val:'cube',tag:'err_wrong_solid'},{val:'cone'},{val:'sphere',tag:'err_wrong_solid'},{val:'rectangle',tag:'err_random'}],
       a:1, e:'A cone has a flat circular face — trace around it.', d:'h', s:null, h:'Which solid has a flat circular face?'
     },
-    {
+    {lessonId:'ku5l2', 
       t: 'Which solid would you use to trace a square?',
       v: null,
       o: [{val:'sphere',tag:'err_wrong_solid'},{val:'cone',tag:'err_wrong_solid'},{val:'cylinder',tag:'err_wrong_solid'},{val:'cube'}],
       a:3, e:'A cube has flat square faces — trace around one.', d:'h', s:null, h:'Which solid has flat square faces?'
     },
     // ── Shape Attributes (K.6D) ───────────────────────────────────────────────
-    {
+    {lessonId:'ku5l3', 
       t: 'Tap the shape with 0 corners.',
       v: { type: 'shapes', config: { items: ['circle','triangle','square','rectangle'], cols: 2, label: 'Four shapes', vivid: true } },
       o: [{val:'circle'},{val:'triangle',tag:'err_shape_sort'},{val:'square',tag:'err_shape_sort'},{val:'rectangle',tag:'err_shape_sort'}],
       a:0, e:'A circle has no corners — it is perfectly round.', d:'e', s:null, h:'Which shape is perfectly round?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A triangle has ___ corners.',
       v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'5',tag:'err_random'}],
       a:1, e:'A triangle has 3 corners.', d:'e', s:null, h:'Count each pointy corner'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A square has ___ sides.',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'A square has 4 sides.', d:'e', s:null, h:'Count each side of the square'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A circle has ___ sides.',
       v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
       o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'2',tag:'err_off_by_one'},{val:'4',tag:'err_random'}],
       a:0, e:'A circle has no straight sides.', d:'e', s:null, h:'A circle is round — no straight sides!'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A rectangle has ___ corners.',
       v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'A rectangle has 4 corners.', d:'m', s:null, h:'Touch each corner: 1, 2, 3, 4'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['square'], label: 'A square' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle',tag:'err_random'},{val:'square'}],
       a:3, e:'A square has 4 equal sides and 4 corners.', d:'m', s:null, h:'All 4 sides the same length.'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A rectangle has 2 long sides and 2 short sides. How many sides total?',
       v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
       o: [{val:'2',tag:'err_off_by_one'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'2 long + 2 short = 4 sides total.', d:'m', s:null, h:'2 long + 2 short sides = ?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'What shape is this?',
       v: { type: 'shapes', config: { items: ['rectangle'], label: 'A rectangle' } },
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'square',tag:'err_random'}],
       a:2, e:'A rectangle has 4 corners and 4 sides.', d:'h', s:null, h:'Count the corners — how many?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'How many corners do a triangle and a square have TOGETHER?',
       v: { type: 'shapes', config: { items: ['triangle','square'], cols: 2, label: 'A triangle and a square' } },
       o: [{val:'4',tag:'err_under_count'},{val:'5',tag:'err_off_by_one'},{val:'6',tag:'err_off_by_one'},{val:'7'}],
       a:3, e:'Triangle = 3 corners + square = 4 corners. 3 + 4 = 7.', d:'h', s:null, h:'3 + 4 = ?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'Which two shapes have the SAME number of sides?',
       v: null,
       o: [{val:'triangle and square',tag:'err_off_by_one'},{val:'circle and triangle',tag:'err_random'},{val:'square and rectangle'},{val:'triangle and circle',tag:'err_random'}],
       a:2, e:'Square and rectangle both have 4 sides.', d:'h', s:null, h:'Which two shapes both have 4 sides?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'A shape with exactly 4 corners can be a square or a ___?',
       v: null,
       o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'sphere',tag:'err_random'}],
       a:2, e:'Rectangles and squares both have 4 corners.', d:'m', s:null, h:'Which other shape has 4 corners?'
     },
-    {
+    {lessonId:'ku5l3', 
       t: 'How many sides do 2 squares have altogether?',
       v: { type: 'shapes', config: { items: ['square','square'], cols: 2, label: 'Two squares' } },
       o: [{val:'4',tag:'err_under_count'},{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'}],
       a:3, e:'Each square has 4 sides. 4 + 4 = 8.', d:'h', s:null, h:'One square = 4 sides. Two squares = ?'
     },
     // ── Sort & Create (K.6E, K.6F) ───────────────────────────────────────────
-    {
+    {lessonId:'ku5l4', 
       t: 'Which group would you sort triangles into?',
       v: { type: 'shapes', config: { items: ['triangle'], label: 'A triangle' } },
       o: [{val:'0 sides',tag:'err_random'},{val:'2 sides',tag:'err_off_by_one'},{val:'3 sides'},{val:'4 sides',tag:'err_off_by_one'}],
       a:2, e:'Triangles always have 3 sides.', d:'e', s:null, h:'Triangle = 3 sides!'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Which group would you sort circles into?',
       v: { type: 'shapes', config: { items: ['circle'], label: 'A circle' } },
       o: [{val:'3 corners',tag:'err_random'},{val:'4 corners',tag:'err_random'},{val:'no corners'},{val:'1 corner',tag:'err_random'}],
       a:2, e:'Circles have zero corners.', d:'e', s:null, h:'Circles are round — no corners!'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Which group would you sort cubes into?',
       v: { type: 'objectSet', config: { count: 1, emoji: '🧊', layout: 'line' } },
       o: [{val:'flat shapes',tag:'err_wrong_solid'},{val:'3D solids'},{val:'curved shapes',tag:'err_random'},{val:'shapes with no corners',tag:'err_random'}],
       a:1, e:'A cube is a 3D solid — you can hold it.', d:'e', s:null, h:'Can you hold a cube?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'To draw a circle, you draw ___?',
       v: null,
       o: [{val:'3 straight lines',tag:'err_random'},{val:'4 straight lines',tag:'err_random'},{val:'no straight lines — a smooth curve'},{val:'1 straight line',tag:'err_random'}],
       a:2, e:'A circle is a smooth curve — no straight lines.', d:'m', s:null, h:'Circles have curves, not straight lines!'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'A rectangle and a square are sorted together. What is the SAME about them?',
       v: { type: 'shapes', config: { items: ['rectangle','square'], cols: 2, label: 'A rectangle and a square' } },
       o: [{val:'sides are all equal',tag:'err_random'},{val:'both are round',tag:'err_random'},{val:'both have 4 sides and 4 corners'},{val:'both have 3 corners',tag:'err_random'}],
       a:2, e:'Both have 4 sides and 4 corners.', d:'m', s:null, h:'How many sides and corners do each have?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'A child sorts circle and sphere together. Why do they belong together?',
       v: null,
       o: [{val:'both have corners',tag:'err_random'},{val:'both are flat',tag:'err_wrong_solid'},{val:'both are round with curved surfaces'},{val:'both have 4 sides',tag:'err_random'}],
       a:2, e:'Circle is round and flat; sphere is round and 3D.', d:'m', s:null, h:'What do circles and spheres have in common?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Sort: triangle, sphere, circle, cube. How many are flat 2D shapes?',
       v: null,
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_random'}],
       a:1, e:'Triangle and circle are flat. Sphere and cube are 3D.', d:'m', s:null, h:'Which can be drawn flat on paper?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'You draw a shape with 4 lines of equal length connected at corners. What shape did you make?',
       v: null,
       o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle',tag:'err_random'},{val:'square'}],
       a:3, e:'4 equal lines connected at corners = square.', d:'m', s:null, h:'4 equal sides = square!'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'A shape is placed upside-down but you still sort it as a triangle. Why?',
       v: { type: 'shapes', config: { items: ['triangle'], rotation: 180, label: 'An upside-down triangle' } },
       o: [{val:'it has no sides when flipped',tag:'err_shape_orient'},{val:'its sides and corners stay the same'},{val:'it becomes a square when flipped',tag:'err_shape_orient'},{val:'you cannot sort a flipped shape',tag:'err_random'}],
       a:1, e:'Turning never changes the sides or corners.', d:'h', s:null, h:'Does turning change how many corners it has?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Sort: sphere, cube, cone, triangle. How many are 3D solids?',
       v: null,
       o: [{val:'1',tag:'err_under_count'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_random'}],
       a:2, e:'Sphere, cube, and cone are 3D. Triangle is flat.', d:'h', s:null, h:'Sphere, cube, cone — can you hold them?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Which sorting rule correctly separates triangles from rectangles?',
       v: { type: 'shapes', config: { items: ['triangle','rectangle'], cols: 2, label: 'A triangle and a rectangle' } },
       o: [{val:'by color',tag:'err_random'},{val:'by size',tag:'err_random'},{val:'by number of sides'},{val:'by which is taller',tag:'err_random'}],
       a:2, e:'Triangle has 3 sides; rectangle has 4 — always different.', d:'h', s:null, h:'What is always different about triangles and rectangles?'
     },
-    {
+    {lessonId:'ku5l4', 
       t: 'Which shape from this list has the MOST sides: circle, triangle, rectangle?',
       v: { type: 'shapes', config: { items: ['circle','triangle','rectangle'], cols: 3, label: 'A circle, a triangle, and a rectangle' } },
       o: [{val:'circle',tag:'err_random'},{val:'triangle',tag:'err_off_by_one'},{val:'rectangle'},{val:'they all have the same',tag:'err_random'}],

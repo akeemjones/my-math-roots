@@ -836,100 +836,100 @@ _mergeKUnitData(2, {
 
   testBank: [
     // ── L1 Addition (4) ──────────────────────────────────────────────────────
-    {
+    {lessonId:'ku3l1', 
       t: '🍭🍭🍭🍭 + 🍭🍭🍭 = ?',
       v: {type:'twoGroups', config:{leftCount:4, leftObj:'🍭', rightCount:3, rightObj:'🍭', op:'add'}},
       o: [{val:'5',tag:'err_off_by_one'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
       a:2, e:'4 + 3 = 7!', d:'e', s:null, h:'Count on from 4: five, six, seven'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🦄🦄 + 🦄🦄🦄🦄🦄🦄 = ?',
       v: {type:'twoGroups', config:{leftCount:2, leftObj:'🦄', rightCount:6, rightObj:'🦄', op:'add'}},
       o: [{val:'6',tag:'err_keep_start'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'2 + 6 = 8!', d:'m', s:null, h:'Count on from 6: seven, eight'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '1 + 9 = ?',
       v: null,
       o: [{val:'8',tag:'err_off_by_one'},{val:'9',tag:'err_keep_start'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'1 + 9 = 10!', d:'m', s:null, h:'Count on from 9: ten'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🎃🎃🎃🎃🎃 + 🎃🎃🎃 = ?',
       v: {type:'twoGroups', config:{leftCount:5, leftObj:'🎃', rightCount:3, rightObj:'🎃', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'5 + 3 = 8!', d:'e', s:null, h:'Count on from 5: six, seven, eight'
     },
     // ── L2 Subtraction (4) ───────────────────────────────────────────────────
-    {
+    {lessonId:'ku3l2', 
       t: '🌈🌈🌈🌈🌈🌈🌈🌈🌈 − 🌈🌈🌈 = ?',
       v: {type:'twoGroups', config:{leftCount:9, leftObj:'🌈', rightCount:3, rightObj:'🌈', op:'subtract'}},
       o: [{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'9',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'9 - 3 = 6!', d:'m', s:null, h:'Count back 3 from 9'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🍦🍦🍦🍦🍦🍦🍦 − 🍦🍦🍦🍦🍦 = ?',
       v: {type:'twoGroups', config:{leftCount:7, leftObj:'🍦', rightCount:5, rightObj:'🍦', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'7',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'7 - 5 = 2!', d:'e', s:null, h:'Eaten = subtract'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🏀🏀🏀🏀🏀🏀🏀🏀🏀🏀 − 🏀🏀🏀 = ?',
       v: {type:'twoGroups', config:{leftCount:10, leftObj:'🏀', rightCount:7, rightObj:'🏀', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_count_all'},{val:'10',tag:'err_keep_start'}],
       a:1, e:'10 - 7 = 3!', d:'m', s:null, h:'Count back 7 from 10'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🎵🎵🎵🎵🎵🎵 − 🎵🎵🎵🎵 = ?',
       v: {type:'twoGroups', config:{leftCount:6, leftObj:'🎵', rightCount:4, rightObj:'🎵', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'6',tag:'err_keep_start'},{val:'10',tag:'err_add_instead'}],
       a:1, e:'6 - 4 = 2!', d:'e', s:null, h:'Erased = subtract'
     },
     // ── L3 Word Problems (4) ─────────────────────────────────────────────────
-    {
+    {lessonId:'ku3l3', 
       t: '🎀🎀🎀 + 🎀🎀🎀🎀🎀 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🎀', rightCount:5, rightObj:'🎀', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'3 + 5 = 8!', d:'e', s:null, h:'Gave more = add'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '☁️☁️☁️☁️☁️☁️☁️☁️☁️☁️ − ☁️☁️☁️☁️☁️☁️ = ?',
       v: {type:'twoGroups', config:{leftCount:10, leftObj:'☁️', rightCount:6, rightObj:'☁️', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'10',tag:'err_keep_start'},{val:'16',tag:'err_add_instead'}],
       a:1, e:'10 - 6 = 4!', d:'m', s:null, h:'Blew away = subtract'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '3 + 4 = ?',
       v: null,
       o: [{val:'3',tag:'err_keep_start'},{val:'4',tag:'err_count_all'},{val:'7'},{val:'12',tag:'err_add_instead'}],
       a:2, e:'3 + 4 = 7, so there were 7 oranges at first!', d:'m', s:null, h:'Think: ? - 4 = 3'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '🐘🐘🐘🐘 + 🐘🐘🐘🐘 = ?',
       v: {type:'twoGroups', config:{leftCount:4, leftObj:'🐘', rightCount:4, rightObj:'🐘', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'4 + 4 = 8!', d:'m', s:null, h:'In all = add'
     },
     // ── L4 Explain Thinking (4) ──────────────────────────────────────────────
-    {
+    {lessonId:'ku3l4', 
       t: '⭐⭐⭐⭐⭐ + ⭐⭐⭐⭐ = ?',
       v: {type:'twoGroups', config:{leftCount:5, leftObj:'⭐', rightCount:4, rightObj:'⭐', op:'add'}},
       o: [{val:'5 - 4 = 1',tag:'err_sub_instead'},{val:'5 + 3 = 8',tag:'err_random'},{val:'5 + 4 = 9'},{val:'4 + 4 = 8',tag:'err_random'}],
       a:2, e:'5 + 4 = 9 matches the picture!', d:'e', s:null, h:'Count both groups'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '8 − 5 = 4 ?',
       v: null,
       o: [{val:'Yes, 8 - 5 = 4',tag:'err_random'},{val:'No, 8 - 5 = 3'},{val:'No, 8 - 5 = 2',tag:'err_off_by_one'},{val:'Yes, because 5 + 4 = 9',tag:'err_random'}],
       a:1, e:'8 - 5 = 3, not 4! Count back 5 from 8: seven, six, five, four, three', d:'m', s:null, h:'Count back 5 from 8'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '2 + 8 = ?',
       v: null,
       o: [{val:'8 + 3 = 11',tag:'err_random'},{val:'8 + 2 = 10'},{val:'2 + 2 = 4',tag:'err_random'},{val:'10 - 2 = 8',tag:'err_sub_instead'}],
       a:1, e:'8 + 2 = 10 is the same as 2 + 8 = 10!', d:'m', s:null, h:'Adding in any order gives the same answer'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '⛵⛵⛵⛵⛵⛵⛵⛵⛵⛵ − ⛵⛵⛵⛵⛵⛵⛵ = ?',
       v: {type:'objectSet', config:{count:10, emoji:'⛵', layout:'grid'}},
       o: [{val:'10 + 7 = 17',tag:'err_add_instead'},{val:'10 - 7 = 3'},{val:'7 - 10 = ?',tag:'err_random'},{val:'10 - 3 = 7',tag:'err_random'}],
@@ -937,216 +937,216 @@ _mergeKUnitData(2, {
     },
     // ── NEW testBank questions ───────────────────────────────────────────────
     // L1 easy (3)
-    {
+    {lessonId:'ku3l1', 
       t: '🌼 + 🌼🌼🌼🌼 = ?',
       v: {type:'twoGroups', config:{leftCount:1, leftObj:'🌼', rightCount:4, rightObj:'🌼', op:'add'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_keep_start'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'1 + 4 = 5!', d:'e', s:null, h:'Count on from 1: two, three, four, five'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🐥🐥 + 🐥🐥 = ?',
       v: {type:'twoGroups', config:{leftCount:2, leftObj:'🐥', rightCount:2, rightObj:'🐥', op:'add'}},
       o: [{val:'2',tag:'err_keep_start'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
       a:2, e:'2 + 2 = 4!', d:'e', s:null, h:'Count on from 2: three, four'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🍦🍦🍦 + 🍦🍦 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🍦', rightCount:2, rightObj:'🍦', op:'add'}},
       o: [{val:'3',tag:'err_keep_start'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'3 + 2 = 5!', d:'e', s:null, h:'Count on from 3: four, five'
     },
     // L1 medium (4)
-    {
+    {lessonId:'ku3l1', 
       t: '3 + 5 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌷', rightCount:5, rightObj:'🌷', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'3 + 5 = 8!', d:'m', s:null, h:'Count on from 3: four, five, six, seven, eight'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🐠🐠🐠🐠🐠 + 🐠🐠🐠 = ?',
       v: {type:'twoGroups', config:{leftCount:5, leftObj:'🐠', rightCount:3, rightObj:'🐠', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'5 + 3 = 8!', d:'m', s:null, h:'Count on from 5: six, seven, eight'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🎶🎶 + 🎶🎶🎶🎶🎶🎶 = ?',
       v: {type:'twoGroups', config:{leftCount:2, leftObj:'🎶', rightCount:6, rightObj:'🎶', op:'add'}},
       o: [{val:'6',tag:'err_keep_start'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'2 + 6 = 8!', d:'m', s:null, h:'Count on from 6: seven, eight'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🎀🎀🎀🎀 + 🎀🎀🎀🎀 = ?',
       v: {type:'twoGroups', config:{leftCount:4, leftObj:'🎀', rightCount:4, rightObj:'🎀', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'4 + 4 = 8!', d:'m', s:null, h:'Count on from 4: five, six, seven, eight'
     },
     // L1 hard (2)
-    {
+    {lessonId:'ku3l1', 
       t: '🌻🌻🌻🌻🌻🌻🌻🌻🌻 + 🌻 = ?',
       v: {type:'twoGroups', config:{leftCount:9, leftObj:'🌻', rightCount:1, rightObj:'🌻', op:'add'}},
       o: [{val:'8',tag:'err_off_by_one'},{val:'9',tag:'err_keep_start'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'9 + 1 = 10!', d:'h', s:null, h:'Count 1 more than 9'
     },
-    {
+    {lessonId:'ku3l1', 
       t: '🐝🐝🐝🐝🐝🐝🐝🐝 + 🐝🐝 = ?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐝', rightCount:2, rightObj:'🐝', op:'add'}},
       o: [{val:'8',tag:'err_keep_start'},{val:'9',tag:'err_off_by_one'},{val:'10'},{val:'11',tag:'err_off_by_one'}],
       a:2, e:'8 + 2 = 10!', d:'h', s:null, h:'Count on from 8: nine, ten'
     },
     // L2 easy (3)
-    {
+    {lessonId:'ku3l2', 
       t: '🍓🍓🍓🍓🍓 − 🍓 = ?',
       v: {type:'twoGroups', config:{leftCount:5, leftObj:'🍓', rightCount:1, rightObj:'🍓', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
       a:1, e:'5 - 1 = 4!', d:'e', s:null, h:'1 less than 5 is 4'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🌼🌼🌼🌼 − 🌼🌼 = ?',
       v: {type:'twoGroups', config:{leftCount:4, leftObj:'🌼', rightCount:2, rightObj:'🌼', op:'subtract'}},
       o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'4',tag:'err_keep_start'},{val:'6',tag:'err_add_instead'}],
       a:1, e:'4 - 2 = 2!', d:'e', s:null, h:'Count back 2 from 4: three, two'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🐣🐣🐣 − 🐣🐣 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐣', rightCount:2, rightObj:'🐣', op:'subtract'}},
       o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
       a:1, e:'3 - 2 = 1!', d:'e', s:null, h:'Count back 2 from 3: two, one'
     },
     // L2 medium (4)
-    {
+    {lessonId:'ku3l2', 
       t: '🍒🍒🍒🍒🍒🍒🍒🍒 − 🍒🍒🍒 = ?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍒', rightCount:3, rightObj:'🍒', op:'subtract'}},
       o: [{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'8',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'8 - 3 = 5!', d:'m', s:null, h:'Count back 3 from 8: seven, six, five'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🌺🌺🌺🌺🌺🌺🌺 − 🌺🌺🌺🌺 = ?',
       v: {type:'twoGroups', config:{leftCount:7, leftObj:'🌺', rightCount:4, rightObj:'🌺', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Count back 4 from 7'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🦋🦋🦋🦋🦋🦋 − 🦋🦋🦋 = ?',
       v: {type:'twoGroups', config:{leftCount:6, leftObj:'🦋', rightCount:3, rightObj:'🦋', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'6',tag:'err_keep_start'},{val:'9',tag:'err_add_instead'}],
       a:1, e:'6 - 3 = 3!', d:'m', s:null, h:'Count back 3 from 6: five, four, three'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🎈🎈🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈🎈🎈🎈🎈 = ?',
       v: {type:'twoGroups', config:{leftCount:9, leftObj:'🎈', rightCount:6, rightObj:'🎈', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'9',tag:'err_keep_start'},{val:'15',tag:'err_add_instead'}],
       a:1, e:'9 - 6 = 3!', d:'m', s:null, h:'Count back 6 from 9: eight, seven, six, five, four, three'
     },
     // L2 hard (2)
-    {
+    {lessonId:'ku3l2', 
       t: '🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋 − 🍋🍋🍋 = ?',
       v: {type:'twoGroups', config:{leftCount:10, leftObj:'🍋', rightCount:7, rightObj:'🍋', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'},{val:'10',tag:'err_keep_start'}],
       a:1, e:'10 - 7 = 3!', d:'h', s:null, h:'Count back 7 from 10: nine, eight, seven, six, five, four, three'
     },
-    {
+    {lessonId:'ku3l2', 
       t: '🐧🐧🐧🐧🐧🐧🐧🐧 − 🐧🐧🐧🐧🐧🐧🐧🐧 = ?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐧', rightCount:8, rightObj:'🐧', op:'subtract'}},
       o: [{val:'0'},{val:'1',tag:'err_off_by_one'},{val:'8',tag:'err_keep_start'},{val:'16',tag:'err_add_instead'}],
       a:0, e:'When you take all away, none are left! 8 - 8 = 0', d:'h', s:null, h:'Taking away all leaves zero'
     },
     // L3 easy (2)
-    {
+    {lessonId:'ku3l3', 
       t: '🐸🐸 + 🐸🐸🐸 = ?',
       v: {type:'twoGroups', config:{leftCount:2, leftObj:'🐸', rightCount:3, rightObj:'🐸', op:'add'}},
       o: [{val:'3',tag:'err_keep_start'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
       a:2, e:'2 + 3 = 5!', d:'e', s:null, h:'Jump on = add'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '🌟🌟🌟 − 🌟🌟 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌟', rightCount:2, rightObj:'🌟', op:'subtract'}},
       o: [{val:'0',tag:'err_off_by_one'},{val:'1'},{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_add_instead'}],
       a:1, e:'3 - 2 = 1!', d:'e', s:null, h:'Fade away = subtract'
     },
     // L3 medium (4)
-    {
+    {lessonId:'ku3l3', 
       t: '🐦🐦🐦 + 🐦🐦🐦🐦🐦 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🐦', rightCount:5, rightObj:'🐦', op:'add'}},
       o: [{val:'6',tag:'err_off_by_one'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
       a:2, e:'3 + 5 = 8!', d:'m', s:null, h:'Land = add'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '🍪🍪🍪🍪🍪🍪🍪🍪 − 🍪🍪🍪🍪 = ?',
       v: {type:'twoGroups', config:{leftCount:8, leftObj:'🍪', rightCount:4, rightObj:'🍪', op:'subtract'}},
       o: [{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'8',tag:'err_keep_start'},{val:'12',tag:'err_add_instead'}],
       a:1, e:'8 - 4 = 4!', d:'m', s:null, h:'Eaten = subtract'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '🎈🎈🎈🎈🎈🎈🎈 − 🎈🎈🎈🎈 = ?',
       v: {type:'twoGroups', config:{leftCount:7, leftObj:'🎈', rightCount:4, rightObj:'🎈', op:'subtract'}},
       o: [{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'7',tag:'err_keep_start'},{val:'11',tag:'err_add_instead'}],
       a:1, e:'7 - 4 = 3!', d:'m', s:null, h:'Pop = subtract'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '5 + 3 = ?',
       v: null,
       o: [{val:'2',tag:'err_off_by_one'},{val:'5',tag:'err_keep_start'},{val:'8'},{val:'15',tag:'err_add_instead'}],
       a:2, e:'5 + 3 = 8, so there were 8 apples at first!', d:'m', s:null, h:'Think: ? - 3 = 5'
     },
     // L3 hard (2)
-    {
+    {lessonId:'ku3l3', 
       t: '6 − 4 = ?',
       v: null,
       o: [{val:'2'},{val:'4',tag:'err_count_all'},{val:'6',tag:'err_keep_total'},{val:'10',tag:'err_add_instead'}],
       a:0, e:'6 - 4 = 2, so there were 2 eggs before hatching!', d:'h', s:null, h:'Think: ? + 4 = 6'
     },
-    {
+    {lessonId:'ku3l3', 
       t: '🖍🖍🖍🖍🖍🖍🖍🖍🖍🖍 − 🖍🖍🖍 = ?',
       v: {type:'twoGroups', config:{leftCount:10, leftObj:'🖍', rightCount:3, rightObj:'🖍', op:'subtract'}},
       o: [{val:'3',tag:'err_keep_start'},{val:'5',tag:'err_off_by_one'},{val:'7'},{val:'13',tag:'err_add_instead'}],
       a:2, e:'10 - 3 = 7, so 7 crayons were given away!', d:'h', s:null, h:'Think: 10 - ? = 3'
     },
     // L4 easy (2)
-    {
+    {lessonId:'ku3l4', 
       t: '🔶🔶🔶 + 🔶🔶🔶🔶 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🔶', rightCount:4, rightObj:'🔶', op:'add'}},
       o: [{val:'3 - 4 = ?',tag:'err_sub_instead'},{val:'3 + 3 = 6',tag:'err_random'},{val:'3 + 4 = 7'},{val:'4 + 4 = 8',tag:'err_random'}],
       a:2, e:'3 + 4 = 7 matches the picture!', d:'e', s:null, h:'Count both groups together'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '🍇🍇🍇🍇🍇 − 🍇🍇 = ?',
       v: {type:'objectSet', config:{count:5, emoji:'🍇', layout:'line'}},
       o: [{val:'5 + 2 = 7',tag:'err_add_instead'},{val:'5 - 2 = 2',tag:'err_off_by_one'},{val:'5 - 2 = 3'},{val:'5 - 2 = 4',tag:'err_off_by_one'}],
       a:2, e:'5 - 2 = 3! Count back 2 from 5: four, three', d:'e', s:null, h:'Count back 2 from 5'
     },
     // L4 medium (4)
-    {
+    {lessonId:'ku3l4', 
       t: '6 + 3 = 8 ?',
       v: null,
       o: [{val:'Yes, 6 + 3 = 8',tag:'err_random'},{val:'No, 6 + 3 = 9'},{val:'No, 6 + 3 = 7',tag:'err_off_by_one'},{val:'No, 6 + 3 = 10',tag:'err_off_by_one'}],
       a:1, e:'6 + 3 = 9, not 8! Count on from 6: seven, eight, nine', d:'m', s:null, h:'Count on from 6 three times'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '🐱🐱🐱🐱🐱🐱🐱🐱🐱 − 🐱🐱🐱🐱🐱 = ?',
       v: {type:'objectSet', config:{count:9, emoji:'🐱', layout:'grid'}},
       o: [{val:'9 + 5 = 14',tag:'err_add_instead'},{val:'9 - 5 = 4'},{val:'5 + 9 = 14',tag:'err_add_instead'},{val:'9 - 5 = 3',tag:'err_off_by_one'}],
       a:1, e:'Went inside = subtract: 9 - 5 = 4!', d:'m', s:null, h:'Went inside = subtraction'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '5 + 4 = ?',
       v: null,
       o: [{val:'4 - 5 = ?',tag:'err_sub_instead'},{val:'4 + 5 = 9'},{val:'5 + 5 = 10',tag:'err_off_by_one'},{val:'9 - 4 = 5',tag:'err_sub_instead'}],
       a:1, e:'4 + 5 = 9 is the same as 5 + 4 = 9 — the order does not change the total!', d:'m', s:null, h:'Flip the numbers — does the total change?'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '7 + 3 = ?',
       v: null,
       o: [{val:'No, you should start at 3 and count 7 more',tag:'err_random'},{val:'Yes! Start at 7 and count: eight, nine, ten — that is 10'},{val:'No, you should subtract instead',tag:'err_sub_instead'},{val:'No, 7 + 3 is not 10',tag:'err_random'}],
       a:1, e:'Zoe is right! Starting at 7 and counting 3 more: eight, nine, ten = 10!', d:'m', s:null, h:'Start at the bigger number and count on'
     },
     // L4 hard (2)
-    {
+    {lessonId:'ku3l4', 
       t: '4 + 6 = ?',
       v: null,
       o: [{val:'6 - 4 = 2',tag:'err_sub_instead'},{val:'6 + 4 = 10'},{val:'4 + 5 = 9',tag:'err_off_by_one'},{val:'10 - 4 = 6',tag:'err_sub_instead'}],
       a:1, e:'6 + 4 = 10 is the same as 4 + 6 = 10 — you can add in any order!', d:'h', s:null, h:'Flip the order — the total stays the same'
     },
-    {
+    {lessonId:'ku3l4', 
       t: '8 + 0 = ?',
       v: null,
       o: [{val:'Because zero is the same as 1',tag:'err_random'},{val:'Because adding zero means nothing is added — the total stays 8'},{val:'Because 8 + 0 is the same as 8 - 8',tag:'err_random'},{val:'Because 0 + 0 = 8',tag:'err_random'}],

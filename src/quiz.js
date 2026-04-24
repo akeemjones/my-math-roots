@@ -307,7 +307,10 @@ function startLessonQuiz(unitIdx, lessonIdx){
 function startUnitQuiz(unitIdx){
   _loadUnit(unitIdx).then(function(){
     const u = UNITS_DATA[unitIdx];
-    _runQuiz(u.testBank||u.unitQuiz, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx);
+    const bank = (u.quizBlueprint && typeof _buildKUnitQuiz === 'function')
+      ? _buildKUnitQuiz(u)
+      : (u.testBank || u.unitQuiz);
+    _runQuiz(bank, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx);
   }).catch(function(){ alert('Could not load quiz. Check your connection.'); });
 }
 
