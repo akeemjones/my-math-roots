@@ -1444,6 +1444,38 @@ function buildPracticeQ(pid, q){
   // q.t and q.o may contain SVG/HTML (e.g. clock diagrams) — render as-is; these are authored data, not user input
   const qText = q.t && q.t.includes('<') ? q.t : _escHtml(q.t);
 
+  // shapes (2–4 items, all shape names in opts) — render tappable SVG shape buttons
+  if (q.v && q.v.type === 'shapes' && q.v.config && (q.v.config.items||[]).length >= 2) {
+    const sCfg   = q.v.config;
+    const sItems = sCfg.items.slice(0, 4);
+    if (sItems.every(s => opts.includes(s))) {
+      const SDEFS = {
+        circle:    '<circle cx="40" cy="40" r="32"/>',
+        triangle:  '<polygon points="40,8 72,72 8,72"/>',
+        square:    '<rect x="8" y="8" width="64" height="64"/>',
+        rectangle: '<rect x="4" y="16" width="72" height="48"/>',
+      };
+      const VIVID = ['#3b82f6','#ef4444','#22c55e','#a855f7','#f97316','#ec4899'];
+      let seed = 0; const skey = sItems.join('');
+      for (let k = 0; k < skey.length; k++) seed += skey.charCodeAt(k);
+      const rot = sCfg.rotation || 0;
+      const btnSize  = sItems.length <= 2 ? 120 : 90;
+      const gridClass = sItems.length > 2 ? 'vcmp vcmp-grid' : 'vcmp';
+      const shapeBtns = sItems.map((shape, i) => {
+        const color    = VIVID[(seed + i) % VIVID.length];
+        const shapeEl  = SDEFS[shape] || '';
+        const rotatePart = rot ? ` transform="rotate(${rot},40,40)"` : '';
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" style="width:${btnSize}px;height:${btnSize}px;display:block" focusable="false" aria-hidden="true"><g fill="${color}"${rotatePart}>${shapeEl}</g></svg>`;
+        return `<button class="vchoice pq-vgroup-btn" type="button" data-value="${_escHtml(shape)}" onclick="_pickPracticeVisualAns('${pid}','${_escHtml(shape)}')">${svg}<span class="vchoice-label">${_escHtml(shape)}</span></button>`;
+      }).join('');
+      return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
+        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="${gridClass}">${shapeBtns}</div>
+        <div class="pq-drill-fb" id="${pid}-fb"></div>
+      </div>`;
+    }
+  }
+
   // twoGroups compare with numeric options — render vertical emoji group buttons
   if (q.v && q.v.type === 'twoGroups' && q.v.config && q.v.config.op === 'compare') {
     const cfg = q.v.config;

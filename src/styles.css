@@ -872,6 +872,8 @@ body.a11y-colorblind .abtn.wrong{ border:3px dashed #e74c3c!important; color:#8b
 /* ── Comparison visual — clickable bar panels ─────────────────────── */
 .vcmp{ display:flex; gap:16px; justify-content:center; align-items:flex-end;
        padding:16px 8px; margin-bottom:16px; flex-wrap:wrap; }
+.vcmp-grid{ max-width:232px; margin:0 auto; align-items:flex-start; }
+.vcmp-grid .vchoice{ width:calc(50% - 8px); }
 .vchoice{ display:flex; flex-direction:column; align-items:center; gap:8px;
           padding:12px 10px; border-radius:16px;
           background:rgba(255,255,255,0.94);
