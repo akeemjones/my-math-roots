@@ -98,6 +98,8 @@
     _kManipAdd:             ()    => _kManipAdd(),
     _kManipRemove:          ()    => _kManipRemove(),
     _kManipSubmit:          ()    => _kManipSubmit(),
+    _tapGroupToggle:        (sid) => _tapGroupToggle(sid),
+    _tapGroupSubmit:        ()    => _tapGroupSubmit(),
 
     // ── Home ────────────────────────────────────────────────────────────────
     openUnit:               (a)   => openUnit(Number(a)),

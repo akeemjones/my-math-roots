@@ -507,7 +507,7 @@ function _renderQ(){
   if(qz.viewIdx == null) qz.viewIdx = qz.idx;
   const isReview = qz.viewIdx < qz.idx;
   const qIdx = qz.viewIdx;
-  const q = qz.questions[qIdx];
+  const q = (typeof QE !== 'undefined') ? QE.normalize(qz.questions[qIdx]) : qz.questions[qIdx];
 
   document.getElementById('qlbl').textContent = 'Question '+(qIdx+1)+' of '+total;
   document.getElementById('qscore').textContent = qz.score+' correct';
@@ -523,10 +523,42 @@ function _renderQ(){
     // Read-only: render past answered question
     const _ov = item => (item && typeof item === 'object') ? item.val : item;
     const past = qz.answers[qIdx];
-    const correct = past ? past.correct : _ov(q.o[q.a]);
-    const chosen = past ? past.chosen : null;
+    const isTapGroupQ = q.type === 'tapGroup' || (q.v && q.v.type === 'tapGroup');
     nb.style.display = 'block';
     nb.innerHTML = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
+
+    if (isTapGroupQ) {
+      // Render tapGroup review with correct/wrong shape state
+      var _tgRevCfg = q.visual ? q.visual.config : (q.v ? q.v.config : null);
+      var _tgRevShapes = (_tgRevCfg && _tgRevCfg.shapes) || [];
+      var _tgRevSelected = past && past.selectedIds ? past.selectedIds : [];
+      var _tgRevItems = _tgRevShapes.map(function(s) {
+        var wasSelected = _tgRevSelected.indexOf(s.id) !== -1;
+        var cls = 'tap-shape tg-shape-' + s.shape;
+        if (s.correct && wasSelected) cls += ' tg-correct';
+        else if (!s.correct && wasSelected) cls += ' tg-wrong';
+        else if (s.correct && !wasSelected) cls += ' tg-missed';
+        return '<div class="' + cls + '" aria-disabled="true">' +
+          (typeof _drawShapeSVG === 'function' ? _drawShapeSVG(s.shape) : '') +
+          '<span class="tg-shape-label">' + _escHtml(s.shape) + '</span>' +
+        '</div>';
+      });
+      document.getElementById('qcard').innerHTML =
+        '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
+        '<div class="q-text">'+_qText(q.t || q.prompt)+'</div>'+
+        '<div style="font-size:var(--fs-sm);color:var(--txt2);margin-bottom:10px">' + _ICO.eyeOn + ' Review — answer locked</div>'+
+        '<div class="tap-group">'+_tgRevItems.join('')+'</div>'+
+        (past ? '<div class="reveal show '+(past.ok?'ok':'no')+'">'+
+          '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
+          '<div class="rev-exp">' + _ICO.lightbulb + ' '+_escHtml(past.exp || q.explanation || q.e || '')+'</div>'+
+          (past.timeSecs != null ? '<div class="rev-time">⏱ '+past.timeSecs+'s on this question</div>' : '')+
+        '</div>' : '');
+      qz._answered = true;
+      return;
+    }
+
+    const correct = past ? past.correct : _ov(q.o[q.a]);
+    const chosen = past ? past.chosen : null;
     document.getElementById('qcard').innerHTML =
       '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
       '<div class="q-text">'+_qText(q.t)+'</div>'+(q.v?_buildVisualHTML(q.v):(q.s?'<div class="q-visual">'+q.s+'</div>':''))+
@@ -554,9 +586,10 @@ function _renderQ(){
   // Preserve existing option order on retry (intervention loop); shuffle only on first render
   // Support both plain string options and {val, tag} object options
   const _optVal = item => typeof item === 'object' ? item.val : item;
-  const opts = qz._opts || _shuffle([...q.o].map((item,i)=>({text:_optVal(item),i})));
-  qz._opts = opts;
-  const correct = _optVal(q.o[q.a]);
+  const _isTapGroup = q.type === 'tapGroup' || (q.v && q.v.type === 'tapGroup');
+  const opts = (!_isTapGroup && q.o) ? (qz._opts || _shuffle([...q.o].map((item,i)=>({text:_optVal(item),i})))) : [];
+  if (!_isTapGroup && q.o) qz._opts = opts;
+  const correct = (!_isTapGroup && q.o) ? _optVal(q.o[q.a]) : null;
 
   nb.style.display = 'none';
   nb.innerHTML = (qz.idx === total-1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
@@ -608,6 +641,11 @@ function _renderQ(){
       // answers go to agrid as plain number buttons
     }
 
+  } else if (q.type === 'tapGroup' || _vt === 'tapGroup') {
+    _agridOpts   = [];
+    var _tgCfg   = q.visual ? q.visual.config : (q.v ? q.v.config : null);
+    _visualBlock = _tgCfg ? _buildTapGroup(_tgCfg) : '';
+
   } else {
     _visualBlock = q.v ? _buildVisualHTML(q.v) : (q.s ? '<div class="q-visual">'+q.s+'</div>' : '');
   }
@@ -616,7 +654,7 @@ function _renderQ(){
   qz._hintRevealed = false;
   document.getElementById('qcard').innerHTML =
     '<div class="q-num" style="color:'+u.color+'">Question '+(qIdx+1)+'</div>'+
-    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t)+'</div>'+
+    '<div class="q-text" role="heading" aria-level="2">'+_qText(q.t || q.prompt)+'</div>'+
     _visualBlock+
     (_agridOpts.length > 0 ?
       '<div class="agrid" role="group" aria-label="Answer choices">'+
@@ -626,9 +664,9 @@ function _renderQ(){
         }).join('')+
       '</div>'
     : '')+
-    (q.h ? '<div id="qhint" role="note" aria-live="polite">'+
+    ((q.h || q.hint) ? '<div id="qhint" role="note" aria-live="polite">'+
       '<button id="qhint-btn" class="hint-btn" type="button" data-action="_toggleHint" aria-label="Need a hint?" aria-expanded="false">💡 Need a Hint?</button>'+
-      '<div class="hint-content" aria-hidden="true">'+_escHtml(q.h)+'</div>'+
+      '<div class="hint-content" aria-hidden="true">'+_escHtml(q.h || q.hint)+'</div>'+
     '</div>' : '')+
     '<div class="reveal" id="qreveal" role="status" aria-live="polite" aria-atomic="true"></div>';
 
@@ -882,6 +920,202 @@ function _kManipSubmit() {
     if (idx === -1) idx = 0;
   }
   _pickAnswer(idx);
+}
+
+// ── Tap-Group Interactive Question ─────────────────────────────────────────
+// Shape buttons + Submit. State stored on the .tap-group DOM node.
+
+function _buildTapGroup(config) {
+  var shapes = (config && config.shapes) || [];
+  var mode   = (config && config.mode) || 'multi';
+  var items  = shapes.map(function(s) {
+    return '<button class="tap-shape tg-shape-' + _escHtml(s.shape) + '"' +
+           ' type="button" data-action="_tapGroupToggle" data-arg="' + _escHtml(s.id) + '"' +
+           ' aria-pressed="false" aria-label="' + _escHtml(s.shape) + '">' +
+      (typeof _drawShapeSVG === 'function' ? _drawShapeSVG(s.shape) : '') +
+      '<span class="tg-shape-label">' + _escHtml(s.shape) + '</span>' +
+    '</button>';
+  });
+  return '<div class="tap-group" data-tg-mode="' + mode + '" data-tg-selected="">' +
+    items.join('') +
+    '<div style="width:100%;display:flex;justify-content:center;margin-top:4px">' +
+      '<button class="k-submit-btn" data-action="_tapGroupSubmit" disabled>\u2713 Submit</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function _tapGroupToggle(sid) {
+  if (isPaused || !CUR.quiz || CUR.quiz._answered) return;
+  var tg = document.querySelector('.tap-group');
+  if (!tg) return;
+  var mode = tg.dataset.tgMode || 'multi';
+  var btn  = tg.querySelector('[data-arg="' + sid + '"]');
+  if (!btn) return;
+
+  if (mode === 'single') {
+    // Deselect all others first
+    tg.querySelectorAll('.tap-shape.tg-selected').forEach(function(b) {
+      if (b !== btn) { b.classList.remove('tg-selected'); b.setAttribute('aria-pressed', 'false'); }
+    });
+    btn.classList.toggle('tg-selected');
+    btn.setAttribute('aria-pressed', btn.classList.contains('tg-selected') ? 'true' : 'false');
+  } else {
+    btn.classList.toggle('tg-selected');
+    btn.setAttribute('aria-pressed', btn.classList.contains('tg-selected') ? 'true' : 'false');
+  }
+
+  // Enable Submit iff at least 1 shape selected
+  var anySelected = tg.querySelectorAll('.tap-shape.tg-selected').length > 0;
+  var sub = tg.querySelector('.k-submit-btn');
+  if (sub) sub.disabled = !anySelected;
+}
+
+function _tapGroupSubmit() {
+  if (isPaused || !CUR.quiz || CUR.quiz._answered) return;
+  var qz  = CUR.quiz;
+  var tg  = document.querySelector('.tap-group');
+  if (!tg) return;
+
+  // Freeze all shape buttons and submit
+  tg.querySelectorAll('.tap-shape, .k-submit-btn').forEach(function(b) { b.disabled = true; });
+
+  var selected = Array.from(tg.querySelectorAll('.tap-shape.tg-selected'));
+  var selectedIds = selected.map(function(b) { return b.dataset.arg; });
+
+  var q = (typeof QE !== 'undefined') ? QE.normalize(qz.questions[qz.idx]) : qz.questions[qz.idx];
+  var tgCfg = q.visual ? q.visual.config : (q.v ? q.v.config : null);
+  var gradeResult = (typeof QE !== 'undefined') ? QE.grade(q, { selectedIds: selectedIds }) : { ok: false, errorType: 'err_tap_wrong_shape' };
+  var isOk = gradeResult.ok;
+  var qTimeSecs = qz._qStartedAt ? Math.round((Date.now() - qz._qStartedAt) / 1000) : null;
+
+  qz._answered = true;
+
+  setTimeout(function() {
+    // Mark correct/wrong/missed on each shape
+    var shapes = tgCfg ? tgCfg.shapes : [];
+    shapes.forEach(function(s) {
+      var btn = tg.querySelector('[data-arg="' + s.id + '"]');
+      if (!btn) return;
+      var wasSelected = selectedIds.indexOf(s.id) !== -1;
+      if (s.correct && wasSelected)  btn.classList.add('tg-correct');
+      if (!s.correct && wasSelected) btn.classList.add('tg-wrong');
+      if (s.correct && !wasSelected) btn.classList.add('tg-missed');
+    });
+
+    if (isOk) { qz.score++; confetti(16); playCorrect(); }
+    else { playWrong(); }
+    document.getElementById('qscore').textContent = qz.score + ' correct';
+
+    var exp = q.explanation || q.e || '';
+    var rev = document.getElementById('qreveal');
+    if (rev) {
+      rev.className = 'reveal show ' + (isOk ? 'ok' : 'no');
+      rev.innerHTML =
+        '<div class="rev-h ' + (isOk ? 'ok' : 'no') + '">' + (isOk ? '🎉 Correct! Great job!' : '😊 Not quite...') + '</div>' +
+        (exp ? '<div class="rev-exp">' + _ICO.lightbulb + ' ' + _escHtml(exp) + '</div>' : '');
+    }
+
+    // Haptic feedback on wrong
+    if (!isOk && document.body.classList.contains('a11y-haptic') && navigator.vibrate) {
+      try { navigator.vibrate(150); } catch(e) {}
+    }
+
+    if (typeof QE !== 'undefined') QE.logResult(q, gradeResult);
+
+    qz.answers.push({
+      t: q.t || q.prompt, ok: isOk, exp: exp,
+      selectedIds: selectedIds, timeSecs: qTimeSecs,
+      hintUsed: qz._hintRevealed || false
+    });
+
+    var nb = document.getElementById('next-btn');
+    if (nb) {
+      nb.style.display = 'block';
+      setTimeout(function() { nb.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 60);
+    }
+
+    // Immediately trigger intervention on wrong — tapGroup needs teach, not retry count
+    if (!isOk) {
+      setTimeout(function() {
+        _pauseForInterventionTapGroup(gradeResult.errorType, q);
+      }, 600);
+    }
+  }, 120);
+}
+
+function _pauseForInterventionTapGroup(errorTag, q) {
+  isPaused = true;
+  var content = _buildInterventionContent(errorTag, q, null, null);
+  var title   = content.title;
+  var text    = content.text;
+  var visualHTML = content.visualHTML;
+
+  var existing = document.querySelector('[data-focus-overlay]');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.setAttribute('data-focus-overlay', '1');
+  overlay.style.cssText = [
+    'position:fixed','inset:0','z-index:99999',
+    'background:var(--modal-bg, rgba(255,255,255,0.82))',
+    'backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
+    '-webkit-backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
+    'display:flex','flex-direction:column',
+    'align-items:center','justify-content:center',
+    'padding:32px','box-sizing:border-box',
+    'font-family:var(--ff, "Boogaloo","Arial Rounded MT Bold",sans-serif)',
+    'color:var(--txt, #1a2535)'
+  ].join(';');
+
+  var LABEL_STYLE = 'font-size:0.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;' +
+    'color:var(--txt2,#5a7080);margin-bottom:6px;font-family:var(--ff2,\'Nunito\',sans-serif)';
+  var DIVIDER = '<hr style="border:none;border-top:1px solid var(--border,rgba(0,0,0,.09));margin:14px 0">';
+
+  var qSection = q ?
+    '<div style="background:var(--bg2,#f4f7fa);border-radius:var(--rad-sm,12px);padding:12px 14px;text-align:left;">' +
+      '<div style="' + LABEL_STYLE + '">The question</div>' +
+      '<p style="margin:0;font-size:1rem;font-weight:600;line-height:1.4;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(q.t || q.prompt) + '</p>' +
+    '</div>' : '';
+
+  var fixSection = text ?
+    '<div style="text-align:left;">' +
+      '<div style="' + LABEL_STYLE + '">Let\'s look again</div>' +
+      '<p style="margin:0;font-size:1rem;line-height:1.5;color:var(--txt2,#5a7080);font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(text) + '</p>' +
+    '</div>' : '';
+
+  var trySection = visualHTML ?
+    '<div><div style="' + LABEL_STYLE + ';text-align:left">Try it this way</div>' +
+    '<div style="padding:10px 0">' + visualHTML + '</div></div>' : '';
+
+  overlay.innerHTML =
+    '<div style="max-width:520px;width:100%;background:var(--card-bg,#fff);border-radius:var(--rad,22px);' +
+      'box-shadow:var(--shad,0 6px 28px rgba(0,0,0,.16));padding:28px 28px 24px;' +
+      'border:1px solid var(--border,rgba(0,0,0,.11));display:flex;flex-direction:column;gap:0">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+        '<span style="font-size:1.6rem;line-height:1">💡</span>' +
+        '<h2 style="margin:0;font-size:1.2rem;color:var(--txt,#2d3a8c);font-family:var(--ff,\'Boogaloo\',sans-serif);text-align:left">' + _escHtml(title) + '</h2>' +
+      '</div>' +
+      qSection +
+      (qSection && fixSection ? DIVIDER : '') +
+      fixSection +
+      (fixSection && trySection ? DIVIDER : '') +
+      trySection +
+      '<div style="margin-top:18px;text-align:center">' +
+        '<button id="focus-overlay-got-it" style="' +
+          'background:linear-gradient(135deg,#4f46e5,#6c5ce7);color:#fff;border:none;' +
+          'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;' +
+          'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);' +
+          'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">' +
+          'Got it \u2014 try a similar one! \u2192' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+  document.getElementById('focus-overlay-got-it').addEventListener('click', function() {
+    overlay.remove();
+    _resumeQuiz();
+  });
 }
 
 // ── Dynamic intervention content builder ─────────────────────────────────
@@ -1193,6 +1427,31 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       text = 'A 2D shape is flat — you draw it on paper. A 3D solid takes up space and has volume — you can hold it. Look carefully at the object.';
     }
 
+  } else if(errorTag === 'err_tap_wrong_shape' || errorTag === 'err_tap_missed'){
+    title = 'Let\'s Look Again!';
+    // Get teach text from intervention config if available
+    var _tgTeach = q && q.intervention && q.intervention.teach;
+    text = _tgTeach ? _tgTeach.text : 'Look at each shape carefully and count its corners!';
+    // Build corner-count reference grid from question shapes
+    var _tgCfg2 = q && (q.visual || q.v);
+    var _tgShapes = _tgCfg2 && _tgCfg2.config && _tgCfg2.config.shapes;
+    var _tgHighlight = _tgTeach && _tgTeach.highlight ? _tgTeach.highlight : [];
+    if(_tgShapes && typeof _drawShapeSVG === 'function'){
+      var CORNER_MAP2 = {circle:0, triangle:3, square:4, rectangle:4};
+      var seenShapes = {};
+      var _tgItems2 = _tgShapes.filter(function(s){ if(seenShapes[s.shape]) return false; seenShapes[s.shape]=true; return true; })
+        .map(function(s){
+          var isHL = _tgHighlight.indexOf(s.shape) !== -1;
+          var corners = s.corners != null ? s.corners : (CORNER_MAP2[s.shape] || 0);
+          return '<div class="tg-intv-shape tg-shape-' + s.shape + (isHL ? ' tg-intv-hl' : '') + '">' +
+            _drawShapeSVG(s.shape) +
+            '<span class="tg-intv-name">' + _escHtml(s.shape) + '</span>' +
+            '<span class="tg-intv-count">' + corners + (corners === 1 ? ' corner' : ' corners') + '</span>' +
+          '</div>';
+        });
+      visualHTML = '<div class="tg-intv-grid">' + _tgItems2.join('') + '</div>';
+    }
+
   } else if(errorTag === 'err_shape_sort'){
     title = 'Let\'s Count the Corners!';
     var CORNER_MAP = {circle:0, triangle:3, square:4, rectangle:4};
@@ -1382,26 +1641,38 @@ function _resumeQuiz(){
   if(_ACTIVE_GRADE === 'K' && qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null){
     var curQ    = qz.questions[qz.idx];
     var curType = curQ && curQ.v && curQ.v.type;
+    var isTapGroupRetry = curQ && (curQ.type === 'tapGroup' || curType === 'tapGroup');
     var curText = curQ && curQ.t;
     try {
       var l    = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
       var bank = (l.qBank || l.quiz || []);
-      // Candidates: same visual type, different question text, not already in current quiz set
-      var usedTexts = qz.questions.map(function(q){ return q.t; });
-      var pool = bank.filter(function(q){
-        var qType = q.v && q.v.type;
-        return qType === curType && q.t !== curText && usedTexts.indexOf(q.t) === -1;
-      });
-      // Fall back to any same-type question not identical to the current one
-      if(pool.length === 0){
-        pool = bank.filter(function(q){
-          return q.v && q.v.type === curType && q.t !== curText;
+
+      if(isTapGroupRetry && typeof QE !== 'undefined'){
+        // Tag-aware retry via QE.selectRetry
+        var normCurQ = QE.normalize(curQ);
+        var pick = QE.selectRetry(normCurQ, bank);
+        if(pick){
+          qz.questions[qz.idx] = pick;
+          qz._opts = null;
+        }
+      } else {
+        // Candidates: same visual type, different question text, not already in current quiz set
+        var usedTexts = qz.questions.map(function(q){ return q.t; });
+        var pool = bank.filter(function(q){
+          var qType = q.v && q.v.type;
+          return qType === curType && q.t !== curText && usedTexts.indexOf(q.t) === -1;
         });
-      }
-      if(pool.length > 0){
-        var pick = pool[Math.floor(Math.random() * pool.length)];
-        qz.questions[qz.idx] = pick;
-        qz._opts = null; // force fresh option shuffle for new question
+        // Fall back to any same-type question not identical to the current one
+        if(pool.length === 0){
+          pool = bank.filter(function(q){
+            return q.v && q.v.type === curType && q.t !== curText;
+          });
+        }
+        if(pool.length > 0){
+          var pick2 = pool[Math.floor(Math.random() * pool.length)];
+          qz.questions[qz.idx] = pick2;
+          qz._opts = null;
+        }
       }
     } catch(e){ /* silent — fall through to re-render current question */ }
   }

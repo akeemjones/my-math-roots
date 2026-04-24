@@ -213,6 +213,57 @@ _mergeKUnitData(5, {
           v: null,
           o: [{val:'triangle',tag:'err_random'},{val:'circle',tag:'err_random'},{val:'cube'},{val:'square',tag:'err_random'}],
           a:2, e:'Cube! A cube is a 3D solid — you can hold it.', d:'h', s:null, h:'Which one can you hold like a box?'
+        },
+        // ── tapGroup: identify shapes by name ─────────────────────────────────
+        {
+          id:'k-u6-l1-tg-01', type:'tapGroup', grade:'K', unit:6, lesson:1,
+          t:'Tap all the triangles.',
+          prompt:'Tap all the triangles.',
+          hint:'Look for the pointy shapes!',
+          explanation:'Triangles are pointy shapes — they have 3 sides!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle',corners:3,correct:true},
+            {id:'s2',shape:'circle',  corners:0,correct:false},
+            {id:'s3',shape:'triangle',corners:3,correct:true},
+            {id:'s4',shape:'square',  corners:4,correct:false},
+            {id:'s5',shape:'triangle',corners:3,correct:true}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle',corners:3,correct:true},
+            {id:'s2',shape:'circle',  corners:0,correct:false},
+            {id:'s3',shape:'triangle',corners:3,correct:true},
+            {id:'s4',shape:'square',  corners:4,correct:false},
+            {id:'s5',shape:'triangle',corners:3,correct:true}
+          ]}},
+          tags:['shapes','triangle','identify'],
+          difficulty:'easy', standard:'K.6A',
+          intervention:{ teach:{ text:'Triangles are the pointy shapes!', highlight:['triangle'] }, retry:{ strategy:'similar', matchTags:['triangle','identify'] } }
+        },
+        {
+          id:'k-u6-l1-tg-02', type:'tapGroup', grade:'K', unit:6, lesson:1,
+          t:'Tap the circles.',
+          prompt:'Tap the circles.',
+          hint:'Circles are the round shapes!',
+          explanation:'Circles are round!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','circle','identify','round'],
+          difficulty:'easy', standard:'K.6A',
+          intervention:{ teach:{ text:'Circles are the round shapes!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['circle','identify'] } }
         }
       ]
     },
@@ -651,6 +702,83 @@ _mergeKUnitData(5, {
           v: null,
           o: [{val:'circle',tag:'err_random'},{val:'triangle'},{val:'they have the same',tag:'err_random'},{val:'neither has corners',tag:'err_random'}],
           a:1, e:'Triangle! It has 3 corners; circle has 0.', d:'h', s:null, h:'Circle = 0 corners; triangle = 3 corners'
+        },
+        // ── tapGroup: corners ─────────────────────────────────────────────────
+        {
+          id:'k-u6-l3-tg-01', type:'tapGroup', grade:'K', unit:6, lesson:3,
+          t:'Find the shapes with 3 corners.',
+          prompt:'Find the shapes with 3 corners.',
+          hint:'Touch each corner: 1, 2, 3!',
+          explanation:'Triangles have 3 corners!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s2',shape:'square',   corners:4,correct:false},
+            {id:'s3',shape:'triangle', corners:3,correct:true},
+            {id:'s4',shape:'circle',   corners:0,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s2',shape:'square',   corners:4,correct:false},
+            {id:'s3',shape:'triangle', corners:3,correct:true},
+            {id:'s4',shape:'circle',   corners:0,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','corners','triangle','identify'],
+          difficulty:'easy', standard:'K.6D',
+          intervention:{ teach:{ text:'Touch each corner: 1, 2, 3! That shape is a triangle.', highlight:['triangle'] }, retry:{ strategy:'similar', matchTags:['corners','identify'] } }
+        },
+        {
+          id:'k-u6-l3-tg-02', type:'tapGroup', grade:'K', unit:6, lesson:3,
+          t:'Find the shapes with 4 corners.',
+          prompt:'Find the shapes with 4 corners.',
+          hint:'Count each corner: 1, 2, 3, 4!',
+          explanation:'Squares and rectangles have 4 corners!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
+          ]}},
+          tags:['shapes','corners','square','rectangle','identify'],
+          difficulty:'easy', standard:'K.6D',
+          distractors:{ type:'conceptual', rationale:'circle (0) tests zero-confusion; triangle (3) tests near-miss' },
+          intervention:{ teach:{ text:'Count each corner: 1, 2, 3, 4! Squares and rectangles both have 4.', highlight:['square','rectangle'] }, retry:{ strategy:'similar', matchTags:['corners','identify'] } }
+        },
+        {
+          id:'k-u6-l3-tg-03', type:'tapGroup', grade:'K', unit:6, lesson:3,
+          t:'Tap the round shapes.',
+          prompt:'Tap the round shapes.',
+          hint:'Round shapes feel smooth — no pointy corners!',
+          explanation:'Circles are round — no corners!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','corners','circle','identify','zero'],
+          difficulty:'easy', standard:'K.6D',
+          intervention:{ teach:{ text:'Circles are round — no pointy corners!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['corners','identify'] } }
         }
       ]
     },
@@ -892,6 +1020,131 @@ _mergeKUnitData(5, {
           v: null,
           o: [{val:'triangle',tag:'err_off_by_one'},{val:'circle',tag:'err_random'},{val:'rectangle'},{val:'none of these',tag:'err_random'}],
           a:2, e:'Rectangle! It has 4 corners — more than 3.', d:'h', s:null, h:'Which shape has more than 3 corners?'
+        },
+        // ── tapGroup: 5 required interactive variations ───────────────────────
+        {
+          id:'k-u6-l4-tg-01', type:'tapGroup', grade:'K', unit:6, lesson:4,
+          t:'Tap all the circles.',
+          prompt:'Tap all the circles.',
+          hint:'Circles are the round shapes!',
+          explanation:'Circles are round!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'square',   corners:4,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'square',   corners:4,correct:false},
+            {id:'s3',shape:'circle',   corners:0,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','circle','identify','sort'],
+          difficulty:'easy', standard:'K.6E',
+          intervention:{ teach:{ text:'Circles are the round shapes!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['circle','identify'] } }
+        },
+        {
+          id:'k-u6-l4-tg-02', type:'tapGroup', grade:'K', unit:6, lesson:4,
+          t:'Find the shapes with 4 corners.',
+          prompt:'Find the shapes with 4 corners.',
+          hint:'Count each corner: 1, 2, 3, 4!',
+          explanation:'Squares and rectangles have 4 corners!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'square',   corners:4,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'rectangle',corners:4,correct:true},
+            {id:'s4',shape:'triangle', corners:3,correct:false},
+            {id:'s5',shape:'square',   corners:4,correct:true}
+          ]}},
+          tags:['shapes','corners','square','rectangle','identify','sort'],
+          difficulty:'easy', standard:'K.6D',
+          distractors:{ type:'conceptual', rationale:'circle (0) tests zero-confusion; triangle (3) tests near-miss' },
+          intervention:{ teach:{ text:'Count each corner: 1, 2, 3, 4! Squares and rectangles both have 4.', highlight:['square','rectangle'] }, retry:{ strategy:'similar', matchTags:['corners','identify'] } }
+        },
+        {
+          id:'k-u6-l4-tg-03', type:'tapGroup', grade:'K', unit:6, lesson:4,
+          t:'Tap the round shapes.',
+          prompt:'Tap the round shapes.',
+          hint:'Round shapes feel smooth — no pointy corners!',
+          explanation:'Circles are round — no corners!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'square',   corners:4,correct:false},
+            {id:'s4',shape:'circle',   corners:0,correct:true},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:true},
+            {id:'s2',shape:'triangle', corners:3,correct:false},
+            {id:'s3',shape:'square',   corners:4,correct:false},
+            {id:'s4',shape:'circle',   corners:0,correct:true},
+            {id:'s5',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','corners','circle','identify','sort','zero'],
+          difficulty:'easy', standard:'K.6D',
+          intervention:{ teach:{ text:'Circles are round — no pointy corners!', highlight:['circle'] }, retry:{ strategy:'similar', matchTags:['circle','identify'] } }
+        },
+        {
+          id:'k-u6-l4-tg-04', type:'tapGroup', grade:'K', unit:6, lesson:4,
+          t:'Tap all the triangles.',
+          prompt:'Tap all the triangles.',
+          hint:'Look for the pointy shapes!',
+          explanation:'Triangles are the pointy shapes!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'triangle', corners:3,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'triangle', corners:3,correct:true}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'multi', shapes:[
+            {id:'s1',shape:'triangle', corners:3,correct:true},
+            {id:'s2',shape:'circle',   corners:0,correct:false},
+            {id:'s3',shape:'triangle', corners:3,correct:true},
+            {id:'s4',shape:'square',   corners:4,correct:false},
+            {id:'s5',shape:'triangle', corners:3,correct:true}
+          ]}},
+          tags:['shapes','triangle','identify','sort','match'],
+          difficulty:'easy', standard:'K.6E',
+          intervention:{ teach:{ text:'Triangles are the pointy shapes!', highlight:['triangle'] }, retry:{ strategy:'similar', matchTags:['triangle','identify'] } }
+        },
+        {
+          id:'k-u6-l4-tg-05', type:'tapGroup', grade:'K', unit:6, lesson:4,
+          t:'Find the triangle.',
+          prompt:'Find the triangle.',
+          hint:'Look for the pointy shape!',
+          explanation:'That is the triangle — the pointy shape!',
+          answer:{},
+          v:{ type:'tapGroup', config:{ mode:'single', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:false},
+            {id:'s2',shape:'triangle', corners:3,correct:true},
+            {id:'s3',shape:'square',   corners:4,correct:false},
+            {id:'s4',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          visual:{ type:'tapGroup', config:{ mode:'single', shapes:[
+            {id:'s1',shape:'circle',   corners:0,correct:false},
+            {id:'s2',shape:'triangle', corners:3,correct:true},
+            {id:'s3',shape:'square',   corners:4,correct:false},
+            {id:'s4',shape:'rectangle',corners:4,correct:false}
+          ]}},
+          tags:['shapes','triangle','identify'],
+          difficulty:'easy', standard:'K.6A',
+          intervention:{ teach:{ text:'Triangles are the pointy shapes!', highlight:['triangle'] }, retry:{ strategy:'similar', matchTags:['triangle','identify'] } }
         }
       ]
     }

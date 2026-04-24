@@ -971,6 +971,56 @@ body.dark .vchoice{ background:rgba(12,22,42,0.82);
 body.dark .k-manip-answer{ background:rgba(12,22,42,0.7); }
 body.dark .k-manip-tool{ background:rgba(12,22,42,0.85); }
 
+/* ── Tap-Group Interactive Question ─────────────────────────────────────── */
+.tap-group{ display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
+            padding:16px 10px; width:100%; box-sizing:border-box; }
+.tap-shape{ width:84px; height:84px; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:4px;
+            border:2.5px solid transparent; border-radius:18px;
+            background:rgba(255,255,255,0.88); cursor:pointer;
+            box-shadow:0 3px 10px rgba(0,0,0,.12);
+            touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+            transition:transform .1s, box-shadow .1s, border-color .1s; }
+.tap-shape:hover{ transform:scale(1.06); box-shadow:0 6px 18px rgba(0,0,0,.18); }
+.tap-shape:active{ transform:scale(0.94); }
+.tap-shape.tg-selected{ border-color:#FF9800;
+  box-shadow:0 0 0 3px rgba(255,152,0,.35), 0 3px 10px rgba(0,0,0,.12); }
+.tap-shape.tg-correct{ border-color:#27ae60;
+  background:rgba(46,204,113,.15);
+  box-shadow:0 0 0 3px rgba(39,174,96,.3); }
+.tap-shape.tg-wrong{ border-color:#e74c3c;
+  background:rgba(231,76,60,.1);
+  box-shadow:0 0 0 3px rgba(231,76,60,.25); }
+.tap-shape.tg-missed{ border-color:#27ae60; border-style:dashed;
+  background:rgba(46,204,113,.08); }
+.tg-shape-label{ font-family:'Boogaloo',sans-serif; font-size:0.72rem;
+                 line-height:1; opacity:0.7; text-transform:capitalize; }
+.tg-shape-circle    { color:#2196F3; }
+.tg-shape-triangle  { color:#FF9800; }
+.tg-shape-square    { color:#9C27B0; }
+.tg-shape-rectangle { color:#4CAF50; }
+.tap-group-static{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
+                   padding:12px 8px; }
+.tap-shape-static{ width:72px; height:72px; display:flex; flex-direction:column;
+                   align-items:center; justify-content:center; gap:3px;
+                   border-radius:14px; border:2px solid transparent;
+                   background:rgba(255,255,255,0.7); }
+.tg-intv-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+               margin:8px 0; }
+.tg-intv-shape{ display:flex; flex-direction:column; align-items:center; gap:4px;
+                width:64px; }
+.tg-intv-shape .tg-intv-name{ font-family:'Boogaloo',sans-serif; font-size:0.8rem;
+                               text-transform:capitalize; opacity:0.8; }
+.tg-intv-shape .tg-intv-count{ font-family:'Boogaloo',sans-serif; font-size:1rem;
+                                font-weight:700; color:#2d7d46; }
+.tg-intv-shape.tg-intv-hl .tg-intv-name,
+.tg-intv-shape.tg-intv-hl .tg-intv-count{ opacity:1; }
+body.dark .tap-shape{ background:rgba(12,22,42,0.85); }
+body.dark .tap-shape.tg-correct{ background:rgba(46,204,113,.12); }
+body.dark .tap-shape.tg-wrong  { background:rgba(231,76,60,.12); }
+body.dark .tap-shape.tg-missed { background:rgba(46,204,113,.08); }
+body.dark .tap-shape-static{ background:rgba(12,22,42,0.7); }
+
 /* ── Hint button ──────────────────────────────────────────────── */
 #qhint{ margin-top:10px; }
 .hint-btn{

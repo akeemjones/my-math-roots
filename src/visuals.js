@@ -15,6 +15,7 @@ let _visUid = 0;
 // Returns HTML string (div or button wrapper) or '' when v is absent/invalid.
 function _buildVisualHTML(v) {
   if (!v || !v.type || !v.config) return '';
+  if (v.type === 'tapGroup')   return _buildTapGroupVisual(v.config);
   if (v.type === 'comparison') return drawComparison(v.config, null, null);
   if (v.type === 'objectSet')  return drawObjectSet(v.config, null);
   if (v.type === 'twoGroups')  return drawTwoGroups(v.config);
@@ -369,6 +370,48 @@ function drawObjectSet(config, argIdx) {
 //    null    → renders static <div class="q-visual two-groups-visual">
 //  op: 'add' | 'subtract'
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+//  _drawShapeSVG(shapeName)
+//
+//  Returns an inline SVG for circle / triangle / square / rectangle.
+//  Uses fill="currentColor" so CSS color classes drive appearance in dark mode.
+//  viewBox 64×64 fits inside the 84×84 tap-shape button with padding.
+// ─────────────────────────────────────────────────────────────────────────────
+function _drawShapeSVG(shape) {
+  var vb = '0 0 64 64';
+  var inner = '';
+  if (shape === 'circle') {
+    inner = '<circle cx="32" cy="32" r="27" fill="currentColor" opacity="0.85"/>';
+  } else if (shape === 'triangle') {
+    inner = '<polygon points="32,6 60,58 4,58" fill="currentColor" opacity="0.85"/>';
+  } else if (shape === 'square') {
+    inner = '<rect x="7" y="7" width="50" height="50" rx="3" fill="currentColor" opacity="0.85"/>';
+  } else if (shape === 'rectangle') {
+    inner = '<rect x="4" y="16" width="56" height="32" rx="3" fill="currentColor" opacity="0.85"/>';
+  } else {
+    inner = '<rect x="7" y="7" width="50" height="50" rx="3" fill="currentColor" opacity="0.85"/>';
+  }
+  return '<svg viewBox="'+vb+'" width="48" height="48" focusable="false" aria-hidden="true" style="display:block;pointer-events:none">'+inner+'</svg>';
+}
+window._drawShapeSVG = _drawShapeSVG;
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  _buildTapGroupVisual(config)
+//
+//  Static renderer — used in review mode (no buttons, shows correct/wrong
+//  state via CSS classes on the wrapper). Interactive version lives in quiz.js.
+// ─────────────────────────────────────────────────────────────────────────────
+function _buildTapGroupVisual(config) {
+  var shapes = (config && config.shapes) || [];
+  var items = shapes.map(function(s) {
+    return '<div class="tap-shape-static tg-shape-' + _escHtml(s.shape) + '">' +
+      _drawShapeSVG(s.shape) +
+      '<span class="tg-shape-label">' + _escHtml(s.shape) + '</span>' +
+    '</div>';
+  });
+  return '<div class="q-visual tap-group-static">' + items.join('') + '</div>';
+}
+
 function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
   var lCount = +(config.leftCount)  || 0;
   var rCount = +(config.rightCount) || 0;

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = require('path').join(__dirname, 'dist');
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const MIME = {
   html: 'text/html',
@@ -23,10 +23,17 @@ const MIME = {
 const DEV_AUTH_INJECT = `<script>
 (function(){
   var PROJ = 'omjegwtzirskgmgeojdn';
-  // Clear any stale Supabase session so it fires INITIAL_SESSION with null user.
-  // Without this, a leftover token causes Supabase to try validating remotely → pull_timeout.
   try { localStorage.removeItem('sb-' + PROJ + '-auth-token'); } catch(e){}
-  // Redirect to ?preview=1 so auth.js runs its local preview branch.
+  // Inject a permanently valid signed parent-unlock token so all units/lessons are open.
+  (function(){
+    function sign(token){
+      var str = token + ':mymathroots_unlock_v1', h = 0;
+      for(var i=0;i<str.length;i++) h=((h<<5)-h+str.charCodeAt(i))|0;
+      return String(h>>>0);
+    }
+    var v='dev-preview-all';
+    localStorage.setItem('wb_parent_unlock', JSON.stringify({v:v, s:sign(v)}));
+  })();
   if(!location.search.includes('preview=1')){
     location.replace(location.pathname + '?preview=1');
   }
