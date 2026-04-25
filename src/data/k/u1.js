@@ -651,12 +651,110 @@ _mergeKUnitData(0, {
           a:2, e:'20! You counted all the way to 20!', d:'h', s:null, h:'Count every palm tree — all the way to 20!'
         }
       ]
+    },
+
+    // ── Lesson 4: Count to 20 — migrated from u4.js (→ ku1l4) ────────────────
+    {
+      points: [
+        'Count forward: 1, 2, 3 … all the way to 20!',
+        'Count backward: start at a number and go down — 20, 19, 18 …',
+        'What comes BEFORE and AFTER a number? Use the counting order!'
+      ],
+      examples: [
+        {c:'#FF9800', tag:'Count Forward', p:'Count all the ⭐ below. How many are there?', v:{type:'objectSet', config:{count:15, emoji:'⭐', layout:'grid'}}, s:'Touch each star and count: 1, 2, 3 … 15', a:'15 stars ✅'},
+        {c:'#FB8C00', tag:'What Comes Next?', p:'16, 17, __ — what number comes after 17?', v:null, s:'Count on one more from 17: 18', a:'18 ✅'},
+        {c:'#E65100', tag:'Count Backward', p:'Start at 14 and count back. What comes before 14?', v:null, s:'Count back one step from 14: 13', a:'13 ✅'}
+      ],
+      practice: [
+        {q:'Count forward: 11, 12, 13, __, 15', a:'14', h:'What number comes after 13?', e:'14 comes after 13! ✅'},
+        {q:'What comes after 19?', a:'20', h:'Count on from 19: twenty!', e:'20 comes after 19! ✅'},
+        {q:'What comes before 16?', a:'15', h:'Count back one step from 16', e:'15 comes before 16! ✅'}
+      ],
+      qBank: [
+        {t:'How many 🌟 are there?', v:{type:'objectSet', config:{count:11, emoji:'🌟', layout:'grid'}}, o:[{val:'10',tag:'err_under_count'},{val:'11'},{val:'12',tag:'err_off_by_one'},{val:'13',tag:'err_over_count'}], a:1, e:'Count: 1 … 11!', d:'e', s:null, h:'Count every star one by one'},
+        {t:'How many 🐝 do you see?', v:{type:'objectSet', config:{count:13, emoji:'🐝', layout:'grid'}}, o:[{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}], a:2, e:'Count carefully: 1 … 13!', d:'e', s:null, h:'Touch each bee as you count'},
+        {t:'How many 🦋 are in the garden?', v:{type:'objectSet', config:{count:16, emoji:'🦋', layout:'grid'}}, o:[{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}], a:2, e:'16 butterflies!', d:'m', s:null, h:'Count row by row'},
+        {t:'Count the 🌸 flowers. How many?', v:{type:'objectSet', config:{count:18, emoji:'🌸', layout:'grid'}}, o:[{val:'16',tag:'err_under_count'},{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'}], a:2, e:'18 flowers!', d:'m', s:null, h:'Count carefully — do not skip any'},
+        {t:'How many ⭐ are here?', v:{type:'objectSet', config:{count:20, emoji:'⭐', layout:'grid'}}, o:[{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}], a:2, e:'20 stars — all the way to 20!', d:'m', s:null, h:'Count all the way to the last one'},
+        {t:'What number comes after 10?', v:null, o:[{val:'9',tag:'err_under_count'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}], a:2, e:'11 comes right after 10!', d:'e', s:null, h:'Count on one more from 10'},
+        {t:'What number comes after 14?', v:null, o:[{val:'13',tag:'err_under_count'},{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_off_by_one'}], a:2, e:'15 comes after 14!', d:'e', s:null, h:'Count forward one step from 14'},
+        {t:'What number comes after 17?', v:null, o:[{val:'16',tag:'err_under_count'},{val:'17',tag:'err_same'},{val:'18'},{val:'20',tag:'err_over_count'}], a:2, e:'18 comes after 17!', d:'e', s:null, h:'Say 17 … then the next number'},
+        {t:'What number comes after 19?', v:null, o:[{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}], a:2, e:'20 comes after 19 — that is the biggest!', d:'m', s:null, h:'Count on from 19'},
+        {t:'11, 12, 13, __ — what comes next?', v:null, o:[{val:'12',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}], a:2, e:'14 comes next!', d:'e', s:null, h:'Count on from 13'},
+        {t:'What number comes before 12?', v:null, o:[{val:'10',tag:'err_under_count'},{val:'11'},{val:'12',tag:'err_same'},{val:'13',tag:'err_off_by_one'}], a:1, e:'11 comes before 12!', d:'e', s:null, h:'Count back one step from 12'},
+        {t:'What number comes before 15?', v:null, o:[{val:'13',tag:'err_under_count'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}], a:1, e:'14 comes before 15!', d:'e', s:null, h:'Say 15 and count back one'},
+        {t:'What number comes before 20?', v:null, o:[{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}], a:2, e:'19 comes before 20!', d:'m', s:null, h:'Count back one step from 20'},
+        {t:'__, 16, 17 — what number comes before 16?', v:null, o:[{val:'13',tag:'err_under_count'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_same'}], a:2, e:'15 comes before 16!', d:'m', s:null, h:'Count back one from 16'},
+        {t:'What number comes before 18?', v:null, o:[{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'}], a:2, e:'17 comes before 18!', d:'m', s:null, h:'Count back from 18'},
+        {t:'How many 🦊 are here?', v:{type:'objectSet', config:{count:12, emoji:'🦊', layout:'grid'}}, o:[{val:'10',tag:'err_under_count'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}], a:2, e:'12 foxes!', d:'e', s:null, h:'Count every fox — do not skip any'},
+        {t:'What number comes after 11?', v:null, o:[{val:'10',tag:'err_under_count'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}], a:2, e:'12 comes after 11!', d:'e', s:null, h:'Count on one step from 11'},
+        {t:'17, 18, __ — what comes next?', v:null, o:[{val:'17',tag:'err_under_count'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}], a:2, e:'19 comes after 18!', d:'m', s:null, h:'Count forward from 18'},
+        {t:'What comes after 15?', v:null, o:[{val:'14',tag:'err_under_count'},{val:'15',tag:'err_same'},{val:'16'},{val:'17',tag:'err_off_by_one'}], a:2, e:'16 comes after 15!', d:'m', s:null, h:'Count forward one step from 15'},
+        {t:'What comes before 17?', v:null, o:[{val:'15',tag:'err_under_count'},{val:'16'},{val:'17',tag:'err_same'},{val:'18',tag:'err_off_by_one'}], a:1, e:'16 comes before 17!', d:'m', s:null, h:'Count back one step from 17'},
+        {t:'How many 🦕 are there?', v:{type:'objectSet', config:{count:17, emoji:'🦕', layout:'grid'}}, o:[{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'},{val:'19',tag:'err_over_count'}], a:1, e:'17 dinosaurs — count every one!', d:'h', s:null, h:'Count carefully — do not skip any'},
+        {t:'How many 🐳 do you see?', v:{type:'objectSet', config:{count:19, emoji:'🐳', layout:'grid'}}, o:[{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'},{val:'17',tag:'err_under_count'}], a:1, e:'19 whales!', d:'h', s:null, h:'Count row by row — stay focused!'},
+        {t:'How many 🌵 are in the desert?', v:{type:'objectSet', config:{count:20, emoji:'🌵', layout:'grid'}}, o:[{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}], a:2, e:'20 cacti — all the way to 20!', d:'h', s:null, h:'Count every cactus one by one'},
+        {t:'How many 🎸 are here?', v:{type:'objectSet', config:{count:18, emoji:'🎸', layout:'grid'}}, o:[{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}], a:1, e:'18 guitars!', d:'h', s:null, h:'Count carefully — do not miss any'},
+        {t:'18, 19, __ — what comes next?', v:null, o:[{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}], a:2, e:'20 comes after 19!', d:'h', s:null, h:'Count forward from 19'},
+        {t:'__, 18, 19 — what number is missing?', v:null, o:[{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'},{val:'20',tag:'err_off_by_one'}], a:1, e:'17 goes right before 18!', d:'h', s:null, h:'What comes just before 18?'},
+        {t:'16, __, 18 — what number is missing?', v:null, o:[{val:'16',tag:'err_same'},{val:'17'},{val:'18',tag:'err_same'},{val:'19',tag:'err_off_by_one'}], a:1, e:'17 goes between 16 and 18!', d:'h', s:null, h:'What comes after 16?'},
+        {t:'20, __, 18 — what is missing when counting back?', v:null, o:[{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_same'}], a:2, e:'19 goes between 20 and 18 when counting back!', d:'h', s:null, h:'Count backward from 20'}
+      ]
+    },
+
+    // ── Lesson 5: Read and Represent 11–20 — migrated from u4.js (→ ku1l5) ───
+    {
+      points: [
+        'Teen numbers are made of 10 and some MORE — like 10 + 4 = 14',
+        '11 = 10 + 1, 12 = 10 + 2, all the way to 19 = 10 + 9',
+        'Match the numeral to the right group of objects!'
+      ],
+      examples: [
+        {c:'#FF9800', tag:'10 + Extras', p:'Here are 14 ⭐. Count the group of 10 — then count the 4 extras!', v:{type:'objectSet', config:{count:14, emoji:'⭐', layout:'grid'}}, s:'10 in the full rows, then 1, 2, 3, 4 more = 14', a:'14 ✅ — ten and four more'},
+        {c:'#FB8C00', tag:'Name the Set', p:'How many 🌙 are there? Pick the numeral.', v:{type:'objectSet', config:{count:16, emoji:'🌙', layout:'grid'}}, s:'Count all: 1 … 16. The numeral is 16.', a:'16 ✅'},
+        {c:'#E65100', tag:'Count the Extras', p:'13 objects = 10 + how many extras?', v:{type:'objectSet', config:{count:13, emoji:'🍎', layout:'grid'}}, s:'Count beyond 10: 11, 12, 13 — that is 3 extras', a:'3 extras ✅ — 10 + 3 = 13'}
+      ],
+      practice: [
+        {q:'Show 12 using 10 + extras. How many extras?', a:'2', h:'12 = 10 + ?', e:'12 = 10 + 2! ✅'},
+        {q:'15 = 10 + ?', a:'5', h:'Count past 10 to 15', e:'15 = 10 + 5! ✅'},
+        {q:'Which numeral matches 10 + 8?', a:'18', h:'10 + 8 = …', e:'18! Ten and eight more ✅'}
+      ],
+      qBank: [
+        {t:'How many 🍎 are there?', v:{type:'objectSet', config:{count:11, emoji:'🍎', layout:'grid'}}, o:[{val:'9',tag:'err_teen'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}], a:2, e:'11 = ten and one more!', d:'e', s:null, h:'Count all — 10 then 1 more'},
+        {t:'How many 🌙 do you see?', v:{type:'objectSet', config:{count:12, emoji:'🌙', layout:'grid'}}, o:[{val:'10',tag:'err_teen'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}], a:2, e:'12 = ten and two more!', d:'e', s:null, h:'Count the ten, then the extras'},
+        {t:'How many 🐸 are here?', v:{type:'objectSet', config:{count:14, emoji:'🐸', layout:'grid'}}, o:[{val:'12',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}], a:2, e:'14 = ten and four more!', d:'e', s:null, h:'Count on past 10'},
+        {t:'Count the 🌺 flowers. How many?', v:{type:'objectSet', config:{count:17, emoji:'🌺', layout:'grid'}}, o:[{val:'15',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}], a:2, e:'17 = ten and seven more!', d:'m', s:null, h:'Count carefully past 16'},
+        {t:'How many 🐠 fish are there?', v:{type:'objectSet', config:{count:19, emoji:'🐠', layout:'grid'}}, o:[{val:'17',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}], a:2, e:'19 = ten and nine more!', d:'m', s:null, h:'Count all the fish'},
+        {t:'How many ⭐ stars are here?', v:{type:'objectSet', config:{count:20, emoji:'⭐', layout:'grid'}}, o:[{val:'18',tag:'err_teen'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_off_by_one'}], a:2, e:'20! That is our biggest number!', d:'m', s:null, h:'Count all the way to the end'},
+        {t:'13 = 10 + how many extras?', v:{type:'objectSet', config:{count:13, emoji:'🍋', layout:'grid'}}, o:[{val:'1',tag:'err_teen'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}], a:2, e:'13 = 10 + 3!', d:'e', s:null, h:'Count past 10: 11, 12, 13 — that is 3 extras'},
+        {t:'15 = 10 + how many extras?', v:{type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}}, o:[{val:'3',tag:'err_teen'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}], a:2, e:'15 = 10 + 5!', d:'e', s:null, h:'Count beyond 10 to reach 15'},
+        {t:'18 = 10 + how many extras?', v:{type:'objectSet', config:{count:18, emoji:'🐥', layout:'grid'}}, o:[{val:'6',tag:'err_teen'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}], a:2, e:'18 = 10 + 8!', d:'m', s:null, h:'Count how many are past the 10'},
+        {t:'16 = 10 + how many extras?', v:{type:'objectSet', config:{count:16, emoji:'🍇', layout:'grid'}}, o:[{val:'4',tag:'err_teen'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}], a:2, e:'16 = 10 + 6!', d:'m', s:null, h:'Count the extras after the first 10'},
+        {t:'19 = 10 + how many extras?', v:{type:'objectSet', config:{count:19, emoji:'🐣', layout:'grid'}}, o:[{val:'7',tag:'err_teen'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}], a:2, e:'19 = 10 + 9!', d:'m', s:null, h:'Count the extras after 10'},
+        {t:'Which number is "twelve"?', v:null, o:[{val:'10',tag:'err_teen'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'20',tag:'err_teen'}], a:2, e:'Twelve = 12!', d:'e', s:null, h:'Twelve has a 1 and a 2'},
+        {t:'Which number is "fifteen"?', v:null, o:[{val:'5',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}], a:2, e:'Fifteen = 15!', d:'e', s:null, h:'Fifteen: ten and five more'},
+        {t:'Which number is "seventeen"?', v:null, o:[{val:'7',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}], a:2, e:'Seventeen = 17!', d:'m', s:null, h:'Seventeen: ten and seven more'},
+        {t:'Which number is "nineteen"?', v:null, o:[{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}], a:2, e:'Nineteen = 19!', d:'m', s:null, h:'Nineteen: ten and nine more'},
+        {t:'12 = 10 + how many extras?', v:{type:'objectSet', config:{count:12, emoji:'🐢', layout:'grid'}}, o:[{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}], a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'},
+        {t:'14 = 10 + how many extras?', v:{type:'objectSet', config:{count:14, emoji:'🐛', layout:'grid'}}, o:[{val:'2',tag:'err_teen'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}], a:2, e:'14 = 10 + 4!', d:'m', s:null, h:'Count the extras past the first 10'},
+        {t:'Which number is "thirteen"?', v:null, o:[{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}], a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'},
+        {t:'Which number is "eleven"?', v:null, o:[{val:'10',tag:'err_teen'},{val:'11'},{val:'12',tag:'err_teen'},{val:'20',tag:'err_teen'}], a:1, e:'Eleven = 11!', d:'e', s:null, h:'Eleven: ten and one more'},
+        {t:'12 = 10 + how many extras? Count the 🦜.', v:{type:'objectSet', config:{count:12, emoji:'🦜', layout:'grid'}}, o:[{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_teen'}], a:1, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after the first 10'},
+        {t:'How many 🚂 are there?', v:{type:'objectSet', config:{count:15, emoji:'🚂', layout:'grid'}}, o:[{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}], a:2, e:'15 trains — ten and five more!', d:'m', s:null, h:'Count every train'},
+        {t:'How many 🎠 do you see?', v:{type:'objectSet', config:{count:16, emoji:'🎠', layout:'grid'}}, o:[{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}], a:2, e:'16 carousels — ten and six more!', d:'m', s:null, h:'Count carefully past 15'},
+        {t:'How many 🦁 are in the group?', v:{type:'objectSet', config:{count:17, emoji:'🦁', layout:'grid'}}, o:[{val:'15',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}], a:2, e:'17 lions — ten and seven more!', d:'m', s:null, h:'Count row by row past 16'},
+        {t:'Which number is "sixteen"?', v:null, o:[{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}], a:2, e:'Sixteen = 16!', d:'m', s:null, h:'Sixteen: ten and six more'},
+        {t:'Which number is "eighteen"?', v:null, o:[{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'}], a:2, e:'Eighteen = 18!', d:'h', s:null, h:'Eighteen: ten and eight more'},
+        {t:'Which number is "twenty"?', v:null, o:[{val:'18',tag:'err_off_by_one'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'2',tag:'err_teen'}], a:2, e:'Twenty = 20 — our biggest number!', d:'h', s:null, h:'Twenty comes after nineteen'},
+        {t:'How many 🦩 are there?', v:{type:'objectSet', config:{count:18, emoji:'🦩', layout:'grid'}}, o:[{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}], a:1, e:'18 flamingos — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'},
+        {t:'How many 🧩 pieces are here?', v:{type:'objectSet', config:{count:19, emoji:'🧩', layout:'grid'}}, o:[{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'},{val:'17',tag:'err_under_count'}], a:1, e:'19 puzzle pieces!', d:'h', s:null, h:'Count row by row — stay focused!'}
+      ]
     }
 
   ],
 
   // ── Unit 1 Test Bank ──────────────────────────────────────────────────────
-  // 50 questions mixing all three lesson topics.
+  // 50 questions mixing all three lesson topics. ku1l4/ku1l5 migrated from u4.js.
   testBank: [
     // ── ORIGINAL 15 questions (preserved verbatim) ──────────────────────────
 
@@ -977,11 +1075,123 @@ _mergeKUnitData(0, {
       o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
       a:2, e:'19! One away from 20!', d:'h', s:null, h:'Count carefully past 18!'
     },
-    {lessonId:'ku1l3', 
+    {lessonId:'ku1l3',
       t: 'How many more than 10 to make 18?',
       v: null,
       o: [{val:'7',tag:'err_teen'},{val:'8'},{val:'9',tag:'err_teen'},{val:'10',tag:'err_teen'}],
       a:1, e:'18 = 10 + 8 — ten and EIGHT more!', d:'h', s:null, h:'10 + ___ = 18'
-    }
+    },
+
+    // ── ku1l4 testBank (migrated from u4.js) ────────────────────────────────
+    {lessonId:'ku1l4', t:'What number comes after 13?', v:null,
+      o:[{val:'12',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
+      a:2, e:'14 comes after 13!', d:'e', s:null, h:'Count forward from 13'},
+    {lessonId:'ku1l4', t:'Count the 🍎 apples. How many?',
+      v:{type:'objectSet', config:{count:17, emoji:'🍎', layout:'grid'}},
+      o:[{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
+      a:2, e:'17 apples!', d:'m', s:null, h:'Count carefully row by row'},
+    {lessonId:'ku1l4', t:'19, __, 17 — what number is missing?', v:null,
+      o:[{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'18'},{val:'20',tag:'err_same'}],
+      a:2, e:'18 goes between 19 and 17 when counting back!', d:'m', s:null, h:'Count backward from 19'},
+    {lessonId:'ku1l4', t:'15, 16, __, 18 — what number is missing?', v:null,
+      o:[{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'17'},{val:'19',tag:'err_off_by_one'}],
+      a:2, e:'17 goes between 16 and 18!', d:'m', s:null, h:'What comes after 16?'},
+    {lessonId:'ku1l4', t:'How many 🌈 are there?',
+      v:{type:'objectSet', config:{count:11, emoji:'🌈', layout:'grid'}},
+      o:[{val:'9',tag:'err_under_count'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
+      a:2, e:'11 rainbows!', d:'e', s:null, h:'Count every one'},
+    {lessonId:'ku1l4', t:'How many 🎈 balloons do you see?',
+      v:{type:'objectSet', config:{count:13, emoji:'🎈', layout:'grid'}},
+      o:[{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
+      a:2, e:'13 balloons!', d:'e', s:null, h:'Touch each balloon as you count'},
+    {lessonId:'ku1l4', t:'What number comes right after 10?', v:null,
+      o:[{val:'9',tag:'err_under_count'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
+      a:2, e:'11 comes right after 10!', d:'e', s:null, h:'Count on one step from 10'},
+    {lessonId:'ku1l4', t:'How many 🦄 are in the group?',
+      v:{type:'objectSet', config:{count:14, emoji:'🦄', layout:'grid'}},
+      o:[{val:'12',tag:'err_under_count'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
+      a:2, e:'14 unicorns!', d:'m', s:null, h:'Count row by row'},
+    {lessonId:'ku1l4', t:'How many 🌍 do you see?',
+      v:{type:'objectSet', config:{count:16, emoji:'🌍', layout:'grid'}},
+      o:[{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
+      a:2, e:'16 globes!', d:'m', s:null, h:'Count carefully past 15'},
+    {lessonId:'ku1l4', t:'12, 13, __, 15 — what number is missing?', v:null,
+      o:[{val:'11',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'16',tag:'err_off_by_one'}],
+      a:2, e:'14 goes between 13 and 15!', d:'m', s:null, h:'What comes after 13?'},
+    {lessonId:'ku1l4', t:'What number comes before 14?', v:null,
+      o:[{val:'12',tag:'err_under_count'},{val:'13'},{val:'14',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
+      a:1, e:'13 comes before 14!', d:'m', s:null, h:'Count back one step from 14'},
+    {lessonId:'ku1l4', t:'13, 14, 15, __, 17 — what number is missing?', v:null,
+      o:[{val:'14',tag:'err_under_count'},{val:'15',tag:'err_same'},{val:'16'},{val:'18',tag:'err_off_by_one'}],
+      a:2, e:'16 goes between 15 and 17!', d:'m', s:null, h:'What comes after 15?'},
+    {lessonId:'ku1l4', t:'How many 🐗 are there?',
+      v:{type:'objectSet', config:{count:17, emoji:'🐗', layout:'grid'}},
+      o:[{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'},{val:'15',tag:'err_under_count'}],
+      a:1, e:'17 boars — count every one!', d:'h', s:null, h:'Count carefully — do not miss any'},
+    {lessonId:'ku1l4', t:'How many 🎯 targets are here?',
+      v:{type:'objectSet', config:{count:20, emoji:'🎯', layout:'grid'}},
+      o:[{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
+      a:2, e:'20 targets — all the way to 20!', d:'h', s:null, h:'Count all the way to the end'},
+    {lessonId:'ku1l4', t:'17, 18, 19, __ — what comes next?', v:null,
+      o:[{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
+      a:2, e:'20 comes after 19!', d:'h', s:null, h:'Count forward from 19'},
+    {lessonId:'ku1l4', t:'20, 19, __, 17 — what is missing counting back?', v:null,
+      o:[{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'20',tag:'err_same'}],
+      a:1, e:'18 goes between 19 and 17 when counting back!', d:'h', s:null, h:'Count backward from 19'},
+
+    // ── ku1l5 testBank (migrated from u4.js) ────────────────────────────────
+    {lessonId:'ku1l5', t:'Count the 🌟 stars. How many?',
+      v:{type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}},
+      o:[{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
+      a:2, e:'15 stars — ten and five more!', d:'e', s:null, h:'Count past 10'},
+    {lessonId:'ku1l5', t:'11 = 10 + how many extras?',
+      v:{type:'objectSet', config:{count:11, emoji:'🌙', layout:'grid'}},
+      o:[{val:'0',tag:'err_teen'},{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'11',tag:'err_teen'}],
+      a:1, e:'11 = 10 + 1!', d:'e', s:null, h:'Count past the first 10'},
+    {lessonId:'ku1l5', t:'Which number is "fourteen"?', v:null,
+      o:[{val:'4',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'40',tag:'err_teen'}],
+      a:2, e:'Fourteen = 14!', d:'m', s:null, h:'Fourteen: ten and four more'},
+    {lessonId:'ku1l5', t:'17 = 10 + how many extras?', v:null,
+      o:[{val:'5',tag:'err_teen'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
+      a:2, e:'17 = 10 + 7!', d:'m', s:null, h:'How many beyond 10?'},
+    {lessonId:'ku1l5', t:'13 = 10 + how many extras? Count the 🌴.',
+      v:{type:'objectSet', config:{count:13, emoji:'🌴', layout:'grid'}},
+      o:[{val:'1',tag:'err_teen'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
+      a:2, e:'13 = 10 + 3!', d:'e', s:null, h:'Count past 10 to 13'},
+    {lessonId:'ku1l5', t:'Which numeral is "thirteen"?', v:null,
+      o:[{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}],
+      a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'},
+    {lessonId:'ku1l5', t:'12 = 10 + how many extras? Count the 🍭.',
+      v:{type:'objectSet', config:{count:12, emoji:'🍭', layout:'grid'}},
+      o:[{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}],
+      a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'},
+    {lessonId:'ku1l5', t:'How many 🌮 are there?',
+      v:{type:'objectSet', config:{count:14, emoji:'🌮', layout:'grid'}},
+      o:[{val:'12',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
+      a:2, e:'14 tacos — ten and four more!', d:'m', s:null, h:'Count past 10'},
+    {lessonId:'ku1l5', t:'How many 🐘 elephants are here?',
+      v:{type:'objectSet', config:{count:16, emoji:'🐘', layout:'grid'}},
+      o:[{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
+      a:2, e:'16 elephants — ten and six more!', d:'m', s:null, h:'Count carefully past 15'},
+    {lessonId:'ku1l5', t:'Which number is "sixteen"?', v:null,
+      o:[{val:'6',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
+      a:2, e:'Sixteen = 16!', d:'m', s:null, h:'Sixteen: ten and six more'},
+    {lessonId:'ku1l5', t:'15 = 10 + how many extras?', v:null,
+      o:[{val:'3',tag:'err_teen'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
+      a:2, e:'15 = 10 + 5!', d:'m', s:null, h:'Count how many beyond 10'},
+    {lessonId:'ku1l5', t:'How many 🌾 are in the group?',
+      v:{type:'objectSet', config:{count:15, emoji:'🌾', layout:'grid'}},
+      o:[{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
+      a:2, e:'15 wheat stalks — ten and five more!', d:'m', s:null, h:'Count every stalk'},
+    {lessonId:'ku1l5', t:'18 = 10 + how many extras?', v:null,
+      o:[{val:'6',tag:'err_teen'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
+      a:2, e:'18 = 10 + 8!', d:'h', s:null, h:'Count how many beyond 10'},
+    {lessonId:'ku1l5', t:'How many 🦚 peacocks are here?',
+      v:{type:'objectSet', config:{count:18, emoji:'🦚', layout:'grid'}},
+      o:[{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}],
+      a:1, e:'18 peacocks — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'},
+    {lessonId:'ku1l5', t:'Which number is "nineteen"?', v:null,
+      o:[{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
+      a:2, e:'Nineteen = 19!', d:'h', s:null, h:'Nineteen: ten and nine more'}
   ]
 });

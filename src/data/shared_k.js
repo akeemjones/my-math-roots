@@ -81,9 +81,14 @@ const _UNITS_DATA_K = [
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#7E57C2" opacity="0.12"/><circle cx="14" cy="30" r="4" fill="#7E57C2"/><rect x="21" y="26" width="8" height="8" rx="1" fill="#7E57C2"/><circle cx="36" cy="30" r="4" fill="#7E57C2"/><rect x="43" y="26" width="8" height="8" rx="1" fill="#7E57C2"/></svg>',
     color: '#7E57C2',
     gp: 4,
-    teks: 'TEKS K.5',
-    lessons: [],
-    comingSoon: true,
+    teks: 'TEKS K.5A',
+    quizBlueprint: { ku4l1:7, ku4l2:7, ku4l3:5, ku4l4:5 },
+    lessons: [
+      {id:'ku4l1', title:'Count Forward by Ones',        icon:'1️⃣', desc:'Say numbers in order — each number is one more'},
+      {id:'ku4l2', title:'Count by Tens',                icon:'🔟', desc:'Skip-count by tens: 10, 20, 30 ...'},
+      {id:'ku4l3', title:'Count from Any Number',        icon:'🎯', desc:'Start counting from any number, not just 1'},
+      {id:'ku4l4', title:'Missing Numbers in Patterns',  icon:'❓', desc:'Find the missing number using the pattern'}
+    ],
     _loaded: false
   },
   {
@@ -164,11 +169,8 @@ const _K_MERGE_MAP = {
   1: { target: 1, offset: 0 },
   // Old u3.js — Addition & Subtraction → new U3 slots 0–3
   2: { target: 2, offset: 0 },
-  // Old u4.js — Teen Numbers: L1–L2 → new U1 slots 3–4, L3–L4 → new U2 slots 4–5
-  3: { split: [
-    { range: [0, 2], target: 0, offset: 3 },
-    { range: [2, 4], target: 1, offset: 4 }
-  ], testBankTarget: 0 },  // testBank → new U1 (teen-number focus)
+  // Old u4.js — now Counting Patterns → new U4 (index 3)
+  3: { target: 3, offset: 0 },
   // Old u5.js — Counting/Problem Solving: L1–L2 → new U1 slots 5–6, L3–L4 → new U3 slots 4–5
   4: { split: [
     { range: [0, 2], target: 0, offset: 5 },
@@ -184,10 +186,10 @@ const _K_MERGE_MAP = {
 
 // Which legacy source files each NEW unit index needs loaded
 const _K_UNIT_SOURCES = {
-  0: [1, 4, 5],  // new U1 (C&C) ← u1.js + u4.js + u5.js
-  1: [2, 4],     // new U2 (Num Rel) ← u2.js + u4.js
+  0: [1, 5],     // new U1 (C&C) ← u1.js + u5.js
+  1: [2],        // new U2 (Num Rel) ← u2.js
   2: [3, 5],     // new U3 (Add/Sub) ← u3.js + u5.js
-  3: [],         // new U4 (Algebraic) — empty shell
+  3: [4],        // new U4 (Counting Patterns) ← u4.js
   4: [6],        // new U5 (Geometry) ← u6.js
   5: [7],        // new U6 (Measurement) ← u7.js
   6: [8],        // new U7 (Data Analysis) ← u8.js
