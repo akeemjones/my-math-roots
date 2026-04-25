@@ -125,13 +125,17 @@ const _UNITS_DATA_K = [
     id: 'ku7',
     name: 'Data Analysis',
     icon: '📊',
-    // Bar chart glyph
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#009688" opacity="0.12"/><rect x="14" y="32" width="8" height="16" rx="1" fill="#009688"/><rect x="26" y="22" width="8" height="26" rx="1" fill="#009688"/><rect x="38" y="16" width="8" height="32" rx="1" fill="#009688"/></svg>',
     color: '#009688',
     gp: 7,
-    teks: 'TEKS K.8',
-    lessons: [],
-    comingSoon: true,
+    teks: 'TEKS K.8A, K.8B, K.8C',
+    quizBlueprint: { ku7l1:7, ku7l2:7, ku7l3:5, ku7l4:5 },
+    lessons: [
+      {id:'ku7l1', title:'Sort Into Groups',          icon:'🗂️',  desc:'Sort objects into categories and count each group'},
+      {id:'ku7l2', title:'Build and Read Picture Graphs', icon:'📊', desc:'Use pictures to show information in a graph'},
+      {id:'ku7l3', title:'Read Picture Graphs',        icon:'👀',  desc:'Read graphs to find totals and compare groups'},
+      {id:'ku7l4', title:'Compare Data',               icon:'⚖️',  desc:'Find how many more or fewer between two groups'}
+    ],
     _loaded: false
   },
   {
@@ -173,7 +177,9 @@ const _K_MERGE_MAP = {
   // Old u6.js — Geometry → new U5 (index 4)
   5: { target: 4, offset: 0 },
   // Old u7.js — Measurement → new U6 (index 5)
-  6: { target: 5, offset: 0 }
+  6: { target: 5, offset: 0 },
+  // Old u8.js — Data Analysis → new U7 (index 6)
+  7: { target: 6, offset: 0 }
 };
 
 // Which legacy source files each NEW unit index needs loaded
@@ -184,7 +190,7 @@ const _K_UNIT_SOURCES = {
   3: [],         // new U4 (Algebraic) — empty shell
   4: [6],        // new U5 (Geometry) ← u6.js
   5: [7],        // new U6 (Measurement) ← u7.js
-  6: [],         // new U7 (Data) — empty shell
+  6: [8],        // new U7 (Data Analysis) ← u8.js
   7: []          // new U8 (Financial) — empty shell
 };
 
