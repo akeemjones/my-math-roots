@@ -1,1164 +1,759 @@
-// Kindergarten Unit 4: Teen Numbers & Counting to 20
-// Calls _mergeKUnitData — available globally from shared_k.js in the app bundle.
+// Kindergarten Unit 4: Counting Patterns (TEKS K.5A)
 _mergeKUnitData(3, {
   lessons: [
 
-    // ── Lesson 1: Count to 20 ────────────────────────────────────────────────
+    // ── Lesson 1: Count Forward by Ones ─────────────────────────────────────
     {
       points: [
-        'Count forward: 1, 2, 3 … all the way to 20!',
-        'Count backward: start at a number and go down — 20, 19, 18 …',
-        'What comes BEFORE and AFTER a number? Use the counting order!'
+        'Numbers go in order — each number is ONE more than the one before',
+        'Start at 1 and say each number in order: 1, 2, 3, 4, 5 …',
+        'To find what comes NEXT, just count on one more!'
       ],
       examples: [
         {
-          c: '#FF9800',
-          tag: 'Count Forward',
-          p: 'Count all the ⭐ below. How many are there?',
-          v: {type:'objectSet', config:{count:15, emoji:'⭐', layout:'grid'}},
-          s: 'Touch each star and count: 1, 2, 3 … 15',
-          a: '15 stars ✅'
-        },
-        {
-          c: '#FB8C00',
+          c: '#7E57C2',
           tag: 'What Comes Next?',
-          p: '16, 17, __ — what number comes after 17?',
+          p: '3, 4, 5, __ — what number comes next?',
           v: null,
-          s: 'Count on one more from 17: 18',
-          a: '18 ✅'
+          s: 'Count on from 5: the next number is 6',
+          a: '6 ✅ — each number is one more!'
         },
         {
-          c: '#E65100',
-          tag: 'Count Backward',
-          p: 'Start at 14 and count back. What comes before 14?',
+          c: '#6A1B9A',
+          tag: 'Count the Objects',
+          p: 'Count the 🍎 apples below. What comes after 7?',
+          v: {type:'objectSet', config:{count:7, emoji:'🍎', layout:'line'}},
+          s: 'Count: 1, 2, 3, 4, 5, 6, 7 — the next is 8',
+          a: '8 ✅ — one more than 7'
+        },
+        {
+          c: '#4A148C',
+          tag: 'Fill the Blank',
+          p: '1, 2, __, 4, 5 — what number is missing?',
           v: null,
-          s: 'Count back one step from 14: 13',
-          a: '13 ✅'
+          s: 'Count: 1, 2, ___ — the missing number is 3',
+          a: '3 ✅ — 3 comes between 2 and 4'
         }
       ],
       practice: [
-        {q:'Count forward: 11, 12, 13, __, 15', a:'14', h:'What number comes after 13?', e:'14 comes after 13! ✅'},
-        {q:'What comes after 19?', a:'20', h:'Count on from 19: twenty!', e:'20 comes after 19! ✅'},
-        {q:'What comes before 16?', a:'15', h:'Count back one step from 16', e:'15 comes before 16! ✅'}
+        {q:'4, 5, 6, __ — what comes next?', a:'7', h:'Count on one from 6', e:'7! Each number is one more ✅'},
+        {q:'What number comes after 9?', a:'10', h:'Count on from 9', e:'10 comes right after 9! ✅'},
+        {q:'2, __, 4 — what is missing?', a:'3', h:'What goes between 2 and 4?', e:'3 goes between 2 and 4! ✅'}
       ],
       qBank: [
-        // ── Count objectSet (11–20) ──────────────────────────────────────────
-        {
-          t: 'How many 🌟 are there?',
-          v: {type:'objectSet', config:{count:11, emoji:'🌟', layout:'grid'}},
-          o: [{val:'10',tag:'err_under_count'},{val:'11'},{val:'12',tag:'err_off_by_one'},{val:'13',tag:'err_over_count'}],
-          a:1, e:'Count: 1 … 11!', d:'e', s:null, h:'Count every star one by one'
-        },
-        {
-          t: 'How many 🐝 do you see?',
-          v: {type:'objectSet', config:{count:13, emoji:'🐝', layout:'grid'}},
-          o: [{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
-          a:2, e:'Count carefully: 1 … 13!', d:'e', s:null, h:'Touch each bee as you count'
-        },
-        {
-          t: 'How many 🦋 are in the garden?',
-          v: {type:'objectSet', config:{count:16, emoji:'🦋', layout:'grid'}},
-          o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-          a:2, e:'16 butterflies!', d:'m', s:null, h:'Count row by row'
-        },
-        {
-          t: 'Count the 🌸 flowers. How many?',
-          v: {type:'objectSet', config:{count:18, emoji:'🌸', layout:'grid'}},
-          o: [{val:'16',tag:'err_under_count'},{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
-          a:2, e:'18 flowers!', d:'m', s:null, h:'Count carefully — do not skip any'
-        },
-        {
-          t: 'How many ⭐ are here?',
-          v: {type:'objectSet', config:{count:20, emoji:'⭐', layout:'grid'}},
-          o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-          a:2, e:'20 stars — all the way to 20!', d:'m', s:null, h:'Count all the way to the last one'
-        },
-        // ── What comes after N? ──────────────────────────────────────────────
-        {
-          t: 'What number comes after 10?',
-          v: null,
-          o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
-          a:2, e:'11 comes right after 10!', d:'e', s:null, h:'Count on one more from 10'
-        },
-        {
-          t: 'What number comes after 14?',
-          v: null,
-          o: [{val:'13',tag:'err_under_count'},{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-          a:2, e:'15 comes after 14!', d:'e', s:null, h:'Count forward one step from 14'
-        },
-        {
-          t: 'What number comes after 17?',
-          v: null,
-          o: [{val:'16',tag:'err_under_count'},{val:'17',tag:'err_same'},{val:'18'},{val:'20',tag:'err_over_count'}],
-          a:2, e:'18 comes after 17!', d:'e', s:null, h:'Say 17 … then the next number'
-        },
-        {
-          t: 'What number comes after 19?',
-          v: null,
-          o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-          a:2, e:'20 comes after 19 — that is the biggest!', d:'m', s:null, h:'Count on from 19'
-        },
-        {
-          t: '11, 12, 13, __ — what comes next?',
-          v: null,
-          o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-          a:2, e:'14 comes next!', d:'e', s:null, h:'Count on from 13'
-        },
-        // ── What comes before N? ─────────────────────────────────────────────
-        {
-          t: 'What number comes before 12?',
-          v: null,
-          o: [{val:'10',tag:'err_under_count'},{val:'11'},{val:'12',tag:'err_same'},{val:'13',tag:'err_off_by_one'}],
-          a:1, e:'11 comes before 12!', d:'e', s:null, h:'Count back one step from 12'
-        },
-        {
-          t: 'What number comes before 15?',
-          v: null,
-          o: [{val:'13',tag:'err_under_count'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
-          a:1, e:'14 comes before 15!', d:'e', s:null, h:'Say 15 and count back one'
-        },
-        {
-          t: 'What number comes before 20?',
-          v: null,
-          o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
-          a:2, e:'19 comes before 20!', d:'m', s:null, h:'Count back one step from 20'
-        },
-        {
-          t: '__, 16, 17 — what number comes before 16?',
-          v: null,
-          o: [{val:'13',tag:'err_under_count'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_same'}],
-          a:2, e:'15 comes before 16!', d:'m', s:null, h:'Count back one from 16'
-        },
-        {
-          t: 'What number comes before 18?',
-          v: null,
-          o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'}],
-          a:2, e:'17 comes before 18!', d:'m', s:null, h:'Count back from 18'
-        },
-        {
-          t: 'How many 🦊 are here?',
-          v: {type:'objectSet', config:{count:12, emoji:'🦊', layout:'grid'}},
-          o: [{val:'10',tag:'err_under_count'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
-          a:2, e:'12 foxes!', d:'e', s:null, h:'Count every fox — do not skip any'
-        },
-        {
-          t: 'What number comes after 11?',
-          v: null,
-          o: [{val:'10',tag:'err_under_count'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
-          a:2, e:'12 comes after 11!', d:'e', s:null, h:'Count on one step from 11'
-        },
-        {
-          t: '17, 18, __ — what comes next?',
-          v: null,
-          o: [{val:'17',tag:'err_under_count'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-          a:2, e:'19 comes after 18!', d:'m', s:null, h:'Count forward from 18'
-        },
-        // ── NEW questions (appended) ─────────────────────────────────────────
-        {
-          t: 'What comes after 15?',
-          v: null,
-          o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_same'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-          a:2, e:'16 comes after 15!', d:'m', s:null, h:'Count forward one step from 15'
-        },
-        {
-          t: 'What comes before 17?',
-          v: null,
-          o: [{val:'15',tag:'err_under_count'},{val:'16'},{val:'17',tag:'err_same'},{val:'18',tag:'err_off_by_one'}],
-          a:1, e:'16 comes before 17!', d:'m', s:null, h:'Count back one step from 17'
-        },
-        {
-          t: 'How many 🦕 are there?',
-          v: {type:'objectSet', config:{count:17, emoji:'🦕', layout:'grid'}},
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'},{val:'19',tag:'err_over_count'}],
-          a:1, e:'17 dinosaurs — count every one!', d:'h', s:null, h:'Count carefully — do not skip any'
-        },
-        {
-          t: 'How many 🐳 do you see?',
-          v: {type:'objectSet', config:{count:19, emoji:'🐳', layout:'grid'}},
-          o: [{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'},{val:'17',tag:'err_under_count'}],
-          a:1, e:'19 whales!', d:'h', s:null, h:'Count row by row — stay focused!'
-        },
-        {
-          t: 'How many 🌵 are in the desert?',
-          v: {type:'objectSet', config:{count:20, emoji:'🌵', layout:'grid'}},
-          o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-          a:2, e:'20 cacti — all the way to 20!', d:'h', s:null, h:'Count every cactus one by one'
-        },
-        {
-          t: 'How many 🎸 are here?',
-          v: {type:'objectSet', config:{count:18, emoji:'🎸', layout:'grid'}},
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}],
-          a:1, e:'18 guitars!', d:'h', s:null, h:'Count carefully — do not miss any'
-        },
-        {
-          t: '18, 19, __ — what comes next?',
-          v: null,
-          o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-          a:2, e:'20 comes after 19!', d:'h', s:null, h:'Count forward from 19'
-        },
-        {
-          t: '__, 18, 19 — what number is missing?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'},{val:'20',tag:'err_off_by_one'}],
-          a:1, e:'17 goes right before 18!', d:'h', s:null, h:'What comes just before 18?'
-        },
-        {
-          t: '16, __, 18 — what number is missing?',
-          v: null,
-          o: [{val:'16',tag:'err_same'},{val:'17'},{val:'18',tag:'err_same'},{val:'19',tag:'err_off_by_one'}],
-          a:1, e:'17 goes between 16 and 18!', d:'h', s:null, h:'What comes after 16?'
-        },
-        {
-          t: '20, __, 18 — what is missing when counting back?',
-          v: null,
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_same'}],
-          a:2, e:'19 goes between 20 and 18 when counting back!', d:'h', s:null, h:'Count backward from 20'
-        }
+        // ── easy: next number, single step ──────────────────────────────────
+        {t:'1, 2, 3, __ — what comes next?', v:null,
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'3',tag:'err_same',patternTag:'chooses-start-number'},{val:'4'},{val:'5',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'4 comes after 3 — one more!', d:'e', s:null, h:'Count on from 3'},
+        {t:'4, 5, 6, __ — what comes next?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 comes after 6!', d:'e', s:null, h:'Count on from 6'},
+        {t:'7, 8, 9, __ — what comes next?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'9',tag:'err_same',patternTag:'chooses-start-number'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'10 comes after 9!', d:'e', s:null, h:'Count on from 9'},
+        {t:'What number comes after 5?', v:null,
+          o:[{val:'4',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 comes right after 5!', d:'e', s:null, h:'Say 5 … then the next number'},
+        {t:'What number comes after 2?', v:null,
+          o:[{val:'1',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'2',tag:'err_same',patternTag:'chooses-start-number'},{val:'3'},{val:'4',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'3 comes right after 2!', d:'e', s:null, h:'Count on from 2'},
+        {t:'Count the 🐝. How many?',
+          v:{type:'objectSet', config:{count:4, emoji:'🐝', layout:'line'}},
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'4'},{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'4 bees!', d:'e', s:null, h:'Touch each bee as you count'},
+        {t:'Count the 🌟. How many?',
+          v:{type:'objectSet', config:{count:6, emoji:'🌟', layout:'line'}},
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'6 stars!', d:'e', s:null, h:'Count each star carefully'},
+        {t:'What number comes after 8?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'8',tag:'err_same',patternTag:'chooses-start-number'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 comes after 8!', d:'e', s:null, h:'Count on one from 8'},
+        {t:'2, 3, 4, __ — what comes next?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'5 comes after 4!', d:'e', s:null, h:'Count on from 4'},
+        {t:'5, 6, 7, __ — what comes next?', v:null,
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'7',tag:'err_same',patternTag:'chooses-start-number'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'8 comes after 7!', d:'e', s:null, h:'Count on from 7'},
+        {t:'Count the 🍊. How many?',
+          v:{type:'objectSet', config:{count:3, emoji:'🍊', layout:'line'}},
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'3'},{val:'4',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'5',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'3 oranges!', d:'e', s:null, h:'Count each one'},
+        {t:'Count the 🐸. How many?',
+          v:{type:'objectSet', config:{count:5, emoji:'🐸', layout:'line'}},
+          o:[{val:'4',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'5 frogs!', d:'e', s:null, h:'Touch each frog as you count'},
+        {t:'6, 7, 8, __ — what comes next?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'8',tag:'err_same',patternTag:'chooses-start-number'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 comes after 8!', d:'e', s:null, h:'Count on from 8'},
+        {t:'What number comes after 1?', v:null,
+          o:[{val:'1',tag:'err_same',patternTag:'chooses-start-number'},{val:'2'},{val:'3',tag:'err_off_by_one',patternTag:'skips-ahead'},{val:'0',tag:'err_off_by_one',patternTag:'counts-backward'}],
+          a:1, e:'2 comes right after 1!', d:'e', s:null, h:'1, then …'},
+        {t:'What number comes after 6?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 comes after 6!', d:'e', s:null, h:'Count forward from 6'},
+        {t:'3, 4, 5, __ — what comes next?', v:null,
+          o:[{val:'4',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 comes after 5!', d:'e', s:null, h:'Count on from 5'},
+        // ── medium: missing middle, what comes before ────────────────────────
+        {t:'3, __, 5 — what is missing?', v:null,
+          o:[{val:'3',tag:'err_same',patternTag:'chooses-start-number'},{val:'4'},{val:'5',tag:'err_same',patternTag:'sequence-confusion'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'4 goes between 3 and 5!', d:'m', s:null, h:'What comes after 3?'},
+        {t:'6, __, 8 — what is missing?', v:null,
+          o:[{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'7 goes between 6 and 8!', d:'m', s:null, h:'What comes after 6?'},
+        {t:'1, __, 3 — what is missing?', v:null,
+          o:[{val:'1',tag:'err_same',patternTag:'chooses-start-number'},{val:'2'},{val:'3',tag:'err_same',patternTag:'sequence-confusion'},{val:'4',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'2 goes between 1 and 3!', d:'m', s:null, h:'What is one more than 1?'},
+        {t:'What number comes before 7?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6'},{val:'7',tag:'err_same',patternTag:'chooses-start-number'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'6 comes before 7!', d:'m', s:null, h:'Count back one step from 7'},
+        {t:'What number comes before 4?', v:null,
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'3'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'3 comes before 4!', d:'m', s:null, h:'Count back one from 4'},
+        {t:'Count the 🦋. How many?',
+          v:{type:'objectSet', config:{count:7, emoji:'🦋', layout:'grid'}},
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:2, e:'7 butterflies!', d:'m', s:null, h:'Count row by row'},
+        {t:'Count the 🐙. How many?',
+          v:{type:'objectSet', config:{count:8, emoji:'🐙', layout:'grid'}},
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:2, e:'8 octopuses!', d:'m', s:null, h:'Count carefully — do not skip any'},
+        {t:'2, 3, __, 5 — what is missing?', v:null,
+          o:[{val:'2',tag:'err_same',patternTag:'chooses-start-number'},{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'4 goes between 3 and 5!', d:'m', s:null, h:'What comes after 3?'},
+        {t:'7, __, 9 — what is missing?', v:null,
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'7',tag:'err_same',patternTag:'chooses-start-number'},{val:'8'},{val:'9',tag:'err_same',patternTag:'sequence-confusion'}],
+          a:2, e:'8 goes between 7 and 9!', d:'m', s:null, h:'What comes after 7?'},
+        {t:'4, 5, __, 7 — what is missing?', v:null,
+          o:[{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 goes between 5 and 7!', d:'m', s:null, h:'What comes after 5?'},
+        {t:'What number comes before 10?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'9'},{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'9 comes before 10!', d:'m', s:null, h:'Count back one step from 10'},
+        {t:'Count the 🌈. How many?',
+          v:{type:'objectSet', config:{count:9, emoji:'🌈', layout:'grid'}},
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:2, e:'9 rainbows!', d:'m', s:null, h:'Count every one carefully'},
+        // ── hard: tricky sequences, larger numbers ───────────────────────────
+        {t:'8, 9, 10, __ — what comes next?', v:null,
+          o:[{val:'9',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11'},{val:'12',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'11 comes after 10!', d:'h', s:null, h:'Count on from 10'},
+        {t:'10, __, 12 — what is missing?', v:null,
+          o:[{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11'},{val:'12',tag:'err_same',patternTag:'sequence-confusion'},{val:'13',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'11 goes between 10 and 12!', d:'h', s:null, h:'What is one more than 10?'},
+        {t:'What number comes before 1?', v:null,
+          o:[{val:'0'},{val:'1',tag:'err_same',patternTag:'chooses-start-number'},{val:'2',tag:'err_off_by_one',patternTag:'skips-ahead'},{val:'3',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:0, e:'0 comes before 1!', d:'h', s:null, h:'Count back one from 1'},
+        {t:'Count the 🦄. How many?',
+          v:{type:'objectSet', config:{count:10, emoji:'🦄', layout:'grid'}},
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:2, e:'10 unicorns!', d:'h', s:null, h:'Count all the way to the last one'},
+        {t:'6, 7, __, 9, 10 — what is missing?', v:null,
+          o:[{val:'7',tag:'err_same',patternTag:'sequence-confusion'},{val:'8'},{val:'9',tag:'err_same',patternTag:'sequence-confusion'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'8 goes between 7 and 9!', d:'h', s:null, h:'What comes after 7?'},
+        {t:'9, __, 11 — what is missing?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'9',tag:'err_same',patternTag:'chooses-start-number'},{val:'10'},{val:'11',tag:'err_same',patternTag:'sequence-confusion'}],
+          a:2, e:'10 goes between 9 and 11!', d:'h', s:null, h:'What is one more than 9?'},
+        {t:'Count the 🐯. How many?',
+          v:{type:'objectSet', config:{count:9, emoji:'🐯', layout:'grid'}},
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:1, e:'9 tigers — count every one!', d:'h', s:null, h:'Count row by row — do not miss any'},
+        {t:'5, 6, __, 8 — what is missing?', v:null,
+          o:[{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'7'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 goes between 6 and 8!', d:'h', s:null, h:'Count on from 6'},
+        {t:'What number comes before 5?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4'},{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'4 comes before 5!', d:'h', s:null, h:'Count back one from 5'},
+        {t:'1, 2, 3, 4, __ — what comes next?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'5 comes after 4!', d:'h', s:null, h:'Count forward from 4'},
+        {t:'3, 4, 5, 6, __ — what comes next?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 comes after 6!', d:'h', s:null, h:'Count on from 6'},
+        {t:'Count the 🎈. How many?',
+          v:{type:'objectSet', config:{count:8, emoji:'🎈', layout:'grid'}},
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'}],
+          a:2, e:'8 balloons — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'}
       ]
     },
 
-    // ── Lesson 2: Read and Represent 11–20 ──────────────────────────────────
+    // ── Lesson 2: Count by Tens ──────────────────────────────────────────────
     {
       points: [
-        'Teen numbers are made of 10 and some MORE — like 10 + 4 = 14',
-        '11 = 10 + 1, 12 = 10 + 2, all the way to 19 = 10 + 9',
-        'Match the numeral to the right group of objects!'
+        'Count by tens: 10, 20, 30, 40, 50 — each jump is TEN more',
+        'Look at the tens digit — it goes up by one each time: 1, 2, 3 …',
+        'Skip-counting by tens is a pattern — use it to count big groups fast!'
       ],
       examples: [
         {
-          c: '#FF9800',
-          tag: '10 + Extras',
-          p: 'Here are 14 ⭐. Count the group of 10 — then count the 4 extras!',
-          v: {type:'objectSet', config:{count:14, emoji:'⭐', layout:'grid'}},
-          s: '10 in the full rows, then 1, 2, 3, 4 more = 14',
-          a: '14 ✅ — ten and four more'
+          c: '#1565C0',
+          tag: 'Count the Tens',
+          p: '10, 20, __ — what comes next when counting by tens?',
+          v: null,
+          s: '10 … 20 … add ten more: 30',
+          a: '30 ✅ — each step is ten more!'
         },
         {
-          c: '#FB8C00',
-          tag: 'Name the Set',
-          p: 'How many 🌙 are there? Pick the numeral.',
-          v: {type:'objectSet', config:{count:16, emoji:'🌙', layout:'grid'}},
-          s: 'Count all: 1 … 16. The numeral is 16.',
-          a: '16 ✅'
+          c: '#0D47A1',
+          tag: 'Groups of Ten',
+          p: 'Here are 3 groups of 10 🔵. How many in all?',
+          v: {type:'objectSet', config:{count:30, emoji:'🔵', layout:'grid'}},
+          s: 'Count by tens: 10, 20, 30 — three groups make 30',
+          a: '30 ✅ — count by tens!'
         },
         {
-          c: '#E65100',
-          tag: 'Count the Extras',
-          p: '13 objects = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:13, emoji:'🍎', layout:'grid'}},
-          s: 'Count beyond 10: 11, 12, 13 — that is 3 extras',
-          a: '3 extras ✅ — 10 + 3 = 13'
+          c: '#003c8f',
+          tag: 'Complete the Pattern',
+          p: '30, 40, __ — what comes next?',
+          v: null,
+          s: 'After 40 comes 50 — keep adding ten!',
+          a: '50 ✅ — add ten each time'
         }
       ],
       practice: [
-        {q:'Show 12 using 10 + extras. How many extras?', a:'2', h:'12 = 10 + ?', e:'12 = 10 + 2! ✅'},
-        {q:'15 = 10 + ?', a:'5', h:'Count past 10 to 15', e:'15 = 10 + 5! ✅'},
-        {q:'Which numeral matches 10 + 8?', a:'18', h:'10 + 8 = …', e:'18! Ten and eight more ✅'}
+        {q:'10, 20, __ — what comes next?', a:'30', h:'Add ten to 20', e:'30! 20 + 10 = 30 ✅'},
+        {q:'40, 50, __ — what comes next?', a:'60', h:'Add ten to 50', e:'60! 50 + 10 = 60 ✅'},
+        {q:'20, 30, 40, __ — what is next?', a:'50', h:'Keep adding ten', e:'50! Count on by tens ✅'}
       ],
       qBank: [
-        // ── objectSet → identify numeral ─────────────────────────────────────
-        {
-          t: 'How many 🍎 are there?',
-          v: {type:'objectSet', config:{count:11, emoji:'🍎', layout:'grid'}},
-          o: [{val:'9',tag:'err_teen'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
-          a:2, e:'11 = ten and one more!', d:'e', s:null, h:'Count all — 10 then 1 more'
-        },
-        {
-          t: 'How many 🌙 do you see?',
-          v: {type:'objectSet', config:{count:12, emoji:'🌙', layout:'grid'}},
-          o: [{val:'10',tag:'err_teen'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
-          a:2, e:'12 = ten and two more!', d:'e', s:null, h:'Count the ten, then the extras'
-        },
-        {
-          t: 'How many 🐸 are here?',
-          v: {type:'objectSet', config:{count:14, emoji:'🐸', layout:'grid'}},
-          o: [{val:'12',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-          a:2, e:'14 = ten and four more!', d:'e', s:null, h:'Count on past 10'
-        },
-        {
-          t: 'Count the 🌺 flowers. How many?',
-          v: {type:'objectSet', config:{count:17, emoji:'🌺', layout:'grid'}},
-          o: [{val:'15',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-          a:2, e:'17 = ten and seven more!', d:'m', s:null, h:'Count carefully past 16'
-        },
-        {
-          t: 'How many 🐠 fish are there?',
-          v: {type:'objectSet', config:{count:19, emoji:'🐠', layout:'grid'}},
-          o: [{val:'17',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-          a:2, e:'19 = ten and nine more!', d:'m', s:null, h:'Count all the fish'
-        },
-        {
-          t: 'How many ⭐ stars are here?',
-          v: {type:'objectSet', config:{count:20, emoji:'⭐', layout:'grid'}},
-          o: [{val:'18',tag:'err_teen'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_off_by_one'}],
-          a:2, e:'20! That is our biggest number!', d:'m', s:null, h:'Count all the way to the end'
-        },
-        // ── How many extras beyond 10? ───────────────────────────────────────
-        {
-          t: '13 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:13, emoji:'🍋', layout:'grid'}},
-          o: [{val:'1',tag:'err_teen'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
-          a:2, e:'13 = 10 + 3!', d:'e', s:null, h:'Count past 10: 11, 12, 13 — that is 3 extras'
-        },
-        {
-          t: '15 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}},
-          o: [{val:'3',tag:'err_teen'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
-          a:2, e:'15 = 10 + 5!', d:'e', s:null, h:'Count beyond 10 to reach 15'
-        },
-        {
-          t: '18 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:18, emoji:'🐥', layout:'grid'}},
-          o: [{val:'6',tag:'err_teen'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
-          a:2, e:'18 = 10 + 8!', d:'m', s:null, h:'Count how many are past the 10'
-        },
-        {
-          t: '16 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:16, emoji:'🍇', layout:'grid'}},
-          o: [{val:'4',tag:'err_teen'},{val:'5',tag:'err_off_by_one'},{val:'6'},{val:'7',tag:'err_off_by_one'}],
-          a:2, e:'16 = 10 + 6!', d:'m', s:null, h:'Count the extras after the first 10'
-        },
-        {
-          t: '19 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:19, emoji:'🐣', layout:'grid'}},
-          o: [{val:'7',tag:'err_teen'},{val:'8',tag:'err_off_by_one'},{val:'9'},{val:'10',tag:'err_off_by_one'}],
-          a:2, e:'19 = 10 + 9!', d:'m', s:null, h:'Count the extras after 10'
-        },
-        // ── Given numeral, which count? ──────────────────────────────────────
-        {
-          t: 'Which number is "twelve"?',
-          v: null,
-          o: [{val:'10',tag:'err_teen'},{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'20',tag:'err_teen'}],
-          a:2, e:'Twelve = 12!', d:'e', s:null, h:'Twelve has a 1 and a 2'
-        },
-        {
-          t: 'Which number is "fifteen"?',
-          v: null,
-          o: [{val:'5',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-          a:2, e:'Fifteen = 15!', d:'e', s:null, h:'Fifteen: ten and five more'
-        },
-        {
-          t: 'Which number is "seventeen"?',
-          v: null,
-          o: [{val:'7',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-          a:2, e:'Seventeen = 17!', d:'m', s:null, h:'Seventeen: ten and seven more'
-        },
-        {
-          t: 'Which number is "nineteen"?',
-          v: null,
-          o: [{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-          a:2, e:'Nineteen = 19!', d:'m', s:null, h:'Nineteen: ten and nine more'
-        },
-        {
-          t: '12 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:12, emoji:'🐢', layout:'grid'}},
-          o: [{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}],
-          a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'
-        },
-        {
-          t: '14 = 10 + how many extras?',
-          v: {type:'objectSet', config:{count:14, emoji:'🐛', layout:'grid'}},
-          o: [{val:'2',tag:'err_teen'},{val:'3',tag:'err_off_by_one'},{val:'4'},{val:'5',tag:'err_off_by_one'}],
-          a:2, e:'14 = 10 + 4!', d:'m', s:null, h:'Count the extras past the first 10'
-        },
-        {
-          t: 'Which number is "thirteen"?',
-          v: null,
-          o: [{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}],
-          a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'
-        },
-        // ── NEW questions (appended) ─────────────────────────────────────────
-        {
-          t: 'Which number is "eleven"?',
-          v: null,
-          o: [{val:'10',tag:'err_teen'},{val:'11'},{val:'12',tag:'err_teen'},{val:'20',tag:'err_teen'}],
-          a:1, e:'Eleven = 11!', d:'e', s:null, h:'Eleven: ten and one more'
-        },
-        {
-          t: '12 = 10 + how many extras? Count the 🦜.',
-          v: {type:'objectSet', config:{count:12, emoji:'🦜', layout:'grid'}},
-          o: [{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'},{val:'4',tag:'err_teen'}],
-          a:1, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after the first 10'
-        },
-        {
-          t: 'How many 🚂 are there?',
-          v: {type:'objectSet', config:{count:15, emoji:'🚂', layout:'grid'}},
-          o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-          a:2, e:'15 trains — ten and five more!', d:'m', s:null, h:'Count every train'
-        },
-        {
-          t: 'How many 🎠 do you see?',
-          v: {type:'objectSet', config:{count:16, emoji:'🎠', layout:'grid'}},
-          o: [{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-          a:2, e:'16 carousels — ten and six more!', d:'m', s:null, h:'Count carefully past 15'
-        },
-        {
-          t: 'How many 🦁 are in the group?',
-          v: {type:'objectSet', config:{count:17, emoji:'🦁', layout:'grid'}},
-          o: [{val:'15',tag:'err_teen'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-          a:2, e:'17 lions — ten and seven more!', d:'m', s:null, h:'Count row by row past 16'
-        },
-        {
-          t: 'Which number is "sixteen"?',
-          v: null,
-          o: [{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-          a:2, e:'Sixteen = 16!', d:'m', s:null, h:'Sixteen: ten and six more'
-        },
-        {
-          t: 'Which number is "eighteen"?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
-          a:2, e:'Eighteen = 18!', d:'h', s:null, h:'Eighteen: ten and eight more'
-        },
-        {
-          t: 'Which number is "twenty"?',
-          v: null,
-          o: [{val:'18',tag:'err_off_by_one'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'2',tag:'err_teen'}],
-          a:2, e:'Twenty = 20 — our biggest number!', d:'h', s:null, h:'Twenty comes after nineteen'
-        },
-        {
-          t: 'How many 🦩 are there?',
-          v: {type:'objectSet', config:{count:18, emoji:'🦩', layout:'grid'}},
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}],
-          a:1, e:'18 flamingos — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'
-        },
-        {
-          t: 'How many 🧩 pieces are here?',
-          v: {type:'objectSet', config:{count:19, emoji:'🧩', layout:'grid'}},
-          o: [{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'},{val:'17',tag:'err_under_count'}],
-          a:1, e:'19 puzzle pieces!', d:'h', s:null, h:'Count row by row — stay focused!'
-        }
+        // ── easy ─────────────────────────────────────────────────────────────
+        {t:'10, 20, __ — what comes next counting by tens?', v:null,
+          o:[{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'29',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'40',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'30 comes after 20 — add ten!', d:'e', s:null, h:'10, 20, then add ten more'},
+        {t:'20, 30, __ — what comes next?', v:null,
+          o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'39',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'50',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'40 comes after 30 — add ten!', d:'e', s:null, h:'20, 30, then add ten more'},
+        {t:'30, 40, __ — what comes next?', v:null,
+          o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'49',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'60',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'50 comes after 40 — add ten!', d:'e', s:null, h:'30, 40, then add ten more'},
+        {t:'Count 2 groups of 10 🔵. How many in all?',
+          v:{type:'objectSet', config:{count:20, emoji:'🔵', layout:'grid'}},
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'12',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'20'},{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+          a:2, e:'2 groups of 10 = 20!', d:'e', s:null, h:'Count by tens: 10, 20'},
+        {t:'40, 50, __ — what comes next?', v:null,
+          o:[{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'60'},{val:'70',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'60 comes after 50 — add ten!', d:'e', s:null, h:'40, 50, then add ten more'},
+        {t:'Which shows counting by tens?', v:null,
+          o:[{val:'10, 11, 12',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'10, 20, 30'},{val:'10, 15, 20',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'5, 10, 15',tag:'err_off_by_one',patternTag:'wrong-decade'}],
+          a:1, e:'10, 20, 30 — each jump is ten!', d:'e', s:null, h:'Each step should add ten'},
+        {t:'10, 20, 30, __ — what comes next?', v:null,
+          o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'50',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'40 comes after 30!', d:'e', s:null, h:'Add ten to 30'},
+        {t:'Count 3 groups of 10 🍎. How many in all?',
+          v:{type:'objectSet', config:{count:30, emoji:'🍎', layout:'grid'}},
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'13',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+          a:2, e:'3 groups of 10 = 30!', d:'e', s:null, h:'Count by tens: 10, 20, 30'},
+        {t:'50, 60, __ — what comes next?', v:null,
+          o:[{val:'61',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'65',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'70'},{val:'80',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'70 comes after 60 — add ten!', d:'e', s:null, h:'Add ten to 60'},
+        // ── medium ───────────────────────────────────────────────────────────
+        {t:'10, 20, __, 40 — what is missing?', v:null,
+          o:[{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'25',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'39',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'30 goes between 20 and 40!', d:'m', s:null, h:'Add ten to 20'},
+        {t:'20, __, 40, 50 — what is missing?', v:null,
+          o:[{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'25',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'30 goes between 20 and 40!', d:'m', s:null, h:'What comes after 20 when counting by tens?'},
+        {t:'30, __, 50 — what is missing?', v:null,
+          o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'40 goes between 30 and 50!', d:'m', s:null, h:'Add ten to 30'},
+        {t:'Count 4 groups of 10 🌟. How many in all?',
+          v:{type:'objectSet', config:{count:40, emoji:'🌟', layout:'grid'}},
+          o:[{val:'4',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'14',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+          a:2, e:'4 groups of 10 = 40!', d:'m', s:null, h:'Count by tens: 10, 20, 30, 40'},
+        {t:'50, __, 70 — what is missing?', v:null,
+          o:[{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'60'},{val:'65',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'60 goes between 50 and 70!', d:'m', s:null, h:'Add ten to 50'},
+        {t:'How much do 5 dimes make in tens? 10, 20, 30, 40, __', v:null,
+          o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'60',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'50! After 40 comes 50 when counting by tens!', d:'m', s:null, h:'Keep counting by tens from 40'},
+        {t:'60, 70, __ — what comes next?', v:null,
+          o:[{val:'71',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'75',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'80'},{val:'90',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'80 comes after 70!', d:'m', s:null, h:'Add ten to 70'},
+        // ── hard ─────────────────────────────────────────────────────────────
+        {t:'70, 80, __ — what comes next?', v:null,
+          o:[{val:'81',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'85',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'90'},{val:'100',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'90 comes after 80!', d:'h', s:null, h:'Add ten to 80'},
+        {t:'80, 90, __ — what comes next?', v:null,
+          o:[{val:'91',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'95',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'100'},{val:'110',tag:'err_off_by_one',patternTag:'skips-ten'}],
+          a:2, e:'100 comes after 90!', d:'h', s:null, h:'Add ten to 90'},
+        {t:'40, __, 60, 70 — what is missing?', v:null,
+          o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'50 goes between 40 and 60!', d:'h', s:null, h:'Add ten to 40'},
+        {t:'Count 5 groups of 10 🐝. How many in all?',
+          v:{type:'objectSet', config:{count:50, emoji:'🐝', layout:'grid'}},
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'15',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+          a:2, e:'5 groups of 10 = 50!', d:'h', s:null, h:'Count by tens: 10, 20, 30, 40, 50'},
+        {t:'__, 20, 30, 40 — what comes first?', v:null,
+          o:[{val:'9',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'15',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:1, e:'10 comes before 20 when counting by tens!', d:'h', s:null, h:'What is ten less than 20?'},
+        {t:'10, 20, 30, 40, __, 60 — what is missing?', v:null,
+          o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+          a:2, e:'50 goes between 40 and 60!', d:'h', s:null, h:'Keep the tens pattern going'},
+        {t:'What number comes before 30 when counting by tens?', v:null,
+          o:[{val:'19',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'20'},{val:'25',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'29',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+          a:1, e:'20 comes before 30 when counting by tens!', d:'h', s:null, h:'What is ten less than 30?'}
       ]
     },
 
-    // ── Lesson 3: More, Less, and Equal Within 20 ────────────────────────────
+    // ── Lesson 3: Count from Any Number ─────────────────────────────────────
     {
       points: [
-        'MORE means the bigger amount — the group with more objects',
-        'LESS means the smaller amount — the group with fewer objects',
-        'EQUAL means both groups have the same amount'
+        'You do not have to start at 1 — you can start counting from ANY number',
+        'Start at that number and just keep going forward: one more each time',
+        'If someone says "start at 4," count 4, 5, 6, 7 … keep going!'
       ],
       examples: [
         {
-          c: '#0095FF',
-          tag: 'Compare Groups',
-          p: 'Which group has MORE — 13 🌻 or 8 🌻?',
-          v: {type:'twoGroups', config:{leftCount:13, leftObj:'🌻', rightCount:8, rightObj:'🌻', op:'compare'}},
-          s: 'Count both: 13 is bigger than 8',
-          a: '13 🌻 has MORE ✅'
-        },
-        {
-          c: '#0072CE',
-          tag: 'Compare Numbers',
-          p: 'Is 17 more than, less than, or equal to 11?',
+          c: '#2E7D32',
+          tag: 'Start in the Middle',
+          p: 'Start counting at 5. What are the next three numbers?',
           v: null,
-          s: '17 comes later in counting — it is greater than 11',
-          a: '17 is MORE than 11 ✅'
+          s: 'From 5: say 6, 7, 8 — one more each time',
+          a: '6, 7, 8 ✅'
         },
         {
-          c: '#005BB5',
-          tag: 'Equal Groups',
-          p: 'Are 14 🌸 and 14 🌸 equal?',
-          v: {type:'twoGroups', config:{leftCount:14, leftObj:'🌸', rightCount:14, rightObj:'🌸', op:'compare'}},
-          s: 'Both groups have 14 — they are equal!',
-          a: 'Yes, equal! ✅'
+          c: '#1B5E20',
+          tag: 'Count On',
+          p: 'There are 6 🍎. Two more arrive. Start at 6 and count on.',
+          v: {type:'objectSet', config:{count:6, emoji:'🍎', layout:'line'}},
+          s: 'Start at 6: 7 (one more), 8 (two more)',
+          a: '8 ✅ — counted on from 6'
+        },
+        {
+          c: '#003300',
+          tag: 'Any Starting Point',
+          p: 'Start at 3 and count forward. What comes after 3, 4, 5?',
+          v: null,
+          s: 'After 3, 4, 5 — the next number is 6',
+          a: '6 ✅ — count forward from any number'
         }
       ],
       practice: [
-        {q:'Circle the group with more: 15 or 9', a:'15', h:'Which number is bigger?', e:'15 is more than 9! ✅'},
-        {q:'Is 12 more or less than 18?', a:'less', h:'12 comes before 18 when you count', e:'12 is less than 18! ✅'},
-        {q:'Are 16 and 16 equal?', a:'yes', h:'Count both — same number?', e:'Yes! Both are 16, so they are equal ✅'}
+        {q:'Start at 7. What are the next two numbers?', a:'8, 9', h:'Count forward from 7', e:'8, 9! Keep counting from 7 ✅'},
+        {q:'5, 6, __, 8 — what is missing?', a:'7', h:'What comes after 6?', e:'7! Count forward from 6 ✅'},
+        {q:'Start at 4 and count on two more. What do you land on?', a:'6', h:'4 → 5 → 6', e:'6! From 4, count on two steps ✅'}
       ],
       qBank: [
-        // ── twoGroups compare, which is MORE? ────────────────────────────────
-        {
-          t: 'Which group has MORE — 🐶 or 🐱?',
-          v: {type:'twoGroups', config:{leftCount:11, leftObj:'🐶', rightCount:6, rightObj:'🐱', op:'compare'}},
-          o: [{val:'6',tag:'err_less'},{val:'11'},{val:'8',tag:'err_off_by_one'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'11 is more than 6!', d:'e', s:null, h:'Count each group — which is bigger?'
-        },
-        {
-          t: 'Which group has MORE — 🍕 or 🌮?',
-          v: {type:'twoGroups', config:{leftCount:7, leftObj:'🍕', rightCount:14, rightObj:'🌮', op:'compare'}},
-          o: [{val:'7',tag:'err_less'},{val:'14'},{val:'11',tag:'err_off_by_one'},{val:'21',tag:'err_off_by_one'}],
-          a:1, e:'14 is more than 7!', d:'e', s:null, h:'Which side has more objects?'
-        },
-        {
-          t: 'Which group has MORE — 🌟 or 🌙?',
-          v: {type:'twoGroups', config:{leftCount:15, leftObj:'🌟', rightCount:12, rightObj:'🌙', op:'compare'}},
-          o: [{val:'12',tag:'err_less'},{val:'15'},{val:'13',tag:'err_off_by_one'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'15 is more than 12!', d:'m', s:null, h:'Count carefully — they are close!'
-        },
-        {
-          t: 'Which group has MORE — 🐸 or 🦋?',
-          v: {type:'twoGroups', config:{leftCount:9, leftObj:'🐸', rightCount:18, rightObj:'🦋', op:'compare'}},
-          o: [{val:'9',tag:'err_less'},{val:'18'},{val:'14',tag:'err_off_by_one'},{val:'27',tag:'err_off_by_one'}],
-          a:1, e:'18 is more than 9!', d:'e', s:null, h:'Count both sides'
-        },
-        {
-          t: 'Which group has MORE — 🍎 or 🍊?',
-          v: {type:'twoGroups', config:{leftCount:16, leftObj:'🍎', rightCount:13, rightObj:'🍊', op:'compare'}},
-          o: [{val:'13',tag:'err_less'},{val:'16'},{val:'14',tag:'err_off_by_one'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'16 is more than 13!', d:'m', s:null, h:'Count each group — close numbers!'
-        },
-        // ── twoGroups compare, which is FEWER? ───────────────────────────────
-        {
-          t: 'Which group has FEWER — 🐦 or 🐠?',
-          v: {type:'twoGroups', config:{leftCount:5, leftObj:'🐦', rightCount:14, rightObj:'🐠', op:'compare'}},
-          o: [{val:'14',tag:'err_more'},{val:'5'},{val:'9',tag:'err_same'},{val:'19',tag:'err_off_by_one'}],
-          a:1, e:'5 is fewer than 14!', d:'e', s:null, h:'Fewer means less — the smaller group'
-        },
-        {
-          t: 'Which group has FEWER — 🌺 or 🌻?',
-          v: {type:'twoGroups', config:{leftCount:17, leftObj:'🌺', rightCount:8, rightObj:'🌻', op:'compare'}},
-          o: [{val:'17',tag:'err_more'},{val:'8'},{val:'12',tag:'err_same'},{val:'25',tag:'err_off_by_one'}],
-          a:1, e:'8 is fewer than 17!', d:'e', s:null, h:'Fewer = the smaller group'
-        },
-        {
-          t: 'Which group has FEWER — 🍇 or 🍋?',
-          v: {type:'twoGroups', config:{leftCount:11, leftObj:'🍇', rightCount:19, rightObj:'🍋', op:'compare'}},
-          o: [{val:'19',tag:'err_more'},{val:'11'},{val:'15',tag:'err_same'},{val:'30',tag:'err_off_by_one'}],
-          a:1, e:'11 is fewer than 19!', d:'m', s:null, h:'Which side has fewer objects?'
-        },
-        {
-          t: 'Which group has FEWER — 🐥 or 🐣?',
-          v: {type:'twoGroups', config:{leftCount:13, leftObj:'🐥', rightCount:20, rightObj:'🐣', op:'compare'}},
-          o: [{val:'20',tag:'err_more'},{val:'13'},{val:'16',tag:'err_same'},{val:'33',tag:'err_off_by_one'}],
-          a:1, e:'13 is fewer than 20!', d:'m', s:null, h:'Fewer = smaller count'
-        },
-        // ── Abstract comparison (v:null) ─────────────────────────────────────
-        {
-          t: 'Which is greater: 11 or 19?',
-          v: {type:'twoGroups',config:{leftCount:11,leftObj:'🔵',rightCount:19,rightObj:'🔵',op:'compare'}},
-          o: [{val:'11',tag:'err_less'},{val:'19'}],
-          a:1, e:'19 is greater — it comes later when you count!', d:'e', s:null, h:'Which number comes later when you count?'
-        },
-        {
-          t: 'Which is less: 20 or 14?',
-          v: {type:'twoGroups',config:{leftCount:20,leftObj:'🔵',rightCount:14,rightObj:'🔵',op:'compare'}},
-          o: [{val:'20',tag:'err_more'},{val:'14'}],
-          a:1, e:'14 is less — it comes before 20!', d:'e', s:null, h:'Less = comes earlier in counting'
-        },
-        {
-          t: 'Which is greater: 13 or 16?',
-          v: {type:'twoGroups',config:{leftCount:13,leftObj:'🔵',rightCount:16,rightObj:'🔵',op:'compare'}},
-          o: [{val:'13',tag:'err_less'},{val:'16'}],
-          a:1, e:'16 is greater than 13!', d:'m', s:null, h:'13 or 16 — which comes later?'
-        },
-        {
-          t: 'Which is less: 18 or 12?',
-          v: {type:'twoGroups',config:{leftCount:18,leftObj:'🔵',rightCount:12,rightObj:'🔵',op:'compare'}},
-          o: [{val:'18',tag:'err_more'},{val:'12'}],
-          a:1, e:'12 is less than 18!', d:'m', s:null, h:'12 comes earlier in counting'
-        },
-        // ── Equal sets ───────────────────────────────────────────────────────
-        {
-          t: 'Are 15 and 15 equal?',
-          v: {type:'twoGroups',config:{leftCount:15,leftObj:'🔵',rightCount:15,rightObj:'🔵',op:'compare'}},
-          o: [{val:'Yes, they are equal'},{val:'No, not equal',tag:'err_not_equal'}],
-          a:0, e:'15 = 15 — equal means the same amount!', d:'e', s:null, h:'Same number = equal'
-        },
-        {
-          t: 'Which two numbers are EQUAL?',
-          v: null,
-          o: [{val:'12 and 14',tag:'err_off_by_one'},{val:'17 and 17'},{val:'18 and 16',tag:'err_off_by_one'},{val:'11 and 13',tag:'err_off_by_one'}],
-          a:1, e:'17 and 17 are equal — same number!', d:'m', s:null, h:'Equal means both sides are the same'
-        },
-        {
-          t: '🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶 vs 🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱 — are the groups equal?',
-          v: {type:'twoGroups', config:{leftCount:13, leftObj:'🐶', rightCount:13, rightObj:'🐱', op:'compare'}},
-          o: [{val:'Yes, both have 13'},{val:'No, not equal',tag:'err_not_equal'}],
-          a:0, e:'Both groups have 13 — they are equal!', d:'m', s:null, h:'Count each group — are they the same?'
-        },
-        {
-          t: 'Which is greater: 14 or 20?',
-          v: {type:'twoGroups',config:{leftCount:14,leftObj:'🔵',rightCount:20,rightObj:'🔵',op:'compare'}},
-          o: [{val:'14',tag:'err_less'},{val:'20'}],
-          a:1, e:'20 is greater — it comes later when you count!', d:'e', s:null, h:'Which number is bigger?'
-        },
-        {
-          t: 'Which group has MORE — 🐙 or 🦈?',
-          v: {type:'twoGroups', config:{leftCount:20, leftObj:'🐙', rightCount:11, rightObj:'🦈', op:'compare'}},
-          o: [{val:'11',tag:'err_less'},{val:'20'},{val:'15',tag:'err_same'},{val:'31',tag:'err_off_by_one'}],
-          a:1, e:'20 is more than 11!', d:'m', s:null, h:'Count each side carefully'
-        },
-        {
-          t: 'Which is less: 15 or 19?',
-          v: {type:'twoGroups',config:{leftCount:15,leftObj:'🔵',rightCount:19,rightObj:'🔵',op:'compare'}},
-          o: [{val:'15'},{val:'19',tag:'err_more'}],
-          a:0, e:'15 is less — it comes before 19!', d:'m', s:null, h:'Which comes earlier in counting?'
-        },
-        // ── NEW questions (appended) ─────────────────────────────────────────
-        {
-          t: 'Which group has MORE — 🦊 or 🐨?',
-          v: {type:'twoGroups', config:{leftCount:11, leftObj:'🦊', rightCount:15, rightObj:'🐨', op:'compare'}},
-          o: [{val:'11',tag:'err_less'},{val:'15'},{val:'13',tag:'err_off_by_one'},{val:'26',tag:'err_off_by_one'}],
-          a:1, e:'15 is more than 11!', d:'m', s:null, h:'Count each group — which is bigger?'
-        },
-        {
-          t: 'Which group has FEWER — 🍑 or 🍒?',
-          v: {type:'twoGroups', config:{leftCount:18, leftObj:'🍑', rightCount:14, rightObj:'🍒', op:'compare'}},
-          o: [{val:'18',tag:'err_more'},{val:'14'},{val:'16',tag:'err_same'},{val:'32',tag:'err_off_by_one'}],
-          a:1, e:'14 is fewer than 18!', d:'m', s:null, h:'Fewer = the smaller group'
-        },
-        {
-          t: 'Which group has MORE — 🐬 or 🦭?',
-          v: {type:'twoGroups', config:{leftCount:12, leftObj:'🐬', rightCount:13, rightObj:'🦭', op:'compare'}},
-          o: [{val:'12',tag:'err_less'},{val:'13'},{val:'12 and 13 are equal',tag:'err_same'},{val:'11',tag:'err_off_by_one'}],
-          a:1, e:'13 is more than 12 — they differ by just 1!', d:'h', s:null, h:'Count very carefully — the groups are close!'
-        },
-        {
-          t: 'Which group has FEWER — 🎀 or 🎁?',
-          v: {type:'twoGroups', config:{leftCount:16, leftObj:'🎀', rightCount:15, rightObj:'🎁', op:'compare'}},
-          o: [{val:'16',tag:'err_more'},{val:'15'},{val:'16 and 15 are equal',tag:'err_same'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'15 is fewer than 16 — just 1 apart!', d:'h', s:null, h:'Count carefully — very close numbers!'
-        },
-        {
-          t: 'Which group has MORE — 🦀 or 🦞?',
-          v: {type:'twoGroups', config:{leftCount:17, leftObj:'🦀', rightCount:18, rightObj:'🦞', op:'compare'}},
-          o: [{val:'17',tag:'err_less'},{val:'18'},{val:'17 and 18 are equal',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
-          a:1, e:'18 is more than 17 — just 1 apart!', d:'h', s:null, h:'Count very carefully — these are close!'
-        },
-        {
-          t: 'Which group has FEWER — 🐇 or 🐿️?',
-          v: {type:'twoGroups', config:{leftCount:19, leftObj:'🐇', rightCount:20, rightObj:'🐿️', op:'compare'}},
-          o: [{val:'20',tag:'err_more'},{val:'19'},{val:'19 and 20 are equal',tag:'err_same'},{val:'18',tag:'err_off_by_one'}],
-          a:1, e:'19 is fewer than 20 — just 1 apart!', d:'h', s:null, h:'Count very carefully — they are almost the same!'
-        },
-        {
-          t: 'Which is greater: 16 or 17?',
-          v: {type:'twoGroups',config:{leftCount:16,leftObj:'🔵',rightCount:17,rightObj:'🔵',op:'compare'}},
-          o: [{val:'16',tag:'err_less'},{val:'17'}],
-          a:1, e:'17 is greater — it comes after 16!', d:'h', s:null, h:'Which comes later when you count?'
-        },
-        {
-          t: 'Which two numbers are EQUAL?',
-          v: null,
-          o: [{val:'13 and 15',tag:'err_off_by_one'},{val:'18 and 18'},{val:'12 and 13',tag:'err_off_by_one'},{val:'17 and 16',tag:'err_off_by_one'}],
-          a:1, e:'18 and 18 are equal — same number!', d:'h', s:null, h:'Equal means both numbers are exactly the same'
-        }
+        // ── easy ─────────────────────────────────────────────────────────────
+        {t:'Start at 3. What comes next?', v:null,
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'3',tag:'err_same',patternTag:'chooses-start-number'},{val:'4'},{val:'5',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'4 comes right after 3!', d:'e', s:null, h:'Count on from 3'},
+        {t:'Start at 6. What comes next?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 comes right after 6!', d:'e', s:null, h:'Count on from 6'},
+        {t:'Start at 2. What comes next?', v:null,
+          o:[{val:'1',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'2',tag:'err_same',patternTag:'chooses-start-number'},{val:'3'},{val:'4',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'3 comes right after 2!', d:'e', s:null, h:'Count on from 2'},
+        {t:'Start at 8. Count on. What comes next?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'8',tag:'err_same',patternTag:'chooses-start-number'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 comes right after 8!', d:'e', s:null, h:'Count on from 8'},
+        {t:'4, 5, 6 — start at 4 and count on. What are the next two?', v:null,
+          o:[{val:'3 and 2',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4 and 5',tag:'err_same',patternTag:'chooses-start-number'},{val:'7 and 8'},{val:'8 and 9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 and 8 come after 6!', d:'e', s:null, h:'After 4, 5, 6 comes 7, then 8'},
+        {t:'Start at 5. What two numbers come next?', v:null,
+          o:[{val:'4 and 3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5 and 6',tag:'err_same',patternTag:'chooses-start-number'},{val:'6 and 7'},{val:'7 and 8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 and 7 come after 5!', d:'e', s:null, h:'Count on from 5'},
+        {t:'Count the 🌸, then say what comes next.',
+          v:{type:'objectSet', config:{count:4, emoji:'🌸', layout:'line'}},
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'There are 4, so 5 comes next!', d:'e', s:null, h:'Count the flowers, then count on one more'},
+        // ── medium ───────────────────────────────────────────────────────────
+        {t:'Start at 7. Count on three steps. Where do you land?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'7 → 8 → 9 → 10 — three steps!', d:'m', s:null, h:'Count on from 7: one, two, three steps'},
+        {t:'Start at 3. Count on four steps. Where do you land?', v:null,
+          o:[{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'3 → 4 → 5 → 6 → 7 — four steps!', d:'m', s:null, h:'Count on from 3 four times'},
+        {t:'2, 3, 4, __ — what comes next? (started at 2)', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'4',tag:'err_same',patternTag:'sequence-confusion'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'5 comes after 4 — count on!', d:'m', s:null, h:'What is one more than 4?'},
+        {t:'6, 7, 8, __ — what comes next? (started at 6)', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 comes after 8 — count on!', d:'m', s:null, h:'What is one more than 8?'},
+        {t:'Count the 🐟, then count on two more. How many total?',
+          v:{type:'objectSet', config:{count:5, emoji:'🐟', layout:'line'}},
+          o:[{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'5 fish, count on two: 6, 7 — seven total!', d:'m', s:null, h:'Count the fish, then count on 2 more'},
+        {t:'Start at 9. Count on two. What do you get?', v:null,
+          o:[{val:'9',tag:'err_same',patternTag:'chooses-start-number'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'11'},{val:'12',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 → 10 → 11 — two steps!', d:'m', s:null, h:'Count on from 9 two times'},
+        {t:'What comes after 7, 8, 9? (Starting at 7)', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'9',tag:'err_same',patternTag:'sequence-confusion'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'10 comes after 9 — keep counting!', d:'m', s:null, h:'One more than 9 is …'},
+        // ── hard ─────────────────────────────────────────────────────────────
+        {t:'Start at 5, count on 5 steps. What do you land on?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'5 + 5 steps = 10!', d:'h', s:null, h:'Count on from 5: 6, 7, 8, 9, 10'},
+        {t:'Start at 8. Count on 3 steps. Where do you land?', v:null,
+          o:[{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'11'},{val:'12',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'8 → 9 → 10 → 11!', d:'h', s:null, h:'Count on from 8 three times'},
+        {t:'Count the 🎯, then count on three more. Total?',
+          v:{type:'objectSet', config:{count:6, emoji:'🎯', layout:'grid'}},
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 targets + 3 more = 9!', d:'h', s:null, h:'Count on from 6: 7, 8, 9'},
+        {t:'4, 5, 6, 7, 8, __ — what comes next?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'9 comes after 8!', d:'h', s:null, h:'Count forward from 8'},
+        {t:'Start at 6 and count to 10. How many steps forward?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'4'},{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:1, e:'6 → 7 → 8 → 9 → 10 = 4 steps!', d:'h', s:null, h:'Count each step from 6 to 10'},
+        {t:'I start at 2 and count on. I say 2, 3, 4, 5, __. What is next?', v:null,
+          o:[{val:'4',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'5',tag:'err_same',patternTag:'sequence-confusion'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+          a:2, e:'6 comes after 5!', d:'h', s:null, h:'What is one more than 5?'}
       ]
     },
 
-    // ── Lesson 4: One More / One Less Within 20 ──────────────────────────────
+    // ── Lesson 4: Missing Numbers in Counting Patterns ───────────────────────
     {
       points: [
-        'ONE MORE means count up one step — add 1 to the number',
-        'ONE LESS means count back one step — subtract 1',
-        'This works for ALL numbers up to 20!'
+        'Look at the numbers on BOTH sides of the blank to find the missing number',
+        'The missing number must be one more than the number before it',
+        'Check: is the missing number one LESS than the number after it?'
       ],
       examples: [
         {
-          c: '#E91E63',
-          tag: 'One More',
-          p: 'There are 14 ⭐. If we add 1 more, how many will there be?',
-          v: {type:'objectSet', config:{count:14, emoji:'⭐', layout:'grid'}},
-          s: 'Count on one from 14: 15',
-          a: '15 ✅ — one more than 14'
+          c: '#BF360C',
+          tag: 'Use Both Neighbors',
+          p: '4, __, 6 — what number is missing?',
+          v: null,
+          s: 'Before is 4, after is 6. One more than 4 is 5. One less than 6 is also 5!',
+          a: '5 ✅ — fits perfectly between 4 and 6'
         },
         {
-          c: '#C2185B',
-          tag: 'One Less',
-          p: 'One less than 19 is…?',
+          c: '#B71C1C',
+          tag: 'Missing at the End',
+          p: '7, 8, __ — what number is missing?',
           v: null,
-          s: 'Count back one step from 19: 18',
-          a: '18 ✅ — one less than 19'
+          s: 'The last number before the blank is 8. One more than 8 is 9.',
+          a: '9 ✅ — count forward from 8'
         },
         {
-          c: '#AD1457',
-          tag: 'At the Edge',
-          p: 'One more than 20 is…?',
+          c: '#7F0000',
+          tag: 'Missing in the Middle',
+          p: '2, 3, __, 5 — what number is missing?',
           v: null,
-          s: '20 is our biggest number — we stop at 20 in this unit!',
-          a: '20 is the top! ✅'
+          s: 'Before is 3, after is 5. One more than 3 is 4. One less than 5 is also 4!',
+          a: '4 ✅ — 4 fits in the middle'
         }
       ],
       practice: [
-        {q:'One more than 13 is…?', a:'14', h:'Count on from 13', e:'14! 13 + 1 = 14 ✅'},
-        {q:'One less than 17 is…?', a:'16', h:'Count back from 17', e:'16! 17 - 1 = 16 ✅'},
-        {q:'One more than 19 is…?', a:'20', h:'Count on from 19', e:'20! 19 + 1 = 20 ✅'}
+        {q:'1, __, 3 — what is missing?', a:'2', h:'What goes between 1 and 3?', e:'2! One more than 1, one less than 3 ✅'},
+        {q:'6, 7, __ — what comes next?', a:'8', h:'Count on from 7', e:'8! One more than 7 ✅'},
+        {q:'4, __, 6, 7 — what is missing?', a:'5', h:'One more than 4 is …?', e:'5! It fits between 4 and 6 ✅'}
       ],
       qBank: [
-        // ── One more, objectSet ───────────────────────────────────────────────
-        {
-          t: 'There are 10 🌟. One more joins. How many now?',
-          v: {type:'objectSet', config:{count:10, emoji:'🌟', layout:'grid'}},
-          o: [{val:'9',tag:'err_off_by_one'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
-          a:2, e:'10 + 1 = 11!', d:'e', s:null, h:'Count on one from 10'
-        },
-        {
-          t: 'Here are 12 🐦. One more flies in. How many?',
-          v: {type:'objectSet', config:{count:12, emoji:'🐦', layout:'grid'}},
-          o: [{val:'11',tag:'err_off_by_one'},{val:'12',tag:'err_same'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
-          a:2, e:'12 + 1 = 13!', d:'e', s:null, h:'Add one more bird'
-        },
-        {
-          t: 'There are 13 🍎. Add 1 more. How many?',
-          v: {type:'objectSet', config:{count:13, emoji:'🍎', layout:'grid'}},
-          o: [{val:'12',tag:'err_off_by_one'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-          a:2, e:'13 + 1 = 14!', d:'m', s:null, h:'One more means add 1'
-        },
-        {
-          t: '14 🌸 in a vase. One more is added. How many now?',
-          v: {type:'objectSet', config:{count:14, emoji:'🌸', layout:'grid'}},
-          o: [{val:'13',tag:'err_off_by_one'},{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-          a:2, e:'14 + 1 = 15!', d:'m', s:null, h:'Count the flowers then add one more'
-        },
-        // ── One more, v:null ─────────────────────────────────────────────────
-        {
-          t: 'One more than 15 is…?',
-          v: null,
-          o: [{val:'14',tag:'err_off_by_one'},{val:'15',tag:'err_same'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-          a:2, e:'15 + 1 = 16!', d:'e', s:null, h:'Count forward one step from 15'
-        },
-        {
-          t: 'One more than 16 is…?',
-          v: null,
-          o: [{val:'15',tag:'err_off_by_one'},{val:'16',tag:'err_same'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-          a:2, e:'16 + 1 = 17!', d:'e', s:null, h:'What comes right after 16?'
-        },
-        {
-          t: 'One more than 18 is…?',
-          v: null,
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-          a:2, e:'18 + 1 = 19!', d:'m', s:null, h:'Count on from 18'
-        },
-        {
-          t: 'One more than 19 is…?',
-          v: null,
-          o: [{val:'17',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_off_by_one'}],
-          a:2, e:'19 + 1 = 20 — all the way to 20!', d:'m', s:null, h:'Count on from 19'
-        },
-        // ── One less, v:null ─────────────────────────────────────────────────
-        {
-          t: 'One less than 12 is…?',
-          v: null,
-          o: [{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_same'},{val:'13',tag:'err_off_by_one'}],
-          a:1, e:'12 - 1 = 11!', d:'e', s:null, h:'Count back one step from 12'
-        },
-        {
-          t: 'One less than 14 is…?',
-          v: null,
-          o: [{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
-          a:1, e:'14 - 1 = 13!', d:'e', s:null, h:'What comes just before 14?'
-        },
-        {
-          t: 'One less than 16 is…?',
-          v: null,
-          o: [{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_same'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'16 - 1 = 15!', d:'m', s:null, h:'Count back from 16'
-        },
-        {
-          t: 'One less than 20 is…?',
-          v: null,
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
-          a:2, e:'20 - 1 = 19!', d:'m', s:null, h:'Count back one step from 20'
-        },
-        // ── One less, higher teen range ──────────────────────────────────────
-        {
-          t: 'One less than 17 is…?',
-          v: null,
-          o: [{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_same'},{val:'18',tag:'err_teen'}],
-          a:1, e:'17 - 1 = 16!', d:'m', s:null, h:'Go back one from 17'
-        },
-        {
-          t: 'One less than 18 is…?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_same'},{val:'19',tag:'err_teen'}],
-          a:1, e:'18 - 1 = 17!', d:'m', s:null, h:'Go back one from 18'
-        },
-        {
-          t: 'One less than 13 is…?',
-          v: null,
-          o: [{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_same'},{val:'14',tag:'err_teen'}],
-          a:1, e:'13 - 1 = 12!', d:'e', s:null, h:'Count back one from 13'
-        },
-        {
-          t: 'There are 11 🌺. One more blooms. How many now?',
-          v: {type:'objectSet', config:{count:11, emoji:'🌺', layout:'grid'}},
-          o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
-          a:2, e:'11 + 1 = 12!', d:'e', s:null, h:'Add one more flower'
-        },
-        {
-          t: 'There are 15 🐦. One flies away. How many are left?',
-          v: {type:'objectSet', config:{count:15, emoji:'🐦', layout:'grid'}},
-          o: [{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
-          a:1, e:'15 - 1 = 14!', d:'m', s:null, h:'One flies away — count back one'
-        },
-        {
-          t: 'One more than 17 is…?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
-          a:2, e:'17 + 1 = 18!', d:'m', s:null, h:'Count forward one step from 17'
-        },
-        // ── NEW questions (appended) ─────────────────────────────────────────
-        {
-          t: 'There are 13 🌻 flowers. One more grows. How many?',
-          v: {type:'objectSet', config:{count:13, emoji:'🌻', layout:'grid'}},
-          o: [{val:'12',tag:'err_off_by_one'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-          a:2, e:'13 + 1 = 14!', d:'m', s:null, h:'Count on one from 13'
-        },
-        {
-          t: 'Here are 15 🐧 penguins. One waddles away. How many?',
-          v: {type:'objectSet', config:{count:15, emoji:'🐧', layout:'grid'}},
-          o: [{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
-          a:1, e:'15 - 1 = 14!', d:'m', s:null, h:'One leaves — count back one'
-        },
-        {
-          t: 'One more than 19 is…? Think carefully!',
-          v: null,
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19',tag:'err_same'},{val:'20'}],
-          a:3, e:'19 + 1 = 20 — all the way to 20!', d:'h', s:null, h:'Count forward one step from 19'
-        },
-        {
-          t: '20 take away 1 equals…?',
-          v: null,
-          o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
-          a:2, e:'20 - 1 = 19!', d:'h', s:null, h:'Count back one step from 20'
-        },
-        {
-          t: 'Count on one from 17 — what do you get?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'}],
-          a:2, e:'17 + 1 = 18!', d:'h', s:null, h:'Count forward one from 17'
-        },
-        {
-          t: '12 minus 1 equals…?',
-          v: null,
-          o: [{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_same'},{val:'13',tag:'err_off_by_one'}],
-          a:1, e:'12 - 1 = 11!', d:'h', s:null, h:'Count back one from 12'
-        },
-        {
-          t: '14, __, 16 — what number is missing?',
-          v: null,
-          o: [{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_same'},{val:'17',tag:'err_off_by_one'}],
-          a:1, e:'15 goes between 14 and 16!', d:'h', s:null, h:'What is one more than 14?'
-        },
-        {
-          t: '19, __, 17 — what is missing counting back?',
-          v: null,
-          o: [{val:'16',tag:'err_off_by_one'},{val:'17',tag:'err_same'},{val:'18'},{val:'20',tag:'err_off_by_one'}],
-          a:2, e:'18 goes between 19 and 17 counting back!', d:'h', s:null, h:'Count back one step from 19'
-        }
+        // ── easy ─────────────────────────────────────────────────────────────
+        {t:'__, 2, 3 — what is the missing first number?', v:null,
+          o:[{val:'1'},{val:'2',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'3',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'4',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:0, e:'1 comes before 2!', d:'e', s:null, h:'What is one LESS than 2?'},
+        {t:'3, 4, __ — what is missing?', v:null,
+          o:[{val:'3',tag:'err_same',patternTag:'uses-before-only'},{val:'4',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:2, e:'5 comes after 4!', d:'e', s:null, h:'One more than 4 is …'},
+        {t:'6, __, 8 — what is missing?', v:null,
+          o:[{val:'6',tag:'err_same',patternTag:'uses-before-only'},{val:'7'},{val:'8',tag:'err_same',patternTag:'uses-after-only'},{val:'9',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:1, e:'7 fits between 6 and 8!', d:'e', s:null, h:'One more than 6, one less than 8'},
+        {t:'2, __, 4 — what is missing?', v:null,
+          o:[{val:'1',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'2',tag:'err_same',patternTag:'uses-before-only'},{val:'3'},{val:'4',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'3 fits between 2 and 4!', d:'e', s:null, h:'One more than 2, one less than 4'},
+        {t:'7, 8, __ — what is missing?', v:null,
+          o:[{val:'7',tag:'err_same',patternTag:'uses-before-only'},{val:'8',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:2, e:'9 comes after 8!', d:'e', s:null, h:'Count on from 8'},
+        {t:'__, 5, 6 — what is missing?', v:null,
+          o:[{val:'4'},{val:'5',tag:'err_same',patternTag:'uses-after-only'},{val:'6',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'7',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:0, e:'4 comes before 5!', d:'e', s:null, h:'One less than 5 is …'},
+        {t:'1, 2, __ — what is missing?', v:null,
+          o:[{val:'1',tag:'err_same',patternTag:'uses-before-only'},{val:'2',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'3'},{val:'4',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:2, e:'3 comes after 2!', d:'e', s:null, h:'One more than 2'},
+        {t:'4, __, 6 — what is missing?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'4',tag:'err_same',patternTag:'uses-before-only'},{val:'5'},{val:'6',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'5 fits between 4 and 6!', d:'e', s:null, h:'One more than 4, one less than 6'},
+        // ── medium ───────────────────────────────────────────────────────────
+        {t:'3, 4, __, 6 — what is missing?', v:null,
+          o:[{val:'3',tag:'err_same',patternTag:'uses-before-only'},{val:'4',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'5'},{val:'7',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:2, e:'5 goes between 4 and 6!', d:'m', s:null, h:'What comes after 4?'},
+        {t:'7, __, 9, 10 — what is missing?', v:null,
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'7',tag:'err_same',patternTag:'uses-before-only'},{val:'8'},{val:'9',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'8 fits between 7 and 9!', d:'m', s:null, h:'One more than 7, one less than 9'},
+        {t:'1, 2, __, 4, 5 — what is missing?', v:null,
+          o:[{val:'1',tag:'err_same',patternTag:'uses-before-only'},{val:'2',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'3'},{val:'4',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'3 goes between 2 and 4!', d:'m', s:null, h:'What is one more than 2?'},
+        {t:'5, 6, __, 8 — what is missing?', v:null,
+          o:[{val:'5',tag:'err_same',patternTag:'uses-before-only'},{val:'6',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'7'},{val:'9',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:2, e:'7 goes between 6 and 8!', d:'m', s:null, h:'One more than 6, one less than 8'},
+        {t:'__, 7, 8, 9 — what is missing?', v:null,
+          o:[{val:'6'},{val:'7',tag:'err_same',patternTag:'uses-after-only'},{val:'8',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'5',tag:'err_off_by_one',patternTag:'missing-middle-error'}],
+          a:0, e:'6 comes before 7!', d:'m', s:null, h:'One less than 7 is …'},
+        {t:'2, 3, 4, __, 6 — what is missing?', v:null,
+          o:[{val:'3',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'4',tag:'err_same',patternTag:'uses-before-only'},{val:'5'},{val:'6',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'5 goes between 4 and 6!', d:'m', s:null, h:'What comes after 4?'},
+        {t:'8, __, 10 — what is missing?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'8',tag:'err_same',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'9 fits between 8 and 10!', d:'m', s:null, h:'One more than 8, one less than 10'},
+        // ── hard ─────────────────────────────────────────────────────────────
+        {t:'6, 7, 8, __, 10 — what is missing?', v:null,
+          o:[{val:'7',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'8',tag:'err_same',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'9 goes between 8 and 10!', d:'h', s:null, h:'What is one more than 8?'},
+        {t:'3, __, 5, 6, 7 — what is missing?', v:null,
+          o:[{val:'2',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'3',tag:'err_same',patternTag:'uses-before-only'},{val:'4'},{val:'5',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'4 fits between 3 and 5!', d:'h', s:null, h:'One more than 3, one less than 5'},
+        {t:'__, 2, 3, 4 — what is the first missing number?', v:null,
+          o:[{val:'1'},{val:'2',tag:'err_same',patternTag:'uses-after-only'},{val:'3',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'0',tag:'err_off_by_one',patternTag:'missing-middle-error'}],
+          a:0, e:'1 comes before 2!', d:'h', s:null, h:'What is one LESS than 2?'},
+        {t:'5, 6, 7, __, 9 — what is missing?', v:null,
+          o:[{val:'6',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'7',tag:'err_same',patternTag:'uses-before-only'},{val:'8'},{val:'9',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'8 goes between 7 and 9!', d:'h', s:null, h:'One more than 7, one less than 9'},
+        {t:'4, 5, __, 7, 8 — what is missing?', v:null,
+          o:[{val:'4',tag:'err_same',patternTag:'uses-before-only'},{val:'5',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'6'},{val:'7',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'6 goes between 5 and 7!', d:'h', s:null, h:'One more than 5, one less than 7'},
+        {t:'9, __, 11 — what is missing?', v:null,
+          o:[{val:'8',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'9',tag:'err_same',patternTag:'uses-before-only'},{val:'10'},{val:'11',tag:'err_same',patternTag:'uses-after-only'}],
+          a:2, e:'10 fits between 9 and 11!', d:'h', s:null, h:'One more than 9, one less than 11'},
+        {t:'1, __, 3, 4, 5, 6 — what is missing?', v:null,
+          o:[{val:'1',tag:'err_same',patternTag:'uses-before-only'},{val:'2'},{val:'3',tag:'err_same',patternTag:'uses-after-only'},{val:'4',tag:'err_off_by_one',patternTag:'pattern-break'}],
+          a:1, e:'2 fits between 1 and 3!', d:'h', s:null, h:'One more than 1, one less than 3'}
       ]
     }
+
   ],
 
   testBank: [
-    // ── L1: Count to 20 ──────────────────────────────────────────────────────
-    {lessonId:'ku1l4', 
-      t: 'What number comes after 13?',
-      v: null,
-      o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-      a:2, e:'14 comes after 13!', d:'e', s:null, h:'Count forward from 13'
-    },
-    {lessonId:'ku1l4', 
-      t: 'Count the 🍎 apples. How many?',
-      v: {type:'objectSet', config:{count:17, emoji:'🍎', layout:'grid'}},
-      o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-      a:2, e:'17 apples!', d:'m', s:null, h:'Count carefully row by row'
-    },
-    {lessonId:'ku1l4', 
-      t: '19, __, 17 — what number is missing?',
-      v: null,
-      o: [{val:'15',tag:'err_under_count'},{val:'16',tag:'err_off_by_one'},{val:'18'},{val:'20',tag:'err_same'}],
-      a:2, e:'18 goes between 19 and 17 when counting back!', d:'m', s:null, h:'Count backward from 19'
-    },
-    {lessonId:'ku1l4', 
-      t: '15, 16, __, 18 — what number is missing?',
-      v: null,
-      o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'17'},{val:'19',tag:'err_off_by_one'}],
-      a:2, e:'17 goes between 16 and 18!', d:'m', s:null, h:'What comes after 16?'
-    },
-    // ── L2: Read and Represent 11–20 ─────────────────────────────────────────
-    {lessonId:'ku1l5', 
-      t: 'Count the 🌟 stars. How many?',
-      v: {type:'objectSet', config:{count:15, emoji:'🌟', layout:'grid'}},
-      o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-      a:2, e:'15 stars — ten and five more!', d:'e', s:null, h:'Count past 10'
-    },
-    {lessonId:'ku1l5', 
-      t: '11 = 10 + how many extras?',
-      v: {type:'objectSet', config:{count:11, emoji:'🌙', layout:'grid'}},
-      o: [{val:'0',tag:'err_teen'},{val:'1'},{val:'2',tag:'err_off_by_one'},{val:'11',tag:'err_teen'}],
-      a:1, e:'11 = 10 + 1!', d:'e', s:null, h:'Count past the first 10'
-    },
-    {lessonId:'ku1l5', 
-      t: 'Which number is "fourteen"?',
-      v: null,
-      o: [{val:'4',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'40',tag:'err_teen'}],
-      a:2, e:'Fourteen = 14!', d:'m', s:null, h:'Fourteen: ten and four more'
-    },
-    {lessonId:'ku1l5', 
-      t: '17 = 10 + how many extras?',
-      v: null,
-      o: [{val:'5',tag:'err_teen'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
-      a:2, e:'17 = 10 + 7!', d:'m', s:null, h:'How many beyond 10?'
-    },
-    // ── L3: More, Less, and Equal ─────────────────────────────────────────────
-    {lessonId:'ku2l5', 
-      t: 'Which side has MORE — 🐶 or 🐱?',
-      v: {type:'twoGroups', config:{leftCount:8, leftObj:'🐶', rightCount:15, rightObj:'🐱', op:'compare'}},
-      o: [{val:'8',tag:'err_less'},{val:'15'},{val:'11',tag:'err_same'},{val:'23',tag:'err_off_by_one'}],
-      a:1, e:'15 is more than 8!', d:'e', s:null, h:'Count each group'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Which is less: 17 or 11?',
-      v: null,
-      o: [{val:'17',tag:'err_more'},{val:'11'},{val:'14',tag:'err_same'},{val:'28',tag:'err_off_by_one'}],
-      a:1, e:'11 is less than 17!', d:'e', s:null, h:'Which comes earlier in counting?'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Which group has FEWER — 🦋 or 🐝?',
-      v: {type:'twoGroups', config:{leftCount:12, leftObj:'🦋', rightCount:18, rightObj:'🐝', op:'compare'}},
-      o: [{val:'18',tag:'err_more'},{val:'12'},{val:'15',tag:'err_same'},{val:'6',tag:'err_off_by_one'}],
-      a:1, e:'12 is fewer than 18!', d:'m', s:null, h:'Fewer = the smaller group'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Are 14 🌺 and 14 🌻 equal?',
-      v: {type:'twoGroups', config:{leftCount:14, leftObj:'🌺', rightCount:14, rightObj:'🌻', op:'compare'}},
-      o: [{val:'No, left has more',tag:'err_same'},{val:'Yes, both have 14'},{val:'No, right has more',tag:'err_same'},{val:'No, they are different',tag:'err_same'}],
-      a:1, e:'Both are 14 — equal!', d:'m', s:null, h:'Count each group'
-    },
-    // ── L4: One More / One Less ───────────────────────────────────────────────
-    {lessonId:'ku2l6', 
-      t: 'One more than 11 is…?',
-      v: null,
-      o: [{val:'10',tag:'err_off_by_one'},{val:'11',tag:'err_same'},{val:'12'},{val:'13',tag:'err_off_by_one'}],
-      a:2, e:'11 + 1 = 12!', d:'e', s:null, h:'Count forward from 11'
-    },
-    {lessonId:'ku2l6', 
-      t: 'One less than 15 is…?',
-      v: null,
-      o: [{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_same'},{val:'16',tag:'err_off_by_one'}],
-      a:1, e:'15 - 1 = 14!', d:'e', s:null, h:'Count back one from 15'
-    },
-    {lessonId:'ku2l6', 
-      t: 'There are 16 🌟. One more joins. How many now?',
-      v: {type:'objectSet', config:{count:16, emoji:'🌟', layout:'grid'}},
-      o: [{val:'15',tag:'err_off_by_one'},{val:'16',tag:'err_same'},{val:'17'},{val:'18',tag:'err_off_by_one'}],
-      a:2, e:'16 + 1 = 17!', d:'m', s:null, h:'Add one more to the group'
-    },
-    {lessonId:'ku2l6', 
-      t: 'What is one less than 20?',
-      v: null,
-      o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_same'}],
-      a:2, e:'20 - 1 = 19!', d:'m', s:null, h:'Count back one from 20'
-    },
-    // ── NEW testBank questions (appended) ────────────────────────────────────
-    // L1 easy (3)
-    {lessonId:'ku1l4', 
-      t: 'How many 🌈 are there?',
-      v: {type:'objectSet', config:{count:11, emoji:'🌈', layout:'grid'}},
-      o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_off_by_one'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
-      a:2, e:'11 rainbows!', d:'e', s:null, h:'Count every one'
-    },
-    {lessonId:'ku1l4', 
-      t: 'How many 🎈 balloons do you see?',
-      v: {type:'objectSet', config:{count:13, emoji:'🎈', layout:'grid'}},
-      o: [{val:'11',tag:'err_under_count'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
-      a:2, e:'13 balloons!', d:'e', s:null, h:'Touch each balloon as you count'
-    },
-    {lessonId:'ku1l4', 
-      t: 'What number comes right after 10?',
-      v: null,
-      o: [{val:'9',tag:'err_under_count'},{val:'10',tag:'err_same'},{val:'11'},{val:'12',tag:'err_off_by_one'}],
-      a:2, e:'11 comes right after 10!', d:'e', s:null, h:'Count on one step from 10'
-    },
-    // L1 medium (5)
-    {lessonId:'ku1l4', 
-      t: 'How many 🦄 are in the group?',
-      v: {type:'objectSet', config:{count:14, emoji:'🦄', layout:'grid'}},
-      o: [{val:'12',tag:'err_under_count'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-      a:2, e:'14 unicorns!', d:'m', s:null, h:'Count row by row'
-    },
-    {lessonId:'ku1l4', 
-      t: 'How many 🌍 do you see?',
-      v: {type:'objectSet', config:{count:16, emoji:'🌍', layout:'grid'}},
-      o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-      a:2, e:'16 globes!', d:'m', s:null, h:'Count carefully past 15'
-    },
-    {lessonId:'ku1l4', 
-      t: '12, 13, __, 15 — what number is missing?',
-      v: null,
-      o: [{val:'11',tag:'err_under_count'},{val:'13',tag:'err_same'},{val:'14'},{val:'16',tag:'err_off_by_one'}],
-      a:2, e:'14 goes between 13 and 15!', d:'m', s:null, h:'What comes after 13?'
-    },
-    {lessonId:'ku1l4', 
-      t: 'What number comes before 14?',
-      v: null,
-      o: [{val:'12',tag:'err_under_count'},{val:'13'},{val:'14',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
-      a:1, e:'13 comes before 14!', d:'m', s:null, h:'Count back one step from 14'
-    },
-    {lessonId:'ku1l4', 
-      t: '13, 14, 15, __, 17 — what number is missing?',
-      v: null,
-      o: [{val:'14',tag:'err_under_count'},{val:'15',tag:'err_same'},{val:'16'},{val:'18',tag:'err_off_by_one'}],
-      a:2, e:'16 goes between 15 and 17!', d:'m', s:null, h:'What comes after 15?'
-    },
-    // L1 hard (4)
-    {lessonId:'ku1l4', 
-      t: 'How many 🐗 are there?',
-      v: {type:'objectSet', config:{count:17, emoji:'🐗', layout:'grid'}},
-      o: [{val:'16',tag:'err_off_by_one'},{val:'17'},{val:'18',tag:'err_off_by_one'},{val:'15',tag:'err_under_count'}],
-      a:1, e:'17 boars — count every one!', d:'h', s:null, h:'Count carefully — do not miss any'
-    },
-    {lessonId:'ku1l4', 
-      t: 'How many 🎯 targets are here?',
-      v: {type:'objectSet', config:{count:20, emoji:'🎯', layout:'grid'}},
-      o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-      a:2, e:'20 targets — all the way to 20!', d:'h', s:null, h:'Count all the way to the end'
-    },
-    {lessonId:'ku1l4', 
-      t: '17, 18, 19, __ — what comes next?',
-      v: null,
-      o: [{val:'18',tag:'err_under_count'},{val:'19',tag:'err_off_by_one'},{val:'20'},{val:'21',tag:'err_over_count'}],
-      a:2, e:'20 comes after 19!', d:'h', s:null, h:'Count forward from 19'
-    },
-    {lessonId:'ku1l4', 
-      t: '20, 19, __, 17 — what is missing counting back?',
-      v: null,
-      o: [{val:'17',tag:'err_same'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'20',tag:'err_same'}],
-      a:1, e:'18 goes between 19 and 17 when counting back!', d:'h', s:null, h:'Count backward from 19'
-    },
-    // L2 easy (3)
-    {lessonId:'ku1l5', 
-      t: '13 = 10 + how many extras? Count the 🌴.',
-      v: {type:'objectSet', config:{count:13, emoji:'🌴', layout:'grid'}},
-      o: [{val:'1',tag:'err_teen'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
-      a:2, e:'13 = 10 + 3!', d:'e', s:null, h:'Count past 10 to 13'
-    },
-    {lessonId:'ku1l5', 
-      t: 'Which numeral is "thirteen"?',
-      v: null,
-      o: [{val:'3',tag:'err_teen'},{val:'12',tag:'err_off_by_one'},{val:'13'},{val:'30',tag:'err_teen'}],
-      a:2, e:'Thirteen = 13!', d:'e', s:null, h:'Thirteen: ten and three more'
-    },
-    {lessonId:'ku1l5', 
-      t: '12 = 10 + how many extras? Count the 🍭.',
-      v: {type:'objectSet', config:{count:12, emoji:'🍭', layout:'grid'}},
-      o: [{val:'0',tag:'err_teen'},{val:'1',tag:'err_off_by_one'},{val:'2'},{val:'3',tag:'err_off_by_one'}],
-      a:2, e:'12 = 10 + 2!', d:'e', s:null, h:'Count how many come after 10'
-    },
-    // L2 medium (5)
-    {lessonId:'ku1l5', 
-      t: 'How many 🌮 are there?',
-      v: {type:'objectSet', config:{count:14, emoji:'🌮', layout:'grid'}},
-      o: [{val:'12',tag:'err_teen'},{val:'13',tag:'err_off_by_one'},{val:'14'},{val:'15',tag:'err_off_by_one'}],
-      a:2, e:'14 tacos — ten and four more!', d:'m', s:null, h:'Count past 10'
-    },
-    {lessonId:'ku1l5', 
-      t: 'How many 🐘 elephants are here?',
-      v: {type:'objectSet', config:{count:16, emoji:'🐘', layout:'grid'}},
-      o: [{val:'14',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-      a:2, e:'16 elephants — ten and six more!', d:'m', s:null, h:'Count carefully past 15'
-    },
-    {lessonId:'ku1l5', 
-      t: 'Which number is "sixteen"?',
-      v: null,
-      o: [{val:'6',tag:'err_teen'},{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_off_by_one'}],
-      a:2, e:'Sixteen = 16!', d:'m', s:null, h:'Sixteen: ten and six more'
-    },
-    {lessonId:'ku1l5', 
-      t: '15 = 10 + how many extras?',
-      v: null,
-      o: [{val:'3',tag:'err_teen'},{val:'4',tag:'err_off_by_one'},{val:'5'},{val:'6',tag:'err_off_by_one'}],
-      a:2, e:'15 = 10 + 5!', d:'m', s:null, h:'Count how many beyond 10'
-    },
-    {lessonId:'ku1l5', 
-      t: 'How many 🌾 are in the group?',
-      v: {type:'objectSet', config:{count:15, emoji:'🌾', layout:'grid'}},
-      o: [{val:'13',tag:'err_teen'},{val:'14',tag:'err_off_by_one'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-      a:2, e:'15 wheat stalks — ten and five more!', d:'m', s:null, h:'Count every stalk'
-    },
-    // L2 hard (3)
-    {lessonId:'ku1l5', 
-      t: '18 = 10 + how many extras?',
-      v: null,
-      o: [{val:'6',tag:'err_teen'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
-      a:2, e:'18 = 10 + 8!', d:'h', s:null, h:'Count how many beyond 10'
-    },
-    {lessonId:'ku1l5', 
-      t: 'How many 🦚 peacocks are here?',
-      v: {type:'objectSet', config:{count:18, emoji:'🦚', layout:'grid'}},
-      o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_off_by_one'},{val:'16',tag:'err_under_count'}],
-      a:1, e:'18 peacocks — count every one!', d:'h', s:null, h:'Count carefully — close numbers!'
-    },
-    {lessonId:'ku1l5', 
-      t: 'Which number is "nineteen"?',
-      v: null,
-      o: [{val:'9',tag:'err_teen'},{val:'18',tag:'err_off_by_one'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-      a:2, e:'Nineteen = 19!', d:'h', s:null, h:'Nineteen: ten and nine more'
-    },
-    // L3 medium (3)
-    {lessonId:'ku2l5', 
-      t: 'Which group has MORE — 🦢 or 🕊️?',
-      v: {type:'twoGroups', config:{leftCount:10, leftObj:'🦢', rightCount:15, rightObj:'🕊️', op:'compare'}},
-      o: [{val:'10',tag:'err_less'},{val:'15'},{val:'12',tag:'err_same'},{val:'25',tag:'err_off_by_one'}],
-      a:1, e:'15 is more than 10!', d:'m', s:null, h:'Count each group — which is bigger?'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Which is greater: 14 or 18?',
-      v: null,
-      o: [{val:'14',tag:'err_less'},{val:'18'},{val:'16',tag:'err_same'},{val:'32',tag:'err_off_by_one'}],
-      a:1, e:'18 is greater — it comes later when you count!', d:'m', s:null, h:'Which number comes later?'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Which group has FEWER — 🌷 or 🌼?',
-      v: {type:'twoGroups', config:{leftCount:19, leftObj:'🌷', rightCount:13, rightObj:'🌼', op:'compare'}},
-      o: [{val:'19',tag:'err_more'},{val:'13'},{val:'16',tag:'err_same'},{val:'32',tag:'err_off_by_one'}],
-      a:1, e:'13 is fewer than 19!', d:'m', s:null, h:'Fewer = the smaller group'
-    },
-    // L3 hard (2)
-    {lessonId:'ku2l5', 
-      t: 'Which group has MORE — 🦑 or 🦐?',
-      v: {type:'twoGroups', config:{leftCount:16, leftObj:'🦑', rightCount:17, rightObj:'🦐', op:'compare'}},
-      o: [{val:'16',tag:'err_less'},{val:'17'},{val:'16 and 17 are equal',tag:'err_same'},{val:'15',tag:'err_off_by_one'}],
-      a:1, e:'17 is more than 16 — just 1 apart!', d:'h', s:null, h:'Count very carefully — they are close!'
-    },
-    {lessonId:'ku2l5', 
-      t: 'Which is greater: 19 or 18?',
-      v: null,
-      o: [{val:'18',tag:'err_less'},{val:'19'},{val:'18 and 19 are equal',tag:'err_same'},{val:'17',tag:'err_off_by_one'}],
-      a:1, e:'19 is greater — it comes after 18!', d:'h', s:null, h:'Which comes later when you count?'
-    },
-    // L4 medium (3)
-    {lessonId:'ku2l6', 
-      t: 'What is one more than 12?',
-      v: null,
-      o: [{val:'11',tag:'err_off_by_one'},{val:'12',tag:'err_same'},{val:'13'},{val:'14',tag:'err_off_by_one'}],
-      a:2, e:'12 + 1 = 13!', d:'m', s:null, h:'Count forward one step from 12'
-    },
-    {lessonId:'ku2l6', 
-      t: 'What is one less than 13?',
-      v: null,
-      o: [{val:'11',tag:'err_off_by_one'},{val:'12'},{val:'13',tag:'err_same'},{val:'14',tag:'err_off_by_one'}],
-      a:1, e:'13 - 1 = 12!', d:'m', s:null, h:'Count back one from 13'
-    },
-    {lessonId:'ku2l6', 
-      t: 'What is one more than 14?',
-      v: null,
-      o: [{val:'13',tag:'err_off_by_one'},{val:'14',tag:'err_same'},{val:'15'},{val:'16',tag:'err_off_by_one'}],
-      a:2, e:'14 + 1 = 15!', d:'m', s:null, h:'Count forward one step from 14'
-    },
-    // L4 hard (3)
-    {lessonId:'ku2l6', 
-      t: '18 + 1 = ?',
-      v: null,
-      o: [{val:'17',tag:'err_off_by_one'},{val:'18',tag:'err_same'},{val:'19'},{val:'20',tag:'err_off_by_one'}],
-      a:2, e:'18 + 1 = 19!', d:'h', s:null, h:'Count forward one from 18'
-    },
-    {lessonId:'ku2l6', 
-      t: '19 take away 1 = ?',
-      v: null,
-      o: [{val:'17',tag:'err_off_by_one'},{val:'18'},{val:'19',tag:'err_same'},{val:'20',tag:'err_off_by_one'}],
-      a:1, e:'19 - 1 = 18!', d:'h', s:null, h:'Count back one step from 19'
-    },
-    {lessonId:'ku2l6', 
-      t: 'Look at the 🎪 group below. What is one less than this group?',
-      v: {type:'objectSet', config:{count:17, emoji:'🎪', layout:'grid'}},
-      o: [{val:'15',tag:'err_off_by_one'},{val:'16'},{val:'17',tag:'err_same'},{val:'18',tag:'err_off_by_one'}],
-      a:1, e:'17 - 1 = 16!', d:'h', s:null, h:'Count the group, then take away one'
-    }
+    // ── ku4l1: Count Forward by Ones ──────────────────────────────────────────
+    {lessonId:'ku4l1', t:'1, 2, 3, __ — what comes next?', v:null,
+      o:[{val:'2',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'3',tag:'err_same',patternTag:'chooses-start-number'},{val:'4'},{val:'5',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'4 comes after 3!', d:'e', s:null, h:'Count forward from 3'},
+    {lessonId:'ku4l1', t:'What number comes after 5?', v:null,
+      o:[{val:'4',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'6 comes after 5!', d:'e', s:null, h:'Count on one from 5'},
+    {lessonId:'ku4l1', t:'Count the 🍎. How many?',
+      v:{type:'objectSet', config:{count:6, emoji:'🍎', layout:'line'}},
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:1, e:'6 apples!', d:'e', s:null, h:'Touch each apple as you count'},
+    {lessonId:'ku4l1', t:'4, 5, 6, __ — what comes next?', v:null,
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'7 comes after 6!', d:'e', s:null, h:'Count on from 6'},
+    {lessonId:'ku4l1', t:'What number comes after 8?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'8',tag:'err_same',patternTag:'chooses-start-number'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'9 comes after 8!', d:'e', s:null, h:'Count on one from 8'},
+    {lessonId:'ku4l1', t:'3, __, 5 — what is missing?', v:null,
+      o:[{val:'2',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'3',tag:'err_same',patternTag:'chooses-start-number'},{val:'4'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'4 goes between 3 and 5!', d:'m', s:null, h:'One more than 3, one less than 5'},
+    {lessonId:'ku4l1', t:'What number comes before 7?', v:null,
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6'},{val:'7',tag:'err_same',patternTag:'chooses-start-number'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:1, e:'6 comes before 7!', d:'m', s:null, h:'Count back one from 7'},
+    {lessonId:'ku4l1', t:'Count the 🐝. How many?',
+      v:{type:'objectSet', config:{count:8, emoji:'🐝', layout:'grid'}},
+      o:[{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'}],
+      a:2, e:'8 bees!', d:'m', s:null, h:'Count carefully'},
+    {lessonId:'ku4l1', t:'6, __, 8 — what is missing?', v:null,
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'7 goes between 6 and 8!', d:'m', s:null, h:'One more than 6'},
+    {lessonId:'ku4l1', t:'8, 9, 10, __ — what comes next?', v:null,
+      o:[{val:'9',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11'},{val:'12',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'11 comes after 10!', d:'m', s:null, h:'Count on from 10'},
+    {lessonId:'ku4l1', t:'Count the 🦋. How many?',
+      v:{type:'objectSet', config:{count:9, emoji:'🦋', layout:'grid'}},
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'}],
+      a:2, e:'9 butterflies!', d:'h', s:null, h:'Count row by row'},
+    {lessonId:'ku4l1', t:'9, __, 11 — what is missing?', v:null,
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'9',tag:'err_same',patternTag:'chooses-start-number'},{val:'10'},{val:'11',tag:'err_same',patternTag:'sequence-confusion'}],
+      a:2, e:'10 goes between 9 and 11!', d:'h', s:null, h:'One more than 9'},
+    {lessonId:'ku4l1', t:'6, 7, 8, __, 10 — what is missing?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'9 goes between 8 and 10!', d:'h', s:null, h:'What is one more than 8?'},
+    {lessonId:'ku4l1', t:'Count the 🎈. How many?',
+      v:{type:'objectSet', config:{count:10, emoji:'🎈', layout:'grid'}},
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'off-by-one'}],
+      a:2, e:'10 balloons — count all the way!', d:'h', s:null, h:'Count carefully to the end'},
+    {lessonId:'ku4l1', t:'What number comes before 10?', v:null,
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'9'},{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:1, e:'9 comes before 10!', d:'h', s:null, h:'One less than 10'},
+    {lessonId:'ku4l1', t:'3, 4, 5, 6, __ — what comes next?', v:null,
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'6',tag:'err_same',patternTag:'chooses-start-number'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'7 comes after 6!', d:'h', s:null, h:'Count forward from 6'},
+    {lessonId:'ku4l1', t:'10, __, 12 — what is missing?', v:null,
+      o:[{val:'9',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'10',tag:'err_same',patternTag:'chooses-start-number'},{val:'11'},{val:'13',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'11 goes between 10 and 12!', d:'h', s:null, h:'One more than 10'},
+    {lessonId:'ku4l1', t:'5, 6, __, 8, 9 — what is missing?', v:null,
+      o:[{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'7'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'7 goes between 6 and 8!', d:'h', s:null, h:'What comes after 6?'},
+    {lessonId:'ku4l1', t:'What number comes before 5?', v:null,
+      o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4'},{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:1, e:'4 comes before 5!', d:'m', s:null, h:'Count back one from 5'},
+    {lessonId:'ku4l1', t:'7, 8, __, 10 — what is missing?', v:null,
+      o:[{val:'7',tag:'err_same',patternTag:'sequence-confusion'},{val:'8',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'9 goes between 8 and 10!', d:'m', s:null, h:'One more than 8'},
+    {lessonId:'ku4l1', t:'2, 3, 4, __ — what comes next?', v:null,
+      o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'5 comes after 4!', d:'e', s:null, h:'Count forward from 4'},
+
+    // ── ku4l2: Count by Tens ──────────────────────────────────────────────────
+    {lessonId:'ku4l2', t:'10, 20, __ — what comes next counting by tens?', v:null,
+      o:[{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'29',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'40',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'30 — add ten each time!', d:'e', s:null, h:'10, 20, add ten more'},
+    {lessonId:'ku4l2', t:'20, 30, __ — what comes next?', v:null,
+      o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'50',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'40 — add ten to 30!', d:'e', s:null, h:'Add ten to 30'},
+    {lessonId:'ku4l2', t:'Which shows counting by tens?', v:null,
+      o:[{val:'10, 11, 12',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'10, 20, 30'},{val:'5, 10, 15',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'10, 15, 20',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:1, e:'10, 20, 30 — each step is ten!', d:'e', s:null, h:'Each jump should be ten'},
+    {lessonId:'ku4l2', t:'Count 3 groups of 10 🌟. How many?',
+      v:{type:'objectSet', config:{count:30, emoji:'🌟', layout:'grid'}},
+      o:[{val:'3',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'13',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+      a:2, e:'3 groups of 10 = 30!', d:'e', s:null, h:'Count by tens: 10, 20, 30'},
+    {lessonId:'ku4l2', t:'30, 40, __ — what comes next?', v:null,
+      o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'60',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'50 — add ten to 40!', d:'e', s:null, h:'Add ten to 40'},
+    {lessonId:'ku4l2', t:'10, __, 30, 40 — what is missing?', v:null,
+      o:[{val:'11',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'15',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'20'},{val:'25',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'20 goes between 10 and 30!', d:'m', s:null, h:'Add ten to 10'},
+    {lessonId:'ku4l2', t:'20, __, 40 — what is missing?', v:null,
+      o:[{val:'21',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'25',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'30'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'30 goes between 20 and 40!', d:'m', s:null, h:'Add ten to 20'},
+    {lessonId:'ku4l2', t:'40, 50, __ — what comes next?', v:null,
+      o:[{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'60'},{val:'70',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'60 — add ten to 50!', d:'m', s:null, h:'Add ten to 50'},
+    {lessonId:'ku4l2', t:'Count 4 groups of 10 🔵. How many?',
+      v:{type:'objectSet', config:{count:40, emoji:'🔵', layout:'grid'}},
+      o:[{val:'4',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'14',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+      a:2, e:'4 groups of 10 = 40!', d:'m', s:null, h:'Count by tens: 10, 20, 30, 40'},
+    {lessonId:'ku4l2', t:'50, 60, __ — what comes next?', v:null,
+      o:[{val:'61',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'65',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'70'},{val:'80',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'70 — add ten to 60!', d:'m', s:null, h:'Add ten to 60'},
+    {lessonId:'ku4l2', t:'30, __, 50 — what is missing?', v:null,
+      o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'40 goes between 30 and 50!', d:'m', s:null, h:'Add ten to 30'},
+    {lessonId:'ku4l2', t:'70, 80, __ — what comes next?', v:null,
+      o:[{val:'81',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'85',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'90'},{val:'100',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'90 — add ten to 80!', d:'h', s:null, h:'Add ten to 80'},
+    {lessonId:'ku4l2', t:'80, 90, __ — what comes next?', v:null,
+      o:[{val:'91',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'95',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'100'},{val:'110',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'100 — add ten to 90!', d:'h', s:null, h:'Add ten to 90'},
+    {lessonId:'ku4l2', t:'10, 20, 30, __, 50 — what is missing?', v:null,
+      o:[{val:'31',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'40'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'40 goes between 30 and 50!', d:'h', s:null, h:'Add ten to 30'},
+    {lessonId:'ku4l2', t:'__, 20, 30, 40 — what comes first?', v:null,
+      o:[{val:'9',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'15',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:1, e:'10 comes before 20 when counting by tens!', d:'h', s:null, h:'Ten less than 20 is …'},
+    {lessonId:'ku4l2', t:'What number comes before 40 when counting by tens?', v:null,
+      o:[{val:'29',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'30'},{val:'35',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'39',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+      a:1, e:'30 comes before 40 when counting by tens!', d:'h', s:null, h:'Ten less than 40 is …'},
+    {lessonId:'ku4l2', t:'40, __, 60, 70 — what is missing?', v:null,
+      o:[{val:'41',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'45',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'50 goes between 40 and 60!', d:'h', s:null, h:'Add ten to 40'},
+    {lessonId:'ku4l2', t:'Count 5 groups of 10 🍎. How many?',
+      v:{type:'objectSet', config:{count:50, emoji:'🍎', layout:'grid'}},
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'wrong-decade'},{val:'15',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'50'},{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'}],
+      a:2, e:'5 groups of 10 = 50!', d:'h', s:null, h:'Count by tens: 10, 20, 30, 40, 50'},
+    {lessonId:'ku4l2', t:'60, __, 80 — what is missing?', v:null,
+      o:[{val:'61',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'65',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'70'},{val:'75',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'70 goes between 60 and 80!', d:'h', s:null, h:'Add ten to 60'},
+    {lessonId:'ku4l2', t:'50, __, 70 — what is missing?', v:null,
+      o:[{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'60'},{val:'65',tag:'err_off_by_one',patternTag:'tens-pattern-error'}],
+      a:2, e:'60 goes between 50 and 70!', d:'h', s:null, h:'Add ten to 50'},
+    {lessonId:'ku4l2', t:'10, 20, 30, 40, 50, __ — what comes next?', v:null,
+      o:[{val:'51',tag:'err_off_by_one',patternTag:'counts-by-ones-instead'},{val:'55',tag:'err_off_by_one',patternTag:'tens-pattern-error'},{val:'60'},{val:'70',tag:'err_off_by_one',patternTag:'skips-ten'}],
+      a:2, e:'60 comes after 50!', d:'h', s:null, h:'Keep adding ten'},
+
+    // ── ku4l3: Count from Any Number ──────────────────────────────────────────
+    {lessonId:'ku4l3', t:'Start at 4. What comes next?', v:null,
+      o:[{val:'3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'4',tag:'err_same',patternTag:'chooses-start-number'},{val:'5'},{val:'6',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'5 comes after 4!', d:'e', s:null, h:'Count on from 4'},
+    {lessonId:'ku4l3', t:'Start at 7. Count on. What comes next?', v:null,
+      o:[{val:'6',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'7',tag:'err_same',patternTag:'chooses-start-number'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'8 comes after 7!', d:'e', s:null, h:'Count on from 7'},
+    {lessonId:'ku4l3', t:'5, 6, 7 — start at 5. What are the next two?', v:null,
+      o:[{val:'4 and 3',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5 and 6',tag:'err_same',patternTag:'chooses-start-number'},{val:'8 and 9'},{val:'9 and 10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'8 and 9 come after 7!', d:'e', s:null, h:'After 5, 6, 7 comes 8, then 9'},
+    {lessonId:'ku4l3', t:'3, 4, 5, __ — what comes next?', v:null,
+      o:[{val:'4',tag:'err_off_by_one',patternTag:'counts-backward'},{val:'5',tag:'err_same',patternTag:'sequence-confusion'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'6 comes after 5!', d:'e', s:null, h:'Count forward from 5'},
+    {lessonId:'ku4l3', t:'Count the 🐟, then count on two more. Total?',
+      v:{type:'objectSet', config:{count:5, emoji:'🐟', layout:'line'}},
+      o:[{val:'5',tag:'err_same',patternTag:'chooses-start-number'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'5 fish + 2 more = 7!', d:'m', s:null, h:'Count on from 5: 6, 7'},
+    {lessonId:'ku4l3', t:'Start at 6. Count on three steps. Where do you land?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'6 → 7 → 8 → 9 — three steps!', d:'m', s:null, h:'Count on from 6 three times'},
+    {lessonId:'ku4l3', t:'7, 8, 9, __ — what comes next? (started at 7)', v:null,
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'9',tag:'err_same',patternTag:'sequence-confusion'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'10 comes after 9!', d:'m', s:null, h:'What is one more than 9?'},
+    {lessonId:'ku4l3', t:'Start at 8. Count on two. What do you get?', v:null,
+      o:[{val:'8',tag:'err_same',patternTag:'chooses-start-number'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'8 → 9 → 10 — two steps!', d:'m', s:null, h:'Count on from 8 twice'},
+    {lessonId:'ku4l3', t:'Start at 5. Count on 5 steps. Where do you land?', v:null,
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'10'},{val:'11',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'5 + 5 steps = 10!', d:'h', s:null, h:'Count on from 5: 6, 7, 8, 9, 10'},
+    {lessonId:'ku4l3', t:'Count the 🎯, then count on three more. Total?',
+      v:{type:'objectSet', config:{count:6, emoji:'🎯', layout:'grid'}},
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'8',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'6 + 3 more = 9!', d:'h', s:null, h:'Count on from 6: 7, 8, 9'},
+    {lessonId:'ku4l3', t:'4, 5, 6, 7, 8, __ — what comes next?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'9 comes after 8!', d:'h', s:null, h:'Count forward from 8'},
+    {lessonId:'ku4l3', t:'Start at 3. Count on 4 steps. Where do you land?', v:null,
+      o:[{val:'5',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'6',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'7'},{val:'8',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'3 → 4 → 5 → 6 → 7 — four steps!', d:'h', s:null, h:'Count on from 3 four times'},
+    {lessonId:'ku4l3', t:'I start at 2. I count: 2, 3, 4, 5, __. What is next?', v:null,
+      o:[{val:'4',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'5',tag:'err_same',patternTag:'sequence-confusion'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'6 comes after 5!', d:'h', s:null, h:'One more than 5'},
+    {lessonId:'ku4l3', t:'Start at 9. Count on 2. What do you get?', v:null,
+      o:[{val:'9',tag:'err_same',patternTag:'chooses-start-number'},{val:'10',tag:'err_off_by_one',patternTag:'off-by-one'},{val:'11'},{val:'12',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'9 → 10 → 11 — two steps!', d:'h', s:null, h:'Count on from 9 twice'},
+    {lessonId:'ku4l3', t:'6, 7, 8, __ — what comes next? (started at 6)', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'sequence-confusion'},{val:'8',tag:'err_same',patternTag:'sequence-confusion'},{val:'9'},{val:'10',tag:'err_off_by_one',patternTag:'skips-ahead'}],
+      a:2, e:'9 comes after 8!', d:'m', s:null, h:'One more than 8'},
+
+    // ── ku4l4: Missing Numbers in Counting Patterns ───────────────────────────
+    {lessonId:'ku4l4', t:'3, __, 5 — what is missing?', v:null,
+      o:[{val:'2',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'3',tag:'err_same',patternTag:'uses-before-only'},{val:'4'},{val:'6',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:2, e:'4 goes between 3 and 5!', d:'e', s:null, h:'One more than 3, one less than 5'},
+    {lessonId:'ku4l4', t:'6, 7, __ — what is missing?', v:null,
+      o:[{val:'6',tag:'err_same',patternTag:'uses-before-only'},{val:'7',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'8'},{val:'9',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:2, e:'8 comes after 7!', d:'e', s:null, h:'Count on from 7'},
+    {lessonId:'ku4l4', t:'__, 4, 5 — what is the first missing number?', v:null,
+      o:[{val:'3'},{val:'4',tag:'err_same',patternTag:'uses-after-only'},{val:'5',tag:'err_off_by_one',patternTag:'uses-after-only'},{val:'6',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:0, e:'3 comes before 4!', d:'e', s:null, h:'One less than 4 is …'},
+    {lessonId:'ku4l4', t:'1, 2, __ — what is missing?', v:null,
+      o:[{val:'1',tag:'err_same',patternTag:'uses-before-only'},{val:'2',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'3'},{val:'4',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:2, e:'3 comes after 2!', d:'e', s:null, h:'One more than 2'},
+    {lessonId:'ku4l4', t:'4, __, 6 — what is missing?', v:null,
+      o:[{val:'3',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'4',tag:'err_same',patternTag:'uses-before-only'},{val:'5'},{val:'6',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'5 fits between 4 and 6!', d:'e', s:null, h:'One more than 4, one less than 6'},
+    {lessonId:'ku4l4', t:'3, 4, 5, __ — what is missing?', v:null,
+      o:[{val:'4',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'5',tag:'err_same',patternTag:'uses-before-only'},{val:'6'},{val:'7',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:2, e:'6 comes after 5!', d:'m', s:null, h:'Count on from 5'},
+    {lessonId:'ku4l4', t:'7, __, 9 — what is missing?', v:null,
+      o:[{val:'6',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'7',tag:'err_same',patternTag:'uses-before-only'},{val:'8'},{val:'9',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'8 fits between 7 and 9!', d:'m', s:null, h:'One more than 7, one less than 9'},
+    {lessonId:'ku4l4', t:'5, 6, __, 8 — what is missing?', v:null,
+      o:[{val:'5',tag:'err_same',patternTag:'uses-before-only'},{val:'6',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'7'},{val:'9',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:2, e:'7 goes between 6 and 8!', d:'m', s:null, h:'One more than 6, one less than 8'},
+    {lessonId:'ku4l4', t:'__, 8, 9, 10 — what is the first missing number?', v:null,
+      o:[{val:'7'},{val:'8',tag:'err_same',patternTag:'uses-after-only'},{val:'6',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'9',tag:'err_off_by_one',patternTag:'uses-after-only'}],
+      a:0, e:'7 comes before 8!', d:'m', s:null, h:'One less than 8 is …'},
+    {lessonId:'ku4l4', t:'2, 3, __, 5, 6 — what is missing?', v:null,
+      o:[{val:'2',tag:'err_same',patternTag:'uses-before-only'},{val:'3',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'4'},{val:'5',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'4 goes between 3 and 5!', d:'m', s:null, h:'What comes after 3?'},
+    {lessonId:'ku4l4', t:'8, __, 10 — what is missing?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'8',tag:'err_same',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'9 fits between 8 and 10!', d:'m', s:null, h:'One more than 8, one less than 10'},
+    {lessonId:'ku4l4', t:'6, 7, 8, __, 10 — what is missing?', v:null,
+      o:[{val:'7',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'8',tag:'err_same',patternTag:'uses-before-only'},{val:'9'},{val:'10',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'9 goes between 8 and 10!', d:'h', s:null, h:'What is one more than 8?'},
+    {lessonId:'ku4l4', t:'4, 5, __, 7, 8 — what is missing?', v:null,
+      o:[{val:'4',tag:'err_same',patternTag:'uses-before-only'},{val:'5',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'6'},{val:'7',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'6 goes between 5 and 7!', d:'h', s:null, h:'One more than 5, one less than 7'},
+    {lessonId:'ku4l4', t:'3, __, 5, 6, 7 — what is missing?', v:null,
+      o:[{val:'2',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'3',tag:'err_same',patternTag:'uses-before-only'},{val:'4'},{val:'5',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'4 fits between 3 and 5!', d:'h', s:null, h:'One more than 3, one less than 5'},
+    {lessonId:'ku4l4', t:'9, __, 11 — what is missing?', v:null,
+      o:[{val:'8',tag:'err_off_by_one',patternTag:'missing-middle-error'},{val:'9',tag:'err_same',patternTag:'uses-before-only'},{val:'10'},{val:'11',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'10 fits between 9 and 11!', d:'h', s:null, h:'One more than 9, one less than 11'},
+    {lessonId:'ku4l4', t:'5, 6, 7, __, 9 — what is missing?', v:null,
+      o:[{val:'6',tag:'err_off_by_one',patternTag:'uses-before-only'},{val:'7',tag:'err_same',patternTag:'uses-before-only'},{val:'8'},{val:'9',tag:'err_same',patternTag:'uses-after-only'}],
+      a:2, e:'8 goes between 7 and 9!', d:'h', s:null, h:'One more than 7, one less than 9'},
+    {lessonId:'ku4l4', t:'1, __, 3, 4, 5 — what is missing?', v:null,
+      o:[{val:'1',tag:'err_same',patternTag:'uses-before-only'},{val:'2'},{val:'3',tag:'err_same',patternTag:'uses-after-only'},{val:'4',tag:'err_off_by_one',patternTag:'pattern-break'}],
+      a:1, e:'2 fits between 1 and 3!', d:'h', s:null, h:'One more than 1, one less than 3'}
   ]
 });
