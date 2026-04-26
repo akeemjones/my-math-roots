@@ -259,12 +259,22 @@ async function build(){
   // ── Copy K unit data files to dist/data/k/ ──
   const K_DATA_DIR = path.join(DIST, 'data', 'k');
   if (!fs.existsSync(K_DATA_DIR)) fs.mkdirSync(K_DATA_DIR, { recursive: true });
-  const K_UNIT_NUMS = [1, 2, 3, 4, 5, 6, 7, 8]; // extend as new K units are added
+  const K_UNIT_NUMS = [1, 2, 3, 4, 5, 6, 7, 8, 10]; // extend as new K units are added
   for (const n of K_UNIT_NUMS) {
     const kSrc = path.join(ROOT, 'src', 'data', 'k', 'u' + n + '.js');
     if (fs.existsSync(kSrc)) {
       fs.copyFileSync(kSrc, path.join(K_DATA_DIR, 'u' + n + '.js'));
       console.log(`📋 Copied:  data/k/u${n}.js`);
+    }
+  }
+
+  // Named-file shared deps for K units (lazy-loaded by _loadKUnit before sources)
+  const K_NAMED_DEPS = ['coin_assets'];
+  for (const name of K_NAMED_DEPS) {
+    const src = path.join(ROOT, 'src', 'data', 'k', name + '.js');
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(K_DATA_DIR, name + '.js'));
+      console.log(`📋 Copied:  data/k/${name}.js`);
     }
   }
 
