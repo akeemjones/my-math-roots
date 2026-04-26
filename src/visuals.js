@@ -545,3 +545,19 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
     rightHTML+
   '</div>';
 }
+
+// Renders 4 coin SVGs as tappable vchoice buttons.
+// config.coins: ordered array of coin names matching the shuffled opts indices.
+// optIdxs: parallel array of shuffled option indices for data-arg routing.
+// Requires window.coinSVG (loaded by coin_assets.js for K Unit 8).
+function drawCoinChoices(config, optIdxs) {
+  var coins = config.coins || [];
+  var coinFn = (typeof window !== 'undefined' && window.coinSVG) ? window.coinSVG : function(){ return ''; };
+  var buttons = coins.map(function(name, i){
+    var oi = optIdxs[i];
+    return '<button class="vchoice" type="button" data-action="_pickAnswer" data-arg="'+oi+'" id="abtn-'+oi+'" aria-label="'+name+'" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;padding:0">'+
+      coinFn(name, 90)+
+    '</button>';
+  }).join('');
+  return '<div class="q-visual"><div class="vcmp-grid" style="display:grid;grid-template-columns:repeat(2,120px);gap:16px;padding:8px;justify-content:center">'+buttons+'</div></div>';
+}

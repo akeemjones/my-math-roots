@@ -664,6 +664,19 @@ function _renderQ(){
       // answers go to agrid as plain number buttons
     }
 
+  } else if (_vt === 'coinChoices') {
+    var _ccCfg   = q.v.config;
+    var _ccCoins = _ccCfg.coins || [];
+    var _ccIdxs  = _ccCoins.map(function(name){
+      return opts.findIndex(function(o){ return o.text === name; });
+    });
+    if (_ccIdxs.every(function(i){ return i !== -1; })) {
+      _agridOpts   = [];
+      _visualBlock = drawCoinChoices(_ccCfg, _ccIdxs);
+    } else {
+      _visualBlock = q.s ? '<div class="q-visual">'+q.s+'</div>' : '';
+    }
+
   } else if (q.type === 'tapGroup' || _vt === 'tapGroup') {
     _agridOpts   = [];
     var _tgCfg   = q.visual ? q.visual.config : (q.v ? q.v.config : null);

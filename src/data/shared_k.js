@@ -145,15 +145,20 @@ const _UNITS_DATA_K = [
   },
   {
     id: 'ku8',
-    name: 'Financial Literacy',
+    name: 'Financial Literacy & Money',
     icon: '💰',
     // Coin circle with $ suggestion (rects as a stylized dollar sign stroke)
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FFB300" opacity="0.12"/><circle cx="30" cy="30" r="14" fill="none" stroke="#FFB300" stroke-width="4"/><rect x="27" y="18" width="6" height="24" rx="1" fill="#FFB300"/></svg>',
     color: '#FFB300',
     gp: 8,
-    teks: 'TEKS K.4, K.9',
-    lessons: [],
-    comingSoon: true,
+    teks: 'TEKS K.4A, K.9A, K.9B, K.9C, K.9D',
+    quizBlueprint: { ku8l1:7, ku8l2:7, ku8l3:5, ku8l4:5 },
+    lessons: [
+      {id:'ku8l1', title:'Earning Money & Jobs',  icon:'💼', desc:'Learn how people earn money by working at different jobs'},
+      {id:'ku8l2', title:'Wants vs Needs',        icon:'🛒', desc:'Tell the difference between things we need and things we want'},
+      {id:'ku8l3', title:'Identify Coins',        icon:'🪙', desc:'Name the penny, nickel, dime, and quarter'},
+      {id:'ku8l4', title:'Compare Coins',         icon:'⚖️', desc:'Compare coins by size and look — find the matching coin'}
+    ],
     _loaded: false
   }
 ];
@@ -181,7 +186,9 @@ const _K_MERGE_MAP = {
   // Old u7.js — Measurement → new U6 (index 5)
   6: { target: 5, offset: 0 },
   // Old u8.js — Data Analysis → new U7 (index 6)
-  7: { target: 6, offset: 0 }
+  7: { target: 6, offset: 0 },
+  // u10.js — Financial Literacy & Money → new U8 (index 7)
+  9: { target: 7, offset: 0 }
 };
 
 // Which legacy source files each NEW unit index needs loaded
@@ -193,7 +200,14 @@ const _K_UNIT_SOURCES = {
   4: [6],        // new U5 (Geometry) ← u6.js
   5: [7],        // new U6 (Measurement) ← u7.js
   6: [8],        // new U7 (Data Analysis) ← u8.js
-  7: []          // new U8 (Financial) — empty shell
+  7: [10]        // new U8 (Financial Literacy & Money) ← u10.js
+};
+
+// Named-file dependencies that must load BEFORE numeric source files.
+// Loaded sequentially so global side effects (e.g. window.COIN_*) are
+// guaranteed available when the unit's source(s) parse.
+const _K_UNIT_DEPS = {
+  7: ['coin_assets']  // u10.js needs window.COIN_* + window.coinImg
 };
 
 // ── K lazy-load infrastructure ───────────────────────────────────────────────
@@ -256,16 +270,21 @@ function _mergeKUnitData(oldIdx, data){
   }
 }
 
+// Accepts either a number (legacy u<N>.js) or a string (named file like
+// 'coin_assets' → /data/k/coin_assets.js). Caches by stringified key so the
+// two namespaces never collide.
 function _loadKSourceFile(n){
-  if(_kSourceLoadPromises[n]) return _kSourceLoadPromises[n];
-  _kSourceLoadPromises[n] = new Promise(function(resolve, reject){
+  var key = String(n);
+  if(_kSourceLoadPromises[key]) return _kSourceLoadPromises[key];
+  var fileName = (typeof n === 'number') ? ('u' + n) : n;
+  _kSourceLoadPromises[key] = new Promise(function(resolve, reject){
     var s = document.createElement('script');
-    s.src = '/data/k/u' + n + '.js';
+    s.src = '/data/k/' + fileName + '.js';
     s.onload = resolve;
-    s.onerror = function(){ reject(new Error('Failed to load K source u' + n + '.js')); };
+    s.onerror = function(){ reject(new Error('Failed to load K source ' + s.src)); };
     document.head.appendChild(s);
   });
-  return _kSourceLoadPromises[n];
+  return _kSourceLoadPromises[key];
 }
 
 function _loadKUnit(newIdx){
@@ -274,12 +293,21 @@ function _loadKUnit(newIdx){
   if(u._loaded) return Promise.resolve();
   if(_kUnitLoadPromises[newIdx]) return _kUnitLoadPromises[newIdx];
 
+  var deps    = _K_UNIT_DEPS[newIdx] || [];
   var sources = _K_UNIT_SOURCES[newIdx] || [];
-  if(sources.length === 0){
+  if(deps.length === 0 && sources.length === 0){
     u._loaded = true;
     return Promise.resolve();
   }
-  _kUnitLoadPromises[newIdx] = Promise.all(sources.map(_loadKSourceFile))
+
+  // Deps load sequentially BEFORE sources so window.* globals (e.g. coin
+  // assets) exist by the time the unit's source files parse.
+  var depChain = deps.reduce(function(p, dep){
+    return p.then(function(){ return _loadKSourceFile(dep); });
+  }, Promise.resolve());
+
+  _kUnitLoadPromises[newIdx] = depChain
+    .then(function(){ return Promise.all(sources.map(_loadKSourceFile)); })
     .then(function(){ u._loaded = true; });
   return _kUnitLoadPromises[newIdx];
 }

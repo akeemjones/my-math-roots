@@ -1502,6 +1502,20 @@ function buildPracticeQ(pid, q){
     }
   }
 
+  // coinChoices — 4 tappable coin SVG buttons (K Unit 8 coin identification)
+  if (q.v && q.v.type === 'coinChoices' && typeof window.coinSVG === 'function') {
+    const ccCoins = (q.v.config && q.v.config.coins) || ['penny','nickel','dime','quarter'];
+    const ref = (q.v.config && q.v.config.refSize) || 80;
+    const coinBtns = ccCoins.map(name =>
+      `<button class="vchoice pq-vgroup-btn" type="button" data-value="${name}" onclick="_pickPracticeVisualAns('${pid}','${name}')" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;padding:0">${window.coinSVG(name, 90)}</button>`
+    ).join('');
+    return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
+      <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,120px);gap:16px;justify-content:center;padding:8px">${coinBtns}</div>
+      <div class="pq-drill-fb" id="${pid}-fb"></div>
+    </div>`;
+  }
+
   return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
     <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
     <div class="pq-choices">
