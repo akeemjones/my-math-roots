@@ -9,7 +9,7 @@ var QE = {};
 // Maps legacy field names to unified schema. Does NOT mutate the original.
 // Called at the start of _renderQ so all downstream code sees normalized fields.
 
-QE.normalize = function(raw) {
+QE.normalize = function(raw, lessonContext) {
   var q = Object.assign({}, raw);
   if (!q.prompt)       q.prompt       = q.t || '';
   if (!q.hint)         q.hint         = q.h || null;
@@ -37,6 +37,23 @@ QE.normalize = function(raw) {
   // Infer type from visual when absent
   if (!q.type && q.visual) q.type = q.visual.type || 'multipleChoice';
   if (!q.type) q.type = 'multipleChoice';
+
+  // Merge lesson-level defaults — only when the question doesn't carry its own.
+  // Safe-clone so per-question runtime mutation cannot corrupt the shared default.
+  if ((!q.tags || q.tags.length === 0) && lessonContext && Array.isArray(lessonContext.defaultTags)) {
+    q.tags = lessonContext.defaultTags.slice();
+  }
+  if (!q.intervention && lessonContext && lessonContext.defaultIntervention) {
+    var d = lessonContext.defaultIntervention;
+    q.intervention = {
+      teach: Object.assign({}, d.teach || {}),
+      retry: Object.assign(
+        {},
+        d.retry || {},
+        { matchTags: (d.retry && Array.isArray(d.retry.matchTags)) ? d.retry.matchTags.slice() : [] }
+      )
+    };
+  }
   return q;
 };
 
@@ -168,22 +185,48 @@ QE.logResult = function(q, result) {
 };
 
 // ── Audit Pool ────────────────────────────────────────────────────────────────
-// Dev-mode batch validator — runs in ?preview=1 only.
+// Dev-mode batch validator — runs when ?preview=1 OR localStorage.mmr_audit==='1'.
+// Callers should pre-normalize with lessonContext so lesson-default tags/intervention
+// are visible to the audit (see _loadKUnit in shared_k.js).
 
-QE.auditPool = function(pool) {
-  if (typeof location === 'undefined' || location.search.indexOf('preview=1') === -1) return;
+QE.auditPool = function(pool, label) {
+  var inPreview = typeof location !== 'undefined' && location.search.indexOf('preview=1') !== -1;
+  var inAudit   = (function(){ try { return localStorage.getItem('mmr_audit') === '1'; } catch(e){ return false; } })();
+  if (!inPreview && !inAudit) return;
+  var prefix = label ? '[QE audit:' + label + ']' : '[QE audit]';
   var errCount = 0;
   pool.forEach(function(q) {
     var norm = QE.normalize(q);
     var r = QE.validate(norm);
-    if (!r.valid) {
-      console.error('[QE audit]', norm.id || norm.prompt || norm.t, r.errors);
+    // K questions are designed without per-question ids; that check is out of
+    // scope for the activation pass. Drop it to keep audit signal actionable.
+    var validateErrors = (r.errors || []).filter(function(e){ return e !== 'missing id'; });
+    var extra = [];
+    if (!norm.tags || !norm.tags.length) extra.push('missing tags after normalize');
+    if (!norm.intervention) extra.push('missing intervention after normalize');
+    else if (!norm.intervention.retry || !Array.isArray(norm.intervention.retry.matchTags) || !norm.intervention.retry.matchTags.length) {
+      extra.push('empty intervention.retry.matchTags');
+    }
+    var opts = norm.o || (norm.options || []);
+    if (Array.isArray(opts)) {
+      opts.forEach(function(opt, i){
+        if (opt && opt.correct === false && opt.tag && opt.tag.indexOf('err_') !== 0) {
+          extra.push('option[' + i + '] tag "' + opt.tag + '" missing err_ prefix');
+        }
+        if (opt && opt.correct === true && typeof opt.tag === 'string' && opt.tag.indexOf('err_') === 0) {
+          extra.push('option[' + i + '] correct answer has err_* tag "' + opt.tag + '"');
+        }
+      });
+    }
+    if (validateErrors.length || extra.length) {
+      var allErrs = validateErrors.concat(extra);
+      console.error(prefix, norm.id || norm.prompt || norm.t, allErrs);
       errCount++;
     }
   });
   if (errCount === 0) {
-    console.log('[QE audit] Pool audit complete — 0 errors.');
+    console.log(prefix + ' Pool audit complete — 0 errors.');
   } else {
-    console.warn('[QE audit] Pool audit complete — ' + errCount + ' question(s) with errors.');
+    console.warn(prefix + ' Pool audit complete — ' + errCount + ' question(s) with errors.');
   }
 };

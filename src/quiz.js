@@ -514,7 +514,8 @@ function _renderQ(){
   if(qz.viewIdx == null) qz.viewIdx = qz.idx;
   const isReview = qz.viewIdx < qz.idx;
   const qIdx = qz.viewIdx;
-  const q = (typeof QE !== 'undefined') ? QE.normalize(qz.questions[qIdx]) : qz.questions[qIdx];
+  const _qRaw = qz.questions[qIdx];
+  const q = (typeof QE !== 'undefined') ? QE.normalize(_qRaw, (typeof _lessonContextFor === 'function') ? _lessonContextFor(_qRaw) : null) : _qRaw;
 
   document.getElementById('qlbl').textContent = 'Question '+(qIdx+1)+' of '+total;
   document.getElementById('qscore').textContent = qz.score+' correct';
@@ -1018,7 +1019,8 @@ function _tapGroupSubmit() {
   var selected = Array.from(tg.querySelectorAll('.tap-shape.tg-selected'));
   var selectedIds = selected.map(function(b) { return b.dataset.arg; });
 
-  var q = (typeof QE !== 'undefined') ? QE.normalize(qz.questions[qz.idx]) : qz.questions[qz.idx];
+  var _qRawTg = qz.questions[qz.idx];
+  var q = (typeof QE !== 'undefined') ? QE.normalize(_qRawTg, (typeof _lessonContextFor === 'function') ? _lessonContextFor(_qRawTg) : null) : _qRawTg;
   var tgCfg = q.visual ? q.visual.config : (q.v ? q.v.config : null);
   var gradeResult = (typeof QE !== 'undefined') ? QE.grade(q, { selectedIds: selectedIds }) : { ok: false, errorType: 'err_tap_wrong_shape' };
   var isOk = gradeResult.ok;
@@ -1685,7 +1687,7 @@ function _resumeQuiz(){
 
       if(isTapGroupRetry && typeof QE !== 'undefined'){
         // Tag-aware retry via QE.selectRetry
-        var normCurQ = QE.normalize(curQ);
+        var normCurQ = QE.normalize(curQ, (typeof _lessonContextFor === 'function') ? _lessonContextFor(curQ) : null);
         var pick = QE.selectRetry(normCurQ, bank);
         if(pick){
           qz.questions[qz.idx] = pick;
