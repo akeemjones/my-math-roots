@@ -1652,6 +1652,8 @@ function toggleGradePicker(){
 function pickGrade(val){
   var picker = document.getElementById('grade-picker');
   if(picker) picker.classList.remove('open');
+  var heroPicker = document.getElementById('hero-grade-picker');
+  if(heroPicker) heroPicker.classList.remove('open');
   switchGradeUI(val);
 }
 

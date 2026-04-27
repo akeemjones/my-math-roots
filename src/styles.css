@@ -435,11 +435,22 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
   color:#5a7080; margin-top:3px; letter-spacing:.3px; }
 .hero-sub{ font-family:'Nunito',sans-serif; font-size:var(--fs-xs); font-weight:700;
   color:#546e7a; letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
-.hero-tag{ display:inline-block; margin-top:6px; padding:6px 18px;
+.hero-grade-picker{ display:block; margin-top:5px; }
+.hero-grade-btn{
+  display:inline-flex; align-items:center; gap:5px;
+  background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:8px;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-md);
+  color:#3a5a6a; transition:background .15s; }
+.hero-grade-btn:hover{ background:rgba(58,90,106,.10); }
+.hero-grade-chevron{ color:#3a5a6a; transition:transform .2s; flex-shrink:0; }
+.hero-grade-picker.open .hero-grade-chevron{ transform:rotate(180deg); }
+#hero-grade-picker-list{ min-width:200px; }
+.hero-grade-picker.open #hero-grade-picker-list{ display:block; }
+.hero-tag{ display:inline-block; margin-top:5px; padding:4px 14px;
            border-radius:50px; font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
-           font-size:var(--fs-base); color:#fff;
+           font-size:var(--fs-xs); color:#fff;
            background:linear-gradient(135deg,#e74c3c,#e67e22);
-           box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+           box-shadow:0 1px 5px rgba(0,0,0,0.18); }
 
 /* Progress bar */
 .op{ background:rgba(255,255,255,.14);
@@ -2104,7 +2115,7 @@ body.dark #spot-card{
   .hero{ padding:2px 16px 0; display:flex; align-items:center; gap:8px; justify-content:center; width:100%; }
   .home-in .hero-ico{ font-size:var(--fs-lg); display:inline-block; animation:none; margin:0; width:22px; height:22px; flex-shrink:0; }
   .hero-h1{ font-size:var(--fs-lg); }
-  .hero-credit, .hero-sub, .hero-tag{ display:none; }
+  .hero-credit, .hero-sub, .hero-tag, .hero-grade-picker{ display:none; }
   .op{ padding:4px 14px; margin:0 16px 2px; }
   .op-title{ font-size:var(--fs-xs); margin-bottom:1px; }
   .pb{ height:8px; margin:1px 0; }
