@@ -38,7 +38,7 @@ const _APP_GLOBALS = [
   'ALL_SCREENS','show','isUnitUnlocked','isLessonUnlocked','isUnitQuizUnlocked',
   // home.js
   'CAR','buildHome','_carouselInited','initCarousel','carouselGoTo',
-  '_skipNextHomeBuild','goHome','goHistory','showLockToast',
+  '_skipNextHomeBuild','goHome','goHistory','showLockToast','toggleHeroGradePicker',
   // unit.js
   'openUnit','goUnit','playCarryAnim','play3dCarry','playBorrowAnim','renderEx',
   'refreshExamples','generateExamples','buildPQItem','morePractice','steps',

@@ -7,8 +7,43 @@
 // ════════════════════════════════════════
 const CAR = { idx: 0 };
 
+function toggleHeroGradePicker(){
+  var picker = document.getElementById('hero-grade-picker');
+  if(!picker) return;
+  var list = document.getElementById('hero-grade-picker-list');
+  var isOpen = picker.classList.toggle('open');
+  if(isOpen && list){
+    var btn = picker.querySelector('.hero-grade-btn');
+    var r = btn.getBoundingClientRect();
+    var listW = 200;
+    var left = r.left + r.width/2 - listW/2;
+    left = Math.max(8, Math.min(left, window.innerWidth - listW - 8));
+    list.style.left = left + 'px';
+    list.style.top = (r.bottom + 4) + 'px';
+    setTimeout(function(){
+      document.addEventListener('click', function _closeHGP(e){
+        if(!picker.contains(e.target)){ picker.classList.remove('open'); document.removeEventListener('click',_closeHGP); }
+      });
+    }, 0);
+  }
+}
+
+function _updateHeroSummary(){
+  var grade = localStorage.getItem('mmr_grade') || '2';
+  var gradeName = grade === 'K' ? 'Kindergarten' : 'Grade ' + grade;
+  var unitCount = UNITS_DATA.length;
+  var lessonCount = UNITS_DATA.reduce(function(n, u){ return n + u.lessons.length; }, 0);
+  var lbl = document.getElementById('hero-grade-label');
+  if(lbl) lbl.textContent = gradeName;
+  var tag = document.getElementById('hero-tag');
+  if(tag) tag.textContent = unitCount + ' Units \u00b7 ' + lessonCount + ' Lessons \u00b7 Lesson Quizzes \u00b7 Unit Tests';
+  var hint = document.getElementById('carousel-hint');
+  if(hint) hint.textContent = '\uD83D\uDCDC Scroll to browse all ' + unitCount + ' units';
+}
+
 function buildHome(instant){
   _renderCalBtn();
+  _updateHeroSummary();
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
     SCORES.some(s=>s.qid==='lq_'+l.id && s.pct>=80)
