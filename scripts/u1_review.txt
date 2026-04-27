@@ -1,0 +1,361 @@
+testBank[0] -> u1l1 (low confidence): How many tens are shown in this base-10 model?
+testBank[2] -> u1l1 (low confidence): How many dots are in this array?
+testBank[3] -> u1l1 (low confidence): Use the count-on strategy. What is 6 + 3?
+testBank[4] -> u1l1 (low confidence): Use the count-on strategy. What is 8 + 4?
+testBank[5] -> u1l1 (low confidence): Use the count-on strategy. What is 7 + 5?
+testBank[6] -> u1l1 (low confidence): Use the count-on strategy. What is 9 + 3?
+testBank[7] -> u1l1 (low confidence): Use the count-on strategy. What is 5 + 4?
+testBank[8] -> u1l1 (low confidence): Use the count-on strategy. What is 11 + 3?
+testBank[9] -> u1l1 (low confidence): Use the count-on strategy. What is 14 + 2?
+testBank[10] -> u1l1 (low confidence): Use the count-on strategy. What is 7 + 4?
+testBank[11] -> u1l1 (low confidence): Use the count-back strategy. What is 10 − 3?
+testBank[12] -> u1l1 (low confidence): Use the count-back strategy. What is 13 − 4?
+testBank[13] -> u1l1 (low confidence): Use the count-back strategy. What is 15 − 5?
+testBank[14] -> u1l1 (low confidence): Use the count-back strategy. What is 12 − 3?
+testBank[15] -> u1l1 (low confidence): Use the count-back strategy. What is 17 − 6?
+testBank[16] -> u1l1 (low confidence): Use the count-back strategy. What is 14 − 5?
+testBank[17] -> u1l1 (low confidence): Use the count-back strategy. What is 11 − 4?
+testBank[18] -> u1l1 (low confidence): Use the count-back strategy. What is 16 − 7?
+testBank[19] -> u1l1 (low confidence): Which strategy works best to solve 8 + 3?
+testBank[20] -> u1l1 (low confidence): Which strategy works best to solve 14 − 4?
+testBank[21] -> u1l1 (low confidence): Use the count-on strategy. What is 12 + 4?
+testBank[22] -> u1l1 (low confidence): Use the count-back strategy. What is 18 − 5?
+testBank[24] -> u1l1 (low confidence): Use the count-back strategy. What is 20 − 4?
+testBank[25] -> u1l1 (low confidence): Use the count-on strategy. What is 9 + 5?
+testBank[28] -> u1l1 (low confidence): Use the count-back strategy. What is 19 − 6?
+testBank[29] -> u1l1 (low confidence): Use the count-on strategy. What is 10 + 5?
+testBank[30] -> u1l1 (low confidence): Use the count-back strategy. What is 16 − 4?
+testBank[31] -> u1l1 (low confidence): Use the count-on strategy. What is 15 + 3?
+testBank[32] -> u1l1 (low confidence): Use the count-back strategy. What is 13 − 6?
+testBank[53] -> u1l1 (low confidence): Which helps solve 7+8?
+testBank[59] -> u1l1 (low confidence): Which strategy for 8+9?
+testBank[63] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 4?
+testBank[64] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 5?
+testBank[65] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 4?
+testBank[66] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 7?
+testBank[67] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 6?
+testBank[68] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 6?
+testBank[69] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 5?
+testBank[70] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 8?
+testBank[71] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 8?
+testBank[72] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 5?
+testBank[73] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 4?
+testBank[74] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 5?
+testBank[76] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 8?
+testBank[77] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 3?
+testBank[78] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 3?
+testBank[80] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 8?
+testBank[81] -> u1l1 (low confidence): Use the make-ten strategy. What is 4 + 9?
+testBank[82] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 7?
+testBank[83] -> u1l1 (low confidence): Why do we "make ten" first?
+testBank[84] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 7?
+testBank[85] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 6?
+testBank[86] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 7?
+testBank[87] -> u1l1 (low confidence): Use the make-ten strategy. What is 3 + 9?
+testBank[88] -> u1l1 (low confidence): Use the make-ten strategy. What is 4 + 8?
+testBank[90] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 9?
+testBank[91] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 9?
+testBank[92] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 9?
+testBank[94] -> u1l1 (low confidence): If 5 + 8 = 13, what is 13 − 8?
+testBank[95] -> u1l4 (low confidence): What is the missing number? 6 + ___ = 14
+testBank[96] -> u1l1 (low confidence): If 4 + 9 = 13, what is 13 − 4?
+testBank[98] -> u1l1 (low confidence): If 7 + 6 = 13, what is 13 − 7?
+testBank[99] -> u1l4 (low confidence): What is the missing number? 9 + ___ = 17
+testBank[100] -> u1l1 (low confidence): Which fact is in family 5,9,14?
+testBank[101] -> u1l1 (low confidence): If 8 + 7 = 15, what is 15 − 8?
+testBank[102] -> u1l4 (low confidence): What is the missing number? ___ + 6 = 11
+testBank[106] -> u1l1 (low confidence): If 4 + 5 = 9, what is 5 + 4?
+testBank[107] -> u1l1 (low confidence): What is 9 - 3?
+testBank[109] -> u1l1 (low confidence): What is 10 + 6?
+testBank[110] -> u1l1 (low confidence): If 3 + 7 = 10, what is 10 - 7?
+testBank[113] -> u1l1 (low confidence): A cat has 9 treats. It gets 4 more. How many treats does the cat have now?
+testBank[115] -> u1l4 (low confidence): __ + 5 = 12. What is the missing number?
+testBank[116] -> u1l1 (low confidence): Which strategy helps you solve 8 + 5?
+testBank[117] -> u1l1 (low confidence): If 9 + 6 = 15, what is 15 - 9?
+testBank[118] -> u1l1 (low confidence): There are 13 ducks. 4 swim away. How many are left?
+testBank[119] -> u1l1 (low confidence): __ + __ = 14. Both numbers are the same. What are they?
+testBank[121] -> u1l4 (low confidence): 9 - __ = 5. What is the missing number?
+testBank[122] -> u1l1 (low confidence): Ben has 6 red blocks and 7 blue blocks. How many blocks in all?
+testBank[123] -> u1l1 (low confidence): Kai had 14 toy trucks. He gave 6 to his brother and 3 to his friend. How many does Kai have left?
+testBank[125] -> u1l1 (low confidence): If 7 + 9 = 16, what are the two subtraction facts in the same family?
+testBank[126] -> u1l1 (low confidence): Emma has 8 stickers. She finds 7 more, then gives 6 away. How many does she have now?
+testBank[128] -> u1l1 (low confidence): __ + __ = 13. Both numbers are greater than 4. One is 3 more than the other. What are they?
+testBank[129] -> u1l1 (low confidence): Leo says 15 - 8 = 6 because 8 + 6 = 14. What TWO things did Leo get wrong?
+testBank[131] -> u1l1 (low confidence): I am a number. Add me to myself and you get 12. Then subtract 5. What do you get?
+unitQuiz[28] -> u1l4 (low confidence): Use the number line. 3 + ___ = 9. What is the missing number?
+unitQuiz[29] -> u1l4 (low confidence): Use the number line. 4 + ___ = 8. What is the missing number?
+unitQuiz[30] -> u1l4 (low confidence): Use the number line. 6 + ___ = 12. What is the missing number?
+unitQuiz[31] -> u1l4 (low confidence): Use the number line. 4 + ___ = 10. What is the missing number?
+unitQuiz[32] -> u1l4 (low confidence): Use the number line. 5 + ___ = 9. What is the missing number?
+unitQuiz[33] -> u1l4 (low confidence): Use the number line. 7 + ___ = 12. What is the missing number?
+unitQuiz[34] -> u1l4 (low confidence): Use the number line. 4 + ___ = 7. What is the missing number?
+unitQuiz[35] -> u1l4 (low confidence): Use the number line. 3 + ___ = 9. What is the missing number?
+unitQuiz[36] -> u1l4 (low confidence): Use the number line. 3 + ___ = 5. What is the missing number?
+unitQuiz[37] -> u1l4 (low confidence): Use the number line. 3 + ___ = 7. What is the missing number?
+unitQuiz[38] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[39] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[40] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[41] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[42] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[43] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[44] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[45] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[46] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[47] -> u1l1 (low confidence): Each row has the same number of dots. How many dots in all?
+unitQuiz[48] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[49] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[50] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[51] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[52] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[53] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[54] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[55] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[56] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[57] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[58] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[59] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[60] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[61] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[62] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[63] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[64] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[65] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[66] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[67] -> u1l1 (low confidence): How many dots are in this group?
+unitQuiz[68] -> u1l1 (low confidence): This dot group should have 4 rows and 5 columns, but 1 dots are missing. How many are filled in?
+unitQuiz[69] -> u1l1 (low confidence): This dot group should have 4 rows and 4 columns, but 1 dots are missing. How many are filled in?
+unitQuiz[70] -> u1l1 (low confidence): This dot group should have 3 rows and 3 columns, but 1 dots are missing. How many are filled in?
+unitQuiz[71] -> u1l1 (low confidence): This dot group should have 2 rows and 4 columns, but 1 dots are missing. How many are filled in?
+unitQuiz[72] -> u1l1 (low confidence): This dot group should have 4 rows and 5 columns, but 2 dots are missing. How many are filled in?
+unitQuiz[73] -> u1l1 (low confidence): This dot group should have 4 rows and 3 columns, but 3 dots are missing. How many are filled in?
+unitQuiz[74] -> u1l1 (low confidence): This dot group should have 3 rows and 3 columns, but 1 dots are missing. How many are filled in?
+unitQuiz[75] -> u1l1 (low confidence): Use the count-on strategy. What is 6 + 3?
+unitQuiz[76] -> u1l1 (low confidence): Use the count-on strategy. What is 8 + 4?
+unitQuiz[77] -> u1l1 (low confidence): Use the count-on strategy. What is 7 + 5?
+unitQuiz[78] -> u1l1 (low confidence): Use the count-on strategy. What is 9 + 3?
+unitQuiz[79] -> u1l1 (low confidence): Use the count-on strategy. What is 5 + 4?
+unitQuiz[80] -> u1l1 (low confidence): Use the count-on strategy. What is 11 + 3?
+unitQuiz[81] -> u1l1 (low confidence): Use the count-on strategy. What is 14 + 2?
+unitQuiz[82] -> u1l1 (low confidence): Use the count-on strategy. What is 7 + 4?
+unitQuiz[83] -> u1l1 (low confidence): Use the count-back strategy. What is 10 − 3?
+unitQuiz[84] -> u1l1 (low confidence): Use the count-back strategy. What is 13 − 4?
+unitQuiz[85] -> u1l1 (low confidence): Use the count-back strategy. What is 15 − 5?
+unitQuiz[86] -> u1l1 (low confidence): Use the count-back strategy. What is 12 − 3?
+unitQuiz[87] -> u1l1 (low confidence): Use the count-back strategy. What is 17 − 6?
+unitQuiz[88] -> u1l1 (low confidence): Use the count-back strategy. What is 14 − 5?
+unitQuiz[89] -> u1l1 (low confidence): Use the count-back strategy. What is 11 − 4?
+unitQuiz[90] -> u1l1 (low confidence): Use the count-back strategy. What is 16 − 7?
+unitQuiz[91] -> u1l1 (low confidence): Which strategy works best to solve 8 + 3?
+unitQuiz[92] -> u1l1 (low confidence): Which strategy works best to solve 14 − 4?
+unitQuiz[93] -> u1l1 (low confidence): Use the count-on strategy. What is 12 + 4?
+unitQuiz[94] -> u1l1 (low confidence): Use the count-back strategy. What is 18 − 5?
+unitQuiz[96] -> u1l1 (low confidence): Use the count-back strategy. What is 20 − 4?
+unitQuiz[97] -> u1l1 (low confidence): Use the count-on strategy. What is 9 + 5?
+unitQuiz[100] -> u1l1 (low confidence): Use the count-back strategy. What is 19 − 6?
+unitQuiz[101] -> u1l1 (low confidence): Use the count-on strategy. What is 10 + 5?
+unitQuiz[102] -> u1l1 (low confidence): Use the count-back strategy. What is 16 − 4?
+unitQuiz[103] -> u1l1 (low confidence): Use the count-on strategy. What is 15 + 3?
+unitQuiz[104] -> u1l1 (low confidence): Use the count-back strategy. What is 13 − 6?
+unitQuiz[106] -> u1l1 (low confidence): What is 2 + 1?
+unitQuiz[107] -> u1l1 (low confidence): What is 5 + 2?
+unitQuiz[108] -> u1l1 (low confidence): What is 4 + 3?
+unitQuiz[110] -> u1l1 (low confidence): What is 1 + 3?
+unitQuiz[112] -> u1l1 (low confidence): What is 7 - 1?
+unitQuiz[114] -> u1l1 (low confidence): What is 5 - 2?
+unitQuiz[115] -> u1l1 (low confidence): What is 3 + 1?
+unitQuiz[117] -> u1l1 (low confidence): What is 8 - 2?
+unitQuiz[118] -> u1l1 (low confidence): What is 6 - 1?
+unitQuiz[120] -> u1l1 (low confidence): What is 9 - 2?
+unitQuiz[121] -> u1l1 (low confidence): What is 4 + 1?
+unitQuiz[123] -> u1l1 (low confidence): What is 2 + 3?
+unitQuiz[124] -> u1l1 (low confidence): What is 10 - 1?
+unitQuiz[125] -> u1l1 (low confidence): Jada has 8 crayons. She gets 3 more. How many crayons does she have now?
+unitQuiz[126] -> u1l4 (low confidence): __ + 3 = 7. What is the missing number?
+unitQuiz[127] -> u1l1 (low confidence): Which way helps you solve 9 + 3?
+unitQuiz[128] -> u1l1 (low confidence): Leo had 12 grapes. He ate 3. How many grapes are left?
+unitQuiz[130] -> u1l4 (low confidence): 9 - __ = 6. What is the missing number?
+unitQuiz[131] -> u1l1 (low confidence): A frog is on lily pad 5. It jumps forward 4 pads. Which pad does it land on?
+unitQuiz[132] -> u1l1 (low confidence): Which number sentence can you solve by counting back 2?
+unitQuiz[133] -> u1l1 (low confidence): There are 11 birds on a fence. 4 fly away. How many are left?
+unitQuiz[134] -> u1l4 (low confidence): 6 + __ = 9. What is the missing number?
+unitQuiz[135] -> u1l1 (low confidence): Kai has 7 toy cars. His friend gives him some more. Now Kai has 10. How many did his friend give him?
+unitQuiz[136] -> u1l1 (low confidence): Which is the best way to solve 11 - 3?
+unitQuiz[137] -> u1l4 (low confidence): __ - 2 = 8. What is the missing number?
+unitQuiz[139] -> u1l1 (low confidence): There are 14 apples. 4 are eaten. How many are left?
+unitQuiz[140] -> u1l1 (low confidence): Which problem can be solved by counting up from 8?
+unitQuiz[141] -> u1l1 (low confidence): Maya picks 6 flowers. Then she picks 5 more. How many flowers does she have?
+unitQuiz[142] -> u1l4 (low confidence): 7 + __ = 11. What is the missing number?
+unitQuiz[144] -> u1l1 (low confidence): A dog has 9 treats. It eats some. Now it has 6. How many did it eat?
+unitQuiz[145] -> u1l1 (low confidence): Mia had 14 stickers. She gave 3 to Kai and 4 to Jada. How many stickers does Mia have left?
+unitQuiz[146] -> u1l1 (low confidence): A student wrote: 11 - 3 = 9. What mistake did the student make?
+unitQuiz[147] -> u1l1 (low confidence): Leo says counting back 4 from 13 gives 8. Is Leo correct?
+unitQuiz[148] -> u1l1 (low confidence): __ + __ = 11. Both numbers are more than 3. What could they be?
+unitQuiz[149] -> u1l1 (low confidence): Sam had 8 marbles. He found some more and now has 15. Then he lost 3. How many does Sam have now?
+unitQuiz[150] -> u1l1 (low confidence): Which number sentence is NOT solved by counting back?
+unitQuiz[151] -> u1l1 (low confidence): A student wrote: 7 + 4 = 12. What went wrong?
+unitQuiz[152] -> u1l1 (low confidence): Zoe is on step 6. She goes up 3 steps, then back down 2 steps. What step is she on now?
+unitQuiz[154] -> u1l1 (low confidence): True or false: You can solve 6 + 3 by counting back 3 from 6.
+unitQuiz[155] -> u1l1 (low confidence): There were 16 kids at the park. 5 went home, then 3 more went home. How many are still at the park?
+unitQuiz[156] -> u1l1 (low confidence): Kim says 8 + 3 = 10. What should Kim do to fix her work?
+unitQuiz[157] -> u1l4 (low confidence): __ - 4 = 7. Then 7 + 2 = __. What are both missing numbers?
+unitQuiz[158] -> u1l1 (low confidence): Which problem gives the BIGGEST answer?
+unitQuiz[160] -> u1l1 (low confidence): Eli has 13 cards. He gives away some and has 9 left. Then he finds 4 more. How many does Eli have now?
+unitQuiz[161] -> u1l1 (low confidence): A student solved 15 - 4 and got 10. Explain what went wrong.
+unitQuiz[162] -> u1l1 (low confidence): I am thinking of two numbers that add up to 13. Both are greater than 5. What could they be?
+unitQuiz[164] -> u1l1 (low confidence): Is this true or false? 14 - 3 and 13 - 2 give the same answer.
+unitQuiz[185] -> u1l1 (low confidence): Which helps solve 7+8?
+unitQuiz[191] -> u1l1 (low confidence): Which strategy for 8+9?
+unitQuiz[216] -> u1l1 (low confidence): What is 5 + 6?
+unitQuiz[217] -> u1l1 (low confidence): Sara has 7 red beads and 7 blue beads. How many beads in all?
+unitQuiz[218] -> u1l1 (low confidence): __ + __ = 16. Both numbers are the same. What are they?
+unitQuiz[220] -> u1l1 (low confidence): What is 7 + 8?
+unitQuiz[221] -> u1l1 (low confidence): A boy has 2 hands. Each hand has 5 fingers. How many fingers in all?
+unitQuiz[222] -> u1l1 (low confidence): What is 4 + 5?
+unitQuiz[223] -> u1l4 (low confidence): __ + 6 = 12. What is the missing number?
+unitQuiz[224] -> u1l1 (low confidence): Which strategy helps you solve 3 + 4?
+unitQuiz[225] -> u1l1 (low confidence): What is 9 + 8?
+unitQuiz[226] -> u1l1 (low confidence): Two friends each have 6 stickers. How many stickers do they have together?
+unitQuiz[227] -> u1l1 (low confidence): __ + __ = 10. Both numbers are the same. What is each number?
+unitQuiz[229] -> u1l1 (low confidence): Max has 8 toy cars. His brother has 7. How many cars do they have together?
+unitQuiz[231] -> u1l4 (low confidence): __ + 9 = 18. What is the missing number?
+unitQuiz[232] -> u1l1 (low confidence): What is 8 + 7?
+unitQuiz[233] -> u1l1 (low confidence): Ava and Mia each brought 4 books. How many books are there in all?
+unitQuiz[235] -> u1l1 (low confidence): Emma has 7 red marbles and 8 blue marbles. She gives away 3 marbles. How many does she have left?
+unitQuiz[238] -> u1l1 (low confidence): __ + __ = 18. Both numbers are the same. What are they? Then subtract 5 from your answer. What do you get?
+unitQuiz[240] -> u1l1 (low confidence): Two teams each score 8 points. Then one team scores 3 more. What is the winning team's total?
+unitQuiz[241] -> u1l1 (low confidence): A student wrote 8 + 9 = 16. What should the student do to fix it?
+unitQuiz[243] -> u1l1 (low confidence): Lily had 6 coins. She found 6 more. Then she spent 4 coins. How many does she have now?
+unitQuiz[244] -> u1l1 (low confidence): True or false: 5 + 6 and 6 + 5 give different answers because the numbers switched.
+unitQuiz[251] -> u1l1 (low confidence): __ + __ = 12. The two numbers are 2 apart. What could they be?
+unitQuiz[252] -> u1l1 (low confidence): Sam has some stickers. He gets the same number again and now has 16. How many did he start with?
+unitQuiz[255] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 4?
+unitQuiz[256] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 5?
+unitQuiz[257] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 4?
+unitQuiz[258] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 7?
+unitQuiz[259] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 6?
+unitQuiz[260] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 6?
+unitQuiz[261] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 5?
+unitQuiz[262] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 8?
+unitQuiz[263] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 8?
+unitQuiz[264] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 5?
+unitQuiz[265] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 4?
+unitQuiz[266] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 5?
+unitQuiz[268] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 8?
+unitQuiz[269] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 3?
+unitQuiz[270] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 3?
+unitQuiz[272] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 8?
+unitQuiz[273] -> u1l1 (low confidence): Use the make-ten strategy. What is 4 + 9?
+unitQuiz[274] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 7?
+unitQuiz[275] -> u1l1 (low confidence): Why do we "make ten" first?
+unitQuiz[276] -> u1l1 (low confidence): Use the make-ten strategy. What is 8 + 7?
+unitQuiz[277] -> u1l1 (low confidence): Use the make-ten strategy. What is 9 + 6?
+unitQuiz[278] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 7?
+unitQuiz[279] -> u1l1 (low confidence): Use the make-ten strategy. What is 3 + 9?
+unitQuiz[280] -> u1l1 (low confidence): Use the make-ten strategy. What is 4 + 8?
+unitQuiz[282] -> u1l1 (low confidence): Use the make-ten strategy. What is 7 + 9?
+unitQuiz[283] -> u1l1 (low confidence): Use the make-ten strategy. What is 6 + 9?
+unitQuiz[284] -> u1l1 (low confidence): Use the make-ten strategy. What is 5 + 9?
+unitQuiz[290] -> u1l1 (low confidence): What is 10 + 3?
+unitQuiz[291] -> u1l1 (low confidence): What is 10 + 5?
+unitQuiz[292] -> u1l1 (low confidence): What is 10 + 7?
+unitQuiz[293] -> u1l1 (low confidence): What is 10 + 1?
+unitQuiz[294] -> u1l1 (low confidence): What is 10 + 9?
+unitQuiz[299] -> u1l1 (low confidence): What is 10 + 2?
+unitQuiz[300] -> u1l1 (low confidence): What is 10 + 4?
+unitQuiz[301] -> u1l1 (low confidence): What is 10 + 6?
+unitQuiz[302] -> u1l1 (low confidence): What is 10 + 8?
+unitQuiz[305] -> u1l4 (low confidence): What is 8 + 5? Think: 8 + 2 = 10, then 10 + 3 = ?
+unitQuiz[306] -> u1l1 (low confidence): What is 9 + 4?
+unitQuiz[307] -> u1l4 (low confidence): __ + 6 = 10. What is the missing number?
+unitQuiz[308] -> u1l1 (low confidence): Which strategy helps solve 7 + 5?
+unitQuiz[309] -> u1l1 (low confidence): Kai has 9 toy trucks. He gets 6 more. How many does he have?
+unitQuiz[311] -> u1l4 (low confidence): 8 + __ = 13. What is the missing number?
+unitQuiz[312] -> u1l1 (low confidence): A jar has 6 red marbles and 8 blue marbles. How many marbles in all?
+unitQuiz[316] -> u1l1 (low confidence): Ana has 7 stickers. She finds 4 more. How many does she have now?
+unitQuiz[317] -> u1l4 (low confidence): 9 + __ = 15. What is the missing number?
+unitQuiz[320] -> u1l1 (low confidence): What is 5 + 8?
+unitQuiz[321] -> u1l4 (low confidence): 7 + __ = 12. What is the missing number?
+unitQuiz[322] -> u1l1 (low confidence): There are 9 birds in a tree. 5 more land. How many birds now?
+unitQuiz[324] -> u1l4 (low confidence): __ + 8 = 10. What is the missing number?
+unitQuiz[325] -> u1l1 (low confidence): Mia has 8 grapes. Her mom gives her 7 more. She eats 3. How many does Mia have now?
+unitQuiz[326] -> u1l1 (low confidence): A student solved 9 + 5 and got 13. What mistake did the student make?
+unitQuiz[328] -> u1l4 (low confidence): __ + 7 = 15. What is the missing number? Then add 3 more to 15. What do you get?
+unitQuiz[329] -> u1l1 (low confidence): Which two problems BOTH equal 14?
+unitQuiz[330] -> u1l1 (low confidence): A student wrote: 7 + 6 = 14. They said 7 + 3 = 10, then 10 + 4 = 14. What went wrong?
+unitQuiz[331] -> u1l1 (low confidence): Leo has 9 apples. Kai has 8 apples. They put them together and give 5 to a friend. How many are left?
+unitQuiz[333] -> u1l1 (low confidence): A puzzle says: I added a number to 9 and got 16. What number did I add?
+unitQuiz[337] -> u1l1 (low confidence): What is the same about 9 + 4 and 8 + 5?
+unitQuiz[338] -> u1l1 (low confidence): __ + __ = 16. One number is 2 more than the other. What are they?
+unitQuiz[339] -> u1l1 (low confidence): A student solved 7 + 8 and got 16. Explain what went wrong.
+unitQuiz[340] -> u1l1 (low confidence): Nora had 6 pencils. She got 9 more. Then she gave away 4. How many does she have now?
+unitQuiz[341] -> u1l1 (low confidence): If 9 + 6 = 15, what is 9 + 7?
+unitQuiz[342] -> u1l1 (low confidence): Which is greater: 8 + 7 or 9 + 5? How do you know?
+unitQuiz[343] -> u1l1 (low confidence): Fill in both blanks: 8 + __ = 10 + __. The answer is 13.
+unitQuiz[344] -> u1l1 (low confidence): Jada says every make-a-10 problem must start with 9 or 8. Is she right?
+unitQuiz[346] -> u1l1 (low confidence): If 5 + 8 = 13, what is 13 − 8?
+unitQuiz[347] -> u1l4 (low confidence): What is the missing number? 6 + ___ = 14
+unitQuiz[348] -> u1l1 (low confidence): If 4 + 9 = 13, what is 13 − 4?
+unitQuiz[350] -> u1l1 (low confidence): If 7 + 6 = 13, what is 13 − 7?
+unitQuiz[351] -> u1l4 (low confidence): What is the missing number? 9 + ___ = 17
+unitQuiz[352] -> u1l1 (low confidence): Which fact is in family 5,9,14?
+unitQuiz[353] -> u1l1 (low confidence): If 8 + 7 = 15, what is 15 − 8?
+unitQuiz[354] -> u1l4 (low confidence): What is the missing number? ___ + 6 = 11
+unitQuiz[356] -> u1l1 (low confidence): If 9 + 6 = 15, what is 15 − 6?
+unitQuiz[357] -> u1l4 (low confidence): What is the missing number? 7 + ___ = 16
+unitQuiz[359] -> u1l1 (low confidence): If 6 + 8 = 14, what is 14 − 6?
+unitQuiz[360] -> u1l4 (low confidence): What is the missing number? ___ + 9 = 18
+unitQuiz[362] -> u1l1 (low confidence): If 5 + 7 = 12, what is 12 − 5?
+unitQuiz[363] -> u1l4 (low confidence): What is the missing number? 8 + ___ = 13
+unitQuiz[365] -> u1l1 (low confidence): If 3 + 9 = 12, what is 12 − 3?
+unitQuiz[366] -> u1l4 (low confidence): What is the missing number? ___ + 8 = 15
+unitQuiz[368] -> u1l1 (low confidence): If 7 + 8 = 15, what is 15 − 7?
+unitQuiz[369] -> u1l4 (low confidence): What is the missing number? 6 + ___ = 15
+unitQuiz[371] -> u1l1 (low confidence): If 9 + 8 = 17, what is 17 − 9?
+unitQuiz[372] -> u1l4 (low confidence): What is the missing number? ___ + 7 = 12
+unitQuiz[374] -> u1l1 (low confidence): If 4 + 6 = 10, what is 10 − 4?
+unitQuiz[375] -> u1l1 (low confidence): If 3 + 5 = 8, what is 5 + 3?
+unitQuiz[376] -> u1l1 (low confidence): If 2 + 6 = 8, what is 6 + 2?
+unitQuiz[377] -> u1l1 (low confidence): If 4 + 3 = 7, what is 7 - 3?
+unitQuiz[378] -> u1l1 (low confidence): If 5 + 4 = 9, what is 9 - 4?
+unitQuiz[379] -> u1l1 (low confidence): If 1 + 7 = 8, what is 8 - 7?
+unitQuiz[380] -> u1l1 (low confidence): If 6 + 3 = 9, what is 3 + 6?
+unitQuiz[381] -> u1l1 (low confidence): If 2 + 5 = 7, what is 7 - 2?
+unitQuiz[382] -> u1l1 (low confidence): If 8 + 2 = 10, what is 10 - 2?
+unitQuiz[383] -> u1l1 (low confidence): If 3 + 4 = 7, what is 7 - 4?
+unitQuiz[384] -> u1l1 (low confidence): If 6 + 4 = 10, what is 4 + 6?
+unitQuiz[385] -> u1l1 (low confidence): If 9 + 1 = 10, what is 10 - 9?
+unitQuiz[386] -> u1l1 (low confidence): If 5 + 2 = 7, what is 7 - 5?
+unitQuiz[387] -> u1l1 (low confidence): If 7 + 3 = 10, what is 10 - 7?
+unitQuiz[388] -> u1l1 (low confidence): If 1 + 8 = 9, what is 8 + 1?
+unitQuiz[389] -> u1l1 (low confidence): If 4 + 5 = 9, what is 9 - 5?
+unitQuiz[390] -> u1l1 (low confidence): If 3 + 7 = 10, what is 10 - 3?
+unitQuiz[391] -> u1l1 (low confidence): If 2 + 4 = 6, what is 6 - 4?
+unitQuiz[392] -> u1l1 (low confidence): If 6 + 2 = 8, what is 8 - 6?
+unitQuiz[394] -> u1l1 (low confidence): If 1 + 6 = 7, what is 7 - 1?
+unitQuiz[397] -> u1l1 (low confidence): If 9 + 5 = 14, which subtraction fact do you also know?
+unitQuiz[398] -> u1l4 (low confidence): __ - 4 = 7. What is the missing number?
+unitQuiz[400] -> u1l1 (low confidence): Ella has some books. She gives 6 away and has 9 left. How many did she start with?
+unitQuiz[401] -> u1l1 (low confidence): Which strategy helps solve 13 - 7?
+unitQuiz[402] -> u1l1 (low confidence): If 7 + 6 = 13, what is 13 - 6?
+unitQuiz[403] -> u1l4 (low confidence): 8 + __ = 15. What is the missing number?
+unitQuiz[405] -> u1l1 (low confidence): A boy had 12 crayons. He lost some and has 5 left. How many did he lose?
+unitQuiz[406] -> u1l1 (low confidence): If 8 + 4 = 12, which is also true?
+unitQuiz[407] -> u1l4 (low confidence): 14 - __ = 6. What is the missing number?
+unitQuiz[409] -> u1l4 (low confidence): __ + 9 = 16. What is the missing number?
+unitQuiz[410] -> u1l1 (low confidence): Which fact helps you solve 11 - 4?
+unitQuiz[411] -> u1l1 (low confidence): There are 15 kids. 8 are boys. How many are girls?
+unitQuiz[412] -> u1l4 (low confidence): 5 + __ = 13. What is the missing number?
+unitQuiz[413] -> u1l1 (low confidence): If 6 + 7 = 13, which subtraction fact is in the same family?
+unitQuiz[414] -> u1l1 (low confidence): Liam has 9 toy cars. His sister gives him more. Now he has 17. How many did she give?
+unitQuiz[415] -> u1l1 (low confidence): Ana picked 7 flowers. Together with Ben they have 15 flowers. How many did Ben pick? Then 4 flowers wilted. How many are left?
+unitQuiz[419] -> u1l1 (low confidence): Mia says: if I know 8 + 7 = 15, I also know 15 - 7 without counting. What is 15 - 7?
+unitQuiz[421] -> u1l1 (low confidence): Tom has 16 stickers. He gives some to 2 friends. He gives 7 to one and keeps 4 for himself. How many did the second friend get?
+unitQuiz[423] -> u1l1 (low confidence): I know 7 + 8 = 15. Without adding, what is 8 + 7?
+unitQuiz[425] -> u1l1 (low confidence): If 6 + __ = 14, then 14 - 6 = __. Fill in both blanks.
+unitQuiz[426] -> u1l1 (low confidence): A student says 11 - 5 = 7 because 5 + 7 = 12. What TWO mistakes did they make?
+unitQuiz[427] -> u1l1 (low confidence): Sara had some beads. She lost 8 and has 6 left. She finds 3 more. How many does she have now?
+unitQuiz[428] -> u1l4 (low confidence): Which number can replace the box? 5 + box = 12, and 12 - box = 5.
+unitQuiz[429] -> u1l1 (low confidence): Kai wrote four facts: 3 + 9 = 12, 9 + 3 = 12, 12 - 3 = 9, 12 - 9 = 4. Which fact has an error?
+unitQuiz[430] -> u1l1 (low confidence): If you know 9 + 7 = 16, name two subtraction facts you also know.
+unitQuiz[431] -> u1l1 (low confidence): __ - 6 = 9. Then use that answer to find __ + 3. What are both answers?
+unitQuiz[434] -> u1l1 (low confidence): Maya says knowing one addition fact gives you three more facts for free. Is she right?

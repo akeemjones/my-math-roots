@@ -63,25 +63,45 @@ const UNITS_DATA = [
         "id": "u1l1",
         "title": "Count Up & Count Back",
         "icon": "🔢",
-        "desc": "Count forward to add, backward to subtract"
+        "desc": "Count forward to add, backward to subtract",
+        "defaultTags": ["addition_facts","count_on","count_back"],
+        "defaultIntervention": {
+          "teach": { "text": "Start with the bigger number, then count on or count back one step at a time." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_facts","count_on","count_back"] }
+        }
       },
       {
         "id": "u1l2",
         "title": "Doubles!",
         "icon": "✌️",
-        "desc": "Use doubles facts to add quickly"
+        "desc": "Use doubles facts to add quickly",
+        "defaultTags": ["addition_facts","doubles"],
+        "defaultIntervention": {
+          "teach": { "text": "A double adds the same number twice, like 6 + 6." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_facts","doubles"] }
+        }
       },
       {
         "id": "u1l3",
         "title": "Make a 10",
         "icon": "🔟",
-        "desc": "Break apart numbers to reach 10 first"
+        "desc": "Break apart numbers to reach 10 first",
+        "defaultTags": ["addition_facts","make_ten","addition_strategy"],
+        "defaultIntervention": {
+          "teach": { "text": "Look for numbers that make 10 first, then add the rest." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_facts","make_ten","addition_strategy"] }
+        }
       },
       {
         "id": "u1l4",
         "title": "Number Families",
         "icon": "👨‍👩‍👧",
-        "desc": "Related addition & subtraction facts using 3 numbers"
+        "desc": "Related addition & subtraction facts using 3 numbers",
+        "defaultTags": ["fact_families","inverse_operations","addition_subtraction"],
+        "defaultIntervention": {
+          "teach": { "text": "A fact family uses the same numbers to make related addition and subtraction facts." },
+          "retry": { "strategy": "similar", "matchTags": ["fact_families","inverse_operations","addition_subtraction"] }
+        }
       }
     ],
     "_loaded": false
@@ -407,4 +427,19 @@ function _loadUnit(idx){
     document.head.appendChild(s);
   });
   return _unitLoadPromises[idx];
+}
+
+// ════════════════════════════════════════
+//  LESSON CONTEXT RESOLVER
+//  Used by quiz.js → QE.normalize(raw, _lessonContextFor(raw)) so questions
+//  can inherit lesson-level defaultTags / defaultIntervention.
+//  Matches both Grade 2 (u1l3) and Kindergarten (ku1l3) lessonId prefixes.
+// ════════════════════════════════════════
+function _lessonContextFor(q){
+  if(!q || !q.lessonId || !Array.isArray(UNITS_DATA)) return null;
+  var m = q.lessonId.match(/^(k?u\d+)/);
+  if(!m) return null;
+  var unit = UNITS_DATA.find(function(u){ return u.id === m[1]; });
+  if(!unit || !Array.isArray(unit.lessons)) return null;
+  return unit.lessons.find(function(l){ return l.id === q.lessonId; }) || null;
 }
