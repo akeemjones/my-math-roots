@@ -109,7 +109,7 @@ _mergeKUnitData(2, {
         {
           t: '🦋🦋🦋🦋🦋🦋🦋 + 🦋 = ?',
           v: {type:'twoGroups', config:{leftCount:7, leftObj:'🦋', rightCount:1, rightObj:'🦋', op:'add'}},
-          o: [{val:'7',tag:'err_keep_start'},{val:'8'},{val:'9',tag:'err_off_by_one'},{val:'10',tag:'err_random'}],
+          o: [{val:'7',tag:'err_keep_start'},{val:'8'},{val:'9',tag:'err_off_by_one'},{val:'10',tag:'err_over_count',patternTag:'pattern_too_high'}],
           a:1, e:'7 + 1 = 8!', d:'e', s:null, h:'Count 1 more than 7'
         },
         {
@@ -121,7 +121,7 @@ _mergeKUnitData(2, {
         {
           t: '3 + 0 = ?',
           v: null,
-          o: [{val:'0',tag:'err_random'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
+          o: [{val:'0',tag:'err_under_count',patternTag:'pattern_too_low'},{val:'2',tag:'err_off_by_one'},{val:'3'},{val:'4',tag:'err_off_by_one'}],
           a:2, e:'Adding 0 keeps the number the same — 3 + 0 = 3!', d:'e', s:null, h:'Adding 0 changes nothing'
         },
         {
@@ -194,7 +194,7 @@ _mergeKUnitData(2, {
         {
           t: '7 + 0 = ?',
           v: null,
-          o: [{val:'0',tag:'err_random'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
+          o: [{val:'0',tag:'err_under_count',patternTag:'pattern_too_low'},{val:'6',tag:'err_off_by_one'},{val:'7'},{val:'8',tag:'err_off_by_one'}],
           a:2, e:'Adding zero keeps the number the same — 7 + 0 = 7!', d:'h', s:null, h:'Adding 0 changes nothing'
         },
         {
@@ -206,7 +206,7 @@ _mergeKUnitData(2, {
         {
           t: '🌸🌸🌸 + 🌸🌸🌸🌸🌸🌸🌸 = ?',
           v: {type:'twoGroups', config:{leftCount:3, leftObj:'🌸', rightCount:7, rightObj:'🌸', op:'add'}},
-          o: [{val:'3 + 3 = 6',tag:'err_random'},{val:'7 + 3 = 10'},{val:'7 - 3 = 4',tag:'err_sub_instead'},{val:'3 + 6 = 9',tag:'err_off_by_one'}],
+          o: [{val:'3 + 3 = 6',tag:'err_double_right',patternTag:'pattern_doubled_right'},{val:'7 + 3 = 10'},{val:'7 - 3 = 4',tag:'err_sub_instead'},{val:'3 + 6 = 9',tag:'err_off_by_one'}],
           a:1, e:'3 + 7 = 10 and 7 + 3 = 10 — you can add in any order!', d:'h', s:null, h:'Adding numbers in any order gives the same total'
         }
       ]
@@ -525,7 +525,7 @@ _mergeKUnitData(2, {
         {
           t: '7 + 3 = ?',
           v: null,
-          o: [{val:'4',tag:'err_off_by_one'},{val:'7',tag:'err_keep_start'},{val:'10'},{val:'21',tag:'err_random'}],
+          o: [{val:'4',tag:'err_off_by_one'},{val:'7',tag:'err_keep_start'},{val:'10'},{val:'21',tag:'err_over_count',patternTag:'pattern_too_high'}],
           a:2, e:'7 + 3 = 10, so there were 10 birds!', d:'m', s:null, h:'Think: ? - 3 = 7'
         },
         {
@@ -676,25 +676,25 @@ _mergeKUnitData(2, {
         {
           t: '🔵🔵🔵 + 🔵🔵 = ?',
           v: {type:'twoGroups', config:{leftCount:3, leftObj:'🔵', rightCount:2, rightObj:'🔵', op:'add'}},
-          o: [{val:'3 - 2 = 1',tag:'err_sub_instead'},{val:'2 + 2 = 4',tag:'err_random'},{val:'3 + 2 = 5'},{val:'3 + 3 = 6',tag:'err_random'}],
+          o: [{val:'3 - 2 = 1',tag:'err_sub_instead'},{val:'2 + 2 = 4',tag:'err_double_right',patternTag:'pattern_doubled_right'},{val:'3 + 2 = 5'},{val:'3 + 3 = 6',tag:'err_double_left',patternTag:'pattern_doubled_left'}],
           a:2, e:'3 + 2 = 5 matches the picture!', d:'e', s:null, h:'Count both groups to check'
         },
         {
           t: '4 + 2 = 7 ?',
           v: null,
-          o: [{val:'Yes, she is right',tag:'err_random'},{val:'No, 4 + 2 = 6'},{val:'No, 4 + 2 = 5',tag:'err_off_by_one'},{val:'No, 4 + 2 = 8',tag:'err_random'}],
+          o: [{val:'Yes, she is right',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'No, 4 + 2 = 6'},{val:'No, 4 + 2 = 5',tag:'err_off_by_one'},{val:'No, 4 + 2 = 8',tag:'err_over_count',patternTag:'pattern_too_high'}],
           a:1, e:'4 + 2 = 6, not 7. Count on from 4: five, six!', d:'m', s:null, h:'Count on from 4: five, six'
         },
         {
           t: '6 − 2 = ?',
           v: null,
-          o: [{val:'Count all: 1, 2, 3, 4, 5, 6',tag:'err_count_all'},{val:'Start at 6 and count back 2: 5, 4'},{val:'Add 6 + 2',tag:'err_add_instead'},{val:'Start at 2 and count up to 6',tag:'err_random'}],
+          o: [{val:'Count all: 1, 2, 3, 4, 5, 6',tag:'err_count_all'},{val:'Start at 6 and count back 2: 5, 4'},{val:'Add 6 + 2',tag:'err_add_instead'},{val:'Start at 2 and count up to 6',tag:'err_add_instead',patternTag:'pattern_added_instead'}],
           a:1, e:'Start at 6 and count back 2 — you land on 4!', d:'m', s:null, h:'Subtracting = counting back'
         },
         {
           t: '5 + ? = 9',
           v: null,
-          o: [{val:'5 - 4 = 1',tag:'err_sub_instead'},{val:'9 - 5 = 4',tag:'err_sub_instead'},{val:'5 + 4 = 9'},{val:'5 + 5 = 10',tag:'err_random'}],
+          o: [{val:'5 - 4 = 1',tag:'err_sub_instead'},{val:'9 - 5 = 4',tag:'err_sub_instead'},{val:'5 + 4 = 9'},{val:'5 + 5 = 10',tag:'err_double_left',patternTag:'pattern_doubled_left'}],
           a:2, e:'He gets more, so we add: 5 + 4 = 9!', d:'m', s:null, h:'Gets more = addition'
         },
         {
@@ -706,25 +706,25 @@ _mergeKUnitData(2, {
         {
           t: '5 + 5 = ?',
           v: null,
-          o: [{val:'Because 5 + 5 is more than 10',tag:'err_random'},{val:'Count on from 5 five more times: six, seven, eight, nine, ten'},{val:'Because 5 + 4 = 9',tag:'err_off_by_one'},{val:'Because you subtract 5 from 10',tag:'err_sub_instead'}],
+          o: [{val:'Because 5 + 5 is more than 10',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'Count on from 5 five more times: six, seven, eight, nine, ten'},{val:'Because 5 + 4 = 9',tag:'err_off_by_one'},{val:'Because you subtract 5 from 10',tag:'err_sub_instead'}],
           a:1, e:'Counting on from 5 five more times gives you 10!', d:'m', s:null, h:'Start at 5 and count 5 more'
         },
         {
           t: '8 − ? = 3',
           v: null,
-          o: [{val:'8 + 3 = 11',tag:'err_add_instead'},{val:'3 + 5 = 8',tag:'err_random'},{val:'8 - 5 = 3'},{val:'8 - 3 = 5',tag:'err_random'}],
+          o: [{val:'8 + 3 = 11',tag:'err_add_instead'},{val:'3 + 5 = 8',tag:'err_add_instead',patternTag:'pattern_added_instead'},{val:'8 - 5 = 3'},{val:'8 - 3 = 5',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:2, e:'She eats some and 3 are left: 8 - 5 = 3!', d:'m', s:null, h:'Ate some = subtraction'
         },
         {
           t: '🔷🔷🔷🔷 + 🔷🔷🔷 = ?',
           v: {type:'twoGroups', config:{leftCount:4, leftObj:'🔷', rightCount:3, rightObj:'🔷', op:'add'}},
-          o: [{val:'3 + 3 = 6',tag:'err_random'},{val:'3 + 4 = 7'},{val:'4 + 4 = 8',tag:'err_random'},{val:'7 - 3 = 4',tag:'err_sub_instead'}],
+          o: [{val:'3 + 3 = 6',tag:'err_double_left',patternTag:'pattern_doubled_left'},{val:'3 + 4 = 7'},{val:'4 + 4 = 8',tag:'err_double_right',patternTag:'pattern_doubled_right'},{val:'7 - 3 = 4',tag:'err_sub_instead'}],
           a:1, e:'3 + 4 = 7 is the same as 4 + 3 = 7 — order does not matter!', d:'m', s:null, h:'Adding in any order gives the same total'
         },
         {
           t: '🌷🌷🌷 + 🌷🌷🌷🌷🌷 = ?',
           v: null,
-          o: [{val:'5',tag:'err_random'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
+          o: [{val:'5',tag:'err_under_count',patternTag:'pattern_too_low'},{val:'7',tag:'err_off_by_one'},{val:'8'},{val:'9',tag:'err_off_by_one'}],
           a:2, e:'3 + 5 = 8! Count: four, five, six, seven, eight', d:'e', s:null, h:'Count on from 3 five times'
         },
         {
@@ -736,38 +736,38 @@ _mergeKUnitData(2, {
         {
           t: '🔴🔴🔴 + 🔵🔵🔵🔵 = ?',
           v: {type:'twoGroups', config:{leftCount:3, leftObj:'🔴', rightCount:4, rightObj:'🔵', op:'add'}},
-          o: [{val:'No, you must subtract',tag:'err_sub_instead'},{val:'Yes, counting all of them gives you 7'},{val:'No, counting all gives 6',tag:'err_off_by_one'},{val:'Yes, but only if the groups are equal',tag:'err_random'}],
+          o: [{val:'No, you must subtract',tag:'err_sub_instead'},{val:'Yes, counting all of them gives you 7'},{val:'No, counting all gives 6',tag:'err_off_by_one'},{val:'Yes, but only if the groups are equal',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:1, e:'Counting all objects in both groups: 1, 2, 3, 4, 5, 6, 7 — yes, that is 7!', d:'m', s:null, h:'Count every object in both groups'
         },
         {
           t: '6 + 3 = 9 ?',
           v: null,
-          o: [{val:'Guess and check',tag:'err_random'},{val:'Count only the second group',tag:'err_count_all'},{val:'Count on from 6: seven, eight, nine — yes, 3 more'},{val:'Subtract 9 - 6, which gives a different answer',tag:'err_random'}],
+          o: [{val:'Guess and check',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'Count only the second group',tag:'err_count_all'},{val:'Count on from 6: seven, eight, nine — yes, 3 more'},{val:'Subtract 9 - 6, which gives a different answer',tag:'err_sub_instead',patternTag:'pattern_subtracted_instead'}],
           a:2, e:'Counting on from 6 three times lands on 9 — correct!', d:'m', s:null, h:'Start at 6 and count 3 more'
         },
         {
           t: '🐸🐸🐸🐸🐸🐸🐸 − 🐸🐸🐸🐸 = ?',
           v: {type:'objectSet', config:{count:7, emoji:'🐸', layout:'line'}},
-          o: [{val:'7 + 4 = 11',tag:'err_add_instead'},{val:'4 - 7 = ?',tag:'err_random'},{val:'7 - 4 = 3'},{val:'7 - 3 = 4',tag:'err_random'}],
+          o: [{val:'7 + 4 = 11',tag:'err_add_instead'},{val:'4 - 7 = ?',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'7 - 4 = 3'},{val:'7 - 3 = 4',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:2, e:'Jumped away = subtract: 7 - 4 = 3!', d:'m', s:null, h:'Jumped away = subtraction'
         },
         {
           t: '10 − 4 = 6 ?',
           v: null,
-          o: [{val:'No, she should get 5',tag:'err_off_by_one'},{val:'Yes! 10, 9, 8, 7 — that is 4 back, landing on 6'},{val:'No, 10 - 4 = 7',tag:'err_off_by_one'},{val:'No, you cannot count back from 10',tag:'err_random'}],
+          o: [{val:'No, she should get 5',tag:'err_off_by_one'},{val:'Yes! 10, 9, 8, 7 — that is 4 back, landing on 6'},{val:'No, 10 - 4 = 7',tag:'err_off_by_one'},{val:'No, you cannot count back from 10',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:1, e:'10 - 4: count back 4 steps from 10 → nine, eight, seven, six. Yes, she lands on 6!', d:'m', s:null, h:'Count back 4 steps from 10'
         },
         // ── NEW L4 questions ─────────────────────────────────────────────────
         {
           t: '🟡🟡 + 🟡🟡🟡🟡🟡 = ?',
           v: {type:'twoGroups', config:{leftCount:2, leftObj:'🟡', rightCount:5, rightObj:'🟡', op:'add'}},
-          o: [{val:'5 dots on one side and 5 dots on the other',tag:'err_random'},{val:'2 dots on the left and 5 dots on the right'},{val:'5 dots on the left and 2 dots on the right',tag:'err_random'},{val:'2 dots on each side',tag:'err_random'}],
+          o: [{val:'5 dots on one side and 5 dots on the other',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'2 dots on the left and 5 dots on the right'},{val:'5 dots on the left and 2 dots on the right',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'2 dots on each side',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:1, e:'2 on the left and 5 on the right shows 2 + 5!', d:'e', s:null, h:'Look for 2 on one side and 5 on the other'
         },
         {
           t: '🟠🟠🟠🟠 + 🟠 = ?',
           v: {type:'twoGroups', config:{leftCount:4, leftObj:'🟠', rightCount:1, rightObj:'🟠', op:'add'}},
-          o: [{val:'1 object on the left and 4 on the right',tag:'err_random'},{val:'4 objects on the left and 4 on the right',tag:'err_random'},{val:'4 objects on the left and 1 on the right'},{val:'4 objects on the left and 0 on the right',tag:'err_random'}],
+          o: [{val:'1 object on the left and 4 on the right',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'4 objects on the left and 4 on the right',tag:'err_double_left',patternTag:'pattern_doubled_left'},{val:'4 objects on the left and 1 on the right'},{val:'4 objects on the left and 0 on the right',tag:'err_off_by_one',patternTag:'pattern_one_less'}],
           a:2, e:'4 on the left and 1 on the right shows 4 + 1 = 5!', d:'e', s:null, h:'Find the picture with 4 on one side and 1 on the other'
         },
         {
@@ -779,7 +779,7 @@ _mergeKUnitData(2, {
         {
           t: '🟢🟢🟢 + 🟢🟢🟢🟢🟢🟢 = 8 ?',
           v: {type:'twoGroups', config:{leftCount:3, leftObj:'🟢', rightCount:6, rightObj:'🟢', op:'add'}},
-          o: [{val:'Yes, 3 + 6 = 8',tag:'err_random'},{val:'No, 3 + 6 = 9'},{val:'No, 3 + 6 = 7',tag:'err_off_by_one'},{val:'No, 3 + 6 = 10',tag:'err_off_by_one'}],
+          o: [{val:'Yes, 3 + 6 = 8',tag:'err_off_by_one',patternTag:'pattern_one_less'},{val:'No, 3 + 6 = 9'},{val:'No, 3 + 6 = 7',tag:'err_off_by_one'},{val:'No, 3 + 6 = 10',tag:'err_off_by_one'}],
           a:1, e:'3 + 6 = 9, not 8! Count on from 3: four, five, six, seven, eight, nine', d:'m', s:null, h:'Count on from 3 six times'
         },
         {
@@ -791,7 +791,7 @@ _mergeKUnitData(2, {
         {
           t: '7 + 2 = ?',
           v: null,
-          o: [{val:'Count back 2 from 7',tag:'err_sub_instead'},{val:'Count on from the bigger number: start at 7 and count 2 more'},{val:'Add 7 + 7 instead',tag:'err_random'},{val:'Count all objects starting from 1',tag:'err_count_all'}],
+          o: [{val:'Count back 2 from 7',tag:'err_sub_instead'},{val:'Count on from the bigger number: start at 7 and count 2 more'},{val:'Add 7 + 7 instead',tag:'err_double_left',patternTag:'pattern_doubled_left'},{val:'Count all objects starting from 1',tag:'err_count_all'}],
           a:1, e:'Start at 7 (the bigger number) and count on 2: eight, nine — that is 9!', d:'m', s:null, h:'Start counting from the bigger number'
         },
         {
@@ -803,7 +803,7 @@ _mergeKUnitData(2, {
         {
           t: '🍊🍊🍊🍊🍊🍊🍊🍊🍊 − 🍊🍊🍊 = ?',
           v: {type:'objectSet', config:{count:9, emoji:'🍊', layout:'grid'}},
-          o: [{val:'5 — Dan is right',tag:'err_random'},{val:'6 — count back 3 from 9: eight, seven, six'},{val:'7 — Dan is off by 2',tag:'err_off_by_one'},{val:'4 — count back 5 instead',tag:'err_random'}],
+          o: [{val:'5 — Dan is right',tag:'err_off_by_one',patternTag:'pattern_one_less'},{val:'6 — count back 3 from 9: eight, seven, six'},{val:'7 — Dan is off by 2',tag:'err_off_by_one'},{val:'4 — count back 5 instead',tag:'err_under_count',patternTag:'pattern_too_low'}],
           a:1, e:'9 - 3 = 6! Count back 3 from 9: eight, seven, six. Dan got it wrong.', d:'h', s:null, h:'Count back 3 from 9 carefully'
         },
         {
@@ -815,13 +815,13 @@ _mergeKUnitData(2, {
         {
           t: '5 + 0 = ?',
           v: null,
-          o: [{val:'Because adding zero makes the number smaller',tag:'err_random'},{val:'Because zero means nothing is being added — so the total stays 5'},{val:'Because 5 + 0 is the same as 5 - 5',tag:'err_random'},{val:'Because zero is bigger than 5',tag:'err_random'}],
+          o: [{val:'Because adding zero makes the number smaller',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'Because zero means nothing is being added — so the total stays 5'},{val:'Because 5 + 0 is the same as 5 - 5',tag:'err_sub_instead',patternTag:'pattern_subtracted_instead'},{val:'Because zero is bigger than 5',tag:'err_confused',patternTag:'pattern_needs_review'}],
           a:1, e:'Adding zero means you are adding nothing, so the number stays the same — 5 + 0 = 5!', d:'h', s:null, h:'What happens when you add nothing?'
         },
         {
           t: '🍋🍋🍋🍋🍋🍋🍋 − 🍋🍋 = ?',
           v: {type:'objectSet', config:{count:7, emoji:'🍋', layout:'line'}},
-          o: [{val:'Yes, 7 - 2 = 4',tag:'err_random'},{val:'No, 7 - 2 = 5'},{val:'No, 7 - 2 = 6',tag:'err_off_by_one'},{val:'No, 7 - 2 = 3',tag:'err_off_by_one'}],
+          o: [{val:'Yes, 7 - 2 = 4',tag:'err_off_by_one',patternTag:'pattern_one_less'},{val:'No, 7 - 2 = 5'},{val:'No, 7 - 2 = 6',tag:'err_off_by_one'},{val:'No, 7 - 2 = 3',tag:'err_off_by_one'}],
           a:1, e:'7 - 2 = 5, not 4! Count back 2 from 7: six, five.', d:'h', s:null, h:'Count back 2 from 7: six, five'
         },
         {
@@ -914,25 +914,25 @@ _mergeKUnitData(2, {
     {lessonId:'ku3l4', 
       t: '⭐⭐⭐⭐⭐ + ⭐⭐⭐⭐ = ?',
       v: {type:'twoGroups', config:{leftCount:5, leftObj:'⭐', rightCount:4, rightObj:'⭐', op:'add'}},
-      o: [{val:'5 - 4 = 1',tag:'err_sub_instead'},{val:'5 + 3 = 8',tag:'err_random'},{val:'5 + 4 = 9'},{val:'4 + 4 = 8',tag:'err_random'}],
+      o: [{val:'5 - 4 = 1',tag:'err_sub_instead'},{val:'5 + 3 = 8',tag:'err_off_by_one',patternTag:'pattern_one_less'},{val:'5 + 4 = 9'},{val:'4 + 4 = 8',tag:'err_double_right',patternTag:'pattern_doubled_right'}],
       a:2, e:'5 + 4 = 9 matches the picture!', d:'e', s:null, h:'Count both groups'
     },
     {lessonId:'ku3l4', 
       t: '8 − 5 = 4 ?',
       v: null,
-      o: [{val:'Yes, 8 - 5 = 4',tag:'err_random'},{val:'No, 8 - 5 = 3'},{val:'No, 8 - 5 = 2',tag:'err_off_by_one'},{val:'Yes, because 5 + 4 = 9',tag:'err_random'}],
+      o: [{val:'Yes, 8 - 5 = 4',tag:'err_off_by_one',patternTag:'pattern_one_more'},{val:'No, 8 - 5 = 3'},{val:'No, 8 - 5 = 2',tag:'err_off_by_one'},{val:'Yes, because 5 + 4 = 9',tag:'err_add_instead',patternTag:'pattern_added_instead'}],
       a:1, e:'8 - 5 = 3, not 4! Count back 5 from 8: seven, six, five, four, three', d:'m', s:null, h:'Count back 5 from 8'
     },
     {lessonId:'ku3l4', 
       t: '2 + 8 = ?',
       v: null,
-      o: [{val:'8 + 3 = 11',tag:'err_random'},{val:'8 + 2 = 10'},{val:'2 + 2 = 4',tag:'err_random'},{val:'10 - 2 = 8',tag:'err_sub_instead'}],
+      o: [{val:'8 + 3 = 11',tag:'err_off_by_one',patternTag:'pattern_one_more'},{val:'8 + 2 = 10'},{val:'2 + 2 = 4',tag:'err_double_right',patternTag:'pattern_doubled_right'},{val:'10 - 2 = 8',tag:'err_sub_instead'}],
       a:1, e:'8 + 2 = 10 is the same as 2 + 8 = 10!', d:'m', s:null, h:'Adding in any order gives the same answer'
     },
     {lessonId:'ku3l4', 
       t: '⛵⛵⛵⛵⛵⛵⛵⛵⛵⛵ − ⛵⛵⛵⛵⛵⛵⛵ = ?',
       v: {type:'objectSet', config:{count:10, emoji:'⛵', layout:'grid'}},
-      o: [{val:'10 + 7 = 17',tag:'err_add_instead'},{val:'10 - 7 = 3'},{val:'7 - 10 = ?',tag:'err_random'},{val:'10 - 3 = 7',tag:'err_random'}],
+      o: [{val:'10 + 7 = 17',tag:'err_add_instead'},{val:'10 - 7 = 3'},{val:'7 - 10 = ?',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'10 - 3 = 7',tag:'err_confused',patternTag:'pattern_needs_review'}],
       a:1, e:'Sail away = subtract: 10 - 7 = 3!', d:'m', s:null, h:'Sail away = subtraction'
     },
     // ── NEW testBank questions ───────────────────────────────────────────────
@@ -1105,7 +1105,7 @@ _mergeKUnitData(2, {
     {lessonId:'ku3l4', 
       t: '🔶🔶🔶 + 🔶🔶🔶🔶 = ?',
       v: {type:'twoGroups', config:{leftCount:3, leftObj:'🔶', rightCount:4, rightObj:'🔶', op:'add'}},
-      o: [{val:'3 - 4 = ?',tag:'err_sub_instead'},{val:'3 + 3 = 6',tag:'err_random'},{val:'3 + 4 = 7'},{val:'4 + 4 = 8',tag:'err_random'}],
+      o: [{val:'3 - 4 = ?',tag:'err_sub_instead'},{val:'3 + 3 = 6',tag:'err_double_left',patternTag:'pattern_doubled_left'},{val:'3 + 4 = 7'},{val:'4 + 4 = 8',tag:'err_double_right',patternTag:'pattern_doubled_right'}],
       a:2, e:'3 + 4 = 7 matches the picture!', d:'e', s:null, h:'Count both groups together'
     },
     {lessonId:'ku3l4', 
@@ -1118,7 +1118,7 @@ _mergeKUnitData(2, {
     {lessonId:'ku3l4', 
       t: '6 + 3 = 8 ?',
       v: null,
-      o: [{val:'Yes, 6 + 3 = 8',tag:'err_random'},{val:'No, 6 + 3 = 9'},{val:'No, 6 + 3 = 7',tag:'err_off_by_one'},{val:'No, 6 + 3 = 10',tag:'err_off_by_one'}],
+      o: [{val:'Yes, 6 + 3 = 8',tag:'err_off_by_one',patternTag:'pattern_one_less'},{val:'No, 6 + 3 = 9'},{val:'No, 6 + 3 = 7',tag:'err_off_by_one'},{val:'No, 6 + 3 = 10',tag:'err_off_by_one'}],
       a:1, e:'6 + 3 = 9, not 8! Count on from 6: seven, eight, nine', d:'m', s:null, h:'Count on from 6 three times'
     },
     {lessonId:'ku3l4', 
@@ -1136,7 +1136,7 @@ _mergeKUnitData(2, {
     {lessonId:'ku3l4', 
       t: '7 + 3 = ?',
       v: null,
-      o: [{val:'No, you should start at 3 and count 7 more',tag:'err_random'},{val:'Yes! Start at 7 and count: eight, nine, ten — that is 10'},{val:'No, you should subtract instead',tag:'err_sub_instead'},{val:'No, 7 + 3 is not 10',tag:'err_random'}],
+      o: [{val:'No, you should start at 3 and count 7 more',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'Yes! Start at 7 and count: eight, nine, ten — that is 10'},{val:'No, you should subtract instead',tag:'err_sub_instead'},{val:'No, 7 + 3 is not 10',tag:'err_confused',patternTag:'pattern_needs_review'}],
       a:1, e:'Zoe is right! Starting at 7 and counting 3 more: eight, nine, ten = 10!', d:'m', s:null, h:'Start at the bigger number and count on'
     },
     // L4 hard (2)
@@ -1149,7 +1149,7 @@ _mergeKUnitData(2, {
     {lessonId:'ku3l4', 
       t: '8 + 0 = ?',
       v: null,
-      o: [{val:'Because zero is the same as 1',tag:'err_random'},{val:'Because adding zero means nothing is added — the total stays 8'},{val:'Because 8 + 0 is the same as 8 - 8',tag:'err_random'},{val:'Because 0 + 0 = 8',tag:'err_random'}],
+      o: [{val:'Because zero is the same as 1',tag:'err_confused',patternTag:'pattern_needs_review'},{val:'Because adding zero means nothing is added — the total stays 8'},{val:'Because 8 + 0 is the same as 8 - 8',tag:'err_sub_instead',patternTag:'pattern_subtracted_instead'},{val:'Because 0 + 0 = 8',tag:'err_confused',patternTag:'pattern_needs_review'}],
       a:1, e:'Adding zero means nothing is added, so the number stays the same — 8 + 0 = 8!', d:'h', s:null, h:'What happens when you add nothing to a number?'
     }
   ]

@@ -517,7 +517,7 @@ function renderEx(ex, i){
     <div class="ex-tag">Example ${i+1}: ${ex.tag}</div>
     <div class="ex-problem">${ex.p}</div>
     ${ex.v ? _buildVisualHTML(ex.v) : ex.vis ? `<div class="vis-box">${makeVis(ex.vis)}</div>` : ''}
-    <div class="ex-steps">${ex.s.replace(/\n/g,'<br>')}</div>
+    ${ex.s ? `<div class="ex-steps">${ex.s.replace(/\n/g,'<br>')}</div>` : ''}
     <div class="ex-answer">${ex.a}</div>
   </div>`;
 }
