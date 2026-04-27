@@ -428,9 +428,9 @@ var _K_LESSON_PREFIX_TO_UNIT = { ku1:0, ku2:1, ku3:2, ku4:3, ku5:4, ku6:5, ku7:6
 // string slicing or array index.
 function _lessonContextFor(q){
   if(!q || !q.lessonId || !Array.isArray(UNITS_DATA)) return null;
-  var match = q.lessonId.match(/^ku\d+/);
+  var match = q.lessonId.match(/^(k?u\d+)/);
   if(!match) return null;
-  var unit = UNITS_DATA.find(function(u){ return u.id === match[0]; });
+  var unit = UNITS_DATA.find(function(u){ return u.id === match[1]; });
   if(!unit || !Array.isArray(unit.lessons)) return null;
   return unit.lessons.find(function(l){ return l.id === q.lessonId; }) || null;
 }
