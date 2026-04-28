@@ -368,19 +368,34 @@ const UNITS_DATA = [
         "id": "u7l1",
         "title": "How Long Is It?",
         "icon": "📏",
-        "desc": "Measure in inches, feet, and centimeters"
+        "desc": "Measure in inches, feet, and centimeters",
+        "defaultTags": ["measurement","length","measurement_units"],
+        "defaultIntervention": {
+          "teach": { "text": "Choose the right unit, then measure from the starting point to the ending point." },
+          "retry": { "strategy": "similar", "matchTags": ["measurement","length","measurement_units"] }
+        }
       },
       {
         "id": "u7l2",
         "title": "What Time Is It?",
         "icon": "🕐",
-        "desc": "Read clocks to hours and 5-minute intervals"
+        "desc": "Read clocks to hours and 5-minute intervals",
+        "defaultTags": ["time","analog_clock","minutes_by_fives"],
+        "defaultIntervention": {
+          "teach": { "text": "The short hand shows the hour. The long hand shows minutes. Count minutes by 5s." },
+          "retry": { "strategy": "similar", "matchTags": ["time","analog_clock","minutes_by_fives"] }
+        }
       },
       {
         "id": "u7l3",
         "title": "Hot, Cold and Full",
         "icon": "🌡️",
-        "desc": "Read thermometers and measure liquids"
+        "desc": "Read thermometers and measure liquids",
+        "defaultTags": ["measurement","temperature","capacity"],
+        "defaultIntervention": {
+          "teach": { "text": "Temperature tells how hot or cold something is. Capacity tells how much a container holds." },
+          "retry": { "strategy": "similar", "matchTags": ["measurement","temperature","capacity"] }
+        }
       }
     ],
     "_loaded": false

@@ -1,0 +1,37 @@
+fallback distractor in qBank[u7l3][50]: prompt="Shape A is covered by 6 square units. Shape B is covered by 9 square units. Which shape has a bigger area?" correct="Shape B" wrong="Cannot tell"
+fallback distractor in qBank[u7l3][51]: prompt="Shape A has 10 square units. Shape B has 10 square units. What can you say about their areas?" correct="They have the same area" wrong="Cannot tell"
+fallback distractor in qBank[u7l3][54]: prompt="Which has a bigger area: a shape with 14 square units or a shape with 11 square units?" correct="The shape with 14" wrong="Cannot tell"
+fallback distractor in qBank[u7l3][60]: prompt="Which has a smaller area: a shape with 5 square units or a shape with 8 square units?" correct="The shape with 5" wrong="Cannot tell"
+testBank[60] -> u7l1 (low confidence): Very heavy objects are best measured in which unit?
+testBank[62] -> u7l1 (low confidence): How many ounces are in 1 pound?
+testBank[65] -> u7l1 (low confidence): Light objects are best measured in which unit?
+testBank[68] -> u7l1 (low confidence): About how much does an apple weigh?
+testBank[69] -> u7l1 (low confidence): About how much does a pencil weigh?
+testBank[78] -> u7l1 (low confidence): A shape is covered by 9 square units. What is its area?
+testBank[81] -> u7l1 (low confidence): A shape is covered by 5 square units. What is its area?
+testBank[84] -> u7l1 (low confidence): A shape is covered by 12 square units. What is its area?
+testBank[87] -> u7l1 (low confidence): A shape is covered by 3 square units. What is its area?
+testBank[90] -> u7l1 (low confidence): A shape is covered by 16 square units. What is its area?
+testBank[98] -> u7l1 (low confidence): Shape A has 8 square units. Shape B has 11 square units. Which has a bigger area?
+fallback distractor in testBank[98]: prompt="Shape A has 8 square units. Shape B has 11 square units. Which has a bigger area?" correct="Shape B" wrong="Cannot tell"
+testBank[104] -> u7l1 (low confidence): A rug has 14 square units. A mat has 9 square units. How many more square units does the rug have?
+testBank[110] -> u7l1 (low confidence): Two shapes each have 7 square units. What is the total area of both shapes?
+testBank[121] -> u7l1 (low confidence): A patio is 4 by 3. You add a 2-by-3 section. What is the new total area?
+testBank[127] -> u7l1 (low confidence): A 2-by-8 rectangle and a 4-by-4 square — which has a bigger area?
+testBank[130] -> u7l1 (low confidence): A wall is 5 by 4. You hang a picture that covers 6 square units. How many wall squares are still showing?
+testBank[133] -> u7l1 (low confidence): A garden is 6 by 3. A flower bed covers 10 of those squares. How many garden squares are left?
+unitQuiz[17] -> u7l1 (low confidence): About how much does a math book weigh?
+unitQuiz[24] -> u7l1 (low confidence): 16 ounces is equal to how many pounds?
+
+=== Phase 2 U7 spot-check (Task 9) ===
+Sampled 20 questions across u7l1 (5), u7l2 (5), u7l3 (5), testBank (5).
+Generic err_confused fallback count: 1 / 20 (q[60] u7l3 "Cannot tell" → err_confused/pattern_avoidance — appropriate avoidance handler).
+Threshold: ≤ 4 / 20. STATUS: PASS.
+
+Indices sampled:
+  u7l1 qBank: 0, 20, 50, 70, 90 — length/ruler/units. Specific tags: err_measurement_reading_error, err_length_confusion, err_magnitude_error, err_wrong_category, err_under_count, err_over_count.
+  u7l2 qBank: 0, 20, 40, 60, 80 — time/clock. Specific tags: err_clock_hour_hand_confusion, err_clock_minute_hand_confusion. Some clock distractors fell through to err_over_count/err_under_count where a clock-specific tag could have been chosen — accurate numerically, refinement opportunity for Phase 2.5.
+  u7l3 qBank: 0, 20, 40, 60, 80 — temperature/capacity/area. Specific tags: err_temperature_confusion (with pattern_wrong_temperature_scale & pattern_wrong_category), err_more_less_confusion / pattern_thinks_equal, err_confused / pattern_avoidance.
+  testBank: 0, 30, 60, 90, 120. Specific tags: err_length_confusion, err_clock_minute_hand_confusion, err_wrong_category, err_measurement_reading_error.
+
+Verdict: pass — distractors are intentional and domain-relevant; only avoidance-meta-options (e.g. "Cannot tell") fall through to err_confused/pattern_avoidance, which is the correct destination for those.
