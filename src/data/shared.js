@@ -256,25 +256,45 @@ const UNITS_DATA = [
         "id": "u5l1",
         "title": "All About Coins",
         "icon": "🪙",
-        "desc": "Learn each coin and how much it is worth"
+        "desc": "Learn each coin and how much it is worth",
+        "defaultTags": ["money","coins","coin_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Name each coin and use its value. Count money by value, not by how many coins you see." },
+          "retry": { "strategy": "similar", "matchTags": ["money","coins","coin_value"] }
+        }
       },
       {
         "id": "u5l2",
         "title": "Count Your Coins",
         "icon": "💵",
-        "desc": "Add coin values from biggest to smallest"
+        "desc": "Add coin values from biggest to smallest",
+        "defaultTags": ["money","counting_coins","skip_counting"],
+        "defaultIntervention": {
+          "teach": { "text": "Group coins by value, then skip count to find the total amount." },
+          "retry": { "strategy": "similar", "matchTags": ["money","counting_coins","skip_counting"] }
+        }
       },
       {
         "id": "u5l3",
         "title": "Dollars and Cents",
         "icon": "💲",
-        "desc": "Write and compare money amounts"
+        "desc": "Write and compare money amounts",
+        "defaultTags": ["money","dollars_cents","equivalent_values"],
+        "defaultIntervention": {
+          "teach": { "text": "Dollars and cents show money value. Remember that 100 cents equals 1 dollar." },
+          "retry": { "strategy": "similar", "matchTags": ["money","dollars_cents","equivalent_values"] }
+        }
       },
       {
         "id": "u5l4",
         "title": "Save, Spend and Give",
         "icon": "🏦",
-        "desc": "Smart ways to use money"
+        "desc": "Smart ways to use money",
+        "defaultTags": ["financial_literacy","save_spend_give","money_choices"],
+        "defaultIntervention": {
+          "teach": { "text": "Saving, spending, and giving are different choices people make with money." },
+          "retry": { "strategy": "similar", "matchTags": ["financial_literacy","save_spend_give","money_choices"] }
+        }
       }
     ],
     "_loaded": false
