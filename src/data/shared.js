@@ -413,19 +413,34 @@ const UNITS_DATA = [
         "id": "u8l1",
         "title": "What is a Fraction?",
         "icon": "✂️",
-        "desc": "Understand what a fraction means"
+        "desc": "Understand what a fraction means",
+        "defaultTags": ["fractions","equal_parts","fraction_basics"],
+        "defaultIntervention": {
+          "teach": { "text": "Fractions show equal parts of a whole. The parts must be the same size." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","equal_parts","fraction_basics"] }
+        }
       },
       {
         "id": "u8l2",
         "title": "Halves, Fourths and Eighths",
         "icon": "🍕",
-        "desc": "Name and identify common fractions"
+        "desc": "Name and identify common fractions",
+        "defaultTags": ["fractions","halves_fourths_eighths","unit_fractions"],
+        "defaultIntervention": {
+          "teach": { "text": "The denominator tells how many equal parts make the whole." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","halves_fourths_eighths","unit_fractions"] }
+        }
       },
       {
         "id": "u8l3",
         "title": "Which Piece is Bigger?",
         "icon": "⚖️",
-        "desc": "Which fraction is bigger or smaller?"
+        "desc": "Which fraction is bigger or smaller?",
+        "defaultTags": ["fractions","compare_unit_fractions","fraction_size"],
+        "defaultIntervention": {
+          "teach": { "text": "For unit fractions, more equal parts means each piece is smaller." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","compare_unit_fractions","fraction_size"] }
+        }
       }
     ],
     "_loaded": false
