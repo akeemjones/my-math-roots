@@ -211,19 +211,34 @@ const UNITS_DATA = [
         "id": "u4l1",
         "title": "Adding Really Big Numbers",
         "icon": "➕",
-        "desc": "Add hundreds, tens, and ones with regrouping"
+        "desc": "Add hundreds, tens, and ones with regrouping",
+        "defaultTags": ["addition_to_1000","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Add by place value: ones, tens, then hundreds. Regroup when a place makes 10 or more." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_to_1000","regrouping","place_value"] }
+        }
       },
       {
         "id": "u4l2",
         "title": "Taking Away Really Big Numbers",
         "icon": "➖",
-        "desc": "Subtract with regrouping across columns"
+        "desc": "Subtract with regrouping across columns",
+        "defaultTags": ["subtraction_to_1000","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Subtract by place value. Regroup from the next place when there are not enough ones or tens." },
+          "retry": { "strategy": "similar", "matchTags": ["subtraction_to_1000","regrouping","place_value"] }
+        }
       },
       {
         "id": "u4l3",
         "title": "Close Enough Counts!",
         "icon": "🎯",
-        "desc": "Round numbers to get close answers fast"
+        "desc": "Round numbers to get close answers fast",
+        "defaultTags": ["estimation","rounding","reasonableness"],
+        "defaultIntervention": {
+          "teach": { "text": "Round numbers to make a close estimate, then check if the answer is reasonable." },
+          "retry": { "strategy": "similar", "matchTags": ["estimation","rounding","reasonableness"] }
+        }
       }
     ],
     "_loaded": false

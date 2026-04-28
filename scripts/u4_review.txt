@@ -1,0 +1,197 @@
+fallback distractor in qBank[u4l1][60]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="False"
+fallback distractor in qBank[u4l1][60]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="Only sometimes"
+fallback distractor in qBank[u4l1][60]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="Depends"
+fallback distractor in qBank[u4l1][111]: prompt="Maya solved 86 - 49 = 43. What did Maya do wrong?" correct="She forgot to regroup and subtracted 9 - 6 instead" wrong="She added instead of subtracted"
+fallback distractor in qBank[u4l1][111]: prompt="Maya solved 86 - 49 = 43. What did Maya do wrong?" correct="She forgot to regroup and subtracted 9 - 6 instead" wrong="She subtracted the tens wrong"
+fallback distractor in qBank[u4l1][111]: prompt="Maya solved 86 - 49 = 43. What did Maya do wrong?" correct="She forgot to regroup and subtracted 9 - 6 instead" wrong="Her answer is correct"
+fallback distractor in qBank[u4l1][112]: prompt="Without solving, is 93 - 47 greater than or less than 50?" correct="Less than 50, because 90 - 50 = 40" wrong="Cannot tell without solving"
+fallback distractor in qBank[u4l1][114]: prompt="Leo says 'When I subtract, I always get a smaller number.' Is Leo correct?" correct="No, if you subtract 0 the number stays the same" wrong="Yes, subtraction always gives smaller numbers"
+fallback distractor in qBank[u4l1][114]: prompt="Leo says 'When I subtract, I always get a smaller number.' Is Leo correct?" correct="No, if you subtract 0 the number stays the same" wrong="Yes, but only with regrouping"
+fallback distractor in qBank[u4l1][114]: prompt="Leo says 'When I subtract, I always get a smaller number.' Is Leo correct?" correct="No, if you subtract 0 the number stays the same" wrong="No, subtraction can give bigger numbers"
+fallback distractor in qBank[u4l1][116]: prompt="Kim solved 74 - 38 = 44. What mistake did Kim make?" correct="Kim subtracted 8 - 4 in the ones instead of regrouping" wrong="Kim added instead of subtracted"
+fallback distractor in qBank[u4l1][116]: prompt="Kim solved 74 - 38 = 44. What mistake did Kim make?" correct="Kim subtracted 8 - 4 in the ones instead of regrouping" wrong="Kim forgot to subtract the tens"
+fallback distractor in qBank[u4l1][116]: prompt="Kim solved 74 - 38 = 44. What mistake did Kim make?" correct="Kim subtracted 8 - 4 in the ones instead of regrouping" wrong="Kim's answer is correct"
+fallback distractor in qBank[u4l1][119]: prompt="Ryan says 73 - 28 = 55. Use addition to check. Is Ryan correct?" correct="No, because 55 + 28 = 83, not 73" wrong="No, because you cannot check with addition"
+fallback distractor in qBank[u4l1][123]: prompt="Ali says 'Subtracting 48 is the same as subtracting 50 and adding 2.' Is Ali correct?" correct="Yes, because 50 is 2 more than 48, so you add 2 back" wrong="Yes, but only for even numbers"
+fallback distractor in qBank[u4l1][123]: prompt="Ali says 'Subtracting 48 is the same as subtracting 50 and adding 2.' Is Ali correct?" correct="Yes, because 50 is 2 more than 48, so you add 2 back" wrong="No, that only works with addition"
+fallback distractor in qBank[u4l1][124]: prompt="Tina says the difference between 86 and 43 is the same as the difference between 88 and 45. Is she right?" correct="Yes, because adding 2 to both numbers keeps the difference the same" wrong="No, the first difference is bigger"
+fallback distractor in qBank[u4l1][124]: prompt="Tina says the difference between 86 and 43 is the same as the difference between 88 and 45. Is she right?" correct="Yes, because adding 2 to both numbers keeps the difference the same" wrong="No, the second difference is bigger"
+fallback distractor in qBank[u4l1][124]: prompt="Tina says the difference between 86 and 43 is the same as the difference between 88 and 45. Is she right?" correct="Yes, because adding 2 to both numbers keeps the difference the same" wrong="Yes, but only by coincidence"
+fallback distractor in qBank[u4l1][126]: prompt="Jake solved 92 - 57 and got 45. He checked: 45 + 57 = 102. What should Jake conclude?" correct="His answer is wrong because 45 + 57 should equal 92, not 102" wrong="His answer is correct"
+fallback distractor in qBank[u4l1][126]: prompt="Jake solved 92 - 57 and got 45. He checked: 45 + 57 = 102. What should Jake conclude?" correct="His answer is wrong because 45 + 57 should equal 92, not 102" wrong="He should try a different checking method"
+fallback distractor in qBank[u4l1][126]: prompt="Jake solved 92 - 57 and got 45. He checked: 45 + 57 = 102. What should Jake conclude?" correct="His answer is wrong because 45 + 57 should equal 92, not 102" wrong="Addition cannot check subtraction"
+fallback distractor in qBank[u4l1][128]: prompt="Why do 100 - 64 and 99 - 63 give the same answer?" correct="Subtracting 1 from both numbers keeps the difference the same" wrong="They do not give the same answer"
+fallback distractor in qBank[u4l1][128]: prompt="Why do 100 - 64 and 99 - 63 give the same answer?" correct="Subtracting 1 from both numbers keeps the difference the same" wrong="It is a coincidence"
+fallback distractor in qBank[u4l2][10]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Nothing, zeros are easy"
+fallback distractor in qBank[u4l2][10]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Skip the zero"
+fallback distractor in qBank[u4l2][10]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Just subtract 0"
+fallback distractor in qBank[u4l2][59]: prompt="Look at these: 62 - 38 and 64 - 40. Do they give the same answer?" correct="Yes, both equal 24 because adding 2 to each number keeps the difference the same" wrong="No, different numbers always give different answers"
+fallback distractor in qBank[u4l2][66]: prompt="What is the best way to subtract 39 from 75?" correct="Subtract 40, then add 1" wrong="Count back by ones"
+fallback distractor in qBank[u4l2][71]: prompt="Jake solved 83 - 47 = 44. What did Jake do wrong?" correct="Jake subtracted 7 - 3 in the ones instead of regrouping" wrong="Jake added instead of subtracting"
+fallback distractor in qBank[u4l2][71]: prompt="Jake solved 83 - 47 = 44. What did Jake do wrong?" correct="Jake subtracted 7 - 3 in the ones instead of regrouping" wrong="Jake regrouped twice"
+fallback distractor in qBank[u4l2][71]: prompt="Jake solved 83 - 47 = 44. What did Jake do wrong?" correct="Jake subtracted 7 - 3 in the ones instead of regrouping" wrong="Jake's answer is correct"
+fallback distractor in qBank[u4l2][72]: prompt="Is 142 - 78 greater or less than 60? How can you tell without solving?" correct="Greater, because 140 - 80 = 60 and 142 > 140 while 78 < 80" wrong="Less, because both numbers have regrouping"
+fallback distractor in qBank[u4l2][72]: prompt="Is 142 - 78 greater or less than 60? How can you tell without solving?" correct="Greater, because 140 - 80 = 60 and 142 > 140 while 78 < 80" wrong="Cannot tell without solving"
+fallback distractor in qBank[u4l2][74]: prompt="Maria solved 120 - 53 = 77. She checked: 77 + 53 = 130. What went wrong?" correct="Maria's subtraction is wrong because 77 + 53 = 130, not 120" wrong="Maria added wrong during checking"
+fallback distractor in qBank[u4l2][74]: prompt="Maria solved 120 - 53 = 77. She checked: 77 + 53 = 130. What went wrong?" correct="Maria's subtraction is wrong because 77 + 53 = 130, not 120" wrong="Maria's answer is actually correct"
+fallback distractor in qBank[u4l2][76]: prompt="Eli says 'To subtract 98 from any number, I subtract 100 and add 2.' Is Eli's strategy correct?" correct="Yes, because 100 - 98 = 2, so adding 2 corrects the extra taken away" wrong="No, compensation only works for addition"
+fallback distractor in qBank[u4l2][77]: prompt="Without solving, which has the bigger answer: 131 - 64 or 128 - 59?" correct="They are about the same" wrong="131 - 64, because 130 - 60 = 70 is greater than 130 - 60 = 70"
+fallback distractor in qBank[u4l2][77]: prompt="Without solving, which has the bigger answer: 131 - 64 or 128 - 59?" correct="They are about the same" wrong="128 - 59, because the numbers are closer together"
+fallback distractor in qBank[u4l2][77]: prompt="Without solving, which has the bigger answer: 131 - 64 or 128 - 59?" correct="They are about the same" wrong="131 - 64, because 131 is the biggest number"
+fallback distractor in qBank[u4l2][79]: prompt="Tim says 91 - 45 = 56. Amy says 91 - 45 = 46. Who is correct and why?" correct="Amy, because 46 + 45 = 91" wrong="Neither is correct"
+fallback distractor in qBank[u4l2][83]: prompt="Dani says 'Regrouping changes the value of the number.' Is Dani correct?" correct="No, regrouping changes the form but not the value" wrong="Yes, the number gets smaller"
+fallback distractor in qBank[u4l2][83]: prompt="Dani says 'Regrouping changes the value of the number.' Is Dani correct?" correct="No, regrouping changes the form but not the value" wrong="Yes, you lose a ten"
+fallback distractor in qBank[u4l2][83]: prompt="Dani says 'Regrouping changes the value of the number.' Is Dani correct?" correct="No, regrouping changes the form but not the value" wrong="No, but only in addition"
+fallback distractor in qBank[u4l2][85]: prompt="Look at this pattern: 82 - 46 = 36, 83 - 47 = 36, 84 - 48 = 36. Why does the answer stay the same?" correct="Adding 1 to both numbers keeps the difference the same" wrong="The ones digits cancel out"
+fallback distractor in qBank[u4l2][85]: prompt="Look at this pattern: 82 - 46 = 36, 83 - 47 = 36, 84 - 48 = 36. Why does the answer stay the same?" correct="Adding 1 to both numbers keeps the difference the same" wrong="Regrouping makes them all equal"
+fallback distractor in qBank[u4l2][86]: prompt="Nora needs to solve 103 - 67. She changes it to 106 - 70 to make it easier. Does this give the right answer?" correct="Yes, adding 3 to both numbers keeps the same difference" wrong="No, you can only change one number"
+fallback distractor in qBank[u4l2][88]: prompt="Liam solved 135 - 79 like this: 135 - 80 = 55, then 55 + 1 = 56. Is his strategy and answer correct?" correct="Yes, he used compensation correctly" wrong="No, he should have subtracted 1 instead of adding 1"
+fallback distractor in qBank[u4l2][88]: prompt="Liam solved 135 - 79 like this: 135 - 80 = 55, then 55 + 1 = 56. Is his strategy and answer correct?" correct="Yes, he used compensation correctly" wrong="Yes, but the math is wrong"
+fallback distractor in qBank[u4l2][88]: prompt="Liam solved 135 - 79 like this: 135 - 80 = 55, then 55 + 1 = 56. Is his strategy and answer correct?" correct="Yes, he used compensation correctly" wrong="No, compensation does not work here"
+fallback distractor in qBank[u4l3][20]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Add the numbers"
+fallback distractor in qBank[u4l3][20]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Subtract"
+fallback distractor in qBank[u4l3][20]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Guess"
+fallback distractor in qBank[u4l3][29]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="more than"
+fallback distractor in qBank[u4l3][29]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="exactly"
+fallback distractor in qBank[u4l3][29]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="less than"
+fallback distractor in qBank[u4l3][47]: prompt="A boy solved 80 - 35 = 45. He checked: 45 + 35 = 80. Is his work correct?" correct="Yes, his subtraction and check both show 80" wrong="Yes, but the check is wrong"
+fallback distractor in qBank[u4l3][52]: prompt="Sam says 92 - 47 = 55. Kim says the answer is 45. Who is right? Use addition to check." correct="Kim, because 45 + 47 = 92" wrong="Neither is correct"
+fallback distractor in qBank[u4l3][55]: prompt="True or false: If 67 + 45 = 112, then 112 - 45 = 67." correct="True, addition and subtraction are inverse operations" wrong="False, the numbers are too big"
+fallback distractor in qBank[u4l3][55]: prompt="True or false: If 67 + 45 = 112, then 112 - 45 = 67." correct="True, addition and subtraction are inverse operations" wrong="True, but only without regrouping"
+fallback distractor in qBank[u4l3][55]: prompt="True or false: If 67 + 45 = 112, then 112 - 45 = 67." correct="True, addition and subtraction are inverse operations" wrong="False, subtraction does not relate to addition"
+fallback distractor in qBank[u4l3][56]: prompt="Mia solves 134 - 67 = 67. She checks: 67 + 67 = 134. Is her subtraction correct?" correct="Yes, her check proves it" wrong="No, 67 + 67 = 144"
+fallback distractor in qBank[u4l3][56]: prompt="Mia solves 134 - 67 = 67. She checks: 67 + 67 = 134. Is her subtraction correct?" correct="Yes, her check proves it" wrong="No, 134 - 67 = 77"
+fallback distractor in qBank[u4l3][56]: prompt="Mia solves 134 - 67 = 67. She checks: 67 + 67 = 134. Is her subtraction correct?" correct="Yes, her check proves it" wrong="Yes, but the check is wrong"
+fallback distractor in qBank[u4l3][58]: prompt="David solves 81 - 36 = 55. His check: 55 + 36 = 91. What should David do?" correct="Redo the problem because 91 does not equal 81" wrong="Nothing, the answer is correct"
+fallback distractor in qBank[u4l3][58]: prompt="David solves 81 - 36 = 55. His check: 55 + 36 = 91. What should David do?" correct="Redo the problem because 91 does not equal 81" wrong="Use a different checking method"
+fallback distractor in qBank[u4l3][61]: prompt="A student says 'I do not need to check my work if I am careful.' Is this good advice?" correct="No, everyone makes mistakes and checking catches errors" wrong="Yes, careful work is always correct"
+fallback distractor in qBank[u4l3][61]: prompt="A student says 'I do not need to check my work if I am careful.' Is this good advice?" correct="No, everyone makes mistakes and checking catches errors" wrong="No, but only check hard problems"
+fallback distractor in qBank[u4l3][61]: prompt="A student says 'I do not need to check my work if I am careful.' Is this good advice?" correct="No, everyone makes mistakes and checking catches errors" wrong="Yes, checking wastes time"
+fallback distractor in qBank[u4l3][63]: prompt="What are ALL the fact family members for 43 + 29 = 72?" correct="43 + 29 = 72, 29 + 43 = 72, 72 - 29 = 43, 72 - 43 = 29" wrong="There is no fact family"
+fallback distractor in qBank[u4l3][64]: prompt="Rosa solved 143 - 85 = 58. She checks: 58 + 85 = 143. Is Rosa correct?" correct="Yes, her check matches so her subtraction is correct" wrong="No, 58 + 85 = 133"
+fallback distractor in qBank[u4l3][64]: prompt="Rosa solved 143 - 85 = 58. She checks: 58 + 85 = 143. Is Rosa correct?" correct="Yes, her check matches so her subtraction is correct" wrong="No, 143 - 85 = 68"
+fallback distractor in qBank[u4l3][64]: prompt="Rosa solved 143 - 85 = 58. She checks: 58 + 85 = 143. Is Rosa correct?" correct="Yes, her check matches so her subtraction is correct" wrong="Yes, but the check is wrong"
+fallback distractor in qBank[u4l3][67]: prompt="Ben wrote 72 - 38 = 44. His check: 44 + 38 = 82. What does the check tell Ben?" correct="His answer is wrong because 82 does not equal 72" wrong="His check is wrong"
+fallback distractor in qBank[u4l3][67]: prompt="Ben wrote 72 - 38 = 44. His check: 44 + 38 = 82. What does the check tell Ben?" correct="His answer is wrong because 82 does not equal 72" wrong="Nothing useful"
+fallback distractor in qBank[u4l3][69]: prompt="Ana and Ben both solved 95 - 37. Ana got 58, Ben got 68. Use addition to find who is correct." correct="Ana, because 58 + 37 = 95" wrong="Both are correct"
+fallback distractor in qBank[u4l3][69]: prompt="Ana and Ben both solved 95 - 37. Ana got 58, Ben got 68. Use addition to find who is correct." correct="Ana, because 58 + 37 = 95" wrong="Neither is correct"
+fallback distractor in qBank[u4l3][71]: prompt="Carlos solved 153 - 78 = 85. He checked: 85 + 78 = 163. What TWO mistakes did Carlos make?" correct="Wrong subtraction AND wrong addition check" wrong="Only wrong subtraction"
+fallback distractor in qBank[u4l3][71]: prompt="Carlos solved 153 - 78 = 85. He checked: 85 + 78 = 163. What TWO mistakes did Carlos make?" correct="Wrong subtraction AND wrong addition check" wrong="Only wrong addition"
+fallback distractor in qBank[u4l3][71]: prompt="Carlos solved 153 - 78 = 85. He checked: 85 + 78 = 163. What TWO mistakes did Carlos make?" correct="Wrong subtraction AND wrong addition check" wrong="No mistakes were made"
+fallback distractor in qBank[u4l3][73]: prompt="A student solved 140 - 65 = 85. She checked: 85 + 65 = 150. She says 'It is close enough, so I am right.' Is she correct" correct="No, the check must match exactly, and 150 does not equal 140" wrong="Yes, close enough is fine in math"
+fallback distractor in qBank[u4l3][74]: prompt="Nora solved three problems. Which one has an error? A) 91 - 45 = 46  B) 83 - 37 = 46  C) 72 - 28 = 54" correct="Problem C, because 54 + 28 = 82, not 72" wrong="None have errors"
+fallback distractor in qBank[u4l3][76]: prompt="Tom checked 86 - 39 by computing 39 + 86 = 125. What is wrong with Tom's checking strategy?" correct="He should add the ANSWER to 39, not 86 to 39" wrong="Nothing, his strategy is fine"
+fallback distractor in qBank[u4l3][76]: prompt="Tom checked 86 - 39 by computing 39 + 86 = 125. What is wrong with Tom's checking strategy?" correct="He should add the ANSWER to 39, not 86 to 39" wrong="He should subtract instead of add"
+fallback distractor in qBank[u4l3][76]: prompt="Tom checked 86 - 39 by computing 39 + 86 = 125. What is wrong with Tom's checking strategy?" correct="He should add the ANSWER to 39, not 86 to 39" wrong="He should multiply to check"
+fallback distractor in qBank[u4l3][77]: prompt="Three students solved 132 - 67. Amy: 65. Ben: 75. Cal: 55. Which student is correct?" correct="Amy, because 65 + 67 = 132" wrong="None of them"
+fallback distractor in qBank[u4l3][78]: prompt="Why does adding the answer to the subtracted number prove the subtraction is correct?" correct="Because addition undoes subtraction -- they are inverse operations" wrong="Because adding always gives bigger numbers"
+fallback distractor in qBank[u4l3][78]: prompt="Why does adding the answer to the subtracted number prove the subtraction is correct?" correct="Because addition undoes subtraction -- they are inverse operations" wrong="Because the teacher said so"
+fallback distractor in qBank[u4l3][78]: prompt="Why does adding the answer to the subtracted number prove the subtraction is correct?" correct="Because addition undoes subtraction -- they are inverse operations" wrong="It does not actually prove it"
+fallback distractor in qBank[u4l3][79]: prompt="Lisa solved 148 - 79 = 69. She also solved 148 - 69 = 79. Both check out as a fact family. Is she right?" correct="Yes, 69 + 79 = 148 confirms both are correct" wrong="Yes, but only the first equation"
+fallback distractor in qBank[u4l3][79]: prompt="Lisa solved 148 - 79 = 69. She also solved 148 - 69 = 79. Both check out as a fact family. Is she right?" correct="Yes, 69 + 79 = 148 confirms both are correct" wrong="No, you cannot have two related facts"
+fallback distractor in qBank[u4l3][80]: prompt="A student solved 95 - 38 = 57 and then 95 - 57 = 48. She says both are right. What error do you see?" correct="The second equation is wrong: 95 - 57 = 38, not 48" wrong="Both equations are wrong"
+fallback distractor in qBank[u4l3][80]: prompt="A student solved 95 - 38 = 57 and then 95 - 57 = 48. She says both are right. What error do you see?" correct="The second equation is wrong: 95 - 57 = 38, not 48" wrong="The first equation is wrong"
+fallback distractor in qBank[u4l3][80]: prompt="A student solved 95 - 38 = 57 and then 95 - 57 = 48. She says both are right. What error do you see?" correct="The second equation is wrong: 95 - 57 = 38, not 48" wrong="No errors"
+fallback distractor in qBank[u4l3][81]: prompt="Jake knows 156 - 89 = 67. Without solving, what is 156 - 67?" correct="89, because it is the other subtraction in the fact family" wrong="Cannot tell without solving"
+fallback distractor in qBank[u4l3][82]: prompt="A student checked 113 - 47 = 66 by computing 66 + 47. She got 113. But the real answer is 113 - 47 = 66. How is this pos" correct="The answer IS 66 and the check proves it" wrong="The check must be wrong"
+fallback distractor in qBank[u4l3][82]: prompt="A student checked 113 - 47 = 66 by computing 66 + 47. She got 113. But the real answer is 113 - 47 = 66. How is this pos" correct="The answer IS 66 and the check proves it" wrong="She got lucky"
+fallback distractor in qBank[u4l3][83]: prompt="Emma solved 167 - 89 = 78. She wants to check but finds addition hard too. What easier check can she use?" correct="Estimate: 170 - 90 = 80, and 78 is close to 80, so it is likely correct" wrong="There is no other way to check"
+fallback distractor in qBank[u4l3][85]: prompt="A class solved 125 - 67. Five students got 58 and three got 68. Use checking to settle the debate." correct="58 is correct: 58 + 67 = 125" wrong="Both could be correct"
+fallback distractor in qBank[u4l3][85]: prompt="A class solved 125 - 67. Five students got 58 and three got 68. Use checking to settle the debate." correct="58 is correct: 58 + 67 = 125" wrong="Neither is correct"
+fallback distractor in qBank[u4l3][87]: prompt="Mia made the same error on two problems: 82 - 35 = 53 and 71 - 24 = 53. What pattern of error is she making?" correct="She is not regrouping -- she subtracts the smaller digit from the larger in ones place" wrong="She is adding instead of subtracting"
+fallback distractor in qBank[u4l3][87]: prompt="Mia made the same error on two problems: 82 - 35 = 53 and 71 - 24 = 53. What pattern of error is she making?" correct="She is not regrouping -- she subtracts the smaller digit from the larger in ones place" wrong="She is guessing"
+fallback distractor in qBank[u4l3][87]: prompt="Mia made the same error on two problems: 82 - 35 = 53 and 71 - 24 = 53. What pattern of error is she making?" correct="She is not regrouping -- she subtracts the smaller digit from the larger in ones place" wrong="Her answers are correct"
+fallback distractor in qBank[u4l3][89]: prompt="A student says 'If my subtraction check does not match, I should just erase and write the addition answer instead.' Is t" correct="No, she should redo the subtraction carefully to find the error" wrong="Yes, the addition answer is always right"
+fallback distractor in qBank[u4l3][89]: prompt="A student says 'If my subtraction check does not match, I should just erase and write the addition answer instead.' Is t" correct="No, she should redo the subtraction carefully to find the error" wrong="No, she should try a third method"
+fallback distractor in qBank[u4l3][89]: prompt="A student says 'If my subtraction check does not match, I should just erase and write the addition answer instead.' Is t" correct="No, she should redo the subtraction carefully to find the error" wrong="Yes, because addition is easier"
+testBank[10] -> u4l1 (low confidence): When your ones column adds up to 14, what do you write and regroup?
+testBank[15] -> u4l1 (low confidence): Which addition problem requires regrouping twice?
+fallback distractor in testBank[20]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="False"
+fallback distractor in testBank[20]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="Only sometimes"
+fallback distractor in testBank[20]: prompt="Is this true or false? You should always add the ones column first in 3-digit addition." correct="True" wrong="Depends"
+testBank[40] -> u4l1 (low confidence): Why is regrouping across a zero tricky?
+fallback distractor in testBank[40]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Nothing, zeros are easy"
+fallback distractor in testBank[40]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Skip the zero"
+fallback distractor in testBank[40]: prompt="Why is regrouping across a zero tricky?" correct="Must regroup from hundreds first" wrong="Just subtract 0"
+fallback distractor in testBank[80]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Add the numbers"
+fallback distractor in testBank[80]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Subtract"
+fallback distractor in testBank[80]: prompt="What is the first step when making an estimate?" correct="Round each number" wrong="Guess"
+testBank[89] -> u4l1 (low confidence): How are estimates different from exact answers?
+fallback distractor in testBank[89]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="more than"
+fallback distractor in testBank[89]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="exactly"
+fallback distractor in testBank[89]: prompt="How are estimates different from exact answers?" correct="close to but not" wrong="less than"
+testBank[104] -> u4l1 (low confidence): There are 74 birds on a fence. 31 fly away. How many birds are still on the fence?
+testBank[111] -> u4l2 (low confidence): Emma has 88 stickers. She gives 45 to her sister. How many stickers does Emma have left?
+testBank[119] -> u4l1 (low confidence): There are 69 children at a party. 36 go home. How many children are still at the party?
+testBank[122] -> u4l1 (low confidence): __ - 38 = 54. What is the missing number?
+testBank[123] -> u4l1 (low confidence): Which problem needs regrouping?
+testBank[124] -> u4l1 (low confidence): Ben had 83 marbles. He has 36 more than Kim. How many marbles does Kim have?
+fallback distractor in testBank[126]: prompt="Sam solved 95 - 48 = 57. Kim says the answer is 47. Use addition to check. Who is correct?" correct="Both are wrong" wrong="Sam: 57 + 48 = 95"
+fallback distractor in testBank[126]: prompt="Sam solved 95 - 48 = 57. Kim says the answer is 47. Use addition to check. Who is correct?" correct="Both are wrong" wrong="Kim: 47 + 48 = 95"
+fallback distractor in testBank[126]: prompt="Sam solved 95 - 48 = 57. Kim says the answer is 47. Use addition to check. Who is correct?" correct="Both are wrong" wrong="Both are correct"
+testBank[128] -> u4l1 (low confidence): __ - 57 = 36. What is the missing number?
+testBank[129] -> u4l2 (low confidence): A jar has some marbles. After removing 39, there are 54 left. How many marbles were in the jar?
+testBank[131] -> u4l1 (low confidence): A class collected 86 cans in Week 1 and 59 cans in Week 2. How many more cans in Week 1?
+testBank[133] -> u4l1 (low confidence): A shelf holds 80 books. There are 53 books on it. How many more books can fit?
+fallback distractor in testBank[134]: prompt="Rosa solved 110 - 63 = 57. Her check: 57 + 63 = 120. What should Rosa do?" correct="Redo the problem because 120 does not equal 110" wrong="Nothing, the answer is close enough"
+fallback distractor in testBank[134]: prompt="Rosa solved 110 - 63 = 57. Her check: 57 + 63 = 120. What should Rosa do?" correct="Redo the problem because 120 does not equal 110" wrong="Just fix the check"
+fallback distractor in testBank[134]: prompt="Rosa solved 110 - 63 = 57. Her check: 57 + 63 = 120. What should Rosa do?" correct="Redo the problem because 120 does not equal 110" wrong="The check is wrong, the subtraction is right"
+testBank[135] -> u4l1 (low confidence): Which does NOT need regrouping?
+testBank[136] -> u4l1 (low confidence): Ava has 91 stickers. She gives 35 to her friend and buys 12 more. How many does she have?
+testBank[137] -> u4l1 (low confidence): A pet store has 75 fish and 48 birds. How many more fish than birds?
+testBank[138] -> u4l1 (low confidence): __ - 44 = 52. What is the missing number?
+fallback distractor in testBank[139]: prompt="Which story matches 84 - 56?" correct="Both B and C" wrong="Dan has 84 cards. He gets 56 more. How many now?"
+fallback distractor in testBank[139]: prompt="Which story matches 84 - 56?" correct="Both B and C" wrong="Dan has 84 cards. He gives 56 away. How many left?"
+fallback distractor in testBank[139]: prompt="Which story matches 84 - 56?" correct="Both B and C" wrong="Dan needs 84 cards. He has 56. How many does he need to buy?"
+testBank[140] -> u4l1 (low confidence): A school had 183 books. Students checked out 96 in September and 49 in October. How many books are still in the school?
+fallback distractor in testBank[141]: prompt="Luis solved 132 - 78 = 64. He checked: 64 + 78 = 142. What should Luis conclude?" correct="His answer is wrong because 142 does not equal 132" wrong="His addition check was wrong"
+fallback distractor in testBank[141]: prompt="Luis solved 132 - 78 = 64. He checked: 64 + 78 = 142. What should Luis conclude?" correct="His answer is wrong because 142 does not equal 132" wrong="He should try another method"
+fallback distractor in testBank[143]: prompt="Mia solved 94 - 57 = 47. She says 'I subtracted 7 - 4 = 3 and 9 - 5 = 4, so 43... wait, I wrote 47.' What errors did she" correct="She subtracted ones in reverse AND wrote the wrong answer" wrong="She only wrote the wrong answer"
+fallback distractor in testBank[143]: prompt="Mia solved 94 - 57 = 47. She says 'I subtracted 7 - 4 = 3 and 9 - 5 = 4, so 43... wait, I wrote 47.' What errors did she" correct="She subtracted ones in reverse AND wrote the wrong answer" wrong="Her method is correct but she copied wrong"
+fallback distractor in testBank[143]: prompt="Mia solved 94 - 57 = 47. She says 'I subtracted 7 - 4 = 3 and 9 - 5 = 4, so 43... wait, I wrote 47.' What errors did she" correct="She subtracted ones in reverse AND wrote the wrong answer" wrong="No errors"
+testBank[144] -> u4l1 (low confidence): __ - __ = 48. Both numbers are between 60 and 120. Which pair works?
+testBank[146] -> u4l1 (low confidence): Sam says 'Subtracting 49 is the same as subtracting 50 and adding 1.' Tina says 'It is the same as subtracting 40 and subtracting 9.' Who is
+fallback distractor in testBank[146]: prompt="Sam says 'Subtracting 49 is the same as subtracting 50 and adding 1.' Tina says 'It is the same as subtracting 40 and su" correct="Both are correct -- they are different strategies for the same subtraction" wrong="Only Sam is correct"
+fallback distractor in testBank[146]: prompt="Sam says 'Subtracting 49 is the same as subtracting 50 and adding 1.' Tina says 'It is the same as subtracting 40 and su" correct="Both are correct -- they are different strategies for the same subtraction" wrong="Only Tina is correct"
+fallback distractor in testBank[146]: prompt="Sam says 'Subtracting 49 is the same as subtracting 50 and adding 1.' Tina says 'It is the same as subtracting 40 and su" correct="Both are correct -- they are different strategies for the same subtraction" wrong="Neither is correct"
+fallback distractor in testBank[148]: prompt="Three students solved 145 - 87. Amy: 58. Ben: 68. Cal: 62. Check with addition to find who is correct." correct="Amy: 58 + 87 = 145" wrong="None are correct"
+testBank[149] -> u4l1 (low confidence): A toy store had 175 toys. They sold 68 in Week 1 and some in Week 2. Now they have 59 toys. How many did they sell in Week 2?
+fallback distractor in testBank[150]: prompt="Jake says the difference between 87 and 39 is the same as 90 - 42. Is he right?" correct="Yes, adding 3 to both numbers keeps the difference at 48" wrong="Yes, but only by coincidence"
+fallback distractor in testBank[150]: prompt="Jake says the difference between 87 and 39 is the same as 90 - 42. Is he right?" correct="Yes, adding 3 to both numbers keeps the difference at 48" wrong="No, you cannot change both numbers"
+testBank[151] -> u4l2 (low confidence): Ella had some coins. She spent 43 on Monday, 29 on Tuesday, and has 35 left. How many coins did she start with?
+testBank[152] -> u4l1 (low confidence): Which problem requires regrouping in BOTH the ones and tens place?
+testBank[153] -> u4l1 (low confidence): A park has 164 trees. A storm knocks down 47 trees. The city plants 35 new ones. How many trees are in the park now?
+fallback distractor in testBank[154]: prompt="Maria says: 'To check 150 - 73 = 77, I can do 150 - 77 and see if I get 73.' Is this a valid check?" correct="Yes, if 150 - 73 = 77 then 150 - 77 must equal 73 (fact family)" wrong="No, you can only check with addition"
+fallback distractor in testBank[154]: prompt="Maria says: 'To check 150 - 73 = 77, I can do 150 - 77 and see if I get 73.' Is this a valid check?" correct="Yes, if 150 - 73 = 77 then 150 - 77 must equal 73 (fact family)" wrong="Yes, but it is harder than adding"
+fallback distractor in testBank[154]: prompt="Maria says: 'To check 150 - 73 = 77, I can do 150 - 77 and see if I get 73.' Is this a valid check?" correct="Yes, if 150 - 73 = 77 then 150 - 77 must equal 73 (fact family)" wrong="No, subtraction cannot check subtraction"
+fallback distractor in testBank[155]: prompt="A student makes this error pattern: 81 - 36 = 55, 72 - 45 = 33, 93 - 58 = 45. What is the student doing wrong?" correct="Subtracting the smaller digit from the larger in the ones place instead of regrouping" wrong="Adding instead of subtracting"
+fallback distractor in testBank[155]: prompt="A student makes this error pattern: 81 - 36 = 55, 72 - 45 = 33, 93 - 58 = 45. What is the student doing wrong?" correct="Subtracting the smaller digit from the larger in the ones place instead of regrouping" wrong="Forgetting to subtract the tens"
+fallback distractor in testBank[155]: prompt="A student makes this error pattern: 81 - 36 = 55, 72 - 45 = 33, 93 - 58 = 45. What is the student doing wrong?" correct="Subtracting the smaller digit from the larger in the ones place instead of regrouping" wrong="Making random mistakes"
+fallback distractor in testBank[156]: prompt="Nora changes 143 - 67 to 146 - 70 to make it easier. What property allows this?" correct="Constant difference: adding the same amount to both numbers keeps the difference the same" wrong="Commutative property"
+fallback distractor in testBank[156]: prompt="Nora changes 143 - 67 to 146 - 70 to make it easier. What property allows this?" correct="Constant difference: adding the same amount to both numbers keeps the difference the same" wrong="Associative property"
+fallback distractor in testBank[156]: prompt="Nora changes 143 - 67 to 146 - 70 to make it easier. What property allows this?" correct="Constant difference: adding the same amount to both numbers keeps the difference the same" wrong="This does not actually work"
+fallback distractor in testBank[158]: prompt="True or false: If you know the answer to 100 - 37, you can find 99 - 36 without calculating." correct="True: both numbers decreased by 1, so the difference is the same (63)" wrong="False: different numbers give different answers"
+fallback distractor in testBank[158]: prompt="True or false: If you know the answer to 100 - 37, you can find 99 - 36 without calculating." correct="True: both numbers decreased by 1, so the difference is the same (63)" wrong="False: you always have to calculate"
+testBank[159] -> u4l1 (low confidence): A store had 185 items. In the morning 63 were sold. In the afternoon some were sold. At closing, 78 items remain. A new shipment of 40 items
+unitQuiz[0] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[1] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[2] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[3] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[4] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[5] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[6] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[7] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[8] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[9] -> u4l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[10] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[11] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[12] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[13] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[14] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[15] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[16] -> u4l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[17] -> u4l1 (low confidence): These blocks show a number. Write it in expanded form.
+unitQuiz[18] -> u4l1 (low confidence): These blocks show a number. Write it in expanded form.
+unitQuiz[19] -> u4l1 (low confidence): These blocks show a number. Write it in expanded form.
+unitQuiz[20] -> u4l1 (low confidence): These blocks show a number. Write it in expanded form.
+unitQuiz[21] -> u4l1 (low confidence): These blocks show a number. Write it in expanded form.
