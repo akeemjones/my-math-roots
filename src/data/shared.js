@@ -458,19 +458,34 @@ const UNITS_DATA = [
         "id": "u9l1",
         "title": "Flat Shapes",
         "icon": "⭕",
-        "desc": "Flat shapes — sides and corners"
+        "desc": "Flat shapes — sides and corners",
+        "defaultTags": ["geometry","2d_shapes","shape_attributes"],
+        "defaultIntervention": {
+          "teach": { "text": "A 2D (flat) shape's sides are its straight edges and its corners (vertices) are where two sides meet. Triangle: 3 sides, 3 corners. Square: 4, 4. Pentagon: 5. Hexagon: 6. Octagon: 8." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","2d_shapes","shape_attributes"] }
+        }
       },
       {
         "id": "u9l2",
         "title": "Solid Shapes",
         "icon": "📦",
-        "desc": "Solid shapes — faces, edges, vertices"
+        "desc": "Solid shapes — faces, edges, vertices",
+        "defaultTags": ["geometry","3d_solids","faces_edges_vertices"],
+        "defaultIntervention": {
+          "teach": { "text": "A 3D solid has flat faces (surfaces), edges (where two faces meet), and vertices (corner points). A cube has 6 faces, 12 edges, 8 vertices. A sphere has 0 of each." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","3d_solids","faces_edges_vertices"] }
+        }
       },
       {
         "id": "u9l3",
         "title": "Mirror Shapes",
         "icon": "🦋",
-        "desc": "Lines of symmetry in shapes"
+        "desc": "Lines of symmetry in shapes",
+        "defaultTags": ["geometry","symmetry","line_of_symmetry"],
+        "defaultIntervention": {
+          "teach": { "text": "A line of symmetry folds a shape into two matching halves. A square has 4, a non-square rectangle has 2, a circle has infinitely many, and most letters have 0 or 1." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","symmetry","line_of_symmetry"] }
+        }
       }
     ],
     "_loaded": false

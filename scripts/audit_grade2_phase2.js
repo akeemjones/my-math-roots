@@ -2,6 +2,8 @@
 // scripts/audit_grade2_phase2.js
 // Validates Grade 2 Phase 2 activation gates against NORMALIZED questions.
 // Usage: node scripts/audit_grade2_phase2.js --unit u1
+//        node scripts/audit_grade2_phase2.js --unit u2
+// Unit-aware: loads src/data/<unit>.js and reads scripts/<unit>_review.txt.
 
 const fs = require('fs');
 const path = require('path');
@@ -47,7 +49,7 @@ sandbox._mergeUnitData = function(idx, data){
   sandbox._capturedUnits[idx] = data;
   return origMerge(idx, data);
 };
-loadFile('src/data/u1.js');
+loadFile('src/data/' + unitArg + '.js');
 
 const unitIdx = parseInt(unitArg.replace(/^u/, ''), 10) - 1;
 const unitData = sandbox._capturedUnits[unitIdx];
@@ -71,6 +73,7 @@ const gates = {
   outOfRangeAnswerIndex: 0,
   errRandomFound: 0,
   bareStringOptionArrays: 0,
+  negativeDistractors: 0, // Hard-fail: any negative-integer distractor in u2+ Place Value
 };
 const reports = {
   ambiguousLessonIds: 0,
@@ -78,6 +81,9 @@ const reports = {
   errSkipCountErrorCount: 0,
   errMagnitudeErrorCount: 0,
   totalQuestions: 0,
+  totalWrongOptions: 0,
+  totalErrTagCounts: {},
+  totalPatternTagCounts: {},
   questionsByLesson: {},
   optionObjectsTotal: 0,
 };
@@ -142,12 +148,24 @@ function walkPool(pool, where){
           fail(tag0+'.o['+oi+']', 'correct answer has err_* tag: ' + opt.tag);
         }
         if(!isCorrect){
+          reports.totalWrongOptions++;
           if(!opt.tag || typeof opt.tag !== 'string' || !opt.tag.startsWith('err_')){
             gates.wrongOptionMissingErrStar++;
             fail(tag0+'.o['+oi+']', 'wrong option missing err_* tag');
           } else if(opt.tag === 'err_random'){
             gates.errRandomFound++;
             fail(tag0+'.o['+oi+']', 'err_random forbidden');
+          } else {
+            reports.totalErrTagCounts[opt.tag] = (reports.totalErrTagCounts[opt.tag] || 0) + 1;
+          }
+          if(opt.patternTag && typeof opt.patternTag === 'string'){
+            reports.totalPatternTagCounts[opt.patternTag] = (reports.totalPatternTagCounts[opt.patternTag] || 0) + 1;
+          }
+          // Negative-distractor hard-fail check (Place Value u2+ never asks negatives)
+          const valStr = typeof opt.val === 'string' ? opt.val : String(opt.val);
+          if(/^-\d+$/.test(valStr.trim())){
+            gates.negativeDistractors++;
+            fail(tag0+'.o['+oi+']', 'negative distractor: ' + valStr);
           }
         }
         if(opt.tag === 'err_confused') reports.errConfusedCount++;
@@ -183,7 +201,7 @@ walkPool(unitData.testBank, 'testBank');
 walkPool(unitData.unitQuiz, 'unitQuiz');
 
 // Read review file for ambiguous count
-const reviewPath = path.join(REPO_ROOT, 'scripts', 'u1_review.txt');
+const reviewPath = path.join(REPO_ROOT, 'scripts', unitArg + '_review.txt');
 if(fs.existsSync(reviewPath)){
   reports.ambiguousLessonIds = fs.readFileSync(reviewPath, 'utf8').split('\n').filter(l => l.trim()).length;
 }
@@ -204,13 +222,36 @@ Object.entries(gates).forEach(([k, v]) => {
 console.log('');
 console.log('--- REPORTS (informational) ---');
 console.log('  ambiguousLessonIds (low-confidence classification):', reports.ambiguousLessonIds);
+console.log('  Total wrong options:', reports.totalWrongOptions);
 console.log('  err_confused count (fallback, needs review):', reports.errConfusedCount);
+const confusedPct = reports.totalWrongOptions > 0
+  ? (reports.errConfusedCount / reports.totalWrongOptions * 100)
+  : 0;
+console.log('  err_confused percent:', confusedPct.toFixed(2) + '%');
+const CONFUSED_THRESHOLD_PCT = 15;
+const overThreshold = confusedPct > CONFUSED_THRESHOLD_PCT;
+console.log('  err_confused threshold (≤' + CONFUSED_THRESHOLD_PCT + '%):',
+  overThreshold ? 'OVER (review required)' : 'OK');
 console.log('  err_skip_count_error count:', reports.errSkipCountErrorCount);
 console.log('  err_magnitude_error count:', reports.errMagnitudeErrorCount);
 console.log('');
-if(totalGateFailures === 0){
+console.log('--- err_* TAG TALLIES (wrong options) ---');
+Object.entries(reports.totalErrTagCounts).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
+  console.log('  ' + k + ': ' + v);
+});
+console.log('');
+console.log('--- patternTag TALLIES (wrong options) ---');
+Object.entries(reports.totalPatternTagCounts).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
+  console.log('  ' + k + ': ' + v);
+});
+console.log('');
+if(totalGateFailures === 0 && !overThreshold){
   console.log('STATUS: PASS');
   process.exit(0);
+} else if(totalGateFailures === 0 && overThreshold){
+  console.log('STATUS: REVIEW  (gates pass, but err_confused ' + confusedPct.toFixed(2) +
+    '% exceeds ' + CONFUSED_THRESHOLD_PCT + '% threshold — strengthen heuristics or document acceptance)');
+  process.exit(2);
 } else {
   console.log('STATUS: FAIL  (' + totalGateFailures + ' gate violations)');
   console.log('First 20 errors:');
