@@ -1,0 +1,281 @@
+fallback distractor in qBank[u3l1][85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Start over"
+fallback distractor in qBank[u3l1][85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Subtract instead"
+fallback distractor in qBank[u3l1][85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Skip to next"
+fallback distractor in qBank[u3l1][90]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Always"
+fallback distractor in qBank[u3l1][90]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Never"
+fallback distractor in qBank[u3l1][117]: prompt="Which sum is greater: 42 + 31 or 50 + 20?" correct="42 + 31" wrong="They are the same"
+fallback distractor in qBank[u3l1][117]: prompt="Which sum is greater: 42 + 31 or 50 + 20?" correct="42 + 31" wrong="Cannot tell"
+fallback distractor in qBank[u3l1][141]: prompt="Which is greater: 65 + 48 or 59 + 57?" correct="59 + 57" wrong="They are equal"
+fallback distractor in qBank[u3l1][141]: prompt="Which is greater: 65 + 48 or 59 + 57?" correct="59 + 57" wrong="Cannot tell"
+fallback distractor in qBank[u3l1][145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="Added the tens wrong"
+fallback distractor in qBank[u3l1][145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="Added the ones wrong"
+fallback distractor in qBank[u3l1][145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="No mistake, 82 is correct"
+fallback distractor in qBank[u3l1][154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="No error, 123 is correct"
+fallback distractor in qBank[u3l1][154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="The student forgot to regroup the ones"
+fallback distractor in qBank[u3l1][154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="The student added the ones incorrectly"
+fallback distractor in qBank[u3l2][10]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Always"
+fallback distractor in qBank[u3l2][10]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="When numbers are large"
+fallback distractor in qBank[u3l2][10]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Never"
+fallback distractor in qBank[u3l2][41]: prompt="Which difference is greater: 89 - 43 or 75 - 31?" correct="89 - 43" wrong="They are the same"
+fallback distractor in qBank[u3l2][41]: prompt="Which difference is greater: 89 - 43 or 75 - 31?" correct="89 - 43" wrong="Cannot tell"
+fallback distractor in qBank[u3l2][57]: prompt="Which strategy helps solve 100 - 63?" correct="Add up from 63 to 100" wrong="Count back by ones"
+fallback distractor in qBank[u3l2][64]: prompt="Which is greater: 130 - 56 or 115 - 48?" correct="130 - 56" wrong="They are equal"
+fallback distractor in qBank[u3l2][64]: prompt="Which is greater: 130 - 56 or 115 - 48?" correct="130 - 56" wrong="Cannot tell"
+fallback distractor in qBank[u3l2][70]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="Subtracted the ones wrong"
+fallback distractor in qBank[u3l2][70]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="Forgot to regroup"
+fallback distractor in qBank[u3l2][70]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="No mistake, 85 is correct"
+fallback distractor in qBank[u3l2][76]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="No error, 87 is correct"
+fallback distractor in qBank[u3l2][76]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="Forgot to regroup the ones"
+fallback distractor in qBank[u3l2][76]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="Subtracted the ones wrong"
+fallback distractor in qBank[u3l3][24]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="False"
+fallback distractor in qBank[u3l3][24]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Sometimes"
+fallback distractor in qBank[u3l3][24]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Never"
+fallback distractor in qBank[u3l3][50]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Add all ones first"
+fallback distractor in qBank[u3l3][50]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Start with the largest number"
+fallback distractor in qBank[u3l3][50]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Count by ones"
+fallback distractor in qBank[u3l3][55]: prompt="Which two numbers should you add first to make a ten? 17 + 24 + 33" correct="17 and 33" wrong="Add in order"
+fallback distractor in qBank[u3l3][61]: prompt="Which is greater: 25 + 36 + 14 or 43 + 28 + 12?" correct="43 + 28 + 12" wrong="They are equal"
+fallback distractor in qBank[u3l3][61]: prompt="Which is greater: 25 + 36 + 14 or 43 + 28 + 12?" correct="43 + 28 + 12" wrong="Cannot tell"
+fallback distractor in qBank[u3l3][66]: prompt="Which pair makes adding 27 + 46 + 13 easier?" correct="27 and 13" wrong="No pair helps"
+fallback distractor in qBank[u3l3][80]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Add left to right"
+fallback distractor in qBank[u3l3][80]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Add all ones, then all tens"
+fallback distractor in qBank[u3l3][80]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Round each number first"
+fallback distractor in qBank[u3l3][85]: prompt="Is 44 + 38 + 26 greater or less than 29 + 55 + 31?" correct="Second is greater (108 vs 115)" wrong="They are equal"
+fallback distractor in qBank[u3l3][88]: prompt="A student says the best way to add 76 + 24 + 53 is to add left to right. Is there a better strategy?" correct="Yes, add 76 + 24 = 100 first" wrong="No, left to right is best"
+fallback distractor in qBank[u3l3][88]: prompt="A student says the best way to add 76 + 24 + 53 is to add left to right. Is there a better strategy?" correct="Yes, add 76 + 24 = 100 first" wrong="Yes, round all numbers first"
+fallback distractor in qBank[u3l4][3]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Subtract"
+fallback distractor in qBank[u3l4][3]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Multiply"
+fallback distractor in qBank[u3l4][3]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Divide"
+fallback distractor in qBank[u3l4][7]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Add"
+fallback distractor in qBank[u3l4][7]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Multiply"
+fallback distractor in qBank[u3l4][7]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Count up"
+fallback distractor in qBank[u3l4][9]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Guess the answer"
+fallback distractor in qBank[u3l4][9]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Write numbers first"
+fallback distractor in qBank[u3l4][9]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Add everything"
+fallback distractor in qBank[u3l4][11]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="Subtract"
+fallback distractor in qBank[u3l4][11]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="Divide"
+fallback distractor in qBank[u3l4][11]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="None"
+fallback distractor in qBank[u3l4][14]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Add two numbers"
+fallback distractor in qBank[u3l4][14]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Multiply"
+fallback distractor in qBank[u3l4][14]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Count on"
+fallback distractor in qBank[u3l4][18]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="total"
+fallback distractor in qBank[u3l4][18]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="altogether"
+fallback distractor in qBank[u3l4][18]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="in all"
+fallback distractor in qBank[u3l4][22]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="left"
+fallback distractor in qBank[u3l4][22]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="fewer"
+fallback distractor in qBank[u3l4][22]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="gave away"
+fallback distractor in qBank[u3l4][25]: prompt="Which word means SUBTRACT?" correct="difference" wrong="total"
+fallback distractor in qBank[u3l4][25]: prompt="Which word means SUBTRACT?" correct="difference" wrong="sum"
+fallback distractor in qBank[u3l4][25]: prompt="Which word means SUBTRACT?" correct="difference" wrong="combined"
+fallback distractor in qBank[u3l4][38]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Addition"
+fallback distractor in qBank[u3l4][38]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Both"
+fallback distractor in qBank[u3l4][38]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Neither"
+fallback distractor in qBank[u3l4][42]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Addition"
+fallback distractor in qBank[u3l4][42]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Both"
+fallback distractor in qBank[u3l4][42]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Neither"
+fallback distractor in qBank[u3l4][59]: prompt="Which is greater: 'a bag with 93 - 47 marbles' or 'a bag with 85 - 36 marbles'?" correct="Second bag (49 marbles)" wrong="They are equal"
+fallback distractor in qBank[u3l4][59]: prompt="Which is greater: 'a bag with 93 - 47 marbles' or 'a bag with 85 - 36 marbles'?" correct="Second bag (49 marbles)" wrong="Cannot tell"
+fallback distractor in qBank[u3l4][65]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="How many in all?"
+fallback distractor in qBank[u3l4][65]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="How many together?"
+fallback distractor in qBank[u3l4][65]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="What is the total?"
+fallback distractor in qBank[u3l4][72]: prompt="Mia earned 57 points in Game 1 and 84 in Game 2. She needs 150 to win a prize. Does she have enough? How many more does " correct="No, she needs 9 more" wrong="Yes, she has enough"
+fallback distractor in qBank[u3l4][75]: prompt="A student wrote: '147 - 89 = 68.' Find the error and give the correct answer." correct="Should be 58" wrong="No error"
+fallback distractor in qBank[u3l4][76]: prompt="Team A scored 76 and 68. Team B scored 89 and 52. Which team scored more total points, and by how much?" correct="Team A by 3" wrong="They tied"
+fallback distractor in qBank[u3l4][78]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Added instead of subtracted"
+fallback distractor in qBank[u3l4][78]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Subtracted tens wrong"
+fallback distractor in qBank[u3l4][78]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Nothing, 53 is correct"
+testBank[10] -> u3l1 (low confidence): What does REGROUP mean?
+fallback distractor in testBank[10]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Start over"
+fallback distractor in testBank[10]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Subtract instead"
+fallback distractor in testBank[10]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Skip to next"
+testBank[15] -> u3l1 (low confidence): When do you regroup in addition?
+fallback distractor in testBank[15]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Always"
+fallback distractor in testBank[15]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Never"
+testBank[20] -> u3l1 (low confidence): Which addition problem requires regrouping?
+testBank[40] -> u3l1 (low confidence): When do you REGROUP in subtraction?
+fallback distractor in testBank[40]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Always"
+fallback distractor in testBank[40]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="When numbers are large"
+fallback distractor in testBank[40]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Never"
+testBank[45] -> u3l1 (low confidence): Which subtraction problem requires regrouping (regrouping)?
+fallback distractor in testBank[84]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="False"
+fallback distractor in testBank[84]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Sometimes"
+fallback distractor in testBank[84]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Never"
+fallback distractor in testBank[93]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Subtract"
+fallback distractor in testBank[93]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Multiply"
+fallback distractor in testBank[93]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Divide"
+testBank[96] -> u3l1 (low confidence): There are 165 crayons and 78 are broken. How many good crayons are there?
+fallback distractor in testBank[97]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Add"
+fallback distractor in testBank[97]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Multiply"
+fallback distractor in testBank[97]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Count up"
+testBank[98] -> u3l1 (low confidence): There are 82 students in one class and 59 in another. How many students are there combined?
+fallback distractor in testBank[99]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Guess the answer"
+fallback distractor in testBank[99]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Write numbers first"
+fallback distractor in testBank[99]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Add everything"
+fallback distractor in testBank[114]: prompt="Which difference is greater: 67 - 23 or 58 - 15?" correct="67 - 23" wrong="They are the same"
+fallback distractor in testBank[114]: prompt="Which difference is greater: 67 - 23 or 58 - 15?" correct="67 - 23" wrong="Cannot tell"
+testBank[122] -> u3l1 (low confidence): __ + 48 = 125. What is the missing number?
+fallback distractor in testBank[126]: prompt="Which strategy helps solve 98 + 56?" correct="Make a friendly number: 100 + 54" wrong="Round both down"
+testBank[128] -> u3l1 (low confidence): 161 - __ = 84. What is the missing number?
+fallback distractor in testBank[129]: prompt="Which is greater: 89 + 47 or 75 + 58?" correct="89 + 47" wrong="They are equal"
+fallback distractor in testBank[129]: prompt="Which is greater: 89 + 47 or 75 + 58?" correct="89 + 47" wrong="Cannot tell"
+testBank[133] -> u3l1 (low confidence): __ - 56 = 79. What is the missing number?
+fallback distractor in testBank[136]: prompt="Which word problem needs addition? A) 'How many are left?' B) 'How many more?' C) 'What is the total?' D) 'How many fewe" correct="What is the total?" wrong="How many are left?"
+fallback distractor in testBank[136]: prompt="Which word problem needs addition? A) 'How many are left?' B) 'How many more?' C) 'What is the total?' D) 'How many fewe" correct="What is the total?" wrong="How many more?"
+fallback distractor in testBank[136]: prompt="Which word problem needs addition? A) 'How many are left?' B) 'How many more?' C) 'What is the total?' D) 'How many fewe" correct="What is the total?" wrong="How many fewer?"
+testBank[141] -> u3l1 (low confidence): __ + 79 = 163. What is the missing number?
+fallback distractor in testBank[142]: prompt="Ben scored 68, 75, and 49 in three games. He needs 200 total to earn a trophy. Does he have enough? How many more does h" correct="No, he needs 8 more" wrong="Yes, he has enough"
+testBank[145] -> u3l1 (low confidence): __ children were on a playground. 48 went inside, then 35 came out. Now there are 62. How many started on the playground?
+fallback distractor in testBank[146]: prompt="Which has a greater answer: 156 - 89 or 143 - 68?" correct="143 - 68 = 75" wrong="They are equal"
+testBank[149] -> u3l1 (low confidence): __ - 58 = 94. What is the missing number?
+fallback distractor in testBank[151]: prompt="Which addition strategy is most efficient for 97 + 88?" correct="Make a friendly number: 100 + 85" wrong="Add ones then tens"
+fallback distractor in testBank[151]: prompt="Which addition strategy is most efficient for 97 + 88?" correct="Make a friendly number: 100 + 85" wrong="Break apart both numbers"
+fallback distractor in testBank[152]: prompt="Team A: 89 + 67 = ? Team B: 78 + 74 = ? Which team has a higher total, and by how much?" correct="Team A by 4" wrong="They are tied"
+unitQuiz[34] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[35] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[36] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[37] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[38] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[39] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[40] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[41] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[42] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[43] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[44] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[45] -> u3l1 (low confidence): What number do these base-10 blocks show?
+unitQuiz[57] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[58] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[59] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[60] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[61] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[62] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[63] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[64] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[65] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[66] -> u3l1 (low confidence): How many hundreds are shown in these base-10 blocks?
+unitQuiz[85] -> u3l1 (low confidence): What does REGROUP mean?
+fallback distractor in unitQuiz[85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Start over"
+fallback distractor in unitQuiz[85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Subtract instead"
+fallback distractor in unitQuiz[85]: prompt="What does REGROUP mean?" correct="Regroup 10 ones as 1 ten" wrong="Skip to next"
+unitQuiz[90] -> u3l1 (low confidence): When do you regroup in addition?
+fallback distractor in unitQuiz[90]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Always"
+fallback distractor in unitQuiz[90]: prompt="When do you regroup in addition?" correct="When ones column is 10+" wrong="Never"
+unitQuiz[95] -> u3l1 (low confidence): Which addition problem requires regrouping?
+fallback distractor in unitQuiz[117]: prompt="Which sum is greater: 42 + 31 or 50 + 20?" correct="42 + 31" wrong="They are the same"
+fallback distractor in unitQuiz[117]: prompt="Which sum is greater: 42 + 31 or 50 + 20?" correct="42 + 31" wrong="Cannot tell"
+unitQuiz[120] -> u3l1 (low confidence): There are 46 birds on a wire. 23 more land. How many birds are there now?
+unitQuiz[127] -> u3l1 (low confidence): __ + 36 = 73. What is the missing number?
+unitQuiz[130] -> u3l1 (low confidence): __ + 55 = 112. What is the missing number?
+unitQuiz[133] -> u3l1 (low confidence): There are 53 kids on a bus. At the next stop, 39 more get on. How many kids are on the bus?
+unitQuiz[135] -> u3l1 (low confidence): 29 + __ = 81. What is the missing number?
+fallback distractor in unitQuiz[141]: prompt="Which is greater: 65 + 48 or 59 + 57?" correct="59 + 57" wrong="They are equal"
+fallback distractor in unitQuiz[141]: prompt="Which is greater: 65 + 48 or 59 + 57?" correct="59 + 57" wrong="Cannot tell"
+fallback distractor in unitQuiz[145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="Added the tens wrong"
+fallback distractor in unitQuiz[145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="Added the ones wrong"
+fallback distractor in unitQuiz[145]: prompt="A student solved 63 + 29 = 82. What mistake did the student make?" correct="Forgot to regroup" wrong="No mistake, 82 is correct"
+unitQuiz[146] -> u3l1 (low confidence): __ + 67 = 143. What is the missing number?
+unitQuiz[151] -> u3l1 (low confidence): __ + 38 = 117. What is the missing number?
+fallback distractor in unitQuiz[154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="No error, 123 is correct"
+fallback distractor in unitQuiz[154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="The student forgot to regroup the ones"
+fallback distractor in unitQuiz[154]: prompt="A student solved 86 + 47 = 123. Find the error." correct="The student added the tens incorrectly" wrong="The student added the ones incorrectly"
+unitQuiz[156] -> u3l1 (low confidence): __ + 89 = 165. What is the missing number?
+unitQuiz[161] -> u3l1 (low confidence): __ + __ = 130, and both numbers are between 50 and 90. Which pair works?
+unitQuiz[174] -> u3l1 (low confidence): When do you REGROUP in subtraction?
+fallback distractor in unitQuiz[174]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Always"
+fallback distractor in unitQuiz[174]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="When numbers are large"
+fallback distractor in unitQuiz[174]: prompt="When do you REGROUP in subtraction?" correct="When top ones digit is smaller" wrong="Never"
+unitQuiz[179] -> u3l1 (low confidence): Which subtraction problem requires regrouping (regrouping)?
+fallback distractor in unitQuiz[205]: prompt="Which difference is greater: 89 - 43 or 75 - 31?" correct="89 - 43" wrong="They are the same"
+fallback distractor in unitQuiz[205]: prompt="Which difference is greater: 89 - 43 or 75 - 31?" correct="89 - 43" wrong="Cannot tell"
+unitQuiz[217] -> u3l1 (low confidence): 91 - __ = 56. What is the missing number?
+unitQuiz[220] -> u3l1 (low confidence): __ - 29 = 47. What is the missing number?
+fallback distractor in unitQuiz[221]: prompt="Which strategy helps solve 100 - 63?" correct="Add up from 63 to 100" wrong="Count back by ones"
+unitQuiz[226] -> u3l1 (low confidence): 115 - __ = 68. What is the missing number?
+fallback distractor in unitQuiz[228]: prompt="Which is greater: 130 - 56 or 115 - 48?" correct="130 - 56" wrong="They are equal"
+fallback distractor in unitQuiz[228]: prompt="Which is greater: 130 - 56 or 115 - 48?" correct="130 - 56" wrong="Cannot tell"
+unitQuiz[231] -> u3l1 (low confidence): __ - 45 = 88. What is the missing number?
+fallback distractor in unitQuiz[234]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="Subtracted the ones wrong"
+fallback distractor in unitQuiz[234]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="Forgot to regroup"
+fallback distractor in unitQuiz[234]: prompt="A student solved 132 - 57 = 85. What mistake did the student make?" correct="Subtracted the tens wrong" wrong="No mistake, 85 is correct"
+unitQuiz[236] -> u3l1 (low confidence): __ - 67 = 89. What is the missing number?
+fallback distractor in unitQuiz[240]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="No error, 87 is correct"
+fallback distractor in unitQuiz[240]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="Forgot to regroup the ones"
+fallback distractor in unitQuiz[240]: prompt="A student wrote 150 - 73 = 87. Find the error." correct="Subtracted the tens wrong" wrong="Subtracted the ones wrong"
+unitQuiz[241] -> u3l1 (low confidence): __ - 86 = 57. What is the missing number?
+unitQuiz[247] -> u3l1 (low confidence): __ - __ = 45, where the first number is between 100 and 150. Which pair works?
+unitQuiz[251] -> u3l1 (low confidence): There are 193 students. 87 go to lunch first. Of the remaining, 56 go next. How many are still waiting?
+unitQuiz[253] -> u3l1 (low confidence): __ - 95 = 78. What is the missing number?
+fallback distractor in unitQuiz[278]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="False"
+fallback distractor in unitQuiz[278]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Sometimes"
+fallback distractor in unitQuiz[278]: prompt="Is it true that you can add 3 numbers in any order?" correct="True" wrong="Never"
+fallback distractor in unitQuiz[304]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Add all ones first"
+fallback distractor in unitQuiz[304]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Start with the largest number"
+fallback distractor in unitQuiz[304]: prompt="Which strategy helps add 18 + 32 + 25?" correct="Make a ten: 18 + 32 = 50" wrong="Count by ones"
+fallback distractor in unitQuiz[309]: prompt="Which two numbers should you add first to make a ten? 17 + 24 + 33" correct="17 and 33" wrong="Add in order"
+unitQuiz[312] -> u3l1 (low confidence): 15 + __ + 28 = 73. What is the missing number?
+fallback distractor in unitQuiz[315]: prompt="Which is greater: 25 + 36 + 14 or 43 + 28 + 12?" correct="43 + 28 + 12" wrong="They are equal"
+fallback distractor in unitQuiz[315]: prompt="Which is greater: 25 + 36 + 14 or 43 + 28 + 12?" correct="43 + 28 + 12" wrong="Cannot tell"
+fallback distractor in unitQuiz[320]: prompt="Which pair makes adding 27 + 46 + 13 easier?" correct="27 and 13" wrong="No pair helps"
+unitQuiz[323] -> u3l1 (low confidence): Jake scored 47 points in Round 1, 38 in Round 2, and 29 in Round 3. He needs 120 to win. Does he have enough?
+unitQuiz[330] -> u3l1 (low confidence): __ + 56 + __ = 140, and both missing numbers are the same. What is each number?
+fallback distractor in unitQuiz[334]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Add left to right"
+fallback distractor in unitQuiz[334]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Add all ones, then all tens"
+fallback distractor in unitQuiz[334]: prompt="Which strategy is best for adding 63 + 17 + 25?" correct="Make a ten: 63 + 17 = 80, then + 25" wrong="Round each number first"
+unitQuiz[335] -> u3l1 (low confidence): A class needs 150 cans. Group A collected 43, Group B collected 58, Group C collected 37. Do they have enough?
+unitQuiz[336] -> u3l1 (low confidence): 25 + __ + 48 = 130. What is the missing number?
+fallback distractor in unitQuiz[339]: prompt="Is 44 + 38 + 26 greater or less than 29 + 55 + 31?" correct="Second is greater (108 vs 115)" wrong="They are equal"
+fallback distractor in unitQuiz[342]: prompt="A student says the best way to add 76 + 24 + 53 is to add left to right. Is there a better strategy?" correct="Yes, add 76 + 24 = 100 first" wrong="No, left to right is best"
+fallback distractor in unitQuiz[342]: prompt="A student says the best way to add 76 + 24 + 53 is to add left to right. Is there a better strategy?" correct="Yes, add 76 + 24 = 100 first" wrong="Yes, round all numbers first"
+fallback distractor in unitQuiz[346]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Subtract"
+fallback distractor in unitQuiz[346]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Multiply"
+fallback distractor in unitQuiz[346]: prompt="What does the word "altogether" tell you to do?" correct="Add" wrong="Divide"
+unitQuiz[349] -> u3l1 (low confidence): There are 165 crayons and 78 are broken. How many good crayons are there?
+fallback distractor in unitQuiz[350]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Add"
+fallback distractor in unitQuiz[350]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Multiply"
+fallback distractor in unitQuiz[350]: prompt="What does the phrase "how many left" tell you to do?" correct="Subtract" wrong="Count up"
+unitQuiz[351] -> u3l1 (low confidence): There are 82 students in one class and 59 in another. How many students are there combined?
+fallback distractor in unitQuiz[352]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Guess the answer"
+fallback distractor in unitQuiz[352]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Write numbers first"
+fallback distractor in unitQuiz[352]: prompt="What is the first step when solving a word problem?" correct="Read carefully" wrong="Add everything"
+fallback distractor in unitQuiz[354]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="Subtract"
+fallback distractor in unitQuiz[354]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="Divide"
+fallback distractor in unitQuiz[354]: prompt="What does the phrase "in all" mean in a math story?" correct="Add" wrong="None"
+fallback distractor in unitQuiz[357]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Add two numbers"
+fallback distractor in unitQuiz[357]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Multiply"
+fallback distractor in unitQuiz[357]: prompt="What does the word "difference" mean in a math problem?" correct="Subtract to find gap" wrong="Count on"
+fallback distractor in unitQuiz[361]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="total"
+fallback distractor in unitQuiz[361]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="altogether"
+fallback distractor in unitQuiz[361]: prompt="Which word tells you to SUBTRACT in a math story?" correct="fewer" wrong="in all"
+fallback distractor in unitQuiz[365]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="left"
+fallback distractor in unitQuiz[365]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="fewer"
+fallback distractor in unitQuiz[365]: prompt="Which word tells you to ADD in a math story?" correct="combined" wrong="gave away"
+unitQuiz[367] -> u3l1 (low confidence): There are 200 apples and 87 were sold. How many apples are remaining?
+fallback distractor in unitQuiz[368]: prompt="Which word means SUBTRACT?" correct="difference" wrong="total"
+fallback distractor in unitQuiz[368]: prompt="Which word means SUBTRACT?" correct="difference" wrong="sum"
+fallback distractor in unitQuiz[368]: prompt="Which word means SUBTRACT?" correct="difference" wrong="combined"
+unitQuiz[371] -> u3l2 (low confidence): There were 175 people at a game and 88 left early. How many people are still at the game?
+unitQuiz[375] -> u3l1 (low confidence): There are 56 birds in a tree. 12 fly away. How many birds are still in the tree?
+unitQuiz[379] -> u3l1 (low confidence): There were 68 fish in a pond. 24 swam away. How many fish are still in the pond?
+fallback distractor in unitQuiz[381]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Addition"
+fallback distractor in unitQuiz[381]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Both"
+fallback distractor in unitQuiz[381]: prompt="Which operation do you use? 'Leo had 75 cards. He gave 33 to a friend.'" correct="Subtraction" wrong="Neither"
+unitQuiz[384] -> u3l1 (low confidence): Kai collected 43 rocks. His sister collected 35 rocks. How many rocks do they have together?
+fallback distractor in unitQuiz[385]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Addition"
+fallback distractor in unitQuiz[385]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Both"
+fallback distractor in unitQuiz[385]: prompt="Which operation do you use? 'A bakery made 84 cookies. They sold 51.'" correct="Subtraction" wrong="Neither"
+unitQuiz[387] -> u3l1 (low confidence): There are 75 students. 43 go outside. How many are still inside?
+unitQuiz[397] -> u3l2 (low confidence): There were __ students in a gym. 38 left and now there are 57. How many were there at first?
+fallback distractor in unitQuiz[402]: prompt="Which is greater: 'a bag with 93 - 47 marbles' or 'a bag with 85 - 36 marbles'?" correct="Second bag (49 marbles)" wrong="They are equal"
+fallback distractor in unitQuiz[402]: prompt="Which is greater: 'a bag with 93 - 47 marbles' or 'a bag with 85 - 36 marbles'?" correct="Second bag (49 marbles)" wrong="Cannot tell"
+fallback distractor in unitQuiz[408]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="How many in all?"
+fallback distractor in unitQuiz[408]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="How many together?"
+fallback distractor in unitQuiz[408]: prompt="Which word problem needs subtraction? A) 'How many in all?' B) 'How many are left?' C) 'How many together?' D) 'What is " correct="How many are left?" wrong="What is the total?"
+fallback distractor in unitQuiz[415]: prompt="Mia earned 57 points in Game 1 and 84 in Game 2. She needs 150 to win a prize. Does she have enough? How many more does " correct="No, she needs 9 more" wrong="Yes, she has enough"
+unitQuiz[417] -> u3l1 (low confidence): __ children were at the park. 36 went home, then 28 more came. Now there are 75. How many were there at first?
+fallback distractor in unitQuiz[418]: prompt="A student wrote: '147 - 89 = 68.' Find the error and give the correct answer." correct="Should be 58" wrong="No error"
+fallback distractor in unitQuiz[419]: prompt="Team A scored 76 and 68. Team B scored 89 and 52. Which team scored more total points, and by how much?" correct="Team A by 3" wrong="They tied"
+fallback distractor in unitQuiz[421]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Added instead of subtracted"
+fallback distractor in unitQuiz[421]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Subtracted tens wrong"
+fallback distractor in unitQuiz[421]: prompt="A student solved 95 - 48 this way: '9-4=5, 8-5=3, so the answer is 53.' What did the student do wrong?" correct="Subtracted ones digits backward instead of regrouping" wrong="Nothing, 53 is correct"
+unitQuiz[427] -> u3l1 (low confidence): A student checked: 'There are 156 chairs. 79 are used. 77 are empty.' Is this correct?
+unitQuiz[428] -> u3l1 (low confidence): Two friends share 164 stickers equally. How many does each friend get? What operation do you use?
+unitQuiz[430] -> u3l1 (low confidence): __ kids played outside. 47 went inside for lunch. After lunch, 33 came back out. Now 52 are outside. How many started outside?

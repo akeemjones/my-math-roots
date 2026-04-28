@@ -155,25 +155,45 @@ const UNITS_DATA = [
         "id": "u3l1",
         "title": "Adding Bigger Numbers",
         "icon": "➕",
-        "desc": "Add with and without regrouping"
+        "desc": "Add with and without regrouping",
+        "defaultTags": ["addition_to_200","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Add ones first, then tens. If the ones make 10 or more, regroup 10 ones as 1 ten." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_to_200","regrouping","place_value"] }
+        }
       },
       {
         "id": "u3l2",
         "title": "Taking Away Bigger Numbers",
         "icon": "➖",
-        "desc": "Subtract with and without borrowing"
+        "desc": "Subtract with and without borrowing",
+        "defaultTags": ["subtraction_to_200","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Subtract ones first, then tens. If there are not enough ones, regroup 1 ten as 10 ones." },
+          "retry": { "strategy": "similar", "matchTags": ["subtraction_to_200","regrouping","place_value"] }
+        }
       },
       {
         "id": "u3l3",
         "title": "Add Three Numbers",
         "icon": "🔱",
-        "desc": "Find clever ways to add 3 numbers"
+        "desc": "Find clever ways to add 3 numbers",
+        "defaultTags": ["three_addends","addition_strategy","make_ten"],
+        "defaultIntervention": {
+          "teach": { "text": "When adding three numbers, look for two numbers that make 10 or make a friendly number first." },
+          "retry": { "strategy": "similar", "matchTags": ["three_addends","addition_strategy","make_ten"] }
+        }
       },
       {
         "id": "u3l4",
         "title": "Math Stories",
         "icon": "📝",
-        "desc": "Solve math stories step by step"
+        "desc": "Solve math stories step by step",
+        "defaultTags": ["word_problems","addition_subtraction","problem_solving"],
+        "defaultIntervention": {
+          "teach": { "text": "Read the story carefully. Decide if the story is joining, separating, or comparing before choosing an operation." },
+          "retry": { "strategy": "similar", "matchTags": ["word_problems","addition_subtraction","problem_solving"] }
+        }
       }
     ],
     "_loaded": false
