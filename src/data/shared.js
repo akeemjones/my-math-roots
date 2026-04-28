@@ -312,25 +312,45 @@ const UNITS_DATA = [
         "id": "u6l1",
         "title": "Tally Marks",
         "icon": "📋",
-        "desc": "Record and read data with tally marks"
+        "desc": "Record and read data with tally marks",
+        "defaultTags": ["data","tally_marks","counting_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Count tally marks in groups of five, then count any extra marks." },
+          "retry": { "strategy": "similar", "matchTags": ["data","tally_marks","counting_data"] }
+        }
       },
       {
         "id": "u6l2",
         "title": "Bar Graphs",
         "icon": "📊",
-        "desc": "Read and understand bar graphs"
+        "desc": "Read and understand bar graphs",
+        "defaultTags": ["data","bar_graphs","compare_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Read the bar height for each category, then compare the data." },
+          "retry": { "strategy": "similar", "matchTags": ["data","bar_graphs","compare_data"] }
+        }
       },
       {
         "id": "u6l3",
         "title": "Picture Graphs",
         "icon": "🖼️",
-        "desc": "Use pictures to represent data"
+        "desc": "Use pictures to represent data",
+        "defaultTags": ["data","picture_graphs","graph_key"],
+        "defaultIntervention": {
+          "teach": { "text": "Use the picture graph key, then count the pictures for the category." },
+          "retry": { "strategy": "similar", "matchTags": ["data","picture_graphs","graph_key"] }
+        }
       },
       {
         "id": "u6l4",
         "title": "Line Plots",
         "icon": "📈",
-        "desc": "Show and read data on a number line"
+        "desc": "Show and read data on a number line",
+        "defaultTags": ["data","line_plots","measurement_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Each mark on a line plot shows one data point. Count the marks carefully." },
+          "retry": { "strategy": "similar", "matchTags": ["data","line_plots","measurement_data"] }
+        }
       }
     ],
     "_loaded": false
