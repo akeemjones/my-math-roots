@@ -3033,3 +3033,117 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
     padding: 8px 10px 32px;
   }
 }
+
+/* ── Unit Progress Map ────────────────────────────────────────────────── */
+#dashboard-screen .db-upm-overview {
+  font-size: var(--db-text-sm);
+  color: var(--neutral-600);
+  margin: 0 0 12px;
+}
+#dashboard-screen .db-upm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#dashboard-screen .db-upm-card {
+  border-radius: 8px;
+  border: 1px solid var(--neutral-200);
+  border-left-width: 4px;
+  background: #fff;
+  overflow: hidden;
+}
+#dashboard-screen .db-upm-not-started {
+  border-left-color: var(--neutral-300) !important;
+  opacity: .65;
+}
+#dashboard-screen .db-upm-card > summary {
+  list-style: none;
+  cursor: pointer;
+}
+#dashboard-screen .db-upm-card > summary::-webkit-details-marker { display: none; }
+#dashboard-screen .db-upm-card-inner,
+#dashboard-screen .db-upm-not-started .db-upm-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+#dashboard-screen .db-upm-card[open] > summary .db-upm-summary {
+  border-bottom: 1px solid var(--neutral-100);
+}
+#dashboard-screen .db-upm-num {
+  font-size: var(--db-text-xs);
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+#dashboard-screen .db-upm-name {
+  font-size: var(--db-text-sm);
+  font-weight: 600;
+  color: var(--neutral-700);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#dashboard-screen .db-upm-badge {
+  font-size: var(--db-text-xs);
+  font-weight: 600;
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 1px 8px;
+  flex-shrink: 0;
+}
+#dashboard-screen .db-upm-pct {
+  font-size: var(--db-text-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+}
+#dashboard-screen .db-upm-detail {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#dashboard-screen .db-upm-stat {
+  font-size: var(--db-text-xs);
+  color: var(--neutral-500);
+  margin: 0;
+}
+#dashboard-screen .db-upm-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--db-text-sm);
+}
+#dashboard-screen .db-upm-row-lbl {
+  color: var(--neutral-500);
+  flex-shrink: 0;
+  font-size: var(--db-text-xs);
+  min-width: 100px;
+}
+#dashboard-screen .db-upm-row-val {
+  color: var(--neutral-700);
+  font-weight: 600;
+}
+#dashboard-screen .db-upm-hint {
+  font-size: var(--db-text-xs);
+  color: var(--neutral-600);
+  margin: 0;
+  line-height: 1.5;
+}
+#dashboard-screen .db-upm-rec {
+  font-size: var(--db-text-xs);
+  color: var(--neutral-600);
+  background: var(--neutral-50);
+  border-radius: 6px;
+  padding: 6px 8px;
+  line-height: 1.4;
+}
+#dashboard-screen .db-upm-rec strong {
+  color: var(--neutral-700);
+}
