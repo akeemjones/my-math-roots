@@ -1123,6 +1123,19 @@ async function _syncPinHash() {
   } catch(e) { /* offline — keep existing local hash */ }
 }
 
+// ── Activity merge helper ────────────────────────────────────────────────
+// Union-merge two activity event arrays. Local events win on ts collision.
+// Result is sorted by ts ascending, capped at 1000.
+function _mergeActivityEvents(localEvents, remoteEvents) {
+  var tsMap = {};
+  (remoteEvents || []).forEach(function(e) { if (e && e.ts) tsMap[String(e.ts)] = e; });
+  (localEvents  || []).forEach(function(e) { if (e && e.ts) tsMap[String(e.ts)] = e; });
+  var merged = Object.keys(tsMap).map(function(k) { return tsMap[k]; });
+  merged.sort(function(a, b) { return a.ts - b.ts; });
+  if (merged.length > 1000) merged = merged.slice(merged.length - 1000);
+  return { v: 1, events: merged };
+}
+
 // Pull progress + quiz scores from Supabase for a student who logged in via PIN,
 // without requiring an active parent Supabase session.  Uses the SECURITY DEFINER
 // RPC so it works with only the anon key.  Results are merged into DONE / SCORES
@@ -1163,21 +1176,36 @@ async function _pullStudentProgress(studentId) {
       changed = true;
     }
 
-    // Merge mastery_json
+    // Merge mastery_json → mmr_mastery_v1 (canonical key; per-tag higher-attempts wins)
     var masteryJson = data.profile && data.profile.mastery_json;
-    if (masteryJson && typeof masteryJson === 'object' && typeof MASTERY !== 'undefined') {
-      var mkeys = Object.keys(masteryJson);
-      for (var mi = 0; mi < mkeys.length; mi++) {
-        var mk = mkeys[mi];
-        var cm = masteryJson[mk];
-        if (!cm || typeof cm.attempts !== 'number') continue;
-        var lm = MASTERY[mk];
-        if (!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && (cm.correct || 0) > (lm.correct || 0))) {
-          MASTERY[mk] = { attempts: cm.attempts, correct: cm.correct || 0, lastSeen: cm.lastSeen || 0 };
-          changed = true;
+    if (masteryJson && typeof masteryJson === 'object') {
+      try {
+        var localAgg = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+        var mkeys = Object.keys(masteryJson);
+        var mchanged = false;
+        for (var mi = 0; mi < mkeys.length; mi++) {
+          var mk = mkeys[mi];
+          var cm = masteryJson[mk];
+          if (!cm || typeof cm.attempts !== 'number') continue;
+          var lm = localAgg[mk];
+          if (!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && (cm.correct || 0) > (lm.correct || 0))) {
+            localAgg[mk] = { attempts: cm.attempts, correct: cm.correct || 0, lastSeen: cm.lastSeen || 0 };
+            mchanged = true;
+          }
         }
-      }
-      if (changed && typeof saveMastery === 'function') saveMastery();
+        if (mchanged) { localStorage.setItem('mmr_mastery_v1', JSON.stringify(localAgg)); changed = true; }
+      } catch (_me) {}
+    }
+    // Hydrate activity_json → mmr_activity_v1 (union merge by ts)
+    var activityJson = data.profile && data.profile.activity_json;
+    if (activityJson && activityJson.v === 1 && Array.isArray(activityJson.events)) {
+      try {
+        var localActDoc = JSON.parse(localStorage.getItem('mmr_activity_v1') || 'null');
+        var localEvts = (localActDoc && localActDoc.v === 1 && Array.isArray(localActDoc.events)) ? localActDoc.events : [];
+        var mergedDoc = _mergeActivityEvents(localEvts, activityJson.events);
+        localStorage.setItem('mmr_activity_v1', JSON.stringify(mergedDoc));
+        changed = true;
+      } catch (_ae) {}
     }
 
     // Merge streak
@@ -1371,18 +1399,30 @@ async function _pullOnLogin(force){
         localStorage.setItem('wb_streak', JSON.stringify(STREAK));
       }
     }
-    // MASTERY — per-key merge: higher attempts wins; ties go to higher correct count
-    if(prog && prog.mastery_json && typeof prog.mastery_json === 'object' && typeof MASTERY !== 'undefined'){
-      let masteryChanged = false;
-      for(const [k, cm] of Object.entries(prog.mastery_json)){
-        if(!cm || typeof cm.attempts !== 'number') continue;
-        const lm = MASTERY[k];
-        if(!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && cm.correct > lm.correct)){
-          MASTERY[k] = { attempts:cm.attempts, correct:cm.correct||0, lastSeen:cm.lastSeen||0 };
-          masteryChanged = true;
+    // MASTERY — per-key merge → mmr_mastery_v1 (canonical key; higher attempts wins)
+    if(prog && prog.mastery_json && typeof prog.mastery_json === 'object'){
+      try{
+        let localAgg = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+        let masteryChanged = false;
+        for(const [k, cm] of Object.entries(prog.mastery_json)){
+          if(!cm || typeof cm.attempts !== 'number') continue;
+          const lm = localAgg[k];
+          if(!lm || cm.attempts > lm.attempts || (cm.attempts === lm.attempts && (cm.correct||0) > (lm.correct||0))){
+            localAgg[k] = { attempts:cm.attempts, correct:cm.correct||0, lastSeen:cm.lastSeen||0 };
+            masteryChanged = true;
+          }
         }
-      }
-      if(masteryChanged && typeof saveMastery === 'function') saveMastery();
+        if(masteryChanged) localStorage.setItem('mmr_mastery_v1', JSON.stringify(localAgg));
+      } catch(_me){}
+    }
+    // ACTIVITY — union merge → mmr_activity_v1
+    if(prog && prog.activity_json && prog.activity_json.v === 1 && Array.isArray(prog.activity_json.events)){
+      try{
+        const localActDoc = JSON.parse(localStorage.getItem('mmr_activity_v1') || 'null');
+        const localEvts = (localActDoc && localActDoc.v === 1 && Array.isArray(localActDoc.events)) ? localActDoc.events : [];
+        const mergedDoc = _mergeActivityEvents(localEvts, prog.activity_json.events);
+        localStorage.setItem('mmr_activity_v1', JSON.stringify(mergedDoc));
+      } catch(_ae){}
     }
 
     // APP_TIME — take max totalSecs/sessions; merge dailySecs by max per day
@@ -1449,6 +1489,7 @@ async function _pushAllParent(){
   await Promise.all([
     _pushDoneParent(),
     _pushMasteryParent(),
+    _pushActivityParent(),
     _pushScores(),
     _pushAppTimeParent(),
   ]);
@@ -1466,7 +1507,8 @@ async function _pushAll(){
         p_student_id:       studentId,
         p_grade:            localStorage.getItem('mmr_grade') || '2',
         p_session_token:    _sessionToken,
-        p_mastery_json:     (typeof MASTERY !== 'undefined') ? MASTERY : {},
+        p_mastery_json:     (function(){ try{ return JSON.parse(localStorage.getItem('mmr_mastery_v1')||'{}'); }catch(_){ return {}; } })(),
+        p_activity_json:    (function(){ try{ var d=JSON.parse(localStorage.getItem('mmr_activity_v1')||'null'); return (d&&d.v===1)?d:{v:1,events:[]}; }catch(_){ return {v:1,events:[]}; } })(),
         p_streak_current:   STREAK.current || 0,
         p_streak_longest:   STREAK.longest || 0,
         p_streak_last_date: STREAK.lastDate || '',
@@ -1520,7 +1562,7 @@ async function _pushMasteryParent(){
   if(!_supa || !_supaUser) return;
   if(!_pullSucceeded) return; // don't overwrite cloud until local is confirmed current
   try{
-    var mastery = (typeof MASTERY !== 'undefined') ? MASTERY : {};
+    var mastery = (function(){ try{ return JSON.parse(localStorage.getItem('mmr_mastery_v1')||'{}'); }catch(_){ return {}; } })();
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
@@ -1530,6 +1572,23 @@ async function _pushMasteryParent(){
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })
     ]);
   } catch(e){ console.warn('[Supabase] pushMastery error', e); }
+}
+
+async function _pushActivityParent(){
+  if(!_supa || !_supaUser) return;
+  if(!_pullSucceeded) return;
+  try{
+    var activity = (function(){ try{ var d=JSON.parse(localStorage.getItem('mmr_activity_v1')||'null'); return (d&&d.v===1)?d:{v:1,events:[]}; }catch(_){ return {v:1,events:[]}; } })();
+    var _sid = localStorage.getItem('mmr_active_student_id') || null;
+    await Promise.race([
+      _supa.from('student_progress').upsert(
+        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2',
+          activity_json:activity, updated_at:new Date().toISOString() },
+        { onConflict:'user_id,student_id,grade' }
+      ),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushActivity timeout')); },8000); })
+    ]);
+  } catch(e){ console.warn('[Supabase] pushActivity error', e); }
 }
 
 async function _pushAppTimeParent(){
