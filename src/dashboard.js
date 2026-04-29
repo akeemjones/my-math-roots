@@ -186,16 +186,27 @@ function _readLocalStudentData() {
     try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
     catch(e) { return fallback; }
   }
-  var rawScores  = tryParse('wb_sc5', []);
+  // Grade-namespaced scores (e.g. wb_sc5_2); fallback to legacy unnamespaced
+  var activeGrade = (function(){ try { return localStorage.getItem('mmr_grade') || '2'; } catch(_){ return '2'; } })();
+  var rawScores  = tryParse('wb_sc5_' + activeGrade, null) || tryParse('wb_sc5', []);
   var scoresArr  = Array.isArray(rawScores) ? rawScores : (rawScores.d || []);
   var cfg        = tryParse('wb_settings', {});
+  // Canonical mastery key (Phase 2 pipeline); fallback to grade-namespaced then legacy
+  var masteryAgg = tryParse('mmr_mastery_v1', null);
+  if (!masteryAgg || !Object.keys(masteryAgg).length) {
+    masteryAgg = tryParse('wb_mastery_' + activeGrade, null) || tryParse('wb_mastery', {});
+  }
+  // Activity event log (Phase 2 pipeline) — powers Practice Spotlight & Intervention Insights
+  var actDoc    = tryParse('mmr_activity_v1', null);
+  var actEvents = (actDoc && actDoc.v === 1 && Array.isArray(actDoc.events)) ? actDoc.events : [];
   return {
-    id:      'local',
-    name:    cfg.studentName || 'Student (This Device)',
-    MASTERY: tryParse('wb_mastery', {}),
-    SCORES:  scoresArr,
-    STREAK:  tryParse('wb_streak',  { current: 0, longest: 0, lastDate: null }),
-    APP_TIME: tryParse('wb_app_time', { totalSecs: 0, sessions: 0, dailySecs: {} }),
+    id:       'local',
+    name:     cfg.studentName || 'Student (This Device)',
+    MASTERY:  masteryAgg,
+    ACTIVITY: actEvents,
+    SCORES:   scoresArr,
+    STREAK:   tryParse('wb_streak',  { current: 0, longest: 0, lastDate: null }),
+    APP_TIME: tryParse('wb_apptime', { totalSecs: 0, sessions: 0, dailySecs: {} }),
   };
 }
 
@@ -250,6 +261,54 @@ function _buildQTextMap(scores) {
     });
   });
   return map;
+}
+
+// ── Tag / Activity analytics helpers ─────────────────────────────────────
+
+function _computeTagStats(mastery) {
+  return Object.keys(mastery || {}).map(function(tag) {
+    var m = mastery[tag];
+    var attempts = m.attempts || 0;
+    return { tag: tag, attempts: attempts, correct: m.correct || 0,
+             accuracy: attempts ? (m.correct || 0) / attempts : 0, lastSeen: m.lastSeen || 0 };
+  }).sort(function(a, b) { return a.accuracy - b.accuracy; });
+}
+
+function _buildTagLessonMap(activityEvents) {
+  var map = {};
+  (activityEvents || []).forEach(function(e) {
+    if (!e.lessonId) return;
+    (e.tags || []).forEach(function(tag) {
+      if (!map[tag]) map[tag] = {};
+      map[tag][e.lessonId] = (map[tag][e.lessonId] || 0) + 1;
+    });
+  });
+  return map;
+}
+
+function _computeMisconceptions(activityEvents) {
+  var counts = {};
+  (activityEvents || []).forEach(function(e) {
+    if (e.errorType) counts[e.errorType] = (counts[e.errorType] || 0) + 1;
+  });
+  return counts;
+}
+
+function _recommendReviewLessons(weakTags, tagLessonMap, limit) {
+  var recs = [], seen = {};
+  weakTags.forEach(function(t) {
+    var lessons = tagLessonMap[t.tag] || {};
+    Object.keys(lessons)
+      .sort(function(a, b) { return lessons[b] - lessons[a]; })
+      .slice(0, 2)
+      .forEach(function(lessonId) {
+        if (!seen[lessonId]) {
+          seen[lessonId] = true;
+          recs.push({ lessonId: lessonId, weakTag: t.tag, accuracy: t.accuracy });
+        }
+      });
+  });
+  return recs.slice(0, limit || 5);
 }
 
 // ── Render helpers (return HTML strings) ─────────────────────────────────
@@ -675,32 +734,47 @@ function closeQuizReview() {
   if (modal) modal.classList.remove('open');
 }
 
-function _renderPracticeSpotlight(mastery, scores) {
-  // Question-level weaknesses: < 60% accuracy, >= 2 attempts
-  var qTextMap = _buildQTextMap(scores);
-  var weak = Object.keys(mastery)
-    .map(function(k) { return { k: k, m: mastery[k] }; })
-    .filter(function(e) { return e.m.attempts >= 2 && (e.m.correct / e.m.attempts) < 0.6; })
-    .sort(function(a, b) { return (a.m.correct / a.m.attempts) - (b.m.correct / b.m.attempts); })
+function _renderPracticeSpotlight(mastery, activityEvents) {
+  // Identify weak tags: < 60% accuracy, >= 2 attempts
+  var weakTags = Object.keys(mastery)
+    .map(function(tag) {
+      var m = mastery[tag];
+      var accuracy = m.attempts > 0 ? m.correct / m.attempts : 0;
+      return { tag: tag, m: m, accuracy: accuracy };
+    })
+    .filter(function(e) { return e.m.attempts >= 2 && e.accuracy < 0.6; })
+    .sort(function(a, b) { return a.accuracy - b.accuracy; })
     .slice(0, 5);
 
-  if (!weak.length) return '';
+  if (!weakTags.length) return '';
 
-  var items = weak.map(function(e) {
-    var acc  = Math.round((e.m.correct / e.m.attempts) * 100);
-    var kLen = e.k.split('_')[0];
-    // Try to find matching qText by key length prefix
-    var qText = '';
-    Object.keys(qTextMap).forEach(function(mk) {
-      if (!qText && mk.startsWith(kLen + '_')) qText = qTextMap[mk];
-    });
-    if (!qText) qText = e.k; // fallback to raw key
-    var short = qText.length > 90 ? qText.slice(0, 87) + '…' : qText;
-    return '<div class="db-practice-item">'
-      + '<div class="db-practice-txt">' + _esc(short) + '</div>'
-      + '<div class="db-practice-sub">' + acc + '% correct &bull; ' + e.m.attempts + ' attempts</div>'
-      + '</div>';
-  }).join('');
+  var tagLessonMap = _buildTagLessonMap(activityEvents);
+  var recs = _recommendReviewLessons(weakTags, tagLessonMap, 5);
+
+  var items;
+  if (recs.length) {
+    items = recs.map(function(r) {
+      var acc = Math.round(r.accuracy * 100);
+      var lid = r.lessonId || '';
+      // Convert "u3l2" / "ku1l4" → "Unit 3, Lesson 2" / "K Unit 1, Lesson 4"
+      var display = lid.replace(/^(k?)u(\d+)l(\d+)$/i, function(_, k, u, l) {
+        return (k ? 'K Unit ' + u : 'Unit ' + u) + ', Lesson ' + l;
+      });
+      return '<div class="db-practice-item">'
+        + '<div class="db-practice-txt">' + _esc(display) + '</div>'
+        + '<div class="db-practice-sub">' + acc + '% on &ldquo;' + _esc(r.weakTag) + '&rdquo;</div>'
+        + '</div>';
+    }).join('');
+  } else {
+    // No activity log yet — show weak tags directly
+    items = weakTags.map(function(e) {
+      var acc = Math.round(e.accuracy * 100);
+      return '<div class="db-practice-item">'
+        + '<div class="db-practice-txt">' + _esc(e.tag) + '</div>'
+        + '<div class="db-practice-sub">' + acc + '% correct &bull; ' + e.m.attempts + ' attempts</div>'
+        + '</div>';
+    }).join('');
+  }
 
   return '<section class="db-section"><h2 class="db-sec-h">&#x1F4DD; Needs More Practice</h2>'
     + '<div class="db-practice-list">' + items + '</div></section>';
@@ -1749,11 +1823,22 @@ function _summarizeInterventions(events) {
   };
 }
 
-function _renderInterventionInsights(events) {
-  if (!events.length) return '';
+function _renderInterventionInsights(events, activityErrCounts) {
   var summary = _summarizeInterventions(events);
-  var tags = Object.keys(summary.byTag)
-    .map(function(tag) { return [tag, summary.byTag[tag]]; })
+  // Merge activity-derived error counts (every wrong answer) into byTag.
+  // Activity counts are more granular than intervention events (threshold-triggered only).
+  var mergedByTag = Object.assign({}, summary.byTag);
+  if (activityErrCounts) {
+    Object.keys(activityErrCounts).forEach(function(tag) {
+      if (!mergedByTag[tag]) mergedByTag[tag] = { count: 0, resolved: 0 };
+      if (activityErrCounts[tag] > mergedByTag[tag].count) {
+        mergedByTag[tag] = { count: activityErrCounts[tag], resolved: mergedByTag[tag].resolved || 0 };
+      }
+    });
+  }
+  if (!events.length && !Object.keys(mergedByTag).length) return '';
+  var tags = Object.keys(mergedByTag)
+    .map(function(tag) { return [tag, mergedByTag[tag]]; })
     .sort(function(a, b) { return b[1].count - a[1].count; })
     .slice(0, 5);
   var items = tags.map(function(pair) {
@@ -1786,10 +1871,11 @@ function renderDashboard() {
     return;
   }
 
-  var scores   = student.SCORES  || [];
-  var mastery  = student.MASTERY || {};
-  var streak   = student.STREAK  || { current: 0 };
-  var appTime  = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
+  var scores        = student.SCORES   || [];
+  var mastery       = student.MASTERY  || {};
+  var activityEvents = student.ACTIVITY || [];
+  var streak        = student.STREAK   || { current: 0 };
+  var appTime       = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
 
   // Build qTextMap for review queue
   var qTextMap = {};
@@ -1808,6 +1894,7 @@ function renderDashboard() {
   var interventionEvents = _remoteInterventionEvents !== null
     ? _remoteInterventionEvents
     : _getInterventionEvents();
+  var actErrCounts = _computeMisconceptions(activityEvents);
 
   _prStatsHtml  = '';
   _prReportText = '';
@@ -1834,8 +1921,8 @@ function renderDashboard() {
     _renderRecentQuizzes(scores) +
     _renderSkills(skills) +
     _renderWeak(weak) +
-    _renderInterventionInsights(interventionEvents) +
-    _renderPracticeSpotlight(mastery, scores) +
+    _renderInterventionInsights(interventionEvents, actErrCounts) +
+    _renderPracticeSpotlight(mastery, activityEvents) +
     _renderReview(review) +
     _renderActivity(activity) +
     _renderUnlockSection() +
@@ -2358,10 +2445,16 @@ function _loadManagedStudentScores(studentId) {
         student.SCORES.sort(function(a, b) { return b.id - a.id; });
       }
 
-      // Merge mastery
+      // Merge mastery (canonical key from Phase 2 pipeline)
       var masteryJson = data.progress && data.progress.mastery_json;
       if (masteryJson && typeof masteryJson === 'object') {
         student.MASTERY = masteryJson;
+      }
+
+      // Merge activity events (Phase 2 pipeline — may be absent on older accounts)
+      var activityJson = data.progress && data.progress.activity_json;
+      if (activityJson && activityJson.v === 1 && Array.isArray(activityJson.events)) {
+        student.ACTIVITY = activityJson.events;
       }
 
       student._scoresLoaded = true;
