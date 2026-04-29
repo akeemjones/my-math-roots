@@ -2465,6 +2465,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 /* ── Dark-glass form element overrides (login screen always sits on dark gradient) ── */
 #ls-form-shared{--txt2:rgba(255,255,255,.72);--border2:rgba(255,255,255,.22)}
 #login-screen .ls-google-btn{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.28)!important;color:#fff!important}
+#login-screen #ls-submit-btn{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.28)!important;box-shadow:none!important;color:#fff!important}
 #login-screen .auth-tab-btn.idle{color:rgba(255,255,255,.72)}
 
 
