@@ -11,6 +11,7 @@ const {
   _parseTimerSettings,
   _isUnitUnlockedInDraft,
   _isLessonUnlockedInDraft,
+  buildParentInsight,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -313,5 +314,182 @@ describe('_isLessonUnlockedInDraft', () => {
 
   test('returns false when lesson key absent', () => {
     expect(_isLessonUnlockedInDraft({ freeMode: false, units: [], lessons: {} }, 2, 1)).toBe(false);
+  });
+});
+
+// ── buildParentInsight ────────────────────────────────────────────────────
+
+const TEST_TAG_LABELS = {
+  regrouping:  'Regrouping',
+  place_value: 'Place Value',
+  counting:    'Counting',
+  subtraction: 'Subtraction',
+};
+const TEST_ERR_LABELS = {
+  err_no_regroup:      'Forgot to regroup',
+  err_reversed_digits: 'Reversed Digits',
+};
+const noopLessonFn = () => null;
+const lessonFn = (id) =>
+  id === 'ku3l2' ? { lesson: 'Subtracting Numbers', unit: 'Addition & Subtraction' } : null;
+
+function makeActivity(overrides) {
+  return Object.assign(
+    { ts: Date.now(), correct: true, errorType: null, tags: [], lessonId: null },
+    overrides
+  );
+}
+function makeSc(overrides) {
+  return Object.assign({ pct: 80, score: 8, total: 10 }, overrides);
+}
+
+describe('buildParentInsight', () => {
+  const BASE_OPTS = { tagLabels: TEST_TAG_LABELS, errLabels: TEST_ERR_LABELS, lessonNameFn: noopLessonFn };
+
+  test('no-data: fewer than 3 total questions answered', () => {
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: {}, activityEvents: [], scores: [makeSc({ total: 2 })], studentName: 'Alex',
+    });
+    expect(r.tier).toBe('no-data');
+    expect(r.cssTier).toBe('no-data');
+    expect(r.confidence).toBe('none');
+    expect(r.headline).toBe('Not enough data');
+    expect(r.summary).toContain('Alex');
+    expect(r.summary).not.toMatch(/err_/);
+    expect(r.weakTag).toBeNull();
+    expect(r.trend).toBe('steady');
+  });
+
+  test('low-data: 3-9 questions, no tags with enough attempts', () => {
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: { regrouping: { attempts: 2, correct: 1 } },
+      activityEvents: [], scores: [makeSc({ pct: 50, total: 5 })], studentName: 'Alex',
+    });
+    expect(r.tier).toBe('low-data');
+    expect(r.confidence).toBe('low');
+    expect(r.headline).toBe('Getting started');
+    expect(r.actionLabel).toContain('quiz');
+  });
+
+  test('needs-review: weak tag, steady trend, lesson resolved', () => {
+    const events = [
+      makeActivity({ correct: false, errorType: 'err_no_regroup', tags: ['regrouping'], lessonId: 'ku3l2', ts: 1000 }),
+      makeActivity({ correct: false, errorType: 'err_no_regroup', tags: ['regrouping'], lessonId: 'ku3l2', ts: 2000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], lessonId: 'ku3l2', ts: 3000 }),
+    ];
+    const r = buildParentInsight({ ...BASE_OPTS,
+      lessonNameFn: lessonFn,
+      mastery: { regrouping: { attempts: 8, correct: 3 } },
+      activityEvents: events,
+      scores: [makeSc({ pct: 40, total: 10 }), makeSc({ pct: 40, total: 5 })],
+      studentName: 'Alex',
+    });
+    expect(r.tier).toBe('needs-review');
+    expect(r.weakTagLabel).toBe('Regrouping');
+    expect(r.summary).toContain('Regrouping');
+    expect(r.summary).not.toContain('err_');
+    expect(r.commonErrorLabel).toBe('Forgot to regroup');
+    expect(r.actionLessonName).toBe('Subtracting Numbers');
+    expect(r.actionLabel).toContain('Subtracting Numbers');
+  });
+
+  test('improving: weak tag, recent accuracy rising', () => {
+    const now = Date.now();
+    const events = [
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 9000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 8000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 7000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 6000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 5000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 4000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 3000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 2000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 1000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now }),
+    ];
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: { regrouping: { attempts: 10, correct: 4 } },
+      activityEvents: events,
+      scores: [makeSc({ pct: 40, total: 5 }), makeSc({ pct: 40, total: 5 })],
+      studentName: 'Alex',
+    });
+    expect(r.tier).toBe('improving');
+    expect(r.trend).toBe('improving');
+    expect(r.summary).toContain('improving');
+  });
+
+  test('declining: weak tag, recent accuracy dropping', () => {
+    const now = Date.now();
+    const events = [
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 9000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 8000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 7000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 6000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 5000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 4000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 3000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now - 2000 }),
+      makeActivity({ correct: true,  tags: ['regrouping'], ts: now - 1000 }),
+      makeActivity({ correct: false, tags: ['regrouping'], ts: now }),
+    ];
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: { regrouping: { attempts: 10, correct: 5 } },
+      activityEvents: events,
+      scores: [makeSc({ pct: 50, total: 5 }), makeSc({ pct: 50, total: 5 })],
+      studentName: 'Alex',
+    });
+    expect(r.tier).toBe('declining');
+    expect(r.trend).toBe('declining');
+    expect(r.summary).toContain('more misses');
+    expect(r.headline).toBe('Needs attention');
+  });
+
+  test('strong: no weak tags, high accuracy', () => {
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: {
+        regrouping:  { attempts: 10, correct: 9 },
+        place_value: { attempts: 8,  correct: 7 },
+      },
+      activityEvents: [],
+      scores: [makeSc({ pct: 88, total: 10 }), makeSc({ pct: 88, total: 10 }),
+               makeSc({ pct: 88, total: 10 }), makeSc({ pct: 88, total: 10 })],
+      studentName: 'Alex',
+    });
+    expect(r.tier).toBe('strong');
+    expect(r.cssTier).toBe('strong');
+    expect(r.headline).toBe('Strong');
+    expect(r.weakTag).toBeNull();
+    expect(r.summary).toContain('doing well');
+  });
+
+  test('mixed: strong + weak skill coexist', () => {
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: {
+        place_value: { attempts: 8,  correct: 7 },
+        regrouping:  { attempts: 10, correct: 4 },
+      },
+      activityEvents: [],
+      scores: [makeSc({ pct: 60, total: 10 }), makeSc({ pct: 60, total: 10 }), makeSc({ pct: 60, total: 10 })],
+      studentName: 'Alex',
+    });
+    expect(r.tier).toBe('mixed');
+    expect(r.weakTagLabel).toBe('Regrouping');
+    expect(r.strongTagLabel).toBe('Place Value');
+    expect(r.summary).toContain('Place Value');
+    expect(r.summary).toContain('Regrouping');
+    expect(r.summary).not.toContain('err_');
+  });
+
+  test('no raw tag keys in any string field', () => {
+    const r = buildParentInsight({ ...BASE_OPTS,
+      mastery: { regrouping: { attempts: 8, correct: 3 } },
+      activityEvents: [makeActivity({ errorType: 'err_no_regroup', correct: false, tags: ['regrouping'] })],
+      scores: [makeSc({ pct: 38, total: 10 }), makeSc({ pct: 38, total: 5 })],
+      studentName: 'TestChild',
+    });
+    [r.headline, r.summary, r.actionLabel, r.why].forEach(function(f) {
+      expect(f).not.toMatch(/err_/);
+      expect(f).not.toMatch(/regrouping|place_value|subtraction/);
+    });
   });
 });
