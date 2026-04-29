@@ -754,23 +754,26 @@ function _renderPracticeSpotlight(mastery, activityEvents) {
   var items;
   if (recs.length) {
     items = recs.map(function(r) {
-      var acc = Math.round(r.accuracy * 100);
-      var lid = r.lessonId || '';
-      // Convert "u3l2" / "ku1l4" → "Unit 3, Lesson 2" / "K Unit 1, Lesson 4"
-      var display = lid.replace(/^(k?)u(\d+)l(\d+)$/i, function(_, k, u, l) {
-        return (k ? 'K Unit ' + u : 'Unit ' + u) + ', Lesson ' + l;
-      });
+      var acc    = Math.round(r.accuracy * 100);
+      var names  = _lessonDisplayName(r.lessonId);
+      var display = names
+        ? names.lesson + ' (' + names.unit + ')'
+        : (r.lessonId || '');
+      var tagLabel = (_TAG_LABEL_MAP && _TAG_LABEL_MAP[r.weakTag])
+        || _toTitleCase(r.weakTag);
       return '<div class="db-practice-item">'
-        + '<div class="db-practice-txt">' + _esc(display) + '</div>'
-        + '<div class="db-practice-sub">' + acc + '% on &ldquo;' + _esc(r.weakTag) + '&rdquo;</div>'
+        + '<div class="db-practice-txt">&#x1F4CC; ' + _esc(display) + '</div>'
+        + '<div class="db-practice-sub">' + acc + '% on ' + _esc(tagLabel) + '</div>'
         + '</div>';
     }).join('');
   } else {
     // No activity log yet — show weak tags directly
     items = weakTags.map(function(e) {
-      var acc = Math.round(e.accuracy * 100);
+      var acc      = Math.round(e.accuracy * 100);
+      var tagLabel = (_TAG_LABEL_MAP && _TAG_LABEL_MAP[e.tag])
+        || _toTitleCase(e.tag);
       return '<div class="db-practice-item">'
-        + '<div class="db-practice-txt">' + _esc(e.tag) + '</div>'
+        + '<div class="db-practice-txt">&#x1F4CC; ' + _esc(tagLabel) + '</div>'
         + '<div class="db-practice-sub">' + acc + '% correct &bull; ' + e.m.attempts + ' attempts</div>'
         + '</div>';
     }).join('');
@@ -1113,6 +1116,157 @@ var _UNITS_META = [
   { name: 'Geometry',                 lessons: ['Flat Shapes','Solid Shapes','Mirror Shapes'] },
   { name: 'Multiplication & Division', lessons: ['Equal Groups','Adding the Same Number','Sharing Equally'] },
 ];
+
+// ── K lesson-name lookup table ────────────────────────────────────────────
+// Mirrors src/data/shared_k.js; used by _lessonDisplayName() to convert a
+// raw lessonId (e.g. "ku3l2") into a human-readable name for parents.
+// Index 0 = ku1, index 1 = ku2, …
+var _K_UNITS_META = [
+  { name: 'Counting & Cardinality',            lessons: ['Counting to 10','Quick Look','Counting to 20','Count to 20 — Review','Read and Represent 11–20','Counting Strategies','Quick Look: Subitize'] },
+  { name: 'Number Relationships',              lessons: ['One More, One Less','Compare Sets','Compare Numbers','Compose & Decompose','More, Less, and Equal','One More / One Less — Review'] },
+  { name: 'Addition & Subtraction',            lessons: ['Adding Numbers','Subtracting Numbers','Word Problems','Explain Thinking','Story Problems: Join & Separate','Explain Your Math'] },
+  { name: 'Counting Patterns',                 lessons: ['Count Forward by Ones','Count by Tens','Count from Any Number','Missing Numbers in Patterns'] },
+  { name: 'Geometry — Shapes & Solids',   lessons: ['Flat Shapes (2D)','Solid Shapes (3D)','Sides & Corners','Sort & Create Shapes'] },
+  { name: 'Measurement — Comparing & Ordering', lessons: ['Comparing Length & Height','Comparing Weight & Capacity','Ordering by Size','Measurable Attributes'] },
+  { name: 'Data Analysis',                     lessons: ['Sort Into Groups','Build and Read Picture Graphs','Read Picture Graphs','Compare Data'] },
+  { name: 'Financial Literacy & Money',        lessons: ['Earning Money & Jobs','Wants vs Needs','Identify Coins','Compare Coins'] },
+];
+
+// Resolve a lessonId string to { lesson, unit } name objects.
+// Handles K IDs (ku1l1) and grade-2 IDs (u1l1). Returns null when unresolvable.
+function _lessonDisplayName(lessonId) {
+  if (!lessonId) return null;
+  var s = String(lessonId);
+  var kMatch = s.match(/^ku(\d+)l(\d+)$/i);
+  if (kMatch) {
+    var ku = _K_UNITS_META[parseInt(kMatch[1], 10) - 1];
+    if (!ku) return null;
+    var kl = ku.lessons[parseInt(kMatch[2], 10) - 1];
+    return kl ? { lesson: kl, unit: ku.name } : null;
+  }
+  var g2Match = s.match(/^u(\d+)l(\d+)$/i);
+  if (g2Match) {
+    var g2u = _UNITS_META[parseInt(g2Match[1], 10) - 1];
+    if (!g2u) return null;
+    var g2l = g2u.lessons[parseInt(g2Match[2], 10) - 1];
+    return g2l ? { lesson: g2l, unit: g2u.name } : null;
+  }
+  return null;
+}
+
+// Convert a snake_case tag name to Title Case — fallback for tags not in _TAG_LABEL_MAP.
+function _toTitleCase(s) {
+  return String(s).replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+}
+
+// ── Skill tag labels ──────────────────────────────────────────────────────
+// Maps tag names (from mmr_mastery_v1 / defaultTags) to parent-friendly labels.
+// _toTitleCase() is the automatic fallback for any tag not listed here.
+var _TAG_LABEL_MAP = {
+  // ── K: Counting & Cardinality ─────────────────────────────────────────
+  'counting':             'Counting',
+  'count_to_10':          'Counting to 10',
+  'count_to_20':          'Counting to 20',
+  'count_backward':       'Counting Backward',
+  'count_forward':        'Counting Forward',
+  'count_from_any':       'Counting from Any Number',
+  'count_strategy':       'Counting Strategies',
+  'cardinality':          'How Many in All',
+  'subitize':             'Quick Look (Subitize)',
+  'recognize_groups':     'Recognizing Groups',
+  'organize_groups':      'Organizing Groups',
+  'numeral_recognition':  'Reading Numerals',
+  'teen_numbers':         'Teen Numbers',
+  'by_ones':              'Counting by Ones',
+  'by_tens':              'Counting by Tens',
+  'skip_count':           'Skip Counting',
+
+  // ── K: Number Relationships ───────────────────────────────────────────
+  'number_relationships': 'Number Relationships',
+  'one_more':             'One More',
+  'one_less':             'One Less',
+  'compare':              'Comparing Numbers',
+  'more_fewer_same':      'More, Fewer, or Same',
+  'greater_less_equal':   'Greater, Less, or Equal',
+  'more_less_equal':      'More, Less, or Equal',
+  'more_fewer':           'More or Fewer',
+  'compose':              'Putting Numbers Together',
+  'decompose':            'Breaking Numbers Apart',
+  'missing_number':       'Missing Numbers',
+  'pattern':              'Number Patterns',
+
+  // ── K: Addition & Subtraction ─────────────────────────────────────────
+  'add_sub':              'Adding & Subtracting',
+  'addition':             'Addition',
+  'subtraction':          'Subtraction',
+  'join':                 'Joining Groups',
+  'take_away':            'Taking Away',
+  'word_problem':         'Word Problems',
+  'operation_choice':     'Choosing the Right Operation',
+  'reasoning':            'Explaining Thinking',
+  'join_separate':        'Joining & Separating',
+
+  // ── K: Geometry ───────────────────────────────────────────────────────
+  'shapes':               'Shapes',
+  '2d':                   'Flat Shapes (2D)',
+  '3d':                   'Solid Shapes (3D)',
+  'sides':                'Sides of Shapes',
+  'corners':              'Corners of Shapes',
+  'identify':             'Identifying',
+  'sort':                 'Sorting',
+  'attributes':           'Shape Attributes',
+
+  // ── K: Measurement ────────────────────────────────────────────────────
+  'measurement':          'Measurement',
+  'length':               'Length',
+  'height':               'Height',
+  'weight':               'Weight',
+  'capacity':             'Capacity',
+  'order':                'Ordering',
+  'sequence':             'Ordering in Sequence',
+
+  // ── K: Data Analysis ──────────────────────────────────────────────────
+  'data':                 'Reading Data',
+  'categorize':           'Sorting into Categories',
+  'picture_graph':        'Picture Graphs',
+  'build_read':           'Building & Reading Graphs',
+
+  // ── K: Financial Literacy ─────────────────────────────────────────────
+  'money':                'Money',
+  'income':               'Earning Money',
+  'jobs':                 'Jobs & Income',
+  'wants':                'Wants',
+  'needs':                'Needs',
+  'coins':                'Coins',
+  'penny':                'Pennies',
+  'nickel':               'Nickels',
+  'dime':                 'Dimes',
+  'quarter':              'Quarters',
+
+  // ── Grade 1/2: Basic Facts ────────────────────────────────────────────
+  'basic_facts':          'Basic Math Facts',
+  'doubles':              'Doubles',
+  'make_ten':             'Make a 10',
+  'count_up':             'Count Up',
+  'count_back':           'Count Back',
+  'number_families':      'Fact Families',
+
+  // ── Grade 1/2: Place Value & Operations ───────────────────────────────
+  'place_value':          'Place Value',
+  'regrouping':           'Regrouping',
+  'skip_counting':        'Skip Counting',
+  'estimation':           'Estimating',
+  'rounding':             'Rounding',
+  'mental_math':          'Mental Math',
+
+  // ── Grade 1/2: Other areas ────────────────────────────────────────────
+  'fractions':            'Fractions',
+  'geometry':             'Geometry',
+  'time':                 'Telling Time',
+  'multiplication':       'Multiplication',
+  'division':             'Division',
+  'financial_literacy':   'Financial Literacy',
+};
 
 // ── Parent controls draft state ───────────────────────────────────────────
 var _unlockDraft      = _parseUnlockSettings({});
@@ -1772,23 +1926,159 @@ function _changelogHtml() {
 
 // ── Intervention Insights ─────────────────────────────────────────────────
 
-// Parent-facing labels for distractor error tags. Keep each under ~24 chars
-// so they fit in the pill badges. `null` falls back to "Other".
-var _INTERVENTION_TAG_LABELS = {
-  err_count_inclusive:       'Counting start point',
-  err_off_by_one:            'Off by one',
-  err_wrong_operation:       'Wrong operation (+/\u2212)',
-  err_forgot_carry:          'Forgot to carry',
-  err_forgot_borrow:         'Forgot to borrow',
-  err_place_value_confusion: 'Place value mix-up',
-  err_skip_count_error:      'Skip-count mistakes',
-  err_double_count:          'Counted twice',
-  err_magnitude_error:       'Answer size off',
-  err_inverse_confusion:     'Add vs. subtract direction'
+// Parent-facing labels for every err_* tag used across K and Grade 1/2.
+// _toTitleCase(tag.replace(/^err_/,'')) is the automatic fallback for unknowns.
+var _ERR_LABEL_MAP = {
+  // \u2500\u2500 Grade 1/2 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_count_inclusive':       'Counted from wrong start',
+  'err_off_by_one':            'Off by one',
+  'err_wrong_operation':       'Used wrong operation (+/\u2212)',
+  'err_forgot_carry':          'Forgot to carry',
+  'err_forgot_borrow':         'Forgot to borrow',
+  'err_no_regroup':            'Forgot to regroup',
+  'err_place_value_confusion': 'Place value mix-up',
+  'err_skip_count_error':      'Skip-count mistake',
+  'err_double_count':          'Counted same thing twice',
+  'err_magnitude_error':       'Answer size was off',
+  'err_inverse_confusion':     'Add vs. subtract direction',
+
+  // \u2500\u2500 K: Counting \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_under_count':           'Counted too few',
+  'err_over_count':            'Counted too many',
+  'err_count_all':             'Counted each one (no shortcut)',
+  'err_teen':                  'Mixed up teen numbers',
+  'err_subitize':              'Needed to count one by one',
+
+  // \u2500\u2500 K: Comparison \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_more':                  'Chose more instead of less',
+  'err_less':                  'Chose less instead of more',
+  'err_same':                  'Said same when different',
+  'err_not_equal':             'Said not equal when equal',
+  'err_equal_confusion':       'Thought amounts were equal',
+
+  // \u2500\u2500 K: Operations \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_sub_instead':           'Subtracted instead of added',
+  'err_add_instead':           'Added instead of subtracted',
+  'err_keep_start':            'Used starting number as answer',
+  'err_keep_total':            'Kept total instead of separating',
+  'err_double_left':           'Doubled the first number',
+  'err_double_right':          'Doubled the second number',
+
+  // \u2500\u2500 K: Geometry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_shape_confuse':         'Mixed up shape names',
+  'err_shape_orient':          'Confused by shape rotation',
+  'err_shape_sort':            'Sorted shapes incorrectly',
+  'err_corner_count':          'Wrong corner count',
+  'err_2d_3d_confuse':         'Flat vs. solid mix-up',
+  'err_wrong_solid':           'Named wrong solid shape',
+  'err_size_distractor':       'Distracted by size',
+  'err_color_distractor':      'Confused by color',
+  'err_visual_confusion':      'Visual mix-up',
+
+  // \u2500\u2500 K: Measurement \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_size_confuse':          'Judged by size, not measurement',
+  'err_size_confusion':        'Chose wrong size',
+  'err_length_confuse':        'Length vs. height mix-up',
+  'err_longer_shorter':        'Longer vs. shorter mix-up',
+  'err_heavier_lighter':       'Heavier vs. lighter mix-up',
+  'err_weight_confuse':        'Weight mix-up',
+  'err_capacity_confuse':      'Which holds more \u2014 mix-up',
+
+  // \u2500\u2500 K: Data Analysis \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_wrong_category':        'Wrong group or category',
+  'err_whole':                 'Chose total instead of one group',
+
+  // \u2500\u2500 K: Money & Financial Literacy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_coin_confusion':        'Mixed up coin names',
+  'err_wrong_coin':            'Named the wrong coin',
+  'err_confuses_want_need':    'Want vs. need mix-up',
+  'err_picks_want_as_need':    'Chose a want as a need',
+  'err_picks_need_as_want':    'Chose a need as a want',
+  'err_not_income':            'Missed the income source',
+  'err_confuses_gift_income':  'Gift vs. earned money mix-up',
+
+  // \u2500\u2500 General \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_confused':              'General mix-up',
 };
 
+// One-sentence parent guidance shown as a help tip below the mistake label.
+var _ERR_HELP_MAP = {
+  // \u2500\u2500 Grade 1/2 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_count_inclusive':       'When counting up, start from the next number \u2014 not the number itself.',
+  'err_off_by_one':            'Use objects: one finger touch per count, stop on the very last one.',
+  'err_wrong_operation':       'Read the question aloud \u2014 "altogether" means add; "left over" means subtract.',
+  'err_forgot_carry':          'Try graph paper with one digit per box so carrying is easier to track.',
+  'err_forgot_borrow':         'Stack the numbers and circle the column you are borrowing from before starting.',
+  'err_no_regroup':            'Write out each step \u2014 show them to circle the tens and carry that amount over.',
+  'err_place_value_confusion': 'Use physical tens-rods and ones-cubes so each digit has a visible value.',
+  'err_skip_count_error':      'Chant the skip-count sequence together daily; clap on each number.',
+  'err_double_count':          'After counting an object, push it aside so it cannot be counted again.',
+  'err_magnitude_error':       'Ask first: "Should the answer be bigger or smaller than what we started with?"',
+  'err_inverse_confusion':     'Draw a number line: adding slides right, subtracting slides left.',
+
+  // \u2500\u2500 K: Counting \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_under_count':  'Slow the count down \u2014 touch each object once and say the number out loud.',
+  'err_over_count':   'Stop counting the moment you run out of objects to touch.',
+  'err_count_all':    'Show a group of 2 or 3 dots briefly and ask how many \u2014 practice without counting.',
+  'err_teen':         'Use a number chart together \u2014 point to each teen number and say it aloud.',
+  'err_subitize':     'Flash dot cards (1 to 5 dots) quickly; practice naming the group without counting.',
+
+  // \u2500\u2500 K: Comparison \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_more':             'Reread the question \u2014 look for the word "fewer" or "less" to know the direction.',
+  'err_less':             'Reread the question \u2014 look for the word "more" to know the direction.',
+  'err_same':             'Line two groups side by side and count each \u2014 do the totals match?',
+  'err_not_equal':        'Count both groups together; if the counts match, they are equal.',
+  'err_equal_confusion':  'Put two groups side by side; count each and compare the totals out loud.',
+
+  // \u2500\u2500 K: Operations \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_sub_instead':  'The + sign means getting more \u2014 act it out by adding objects to a pile.',
+  'err_add_instead':  'The minus sign means taking away \u2014 physically remove objects from a group.',
+  'err_keep_start':   'Start at the first number and count on \u2014 use fingers for the second number.',
+  'err_keep_total':   'Use objects: put the total in a pile, then take out the part you know.',
+  'err_double_left':  'Put two separate groups on the table \u2014 make sure they are different amounts.',
+  'err_double_right': 'Put two separate groups on the table \u2014 make sure they are different amounts.',
+
+  // \u2500\u2500 K: Geometry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_shape_confuse':    'Count corners together: triangle = 3, square = 4, rectangle = 4, circle = 0.',
+  'err_shape_orient':     'A triangle upside down is still a triangle \u2014 its name comes from its corners.',
+  'err_shape_sort':       'Sort shapes into two piles: "curved sides" and "straight sides."',
+  'err_corner_count':     'Trace each corner with a finger and tap the table once per corner.',
+  'err_2d_3d_confuse':    'Flat shapes can be drawn on paper; solid shapes can be picked up and rolled.',
+  'err_wrong_solid':      'Hold real solid shapes and name each one by touching its faces and edges.',
+  'err_size_distractor':  'Shape names do not change by size \u2014 a tiny triangle and a huge one are both triangles.',
+  'err_color_distractor': 'Shape names do not change by color \u2014 a red square is still a square.',
+  'err_visual_confusion': 'Focus on the key feature: flat or curved sides, and how many corners.',
+
+  // \u2500\u2500 K: Measurement \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_size_confuse':     'Focus only on the attribute asked (length, weight) \u2014 ignore other differences.',
+  'err_size_confusion':   'Bigger does not always mean heavier \u2014 focus on the attribute being measured.',
+  'err_length_confuse':   'Length goes side to side; height goes up and down \u2014 use a ruler to show both.',
+  'err_longer_shorter':   'Line objects up at one end; which sticks out further is longer.',
+  'err_heavier_lighter':  'Hold one object in each hand and feel which pulls down more.',
+  'err_weight_confuse':   'Hold one object in each hand and feel which pulls down more.',
+  'err_capacity_confuse': 'Pour water into two containers \u2014 which one overflows first holds less.',
+
+  // \u2500\u2500 K: Data \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_wrong_category':  'Point to the label of each column or group and read it together out loud.',
+  'err_whole':           'Find the bar for just one category \u2014 do not add all groups together.',
+
+  // \u2500\u2500 K: Money \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_coin_confusion':      'Sort real coins; say name and value: penny 1c, nickel 5c, dime 10c, quarter 25c.',
+  'err_wrong_coin':          'Make a coin chart: penny = small copper, nickel = big silver, dime = small silver.',
+  'err_confuses_want_need':  'Needs are things to survive (food, shelter); wants are extras we enjoy.',
+  'err_picks_want_as_need':  'Ask: "Could you stay healthy without this?" If yes, it is probably a want.',
+  'err_picks_need_as_want':  'Ask: "Do you need this to stay safe and healthy?" If yes, it is a need.',
+  'err_not_income':          'Income is money earned by working \u2014 ask "is someone being paid for a job here?"',
+  'err_confuses_gift_income': 'A gift is given freely; income is earned by working.',
+
+  // \u2500\u2500 General \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  'err_confused': 'Work through one example together with real objects before trying on screen.',
+};
+
+// Return a parent-facing label for an err_* tag, or null if not in the map.
+// Callers fall back to: _toTitleCase(tag.replace(/^err_/, ''))
 function _friendlyInterventionTag(tag) {
-  return _INTERVENTION_TAG_LABELS[tag] || 'Other';
+  return _ERR_LABEL_MAP[tag] || null;
 }
 
 function _getInterventionEvents() {
@@ -1842,12 +2132,17 @@ function _renderInterventionInsights(events, activityErrCounts) {
     .sort(function(a, b) { return b[1].count - a[1].count; })
     .slice(0, 5);
   var items = tags.map(function(pair) {
-    var tag = pair[0], data = pair[1];
-    var tagLabel = _friendlyInterventionTag(tag);
+    var tag      = pair[0], data = pair[1];
+    var tagLabel = _friendlyInterventionTag(tag)
+      || _toTitleCase(tag.replace(/^err_/, ''));
+    var helpText = _ERR_HELP_MAP[tag] || null;
     var rateColor = data.count > 0 && (data.resolved / data.count) >= 0.7 ? '#2e7d32' : '#e65100';
     return '<div class="db-intervention-item">'
+      + '<div class="db-int-top">'
       + '<span class="db-intervention-tag">' + _esc(tagLabel) + '</span>'
-      + '<span class="db-intervention-count" style="color:' + rateColor + '">' + data.count + 'x</span>'
+      + '<span class="db-intervention-count" style="color:' + rateColor + '">' + data.count + '&#xD7;</span>'
+      + '</div>'
+      + (helpText ? '<div class="db-int-help">&#x1F4A1; ' + _esc(helpText) + '</div>' : '')
       + '</div>';
   }).join('');
   var rateColor = summary.recoveryRate >= 70 ? '#2e7d32' : summary.recoveryRate >= 40 ? '#e65100' : '#c62828';
