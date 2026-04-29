@@ -2874,18 +2874,33 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
 .db-settings-summary::-webkit-details-marker { display: none; }
 .db-settings-summary::after {
   content: ' \25BC';
+  display: inline-block;
   font-size: 0.75em;
   color: #607d8b;
   margin-left: 6px;
+  transition: transform 0.2s ease;
 }
 .db-settings-details[open] > .db-settings-summary::after {
-  content: ' \25B2';
+  transform: rotate(-180deg);
 }
 .db-settings-summary .db-sec-h {
   display: inline-block;
   margin: 0;
 }
 .db-settings-body > .db-section:first-child { margin-top: 8px; }
+
+/* ── Phase 4 (polish): Settings accordion — card appearance + hover ───── */
+.db-settings-details {
+  background: var(--neutral-50);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  border-top: none;
+}
+.db-settings-summary:hover {
+  background: rgba(0,0,0,.04);
+  border-radius: 8px;
+}
 
 /* ── Phase 3: Parent Action Summary card ──────────────────────────────── */
 .db-action-summary .das-pill {
@@ -2916,4 +2931,105 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
 }
 @media (max-width: 480px) {
   .db-action-summary .das-summary { font-size: 1rem; }
+}
+
+/* ── Phase 4 (polish): Tier left-border accents on Action Summary ──────── */
+#dashboard-screen .db-action-summary.das-no-data {
+  border-left: 4px solid #607d8b;
+  padding-left: 12px;
+}
+#dashboard-screen .db-action-summary.das-needs-review {
+  border-left: 4px solid #c62828;
+  padding-left: 12px;
+}
+#dashboard-screen .db-action-summary.das-developing {
+  border-left: 4px solid #e65100;
+  padding-left: 12px;
+}
+#dashboard-screen .db-action-summary.das-strong {
+  border-left: 4px solid #2e7d32;
+  padding-left: 12px;
+}
+
+/* ── Phase 4 (polish): Practice Spotlight items ───────────────────────── */
+#dashboard-screen .db-practice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#dashboard-screen .db-practice-item {
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px;
+}
+#dashboard-screen .db-practice-txt {
+  font-size: var(--db-text-base);
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+#dashboard-screen .db-practice-sub {
+  font-size: var(--db-text-sm);
+  color: var(--neutral-500);
+  margin-top: 3px;
+}
+
+/* ── Phase 4 (polish): Learning Insights intervention rows ───────────── */
+#dashboard-screen .db-intervention-item {
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+#dashboard-screen .db-intervention-item:last-child {
+  margin-bottom: 0;
+}
+#dashboard-screen .db-int-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+#dashboard-screen .db-intervention-tag {
+  font-size: var(--db-text-base);
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+#dashboard-screen .db-intervention-count {
+  display: inline-block;
+  background: var(--neutral-100);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: var(--db-text-xs);
+  font-weight: 700;
+  flex-shrink: 0;
+  /* color set via inline style from JS rateColor */
+}
+#dashboard-screen .db-int-help {
+  font-size: var(--db-text-sm);
+  color: var(--neutral-600);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ── Phase 4 (polish): Mobile — narrow screens (≤ 360px) ─────────────── */
+@media (max-width: 360px) {
+  #dashboard-screen .db-student-name {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  #dashboard-screen .db-practice-txt {
+    overflow-wrap: break-word;
+  }
+  #dashboard-screen .db-intervention-tag {
+    overflow-wrap: break-word;
+  }
+  #dashboard-screen .db-section {
+    padding: 12px;
+  }
+  #dashboard-screen .db-main {
+    padding: 8px 10px 32px;
+  }
 }
