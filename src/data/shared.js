@@ -119,25 +119,45 @@ const UNITS_DATA = [
         "id": "u2l1",
         "title": "Big Numbers",
         "icon": "🏠",
-        "desc": "Each digit has a place and a value"
+        "desc": "Each digit has a place and a value",
+        "defaultTags": ["place_value","digit_value","tens_ones_hundreds"],
+        "defaultIntervention": {
+          "teach": { "text": "Each digit has a place: ones, tens, hundreds. The 4 in 347 means 4 tens, which is 40." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","digit_value","tens_ones_hundreds"] }
+        }
       },
       {
         "id": "u2l2",
         "title": "Different Ways to Write Numbers",
         "icon": "📖",
-        "desc": "Write numbers three different ways"
+        "desc": "Write numbers three different ways",
+        "defaultTags": ["place_value","expanded_form","standard_form","word_form"],
+        "defaultIntervention": {
+          "teach": { "text": "347 in expanded form is 300 + 40 + 7. The same number can be written different ways." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","expanded_form","standard_form","word_form"] }
+        }
       },
       {
         "id": "u2l3",
         "title": "Bigger or Smaller?",
         "icon": "⚖️",
-        "desc": "Greater than, less than, and equal to"
+        "desc": "Greater than, less than, and equal to",
+        "defaultTags": ["place_value","comparison","greater_less_equal"],
+        "defaultIntervention": {
+          "teach": { "text": "Compare digits from left to right. Bigger hundreds means bigger number." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","comparison","greater_less_equal"] }
+        }
       },
       {
         "id": "u2l4",
         "title": "Skip Counting",
         "icon": "🐸",
-        "desc": "Count by 2s, 5s, 10s, and 100s"
+        "desc": "Count by 2s, 5s, 10s, and 100s",
+        "defaultTags": ["skip_counting","patterns","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Skip count by 2s, 5s, 10s, or 100s. Each step is the same size." },
+          "retry": { "strategy": "similar", "matchTags": ["skip_counting","patterns","place_value"] }
+        }
       }
     ],
     "_loaded": false
@@ -155,25 +175,45 @@ const UNITS_DATA = [
         "id": "u3l1",
         "title": "Adding Bigger Numbers",
         "icon": "➕",
-        "desc": "Add with and without regrouping"
+        "desc": "Add with and without regrouping",
+        "defaultTags": ["addition_to_200","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Add ones first, then tens. If the ones make 10 or more, regroup 10 ones as 1 ten." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_to_200","regrouping","place_value"] }
+        }
       },
       {
         "id": "u3l2",
         "title": "Taking Away Bigger Numbers",
         "icon": "➖",
-        "desc": "Subtract with and without borrowing"
+        "desc": "Subtract with and without borrowing",
+        "defaultTags": ["subtraction_to_200","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Subtract ones first, then tens. If there are not enough ones, regroup 1 ten as 10 ones." },
+          "retry": { "strategy": "similar", "matchTags": ["subtraction_to_200","regrouping","place_value"] }
+        }
       },
       {
         "id": "u3l3",
         "title": "Add Three Numbers",
         "icon": "🔱",
-        "desc": "Find clever ways to add 3 numbers"
+        "desc": "Find clever ways to add 3 numbers",
+        "defaultTags": ["three_addends","addition_strategy","make_ten"],
+        "defaultIntervention": {
+          "teach": { "text": "When adding three numbers, look for two numbers that make 10 or make a friendly number first." },
+          "retry": { "strategy": "similar", "matchTags": ["three_addends","addition_strategy","make_ten"] }
+        }
       },
       {
         "id": "u3l4",
         "title": "Math Stories",
         "icon": "📝",
-        "desc": "Solve math stories step by step"
+        "desc": "Solve math stories step by step",
+        "defaultTags": ["word_problems","addition_subtraction","problem_solving"],
+        "defaultIntervention": {
+          "teach": { "text": "Read the story carefully. Decide if the story is joining, separating, or comparing before choosing an operation." },
+          "retry": { "strategy": "similar", "matchTags": ["word_problems","addition_subtraction","problem_solving"] }
+        }
       }
     ],
     "_loaded": false
@@ -191,19 +231,34 @@ const UNITS_DATA = [
         "id": "u4l1",
         "title": "Adding Really Big Numbers",
         "icon": "➕",
-        "desc": "Add hundreds, tens, and ones with regrouping"
+        "desc": "Add hundreds, tens, and ones with regrouping",
+        "defaultTags": ["addition_to_1000","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Add by place value: ones, tens, then hundreds. Regroup when a place makes 10 or more." },
+          "retry": { "strategy": "similar", "matchTags": ["addition_to_1000","regrouping","place_value"] }
+        }
       },
       {
         "id": "u4l2",
         "title": "Taking Away Really Big Numbers",
         "icon": "➖",
-        "desc": "Subtract with regrouping across columns"
+        "desc": "Subtract with regrouping across columns",
+        "defaultTags": ["subtraction_to_1000","regrouping","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Subtract by place value. Regroup from the next place when there are not enough ones or tens." },
+          "retry": { "strategy": "similar", "matchTags": ["subtraction_to_1000","regrouping","place_value"] }
+        }
       },
       {
         "id": "u4l3",
         "title": "Close Enough Counts!",
         "icon": "🎯",
-        "desc": "Round numbers to get close answers fast"
+        "desc": "Round numbers to get close answers fast",
+        "defaultTags": ["estimation","rounding","reasonableness"],
+        "defaultIntervention": {
+          "teach": { "text": "Round numbers to make a close estimate, then check if the answer is reasonable." },
+          "retry": { "strategy": "similar", "matchTags": ["estimation","rounding","reasonableness"] }
+        }
       }
     ],
     "_loaded": false
@@ -221,25 +276,45 @@ const UNITS_DATA = [
         "id": "u5l1",
         "title": "All About Coins",
         "icon": "🪙",
-        "desc": "Learn each coin and how much it is worth"
+        "desc": "Learn each coin and how much it is worth",
+        "defaultTags": ["money","coins","coin_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Name each coin and use its value. Count money by value, not by how many coins you see." },
+          "retry": { "strategy": "similar", "matchTags": ["money","coins","coin_value"] }
+        }
       },
       {
         "id": "u5l2",
         "title": "Count Your Coins",
         "icon": "💵",
-        "desc": "Add coin values from biggest to smallest"
+        "desc": "Add coin values from biggest to smallest",
+        "defaultTags": ["money","counting_coins","skip_counting"],
+        "defaultIntervention": {
+          "teach": { "text": "Group coins by value, then skip count to find the total amount." },
+          "retry": { "strategy": "similar", "matchTags": ["money","counting_coins","skip_counting"] }
+        }
       },
       {
         "id": "u5l3",
         "title": "Dollars and Cents",
         "icon": "💲",
-        "desc": "Write and compare money amounts"
+        "desc": "Write and compare money amounts",
+        "defaultTags": ["money","dollars_cents","equivalent_values"],
+        "defaultIntervention": {
+          "teach": { "text": "Dollars and cents show money value. Remember that 100 cents equals 1 dollar." },
+          "retry": { "strategy": "similar", "matchTags": ["money","dollars_cents","equivalent_values"] }
+        }
       },
       {
         "id": "u5l4",
         "title": "Save, Spend and Give",
         "icon": "🏦",
-        "desc": "Smart ways to use money"
+        "desc": "Smart ways to use money",
+        "defaultTags": ["financial_literacy","save_spend_give","money_choices"],
+        "defaultIntervention": {
+          "teach": { "text": "Saving, spending, and giving are different choices people make with money." },
+          "retry": { "strategy": "similar", "matchTags": ["financial_literacy","save_spend_give","money_choices"] }
+        }
       }
     ],
     "_loaded": false
@@ -257,25 +332,45 @@ const UNITS_DATA = [
         "id": "u6l1",
         "title": "Tally Marks",
         "icon": "📋",
-        "desc": "Record and read data with tally marks"
+        "desc": "Record and read data with tally marks",
+        "defaultTags": ["data","tally_marks","counting_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Count tally marks in groups of five, then count any extra marks." },
+          "retry": { "strategy": "similar", "matchTags": ["data","tally_marks","counting_data"] }
+        }
       },
       {
         "id": "u6l2",
         "title": "Bar Graphs",
         "icon": "📊",
-        "desc": "Read and understand bar graphs"
+        "desc": "Read and understand bar graphs",
+        "defaultTags": ["data","bar_graphs","compare_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Read the bar height for each category, then compare the data." },
+          "retry": { "strategy": "similar", "matchTags": ["data","bar_graphs","compare_data"] }
+        }
       },
       {
         "id": "u6l3",
         "title": "Picture Graphs",
         "icon": "🖼️",
-        "desc": "Use pictures to represent data"
+        "desc": "Use pictures to represent data",
+        "defaultTags": ["data","picture_graphs","graph_key"],
+        "defaultIntervention": {
+          "teach": { "text": "Use the picture graph key, then count the pictures for the category." },
+          "retry": { "strategy": "similar", "matchTags": ["data","picture_graphs","graph_key"] }
+        }
       },
       {
         "id": "u6l4",
         "title": "Line Plots",
         "icon": "📈",
-        "desc": "Show and read data on a number line"
+        "desc": "Show and read data on a number line",
+        "defaultTags": ["data","line_plots","measurement_data"],
+        "defaultIntervention": {
+          "teach": { "text": "Each mark on a line plot shows one data point. Count the marks carefully." },
+          "retry": { "strategy": "similar", "matchTags": ["data","line_plots","measurement_data"] }
+        }
       }
     ],
     "_loaded": false
@@ -293,19 +388,34 @@ const UNITS_DATA = [
         "id": "u7l1",
         "title": "How Long Is It?",
         "icon": "📏",
-        "desc": "Measure in inches, feet, and centimeters"
+        "desc": "Measure in inches, feet, and centimeters",
+        "defaultTags": ["measurement","length","measurement_units"],
+        "defaultIntervention": {
+          "teach": { "text": "Choose the right unit, then measure from the starting point to the ending point." },
+          "retry": { "strategy": "similar", "matchTags": ["measurement","length","measurement_units"] }
+        }
       },
       {
         "id": "u7l2",
         "title": "What Time Is It?",
         "icon": "🕐",
-        "desc": "Read clocks to hours and 5-minute intervals"
+        "desc": "Read clocks to hours and 5-minute intervals",
+        "defaultTags": ["time","analog_clock","minutes_by_fives"],
+        "defaultIntervention": {
+          "teach": { "text": "The short hand shows the hour. The long hand shows minutes. Count minutes by 5s." },
+          "retry": { "strategy": "similar", "matchTags": ["time","analog_clock","minutes_by_fives"] }
+        }
       },
       {
         "id": "u7l3",
         "title": "Hot, Cold and Full",
         "icon": "🌡️",
-        "desc": "Read thermometers and measure liquids"
+        "desc": "Read thermometers and measure liquids",
+        "defaultTags": ["measurement","temperature","capacity"],
+        "defaultIntervention": {
+          "teach": { "text": "Temperature tells how hot or cold something is. Capacity tells how much a container holds." },
+          "retry": { "strategy": "similar", "matchTags": ["measurement","temperature","capacity"] }
+        }
       }
     ],
     "_loaded": false
@@ -323,19 +433,34 @@ const UNITS_DATA = [
         "id": "u8l1",
         "title": "What is a Fraction?",
         "icon": "✂️",
-        "desc": "Understand what a fraction means"
+        "desc": "Understand what a fraction means",
+        "defaultTags": ["fractions","equal_parts","fraction_basics"],
+        "defaultIntervention": {
+          "teach": { "text": "Fractions show equal parts of a whole. The parts must be the same size." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","equal_parts","fraction_basics"] }
+        }
       },
       {
         "id": "u8l2",
         "title": "Halves, Fourths and Eighths",
         "icon": "🍕",
-        "desc": "Name and identify common fractions"
+        "desc": "Name and identify common fractions",
+        "defaultTags": ["fractions","halves_fourths_eighths","unit_fractions"],
+        "defaultIntervention": {
+          "teach": { "text": "The denominator tells how many equal parts make the whole." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","halves_fourths_eighths","unit_fractions"] }
+        }
       },
       {
         "id": "u8l3",
         "title": "Which Piece is Bigger?",
         "icon": "⚖️",
-        "desc": "Which fraction is bigger or smaller?"
+        "desc": "Which fraction is bigger or smaller?",
+        "defaultTags": ["fractions","compare_unit_fractions","fraction_size"],
+        "defaultIntervention": {
+          "teach": { "text": "For unit fractions, more equal parts means each piece is smaller." },
+          "retry": { "strategy": "similar", "matchTags": ["fractions","compare_unit_fractions","fraction_size"] }
+        }
       }
     ],
     "_loaded": false
@@ -353,19 +478,34 @@ const UNITS_DATA = [
         "id": "u9l1",
         "title": "Flat Shapes",
         "icon": "⭕",
-        "desc": "Flat shapes — sides and corners"
+        "desc": "Flat shapes — sides and corners",
+        "defaultTags": ["geometry","2d_shapes","shape_attributes"],
+        "defaultIntervention": {
+          "teach": { "text": "A 2D (flat) shape's sides are its straight edges and its corners (vertices) are where two sides meet. Triangle: 3 sides, 3 corners. Square: 4, 4. Pentagon: 5. Hexagon: 6. Octagon: 8." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","2d_shapes","shape_attributes"] }
+        }
       },
       {
         "id": "u9l2",
         "title": "Solid Shapes",
         "icon": "📦",
-        "desc": "Solid shapes — faces, edges, vertices"
+        "desc": "Solid shapes — faces, edges, vertices",
+        "defaultTags": ["geometry","3d_solids","faces_edges_vertices"],
+        "defaultIntervention": {
+          "teach": { "text": "A 3D solid has flat faces (surfaces), edges (where two faces meet), and vertices (corner points). A cube has 6 faces, 12 edges, 8 vertices. A sphere has 0 of each." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","3d_solids","faces_edges_vertices"] }
+        }
       },
       {
         "id": "u9l3",
         "title": "Mirror Shapes",
         "icon": "🦋",
-        "desc": "Lines of symmetry in shapes"
+        "desc": "Lines of symmetry in shapes",
+        "defaultTags": ["geometry","symmetry","line_of_symmetry"],
+        "defaultIntervention": {
+          "teach": { "text": "A line of symmetry folds a shape into two matching halves. A square has 4, a non-square rectangle has 2, a circle has infinitely many, and most letters have 0 or 1." },
+          "retry": { "strategy": "similar", "matchTags": ["geometry","symmetry","line_of_symmetry"] }
+        }
       }
     ],
     "_loaded": false
@@ -383,19 +523,34 @@ const UNITS_DATA = [
         "id": "u10l1",
         "title": "Equal Groups",
         "icon": "🍎",
-        "desc": "Groups with the same amount — start of multiplication"
+        "desc": "Groups with the same amount — start of multiplication",
+        "defaultTags": ["equal_groups","multiplication_foundations","repeated_addition"],
+        "defaultIntervention": {
+          "teach": { "text": "Equal groups have the same number in each group. Add the groups to find the total." },
+          "retry": { "strategy": "similar", "matchTags": ["equal_groups","multiplication_foundations","repeated_addition"] }
+        }
       },
       {
         "id": "u10l2",
         "title": "Adding the Same Number",
         "icon": "🔄",
-        "desc": "Adding equal groups — the bridge to multiplication"
+        "desc": "Adding equal groups — the bridge to multiplication",
+        "defaultTags": ["repeated_addition","skip_counting","multiplication_foundations"],
+        "defaultIntervention": {
+          "teach": { "text": "Repeated addition adds the same number again and again." },
+          "retry": { "strategy": "similar", "matchTags": ["repeated_addition","skip_counting","multiplication_foundations"] }
+        }
       },
       {
         "id": "u10l3",
         "title": "Sharing Equally",
         "icon": "🤝",
-        "desc": "Split into equal groups — introduction to division"
+        "desc": "Split into equal groups — introduction to division",
+        "defaultTags": ["division_foundations","sharing_equally","equal_groups"],
+        "defaultIntervention": {
+          "teach": { "text": "Sharing equally means each group gets the same amount." },
+          "retry": { "strategy": "similar", "matchTags": ["division_foundations","sharing_equally","equal_groups"] }
+        }
       }
     ],
     "_loaded": false

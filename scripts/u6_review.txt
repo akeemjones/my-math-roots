@@ -1,0 +1,67 @@
+fallback distractor in qBank[u6l1][10]: prompt="Which group has more tally marks?" correct="Dogs with 7" wrong="Cannot tell"
+fallback distractor in qBank[u6l1][12]: prompt="Which group has more tally marks?" correct="Boys with 9" wrong="Cannot tell"
+fallback distractor in qBank[u6l1][65]: prompt="A tally chart shows: Bikes IIII III, Scooters IIII, Skateboards IIII I. Do bikes and skateboards together have more or fewer votes than 15?" correct="Fewer" wrong="Cannot tell"
+fallback distractor in qBank[u6l3][37]: prompt="A pictograph shows each star = 1 kid. Bikes has 5 stars and Scooters has 5 stars. Did the same number of kids pick each?" correct="Yes, they are the same" wrong="Cannot tell"
+fallback distractor in testBank[6]: prompt="Which group has more tally marks?" correct="Dogs with 7" wrong="Cannot tell"
+testBank[7] -> u6l2 (low confidence): How many more marks does the top row have?
+testBank[8] -> u6l2 (low confidence): Which pet is most popular?
+testBank[9] -> u6l2 (low confidence): How many more chose Dog than Bunny?
+testBank[10] -> u6l2 (low confidence): How many students in total?
+testBank[11] -> u6l2 (low confidence): Which sport is most popular?
+testBank[15] -> u6l2 (low confidence): Which fruit is most popular?
+testBank[16] -> u6l2 (low confidence): Key: 📖=2 books. How many books did Sofia read?
+testBank[17] -> u6l2 (low confidence): Who read the most books?
+testBank[18] -> u6l2 (low confidence): Key: 📖=2. Total books by all?
+testBank[19] -> u6l2 (low confidence): Key: ⭐=3. How many stars did Cora earn?
+testBank[21] -> u6l2 (low confidence): 1 picture = 5. There are 4 pictures. Total?
+testBank[22] -> u6l2 (low confidence): Key: ⭐=2. How many stickers does Leo have?
+testBank[23] -> u6l2 (low confidence): How many students have 2 pets?
+testBank[24] -> u6l2 (low confidence): Which number of pets is most common?
+testBank[25] -> u6l2 (low confidence): How many students were surveyed in total?
+testBank[26] -> u6l2 (low confidence): How many students read exactly 3 hours?
+testBank[61] -> u6l2 (low confidence): What is the total of both rows?
+testBank[64] -> u6l2 (low confidence): Why is the 5th mark drawn diagonally like this?
+testBank[66] -> u6l2 (low confidence): How many more marks does Summer have than Fall?
+testBank[67] -> u6l2 (low confidence): Which season was least popular?
+testBank[68] -> u6l2 (low confidence): How many more marks does Blue have than Red?
+testBank[72] -> u6l2 (low confidence): What is the best way to count these marks quickly?
+unitQuiz[0] -> u6l2 (low confidence): Which row has exactly one crossed group?
+fallback distractor in unitQuiz[36]: prompt="A tally chart shows: Bikes IIII III, Scooters IIII, Skateboards IIII I. Do bikes and skateboards together have more or fewer votes than 15?" correct="Fewer" wrong="Cannot tell"
+unitQuiz[58] -> u6l2 (low confidence): Two classes made bar graphs. Class A: Dogs=8, Cats=6. Class B: Dogs=5, Cats=9. Which class had more total votes for pets?
+unitQuiz[68] -> u6l2 (low confidence): Which color is most popular?
+unitQuiz[69] -> u6l2 (low confidence): How many more does Red have than Blue?
+unitQuiz[70] -> u6l2 (low confidence): The scale counts by 2s. What value does the taller bar show?
+unitQuiz[71] -> u6l2 (low confidence): Which day was most active?
+unitQuiz[73] -> u6l2 (low confidence): What do equal height bars mean?
+unitQuiz[74] -> u6l2 (low confidence): How many more dogs than birds?
+unitQuiz[75] -> u6l2 (low confidence): The scale counts by 2s. What value does the taller bar show?
+unitQuiz[76] -> u6l2 (low confidence): Which month had the fewest students?
+fallback distractor in unitQuiz[79]: prompt="A pictograph shows each smiley face = 1 vote. Dogs has 7 smiley faces and fish has 3. Which pet got more votes?" correct="Dogs" wrong="Cannot tell"
+fallback distractor in unitQuiz[83]: prompt="A pictograph shows each circle = 1 student. Apples has 8 circles and bananas has 5 circles. Which fruit has fewer votes?" correct="Bananas" wrong="Cannot tell"
+fallback distractor in unitQuiz[87]: prompt="A pictograph shows each ball = 1 student. Basketball has 6 balls and volleyball has 6 balls. Did the same number of students pick each sport" correct="Yes, they are the same" wrong="Cannot tell"
+fallback distractor in unitQuiz[92]: prompt="A pictograph shows each star = 2 votes. Sunny has 4 stars and Cloudy has 2 stars. Which weather has more votes?" correct="Sunny" wrong="Cannot tell"
+fallback distractor in unitQuiz[97]: prompt="A pictograph shows each star = 5 votes. Trucks has 2 stars and Cars has 3 stars. Which has more votes?" correct="Cars" wrong="Cannot tell"
+unitQuiz[150] -> u6l2 (low confidence): Why do pictographs use pictures instead of numbers?
+unitQuiz[154] -> u6l2 (low confidence): A graph shows favorite fruits: Apples=6, Bananas=3, Grapes=8. Which fruit has the most votes?
+unitQuiz[156] -> u6l2 (low confidence): A graph shows: Red=5, Blue=10, Yellow=3. Which color got the fewest votes?
+unitQuiz[159] -> u6l2 (low confidence): A graph shows: Chocolate=11, Vanilla=5, Strawberry=8. Which flavor has the most votes?
+fallback distractor in unitQuiz[161]: prompt="A pictograph shows each star = 1 kid. Bikes has 5 stars and Scooters has 5 stars. Did the same number of kids pick each?" correct="Yes, they are the same" wrong="Cannot tell"
+unitQuiz[162] -> u6l2 (low confidence): A graph shows: Lions=4, Bears=7, Eagles=2. Which animal has the most votes?
+unitQuiz[165] -> u6l2 (low confidence): A graph shows: Sunny=6, Rainy=6, Snowy=3. Which two weather types have the same number of votes?
+unitQuiz[166] -> u6l2 (low confidence): The data shows: Math=5, Reading=8, Art=12. A student says art got the fewest votes. Is that correct?
+unitQuiz[169] -> u6l2 (low confidence): A graph shows: Crayons=8, Markers=3, Pencils=5. Which supply is between markers and crayons in number of votes?
+unitQuiz[172] -> u6l2 (low confidence): A graph shows: Trucks=2, Trains=5, Planes=9. Which vehicle has the fewest votes?
+unitQuiz[174] -> u6l2 (low confidence): A graph shows: Apples=6, Bananas=4, Grapes=5. How many fruits were picked in all?
+unitQuiz[179] -> u6l2 (low confidence): A graph shows the data is missing for one category. Chocolate=11, Vanilla=???, Strawberry=3. There were 20 votes total. How many voted for v
+unitQuiz[183] -> u6l2 (low confidence): A graph shows: Swimming=5, Running=8, Jumping=6. How many students chose swimming and jumping combined?
+unitQuiz[186] -> u6l2 (low confidence): A graph shows: Hamsters=2, Rabbits=7, Turtles=5. How many fewer students picked hamsters than rabbits?
+unitQuiz[188] -> u6l2 (low confidence): A graph shows: Art=12, Music=7. How many more students chose art than music?
+unitQuiz[192] -> u6l2 (low confidence): A graph shows: Milk=5, Juice=11. How many fewer students picked milk?
+unitQuiz[195] -> u6l2 (low confidence): A graph shows: Dogs=9, Cats=6, Fish=3. If 2 more kids pick fish, how many would fish have? Would it be more or less than cats?
+unitQuiz[199] -> u6l2 (low confidence): A graph shows: Bikes=7, Scooters=4, Skateboards=9. If 3 kids change from skateboards to bikes, what would the new totals be for each?
+unitQuiz[202] -> u6l2 (low confidence): The data shows: Sunny=9, Rainy=2, Snowy=4, Cloudy=5. How many students voted in all? How many more sunny than rainy days?
+unitQuiz[204] -> u6l2 (low confidence): A graph shows: Math=7, Reading=10, Art=8. Noah says reading and art together equal 16. He then says that is double math. What should Noah ch
+unitQuiz[207] -> u6l2 (low confidence): A graph shows: Swings=8, Slide=6, Sandbox=4. If each category gets 2 more votes, would swings still have the most?
+unitQuiz[211] -> u6l2 (low confidence): A graph shows: Red=8, Blue=5, Yellow=7, Green=10. Put them in order from most to fewest votes.
+unitQuiz[212] -> u6l2 (low confidence): Two classes collected data on favorite animals. Class A: Dogs=12, Cats=8. Class B: Dogs=7, Cats=11. Which class had more students vote, and 
+unitQuiz[219] -> u6l2 (low confidence): Values 1–4: value 1=2, value 2=4, value 3=3, value 4=1. Least common?

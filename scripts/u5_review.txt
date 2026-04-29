@@ -1,0 +1,158 @@
+testBank[32] -> u5l1 (low confidence): Should you count the biggest coins first when adding up a group of coins?
+testBank[40] -> u5l1 (low confidence): A toy costs $3.25 and you pay $4.00. How much change do you get?
+testBank[48] -> u5l1 (low confidence): Something costs $2.40 and you pay $3.00. How much change do you get?
+testBank[52] -> u5l1 (low confidence): An item costs $1.79 and you pay $2.00. How much change do you get?
+testBank[56] -> u5l1 (low confidence): You pay $5.00 for something that costs $3.67. How much change do you get?
+testBank[76] -> u5l1 (low confidence): You have $15 saved and spend $9. How much do you have left?
+testBank[78] -> u5l1 (low confidence): 3 dimes = ___ cents
+testBank[84] -> u5l1 (low confidence): You have 10¢. You spend 4¢. How much is left?
+testBank[88] -> u5l1 (low confidence): You buy a toy for 5¢ and pay with a dime. How much change?
+testBank[92] -> u5l1 (low confidence): You have a quarter. You spend 20¢. How much change?
+testBank[96] -> u5l1 (low confidence): Which symbol goes BEFORE the number: ¢ or $?
+testBank[99] -> u5l1 (low confidence): ___ quarters = $1.00
+testBank[104] -> u5l1 (low confidence): ___ dimes and 1 nickel = 35¢
+testBank[109] -> u5l1 (low confidence): You have $1.00. You spend 35¢. How much left?
+testBank[110] -> u5l1 (low confidence): Count: 2 quarters, 1 nickel, 3 pennies.
+testBank[111] -> u5l1 (low confidence): An eraser costs 25¢. You pay with a quarter and a dime. How much change?
+testBank[113] -> u5l1 (low confidence): Put in order from LEAST to MOST: 35¢, $0.30, 40¢
+testBank[115] -> u5l1 (low confidence): ___ pennies = 1 quarter
+testBank[117] -> u5l1 (low confidence): You have $1.00. You buy a pencil for 35¢ and an eraser for 20¢. How much change do you get?
+testBank[120] -> u5l1 (low confidence): You need exactly 67¢. You only have quarters, dimes, and pennies. Which set works?
+testBank[121] -> u5l1 (low confidence): Mia has $0.87. She needs $1.00. How much more does she need?
+testBank[123] -> u5l1 (low confidence): You buy a folder for $0.65 and a pen for 30¢. What is the total?
+testBank[125] -> u5l1 (low confidence): A snack costs 90¢. You pay with $1.00. The clerk gives 2 nickels as change. Is that right?
+testBank[129] -> u5l1 (low confidence): Layla says counting up from the price to what you paid finds the change. Price: 73¢. Paid: $1.00. Count up to find the change.
+testBank[130] -> u5l1 (low confidence): Rosa says 2 quarters + 2 dimes + 2 nickels = 90¢. Find her mistake.
+testBank[132] -> u5l1 (low confidence): Sam has $2.00. He buys a ball for 75¢ and tape for $0.50. How much left?
+testBank[133] -> u5l1 (low confidence): Which pair does NOT show the same amount?
+testBank[134] -> u5l1 (low confidence): You buy 3 items: a pen (25¢), a clip (15¢), and tape (20¢). You pay with $1.00. How much change?
+testBank[135] -> u5l1 (low confidence): Nia has $1.50 in quarters. How many quarters does she have?
+testBank[136] -> u5l1 (low confidence): Which strategy helps you compare $0.47 and 52¢?
+unitQuiz[4] -> u5l1 (low confidence): How many pennies equal one nickel?
+unitQuiz[5] -> u5l1 (low confidence): How many nickels equal one dime?
+unitQuiz[6] -> u5l1 (low confidence): How many dimes equal $1.00?
+unitQuiz[7] -> u5l1 (low confidence): How many quarters equal $1.00?
+unitQuiz[8] -> u5l1 (low confidence): How many nickels equal one quarter?
+unitQuiz[10] -> u5l1 (low confidence): How many pennies equal one dime?
+unitQuiz[11] -> u5l1 (low confidence): How many pennies equal one quarter?
+unitQuiz[17] -> u5l1 (low confidence): Is a nickel worth 5 times as much as a penny?
+unitQuiz[18] -> u5l1 (low confidence): How many cents are in half a dollar?
+unitQuiz[25] -> u5l1 (low confidence): Half of one dime equals how many cents?
+unitQuiz[26] -> u5l1 (low confidence): You have 25¢ and find 18¢ more. How much money do you have now?
+unitQuiz[27] -> u5l1 (low confidence): A toy costs 50¢. You have 35¢. How much more do you need?
+unitQuiz[29] -> u5l1 (low confidence): You buy a pencil for 37¢ and an eraser for 24¢. What is the total?
+unitQuiz[42] -> u5l1 (low confidence): True or false: A dime is worth more than a nickel.
+unitQuiz[50] -> u5l1 (low confidence): You have 1 quarter and 1 dime. How much money do you have?
+unitQuiz[52] -> u5l1 (low confidence): ___ nickels = 1 quarter
+unitQuiz[55] -> u5l1 (low confidence): ___ dimes = 1 quarter + 1 nickel
+unitQuiz[58] -> u5l1 (low confidence): 5 pennies have the same value as 1 ___.
+unitQuiz[62] -> u5l1 (low confidence): ___ pennies = 1 dime
+unitQuiz[67] -> u5l1 (low confidence): ___ quarters = 50¢
+unitQuiz[69] -> u5l1 (low confidence): Ava has some coins that total 40¢. Which could be her coins?
+unitQuiz[72] -> u5l1 (low confidence): You need exactly 36¢. You have only dimes, nickels, and pennies. Which set of coins works?
+unitQuiz[74] -> u5l1 (low confidence): Priya says 4 quarters = $1.00. Kai says 10 dimes = $1.00. Who is right?
+unitQuiz[77] -> u5l1 (low confidence): Li says that 5 nickels = 2 dimes + 1 nickel. Is she correct?
+unitQuiz[80] -> u5l1 (low confidence): Amara has 65¢. She spends 1 quarter. How much does she have left?
+unitQuiz[81] -> u5l1 (low confidence): Carlos says 1 quarter + 3 dimes + 1 nickel = 55¢. Is he right?
+unitQuiz[82] -> u5l1 (low confidence): You need exactly 47¢. Which set of coins works?
+unitQuiz[83] -> u5l1 (low confidence): A toy costs 80¢. You pay with $1.00. What coins could you get as change?
+unitQuiz[87] -> u5l1 (low confidence): Zara wants to make 50¢ with exactly 5 coins. Which set works?
+unitQuiz[88] -> u5l1 (low confidence): Aiden has 90¢ in dimes only. How many dimes does he have?
+unitQuiz[100] -> u5l1 (low confidence): What is the best order to count a group of mixed coins?
+unitQuiz[116] -> u5l1 (low confidence): Which amount is more money: 4 dimes or 3 quarters?
+unitQuiz[133] -> u5l1 (low confidence): How do you count a group of dimes?
+unitQuiz[135] -> u5l1 (low confidence): How do you count a group of nickels?
+unitQuiz[142] -> u5l1 (low confidence): Which group of coins totals 65¢?
+unitQuiz[143] -> u5l1 (low confidence): ___ nickels and 1 dime = 35¢
+unitQuiz[148] -> u5l1 (low confidence): Count: 1 quarter, 3 dimes, 2 pennies.
+unitQuiz[156] -> u5l1 (low confidence): Count: 2 quarters, 1 dime, 1 nickel, 2 pennies.
+unitQuiz[157] -> u5l1 (low confidence): ___ quarters and 1 dime = 60¢
+unitQuiz[164] -> u5l1 (low confidence): Tyler says 6 dimes + 3 nickels = 75¢. Is he correct?
+unitQuiz[165] -> u5l1 (low confidence): You need exactly 58¢. Which TWO sets of coins both work?
+unitQuiz[167] -> u5l1 (low confidence): Eli counts his coins: 2 quarters, 4 dimes, 2 nickels, 5 pennies. What is his total?
+unitQuiz[168] -> u5l1 (low confidence): Chen says he can make $1.00 with 7 coins. Which set works?
+unitQuiz[169] -> u5l1 (low confidence): Mai has 72¢. Kai has 1 quarter less than Mai. How much does Kai have?
+unitQuiz[170] -> u5l1 (low confidence): Which strategy is BEST for counting 3 quarters, 2 dimes, 1 nickel, 4 pennies?
+unitQuiz[171] -> u5l1 (low confidence): Rosa says 2 quarters + 2 dimes + 2 nickels = 90¢. Find her mistake.
+unitQuiz[173] -> u5l1 (low confidence): Who counted correctly? Amy: '2 quarters, 3 dimes, 1 penny = 81¢.' Ben: '1 quarter, 5 dimes, 4 pennies = 79¢.'
+unitQuiz[176] -> u5l1 (low confidence): Ava says counting coins from biggest to smallest is faster. Eli says smallest to biggest. Who uses the better strategy?
+unitQuiz[185] -> u5l1 (low confidence): A toy costs $3.25. You pay $4.00. How much change do you get?
+unitQuiz[194] -> u5l1 (low confidence): Something costs $2.40. You pay $3.00. How much change do you get?
+unitQuiz[201] -> u5l1 (low confidence): Something costs $1.79. You pay $2.00. How much change do you get?
+unitQuiz[206] -> u5l1 (low confidence): You pay $5.00 for something that costs $3.67. How much change do you get?
+unitQuiz[214] -> u5l1 (low confidence): What does the dot (.) in $1.35 separate?
+unitQuiz[220] -> u5l1 (low confidence): Which is the correct way to write thirty cents?
+unitQuiz[221] -> u5l1 (low confidence): What does $0.99 mean?
+unitQuiz[224] -> u5l1 (low confidence): Which symbol goes BEFORE the number?
+unitQuiz[225] -> u5l1 (low confidence): Which symbol goes AFTER the number?
+unitQuiz[227] -> u5l1 (low confidence): What is another way to write $0.01?
+unitQuiz[228] -> u5l1 (low confidence): In $2.50, how many dollars and how many cents are there?
+unitQuiz[231] -> u5l1 (low confidence): Which two ways show the SAME amount?
+unitQuiz[235] -> u5l1 (low confidence): Kai has $0.50. Mia has 50¢. Who has more?
+unitQuiz[236] -> u5l1 (low confidence): Write 1 dollar and 25 cents using a dollar sign.
+unitQuiz[237] -> u5l1 (low confidence): ___ ¢ = $0.55
+unitQuiz[241] -> u5l1 (low confidence): Which correctly shows eighty-three cents?
+unitQuiz[245] -> u5l1 (low confidence): Which shows the SAME amount as 3 quarters?
+unitQuiz[246] -> u5l1 (low confidence): Put in order from LEAST to MOST: $0.30, 25¢, $0.35
+unitQuiz[247] -> u5l1 (low confidence): A pencil costs $0.15. You have 15¢. Do you have enough?
+unitQuiz[248] -> u5l1 (low confidence): ___ = $0.05
+unitQuiz[251] -> u5l1 (low confidence): You buy a folder for $0.65 and a pen for 30¢. What is the total cost?
+unitQuiz[253] -> u5l1 (low confidence): Amir has $0.75. He finds $0.18 more. Write his new total.
+unitQuiz[254] -> u5l1 (low confidence): Priya says $0.06 > $0.60. Is she right?
+unitQuiz[256] -> u5l1 (low confidence): Put in order from MOST to LEAST: 89¢, $0.98, $1.00, 79¢
+unitQuiz[258] -> u5l1 (low confidence): You have $1.00. You spend $0.45 on a snack and $0.30 on a drink. How much is left?
+unitQuiz[259] -> u5l1 (low confidence): Which correctly converts 109¢ to dollars and cents?
+unitQuiz[260] -> u5l1 (low confidence): Zoe has $0.87. She needs $1.00. How much more does she need?
+unitQuiz[261] -> u5l1 (low confidence): Chen says $0.5 = 50¢. Layla says $0.50 = 50¢. Who wrote it correctly?
+unitQuiz[262] -> u5l1 (low confidence): A sticker costs 85¢. You pay with $1.00. Your change is ___.
+unitQuiz[263] -> u5l1 (low confidence): Which pair does NOT show the same amount?
+unitQuiz[264] -> u5l1 (low confidence): Nia has $1.50 in quarters. How many quarters does she have?
+unitQuiz[265] -> u5l1 (low confidence): A crayon box costs $0.78. You have 3 quarters. Do you have enough?
+unitQuiz[266] -> u5l1 (low confidence): Which strategy helps you compare $0.47 and 52¢?
+unitQuiz[268] -> u5l1 (low confidence): Rosa wrote these amounts: $0.09, $0.90, $9.00. Which one means 9 cents?
+unitQuiz[269] -> u5l1 (low confidence): Sam has $2.00. He buys a pencil for 75¢ and an eraser for $0.50. Write his remaining money.
+unitQuiz[281] -> u5l1 (low confidence): Ana has $10. A toy costs $7 and a book costs $4. Can she buy both?
+unitQuiz[299] -> u5l1 (low confidence): You have $15 saved and you spend $9. How much do you have left?
+unitQuiz[300] -> u5l1 (low confidence): You have 10¢. You spend 3¢. How much is left?
+unitQuiz[301] -> u5l1 (low confidence): You pay 5¢ for a gumball. You give the clerk a dime. How much change?
+unitQuiz[302] -> u5l1 (low confidence): A sticker costs 8¢. You pay with a dime. How much change do you get?
+unitQuiz[303] -> u5l1 (low confidence): You have a quarter. You buy a ring for 25¢. How much change?
+unitQuiz[304] -> u5l1 (low confidence): You buy a candy for 20¢. You pay with a quarter. How much change?
+unitQuiz[305] -> u5l1 (low confidence): You have 15¢. You spend 10¢. How much is left?
+unitQuiz[307] -> u5l1 (low confidence): You have 25¢. You spend 15¢. How much is left?
+unitQuiz[308] -> u5l1 (low confidence): What does 'making change' mean?
+unitQuiz[309] -> u5l1 (low confidence): An eraser costs 7¢. You pay with a dime. What is your change?
+unitQuiz[310] -> u5l1 (low confidence): You have 20¢. You buy a sticker for 12¢. How much is left?
+unitQuiz[311] -> u5l1 (low confidence): You buy a ball for 15¢. You pay with a quarter. What is your change?
+unitQuiz[312] -> u5l1 (low confidence): You have 50¢. You spend 25¢. How much is left?
+unitQuiz[313] -> u5l1 (low confidence): A gummy bear costs 4¢. You pay with a nickel. How much change?
+unitQuiz[314] -> u5l1 (low confidence): You pay 10¢ for a bookmark. You give the clerk a quarter. How much change?
+unitQuiz[315] -> u5l1 (low confidence): You have 30¢. You buy a toy for 20¢. How much do you have left?
+unitQuiz[316] -> u5l1 (low confidence): A cookie costs 9¢. You pay with a dime. How much change?
+unitQuiz[317] -> u5l1 (low confidence): To find change, you ___.
+unitQuiz[318] -> u5l1 (low confidence): You have 50¢. You spend 30¢. How much change is left?
+unitQuiz[319] -> u5l1 (low confidence): You buy a crayon for 5¢ and pay with a dime. What coins might you get as change?
+unitQuiz[322] -> u5l1 (low confidence): A fruit snack costs 60¢. You pay with $1.00. What coins could be your change?
+unitQuiz[323] -> u5l1 (low confidence): Mia buys a ring for 30¢. She pays with a quarter and a dime. How much change?
+unitQuiz[325] -> u5l1 (low confidence): A toy car costs 55¢. You pay with $1.00. How much change?
+unitQuiz[327] -> u5l1 (low confidence): ___ is the change from paying 50¢ for a 35¢ item.
+unitQuiz[328] -> u5l1 (low confidence): A marker costs 40¢. You pay with 2 quarters. What coins could you get as change?
+unitQuiz[330] -> u5l1 (low confidence): You have $1.00. You spend 25¢. How much do you have left?
+unitQuiz[331] -> u5l1 (low confidence): A juice box costs 80¢. Which amount is NOT enough to pay for it?
+unitQuiz[332] -> u5l1 (low confidence): You buy a sticker for 22¢ and pay with a quarter. How much change?
+unitQuiz[333] -> u5l1 (low confidence): A banana costs 30¢. You pay with a quarter and a dime. How much change?
+unitQuiz[334] -> u5l1 (low confidence): You have 75¢. You buy a pen for 50¢. How much is left?
+unitQuiz[335] -> u5l1 (low confidence): An orange costs 45¢. You give the clerk 2 quarters. She gives you a nickel. Is that the right change?
+unitQuiz[336] -> u5l1 (low confidence): You have $1.00. You spend 40¢. How much left?
+unitQuiz[337] -> u5l1 (low confidence): Which item can you buy if you have exactly 50¢?
+unitQuiz[340] -> u5l1 (low confidence): You buy a pencil for 35¢ and an eraser for 20¢. You pay with $1.00. How much change?
+unitQuiz[343] -> u5l1 (low confidence): You need exactly 67¢. You have only quarters, dimes, and pennies. Which set works?
+unitQuiz[344] -> u5l1 (low confidence): You have $1.00. You buy a ruler for 60¢. What coins could the cashier give you as change?
+unitQuiz[345] -> u5l1 (low confidence): Malik buys a snack for 42¢ and a drink for 33¢. He pays with $1.00. How much change?
+unitQuiz[346] -> u5l1 (low confidence): Ben says his change from a 50¢ purchase with $1.00 is 60¢. Find his error.
+unitQuiz[351] -> u5l1 (low confidence): You buy a crayon pack for 55¢ and a glue stick for 25¢. You pay with $1.00. How much change?
+unitQuiz[352] -> u5l1 (low confidence): Nora says counting up from the price to what you paid is a good way to find change. If the price is 63¢ and you pay 75¢, count up to find th
+unitQuiz[353] -> u5l1 (low confidence): Carlos has $1.00. He buys 3 items: a pen (25¢), a clip (15¢), and tape (20¢). How much change?
+unitQuiz[354] -> u5l1 (low confidence): Which strategy helps you make change from 75¢ for a 48¢ item?
+unitQuiz[355] -> u5l1 (low confidence): A snack costs 90¢. You pay with $1.00. The clerk gives you 2 nickels. Is that the right change?
+unitQuiz[358] -> u5l1 (low confidence): A prize costs 57¢. You pay with $1.00. Which set of coins is the correct change?

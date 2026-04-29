@@ -1,0 +1,18 @@
+fallback distractor in qBank[u8l1][3]: prompt="For a shape to show fractions, all parts must be what?" correct="Equal size" wrong="3+"
+fallback distractor in qBank[u8l1][36]: prompt="What does the bottom number in a fraction tell you?" correct="How many equal parts in all" wrong="How many parts are shaded"
+fallback distractor in qBank[u8l1][37]: prompt="What does the top number in a fraction tell you?" correct="How many parts we are talking about" wrong="How many wholes there are"
+fallback distractor in qBank[u8l1][47]: prompt="What must be true about the parts to write a fraction?" correct="They must be equal" wrong="They must be different sizes"
+fallback distractor in qBank[u8l1][47]: prompt="What must be true about the parts to write a fraction?" correct="They must be equal" wrong="There must be only 2 parts"
+fallback distractor in qBank[u8l1][47]: prompt="What must be true about the parts to write a fraction?" correct="They must be equal" wrong="The shape must be a circle"
+fallback distractor in qBank[u8l2][89]: prompt="Jada says cutting a pizza into 8 slices gives you more pizza than cutting it into 4 slices. What is wrong with her thinking?" correct="The total pizza stays the same; more slices just means smaller slices" wrong="Pizzas can only be cut into 4 slices"
+fallback distractor in testBank[3]: prompt="For a shape to show fractions, all parts must be what?" correct="Equal size" wrong="3+"
+testBank[30] -> u8l1 (low confidence): A pie has 8 equal slices. Each slice=?
+testBank[47] -> u8l1 (low confidence): Which shows one half?
+fallback distractor in testBank[104]: prompt="What does the bottom number in a fraction tell you?" correct="How many equal parts in all" wrong="How many parts are shaded"
+fallback distractor in testBank[104]: prompt="What does the bottom number in a fraction tell you?" correct="How many equal parts in all" wrong="How many shapes there are"
+fallback distractor in testBank[112]: prompt="What must be true to write a fraction?" correct="The parts must be equal" wrong="The parts must be different sizes"
+fallback distractor in testBank[112]: prompt="What must be true to write a fraction?" correct="The parts must be equal" wrong="There must be exactly 2 parts"
+testBank[157] -> u8l1 (low confidence): Jada says cutting a pizza into 8 slices gives you more pizza than cutting it into 4 slices. What is wrong with her thinking?
+fallback distractor in testBank[157]: prompt="Jada says cutting a pizza into 8 slices gives you more pizza than cutting it into 4 slices. What is wrong with her thinking?" correct="The total amount stays the same -- more slices just means smaller slices" wrong="Pizzas can only be cut into 4 slices"
+testBank[158] -> u8l1 (low confidence): 8 cookies are shared equally among 2 friends. How many cookies does each friend get?
+fallback distractor in unitQuiz[13]: prompt="For a shape to show fractions, all parts must be what?" correct="Equal size" wrong="3+"

@@ -1,0 +1,672 @@
+fallback distractor in qBank[u2l1][92]: prompt="In 901, which place has a zero?", correct="Tens", wrong="All places"
+fallback distractor in qBank[u2l1][136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="They are all the same"
+fallback distractor in qBank[u2l1][136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="The middle 4"
+fallback distractor in qBank[u2l1][136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="The last 4"
+fallback distractor in qBank[u2l1][137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 109"
+fallback distractor in qBank[u2l1][137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 119"
+fallback distractor in qBank[u2l1][137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 199"
+fallback distractor in qBank[u2l1][143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="Yes, she is correct"
+fallback distractor in qBank[u2l1][143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="No, she forgot 5 tens"
+fallback distractor in qBank[u2l1][143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="No, she forgot 3 tens"
+fallback distractor in qBank[u2l1][144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="345 and 543"
+fallback distractor in qBank[u2l1][144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="291 and 198"
+fallback distractor in qBank[u2l1][144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="456 and 853"
+fallback distractor in qBank[u2l1][147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="There are 10 ones"
+fallback distractor in qBank[u2l1][147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="The number is zero"
+fallback distractor in qBank[u2l1][147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="It means nothing"
+fallback distractor in qBank[u2l1][148]: prompt="Aiden built 307 with base-ten blocks. How many blocks did he use in all?", correct="10", wrong="10"
+fallback distractor in qBank[u2l1][150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="The 7 is in the tens place"
+fallback distractor in qBank[u2l1][150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="709 has 70 tens"
+fallback distractor in qBank[u2l1][150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="There is no mistake"
+fallback distractor in qBank[u2l1][152]: prompt="Ava shows 524 three different ways. Which is NOT correct?", correct="500 + 20 + 40", wrong="5 hundreds, 2 tens, 4 ones"
+fallback distractor in qBank[u2l1][152]: prompt="Ava shows 524 three different ways. Which is NOT correct?", correct="500 + 20 + 40", wrong="50 tens and 24 ones"
+fallback distractor in qBank[u2l1][155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="Yes, same digits means same number"
+fallback distractor in qBank[u2l1][155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="Yes, both equal 600"
+fallback distractor in qBank[u2l1][155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="No, but they have the same value"
+fallback distractor in qBank[u2l1][157]: prompt="What is the value of the 0 in 903?", correct="0", wrong="There is no value"
+fallback distractor in qBank[u2l1][163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="He dropped the hundreds"
+fallback distractor in qBank[u2l1][163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="He added wrong"
+fallback distractor in qBank[u2l1][163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="Nothing, he is correct"
+fallback distractor in qBank[u2l2][42]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="Yes"
+fallback distractor in qBank[u2l2][42]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="No, it is 906"
+fallback distractor in qBank[u2l2][42]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="No, it is 196"
+fallback distractor in qBank[u2l2][44]: prompt="Which number is written in word form?", correct="Four hundred fifty-two", wrong="452"
+fallback distractor in qBank[u2l2][51]: prompt="Which number is shown in expanded form?", correct="500 + 20 + 3", wrong="Five hundred twenty-three"
+fallback distractor in qBank[u2l2][51]: prompt="Which number is shown in expanded form?", correct="500 + 20 + 3", wrong="5 hundreds 2 tens 3 ones"
+fallback distractor in qBank[u2l2][52]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, 400 + 20 + 8 = 4,208"
+fallback distractor in qBank[u2l2][52]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, 400 + 20 + 8 = 482"
+fallback distractor in qBank[u2l2][52]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, they are close but not the same"
+fallback distractor in qBank[u2l2][55]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="306 and 300 + 60"
+fallback distractor in qBank[u2l2][55]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="715 and 700 + 50 + 1"
+fallback distractor in qBank[u2l2][55]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="243 and 200 + 40 + 30"
+fallback distractor in qBank[u2l2][56]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="No, that is correct"
+fallback distractor in qBank[u2l2][56]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="Yes: 1,000 + 500 + 2"
+fallback distractor in qBank[u2l2][56]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="Yes: 100 + 50 + 2"
+fallback distractor in qBank[u2l2][59]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 7,015"
+fallback distractor in qBank[u2l2][59]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 850"
+fallback distractor in qBank[u2l2][59]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 7,150"
+fallback distractor in qBank[u2l2][60]: prompt="Which is NOT a correct way to write 358?", correct="300 + 80 + 5", wrong="Three hundred fifty-eight"
+fallback distractor in qBank[u2l2][60]: prompt="Which is NOT a correct way to write 358?", correct="300 + 80 + 5", wrong="35 tens and 8 ones"
+fallback distractor in qBank[u2l2][62]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="He put too many zeros"
+fallback distractor in qBank[u2l2][62]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="He switched the digits"
+fallback distractor in qBank[u2l2][62]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="Nothing, he is right"
+fallback distractor in qBank[u2l2][66]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Because you cannot add three numbers"
+fallback distractor in qBank[u2l2][66]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Because 500 is too big"
+fallback distractor in qBank[u2l2][66]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Tom is wrong, it is fine"
+fallback distractor in qBank[u2l2][70]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She added wrong"
+fallback distractor in qBank[u2l2][70]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She forgot to regroup"
+fallback distractor in qBank[u2l2][70]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She switched the tens and ones"
+fallback distractor in qBank[u2l2][71]: prompt="Marcus wrote 1,072 three ways. Which one is WRONG?", correct="1,000 + 700 + 2", wrong="One thousand seventy-two"
+fallback distractor in qBank[u2l2][71]: prompt="Marcus wrote 1,072 three ways. Which one is WRONG?", correct="1,000 + 700 + 2", wrong="10 hundreds + 7 tens + 2 ones"
+fallback distractor in qBank[u2l2][74]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Only Kai"
+fallback distractor in qBank[u2l2][74]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Only Zoe"
+fallback distractor in qBank[u2l2][74]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Neither is correct"
+fallback distractor in qBank[u2l2][76]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Only Eli is right"
+fallback distractor in qBank[u2l2][76]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Only the teacher is right"
+fallback distractor in qBank[u2l2][76]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Neither is right"
+fallback distractor in qBank[u2l2][79]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="A is wrong"
+fallback distractor in qBank[u2l2][79]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="B is wrong"
+fallback distractor in qBank[u2l2][79]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="They are all correct"
+fallback distractor in qBank[u2l2][81]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Rosa, because three hundred = 300 and nine = 09"
+fallback distractor in qBank[u2l2][81]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Both are correct"
+fallback distractor in qBank[u2l2][81]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Neither is correct"
+fallback distractor in qBank[u2l2][82]: prompt="Which expanded form is WRONG for 555?", correct="500 + 55 + 5", wrong="5 hundreds + 5 tens + 5 ones"
+fallback distractor in qBank[u2l2][82]: prompt="Which expanded form is WRONG for 555?", correct="500 + 55 + 5", wrong="55 tens + 5 ones"
+fallback distractor in qBank[u2l2][83]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="No, you cannot have 17 tens"
+fallback distractor in qBank[u2l2][83]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="No, that equals 376"
+fallback distractor in qBank[u2l2][83]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="Yes, but only the first way is proper"
+fallback distractor in qBank[u2l2][84]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="Nothing, it is correct"
+fallback distractor in qBank[u2l2][84]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="It should be 2,013"
+fallback distractor in qBank[u2l2][84]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="Thirteen means 30, not 13"
+fallback distractor in qBank[u2l2][86]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 268"
+fallback distractor in qBank[u2l2][86]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 2,618"
+fallback distractor in qBank[u2l2][86]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 878"
+fallback distractor in qBank[u2l2][89]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="Yes, twelve hundred = 1,200 and one thousand two hundred = 12,000"
+fallback distractor in qBank[u2l2][89]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="Yes, they sound different so they must be different"
+fallback distractor in qBank[u2l2][89]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="No, both equal 12,000"
+fallback distractor in qBank[u2l3][1]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Equal"
+fallback distractor in qBank[u2l3][1]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Cannot tell"
+fallback distractor in qBank[u2l3][7]: prompt="Which number is the greatest? 456, 546, or 465?", correct="546", wrong="Equal"
+fallback distractor in qBank[u2l3][16]: prompt="Which number is in the middle when ordered least to greatest? 410, 401, 140", correct="401", wrong="Equal"
+fallback distractor in qBank[u2l3][19]: prompt="Which number is the least? 605, 506, or 650?", correct="506", wrong="Equal"
+fallback distractor in qBank[u2l3][26]: prompt="Which number is the greatest? 289, 298, or 928?", correct="928", wrong="Equal"
+fallback distractor in qBank[u2l3][30]: prompt="Which is greater: 47 or 74?", correct="74", wrong="They are equal"
+fallback distractor in qBank[u2l3][30]: prompt="Which is greater: 47 or 74?", correct="74", wrong="You cannot tell"
+fallback distractor in qBank[u2l3][35]: prompt="Which is greater: 892 or 829?", correct="892", wrong="They are equal"
+fallback distractor in qBank[u2l3][35]: prompt="Which is greater: 892 or 829?", correct="892", wrong="You cannot tell"
+fallback distractor in qBank[u2l3][36]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="100, 10, 1"
+fallback distractor in qBank[u2l3][36]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="10, 1, 100"
+fallback distractor in qBank[u2l3][36]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="1, 100, 10"
+fallback distractor in qBank[u2l3][37]: prompt="Which number is the greatest: 345, 354, 435?", correct="435", wrong="They are all equal"
+fallback distractor in qBank[u2l3][40]: prompt="Which number is less: 418 or 481?", correct="418", wrong="They are equal"
+fallback distractor in qBank[u2l3][40]: prompt="Which number is less: 418 or 481?", correct="418", wrong="You cannot tell"
+fallback distractor in qBank[u2l3][41]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="Sara"
+fallback distractor in qBank[u2l3][41]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="They have the same"
+fallback distractor in qBank[u2l3][41]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="You cannot tell"
+fallback distractor in qBank[u2l3][43]: prompt="Which is the greatest number: 199, 200, 188?", correct="200", wrong="They are all equal"
+fallback distractor in qBank[u2l3][51]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="512, 521, 215"
+fallback distractor in qBank[u2l3][51]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="521, 512, 215"
+fallback distractor in qBank[u2l3][51]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="215, 521, 512"
+fallback distractor in qBank[u2l3][57]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="140, 401, 410"
+fallback distractor in qBank[u2l3][57]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="401, 410, 140"
+fallback distractor in qBank[u2l3][57]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="140, 410, 401"
+fallback distractor in qBank[u2l3][59]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="Yes, same digits means same number"
+fallback distractor in qBank[u2l3][59]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="Yes, because both have 8 hundreds"
+fallback distractor in qBank[u2l3][59]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="No, because 845 has more hundreds"
+fallback distractor in qBank[u2l3][60]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="999, because 9 > 1"
+fallback distractor in qBank[u2l3][60]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="They are equal"
+fallback distractor in qBank[u2l3][60]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="999, because all digits are bigger"
+fallback distractor in qBank[u2l3][61]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="At least 9 more"
+fallback distractor in qBank[u2l3][61]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="At least 1 more"
+fallback distractor in qBank[u2l3][61]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="He already has more"
+fallback distractor in qBank[u2l3][62]: prompt="Put these numbers on a number line. Which is farthest right? 305, 350, 503", correct="503", wrong="They are all the same distance"
+fallback distractor in qBank[u2l3][63]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="312 > 321"
+fallback distractor in qBank[u2l3][63]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="756 = 765"
+fallback distractor in qBank[u2l3][63]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="200 > 1,000"
+fallback distractor in qBank[u2l3][66]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="490, 409, 940"
+fallback distractor in qBank[u2l3][66]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="940, 490, 409"
+fallback distractor in qBank[u2l3][66]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="409, 940, 490"
+fallback distractor in qBank[u2l3][67]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="450 > 540"
+fallback distractor in qBank[u2l3][67]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="199 > 200"
+fallback distractor in qBank[u2l3][67]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="387 = 378"
+fallback distractor in qBank[u2l3][70]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="899, 890, 908, 981"
+fallback distractor in qBank[u2l3][70]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="908, 899, 890, 981"
+fallback distractor in qBank[u2l3][70]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="981, 908, 899, 890"
+fallback distractor in qBank[u2l3][73]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,102 > 1,120 > 1,012"
+fallback distractor in qBank[u2l3][73]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,012 > 1,102 > 1,120"
+fallback distractor in qBank[u2l3][73]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,120 > 1,012 > 1,102"
+fallback distractor in qBank[u2l3][76]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Ben, Cal, Ava"
+fallback distractor in qBank[u2l3][76]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Cal, Ava, Ben"
+fallback distractor in qBank[u2l3][76]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Ava, Ben, Cal"
+fallback distractor in qBank[u2l3][79]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="Only 407"
+fallback distractor in qBank[u2l3][79]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="Only 470"
+fallback distractor in qBank[u2l3][79]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="400 and 470"
+fallback distractor in qBank[u2l3][80]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,200, 1,100, 1,020, 1,002"
+fallback distractor in qBank[u2l3][80]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,020, 1,002, 1,100, 1,200"
+fallback distractor in qBank[u2l3][80]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,002, 1,100, 1,020, 1,200"
+fallback distractor in qBank[u2l3][84]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="345, 435, 543"
+fallback distractor in qBank[u2l3][84]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="435, 345, 543"
+fallback distractor in qBank[u2l3][84]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="345, 543, 435"
+fallback distractor in qBank[u2l3][85]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="Yes, hundreds tells you everything"
+fallback distractor in qBank[u2l3][85]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="No, you always check ones first"
+fallback distractor in qBank[u2l3][85]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="Yes, because 7 = 7 means they are equal"
+fallback distractor in qBank[u2l3][89]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="Ava"
+fallback distractor in qBank[u2l3][89]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="Cho"
+fallback distractor in qBank[u2l3][89]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="They tied"
+fallback distractor in qBank[u2l4][4]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 4"
+fallback distractor in qBank[u2l4][4]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 5"
+fallback distractor in qBank[u2l4][4]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 7"
+fallback distractor in qBank[u2l4][9]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 2"
+fallback distractor in qBank[u2l4][9]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 3"
+fallback distractor in qBank[u2l4][9]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 5"
+fallback distractor in qBank[u2l4][17]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 10"
+fallback distractor in qBank[u2l4][17]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 50"
+fallback distractor in qBank[u2l4][17]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 200"
+fallback distractor in qBank[u2l4][24]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 2"
+fallback distractor in qBank[u2l4][24]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 4"
+fallback distractor in qBank[u2l4][24]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 10"
+fallback distractor in qBank[u2l4][29]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 20"
+fallback distractor in qBank[u2l4][29]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 30"
+fallback distractor in qBank[u2l4][29]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 50"
+fallback distractor in qBank[u2l4][59]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="2s"
+fallback distractor in qBank[u2l4][59]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="5s"
+fallback distractor in qBank[u2l4][59]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="10s"
+fallback distractor in qBank[u2l4][60]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change ones digit: 348"
+fallback distractor in qBank[u2l4][60]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change tens digit: 357"
+fallback distractor in qBank[u2l4][60]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change all digits: 448"
+fallback distractor in qBank[u2l4][61]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="Yes"
+fallback distractor in qBank[u2l4][61]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="No, she will skip it"
+fallback distractor in qBank[u2l4][61]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="Yes, after 150"
+fallback distractor in qBank[u2l4][70]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="She started at the wrong number"
+fallback distractor in qBank[u2l4][70]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="She counted by 10s at the end"
+fallback distractor in qBank[u2l4][70]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="There is no mistake"
+fallback distractor in qBank[u2l4][77]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 499"
+fallback distractor in qBank[u2l4][77]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 598"
+fallback distractor in qBank[u2l4][77]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 408"
+fallback distractor in qBank[u2l4][79]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="Both are wrong"
+fallback distractor in qBank[u2l4][79]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="990 + 10 is wrong"
+fallback distractor in qBank[u2l4][79]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="There is no error"
+fallback distractor in qBank[u2l4][81]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="Yes, because 48 is even"
+fallback distractor in qBank[u2l4][81]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="Yes, after 47"
+fallback distractor in qBank[u2l4][81]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="No, because 48 is too big"
+fallback distractor in qBank[u2l4][84]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 10; next is 890"
+fallback distractor in qBank[u2l4][84]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 100; next is 890"
+fallback distractor in qBank[u2l4][84]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 200; next is 700"
+fallback distractor in qBank[u2l4][87]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="Yes, always"
+fallback distractor in qBank[u2l4][87]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="No, it only lands on even numbers"
+fallback distractor in qBank[u2l4][87]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="No, it skips some numbers ending in 0"
+testBank[4] -> u2l1 (low confidence): What is 3 hundreds + 4 tens + 7 ones?
+testBank[5] -> u2l1 (low confidence): What is 5 hundreds + 6 tens + 2 ones?
+testBank[12] -> u2l1 (low confidence): What is 8 hundreds + 0 tens + 5 ones?
+testBank[15] -> u2l1 (low confidence): In 528, how many hundreds?
+testBank[16] -> u2l1 (low confidence): Which number has 4 hundreds, 3 tens, 6 ones?
+testBank[17] -> u2l1 (low confidence): In 901, which place has a zero?
+fallback distractor in testBank[17]: prompt="In 901, which place has a zero?", correct="Tens", wrong="All places"
+testBank[21] -> u2l1 (low confidence): What is 7 hundreds + 2 tens + 0 ones?
+testBank[27] -> u2l1 (low confidence): What is 4 hundreds + 0 tens + 4 ones?
+testBank[28] -> u2l1 (low confidence): In 863, how many tens are there?
+testBank[31] -> u2l1 (low confidence): What is 200 + 40 + 7?
+testBank[33] -> u2l1 (low confidence): What is 500 + 30 + 1?
+testBank[35] -> u2l1 (low confidence): What is 400 + 0 + 9?
+testBank[37] -> u2l1 (low confidence): What is 300 + 80 + 0?
+testBank[39] -> u2l1 (low confidence): What is 700 + 60 + 4?
+testBank[41] -> u2l1 (low confidence): What is 900 + 0 + 0?
+testBank[45] -> u2l1 (low confidence): What is 100 + 20 + 3?
+testBank[47] -> u2l1 (low confidence): What is 200 + 90 + 5?
+testBank[49] -> u2l1 (low confidence): What is 400 + 60 + 0?
+testBank[52] -> u2l1 (low confidence): What is 800 + 70 + 0?
+testBank[54] -> u2l1 (low confidence): What is 100 + 0 + 7?
+testBank[56] -> u2l1 (low confidence): What is 600 + 0 + 3?
+testBank[58] -> u2l1 (low confidence): What is 300 + 50 + 0?
+testBank[60] -> u2l1 (low confidence): Which symbol goes in the blank? 527 ___ 572
+testBank[61] -> u2l1 (low confidence): Which is greater: 384 or 438?
+fallback distractor in testBank[61]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Equal"
+fallback distractor in testBank[61]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Cannot tell"
+testBank[63] -> u2l1 (low confidence): Put these numbers in order from least to greatest: 312, 132, 231
+testBank[64] -> u2l1 (low confidence): Which symbol goes in the blank? 760 ___ 760
+testBank[65] -> u2l1 (low confidence): What is 100 more than 523?
+testBank[66] -> u2l1 (low confidence): Which symbol goes in the blank? 199 ___ 200
+testBank[67] -> u2l1 (low confidence): Which number is the greatest? 456, 546, or 465?
+fallback distractor in testBank[67]: prompt="Which number is the greatest? 456, 546, or 465?", correct="546", wrong="Equal"
+testBank[69] -> u2l1 (low confidence): Which symbol goes in the blank? 408 ___ 480
+testBank[70] -> u2l1 (low confidence): Put these numbers in order from greatest to least: 528, 258, 825
+testBank[72] -> u2l1 (low confidence): Which symbol goes in the blank? 900 ___ 90
+testBank[74] -> u2l1 (low confidence): What is 10 more than 690?
+testBank[75] -> u2l1 (low confidence): Which symbol goes in the blank? 335 ___ 353
+testBank[76] -> u2l1 (low confidence): Which number is in the middle when ordered least to greatest? 410, 401, 140
+fallback distractor in testBank[76]: prompt="Which number is in the middle when ordered least to greatest? 410, 401, 140", correct="401", wrong="Equal"
+testBank[77] -> u2l1 (low confidence): What is 1 more than 399?
+testBank[78] -> u2l1 (low confidence): Which symbol goes in the blank? 807 ___ 780
+testBank[79] -> u2l1 (low confidence): Which number is the least? 605, 506, or 650?
+fallback distractor in testBank[79]: prompt="Which number is the least? 605, 506, or 650?", correct="506", wrong="Equal"
+testBank[80] -> u2l1 (low confidence): Which symbol goes in the blank? 500 ___ 499
+testBank[81] -> u2l1 (low confidence): What is 100 more than 899?
+testBank[82] -> u2l1 (low confidence): Which symbol goes in the blank? 234 ___ 243
+testBank[83] -> u2l1 (low confidence): Put these numbers in order from least to greatest: 901, 190, 910
+testBank[85] -> u2l1 (low confidence): Which symbol goes in the blank? 673 ___ 637
+testBank[86] -> u2l1 (low confidence): Which number is the greatest? 289, 298, or 928?
+fallback distractor in testBank[86]: prompt="Which number is the greatest? 289, 298, or 928?", correct="928", wrong="Equal"
+testBank[88] -> u2l1 (low confidence): Which symbol goes in the blank? 415 ___ 415
+testBank[89] -> u2l1 (low confidence): What is 100 more than 450?
+testBank[94] -> u2l1 (low confidence): What is the counting rule? 6, 12, 18, 24...
+fallback distractor in testBank[94]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 4"
+fallback distractor in testBank[94]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 5"
+fallback distractor in testBank[94]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 7"
+testBank[99] -> u2l1 (low confidence): What is the counting rule? 4, 8, 12, 16...
+fallback distractor in testBank[99]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 2"
+fallback distractor in testBank[99]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 3"
+fallback distractor in testBank[99]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 5"
+testBank[102] -> u2l1 (low confidence): Which is greater: 519 or 591?
+fallback distractor in testBank[102]: prompt="Which is greater: 519 or 591?", correct="591", wrong="They are equal"
+fallback distractor in testBank[102]: prompt="Which is greater: 519 or 591?", correct="591", wrong="You cannot tell"
+testBank[105] -> u2l1 (low confidence): What is 100 more than 723?
+testBank[106] -> u2l1 (low confidence): How many tens are in 60?
+testBank[107] -> u2l1 (low confidence): Which symbol goes in the blank? 300 ___ 299
+testBank[109] -> u2l1 (low confidence): Ben has 4 hundreds blocks and 6 ones blocks. What number did he make?
+testBank[110] -> u2l1 (low confidence): In the number 637, what is the value of the digit 3?
+testBank[111] -> u2l1 (low confidence): Which shows the same number as 400 + 90 + 6?
+testBank[112] -> u2l1 (low confidence): Put these in order from least to greatest: 703, 730, 307
+fallback distractor in testBank[112]: prompt="Put these in order from least to greatest: 703, 730, 307", correct="307, 703, 730", wrong="703, 730, 307"
+fallback distractor in testBank[112]: prompt="Put these in order from least to greatest: 703, 730, 307", correct="307, 703, 730", wrong="730, 703, 307"
+fallback distractor in testBank[112]: prompt="Put these in order from least to greatest: 703, 730, 307", correct="307, 703, 730", wrong="307, 730, 703"
+testBank[114] -> u2l1 (low confidence): 500 + ___ + 8 = 578. What goes in the blank?
+testBank[115] -> u2l1 (low confidence): Nora says eight hundred twelve is 8012. What should it be?
+testBank[117] -> u2l1 (low confidence): What is 100 more than 950?
+testBank[119] -> u2l1 (low confidence): In the number 555, which 5 has the greatest value?
+fallback distractor in testBank[119]: prompt="In the number 555, which 5 has the greatest value?", correct="The first 5 (hundreds)", wrong="They are all the same value"
+fallback distractor in testBank[119]: prompt="In the number 555, which 5 has the greatest value?", correct="The first 5 (hundreds)", wrong="The middle 5 (tens)"
+fallback distractor in testBank[119]: prompt="In the number 555, which 5 has the greatest value?", correct="The first 5 (hundreds)", wrong="The last 5 (ones)"
+testBank[120] -> u2l1 (low confidence): What number has 7 hundreds, 0 tens, and 14 ones?
+testBank[121] -> u2l1 (low confidence): Maya wrote 300 + 50 + 18 = 3,518. What should the answer be?
+testBank[122] -> u2l1 (low confidence): Put these in order from least to greatest: 1,010, 1,100, 1,001, 1,011
+fallback distractor in testBank[122]: prompt="Put these in order from least to greatest: 1,010, 1,100, 1,001, 1,011", correct="1,001, 1,010, 1,011, 1,100", wrong="1,100, 1,011, 1,010, 1,001"
+fallback distractor in testBank[122]: prompt="Put these in order from least to greatest: 1,010, 1,100, 1,001, 1,011", correct="1,001, 1,010, 1,011, 1,100", wrong="1,001, 1,011, 1,010, 1,100"
+fallback distractor in testBank[122]: prompt="Put these in order from least to greatest: 1,010, 1,100, 1,001, 1,011", correct="1,001, 1,010, 1,011, 1,100", wrong="1,010, 1,001, 1,011, 1,100"
+testBank[123] -> u2l1 (low confidence): Omar starts at 485. He adds 10 twice, then 100 once. Where does he end?
+fallback distractor in testBank[125]: prompt="Ella counts by 5s from 7. Will she ever say 52?", correct="Yes, the ones digit alternates 2 and 7, and 52 ends in 2", wrong="No, because 52 does not end in 5 or 0"
+fallback distractor in testBank[125]: prompt="Ella counts by 5s from 7. Will she ever say 52?", correct="Yes, the ones digit alternates 2 and 7, and 52 ends in 2", wrong="No, she only says odd numbers"
+fallback distractor in testBank[125]: prompt="Ella counts by 5s from 7. Will she ever say 52?", correct="Yes, the ones digit alternates 2 and 7, and 52 ends in 2", wrong="Yes, but only if she counts past 100"
+fallback distractor in testBank[126]: prompt="Two students wrote 946 in expanded form. Ava: 900 + 40 + 6. Ben: 9 hundreds + 4 ", correct="Both are correct", wrong="Only Ava"
+fallback distractor in testBank[126]: prompt="Two students wrote 946 in expanded form. Ava: 900 + 40 + 6. Ben: 9 hundreds + 4 ", correct="Both are correct", wrong="Only Ben"
+fallback distractor in testBank[126]: prompt="Two students wrote 946 in expanded form. Ava: 900 + 40 + 6. Ben: 9 hundreds + 4 ", correct="Both are correct", wrong="Neither is correct"
+testBank[129] -> u2l1 (low confidence): Kai says 400 + 60 + 13 = 4,613. His sister says it equals 473. Who is right and why?
+fallback distractor in testBank[129]: prompt="Kai says 400 + 60 + 13 = 4,613. His sister says it equals 473. Who is right and ", correct="His sister, because 400 + 60 + 13 = 473", wrong="Kai, because you put digits together"
+fallback distractor in testBank[129]: prompt="Kai says 400 + 60 + 13 = 4,613. His sister says it equals 473. Who is right and ", correct="His sister, because 400 + 60 + 13 = 473", wrong="Neither, it equals 4,063"
+fallback distractor in testBank[129]: prompt="Kai says 400 + 60 + 13 = 4,613. His sister says it equals 473. Who is right and ", correct="His sister, because 400 + 60 + 13 = 473", wrong="Neither, it equals 463"
+unitQuiz[64] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[65] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[66] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[67] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[68] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[69] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[70] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[71] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[72] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[73] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[74] -> u2l1 (low confidence): How many dots are in this group?
+unitQuiz[79] -> u2l1 (low confidence): What is 3 hundreds + 4 tens + 7 ones?
+unitQuiz[80] -> u2l1 (low confidence): What is 5 hundreds + 6 tens + 2 ones?
+unitQuiz[87] -> u2l1 (low confidence): What is 8 hundreds + 0 tens + 5 ones?
+unitQuiz[90] -> u2l1 (low confidence): In 528, how many hundreds?
+unitQuiz[91] -> u2l1 (low confidence): Which number has 4 hundreds, 3 tens, 6 ones?
+unitQuiz[92] -> u2l1 (low confidence): In 901, which place has a zero?
+fallback distractor in unitQuiz[92]: prompt="In 901, which place has a zero?", correct="Tens", wrong="All places"
+unitQuiz[96] -> u2l1 (low confidence): What is 7 hundreds + 2 tens + 0 ones?
+unitQuiz[102] -> u2l1 (low confidence): What is 4 hundreds + 0 tens + 4 ones?
+unitQuiz[103] -> u2l1 (low confidence): In 863, how many tens are there?
+unitQuiz[108] -> u2l1 (low confidence): How many hundreds are in 400?
+unitQuiz[111] -> u2l1 (low confidence): How many tens are in 90?
+unitQuiz[112] -> u2l1 (low confidence): Jake has 3 hundreds blocks, 2 tens blocks, and 5 ones blocks. What number did he make?
+unitQuiz[115] -> u2l1 (low confidence): How many ones are in the number 47?
+unitQuiz[116] -> u2l1 (low confidence): Maria put 5 hundreds blocks on the table. What number do just those blocks show?
+unitQuiz[118] -> u2l1 (low confidence): Which place is the 3 in for the number 735?
+unitQuiz[119] -> u2l1 (low confidence): A number has 0 hundreds, 6 tens, and 2 ones. What is the number?
+unitQuiz[121] -> u2l1 (low confidence): How many hundreds are in 700?
+unitQuiz[122] -> u2l1 (low confidence): Tom has base-ten blocks: 1 hundred, 4 tens, 3 ones. What number is that?
+unitQuiz[125] -> u2l1 (low confidence): In the number 358, what is the VALUE of the digit 5?
+unitQuiz[127] -> u2l1 (low confidence): Rosa has 2 hundreds blocks, 14 ones blocks, and no tens blocks. What number did she build?
+unitQuiz[128] -> u2l1 (low confidence): Which shows how to break apart 745 into hundreds, tens, and ones?
+unitQuiz[129] -> u2l1 (low confidence): A number has 6 hundreds and 3 ones but NO tens. What is the number?
+unitQuiz[130] -> u2l1 (low confidence): What is the value of the digit 9 in 492?
+unitQuiz[131] -> u2l1 (low confidence): Liam says the 4 in 462 is worth 4. What is the 4 actually worth?
+unitQuiz[132] -> u2l1 (low confidence): ___ hundreds + 2 tens + 9 ones = 529. What goes in the blank?
+unitQuiz[134] -> u2l1 (low confidence): Which number shows 4 hundreds, 0 tens, and 8 ones?
+unitQuiz[135] -> u2l1 (low confidence): Carlos built 562 with base-ten blocks. He lost 1 tens block. What number does he have now?
+unitQuiz[136] -> u2l1 (low confidence): In the number 444, which digit has the GREATEST value?
+fallback distractor in unitQuiz[136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="They are all the same"
+fallback distractor in unitQuiz[136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="The middle 4"
+fallback distractor in unitQuiz[136]: prompt="In the number 444, which digit has the GREATEST value?", correct="The first 4", wrong="The last 4"
+fallback distractor in unitQuiz[137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 109"
+fallback distractor in unitQuiz[137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 119"
+fallback distractor in unitQuiz[137]: prompt="What number has 9 in the ones place and 1 in the hundreds place?", correct="There are many answers", wrong="Only 199"
+unitQuiz[138] -> u2l1 (low confidence): Kira added 1 hundreds block to 348. What is her new number?
+unitQuiz[140] -> u2l1 (low confidence): Emma has 6 hundreds blocks, 0 tens blocks, and 9 ones blocks. Which number did she build?
+unitQuiz[141] -> u2l1 (low confidence): The value of the digit 8 in which number is 800?
+unitQuiz[142] -> u2l1 (low confidence): 7 hundreds + ___ tens + 4 ones = 764. What goes in the blank?
+unitQuiz[143] -> u2l1 (low confidence): Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?
+fallback distractor in unitQuiz[143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="Yes, she is correct"
+fallback distractor in unitQuiz[143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="No, she forgot 5 tens"
+fallback distractor in unitQuiz[143]: prompt="Lucy says 305 has 3 hundreds and 5 ones. Did she describe it fully?", correct="No, she forgot 0 tens", wrong="No, she forgot 3 tens"
+fallback distractor in unitQuiz[144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="345 and 543"
+fallback distractor in unitQuiz[144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="291 and 198"
+fallback distractor in unitQuiz[144]: prompt="Which pair of numbers have the SAME digit in the tens place?", correct="672 and 478", wrong="456 and 853"
+fallback distractor in unitQuiz[147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="There are 10 ones"
+fallback distractor in unitQuiz[147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="The number is zero"
+fallback distractor in unitQuiz[147]: prompt="Nina writes the number 470. What does the 0 in the ones place mean?", correct="There are no ones", wrong="It means nothing"
+unitQuiz[148] -> u2l1 (low confidence): Aiden built 307 with base-ten blocks. How many blocks did he use in all?
+fallback distractor in unitQuiz[148]: prompt="Aiden built 307 with base-ten blocks. How many blocks did he use in all?", correct="10", wrong="10"
+unitQuiz[149] -> u2l1 (low confidence): What number is 100 more than 245?
+unitQuiz[150] -> u2l1 (low confidence): Dev says 709 has 7 hundreds and 9 tens. Find his mistake.
+fallback distractor in unitQuiz[150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="The 7 is in the tens place"
+fallback distractor in unitQuiz[150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="709 has 70 tens"
+fallback distractor in unitQuiz[150]: prompt="Dev says 709 has 7 hundreds and 9 tens. Find his mistake.", correct="The 9 is in the ones place, not tens", wrong="There is no mistake"
+fallback distractor in unitQuiz[152]: prompt="Ava shows 524 three different ways. Which is NOT correct?", correct="500 + 20 + 40", wrong="5 hundreds, 2 tens, 4 ones"
+fallback distractor in unitQuiz[152]: prompt="Ava shows 524 three different ways. Which is NOT correct?", correct="500 + 20 + 40", wrong="50 tens and 24 ones"
+unitQuiz[153] -> u2l1 (low confidence): Which number has a 0 that means 'no hundreds'?
+unitQuiz[155] -> u2l1 (low confidence): Riley says 604 and 640 are the same number because they use the same digits. Is she right?
+fallback distractor in unitQuiz[155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="Yes, same digits means same number"
+fallback distractor in unitQuiz[155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="Yes, both equal 600"
+fallback distractor in unitQuiz[155]: prompt="Riley says 604 and 640 are the same number because they use the same digits. Is ", correct="No, the 4 and 0 switched places so the values changed", wrong="No, but they have the same value"
+fallback distractor in unitQuiz[157]: prompt="What is the value of the 0 in 903?", correct="0", wrong="There is no value"
+unitQuiz[158] -> u2l1 (low confidence): Which number does NOT have 4 in a place where its value is 40?
+unitQuiz[161] -> u2l1 (low confidence): Which number has a 3 that is worth 300?
+unitQuiz[162] -> u2l1 (low confidence): A number has more hundreds than tens and more tens than ones. Which could it be?
+unitQuiz[163] -> u2l1 (low confidence): Pedro says 500 + 0 + 8 = 58. What is wrong?
+fallback distractor in unitQuiz[163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="He dropped the hundreds"
+fallback distractor in unitQuiz[163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="He added wrong"
+fallback distractor in unitQuiz[163]: prompt="Pedro says 500 + 0 + 8 = 58. What is wrong?", correct="He forgot the zero in the tens place", wrong="Nothing, he is correct"
+unitQuiz[166] -> u2l1 (low confidence): What is 200 + 40 + 7?
+unitQuiz[168] -> u2l1 (low confidence): What is 500 + 30 + 1?
+unitQuiz[170] -> u2l1 (low confidence): What is 400 + 0 + 9?
+unitQuiz[172] -> u2l1 (low confidence): What is 300 + 80 + 0?
+unitQuiz[174] -> u2l1 (low confidence): What is 700 + 60 + 4?
+unitQuiz[176] -> u2l1 (low confidence): What is 900 + 0 + 0?
+unitQuiz[180] -> u2l1 (low confidence): What is 100 + 20 + 3?
+unitQuiz[182] -> u2l1 (low confidence): What is 200 + 90 + 5?
+unitQuiz[184] -> u2l1 (low confidence): What is 400 + 60 + 0?
+unitQuiz[187] -> u2l1 (low confidence): What is 800 + 70 + 0?
+unitQuiz[189] -> u2l1 (low confidence): What is 100 + 0 + 7?
+unitQuiz[191] -> u2l1 (low confidence): What is 600 + 0 + 3?
+unitQuiz[193] -> u2l1 (low confidence): What is 300 + 50 + 0?
+unitQuiz[197] -> u2l1 (low confidence): What is 400 + 30 + 7?
+unitQuiz[203] -> u2l1 (low confidence): Amy wrote five hundred thirty. Which number is that?
+unitQuiz[204] -> u2l1 (low confidence): What is 100 + 90 + 2?
+unitQuiz[207] -> u2l1 (low confidence): Jake says nine hundred sixteen is 960. Is he right?
+fallback distractor in unitQuiz[207]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="Yes"
+fallback distractor in unitQuiz[207]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="No, it is 906"
+fallback distractor in unitQuiz[207]: prompt="Jake says nine hundred sixteen is 960. Is he right?", correct="No, it is 916", wrong="No, it is 196"
+fallback distractor in unitQuiz[209]: prompt="Which number is written in word form?", correct="Four hundred fifty-two", wrong="452"
+unitQuiz[212] -> u2l1 (low confidence): Maria wrote 300 + 20 + 6. What number is that?
+unitQuiz[214] -> u2l1 (low confidence): What number is six hundred one?
+fallback distractor in unitQuiz[216]: prompt="Which number is shown in expanded form?", correct="500 + 20 + 3", wrong="Five hundred twenty-three"
+fallback distractor in unitQuiz[216]: prompt="Which number is shown in expanded form?", correct="500 + 20 + 3", wrong="5 hundreds 2 tens 3 ones"
+unitQuiz[217] -> u2l1 (low confidence): Is 400 + 20 + 8 the same as 428?
+fallback distractor in unitQuiz[217]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, 400 + 20 + 8 = 4,208"
+fallback distractor in unitQuiz[217]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, 400 + 20 + 8 = 482"
+fallback distractor in unitQuiz[217]: prompt="Is 400 + 20 + 8 the same as 428?", correct="Yes, they are equal", wrong="No, they are close but not the same"
+unitQuiz[218] -> u2l1 (low confidence): 300 + __ + 6 = 376. What goes in the blank?
+unitQuiz[220] -> u2l1 (low confidence): Which two ways show the SAME number?
+fallback distractor in unitQuiz[220]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="306 and 300 + 60"
+fallback distractor in unitQuiz[220]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="715 and 700 + 50 + 1"
+fallback distractor in unitQuiz[220]: prompt="Which two ways show the SAME number?", correct="490 and 400 + 90 + 0", wrong="243 and 200 + 40 + 30"
+fallback distractor in unitQuiz[221]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="No, that is correct"
+fallback distractor in unitQuiz[221]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="Yes: 1,000 + 500 + 2"
+fallback distractor in unitQuiz[221]: prompt="Nora wrote 1,052 in expanded form as 1,000 + 52. Is there a better way?", correct="Yes: 1,000 + 50 + 2", wrong="Yes: 100 + 50 + 2"
+unitQuiz[223] -> u2l1 (low confidence): __ + 40 + 5 = 945. What goes in the blank?
+unitQuiz[224] -> u2l1 (low confidence): Ella says 700 + 15 is the same as 715. Is she correct?
+fallback distractor in unitQuiz[224]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 7,015"
+fallback distractor in unitQuiz[224]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 850"
+fallback distractor in unitQuiz[224]: prompt="Ella says 700 + 15 is the same as 715. Is she correct?", correct="Yes, 700 + 15 = 715", wrong="No, it equals 7,150"
+unitQuiz[225] -> u2l1 (low confidence): Which is NOT a correct way to write 358?
+fallback distractor in unitQuiz[225]: prompt="Which is NOT a correct way to write 358?", correct="300 + 80 + 5", wrong="Three hundred fifty-eight"
+fallback distractor in unitQuiz[225]: prompt="Which is NOT a correct way to write 358?", correct="300 + 80 + 5", wrong="35 tens and 8 ones"
+unitQuiz[227] -> u2l1 (low confidence): Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?
+fallback distractor in unitQuiz[227]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="He put too many zeros"
+fallback distractor in unitQuiz[227]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="He switched the digits"
+fallback distractor in unitQuiz[227]: prompt="Kevin wrote 'five hundred sixty-three' as 500603. What did he do wrong?", correct="He wrote each part separately instead of combining", wrong="Nothing, he is right"
+fallback distractor in unitQuiz[231]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Because you cannot add three numbers"
+fallback distractor in unitQuiz[231]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Because 500 is too big"
+fallback distractor in unitQuiz[231]: prompt="Tom says 500 + 30 + 12 is not in proper expanded form. Why?", correct="Because 12 has two digits", wrong="Tom is wrong, it is fine"
+unitQuiz[232] -> u2l1 (low confidence): What number does this show: 1,000 + 100 + 20 + 5?
+unitQuiz[233] -> u2l1 (low confidence): Which shows the same number as eight hundred five?
+unitQuiz[234] -> u2l1 (low confidence): Fill in the blank: 147 = ___ + 40 + 7
+fallback distractor in unitQuiz[235]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She added wrong"
+fallback distractor in unitQuiz[235]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She forgot to regroup"
+fallback distractor in unitQuiz[235]: prompt="Lily wrote 600 + 40 + 15 in standard form as 6,415. What mistake did she make?", correct="She put digits side by side instead of adding", wrong="She switched the tens and ones"
+unitQuiz[236] -> u2l1 (low confidence): Marcus wrote 1,072 three ways. Which one is WRONG?
+fallback distractor in unitQuiz[236]: prompt="Marcus wrote 1,072 three ways. Which one is WRONG?", correct="1,000 + 700 + 2", wrong="One thousand seventy-two"
+fallback distractor in unitQuiz[236]: prompt="Marcus wrote 1,072 three ways. Which one is WRONG?", correct="1,000 + 700 + 2", wrong="10 hundreds + 7 tens + 2 ones"
+unitQuiz[237] -> u2l1 (low confidence): Ava wrote 'four hundred sixteen' as 4016. What should the correct number be?
+fallback distractor in unitQuiz[239]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Only Kai"
+fallback distractor in unitQuiz[239]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Only Zoe"
+fallback distractor in unitQuiz[239]: prompt="Two students write 837 in expanded form. Kai writes 800 + 30 + 7. Zoe writes 800", correct="Both are correct", wrong="Neither is correct"
+fallback distractor in unitQuiz[241]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Only Eli is right"
+fallback distractor in unitQuiz[241]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Only the teacher is right"
+fallback distractor in unitQuiz[241]: prompt="Eli says the expanded form of 1,200 is 1,000 + 200. His teacher says he can also", correct="Both are right", wrong="Neither is right"
+unitQuiz[243] -> u2l1 (low confidence): 900 + __ + 14 = 964. What goes in the blank?
+fallback distractor in unitQuiz[244]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="A is wrong"
+fallback distractor in unitQuiz[244]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="B is wrong"
+fallback distractor in unitQuiz[244]: prompt="Mr. Chen asks: 'Write 708 in expanded form.' Three students answer. Who is WRONG", correct="C is wrong", wrong="They are all correct"
+unitQuiz[246] -> u2l1 (low confidence): Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct and why?
+fallback distractor in unitQuiz[246]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Rosa, because three hundred = 300 and nine = 09"
+fallback distractor in unitQuiz[246]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Both are correct"
+fallback distractor in unitQuiz[246]: prompt="Rosa writes three hundred nine as 3009. Oscar writes it as 309. Who is correct a", correct="Oscar, because 300 + 9 = 309", wrong="Neither is correct"
+fallback distractor in unitQuiz[247]: prompt="Which expanded form is WRONG for 555?", correct="500 + 55 + 5", wrong="5 hundreds + 5 tens + 5 ones"
+fallback distractor in unitQuiz[247]: prompt="Which expanded form is WRONG for 555?", correct="500 + 55 + 5", wrong="55 tens + 5 ones"
+unitQuiz[248] -> u2l1 (low confidence): Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 17 tens + 6 ones. Is the second way correct?
+fallback distractor in unitQuiz[248]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="No, you cannot have 17 tens"
+fallback distractor in unitQuiz[248]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="No, that equals 376"
+fallback distractor in unitQuiz[248]: prompt="Tyler says he can write 476 as 4 hundreds + 7 tens + 6 ones OR as 3 hundreds + 1", correct="Yes, 300 + 170 + 6 = 476", wrong="Yes, but only the first way is proper"
+unitQuiz[249] -> u2l1 (low confidence): What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?
+fallback distractor in unitQuiz[249]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="Nothing, it is correct"
+fallback distractor in unitQuiz[249]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="It should be 2,013"
+fallback distractor in unitQuiz[249]: prompt="What is wrong with this: 'Two hundred thirteen = 200 + 30 + 1'?", correct="The tens and ones are switched: should be 200 + 10 + 3", wrong="Thirteen means 30, not 13"
+unitQuiz[251] -> u2l1 (low confidence): Mia says 200 + 60 + 18 = 278. Is she right?
+fallback distractor in unitQuiz[251]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 268"
+fallback distractor in unitQuiz[251]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 2,618"
+fallback distractor in unitQuiz[251]: prompt="Mia says 200 + 60 + 18 = 278. Is she right?", correct="Yes", wrong="No, it equals 878"
+unitQuiz[254] -> u2l1 (low confidence): James says 'twelve hundred' and 'one thousand two hundred' are different numbers. Is he right?
+fallback distractor in unitQuiz[254]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="Yes, twelve hundred = 1,200 and one thousand two hundred = 12,000"
+fallback distractor in unitQuiz[254]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="Yes, they sound different so they must be different"
+fallback distractor in unitQuiz[254]: prompt="James says 'twelve hundred' and 'one thousand two hundred' are different numbers", correct="No, both equal 1,200", wrong="No, both equal 12,000"
+unitQuiz[255] -> u2l1 (low confidence): Which symbol goes in the blank? 527 ___ 572
+unitQuiz[256] -> u2l1 (low confidence): Which is greater: 384 or 438?
+fallback distractor in unitQuiz[256]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Equal"
+fallback distractor in unitQuiz[256]: prompt="Which is greater: 384 or 438?", correct="438", wrong="Cannot tell"
+unitQuiz[258] -> u2l1 (low confidence): Put these numbers in order from least to greatest: 312, 132, 231
+unitQuiz[259] -> u2l1 (low confidence): Which symbol goes in the blank? 760 ___ 760
+unitQuiz[260] -> u2l1 (low confidence): What is 100 more than 523?
+unitQuiz[261] -> u2l1 (low confidence): Which symbol goes in the blank? 199 ___ 200
+unitQuiz[262] -> u2l1 (low confidence): Which number is the greatest? 456, 546, or 465?
+fallback distractor in unitQuiz[262]: prompt="Which number is the greatest? 456, 546, or 465?", correct="546", wrong="Equal"
+unitQuiz[264] -> u2l1 (low confidence): Which symbol goes in the blank? 408 ___ 480
+unitQuiz[265] -> u2l1 (low confidence): Put these numbers in order from greatest to least: 528, 258, 825
+unitQuiz[267] -> u2l1 (low confidence): Which symbol goes in the blank? 900 ___ 90
+unitQuiz[269] -> u2l1 (low confidence): What is 10 more than 690?
+unitQuiz[270] -> u2l1 (low confidence): Which symbol goes in the blank? 335 ___ 353
+unitQuiz[271] -> u2l1 (low confidence): Which number is in the middle when ordered least to greatest? 410, 401, 140
+fallback distractor in unitQuiz[271]: prompt="Which number is in the middle when ordered least to greatest? 410, 401, 140", correct="401", wrong="Equal"
+unitQuiz[272] -> u2l1 (low confidence): What is 1 more than 399?
+unitQuiz[273] -> u2l1 (low confidence): Which symbol goes in the blank? 807 ___ 780
+unitQuiz[274] -> u2l1 (low confidence): Which number is the least? 605, 506, or 650?
+fallback distractor in unitQuiz[274]: prompt="Which number is the least? 605, 506, or 650?", correct="506", wrong="Equal"
+unitQuiz[275] -> u2l1 (low confidence): Which symbol goes in the blank? 500 ___ 499
+unitQuiz[276] -> u2l1 (low confidence): What is 100 more than 899?
+unitQuiz[277] -> u2l1 (low confidence): Which symbol goes in the blank? 234 ___ 243
+unitQuiz[278] -> u2l1 (low confidence): Put these numbers in order from least to greatest: 901, 190, 910
+unitQuiz[280] -> u2l1 (low confidence): Which symbol goes in the blank? 673 ___ 637
+unitQuiz[281] -> u2l1 (low confidence): Which number is the greatest? 289, 298, or 928?
+fallback distractor in unitQuiz[281]: prompt="Which number is the greatest? 289, 298, or 928?", correct="928", wrong="Equal"
+unitQuiz[283] -> u2l1 (low confidence): Which symbol goes in the blank? 415 ___ 415
+unitQuiz[284] -> u2l1 (low confidence): What is 100 more than 450?
+unitQuiz[285] -> u2l1 (low confidence): Which is greater: 47 or 74?
+fallback distractor in unitQuiz[285]: prompt="Which is greater: 47 or 74?", correct="74", wrong="They are equal"
+fallback distractor in unitQuiz[285]: prompt="Which is greater: 47 or 74?", correct="74", wrong="You cannot tell"
+unitQuiz[286] -> u2l1 (low confidence): Which symbol goes in the blank? 385 ___ 583
+unitQuiz[289] -> u2l1 (low confidence): Which symbol goes in the blank? 250 ___ 250
+unitQuiz[290] -> u2l1 (low confidence): Which is greater: 892 or 829?
+fallback distractor in unitQuiz[290]: prompt="Which is greater: 892 or 829?", correct="892", wrong="They are equal"
+fallback distractor in unitQuiz[290]: prompt="Which is greater: 892 or 829?", correct="892", wrong="You cannot tell"
+unitQuiz[291] -> u2l1 (low confidence): Put in order from least to greatest: 100, 10, 1
+fallback distractor in unitQuiz[291]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="100, 10, 1"
+fallback distractor in unitQuiz[291]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="10, 1, 100"
+fallback distractor in unitQuiz[291]: prompt="Put in order from least to greatest: 100, 10, 1", correct="1, 10, 100", wrong="1, 100, 10"
+unitQuiz[292] -> u2l1 (low confidence): Which number is the greatest: 345, 354, 435?
+fallback distractor in unitQuiz[292]: prompt="Which number is the greatest: 345, 354, 435?", correct="435", wrong="They are all equal"
+unitQuiz[293] -> u2l1 (low confidence): Which symbol goes in the blank? 607 ___ 670
+unitQuiz[295] -> u2l1 (low confidence): Which number is less: 418 or 481?
+fallback distractor in unitQuiz[295]: prompt="Which number is less: 418 or 481?", correct="418", wrong="They are equal"
+fallback distractor in unitQuiz[295]: prompt="Which number is less: 418 or 481?", correct="418", wrong="You cannot tell"
+unitQuiz[296] -> u2l1 (low confidence): Sara has 312 stickers. Tom has 321 stickers. Who has more?
+fallback distractor in unitQuiz[296]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="Sara"
+fallback distractor in unitQuiz[296]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="They have the same"
+fallback distractor in unitQuiz[296]: prompt="Sara has 312 stickers. Tom has 321 stickers. Who has more?", correct="Tom", wrong="You cannot tell"
+unitQuiz[297] -> u2l1 (low confidence): Which symbol goes in the blank? 755 ___ 575
+unitQuiz[298] -> u2l1 (low confidence): Which is the greatest number: 199, 200, 188?
+fallback distractor in unitQuiz[298]: prompt="Which is the greatest number: 199, 200, 188?", correct="200", wrong="They are all equal"
+unitQuiz[300] -> u2l1 (low confidence): Which number comes just BEFORE 600?
+unitQuiz[301] -> u2l1 (low confidence): Which number comes just AFTER 999?
+unitQuiz[302] -> u2l1 (low confidence): Leo picked a number between 450 and 460. Which could it be?
+unitQuiz[304] -> u2l1 (low confidence): Which symbol goes in the blank? 900 ___ 900
+unitQuiz[305] -> u2l1 (low confidence): Which symbol goes between 358 ___ 385?
+unitQuiz[306] -> u2l1 (low confidence): Put these in order from least to greatest: 512, 521, 215
+fallback distractor in unitQuiz[306]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="512, 521, 215"
+fallback distractor in unitQuiz[306]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="521, 512, 215"
+fallback distractor in unitQuiz[306]: prompt="Put these in order from least to greatest: 512, 521, 215", correct="215, 512, 521", wrong="215, 521, 512"
+unitQuiz[307] -> u2l1 (low confidence): Which number is closest to 800?
+unitQuiz[309] -> u2l1 (low confidence): Which number is between 475 and 500?
+unitQuiz[312] -> u2l1 (low confidence): Which list is in order from greatest to least?
+fallback distractor in unitQuiz[312]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="140, 401, 410"
+fallback distractor in unitQuiz[312]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="401, 410, 140"
+fallback distractor in unitQuiz[312]: prompt="Which list is in order from greatest to least?", correct="410, 401, 140", wrong="140, 410, 401"
+fallback distractor in unitQuiz[314]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="Yes, same digits means same number"
+fallback distractor in unitQuiz[314]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="Yes, because both have 8 hundreds"
+fallback distractor in unitQuiz[314]: prompt="Rosa compared 845 and 854. She said they are equal because they use the same dig", correct="No, the digits are in different places so the values differ", wrong="No, because 845 has more hundreds"
+unitQuiz[315] -> u2l1 (low confidence): Which is greater: 1,200 or 999?
+fallback distractor in unitQuiz[315]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="999, because 9 > 1"
+fallback distractor in unitQuiz[315]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="They are equal"
+fallback distractor in unitQuiz[315]: prompt="Which is greater: 1,200 or 999?", correct="1,200, because it has more digits", wrong="999, because all digits are bigger"
+unitQuiz[316] -> u2l1 (low confidence): Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How many more does he need?
+fallback distractor in unitQuiz[316]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="At least 9 more"
+fallback distractor in unitQuiz[316]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="At least 1 more"
+fallback distractor in unitQuiz[316]: prompt="Sam has 467 baseball cards. He wants to have more than Mia, who has 476. How man", correct="At least 10 more", wrong="He already has more"
+unitQuiz[317] -> u2l1 (low confidence): Put these numbers on a number line. Which is farthest right? 305, 350, 503
+fallback distractor in unitQuiz[317]: prompt="Put these numbers on a number line. Which is farthest right? 305, 350, 503", correct="503", wrong="They are all the same distance"
+unitQuiz[318] -> u2l1 (low confidence): Which comparison is TRUE?
+fallback distractor in unitQuiz[318]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="312 > 321"
+fallback distractor in unitQuiz[318]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="756 = 765"
+fallback distractor in unitQuiz[318]: prompt="Which comparison is TRUE?", correct="489 < 498", wrong="200 > 1,000"
+unitQuiz[319] -> u2l1 (low confidence): What is the greatest 3-digit number you can make with the digits 3, 7, and 1?
+unitQuiz[321] -> u2l1 (low confidence): Eli has these numbers on cards: 490, 409, 940. Put them in order from least to greatest.
+fallback distractor in unitQuiz[321]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="490, 409, 940"
+fallback distractor in unitQuiz[321]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="940, 490, 409"
+fallback distractor in unitQuiz[321]: prompt="Eli has these numbers on cards: 490, 409, 940. Put them in order from least to g", correct="409, 490, 940", wrong="409, 940, 490"
+unitQuiz[322] -> u2l1 (low confidence): Which statement is correct?
+fallback distractor in unitQuiz[322]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="450 > 540"
+fallback distractor in unitQuiz[322]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="199 > 200"
+fallback distractor in unitQuiz[322]: prompt="Which statement is correct?", correct="1,050 > 1,005", wrong="387 = 378"
+unitQuiz[325] -> u2l1 (low confidence): Put these in order from least to greatest: 899, 908, 890, 981
+fallback distractor in unitQuiz[325]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="899, 890, 908, 981"
+fallback distractor in unitQuiz[325]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="908, 899, 890, 981"
+fallback distractor in unitQuiz[325]: prompt="Put these in order from least to greatest: 899, 908, 890, 981", correct="890, 899, 908, 981", wrong="981, 908, 899, 890"
+unitQuiz[327] -> u2l1 (low confidence): Nina made the greatest 3-digit number and the least 3-digit number using digits 5, 0, and 8 (each once). What is the difference?
+unitQuiz[328] -> u2l1 (low confidence): Which shows the numbers in order from greatest to least?
+fallback distractor in unitQuiz[328]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,102 > 1,120 > 1,012"
+fallback distractor in unitQuiz[328]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,012 > 1,102 > 1,120"
+fallback distractor in unitQuiz[328]: prompt="Which shows the numbers in order from greatest to least?", correct="1,120 > 1,102 > 1,012", wrong="1,120 > 1,012 > 1,102"
+unitQuiz[330] -> u2l1 (low confidence): Using the digits 6, 2, and 9 (each used once), what is the LEAST 3-digit number you can make?
+unitQuiz[331] -> u2l1 (low confidence): Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put them in order from shortest to longest jump.
+fallback distractor in unitQuiz[331]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Ben, Cal, Ava"
+fallback distractor in unitQuiz[331]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Cal, Ava, Ben"
+fallback distractor in unitQuiz[331]: prompt="Three friends measured their jumps. Ava: 108 cm, Ben: 180 cm, Cal: 118 cm. Put t", correct="Ava, Cal, Ben", wrong="Ava, Ben, Cal"
+unitQuiz[334] -> u2l1 (low confidence): Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 400 and 500. Which numbers can he make?
+fallback distractor in unitQuiz[334]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="Only 407"
+fallback distractor in unitQuiz[334]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="Only 470"
+fallback distractor in unitQuiz[334]: prompt="Tyler has cards showing 4, 7, and 0. He wants to make a 3-digit number between 4", correct="407 and 470", wrong="400 and 470"
+unitQuiz[335] -> u2l1 (low confidence): Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100
+fallback distractor in unitQuiz[335]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,200, 1,100, 1,020, 1,002"
+fallback distractor in unitQuiz[335]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,020, 1,002, 1,100, 1,200"
+fallback distractor in unitQuiz[335]: prompt="Put these in order from least to greatest: 1,200, 1,020, 1,002, 1,100", correct="1,002, 1,020, 1,100, 1,200", wrong="1,002, 1,100, 1,020, 1,200"
+unitQuiz[339] -> u2l1 (low confidence): Which set of numbers is in order from GREATEST to LEAST?
+fallback distractor in unitQuiz[339]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="345, 435, 543"
+fallback distractor in unitQuiz[339]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="435, 345, 543"
+fallback distractor in unitQuiz[339]: prompt="Which set of numbers is in order from GREATEST to LEAST?", correct="543, 435, 345", wrong="345, 543, 435"
+fallback distractor in unitQuiz[340]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="Yes, hundreds tells you everything"
+fallback distractor in unitQuiz[340]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="No, you always check ones first"
+fallback distractor in unitQuiz[340]: prompt="Dana says you only need to look at the hundreds digit to compare 738 and 742. Is", correct="No, both have 7 hundreds so you must check tens too", wrong="Yes, because 7 = 7 means they are equal"
+unitQuiz[343] -> u2l1 (low confidence): I am between 990 and 1,010. I am an even number. My digits add up to 9. What number am I?
+unitQuiz[344] -> u2l1 (low confidence): Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 seconds. Who was fastest (least time)?
+fallback distractor in unitQuiz[344]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="Ava"
+fallback distractor in unitQuiz[344]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="Cho"
+fallback distractor in unitQuiz[344]: prompt="Three kids ran a race. Times: Ava 1,050 seconds, Ben 1,005 seconds, Cho 1,500 se", correct="Ben", wrong="They tied"
+unitQuiz[349] -> u2l1 (low confidence): What is the counting rule? 6, 12, 18, 24...
+fallback distractor in unitQuiz[349]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 4"
+fallback distractor in unitQuiz[349]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 5"
+fallback distractor in unitQuiz[349]: prompt="What is the counting rule? 6, 12, 18, 24...", correct="Add 6", wrong="Add 7"
+unitQuiz[354] -> u2l1 (low confidence): What is the counting rule? 4, 8, 12, 16...
+fallback distractor in unitQuiz[354]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 2"
+fallback distractor in unitQuiz[354]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 3"
+fallback distractor in unitQuiz[354]: prompt="What is the counting rule? 4, 8, 12, 16...", correct="Add 4", wrong="Add 5"
+unitQuiz[358] -> u2l1 (low confidence): What is the missing number? 3, 6, ___, 12, 15
+unitQuiz[362] -> u2l1 (low confidence): What is the counting rule? 100, 200, 300, 400...
+fallback distractor in unitQuiz[362]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 10"
+fallback distractor in unitQuiz[362]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 50"
+fallback distractor in unitQuiz[362]: prompt="What is the counting rule? 100, 200, 300, 400...", correct="Add 100", wrong="Add 200"
+unitQuiz[363] -> u2l1 (low confidence): What is the missing number? 10, 20, ___, 40, 50
+unitQuiz[368] -> u2l1 (low confidence): What is the missing number? 50, ___, 70, 80
+unitQuiz[369] -> u2l1 (low confidence): What is the counting rule? 5, 10, 15, 20...
+fallback distractor in unitQuiz[369]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 2"
+fallback distractor in unitQuiz[369]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 4"
+fallback distractor in unitQuiz[369]: prompt="What is the counting rule? 5, 10, 15, 20...", correct="Add 5", wrong="Add 10"
+unitQuiz[372] -> u2l1 (low confidence): What is the missing number? 200, 400, ___, 800
+unitQuiz[374] -> u2l1 (low confidence): What is the counting rule? 25, 50, 75, 100...
+fallback distractor in unitQuiz[374]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 20"
+fallback distractor in unitQuiz[374]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 30"
+fallback distractor in unitQuiz[374]: prompt="What is the counting rule? 25, 50, 75, 100...", correct="Add 25", wrong="Add 50"
+unitQuiz[377] -> u2l1 (low confidence): What is 10 more than 237?
+unitQuiz[378] -> u2l1 (low confidence): What is 100 more than 450?
+unitQuiz[383] -> u2l1 (low confidence): What number is 10 more than 590?
+unitQuiz[385] -> u2l1 (low confidence): What is 100 more than 900?
+unitQuiz[392] -> u2l1 (low confidence): Maya has 163 blocks. She gets 10 more. How many does she have now?
+unitQuiz[393] -> u2l1 (low confidence): What number is 10 more than 195?
+unitQuiz[395] -> u2l1 (low confidence): What is 100 more than 567?
+unitQuiz[400] -> u2l1 (low confidence): What is 10 more than 996?
+unitQuiz[401] -> u2l1 (low confidence): Mia has 835 stickers. She gives away 100. How many does she have now?
+fallback distractor in unitQuiz[404]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="2s"
+fallback distractor in unitQuiz[404]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="5s"
+fallback distractor in unitQuiz[404]: prompt="Eli skip counts: 625, 650, 675, ___. What is he counting by?", correct="25s", wrong="10s"
+unitQuiz[405] -> u2l1 (low confidence): Which is the same as adding 100? Starting number: 347
+fallback distractor in unitQuiz[405]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change ones digit: 348"
+fallback distractor in unitQuiz[405]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change tens digit: 357"
+fallback distractor in unitQuiz[405]: prompt="Which is the same as adding 100? Starting number: 347", correct="Change hundreds digit: 447", wrong="Change all digits: 448"
+fallback distractor in unitQuiz[406]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="Yes"
+fallback distractor in unitQuiz[406]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="No, she will skip it"
+fallback distractor in unitQuiz[406]: prompt="Sara starts at 100 and counts by 10s. Will she say 155?", correct="No, 155 is not a multiple of 10", wrong="Yes, after 150"
+unitQuiz[407] -> u2l1 (low confidence): What is 10 more than 1,090?
+unitQuiz[410] -> u2l1 (low confidence): Fill in the pattern: 480, ___, 500, 510, 520
+unitQuiz[411] -> u2l1 (low confidence): What is 100 more than 908?
+unitQuiz[413] -> u2l1 (low confidence): Rosa had 1,200 points. She lost 100 points twice. How many does she have now?
+fallback distractor in unitQuiz[415]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="She started at the wrong number"
+fallback distractor in unitQuiz[415]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="She counted by 10s at the end"
+fallback distractor in unitQuiz[415]: prompt="Amy counts by 5s starting at 280. She says 280, 285, 290, 300. What mistake did ", correct="She skipped 295", wrong="There is no mistake"
+unitQuiz[420] -> u2l1 (low confidence): Sam starts at 250 and adds 100 four times. Then he subtracts 10 three times. Where does he end up?
+unitQuiz[422] -> u2l1 (low confidence): Mia writes: 10 more than 498 is 508. Is she correct?
+fallback distractor in unitQuiz[422]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 499"
+fallback distractor in unitQuiz[422]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 598"
+fallback distractor in unitQuiz[422]: prompt="Mia writes: 10 more than 498 is 508. Is she correct?", correct="Yes", wrong="No, it is 408"
+unitQuiz[424] -> u2l1 (low confidence): Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find her error.
+fallback distractor in unitQuiz[424]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="Both are wrong"
+fallback distractor in unitQuiz[424]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="990 + 10 is wrong"
+fallback distractor in unitQuiz[424]: prompt="Nora says that 10 more than 990 is 1,000, and 10 more than 1,000 is 1,100. Find ", correct="1,000 + 10 should be 1,010, not 1,100", wrong="There is no error"
+fallback distractor in unitQuiz[426]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="Yes, because 48 is even"
+fallback distractor in unitQuiz[426]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="Yes, after 47"
+fallback distractor in unitQuiz[426]: prompt="Tyler counts by 2s from 1. Will he ever say 48?", correct="No, because he starts on an odd number", wrong="No, because 48 is too big"
+unitQuiz[427] -> u2l1 (low confidence): Ava has 780. She adds 10 three times and then adds 100 once. What does she have now?
+fallback distractor in unitQuiz[429]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 10; next is 890"
+fallback distractor in unitQuiz[429]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 100; next is 890"
+fallback distractor in unitQuiz[429]: prompt="Look at the pattern: 1,200, 1,100, 1,000, 900, ___. What rule does this follow, ", correct="Subtract 100; next is 800", wrong="Subtract 200; next is 700"
+unitQuiz[431] -> u2l1 (low confidence): What number is 10 more than 10 more than 10 more than 770?
+fallback distractor in unitQuiz[432]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="Yes, always"
+fallback distractor in unitQuiz[432]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="No, it only lands on even numbers"
+fallback distractor in unitQuiz[432]: prompt="Jada says skip counting by 5s will land on every number that ends in 0. Is she r", correct="No, it also lands on numbers ending in 5", wrong="No, it skips some numbers ending in 0"
+unitQuiz[433] -> u2l1 (low confidence): Omar starts at 340. He subtracts 10 five times. Then adds 100 twice. Where is he?
