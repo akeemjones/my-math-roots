@@ -13,6 +13,7 @@ const {
   _isLessonUnlockedInDraft,
   buildParentInsight,
   _computeUnitInsights,
+  _unitIndexFromId,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -568,5 +569,113 @@ describe('_computeUnitInsights', () => {
     expect(result[1].weakTagLabel).toBeNull();
     expect(result[0].status).toBe('not-started');
     expect(result[2].status).toBe('not-started');
+  });
+
+  test('grade-2 activity event with unitId "u3" enriches Unit 3', () => {
+    const events = [
+      { unitId: 'u3', correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 1000 },
+      { unitId: 'u3', correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 2000 },
+      { unitId: 'u3', correct: true,  tags: ['regrouping'],                              lessonId: 'u3l2', ts: 3000 },
+    ];
+    const result = _computeUnitInsights({ ...BASE_UI,
+      lessonNameFn: (id) => id === 'u3l2' ? { lesson: 'Subtracting Bigger Numbers', unit: 'Add & Subtract' } : null,
+      scores: [{ unitIdx: 2, pct: 35, score: 7, total: 20 }],
+      activityEvents: events,
+    });
+    expect(result[2].status).toBe('needs-review');
+    expect(result[2].weakTagLabel).toBe('Regrouping');
+    expect(result[2].topErrLabel).toBe('Forgot to regroup');
+    expect(result[2].lessonRec).toBe('Subtracting Bigger Numbers');
+    expect(result[0].weakTagLabel).toBeNull();
+    expect(result[1].weakTagLabel).toBeNull();
+  });
+
+  test('kindergarten activity event with unitId "ku3" enriches K Unit 3', () => {
+    const events = [
+      { unitId: 'ku3', correct: false, tags: ['subtraction'], errorType: 'err_off_by_one', lessonId: 'ku3l2', ts: 1000 },
+      { unitId: 'ku3', correct: false, tags: ['subtraction'], errorType: 'err_off_by_one', lessonId: 'ku3l2', ts: 2000 },
+      { unitId: 'ku3', correct: true,  tags: ['subtraction'],                              lessonId: 'ku3l2', ts: 3000 },
+    ];
+    const result = _computeUnitInsights({
+      unitsMeta: [
+        { name: 'Counting & Cardinality', lessons: [] },
+        { name: 'Number Relationships',   lessons: [] },
+        { name: 'Addition & Subtraction', lessons: ['Adding Numbers', 'Subtracting Numbers'] },
+      ],
+      tagLabels:    { subtraction: 'Subtraction' },
+      errLabels:    { err_off_by_one: 'Off by one' },
+      errHelpMap:   { err_off_by_one: 'Use objects: one finger touch per count.' },
+      lessonNameFn: (id) => id === 'ku3l2' ? { lesson: 'Subtracting Numbers', unit: 'Addition & Subtraction' } : null,
+      scores:       [{ unitIdx: 2, pct: 35, score: 7, total: 20 }],
+      activityEvents: events,
+    });
+    expect(result[2].status).toBe('needs-review');
+    expect(result[2].weakTagLabel).toBe('Subtraction');
+    expect(result[2].topErrLabel).toBe('Off by one');
+    expect(result[2].topErrHelp).toBe('Use objects: one finger touch per count.');
+    expect(result[2].lessonRec).toBe('Subtracting Numbers');
+    expect(result[2].weakTagLabel).not.toMatch(/err_|subtraction/);
+    expect(result[2].topErrLabel).not.toMatch(/err_/);
+  });
+
+  test('mixed unitId formats in events all land on the right unit', () => {
+    // Three events on Unit 3 expressed three different ways: integer, "u3", "ku3".
+    // All must converge on index 2 so attempts cross the >= 3 threshold.
+    const events = [
+      { unitId: 2,     correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 1000 },
+      { unitId: 'u3',  correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 2000 },
+      { unitId: 'ku3', correct: true,  tags: ['regrouping'],                              lessonId: 'u3l2', ts: 3000 },
+    ];
+    const result = _computeUnitInsights({ ...BASE_UI,
+      scores: [{ unitIdx: 2, pct: 33, score: 1, total: 3 }],
+      activityEvents: events,
+    });
+    expect(result[2].weakTagLabel).toBe('Regrouping');
+    expect(result[2].topErrLabel).toBe('Forgot to regroup');
+  });
+
+  test('events with malformed unitId are skipped, not crashed on', () => {
+    const events = [
+      { unitId: null,    correct: false, tags: ['x'], errorType: 'err_x', ts: 1 },
+      { unitId: 'foo',   correct: false, tags: ['x'], errorType: 'err_x', ts: 2 },
+      { /* missing */    correct: false, tags: ['x'], errorType: 'err_x', ts: 3 },
+      { unitId: 'u3',    correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 4 },
+      { unitId: 'u3',    correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'u3l2', ts: 5 },
+      { unitId: 'u3',    correct: true,  tags: ['regrouping'],                              lessonId: 'u3l2', ts: 6 },
+    ];
+    const result = _computeUnitInsights({ ...BASE_UI,
+      scores: [{ unitIdx: 2, pct: 33, score: 1, total: 3 }],
+      activityEvents: events,
+    });
+    expect(result[2].weakTagLabel).toBe('Regrouping');
+  });
+});
+
+// ── _unitIndexFromId ──────────────────────────────────────────────────────
+
+describe('_unitIndexFromId', () => {
+  test('parses grade-2 string ids (1-based → 0-based)', () => {
+    expect(_unitIndexFromId('u1')).toBe(0);
+    expect(_unitIndexFromId('u3')).toBe(2);
+    expect(_unitIndexFromId('u10')).toBe(9);
+  });
+  test('parses kindergarten string ids', () => {
+    expect(_unitIndexFromId('ku1')).toBe(0);
+    expect(_unitIndexFromId('ku3')).toBe(2);
+    expect(_unitIndexFromId('ku8')).toBe(7);
+  });
+  test('passes integer indices through unchanged', () => {
+    expect(_unitIndexFromId(0)).toBe(0);
+    expect(_unitIndexFromId(2)).toBe(2);
+  });
+  test('parses purely numeric strings', () => {
+    expect(_unitIndexFromId('2')).toBe(2);
+  });
+  test('returns null for nullish or non-matching values', () => {
+    expect(_unitIndexFromId(null)).toBeNull();
+    expect(_unitIndexFromId(undefined)).toBeNull();
+    expect(_unitIndexFromId('')).toBeNull();
+    expect(_unitIndexFromId('foo')).toBeNull();
+    expect(_unitIndexFromId(NaN)).toBeNull();
   });
 });

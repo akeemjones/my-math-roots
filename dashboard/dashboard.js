@@ -2564,6 +2564,20 @@ function buildParentInsight(opts) {
 
 // ── Unit progress map helper (duplicated here for testability) ───────────
 
+// Normalize a unit identifier to a zero-based unitsMeta index.
+// QE.normalize emits unitId as 'u3' / 'ku3' (1-based), but scores carry a
+// raw integer unitIdx. Accept either so activity events can be matched
+// against the same map keys as scores.
+function _unitIndexFromId(unitId) {
+  if (unitId == null) return null;
+  if (typeof unitId === 'number' && Number.isFinite(unitId)) return unitId;
+  var s = String(unitId);
+  var m = s.match(/^k?u(\d+)$/i);
+  if (m) return Number(m[1]) - 1;
+  if (/^\d+$/.test(s)) return Number(s);
+  return null;
+}
+
 function _computeUnitInsights(opts) {
   var scores         = opts.scores         || [];
   var activityEvents = opts.activityEvents || [];
@@ -2589,11 +2603,12 @@ function _computeUnitInsights(opts) {
     scoreMap[k].total   += (s.total  || 0);
   });
 
-  // Group activity events by unitId
+  // Group activity events by normalized unit index. Accepts both raw integer
+  // unitIdx and string unitId ('u3' / 'ku3') from QE.normalize.
   var actMap = {};
   activityEvents.forEach(function(e) {
-    if (e.unitId == null) return;
-    var k = e.unitId;
+    var k = _unitIndexFromId(e.unitId);
+    if (k == null) return;
     if (!actMap[k]) actMap[k] = [];
     actMap[k].push(e);
   });
@@ -2695,5 +2710,6 @@ if (typeof module !== 'undefined') {
     _isLessonUnlockedInDraft,
     buildParentInsight,
     _computeUnitInsights,
+    _unitIndexFromId,
   };
 }
