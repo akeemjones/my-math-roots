@@ -3096,6 +3096,13 @@ async function dbEditSave(studentId) {
     closeEditProfileSheet();
     _reRenderManageProfiles();
 
+    // If we're viewing this student in the parent dashboard, refresh the grade
+    // context line and stats immediately; reload Supabase data if grade changed.
+    if (_activeId === studentId) {
+      renderDashboard();
+      if (nNew && nNew !== nOld) { _loadManagedStudentScores(studentId); }
+    }
+
     // If we just changed the grade of the *currently active* profile, mirror
     // it to mmr_grade and reload so boot.js / state.js pick up the new
     // UNITS_DATA and key namespacing.
