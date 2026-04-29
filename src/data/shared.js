@@ -119,25 +119,45 @@ const UNITS_DATA = [
         "id": "u2l1",
         "title": "Big Numbers",
         "icon": "🏠",
-        "desc": "Each digit has a place and a value"
+        "desc": "Each digit has a place and a value",
+        "defaultTags": ["place_value","digit_value","tens_ones_hundreds"],
+        "defaultIntervention": {
+          "teach": { "text": "Each digit has a place: ones, tens, hundreds. The 4 in 347 means 4 tens, which is 40." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","digit_value","tens_ones_hundreds"] }
+        }
       },
       {
         "id": "u2l2",
         "title": "Different Ways to Write Numbers",
         "icon": "📖",
-        "desc": "Write numbers three different ways"
+        "desc": "Write numbers three different ways",
+        "defaultTags": ["place_value","expanded_form","standard_form","word_form"],
+        "defaultIntervention": {
+          "teach": { "text": "347 in expanded form is 300 + 40 + 7. The same number can be written different ways." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","expanded_form","standard_form","word_form"] }
+        }
       },
       {
         "id": "u2l3",
         "title": "Bigger or Smaller?",
         "icon": "⚖️",
-        "desc": "Greater than, less than, and equal to"
+        "desc": "Greater than, less than, and equal to",
+        "defaultTags": ["place_value","comparison","greater_less_equal"],
+        "defaultIntervention": {
+          "teach": { "text": "Compare digits from left to right. Bigger hundreds means bigger number." },
+          "retry": { "strategy": "similar", "matchTags": ["place_value","comparison","greater_less_equal"] }
+        }
       },
       {
         "id": "u2l4",
         "title": "Skip Counting",
         "icon": "🐸",
-        "desc": "Count by 2s, 5s, 10s, and 100s"
+        "desc": "Count by 2s, 5s, 10s, and 100s",
+        "defaultTags": ["skip_counting","patterns","place_value"],
+        "defaultIntervention": {
+          "teach": { "text": "Skip count by 2s, 5s, 10s, or 100s. Each step is the same size." },
+          "retry": { "strategy": "similar", "matchTags": ["skip_counting","patterns","place_value"] }
+        }
       }
     ],
     "_loaded": false
