@@ -54,6 +54,15 @@ QE.normalize = function(raw, lessonContext) {
       )
     };
   }
+  // Stash lesson/unit/grade context for downstream loggers (_lessonId, _unitId, _grade).
+  // Underscore prefix marks these as engine metadata — not question content.
+  var _lid = (lessonContext && lessonContext.id) || q.lessonId || null;
+  if (_lid) {
+    q._lessonId = _lid;
+    var _um = _lid.match(/^(k?u\d+)/);
+    if (_um) q._unitId = _um[1];
+  }
+  try { q._grade = localStorage.getItem('mmr_grade') || null; } catch (_e) {}
   return q;
 };
 
@@ -167,21 +176,59 @@ QE.selectRetry = function(q, pool) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 };
 
-// ── Mastery Logger ────────────────────────────────────────────────────────────
-// Stub — extend when parent dashboard is built.
+// ── Mastery + Activity Logger ─────────────────────────────────────────────────
+// (a) Updates per-tag aggregate in mmr_mastery_v1.
+// (b) Appends a rich event to mmr_activity_v1 for dashboard analytics.
+// Gracefully skips the activity event when _lessonId is absent so older
+// callers still get the aggregate without requiring a lessonContext.
 
 QE.logResult = function(q, result) {
-  if (!q.tags || !q.tags.length) return;
+  var hasTags = q && q.tags && q.tags.length;
+  var ts = Date.now();
+
+  // (a) Aggregate update — schema unchanged: { [tag]: { attempts, correct, lastSeen } }
+  if (hasTags) {
+    try {
+      var aggKey = 'mmr_mastery_v1';
+      var agg = JSON.parse(localStorage.getItem(aggKey) || '{}');
+      q.tags.forEach(function(tag) {
+        if (!agg[tag]) agg[tag] = { attempts: 0, correct: 0 };
+        agg[tag].attempts++;
+        if (result && result.ok) agg[tag].correct++;
+        agg[tag].lastSeen = ts;
+      });
+      localStorage.setItem(aggKey, JSON.stringify(agg));
+    } catch (e) {
+      try { console.warn('[QE] aggregate write failed', e); } catch (_) {}
+    }
+  }
+
+  // (b) Activity event — requires _lessonId (set by QE.normalize when lessonContext provided).
+  var lessonId = q && q._lessonId;
+  if (!lessonId) return;
   try {
-    var key = 'mmr_mastery_v1';
-    var log = JSON.parse(localStorage.getItem(key) || '{}');
-    q.tags.forEach(function(tag) {
-      if (!log[tag]) log[tag] = { attempts: 0, correct: 0 };
-      log[tag].attempts++;
-      if (result.ok) log[tag].correct++;
+    var actKey = 'mmr_activity_v1';
+    var raw = JSON.parse(localStorage.getItem(actKey) || 'null');
+    var doc = (raw && raw.v === 1 && Array.isArray(raw.events))
+      ? raw
+      : { v: 1, events: [] };
+    doc.events.push({
+      ts:         ts,
+      grade:      (q._grade)  || null,
+      unitId:     (q._unitId) || null,
+      lessonId:   lessonId,
+      questionId: q.id || null,
+      tags:       (q.tags || []).slice(),
+      correct:    !!(result && result.ok),
+      errorType:  (result && result.errorType) || null,
+      patternTag: q.patternTag || null
     });
-    localStorage.setItem(key, JSON.stringify(log));
-  } catch(e) {}
+    var MAX = 1000;
+    if (doc.events.length > MAX) doc.events = doc.events.slice(doc.events.length - MAX);
+    localStorage.setItem(actKey, JSON.stringify(doc));
+  } catch (e) {
+    try { console.warn('[QE] activity write failed', e); } catch (_) {}
+  }
 };
 
 // ── Audit Pool ────────────────────────────────────────────────────────────────

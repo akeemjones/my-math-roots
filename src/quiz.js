@@ -825,7 +825,16 @@ function _handleAnswer(selectedIndex){
     activeIntervention = null;
   }
 
-  // Correct answer — nothing to track
+  // Log mastery result for multipleChoice (both correct and wrong answers).
+  if (typeof QE !== 'undefined') {
+    var _normQ = (typeof _lessonContextFor === 'function') ? QE.normalize(q, _lessonContextFor(q)) : q;
+    var _isOk = selectedIndex === q.a;
+    var _wrongOpt = _isOk ? null : (q.o && q.o[selectedIndex]);
+    var _errType = (!_isOk && _wrongOpt && typeof _wrongOpt === 'object') ? _wrongOpt.tag || null : null;
+    QE.logResult(_normQ, { ok: _isOk, errorType: _errType });
+  }
+
+  // Correct answer — nothing more to track
   if(selectedIndex === q.a) return;
 
   var option = q.o[selectedIndex];
