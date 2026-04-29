@@ -2572,6 +2572,30 @@ function normalizeGrade(value) {
   return '2';
 }
 
+// Summarise intervention events into total, recoveryRate and per-tag counts.
+// Mirrors src/dashboard.js _summarizeInterventions.
+function _summarizeInterventions(events) {
+  var byTag = {};
+  var total = 0;
+  var resolved = 0;
+  (events || []).forEach(function(e) {
+    if (e.type === 'triggered') {
+      total++;
+      if (!byTag[e.errorTag]) byTag[e.errorTag] = { count: 0, resolved: 0 };
+      byTag[e.errorTag].count++;
+    }
+    if (e.type === 'resolved') {
+      if (e.resolvedCorrectly) resolved++;
+      if (byTag[e.errorTag] && e.resolvedCorrectly) byTag[e.errorTag].resolved++;
+    }
+  });
+  return {
+    total: total,
+    recoveryRate: total ? Math.round((resolved / total) * 100) : 0,
+    byTag: byTag,
+  };
+}
+
 // Filter activity events to only those matching the active grade. Events
 // without a grade field are kept (legacy / un-tagged data). Active grade is
 // passed in by the caller after running through normalizeGrade().
@@ -2789,6 +2813,7 @@ if (typeof module !== 'undefined') {
     normalizeGrade,
     _filterActivityByGrade,
     _masteryKeyFor,
+    _summarizeInterventions,
     _dbResolveProfileGrade,
     _dbProfileGradeKey,
     _dbReadProfileGrade,

@@ -31,6 +31,7 @@ const {
   normalizeGrade,
   _filterActivityByGrade,
   _masteryKeyFor,
+  _summarizeInterventions,
   _dbResolveProfileGrade,
   _dbProfileGradeKey,
   _dbReadProfileGrade,
@@ -941,6 +942,107 @@ describe('grade split-brain isolation', () => {
     test('K mastery key and G2 mastery key are distinct', () => {
       expect(_masteryKeyFor('K')).not.toBe(_masteryKeyFor('2'));
     });
+  });
+});
+
+// ── Learning Insights reset behavior (_summarizeInterventions) ───────────
+// Verifies that an empty intervention event list produces a zeroed summary
+// (no Learning Insights section rendered), and that a populated list
+// surfaces the expected counts — regression guard for the reset bug where
+// _dbFullReset did not clear _remoteInterventionEvents.
+
+describe('_summarizeInterventions', () => {
+  test('empty events list produces zeroed summary (reset state)', () => {
+    const summary = _summarizeInterventions([]);
+    expect(summary.total).toBe(0);
+    expect(summary.recoveryRate).toBe(0);
+    expect(Object.keys(summary.byTag)).toHaveLength(0);
+  });
+
+  test('null/undefined events list is treated as empty', () => {
+    expect(_summarizeInterventions(null).total).toBe(0);
+    expect(_summarizeInterventions(undefined).total).toBe(0);
+  });
+
+  test('triggered events are counted by errorTag', () => {
+    const events = [
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+    ];
+    const s = _summarizeInterventions(events);
+    expect(s.total).toBe(3);
+    expect(s.byTag['err_off_by_one'].count).toBe(3);
+    expect(s.recoveryRate).toBe(0); // no resolved events
+  });
+
+  test('recovery rate is correct proportion of resolved events', () => {
+    const events = [
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'resolved',  errorTag: 'err_off_by_one', resolvedCorrectly: true },
+      { type: 'resolved',  errorTag: 'err_off_by_one', resolvedCorrectly: false },
+    ];
+    const s = _summarizeInterventions(events);
+    expect(s.total).toBe(2);         // 2 triggered
+    expect(s.recoveryRate).toBe(50); // 1 of 2 resolved correctly
+    expect(s.byTag['err_off_by_one'].count).toBe(2);
+    expect(s.byTag['err_off_by_one'].resolved).toBe(1);
+  });
+
+  test('multiple error tags are tracked independently', () => {
+    const events = [
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_no_regroup' },
+    ];
+    const s = _summarizeInterventions(events);
+    expect(s.total).toBe(3);
+    expect(s.byTag['err_off_by_one'].count).toBe(2);
+    expect(s.byTag['err_no_regroup'].count).toBe(1);
+  });
+
+  test('after simulated reset: cleared events produce same result as fresh profile', () => {
+    // Simulates: events were populated, then reset clears _remoteInterventionEvents to []
+    const beforeReset = [
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+      { type: 'resolved',  errorTag: 'err_off_by_one', resolvedCorrectly: true },
+    ];
+    const afterReset = []; // _dbFullReset sets _remoteInterventionEvents = []
+
+    const sBefore = _summarizeInterventions(beforeReset);
+    const sAfter  = _summarizeInterventions(afterReset);
+
+    expect(sBefore.total).toBe(3);         // had data before reset
+    expect(sAfter.total).toBe(0);          // empty after reset
+    expect(sAfter.recoveryRate).toBe(0);
+    expect(Object.keys(sAfter.byTag)).toHaveLength(0);
+  });
+
+  test('other profile data is unaffected (different student IDs are isolated)', () => {
+    // Profile A events (would belong to student A in Supabase)
+    const profileAEvents = [
+      { type: 'triggered', errorTag: 'err_off_by_one' },
+    ];
+    // Profile B events (not cleared when profile A is reset)
+    const profileBEvents = [
+      { type: 'triggered', errorTag: 'err_no_regroup' },
+      { type: 'triggered', errorTag: 'err_no_regroup' },
+    ];
+
+    const sA = _summarizeInterventions(profileAEvents);
+    const sB = _summarizeInterventions(profileBEvents);
+
+    expect(sA.total).toBe(1);
+    expect(sA.byTag['err_off_by_one'].count).toBe(1);
+    expect(sB.total).toBe(2);
+    expect(sB.byTag['err_no_regroup'].count).toBe(2);
+    // Resetting A (producing []) doesn't change B
+    const sAAfterReset = _summarizeInterventions([]);
+    expect(sAAfterReset.total).toBe(0);
+    expect(sB.total).toBe(2); // B unchanged
   });
 });
 

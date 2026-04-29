@@ -1675,9 +1675,30 @@ async function _dbFullReset() {
   try {
     var result = await _supa.rpc('reset_student_data', { p_student_id: _activeId });
     if (result.error) throw result.error;
-    var msg = document.getElementById('db-unlock-msg');
-    if (msg) { msg.style.color = '#c62828'; msg.textContent = '🗑 Student data cleared.'; }
-    setTimeout(function() { if (msg) msg.textContent = ''; }, 3000);
+
+    // Clear Learning Insights data from Supabase.  Fire-and-forget: the RPC is
+    // ownership-checked server-side; a network failure here is non-fatal.
+    _supa.rpc('clear_intervention_events', { p_student_id: _activeId }).catch(function(){});
+
+    // Clear in-memory student data so the dashboard reflects the reset immediately
+    // without waiting for a full page reload or another Supabase round-trip.
+    var student = _students[_activeId];
+    if (student) {
+      student.SCORES   = [];
+      student.MASTERY  = {};
+      student.ACTIVITY = [];
+      student.STREAK   = { current: 0, longest: 0, lastDate: null };
+      student._scoresLoaded = false;
+    }
+    // Use an empty array (not null) so renderDashboard does not fall back to the
+    // stale mmr_intervention_events_v1 localStorage key during this render.
+    _remoteInterventionEvents = [];
+
+    renderDashboard();
+    _showDbToast('Student data cleared.', false);
+
+    // Reload from Supabase async — will re-render with confirmed-empty data.
+    _loadManagedStudentScores(_activeId);
   } catch(e) {
     var msg2 = document.getElementById('db-unlock-msg');
     if (msg2) { msg2.style.color = '#c62828'; msg2.textContent = '❌ Reset failed.'; }
