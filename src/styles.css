@@ -2618,8 +2618,25 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 #dashboard-screen .rs-node-icon { font-size:.9rem; line-height:1; }
 #dashboard-screen .rs-spine     { width:3px; height:24px; background:var(--neutral-200); border-radius:2px; }
 #dashboard-screen .rs-label     { flex:1; padding-top:6px; min-width:0; }
+#dashboard-screen .rs-spine-active { background:var(--neutral-300); }
 #dashboard-screen .rs-lbl-name  { font-size:var(--db-text-sm); font-weight:600; color:var(--neutral-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #dashboard-screen .rs-lbl-sub   { font-size:var(--db-text-xs); margin-top:2px; }
+#dashboard-screen .rs-label-exp { display:block; cursor:pointer; }
+#dashboard-screen .rs-label-exp > summary { list-style:none; cursor:pointer; display:block; }
+#dashboard-screen .rs-label-exp > summary::-webkit-details-marker { display:none; }
+#dashboard-screen .rs-lbl-sum .rs-lbl-name::after { content:' ›'; font-size:var(--db-text-xs); color:var(--neutral-400); font-weight:400; }
+#dashboard-screen .rs-label-exp[open] .rs-lbl-sum .rs-lbl-name::after { content:' ‹'; }
+#dashboard-screen .rs-row-left .rs-label-exp > summary { text-align:right; }
+#dashboard-screen .rs-row-left .rs-label-exp .rs-lbl-name { text-align:right; }
+#dashboard-screen .rs-row-left .rs-label-exp .rs-lbl-sub  { text-align:right; }
+#dashboard-screen .rs-det { margin-top:6px; padding:8px 10px; background:var(--neutral-50); border-radius:6px; display:flex; flex-direction:column; gap:4px; text-align:left; }
+#dashboard-screen .rs-det-stat { font-size:var(--db-text-xs); color:var(--neutral-500); margin:0; }
+#dashboard-screen .rs-det-row  { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+#dashboard-screen .rs-det-lbl  { font-size:var(--db-text-xs); color:var(--neutral-500); flex-shrink:0; }
+#dashboard-screen .rs-det-val  { font-size:var(--db-text-xs); font-weight:600; color:var(--neutral-700); }
+#dashboard-screen .rs-det-hint { font-size:var(--db-text-xs); color:var(--neutral-600); margin:0; line-height:1.45; }
+#dashboard-screen .rs-det-rec  { font-size:var(--db-text-xs); color:var(--neutral-600); line-height:1.4; }
+#dashboard-screen .rs-det-rec strong { color:var(--neutral-700); }
 #dashboard-screen .db-time-box  { background:rgba(103,58,183,.06); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
 #dashboard-screen .db-time-row  { display:flex; justify-content:space-between; align-items:center; }
 #dashboard-screen .db-time-lbl  { font-size:var(--db-text-base); color:var(--neutral-600); }

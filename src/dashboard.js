@@ -547,21 +547,43 @@ function _computeUnitInsights(opts) {
 }
 
 function _renderUnitProgressMap(scores, activityEvents) {
-  var STATUS_ORDER = { 'needs-review': 0, 'low-data': 1, 'developing': 2, 'strong': 3, 'not-started': 4 };
-  var statusLabel = {
-    'needs-review': 'Needs Review',
-    'low-data':     'Getting started',
-    'developing':   'Developing',
-    'strong':       'Strong',
-    'not-started':  'Not started',
-  };
   var statusColor = {
-    'needs-review': '#c62828',
-    'low-data':     '#e65100',
-    'developing':   '#e65100',
-    'strong':       '#2e7d32',
-    'not-started':  '#b0bec5',
+    'needs-review': '#c62828', 'low-data': '#f57f17',
+    'developing':   '#f57f17', 'strong':   '#2e7d32',
+    'not-started':  '#cfd8dc',
   };
+  var statusLabel = {
+    'needs-review': 'Needs Review', 'low-data':    'Getting Started',
+    'developing':   'Developing',   'strong':       'Strong',
+    'not-started':  'Not Started',
+  };
+
+  var _niSvg = '<svg width="15" height="15" viewBox="0 0 310 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle">'
+    + '<g stroke-linecap="round" fill="none"><path d="M154 284 Q100 278 72 292" stroke="#16763a" stroke-width="3"/><path d="M156 284 Q210 278 238 292" stroke="#16763a" stroke-width="3"/><path d="M154 283 Q112 270 92 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M156 283 Q198 270 218 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M154 283 Q128 266 116 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M156 283 Q182 266 194 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M154 282 Q142 266 138 260" stroke="#20a650" stroke-width="3.5"/><path d="M156 282 Q168 266 172 260" stroke="#20a650" stroke-width="3.5"/></g>'
+    + '<path d="M155 278 Q152 234 154 190 Q156 155 155 118" stroke="#28a855" stroke-width="5.5" stroke-linecap="round" fill="none"/>'
+    + '<path d="M154 194 C136 174,82 152,62 108 C50 78,74 50,104 70 C126 85,144 146,154 194Z" fill="#f5a020"/>'
+    + '<path d="M156 162 C176 142,228 120,248 76 C260 46,236 18,206 38 C184 54,164 112,156 162Z" fill="#ee9010"/>'
+    + '<path d="M155 118 C147 100 145 74 155 56 C165 74 163 100 155 118Z" fill="#5ad880"/>'
+    + '</svg>';
+  var statusIcon = {
+    'needs-review': _niSvg, 'low-data':    '&#x1F331;',
+    'developing':   '&#x1F33F;', 'strong': '&#x1F333;',
+    'not-started':  '&#x1FAA8;',
+  };
+
+  var _sproutSvg = '<svg width="22" height="22" viewBox="0 0 310 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:6px;filter:drop-shadow(0 1px 3px rgba(0,80,20,0.18))">'
+    + '<defs>'
+    + '<linearGradient id="rs-l1" x1="5%" y1="5%" x2="95%" y2="95%"><stop offset="0%" stop-color="#ffd8a0"/><stop offset="38%" stop-color="#f5a020"/><stop offset="100%" stop-color="#c86c00"/></linearGradient>'
+    + '<linearGradient id="rs-l2" x1="95%" y1="5%" x2="5%" y2="95%"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="38%" stop-color="#ee9010"/><stop offset="100%" stop-color="#b85e00"/></linearGradient>'
+    + '<linearGradient id="rs-ls" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3ada6e"/><stop offset="100%" stop-color="#14762e"/></linearGradient>'
+    + '<linearGradient id="rs-lb" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#aeffc8"/><stop offset="100%" stop-color="#28c45c"/></linearGradient>'
+    + '</defs>'
+    + '<g stroke-linecap="round" fill="none"><path d="M154 284 Q100 278 72 292" stroke="#16763a" stroke-width="3.0"/><path d="M156 284 Q210 278 238 292" stroke="#16763a" stroke-width="3.0"/><path d="M154 283 Q112 270 92 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M156 283 Q198 270 218 278" stroke="#1a8e44" stroke-width="3.2"/><path d="M154 283 Q128 266 116 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M156 283 Q182 266 194 268" stroke="#1e9e4c" stroke-width="3.4"/><path d="M154 282 Q142 266 138 260" stroke="#20a650" stroke-width="3.5"/><path d="M156 282 Q168 266 172 260" stroke="#20a650" stroke-width="3.5"/></g>'
+    + '<path d="M155 278 Q152 234 154 190 Q156 155 155 118" stroke="url(#rs-ls)" stroke-width="5.5" stroke-linecap="round" fill="none"/>'
+    + '<path d="M154 194 C136 174,82 152,62 108 C50 78,74 50,104 70 C126 85,144 146,154 194Z" fill="url(#rs-l1)"/>'
+    + '<path d="M156 162 C176 142,228 120,248 76 C260 46,236 18,206 38 C184 54,164 112,156 162Z" fill="url(#rs-l2)"/>'
+    + '<path d="M155 118 C147 100 145 74 155 56 C165 74 163 100 155 118Z" fill="url(#rs-lb)"/>'
+    + '</svg>';
 
   var units = _computeUnitInsights({
     scores:         scores,
@@ -571,64 +593,70 @@ function _renderUnitProgressMap(scores, activityEvents) {
     errLabels:      _ERR_LABEL_MAP,
     errHelpMap:     _ERR_HELP_MAP,
     lessonNameFn:   _lessonDisplayName,
-  }).slice().sort(function(a, b) { return STATUS_ORDER[a.status] - STATUS_ORDER[b.status]; });
+  });
 
-  var cards = units.map(function(u) {
-    var col  = statusColor[u.status];
-    var lbl  = statusLabel[u.status];
-    var pctStr = u.accuracy != null ? u.accuracy + '%' : '';
+  var nodeHTML = units.map(function(u, i) {
+    var col       = statusColor[u.status];
+    var icon      = statusIcon[u.status];
+    var lbl       = statusLabel[u.status];
+    var isRight   = i % 2 === 0;
+    var isStarted = u.status !== 'not-started';
+    var pct       = u.accuracy != null ? ' &bull; ' + u.accuracy + '%' : '';
 
-    var summaryInner = '<div class="db-upm-summary">'
-      + '<span class="db-upm-num" style="color:' + col + '">' + (u.idx + 1) + '</span>'
-      + '<span class="db-upm-name">' + _esc(u.name) + '</span>'
-      + '<span class="db-upm-badge" style="color:' + col + ';border-color:' + col + '40">' + lbl + '</span>'
-      + (pctStr ? '<span class="db-upm-pct" style="color:' + col + '">' + pctStr + '</span>' : '')
+    var nodeEl = '<div class="rs-node-col">'
+      + '<div class="rs-node' + (!isStarted ? ' rs-node-locked' : '') + '" style="border-color:' + col + ';background:' + (!isStarted ? '#f5f5f5' : col + '18') + '">'
+      + '<span class="rs-node-num" style="color:' + col + '">' + (u.idx + 1) + '</span>'
+      + '<span class="rs-node-icon">' + icon + '</span>'
+      + '</div>'
+      + (i < units.length - 1 ? '<div class="rs-spine' + (isStarted ? ' rs-spine-active" style="background:' + col + '60"' : '"') + '></div>' : '')
       + '</div>';
 
-    if (u.status === 'not-started') {
-      return '<div class="db-upm-card db-upm-not-started">' + summaryInner + '</div>';
-    }
+    var labelHeader = '<div class="rs-lbl-name">' + _esc(u.name) + '</div>'
+      + '<div class="rs-lbl-sub" style="color:' + col + '">' + lbl + pct + '</div>';
 
-    var detail;
-    if (u.status === 'low-data') {
-      detail = '<div class="db-upm-detail">'
-        + '<p class="db-upm-hint">Not enough practice data yet. Complete a lesson quiz to unlock unit insights.</p>'
-        + '</div>';
+    var labelEl;
+    if (!isStarted) {
+      labelEl = '<div class="rs-label rs-label-' + (isRight ? 'right' : 'left') + '">' + labelHeader + '</div>';
     } else {
-      var statLine = u.total + ' question' + (u.total !== 1 ? 's' : '') + ' answered';
-      if (u.quizCount > 0) statLine += ' &bull; ' + u.quizCount + ' quiz' + (u.quizCount !== 1 ? 'zes' : '');
-      detail = '<div class="db-upm-detail">'
-        + '<p class="db-upm-stat">' + statLine + '</p>';
-      if (u.weakTagLabel) {
-        detail += '<div class="db-upm-row"><span class="db-upm-row-lbl">Weakest skill</span>'
-          + '<span class="db-upm-row-val">' + _esc(u.weakTagLabel) + '</span></div>';
+      var dp = [];
+      if (u.status === 'low-data') {
+        dp.push('<p class="rs-det-hint">A few more practice questions will unlock skill-level insights.</p>');
+      } else {
+        var statLine = u.total + ' question' + (u.total !== 1 ? 's' : '') + ' answered';
+        if (u.quizCount > 0) statLine += ' &bull; ' + u.quizCount + ' quiz' + (u.quizCount !== 1 ? 'zes' : '');
+        dp.push('<p class="rs-det-stat">' + statLine + '</p>');
+        if (u.weakTagLabel) dp.push('<div class="rs-det-row"><span class="rs-det-lbl">Weakest skill</span><span class="rs-det-val">' + _esc(u.weakTagLabel) + '</span></div>');
+        if (u.topErrLabel)  dp.push('<div class="rs-det-row"><span class="rs-det-lbl">Common mistake</span><span class="rs-det-val">' + _esc(u.topErrLabel) + '</span></div>');
+        if (u.topErrHelp)   dp.push('<p class="rs-det-hint">&#x1F4A1; ' + _esc(u.topErrHelp) + '</p>');
+        if (u.lessonRec)    dp.push('<div class="rs-det-rec">&#x1F4CC; Review: <strong>' + _esc(u.lessonRec) + '</strong></div>');
       }
-      if (u.topErrLabel) {
-        detail += '<div class="db-upm-row"><span class="db-upm-row-lbl">Common mistake</span>'
-          + '<span class="db-upm-row-val">' + _esc(u.topErrLabel) + '</span></div>';
-      }
-      if (u.topErrHelp) {
-        detail += '<p class="db-upm-hint">&#x1F4A1; ' + _esc(u.topErrHelp) + '</p>';
-      }
-      if (u.lessonRec) {
-        detail += '<div class="db-upm-rec">&#x1F4CC; Review: <strong>' + _esc(u.lessonRec) + '</strong></div>';
-      }
-      detail += '</div>';
+      var detailDiv = dp.length ? '<div class="rs-det" style="border-left:2px solid ' + col + '40">' + dp.join('') + '</div>' : '';
+      labelEl = '<details class="rs-label rs-label-' + (isRight ? 'right' : 'left') + ' rs-label-exp">'
+        + '<summary class="rs-lbl-sum">' + labelHeader + '</summary>'
+        + detailDiv
+        + '</details>';
     }
 
-    return '<details class="db-upm-card" style="border-left:4px solid ' + col + '">'
-      + '<summary class="db-upm-card-inner">' + summaryInner + '</summary>'
-      + detail
-      + '</details>';
+    return '<div class="rs-row' + (isRight ? ' rs-row-right' : ' rs-row-left') + '">'
+      + (isRight ? '' : labelEl)
+      + nodeEl
+      + (isRight ? labelEl : '')
+      + '</div>';
   }).join('');
 
   var strong  = units.filter(function(u) { return u.status === 'strong'; }).length;
   var started = units.filter(function(u) { return u.status !== 'not-started'; }).length;
 
   return '<section class="db-section">'
-    + '<h2 class="db-sec-h">&#x1F331; Unit Progress Map</h2>'
-    + '<p class="db-upm-overview">' + strong + ' of 10 units strong &bull; ' + started + ' started</p>'
-    + '<div class="db-upm-list">' + cards + '</div>'
+    + '<h2 class="db-sec-h">' + _sproutSvg + 'The Root System</h2>'
+    + '<div class="rs-legend">'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#2e7d32"></span>Strong</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#f57f17"></span>Developing</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#c62828"></span>Needs Review</span>'
+    + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#cfd8dc"></span>Not Started</span>'
+    + '</div>'
+    + '<p class="rs-summary">' + strong + ' of 10 units strong &bull; ' + started + ' started</p>'
+    + '<div class="rs-track">' + nodeHTML + '</div>'
     + '</section>';
 }
 
