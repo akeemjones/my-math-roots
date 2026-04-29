@@ -235,11 +235,11 @@ function _readLocalStudentData() {
   };
 }
 
-// ── Per-profile grade selection (Phase 1 — local-only) ────────────────────
-// A profile's grade is stored at mmr_profile_grade_<id>. This is independent
-// of the Supabase student_profiles table (Phase 3 will add the column). On
-// profile switch we read this value and write it to mmr_grade so the rest
-// of the app picks up the correct grade after reload.
+// ── Per-profile grade selection ───────────────────────────────────────────
+// A profile's grade lives in two places:
+//   - Supabase: student_profiles.grade (Phase 3 column, source of truth)
+//   - Local cache: mmr_profile_grade_<id> (mirror, used pre-fetch and
+//     on student devices that don't query student_profiles directly)
 function _dbProfileGradeKey(id) { return 'mmr_profile_grade_' + String(id); }
 function _dbReadProfileGrade(id) {
   if (!id) return '2';
@@ -259,6 +259,51 @@ function _dbWriteProfileGrade(id, grade) {
 }
 function _dbGradeBadge(g) {
   return (typeof normalizeGrade === 'function' ? normalizeGrade(g) : g) === 'K' ? 'Kindergarten' : 'Grade 2';
+}
+
+// Resolve a profile's grade with a clear precedence:
+//   1. profile.grade  (Supabase-backed, freshest)
+//   2. mmr_profile_grade_<id>  (local cache mirror)
+//   3. localStorage.mmr_grade  (current global flag — last resort if
+//      profile metadata is unavailable)
+//   4. '2'  (final fallback)
+// Whenever the resolver returns a value, it also mirrors it into the
+// local cache so subsequent reads on this device are O(1).
+function _dbResolveProfileGrade(profile, fallbackProfileId) {
+  var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
+    if (v === null || v === undefined) return '2';
+    var s = String(v).trim().toLowerCase();
+    return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+  };
+
+  // 1. Profile object carries grade from Supabase
+  if (profile && profile.grade != null && profile.grade !== '') {
+    var fromProfile = _norm(profile.grade);
+    if (profile.id) _dbWriteProfileGrade(profile.id, fromProfile);
+    return fromProfile;
+  }
+
+  // 2. Local cache by id
+  var id = (profile && profile.id) || fallbackProfileId;
+  if (id) {
+    try {
+      var cached = localStorage.getItem(_dbProfileGradeKey(id));
+      if (cached) return _norm(cached);
+    } catch (_e) {}
+  }
+
+  // 3. Current global flag (legacy single-grade callers)
+  try {
+    var current = localStorage.getItem('mmr_grade');
+    if (current) {
+      var g = _norm(current);
+      if (id) _dbWriteProfileGrade(id, g);
+      return g;
+    }
+  } catch (_e) {}
+
+  // 4. Final fallback
+  return '2';
 }
 
 function getAllStudents() {
@@ -2758,17 +2803,23 @@ async function _fetchManagedProfiles() {
     var result = await Promise.race([
       _supa
         .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, grade')
         .order('created_at', { ascending: true }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
     if (result.error) throw result.error;
     _managedProfiles = result.data || [];
+    // Mirror Supabase grade into the per-profile local cache so the
+    // grade resolver and student-side reads work without re-fetching.
+    _managedProfiles.forEach(function(p) {
+      if (p && p.id && p.grade) _dbWriteProfileGrade(p.id, p.grade);
+    });
     localStorage.setItem('mmr_family_profiles',
       JSON.stringify(_managedProfiles.map(function(p) {
         return { id: p.id, display_name: p.display_name, age: p.age,
           avatar_emoji: p.avatar_emoji, avatar_color_from: p.avatar_color_from,
-          avatar_color_to: p.avatar_color_to, username: p.username, pin_hash: '' };
+          avatar_color_to: p.avatar_color_to, username: p.username, pin_hash: '',
+          grade: p.grade || null };
       }))
     );
   } catch(e) {
@@ -2790,7 +2841,7 @@ function _renderManageProfiles() {
 
   var rows = _managedProfiles.map(function(p) {
     var lastActive = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Never';
-    var gradeLabel = _dbGradeBadge(_dbReadProfileGrade(p.id));
+    var gradeLabel = _dbGradeBadge(_dbResolveProfileGrade(p));
     return '<div class="db-profile-row">'
       + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _dbValidColor(p.avatar_color_from) + ',' + _dbValidColor(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
       + '<div style="flex:1;min-width:0">'
@@ -2955,7 +3006,7 @@ function openEditProfileSheet(studentId) {
   var AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
   var AVATAR_COLORS = {'🦁':'#f59e0b,#f97316','🦋':'#8b5cf6,#ec4899','🐉':'#06b6d4,#3b82f6','🦊':'#ef4444,#f97316','🐬':'#10b981,#0ea5e9','🌟':'#f59e0b,#eab308'};
 
-  var currentGrade = _dbReadProfileGrade(studentId);
+  var currentGrade = _dbResolveProfileGrade(profile, studentId);
   document.getElementById('db-edit-profile-body').innerHTML =
     '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Name</label>'
     + '<input id="db-edit-name" type="text" maxlength="20" value="' + _esc(profile.display_name) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
@@ -3013,22 +3064,24 @@ async function dbEditSave(studentId) {
   var colors = AVATAR_COLORS[emoji] || ['#f59e0b','#f97316'];
   var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
   var newGrade = gradeInp ? gradeInp.value : null;
-  var oldGrade = _dbReadProfileGrade(studentId);
+  var oldGrade = _dbResolveProfileGrade(profile, studentId);
+  var nNew = (typeof normalizeGrade === 'function') ? normalizeGrade(newGrade) : newGrade;
 
   try {
     var result = await Promise.race([
       _supa.from('student_profiles').update({
         display_name: name, age: ageVal,
         avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
+        grade: nNew || '2',
         updated_at: new Date().toISOString(),
       }).eq('id', studentId),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
     if (result.error) throw result.error;
 
-    // Phase 1: persist grade locally only — Supabase column lands in Phase 3.
+    // Persist grade locally so subsequent reads stay consistent without
+    // waiting for the next _fetchManagedProfiles pull.
     if (newGrade) _dbWriteProfileGrade(studentId, newGrade);
-    var nNew = (typeof normalizeGrade === 'function') ? normalizeGrade(newGrade) : newGrade;
     var nOld = (typeof normalizeGrade === 'function') ? normalizeGrade(oldGrade) : oldGrade;
 
     await _fetchManagedProfiles();
@@ -3189,10 +3242,18 @@ async function dbAddSave() {
         username: username, display_name: name, age: ageVal,
         avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
         pin_hash: pinHash,
-      }),
+        grade: '2',                                // default; parent edits via Edit sheet
+      }).select(),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
     if (result.error) throw result.error;
+
+    // Mirror the new profile's grade into the per-profile local cache so
+    // the resolver returns the right value before the next fetch lands.
+    var newRows = (result && result.data) || [];
+    if (newRows.length && newRows[0].id) {
+      _dbWriteProfileGrade(newRows[0].id, newRows[0].grade || '2');
+    }
 
     await _fetchManagedProfiles();
     closeAddStudentSheet();

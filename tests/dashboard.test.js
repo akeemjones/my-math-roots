@@ -1,5 +1,19 @@
 'use strict';
 
+// Minimal localStorage stub for tests that exercise grade-resolver paths.
+// The dashboard module reads localStorage at runtime; without this, calls
+// throw ReferenceError under Node's default test environment.
+if (typeof globalThis.localStorage === 'undefined') {
+  const _store = new Map();
+  globalThis.localStorage = {
+    getItem(k)        { return _store.has(k) ? _store.get(k) : null; },
+    setItem(k, v)     { _store.set(String(k), String(v)); },
+    removeItem(k)     { _store.delete(k); },
+    clear()           { _store.clear(); },
+    _reset()          { _store.clear(); }
+  };
+}
+
 const {
   getCategoryFromId,
   _computeOverallStats,
@@ -17,6 +31,10 @@ const {
   normalizeGrade,
   _filterActivityByGrade,
   _masteryKeyFor,
+  _dbResolveProfileGrade,
+  _dbProfileGradeKey,
+  _dbReadProfileGrade,
+  _dbWriteProfileGrade,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -734,6 +752,79 @@ describe('_masteryKeyFor', () => {
   test('null/empty falls through to mmr_mastery_v1_2', () => {
     expect(_masteryKeyFor(null)).toBe('mmr_mastery_v1_2');
     expect(_masteryKeyFor('')).toBe('mmr_mastery_v1_2');
+  });
+});
+
+// ── _dbResolveProfileGrade ────────────────────────────────────────────────
+
+describe('_dbResolveProfileGrade', () => {
+  beforeEach(() => { globalThis.localStorage.clear(); });
+
+  test('1. profile.grade takes top precedence', () => {
+    localStorage.setItem('mmr_profile_grade_p1', '2');     // local cache says G2
+    localStorage.setItem('mmr_grade', '2');                 // global flag says G2
+    const profile = { id: 'p1', grade: 'K' };               // Supabase says K
+    expect(_dbResolveProfileGrade(profile)).toBe('K');
+  });
+
+  test('1b. profile.grade is normalized (lowercase k → K)', () => {
+    expect(_dbResolveProfileGrade({ id: 'p1', grade: 'k' })).toBe('K');
+    expect(_dbResolveProfileGrade({ id: 'p2', grade: 'kindergarten' })).toBe('K');
+    expect(_dbResolveProfileGrade({ id: 'p3', grade: '0' })).toBe('K');
+  });
+
+  test('1c. resolving from profile.grade also mirrors to local cache', () => {
+    _dbResolveProfileGrade({ id: 'p1', grade: 'K' });
+    expect(localStorage.getItem('mmr_profile_grade_p1')).toBe('K');
+  });
+
+  test('2. local cache (mmr_profile_grade_<id>) is second', () => {
+    localStorage.setItem('mmr_profile_grade_p1', 'K');
+    localStorage.setItem('mmr_grade', '2');
+    expect(_dbResolveProfileGrade({ id: 'p1' })).toBe('K');                // profile has no grade → fall through to cache
+    expect(_dbResolveProfileGrade(null, 'p1')).toBe('K');                  // accept fallback id
+  });
+
+  test('3. mmr_grade (global flag) is third', () => {
+    localStorage.setItem('mmr_grade', 'K');
+    expect(_dbResolveProfileGrade({ id: 'p1' })).toBe('K');
+    expect(_dbResolveProfileGrade(null)).toBe('K');
+  });
+
+  test('3b. resolving from mmr_grade mirrors to local cache when id is known', () => {
+    localStorage.setItem('mmr_grade', 'K');
+    _dbResolveProfileGrade({ id: 'p1' });
+    expect(localStorage.getItem('mmr_profile_grade_p1')).toBe('K');
+  });
+
+  test('4. final fallback is "2"', () => {
+    expect(_dbResolveProfileGrade(null)).toBe('2');
+    expect(_dbResolveProfileGrade(undefined)).toBe('2');
+    expect(_dbResolveProfileGrade({})).toBe('2');
+    expect(_dbResolveProfileGrade({ id: 'p1' })).toBe('2');
+  });
+
+  test('5. empty-string profile.grade falls through to next layer', () => {
+    localStorage.setItem('mmr_grade', 'K');
+    expect(_dbResolveProfileGrade({ id: 'p1', grade: '' })).toBe('K');
+  });
+
+  test('6. _dbReadProfileGrade is the cache-only read', () => {
+    localStorage.setItem('mmr_profile_grade_p1', 'K');
+    expect(_dbReadProfileGrade('p1')).toBe('K');
+    expect(_dbReadProfileGrade('p2')).toBe('2');     // no cache → '2'
+    expect(_dbReadProfileGrade(null)).toBe('2');
+  });
+
+  test('7. _dbWriteProfileGrade normalizes before write', () => {
+    _dbWriteProfileGrade('p1', 'k');
+    _dbWriteProfileGrade('p2', 'Kindergarten');
+    _dbWriteProfileGrade('p3', '2');
+    _dbWriteProfileGrade('p4', 'foo');                // unknown → '2'
+    expect(localStorage.getItem('mmr_profile_grade_p1')).toBe('K');
+    expect(localStorage.getItem('mmr_profile_grade_p2')).toBe('K');
+    expect(localStorage.getItem('mmr_profile_grade_p3')).toBe('2');
+    expect(localStorage.getItem('mmr_profile_grade_p4')).toBe('2');
   });
 });
 

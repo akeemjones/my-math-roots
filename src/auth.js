@@ -1176,11 +1176,18 @@ async function _pullStudentProgress(studentId) {
       changed = true;
     }
 
-    // Merge mastery_json → mmr_mastery_v1 (canonical key; per-tag higher-attempts wins)
+    // Merge mastery_json → mmr_mastery_v1_<grade> (per-grade canonical key;
+    // per-tag higher-attempts wins). The RPC was called with p_grade scope,
+    // so the row's mastery_json is already grade-isolated; we simply hydrate
+    // into the matching local bucket.
     var masteryJson = data.profile && data.profile.mastery_json;
     if (masteryJson && typeof masteryJson === 'object') {
       try {
-        var localAgg = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+        var _gPull = (typeof normalizeGrade === 'function')
+          ? normalizeGrade(localStorage.getItem('mmr_grade'))
+          : (localStorage.getItem('mmr_grade') || '2');
+        var _pullKey = 'mmr_mastery_v1_' + _gPull;
+        var localAgg = JSON.parse(localStorage.getItem(_pullKey) || '{}');
         var mkeys = Object.keys(masteryJson);
         var mchanged = false;
         for (var mi = 0; mi < mkeys.length; mi++) {
@@ -1193,7 +1200,7 @@ async function _pullStudentProgress(studentId) {
             mchanged = true;
           }
         }
-        if (mchanged) { localStorage.setItem('mmr_mastery_v1', JSON.stringify(localAgg)); changed = true; }
+        if (mchanged) { localStorage.setItem(_pullKey, JSON.stringify(localAgg)); changed = true; }
       } catch (_me) {}
     }
     // Hydrate activity_json → mmr_activity_v1 (union merge by ts)
@@ -1399,10 +1406,16 @@ async function _pullOnLogin(force){
         localStorage.setItem('wb_streak', JSON.stringify(STREAK));
       }
     }
-    // MASTERY — per-key merge → mmr_mastery_v1 (canonical key; higher attempts wins)
+    // MASTERY — per-key merge → mmr_mastery_v1_<grade> (per-grade canonical
+    // key; higher attempts wins). Parent-mode pull mirrors the row that
+    // matches the active grade, so the local bucket stays in sync.
     if(prog && prog.mastery_json && typeof prog.mastery_json === 'object'){
       try{
-        let localAgg = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+        const _gPull2 = (typeof normalizeGrade === 'function')
+          ? normalizeGrade(localStorage.getItem('mmr_grade'))
+          : (localStorage.getItem('mmr_grade') || '2');
+        const _pullKey2 = 'mmr_mastery_v1_' + _gPull2;
+        let localAgg = JSON.parse(localStorage.getItem(_pullKey2) || '{}');
         let masteryChanged = false;
         for(const [k, cm] of Object.entries(prog.mastery_json)){
           if(!cm || typeof cm.attempts !== 'number') continue;
@@ -1412,7 +1425,7 @@ async function _pullOnLogin(force){
             masteryChanged = true;
           }
         }
-        if(masteryChanged) localStorage.setItem('mmr_mastery_v1', JSON.stringify(localAgg));
+        if(masteryChanged) localStorage.setItem(_pullKey2, JSON.stringify(localAgg));
       } catch(_me){}
     }
     // ACTIVITY — union merge → mmr_activity_v1
@@ -1505,9 +1518,14 @@ async function _pushAll(){
     var result = await Promise.race([
       _supa.rpc('push_student_progress', {
         p_student_id:       studentId,
-        p_grade:            localStorage.getItem('mmr_grade') || '2',
+        p_grade:            (typeof normalizeGrade === 'function') ? normalizeGrade(localStorage.getItem('mmr_grade')) : (localStorage.getItem('mmr_grade') || '2'),
         p_session_token:    _sessionToken,
-        p_mastery_json:     (function(){ try{ return JSON.parse(localStorage.getItem('mmr_mastery_v1')||'{}'); }catch(_){ return {}; } })(),
+        p_mastery_json:     (function(){
+          try{
+            var _g = (typeof normalizeGrade === 'function') ? normalizeGrade(localStorage.getItem('mmr_grade')) : (localStorage.getItem('mmr_grade') || '2');
+            return JSON.parse(localStorage.getItem('mmr_mastery_v1_' + _g) || '{}');
+          } catch(_){ return {}; }
+        })(),
         p_activity_json:    (function(){ try{ var d=JSON.parse(localStorage.getItem('mmr_activity_v1')||'null'); return (d&&d.v===1)?d:{v:1,events:[]}; }catch(_){ return {v:1,events:[]}; } })(),
         p_streak_current:   STREAK.current || 0,
         p_streak_longest:   STREAK.longest || 0,
@@ -1562,11 +1580,12 @@ async function _pushMasteryParent(){
   if(!_supa || !_supaUser) return;
   if(!_pullSucceeded) return; // don't overwrite cloud until local is confirmed current
   try{
-    var mastery = (function(){ try{ return JSON.parse(localStorage.getItem('mmr_mastery_v1')||'{}'); }catch(_){ return {}; } })();
+    var _gPush = (typeof normalizeGrade === 'function') ? normalizeGrade(localStorage.getItem('mmr_grade')) : (localStorage.getItem('mmr_grade') || '2');
+    var mastery = (function(){ try{ return JSON.parse(localStorage.getItem('mmr_mastery_v1_' + _gPush)||'{}'); }catch(_){ return {}; } })();
     var _sid = localStorage.getItem('mmr_active_student_id') || null;
     await Promise.race([
       _supa.from('student_progress').upsert(
-        { user_id:_supaUser.id, student_id:_sid, grade:localStorage.getItem('mmr_grade')||'2', mastery_json:mastery, updated_at:new Date().toISOString() },
+        { user_id:_supaUser.id, student_id:_sid, grade:_gPush, mastery_json:mastery, updated_at:new Date().toISOString() },
         { onConflict:'user_id,student_id,grade' }
       ),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushMastery timeout')); },8000); })

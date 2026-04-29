@@ -2589,6 +2589,54 @@ function _masteryKeyFor(grade) {
   return 'mmr_mastery_v1_' + normalizeGrade(grade);
 }
 
+// ── Per-profile grade resolver (mirrors src/dashboard.js) ────────────────
+function _dbProfileGradeKey(id) { return 'mmr_profile_grade_' + String(id); }
+
+function _dbReadProfileGrade(id) {
+  if (!id) return '2';
+  try {
+    var v = (typeof localStorage !== 'undefined') ? localStorage.getItem(_dbProfileGradeKey(id)) : null;
+    return normalizeGrade(v);
+  } catch (_e) { return '2'; }
+}
+
+function _dbWriteProfileGrade(id, grade) {
+  if (!id) return;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(_dbProfileGradeKey(id), normalizeGrade(grade));
+    }
+  } catch (_e) {}
+}
+
+// Resolver precedence: profile.grade → mmr_profile_grade_<id> → mmr_grade → '2'
+function _dbResolveProfileGrade(profile, fallbackProfileId) {
+  if (profile && profile.grade != null && profile.grade !== '') {
+    var fromProfile = normalizeGrade(profile.grade);
+    if (profile.id) _dbWriteProfileGrade(profile.id, fromProfile);
+    return fromProfile;
+  }
+
+  var id = (profile && profile.id) || fallbackProfileId;
+  if (id) {
+    try {
+      var cached = (typeof localStorage !== 'undefined') ? localStorage.getItem(_dbProfileGradeKey(id)) : null;
+      if (cached) return normalizeGrade(cached);
+    } catch (_e) {}
+  }
+
+  try {
+    var current = (typeof localStorage !== 'undefined') ? localStorage.getItem('mmr_grade') : null;
+    if (current) {
+      var g = normalizeGrade(current);
+      if (id) _dbWriteProfileGrade(id, g);
+      return g;
+    }
+  } catch (_e) {}
+
+  return '2';
+}
+
 // ── Unit progress map helper (duplicated here for testability) ───────────
 
 // Normalize a unit identifier to a zero-based unitsMeta index.
@@ -2741,5 +2789,9 @@ if (typeof module !== 'undefined') {
     normalizeGrade,
     _filterActivityByGrade,
     _masteryKeyFor,
+    _dbResolveProfileGrade,
+    _dbProfileGradeKey,
+    _dbReadProfileGrade,
+    _dbWriteProfileGrade,
   };
 }
