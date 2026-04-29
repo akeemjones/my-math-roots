@@ -2156,114 +2156,245 @@ function _renderInterventionInsights(events, activityErrCounts) {
     + '</section>';
 }
 
-// ── Parent Action Summary ─────────────────────────────────────────────────
-// Top-of-dashboard card with a status pill, plain-English summary,
-// recommended action, and the data-backed "why".
-//
-// Status tiers (per Phase 3 spec):
-//   not-enough-data  — fewer than 3 total questions answered
-//   needs-review     — any mastery tag with attempts >= 3 and accuracy < 60%
-//   strong           — overall accuracy >= 80% AND no weak tags
-//   developing       — everything else
-//
-// All copy uses parent-friendly labels (_TAG_LABEL_MAP, _ERR_LABEL_MAP)
-// installed in Phase 1. No raw err_* or snake_case tags reach the UI.
-function _renderParentActionSummary(stats, mastery, activityEvents, name) {
-  var totalAttempts = (stats && stats.totalAttempted) || 0;
-  var nameSafe      = _esc(name || 'Your child');
+// ── Insight engine helpers (also in dashboard/dashboard.js for testability) ─
 
-  // Tag-level weak skill (lowest accuracy with >= 3 attempts and < 60%)
-  var tagStats = _computeTagStats(mastery || {});
-  var weakTags = tagStats.filter(function(t) {
-    return t.attempts >= 3 && t.accuracy < 0.60;
+function _bie_computeTagStats(mastery) {
+  return Object.keys(mastery || {}).map(function(tag) {
+    var m = mastery[tag];
+    var attempts = m.attempts || 0;
+    return { tag: tag, attempts: attempts, correct: m.correct || 0,
+             accuracy: attempts ? (m.correct || 0) / attempts : 0 };
+  }).sort(function(a, b) { return a.accuracy - b.accuracy; });
+}
+
+function _bie_computeMisconceptions(events) {
+  var counts = {};
+  (events || []).forEach(function(e) {
+    if (e.errorType) counts[e.errorType] = (counts[e.errorType] || 0) + 1;
   });
-  var topWeakTag = weakTags[0] || null;
+  return counts;
+}
 
-  // Most common mistake across all activity events
-  var errCounts = _computeMisconceptions(activityEvents || []);
+function _bie_buildTagLessonMap(events) {
+  var map = {};
+  (events || []).forEach(function(e) {
+    if (!e.lessonId) return;
+    (e.tags || []).forEach(function(tag) {
+      if (!map[tag]) map[tag] = {};
+      map[tag][e.lessonId] = (map[tag][e.lessonId] || 0) + 1;
+    });
+  });
+  return map;
+}
+
+function _bie_recommendLesson(weakTags, tagLessonMap) {
+  var recs = [], seen = {};
+  weakTags.forEach(function(t) {
+    var lessons = tagLessonMap[t.tag] || {};
+    Object.keys(lessons).sort(function(a, b) { return lessons[b] - lessons[a]; })
+      .slice(0, 2).forEach(function(lessonId) {
+        if (!seen[lessonId]) { seen[lessonId] = true; recs.push({ lessonId: lessonId, weakTag: t.tag }); }
+      });
+  });
+  return recs[0] || null;
+}
+
+function _bie_computeTrend(activityEvents) {
+  var sorted = (activityEvents || [])
+    .filter(function(e) { return e.ts && typeof e.correct === 'boolean'; })
+    .sort(function(a, b) { return a.ts - b.ts; })
+    .slice(-10);
+  if (sorted.length < 6) return 'steady';
+  var first5 = sorted.slice(0, 5);
+  var last5  = sorted.slice(-5);
+  var acc5first = first5.filter(function(e) { return e.correct; }).length / 5;
+  var acc5last  = last5.filter(function(e)  { return e.correct; }).length / 5;
+  var delta = acc5last - acc5first;
+  if (delta >=  0.20) return 'improving';
+  if (delta <= -0.20) return 'declining';
+  return 'steady';
+}
+
+var _BIE_CSS_TIER = {
+  'no-data': 'no-data', 'low-data': 'no-data',
+  'needs-review': 'needs-review', 'declining': 'needs-review',
+  'improving': 'developing', 'mixed': 'developing', 'developing': 'developing',
+  'strong': 'strong',
+};
+
+function buildParentInsight(opts) {
+  var mastery        = opts.mastery        || {};
+  var activityEvents = opts.activityEvents || [];
+  var scores         = opts.scores         || [];
+  var studentName    = opts.studentName    || 'Your child';
+  var tagLabels      = opts.tagLabels      || {};
+  var errLabels      = opts.errLabels      || {};
+  var lessonNameFn   = opts.lessonNameFn   || function() { return null; };
+
+  var tagStats   = _bie_computeTagStats(mastery);
+  var weakTags   = tagStats.filter(function(t) { return t.attempts >= 3 && t.accuracy < 0.60; });
+  var strongTags = tagStats.filter(function(t) { return t.attempts >= 3 && t.accuracy >= 0.80; });
+  var topWeakTag   = weakTags[0]   || null;
+  var topStrongTag = strongTags[strongTags.length - 1] || null;
+
+  var completedScores = scores.filter(function(s) { return s.pct != null && s.total > 0; });
+  var totalQuestionsAnswered = completedScores.reduce(function(a, s) { return a + (s.total || 0); }, 0);
+  var overallAccuracy = completedScores.length > 0
+    ? Math.round(completedScores.reduce(function(a, s) { return a + s.pct; }, 0) / completedScores.length)
+    : 0;
+
+  var confidence;
+  if (totalQuestionsAnswered < 3)       confidence = 'none';
+  else if (totalQuestionsAnswered < 10) confidence = 'low';
+  else if (totalQuestionsAnswered < 30) confidence = 'medium';
+  else                                  confidence = 'high';
+
+  var trend = _bie_computeTrend(activityEvents);
+
+  var errCounts = _bie_computeMisconceptions(activityEvents);
   var topErr = null, topErrCount = 0;
   Object.keys(errCounts).forEach(function(t) {
     if (errCounts[t] > topErrCount) { topErr = t; topErrCount = errCounts[t]; }
   });
 
-  // Practice recommendation: a real lesson that drilled the weak tag
-  var topRec = null;
-  if (topWeakTag && Array.isArray(activityEvents) && activityEvents.length) {
-    var tlm  = _buildTagLessonMap(activityEvents);
-    var recs = _recommendReviewLessons([topWeakTag], tlm, 1);
-    topRec = recs[0] || null;
+  var topRec = topWeakTag
+    ? _bie_recommendLesson(weakTags, _bie_buildTagLessonMap(activityEvents))
+    : null;
+  var actionLessonId   = topRec ? topRec.lessonId : null;
+  var actionLessonName = null;
+  if (actionLessonId) {
+    var ldn = lessonNameFn(actionLessonId);
+    actionLessonName = ldn ? ldn.lesson : null;
   }
 
-  // Resolve status tier
-  var tier;
-  if (totalAttempts < 3)         tier = 'no-data';
-  else if (topWeakTag)           tier = 'needs-review';
-  else if (stats.accuracy >= 80) tier = 'strong';
-  else                           tier = 'developing';
+  var _toTitle = function(s) {
+    return s ? s.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) : s;
+  };
+  var weakTagLabel   = topWeakTag   ? (tagLabels[topWeakTag.tag]   || _toTitle(topWeakTag.tag))   : null;
+  var strongTagLabel = topStrongTag ? (tagLabels[topStrongTag.tag] || _toTitle(topStrongTag.tag)) : null;
+  var commonErrorLabel = topErr ? (errLabels[topErr] || null) : null;
 
-  // Per-tier copy
-  var pillText, color, summary, action, why;
+  var tier;
+  var isMixed = weakTags.length > 0 && strongTags.length > 0;
+  if (confidence === 'none') {
+    tier = 'no-data';
+  } else if (confidence === 'low' && weakTags.length === 0) {
+    tier = 'low-data';
+  } else if (weakTags.length > 0) {
+    if      (trend === 'improving') tier = 'improving';
+    else if (trend === 'declining') tier = 'declining';
+    else if (isMixed)               tier = 'mixed';
+    else                            tier = 'needs-review';
+  } else if (overallAccuracy >= 80 || strongTags.length >= 2) {
+    tier = 'strong';
+  } else {
+    tier = 'developing';
+  }
+
+  var n = studentName;
+  var wpct = topWeakTag ? Math.round(topWeakTag.accuracy * 100) : 0;
+  var wattempts = topWeakTag ? topWeakTag.attempts : 0;
+  var errSuffix = commonErrorLabel ? ' Most common mistake: ' + commonErrorLabel + '.' : '';
+  var headline, summary, actionLabel, why;
 
   switch (tier) {
     case 'no-data':
-      pillText = 'Not enough data';
-      color    = '#607d8b';
-      summary  = nameSafe + ' needs a few more questions before we can give a reliable recommendation.';
-      action   = 'Complete one more lesson quiz to unlock better insights.';
-      why      = 'There is not enough activity yet to identify a weak skill.';
+      headline    = 'Not enough data';
+      summary     = n + ' needs a few more practice questions before we can spot patterns.';
+      actionLabel = 'Complete one more lesson quiz to unlock better insights.';
+      why         = 'There is not enough activity yet to identify a weak skill.';
       break;
-
+    case 'low-data':
+      headline    = 'Getting started';
+      summary     = n + ' has started practicing. A few more questions will unlock skill-level insights.';
+      actionLabel = 'Try a 5-question quiz on any lesson.';
+      why         = 'We have ' + totalQuestionsAnswered + ' answer' + (totalQuestionsAnswered !== 1 ? 's' : '') + ' so far — a few more will unlock skill-level insights.';
+      break;
     case 'needs-review':
-      var weakLabel = _TAG_LABEL_MAP[topWeakTag.tag] || _toTitleCase(topWeakTag.tag);
-      var weakPct   = Math.round(topWeakTag.accuracy * 100);
-      var attempts  = topWeakTag.attempts;
-      pillText = 'Needs review';
-      color    = '#c62828';
-      summary  = nameSafe + ' is developing in math. The main focus right now: '
-                 + _esc(weakLabel) + '.';
-      if (topRec && topRec.lessonId) {
-        var lid = _lessonDisplayName(topRec.lessonId);
-        action = lid
-          ? 'Review: ' + _esc(lid.lesson) + '.'
-          : 'Spend a few minutes practicing ' + _esc(weakLabel) + '.';
-      } else {
-        action = 'Spend a few minutes practicing ' + _esc(weakLabel) + '.';
-      }
-      why = _esc(weakLabel) + ' is at ' + weakPct + '% accuracy across '
-            + attempts + ' attempt' + (attempts !== 1 ? 's' : '') + '.';
-      if (topErr && _ERR_LABEL_MAP[topErr]) {
-        why += ' Most common mistake: ' + _esc(_ERR_LABEL_MAP[topErr]) + '.';
-      }
+      headline    = 'Needs review';
+      summary     = n + ' is struggling most with ' + weakTagLabel + '. ' + wpct + '% accuracy across ' + wattempts + ' question' + (wattempts !== 1 ? 's' : '') + (commonErrorLabel ? ', most common mistake: ' + commonErrorLabel + '.' : '.');
+      actionLabel = actionLessonName ? 'Review: ' + actionLessonName + '.' : 'Spend a few minutes practicing ' + weakTagLabel + '.';
+      why         = weakTagLabel + ' is at ' + wpct + '% accuracy across ' + wattempts + ' attempt' + (wattempts !== 1 ? 's' : '') + '.' + errSuffix;
       break;
-
+    case 'improving':
+      headline    = 'Improving';
+      summary     = n + ' still needs work on ' + weakTagLabel + ', but recent answers are improving. Keep going.';
+      actionLabel = actionLessonName ? 'Continue: ' + actionLessonName + '.' : 'Keep practicing ' + weakTagLabel + '.';
+      why         = wpct + '% accuracy on ' + weakTagLabel + ' across ' + wattempts + ' attempt' + (wattempts !== 1 ? 's' : '') + '. Recent answers show improvement.';
+      break;
+    case 'declining':
+      headline    = 'Needs attention';
+      summary     = n + '\'s recent answers show more misses in ' + weakTagLabel + '. A short review now can help.';
+      actionLabel = actionLessonName ? 'Review ' + actionLessonName + ' before moving ahead.' : 'Review ' + weakTagLabel + ' before the next lesson.';
+      why         = wpct + '% accuracy on ' + weakTagLabel + '. Recent trend: more misses.' + errSuffix;
+      break;
+    case 'mixed':
+      headline    = 'Mixed';
+      summary     = n + ' is strong in ' + strongTagLabel + ' but needs review in ' + weakTagLabel + '.';
+      actionLabel = actionLessonName ? 'Focus on ' + actionLessonName + ' this week.' : 'Spend a few minutes on ' + weakTagLabel + ' this week.';
+      why         = weakTagLabel + ' is at ' + wpct + '% accuracy (' + wattempts + ' attempt' + (wattempts !== 1 ? 's' : '') + ').' + errSuffix;
+      break;
     case 'strong':
-      pillText = 'Strong';
-      color    = '#2e7d32';
-      summary  = nameSafe + ' is doing well overall. Keep practicing to build consistency.';
-      action   = 'Keep going — try a new lesson to keep growing.';
-      why      = 'Overall accuracy is ' + stats.accuracy + '% across '
-                 + totalAttempts + ' question'
-                 + (totalAttempts !== 1 ? 's' : '') + '.';
+      headline    = 'Strong';
+      summary     = n + ' is doing well overall. Keep practicing to stay sharp.';
+      actionLabel = 'Try a new lesson to keep growing.';
+      why         = strongTags.length + ' skill' + (strongTags.length !== 1 ? 's' : '') + ' at 80%+ accuracy.';
       break;
-
     case 'developing':
     default:
-      pillText = 'Developing';
-      color    = '#e65100';
-      summary  = nameSafe + ' is developing in math. Steady practice is making a difference.';
-      action   = 'Continue with the recommended lessons below.';
-      why      = 'Overall accuracy is ' + stats.accuracy + '% across '
-                 + totalAttempts + ' question'
-                 + (totalAttempts !== 1 ? 's' : '') + '.';
+      headline    = 'Developing';
+      summary     = n + ' is developing in math. Steady practice is making a difference.';
+      actionLabel = 'Continue with the recommended lessons below.';
+      why         = totalQuestionsAnswered + ' question' + (totalQuestionsAnswered !== 1 ? 's' : '') + ' answered. Keep building the streak.';
       break;
   }
 
-  return '<section class="db-section db-action-summary das-' + tier + '">'
+  return {
+    tier:             tier,
+    cssTier:          _BIE_CSS_TIER[tier] || 'developing',
+    headline:         headline,
+    summary:          summary,
+    actionLabel:      actionLabel,
+    actionLessonId:   actionLessonId,
+    actionLessonName: actionLessonName,
+    why:              why,
+    confidence:       confidence,
+    weakTag:          topWeakTag   ? topWeakTag.tag   : null,
+    weakTagLabel:     weakTagLabel,
+    weakTagAccuracy:  topWeakTag   ? topWeakTag.accuracy   : null,
+    weakTagAttempts:  topWeakTag   ? topWeakTag.attempts   : null,
+    strongTag:        topStrongTag ? topStrongTag.tag : null,
+    strongTagLabel:   strongTagLabel,
+    commonErrorType:  topErr,
+    commonErrorLabel: commonErrorLabel,
+    trend:            trend,
+  };
+}
+
+// ── Parent Action Summary ─────────────────────────────────────────────────
+function _renderParentActionSummary(stats, mastery, activityEvents, name, scores) {
+  var insight = buildParentInsight({
+    mastery:        mastery        || {},
+    activityEvents: activityEvents || [],
+    scores:         scores         || [],
+    studentName:    name,
+    tagLabels:      _TAG_LABEL_MAP,
+    errLabels:      _ERR_LABEL_MAP,
+    lessonNameFn:   _lessonDisplayName,
+  });
+  var tierColors = {
+    'no-data':      '#607d8b',
+    'needs-review': '#c62828',
+    'developing':   '#e65100',
+    'strong':       '#2e7d32',
+  };
+  var color = tierColors[insight.cssTier] || '#607d8b';
+  return '<section class="db-section db-action-summary das-' + insight.cssTier + '">'
     + '<div class="das-pill" style="background:' + color + '15;color:' + color
-    + ';border:1px solid ' + color + '">' + _esc(pillText) + '</div>'
-    + '<p class="das-summary">' + summary + '</p>'
-    + '<p class="das-action"><strong>Action:</strong> ' + action + '</p>'
-    + '<p class="das-why">' + why + '</p>'
+    + ';border:1px solid ' + color + '">' + _esc(insight.headline) + '</div>'
+    + '<p class="das-summary">' + _esc(insight.summary) + '</p>'
+    + '<p class="das-action"><strong>Action:</strong> ' + _esc(insight.actionLabel) + '</p>'
+    + '<p class="das-why">' + _esc(insight.why) + '</p>'
     + '</section>';
 }
 
@@ -2346,7 +2477,7 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
-    _renderParentActionSummary(stats, mastery, activityEvents, student.name) +
+    _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderPracticeSpotlight(mastery, activityEvents) +
     _renderWeak(weak) +
