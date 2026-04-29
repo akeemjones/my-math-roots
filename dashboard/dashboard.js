@@ -2562,6 +2562,33 @@ function buildParentInsight(opts) {
   };
 }
 
+// ── Canonical grade normalizer (also defined in src/state.js) ────────────
+// Map any grade-ish input to canonical 'K' or '2'. Duplicated here so Jest
+// can call it without booting the full app.
+function normalizeGrade(value) {
+  if (value === null || value === undefined) return '2';
+  var s = String(value).trim().toLowerCase();
+  if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+  return '2';
+}
+
+// Filter activity events to only those matching the active grade. Events
+// without a grade field are kept (legacy / un-tagged data). Active grade is
+// passed in by the caller after running through normalizeGrade().
+function _filterActivityByGrade(events, activeGrade) {
+  var g = normalizeGrade(activeGrade);
+  return (events || []).filter(function(e) {
+    if (!e) return false;
+    if (e.grade == null) return true;
+    return normalizeGrade(e.grade) === g;
+  });
+}
+
+// Resolve the localStorage key for grade-scoped mastery aggregates.
+function _masteryKeyFor(grade) {
+  return 'mmr_mastery_v1_' + normalizeGrade(grade);
+}
+
 // ── Unit progress map helper (duplicated here for testability) ───────────
 
 // Normalize a unit identifier to a zero-based unitsMeta index.
@@ -2711,5 +2738,8 @@ if (typeof module !== 'undefined') {
     buildParentInsight,
     _computeUnitInsights,
     _unitIndexFromId,
+    normalizeGrade,
+    _filterActivityByGrade,
+    _masteryKeyFor,
   };
 }

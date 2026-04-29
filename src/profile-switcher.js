@@ -289,6 +289,25 @@ async function _psCheckPin(){
     localStorage.setItem('mmr_last_student_id',   profile.id);
     localStorage.setItem('mmr_user_role', 'student');
 
+    // Per-profile grade (Phase 1) — read this profile's stored grade and
+    // mirror it to mmr_grade BEFORE any further state hydration so that
+    // every downstream consumer (state.js key prefixes, boot.js
+    // _applyKindergartenGrade, dashboard mastery key) sees the right value.
+    // If the new grade differs from the current one, reload — state.js and
+    // boot.js bake grade-derived constants at module load and have no
+    // mid-session re-init path.
+    var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
+      if (v === null || v === undefined) return '2';
+      var s = String(v).trim().toLowerCase();
+      return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+    };
+    var _profileGrade = _norm(localStorage.getItem('mmr_profile_grade_' + profile.id));
+    var _currentGrade = _norm(localStorage.getItem('mmr_grade'));
+    localStorage.setItem('mmr_grade', _profileGrade);
+    if (_profileGrade !== _currentGrade) {
+      try { location.reload(); return; } catch (_e) {}
+    }
+
     var freshDone = safeLoad(_DONE_KEY, {});
     Object.keys(DONE).forEach(function(k){ delete DONE[k]; });
     Object.assign(DONE, freshDone);

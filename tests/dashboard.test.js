@@ -14,6 +14,9 @@ const {
   buildParentInsight,
   _computeUnitInsights,
   _unitIndexFromId,
+  normalizeGrade,
+  _filterActivityByGrade,
+  _masteryKeyFor,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -648,6 +651,89 @@ describe('_computeUnitInsights', () => {
       activityEvents: events,
     });
     expect(result[2].weakTagLabel).toBe('Regrouping');
+  });
+});
+
+// ── normalizeGrade ────────────────────────────────────────────────────────
+
+describe('normalizeGrade', () => {
+  test('K-aliases all collapse to canonical "K"', () => {
+    expect(normalizeGrade('K')).toBe('K');
+    expect(normalizeGrade('k')).toBe('K');
+    expect(normalizeGrade('Kindergarten')).toBe('K');
+    expect(normalizeGrade('KINDERGARTEN')).toBe('K');
+    expect(normalizeGrade('  k  ')).toBe('K');
+    expect(normalizeGrade('0')).toBe('K');
+    expect(normalizeGrade(0)).toBe('K');
+  });
+  test('Grade 2 stays "2"', () => {
+    expect(normalizeGrade('2')).toBe('2');
+    expect(normalizeGrade(2)).toBe('2');
+  });
+  test('null/undefined/empty falls through to "2"', () => {
+    expect(normalizeGrade(null)).toBe('2');
+    expect(normalizeGrade(undefined)).toBe('2');
+    expect(normalizeGrade('')).toBe('2');
+  });
+  test('any unknown input falls through to "2" (safe default)', () => {
+    expect(normalizeGrade('1')).toBe('2');
+    expect(normalizeGrade('3')).toBe('2');
+    expect(normalizeGrade('foo')).toBe('2');
+    expect(normalizeGrade({})).toBe('2');
+  });
+  test('result only ever uses canonical case — never lowercase k or extended strings', () => {
+    var inputs = ['k','K','Kindergarten','kindergarten','0',0,'2',2,null,undefined,'','1','foo'];
+    inputs.forEach(function(v) {
+      var out = normalizeGrade(v);
+      expect(['K','2']).toContain(out);
+    });
+  });
+});
+
+// ── _filterActivityByGrade ────────────────────────────────────────────────
+
+describe('_filterActivityByGrade', () => {
+  const events = [
+    { ts: 1, grade: 'K', tags: ['counting'],    correct: true  },
+    { ts: 2, grade: '2', tags: ['regrouping'],  correct: false },
+    { ts: 3, grade: 'k', tags: ['shapes'],      correct: true  }, // lowercase legacy
+    { ts: 4, grade: 'K', tags: ['subtraction'], correct: false },
+    { ts: 5, grade: '2', tags: ['addition'],    correct: true  },
+    { ts: 6,             tags: ['legacy'],      correct: true  }, // missing grade — kept
+  ];
+  test('K active grade returns only K events plus untagged', () => {
+    const out = _filterActivityByGrade(events, 'K');
+    expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 4, 6]);
+  });
+  test('Grade 2 active grade returns only G2 events plus untagged', () => {
+    const out = _filterActivityByGrade(events, '2');
+    expect(out.map(function(e){ return e.ts; })).toEqual([2, 5, 6]);
+  });
+  test('lowercase active grade still works (caller may pass raw value)', () => {
+    const out = _filterActivityByGrade(events, 'k');
+    expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 4, 6]);
+  });
+  test('handles null events list', () => {
+    expect(_filterActivityByGrade(null, 'K')).toEqual([]);
+    expect(_filterActivityByGrade(undefined, '2')).toEqual([]);
+  });
+});
+
+// ── _masteryKeyFor ────────────────────────────────────────────────────────
+
+describe('_masteryKeyFor', () => {
+  test('produces canonical grade-scoped keys', () => {
+    expect(_masteryKeyFor('K')).toBe('mmr_mastery_v1_K');
+    expect(_masteryKeyFor('2')).toBe('mmr_mastery_v1_2');
+  });
+  test('K-aliases all resolve to mmr_mastery_v1_K', () => {
+    expect(_masteryKeyFor('k')).toBe('mmr_mastery_v1_K');
+    expect(_masteryKeyFor('kindergarten')).toBe('mmr_mastery_v1_K');
+    expect(_masteryKeyFor('0')).toBe('mmr_mastery_v1_K');
+  });
+  test('null/empty falls through to mmr_mastery_v1_2', () => {
+    expect(_masteryKeyFor(null)).toBe('mmr_mastery_v1_2');
+    expect(_masteryKeyFor('')).toBe('mmr_mastery_v1_2');
   });
 });
 

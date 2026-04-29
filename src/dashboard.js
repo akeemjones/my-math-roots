@@ -186,19 +186,44 @@ function _readLocalStudentData() {
     try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
     catch(e) { return fallback; }
   }
+  // Active grade — canonical 'K' or '2'. normalizeGrade() lives in state.js
+  // (loaded earlier in the bundle) but we keep a tiny local fallback in case
+  // this file is ever evaluated on its own.
+  var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
+    if (v === null || v === undefined) return '2';
+    var s = String(v).trim().toLowerCase();
+    return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+  };
+  var activeGrade = _norm((function(){ try { return localStorage.getItem('mmr_grade'); } catch(_){ return null; } })());
+
   // Grade-namespaced scores (e.g. wb_sc5_2); fallback to legacy unnamespaced
-  var activeGrade = (function(){ try { return localStorage.getItem('mmr_grade') || '2'; } catch(_){ return '2'; } })();
   var rawScores  = tryParse('wb_sc5_' + activeGrade, null) || tryParse('wb_sc5', []);
   var scoresArr  = Array.isArray(rawScores) ? rawScores : (rawScores.d || []);
   var cfg        = tryParse('wb_settings', {});
-  // Canonical mastery key (Phase 2 pipeline); fallback to grade-namespaced then legacy
-  var masteryAgg = tryParse('mmr_mastery_v1', null);
+
+  // Per-grade canonical mastery key (Phase 2). Falls back through the legacy
+  // un-namespaced mmr_mastery_v1, then the wb_mastery_<grade> store. The
+  // boot-time migration in state.js has already copied legacy data into
+  // mmr_mastery_v1_2 for existing users.
+  var masteryAgg = tryParse('mmr_mastery_v1_' + activeGrade, null);
+  if (!masteryAgg || !Object.keys(masteryAgg).length) {
+    masteryAgg = tryParse('mmr_mastery_v1', null);
+  }
   if (!masteryAgg || !Object.keys(masteryAgg).length) {
     masteryAgg = tryParse('wb_mastery_' + activeGrade, null) || tryParse('wb_mastery', {});
   }
-  // Activity event log (Phase 2 pipeline) — powers Practice Spotlight & Intervention Insights
+
+  // Activity event log (Phase 2 pipeline) — powers Practice Spotlight &
+  // Intervention Insights. Filter by active grade at load time so every
+  // downstream consumer (Unit Progress Map, Action Summary, Practice Next,
+  // Mistake Patterns) automatically sees a single-grade slice.
   var actDoc    = tryParse('mmr_activity_v1', null);
-  var actEvents = (actDoc && actDoc.v === 1 && Array.isArray(actDoc.events)) ? actDoc.events : [];
+  var allEvents = (actDoc && actDoc.v === 1 && Array.isArray(actDoc.events)) ? actDoc.events : [];
+  var actEvents = allEvents.filter(function(e){
+    if (!e) return false;
+    if (e.grade == null) return true;        // unknown-grade events: keep so legacy data still appears
+    return _norm(e.grade) === activeGrade;
+  });
   return {
     id:       'local',
     name:     cfg.studentName || 'Student (This Device)',
@@ -208,6 +233,32 @@ function _readLocalStudentData() {
     STREAK:   tryParse('wb_streak',  { current: 0, longest: 0, lastDate: null }),
     APP_TIME: tryParse('wb_apptime', { totalSecs: 0, sessions: 0, dailySecs: {} }),
   };
+}
+
+// ── Per-profile grade selection (Phase 1 — local-only) ────────────────────
+// A profile's grade is stored at mmr_profile_grade_<id>. This is independent
+// of the Supabase student_profiles table (Phase 3 will add the column). On
+// profile switch we read this value and write it to mmr_grade so the rest
+// of the app picks up the correct grade after reload.
+function _dbProfileGradeKey(id) { return 'mmr_profile_grade_' + String(id); }
+function _dbReadProfileGrade(id) {
+  if (!id) return '2';
+  try {
+    var v = localStorage.getItem(_dbProfileGradeKey(id));
+    return (typeof normalizeGrade === 'function') ? normalizeGrade(v) :
+      (String(v || '').trim().toLowerCase() === 'k' ? 'K' : '2');
+  } catch (_e) { return '2'; }
+}
+function _dbWriteProfileGrade(id, grade) {
+  if (!id) return;
+  try {
+    var g = (typeof normalizeGrade === 'function') ? normalizeGrade(grade) :
+      (String(grade || '').trim().toLowerCase() === 'k' ? 'K' : '2');
+    localStorage.setItem(_dbProfileGradeKey(id), g);
+  } catch (_e) {}
+}
+function _dbGradeBadge(g) {
+  return (typeof normalizeGrade === 'function' ? normalizeGrade(g) : g) === 'K' ? 'Kindergarten' : 'Grade 2';
 }
 
 function getAllStudents() {
@@ -2739,11 +2790,12 @@ function _renderManageProfiles() {
 
   var rows = _managedProfiles.map(function(p) {
     var lastActive = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Never';
+    var gradeLabel = _dbGradeBadge(_dbReadProfileGrade(p.id));
     return '<div class="db-profile-row">'
       + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _dbValidColor(p.avatar_color_from) + ',' + _dbValidColor(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
       + '<div style="flex:1;min-width:0">'
       + '<div style="font-weight:700;font-size:.88rem;color:#263238">' + _esc(p.display_name) + (p.age ? ' <span style="font-weight:400;color:#90a4ae;font-size:.75rem">Age ' + _esc(String(p.age)) + '</span>' : '') + '</div>'
-      + '<div style="font-size:.72rem;color:#90a4ae">Last active ' + _esc(lastActive) + '</div>'
+      + '<div style="font-size:.72rem;color:#90a4ae">' + _esc(gradeLabel) + ' &middot; Last active ' + _esc(lastActive) + '</div>'
       + '</div>'
       + '<div style="display:flex;gap:6px;flex-shrink:0">'
       + '<button class="db-profile-edit-btn" data-action="openEditProfileSheet" data-arg="' + _esc(p.id) + '">Edit</button>'
@@ -2903,11 +2955,22 @@ function openEditProfileSheet(studentId) {
   var AVATAR_EMOJIS = ['🦁','🦋','🐉','🦊','🐬','🌟'];
   var AVATAR_COLORS = {'🦁':'#f59e0b,#f97316','🦋':'#8b5cf6,#ec4899','🐉':'#06b6d4,#3b82f6','🦊':'#ef4444,#f97316','🐬':'#10b981,#0ea5e9','🌟':'#f59e0b,#eab308'};
 
+  var currentGrade = _dbReadProfileGrade(studentId);
   document.getElementById('db-edit-profile-body').innerHTML =
     '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Name</label>'
     + '<input id="db-edit-name" type="text" maxlength="20" value="' + _esc(profile.display_name) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Age (optional)</label>'
     + '<input id="db-edit-age" type="number" min="4" max="18" value="' + _esc(String(profile.age || '')) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Grade level</label>'
+    + '<select id="db-edit-grade" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:4px;background:#fff">'
+    +   '<option value="K"' + (currentGrade === 'K' ? ' selected' : '') + '>Kindergarten</option>'
+    +   '<option value="2"' + (currentGrade === '2' ? ' selected' : '') + '>Grade 2</option>'
+    +   '<option value="1" disabled>Grade 1 (coming soon)</option>'
+    +   '<option value="3" disabled>Grade 3 (coming soon)</option>'
+    +   '<option value="4" disabled>Grade 4 (coming soon)</option>'
+    +   '<option value="5" disabled>Grade 5 (coming soon)</option>'
+    + '</select>'
+    + '<div style="font-size:.72rem;color:#90a4ae;margin-bottom:12px">What level of math is this student working on?</div>'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Avatar</label>'
     + '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">'
     + AVATAR_EMOJIS.map(function(e) {
@@ -2937,6 +3000,7 @@ async function dbEditSave(studentId) {
   var msg = document.getElementById('db-edit-msg');
   var nameInp = document.getElementById('db-edit-name');
   var ageInp  = document.getElementById('db-edit-age');
+  var gradeInp = document.getElementById('db-edit-grade');
   if (!nameInp || !msg) return;
 
   var name = nameInp.value.trim();
@@ -2948,6 +3012,8 @@ async function dbEditSave(studentId) {
   var AVATAR_COLORS = {'🦁':['#f59e0b','#f97316'],'🦋':['#8b5cf6','#ec4899'],'🐉':['#06b6d4','#3b82f6'],'🦊':['#ef4444','#f97316'],'🐬':['#10b981','#0ea5e9'],'🌟':['#f59e0b','#eab308']};
   var colors = AVATAR_COLORS[emoji] || ['#f59e0b','#f97316'];
   var ageVal = ageInp ? parseInt(ageInp.value) || null : null;
+  var newGrade = gradeInp ? gradeInp.value : null;
+  var oldGrade = _dbReadProfileGrade(studentId);
 
   try {
     var result = await Promise.race([
@@ -2960,9 +3026,25 @@ async function dbEditSave(studentId) {
     ]);
     if (result.error) throw result.error;
 
+    // Phase 1: persist grade locally only — Supabase column lands in Phase 3.
+    if (newGrade) _dbWriteProfileGrade(studentId, newGrade);
+    var nNew = (typeof normalizeGrade === 'function') ? normalizeGrade(newGrade) : newGrade;
+    var nOld = (typeof normalizeGrade === 'function') ? normalizeGrade(oldGrade) : oldGrade;
+
     await _fetchManagedProfiles();
     closeEditProfileSheet();
     _reRenderManageProfiles();
+
+    // If we just changed the grade of the *currently active* profile, mirror
+    // it to mmr_grade and reload so boot.js / state.js pick up the new
+    // UNITS_DATA and key namespacing.
+    if (nNew && nNew !== nOld) {
+      var activeId = (function(){ try { return localStorage.getItem('mmr_active_student_id'); } catch(_){ return null; } })();
+      if (activeId === studentId) {
+        try { localStorage.setItem('mmr_grade', nNew); } catch(_){}
+        try { location.reload(); } catch(_){}
+      }
+    }
   } catch(e) {
     if (msg) msg.textContent = 'Error saving. Try again.';
   }

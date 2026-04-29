@@ -187,9 +187,19 @@ QE.logResult = function(q, result) {
   var ts = Date.now();
 
   // (a) Aggregate update — schema unchanged: { [tag]: { attempts, correct, lastSeen } }
+  // Stored per-grade so K and Grade 2 mastery never collide on shared tag names
+  // like 'addition' or 'counting'. Read sites must request the same key shape.
   if (hasTags) {
     try {
-      var aggKey = 'mmr_mastery_v1';
+      var _gFn = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
+        if (v === null || v === undefined) return '2';
+        var s = String(v).trim().toLowerCase();
+        return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+      };
+      var _gradeForKey = _gFn(q && q._grade ? q._grade : (function(){
+        try { return localStorage.getItem('mmr_grade'); } catch(_){ return null; }
+      })());
+      var aggKey = 'mmr_mastery_v1_' + _gradeForKey;
       var agg = JSON.parse(localStorage.getItem(aggKey) || '{}');
       q.tags.forEach(function(tag) {
         if (!agg[tag]) agg[tag] = { attempts: 0, correct: 0 };

@@ -35,8 +35,20 @@ function saveSigned(key, value){
   localStorage.setItem(key, JSON.stringify({ d, s: _signData(d) }));
 }
 
+// ── Canonical grade normalizer ────────────────────────────────────────────
+// Map any grade-ish input to canonical 'K' or '2'. K-aliases ('k','K',
+// 'kindergarten','0') resolve to 'K'; everything else (including missing/
+// invalid) resolves to '2' (the historical default). Use this everywhere a
+// grade value is read or compared to avoid casing inconsistencies.
+function normalizeGrade(value) {
+  if (value === null || value === undefined) return '2';
+  var s = String(value).trim().toLowerCase();
+  if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+  return '2';
+}
+
 // ── Grade-scoped key prefix ───────────────────────────────────────────────
-const _ACTIVE_GRADE  = localStorage.getItem('mmr_grade') || '2';
+const _ACTIVE_GRADE  = normalizeGrade(localStorage.getItem('mmr_grade'));
 const _DONE_KEY      = 'wb_done5_'   + _ACTIVE_GRADE;
 const _SCORES_KEY    = 'wb_sc5_'     + _ACTIVE_GRADE;
 const _MASTERY_KEY   = 'wb_mastery_' + _ACTIVE_GRADE;
@@ -51,6 +63,19 @@ const _MASTERY_KEY   = 'wb_mastery_' + _ACTIVE_GRADE;
       localStorage.setItem(namespaced, localStorage.getItem(old));
     }
   });
+})();
+
+// One-time migration: copy legacy un-namespaced mmr_mastery_v1 into the
+// Grade-2 bucket so existing parents see no data loss after the per-grade
+// mastery split lands. Idempotent. Legacy key is preserved (do not delete
+// until soak window completes).
+(function _migrateMasteryV1ToGrade2(){
+  try {
+    var legacy = localStorage.getItem('mmr_mastery_v1');
+    if (!legacy) return;
+    if (localStorage.getItem('mmr_mastery_v1_2')) return;
+    localStorage.setItem('mmr_mastery_v1_2', legacy);
+  } catch (_e) {}
 })();
 
 const DONE   = safeLoadSigned(_DONE_KEY, {});

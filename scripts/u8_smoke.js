@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // scripts/u8_smoke.js — Node vm browser-smoke harness for U8 activation
-// Validates: QE.normalize merges defaults, QE.logResult writes mmr_mastery_v1,
+// Validates: QE.normalize merges defaults, QE.logResult writes
+// mmr_mastery_v1_<grade> (defaults to _2 when no mmr_grade set),
 // QE.selectRetry returns tag-overlapping question. Also smoke-tests U1-U7.
 
 const fs = require('fs');
@@ -89,9 +90,9 @@ const harness = `
       norm.intervention && norm.intervention.retry ? JSON.stringify(norm.intervention.retry.matchTags) : 'null');
 
     // Mastery logging
-    localStorage.removeItem('mmr_mastery_v1');
+    localStorage.removeItem('mmr_mastery_v1_2');
     QE.logResult(norm, { ok: true });
-    const mastery = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+    const mastery = JSON.parse(localStorage.getItem('mmr_mastery_v1_2') || '{}');
     const allLogged = expected.every(t => mastery[t] && mastery[t].attempts === 1 && mastery[t].correct === 1);
     check(lid + ' mastery logged with expected tags', allLogged,
       'mastery keys=' + JSON.stringify(Object.keys(mastery)));
@@ -133,9 +134,9 @@ const harness = `
     check(unit + ' normalize intervention populated',
       !!(norm.intervention && norm.intervention.teach),
       '');
-    localStorage.removeItem('mmr_mastery_v1');
+    localStorage.removeItem('mmr_mastery_v1_2');
     QE.logResult(norm, { ok: true });
-    const mastery = JSON.parse(localStorage.getItem('mmr_mastery_v1') || '{}');
+    const mastery = JSON.parse(localStorage.getItem('mmr_mastery_v1_2') || '{}');
     check(unit + ' mastery logged',
       norm.tags.every(t => mastery[t] && mastery[t].attempts === 1),
       'mastery keys=' + JSON.stringify(Object.keys(mastery)));
