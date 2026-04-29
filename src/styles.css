@@ -2858,3 +2858,31 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
 .grade-badge-soon   { background: var(--surface-dim, #f0ede8); color: var(--ink-muted); }
 .grade-list-check   { color: #f5a623; font-size: 18px; font-weight: 700; flex-shrink: 0; }
 .grade-list-row .hidden { display: none; }
+
+/* ── Phase 2: Settings & Management accordion ─────────────────────────── */
+.db-settings-details {
+  margin-top: 28px;
+  border-top: 1px solid #cfd8dc;
+  padding-top: 8px;
+}
+.db-settings-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 0;
+  outline: none;
+}
+.db-settings-summary::-webkit-details-marker { display: none; }
+.db-settings-summary::after {
+  content: ' \25BC';
+  font-size: 0.75em;
+  color: #607d8b;
+  margin-left: 6px;
+}
+.db-settings-details[open] > .db-settings-summary::after {
+  content: ' \25B2';
+}
+.db-settings-summary .db-sec-h {
+  display: inline-block;
+  margin: 0;
+}
+.db-settings-body > .db-section:first-child { margin-top: 8px; }

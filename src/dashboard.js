@@ -2156,6 +2156,30 @@ function _renderInterventionInsights(events, activityErrCounts) {
     + '</section>';
 }
 
+// ── Settings & Management accordion ───────────────────────────────────────
+// Wraps Manage Profiles + the seven settings/admin sections in a native
+// <details> element, closed by default. No JS toggle code needed — the
+// browser handles open/close. Inner sections keep their existing
+// <section class="db-section"> wrappers, so all data-action delegated
+// click handlers continue to work unchanged.
+function _renderSettingsAccordion() {
+  return '<details class="db-settings-details">'
+    + '<summary class="db-settings-summary">'
+    + '<h2 class="db-sec-h">&#x2699;&#xFE0F; Settings &amp; Management</h2>'
+    + '</summary>'
+    + '<div class="db-settings-body">'
+    + _renderManageProfiles()
+    + _renderUnlockSection()
+    + _renderTimerSection()
+    + _renderA11ySection()
+    + _renderRemindersSection()
+    + _renderPasswordSection()
+    + _renderFeedbackSection()
+    + _renderChangelogSection()
+    + '</div>'
+    + '</details>';
+}
+
 function renderDashboard() {
   var root = document.getElementById('db-root');
   if (!root) return;
@@ -2205,28 +2229,24 @@ function renderDashboard() {
     appBtn.style.display = '';
   }
 
+  // Phase 2: parent-actionable content first; admin/settings collapsed
+  // into a closed-by-default Settings & Management accordion at the bottom.
+  // _renderManageProfiles() now lives inside _renderSettingsAccordion().
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
-    _renderManageProfiles() +
     _renderWeeklySnapshot(scores, appTime, streak) +
-    _renderRootSystem(scores, _unitNames()) +
-    _renderOverview(stats) +
-    _renderTime(scores, appTime) +
-    _renderRecentQuizzes(scores) +
-    _renderSkills(skills) +
+    _renderPracticeSpotlight(mastery, activityEvents) +
     _renderWeak(weak) +
     _renderInterventionInsights(interventionEvents, actErrCounts) +
-    _renderPracticeSpotlight(mastery, activityEvents) +
-    _renderReview(review) +
+    _renderRootSystem(scores, _unitNames()) +
+    _renderSkills(skills) +
+    _renderRecentQuizzes(scores) +
     _renderActivity(activity) +
-    _renderUnlockSection() +
-    _renderTimerSection() +
-    _renderA11ySection() +
-    _renderRemindersSection() +
-    _renderPasswordSection() +
-    _renderFeedbackSection() +
-    _renderChangelogSection();
+    _renderReview(review) +
+    _renderOverview(stats) +
+    _renderTime(scores, appTime) +
+    _renderSettingsAccordion();
 
   // Render AI report footer
   var footerEl = document.getElementById('db-ai-footer');
