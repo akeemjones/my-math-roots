@@ -10,7 +10,7 @@ const vm = require('vm');
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SHARED = path.join(REPO_ROOT, 'src/data/shared.js');
 const QE_PATH = path.join(REPO_ROOT, 'src/question-engine.js');
-const UNIT_FILES = ['u1','u2','u3','u4','u5','u6','u7','u8','u9'].map(u => path.join(REPO_ROOT, `src/data/${u}.js`));
+const UNIT_FILES = ['u1','u2','u3','u4','u5','u6','u7','u8','u9','u10'].map(u => path.join(REPO_ROOT, `src/data/${u}.js`));
 
 // localStorage stub
 const _ls = {};
@@ -51,6 +51,7 @@ const harness = `
   const FULL_TEST_LESSONS = [
     ['u8','u8l1'], ['u8','u8l2'], ['u8','u8l3'],
     ['u9','u9l1'], ['u9','u9l2'], ['u9','u9l3'],
+    ['u10','u10l1'], ['u10','u10l2'], ['u10','u10l3'],
   ];
   const EXPECTED_TAGS = {
     u8l1: ['fractions','equal_parts','fraction_basics'],
@@ -59,6 +60,9 @@ const harness = `
     u9l1: ['geometry','2d_shapes','shape_attributes'],
     u9l2: ['geometry','3d_solids','faces_edges_vertices'],
     u9l3: ['geometry','symmetry','line_of_symmetry'],
+    u10l1: ['equal_groups','multiplication_foundations','repeated_addition'],
+    u10l2: ['repeated_addition','skip_counting','multiplication_foundations'],
+    u10l3: ['division_foundations','sharing_equally','equal_groups'],
   };
 
   for(const pair of FULL_TEST_LESSONS){

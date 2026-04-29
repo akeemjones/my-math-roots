@@ -503,19 +503,34 @@ const UNITS_DATA = [
         "id": "u10l1",
         "title": "Equal Groups",
         "icon": "🍎",
-        "desc": "Groups with the same amount — start of multiplication"
+        "desc": "Groups with the same amount — start of multiplication",
+        "defaultTags": ["equal_groups","multiplication_foundations","repeated_addition"],
+        "defaultIntervention": {
+          "teach": { "text": "Equal groups have the same number in each group. Add the groups to find the total." },
+          "retry": { "strategy": "similar", "matchTags": ["equal_groups","multiplication_foundations","repeated_addition"] }
+        }
       },
       {
         "id": "u10l2",
         "title": "Adding the Same Number",
         "icon": "🔄",
-        "desc": "Adding equal groups — the bridge to multiplication"
+        "desc": "Adding equal groups — the bridge to multiplication",
+        "defaultTags": ["repeated_addition","skip_counting","multiplication_foundations"],
+        "defaultIntervention": {
+          "teach": { "text": "Repeated addition adds the same number again and again." },
+          "retry": { "strategy": "similar", "matchTags": ["repeated_addition","skip_counting","multiplication_foundations"] }
+        }
       },
       {
         "id": "u10l3",
         "title": "Sharing Equally",
         "icon": "🤝",
-        "desc": "Split into equal groups — introduction to division"
+        "desc": "Split into equal groups — introduction to division",
+        "defaultTags": ["division_foundations","sharing_equally","equal_groups"],
+        "defaultIntervention": {
+          "teach": { "text": "Sharing equally means each group gets the same amount." },
+          "retry": { "strategy": "similar", "matchTags": ["division_foundations","sharing_equally","equal_groups"] }
+        }
       }
     ],
     "_loaded": false

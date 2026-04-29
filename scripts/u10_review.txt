@@ -1,0 +1,118 @@
+fallback distractor in qBank[u10l2][5]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="Different answers"
+fallback distractor in qBank[u10l2][5]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="Estimate"
+fallback distractor in qBank[u10l2][5]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="A fraction"
+fallback distractor in qBank[u10l2][25]: prompt="Which means the same as 3+3+3+3+3?" correct="Both" wrong="3×5"
+fallback distractor in qBank[u10l2][25]: prompt="Which means the same as 3+3+3+3+3?" correct="Both" wrong="Neither"
+fallback distractor in qBank[u10l2][28]: prompt="Repeated addition ALWAYS gives same as multiplication?" correct="True" wrong="Only for small numbers"
+fallback distractor in qBank[u10l2][29]: prompt="6×4 in repeated addition?" correct="Either works" wrong="Neither"
+fallback distractor in qBank[u10l2][55]: prompt="Is 4 + 4 + 4 the same as 3 + 3 + 3 + 3?" correct="Yes, both equal 12" wrong="No, the first is bigger"
+fallback distractor in qBank[u10l2][55]: prompt="Is 4 + 4 + 4 the same as 3 + 3 + 3 + 3?" correct="Yes, both equal 12" wrong="No, the second is bigger"
+fallback distractor in qBank[u10l2][68]: prompt="Which pair of repeated addition sentences gives the same total? A) 2+2+2+2+2 and 5+5  B) 3+3+3 and 4+4  C) 6+6 and 3+3+3+3" correct="A and C" wrong="A only"
+fallback distractor in qBank[u10l2][68]: prompt="Which pair of repeated addition sentences gives the same total? A) 2+2+2+2+2 and 5+5  B) 3+3+3 and 4+4  C) 6+6 and 3+3+3+3" correct="A and C" wrong="B only"
+fallback distractor in qBank[u10l2][68]: prompt="Which pair of repeated addition sentences gives the same total? A) 2+2+2+2+2 and 5+5  B) 3+3+3 and 4+4  C) 6+6 and 3+3+3+3" correct="A and C" wrong="C only"
+fallback distractor in qBank[u10l2][79]: prompt="Jada adds 5+5+5 and gets 20. Marcus adds 4+4+4+4 and gets 12. Who made an error?" correct="Both made errors" wrong="Only Jada"
+fallback distractor in qBank[u10l2][79]: prompt="Jada adds 5+5+5 and gets 20. Marcus adds 4+4+4+4 and gets 12. Who made an error?" correct="Both made errors" wrong="Only Marcus"
+fallback distractor in qBank[u10l2][79]: prompt="Jada adds 5+5+5 and gets 20. Marcus adds 4+4+4+4 and gets 12. Who made an error?" correct="Both made errors" wrong="Neither made an error"
+fallback distractor in qBank[u10l2][82]: prompt="Three children each count by a different number. Amy counts by 2s and says 5 numbers. Ben counts by 3s and says 4 numbers. Cara counts by 5s" correct="Ben" wrong="Amy"
+fallback distractor in qBank[u10l2][82]: prompt="Three children each count by a different number. Amy counts by 2s and says 5 numbers. Ben counts by 3s and says 4 numbers. Cara counts by 5s" correct="Ben" wrong="Cara"
+fallback distractor in qBank[u10l2][82]: prompt="Three children each count by a different number. Amy counts by 2s and says 5 numbers. Ben counts by 3s and says 4 numbers. Cara counts by 5s" correct="Ben" wrong="They all reached the same number"
+fallback distractor in qBank[u10l2][86]: prompt="Emma skips 5 stones. Each stone bounces 3 times. She counts 5 + 3 = 8 bounces. What mistake did she make?" correct="She should have added 3+3+3+3+3 = 15" wrong="Her answer is correct"
+fallback distractor in qBank[u10l2][87]: prompt="Two friends each count by 2s and say 5 numbers each. Did they count the same total of numbers?" correct="Yes, each counted to 10" wrong="No, the first counted higher"
+fallback distractor in qBank[u10l2][87]: prompt="Two friends each count by 2s and say 5 numbers each. Did they count the same total of numbers?" correct="Yes, each counted to 10" wrong="No, the second counted higher"
+fallback distractor in qBank[u10l2][87]: prompt="Two friends each count by 2s and say 5 numbers each. Did they count the same total of numbers?" correct="Yes, each counted to 10" wrong="Not enough information"
+fallback distractor in qBank[u10l3][5]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Add"
+fallback distractor in qBank[u10l3][5]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Subtract"
+fallback distractor in qBank[u10l3][5]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Multiply"
+fallback distractor in qBank[u10l3][15]: prompt="Division and multiplication are?" correct="Fact families" wrong="Unrelated"
+fallback distractor in qBank[u10l3][15]: prompt="Division and multiplication are?" correct="Fact families" wrong="Always equal"
+fallback distractor in qBank[u10l3][15]: prompt="Division and multiplication are?" correct="Fact families" wrong="Neither"
+fallback distractor in qBank[u10l3][52]: prompt="Which sharing is NOT equal? A) 10 split into 5 and 5  B) 9 split into 3, 3, 3  C) 8 split into 3, 3, 2  D) 12 split into 4, 4, 4" correct="C" wrong="A"
+fallback distractor in qBank[u10l3][52]: prompt="Which sharing is NOT equal? A) 10 split into 5 and 5  B) 9 split into 3, 3, 3  C) 8 split into 3, 3, 2  D) 12 split into 4, 4, 4" correct="C" wrong="B"
+fallback distractor in qBank[u10l3][52]: prompt="Which sharing is NOT equal? A) 10 split into 5 and 5  B) 9 split into 3, 3, 3  C) 8 split into 3, 3, 2  D) 12 split into 4, 4, 4" correct="C" wrong="D"
+fallback distractor in qBank[u10l3][60]: prompt="Sara has 12 crackers. Can she share them equally among 5 friends with none left over?" correct="No, there would be extras" wrong="Yes, each gets 2"
+fallback distractor in qBank[u10l3][60]: prompt="Sara has 12 crackers. Can she share them equally among 5 friends with none left over?" correct="No, there would be extras" wrong="Yes, each gets 3"
+fallback distractor in qBank[u10l3][60]: prompt="Sara has 12 crackers. Can she share them equally among 5 friends with none left over?" correct="No, there would be extras" wrong="No, she needs more crackers"
+fallback distractor in qBank[u10l3][66]: prompt="Which gives each child MORE treats: 12 treats shared by 3 children, or 12 treats shared by 4 children?" correct="Shared by 3 (4 each)" wrong="They get the same"
+fallback distractor in qBank[u10l3][73]: prompt="A teacher has 20 pencils. She gives 4 to each student. She says she can give pencils to 6 students. Is she right?" correct="No, she can only give to 5 students" wrong="Yes, she has enough"
+fallback distractor in qBank[u10l3][75]: prompt="Ella says if you share 16 equally among 3, each person gets 5 with 1 left over. Is she correct?" correct="Yes, she is correct" wrong="No, each gets 5 with 0 left"
+fallback distractor in qBank[u10l3][75]: prompt="Ella says if you share 16 equally among 3, each person gets 5 with 1 left over. Is she correct?" correct="Yes, she is correct" wrong="No, each gets 4 with 4 left over"
+fallback distractor in qBank[u10l3][75]: prompt="Ella says if you share 16 equally among 3, each person gets 5 with 1 left over. Is she correct?" correct="Yes, she is correct" wrong="No, each gets 5 with 2 left over"
+fallback distractor in qBank[u10l3][76]: prompt="A librarian has 30 books. She puts 5 on each shelf. She says she needs 7 shelves. What is her mistake?" correct="She needs 6 shelves" wrong="She is correct"
+testBank[25] -> u10l1 (low confidence): How many items in 3 rows of 4?
+fallback distractor in testBank[35]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="Different answers"
+fallback distractor in testBank[35]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="Estimate"
+fallback distractor in testBank[35]: prompt="Repeated addition and multiplication give?" correct="Same answer" wrong="A fraction"
+testBank[39] -> u10l1 (low confidence): What is 9+9?
+testBank[48] -> u10l1 (low confidence): What is 8+8?
+fallback distractor in testBank[55]: prompt="Which means the same as 3+3+3+3+3?" correct="Both" wrong="3×5"
+fallback distractor in testBank[55]: prompt="Which means the same as 3+3+3+3+3?" correct="Both" wrong="Neither"
+fallback distractor in testBank[58]: prompt="Repeated addition ALWAYS gives same as multiplication?" correct="True" wrong="Only for small numbers"
+fallback distractor in testBank[59]: prompt="6×4 in repeated addition?" correct="Either works" wrong="Neither"
+fallback distractor in testBank[65]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Add"
+fallback distractor in testBank[65]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Subtract"
+fallback distractor in testBank[65]: prompt="What does the ÷ symbol mean?" correct="Share equally" wrong="Multiply"
+testBank[70] -> u10l1 (low confidence): 12 cookies, 3 friends. Each gets?
+fallback distractor in testBank[75]: prompt="Division and multiplication are?" correct="Fact families" wrong="Unrelated"
+fallback distractor in testBank[75]: prompt="Division and multiplication are?" correct="Fact families" wrong="Always equal"
+fallback distractor in testBank[75]: prompt="Division and multiplication are?" correct="Fact families" wrong="Neither"
+testBank[83] -> u10l1 (low confidence): Sharing 15 stickers equally among 5 kids. Each gets?
+testBank[98] -> u10l1 (low confidence): 8 apples, 2 groups. Each?
+testBank[100] -> u10l1 (low confidence): There are 3 bowls with 4 strawberries each. How many strawberries in all?
+testBank[103] -> u10l1 (low confidence): There are 5 jars with 2 bugs each. How many bugs in all?
+testBank[106] -> u10l1 (low confidence): There are 4 nests with 3 eggs each. How many eggs in all?
+testBank[109] -> u10l1 (low confidence): There are 2 plates with 5 cookies each. How many cookies in all?
+testBank[112] -> u10l1 (low confidence): There are 3 boxes with 5 pencils each. How many pencils in all?
+testBank[115] -> u10l1 (low confidence): There are 6 cups with 2 ice cubes each. How many ice cubes in all?
+testBank[116] -> u10l1 (low confidence): A dog buries 2 bones each day. After 3 days, how many bones are buried?
+testBank[118] -> u10l1 (low confidence): There are 4 bags with 4 candies each. How many candies in all?
+testBank[122] -> u10l1 (low confidence): 18 apples are put in bags with 6 in each bag. How many bags are there?
+fallback distractor in testBank[123]: prompt="Is 3 + 3 + 3 + 3 the same as 4 + 4 + 4?" correct="Yes, both equal 12" wrong="No, the first is bigger"
+fallback distractor in testBank[123]: prompt="Is 3 + 3 + 3 + 3 the same as 4 + 4 + 4?" correct="Yes, both equal 12" wrong="No, the second is bigger"
+testBank[124] -> u10l1 (low confidence): __ + __ + __ + __ + __ = 20 (all the same number). What is each number?
+testBank[125] -> u10l1 (low confidence): A store has 16 balls. Each bin holds 4 balls. How many bins are needed?
+testBank[128] -> u10l1 (low confidence): A girl earns 5 stars each day at school. After some days she has 25 stars. How many days?
+testBank[129] -> u10l1 (low confidence): Which gives each person MORE: 12 cookies for 4 people, or 10 cookies for 2 people?
+testBank[130] -> u10l1 (low confidence): Amy counts by 2s and writes: 2, 4, 6, 10. What number did she skip?
+testBank[132] -> u10l1 (low confidence): __ + __ = 18 (both the same number). What is each number?
+testBank[133] -> u10l1 (low confidence): Leo says he can share 11 erasers equally among 3 friends with none left over. Is he right?
+testBank[134] -> u10l1 (low confidence): A dog gets 2 treats after each walk. After 6 walks, how many treats has the dog eaten?
+testBank[136] -> u10l1 (low confidence): A teacher puts 20 pencils in cups with 5 in each cup. She says she filled 3 cups. Is that right?
+testBank[137] -> u10l1 (low confidence): Jake has some boxes with 4 toys each. He has 16 toys total. How many boxes?
+testBank[140] -> u10l1 (low confidence): A garden has 3 rows of vegetables with 6 in each row. A rabbit eats 4 vegetables. How many are left?
+testBank[142] -> u10l1 (low confidence): There are 6 bags. Some have 2 toys and some have 5 toys. There are 21 toys total. How many bags have 5 toys?
+testBank[143] -> u10l1 (low confidence): Tom has 18 trading cards. He can put them in equal stacks. Which is NOT a way he could stack them?
+testBank[146] -> u10l1 (low confidence): A pet store has 4 tanks with 5 fish each. Someone buys 2 fish from one tank. Later, 3 new fish are added to another tank. How many fish are 
+testBank[150] -> u10l1 (low confidence): Ben earns 3 coins each chore. He does 5 chores, then spends 8 coins. How many coins does he have?
+testBank[151] -> u10l1 (low confidence): A number is added to itself 4 times and the total is 20. What is the number?
+testBank[153] -> u10l1 (low confidence): A class of 20 students forms groups. If groups have 3 students each, how many full groups form and how many students are left?
+testBank[154] -> u10l1 (low confidence): Emma has between 20 and 30 stickers. She can share them equally among 5 friends with none left over AND among 3 friends with none left over.
+testBank[155] -> u10l1 (low confidence): A store display has 2 rows of 5 toys on top and 3 rows of 4 toys on the bottom. A customer buys 3 toys. How many are left?
+testBank[156] -> u10l1 (low confidence): Jada has 5 bags. Some hold 3 marbles and some hold 6 marbles. She has 21 marbles total. How many bags hold 6 marbles?
+testBank[157] -> u10l1 (low confidence): Marcus puts 20 books on shelves with 4 on each shelf. He says there are 6 shelves. What is his mistake?
+testBank[158] -> u10l1 (low confidence): A farm has 3 pens with 4 chickens each and 2 pens with 6 chickens each. How many chickens total?
+testBank[159] -> u10l1 (low confidence): A secret number can be made by adding 2s together AND by adding 3s together. The number is less than 15. What are the TWO possible numbers?
+unitQuiz[0] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[1] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[2] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[3] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[4] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[5] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[6] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[7] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[8] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[9] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[10] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[11] -> u10l1 (low confidence): How many dots are in this group?
+unitQuiz[22] -> u10l1 (low confidence): If you share 18 dots equally into 6 rows, how many are in each row?
+unitQuiz[23] -> u10l1 (low confidence): 12 dots are arranged in 6 equal rows. How many dots in each row?
+unitQuiz[24] -> u10l1 (low confidence): 20 dots are arranged in 4 equal rows. How many dots in each row?
+unitQuiz[25] -> u10l1 (low confidence): If you share 20 dots equally into 5 rows, how many are in each row?
+unitQuiz[26] -> u10l1 (low confidence): If you share 24 dots equally into 6 rows, how many are in each row?
+unitQuiz[27] -> u10l1 (low confidence): 6 dots are arranged in 3 equal rows. How many dots in each row?
+unitQuiz[28] -> u10l1 (low confidence): If you share 6 dots equally into 3 rows, how many are in each row?
+unitQuiz[29] -> u10l1 (low confidence): If you share 30 dots equally into 5 rows, how many are in each row?
+unitQuiz[30] -> u10l1 (low confidence): 24 dots are arranged in 3 equal rows. How many dots in each row?
+unitQuiz[31] -> u10l1 (low confidence): 12 dots are arranged in 4 equal rows. How many dots in each row?
+fallback distractor in unitQuiz[66]: prompt="What does the ÷ symbol mean?" correct="Divide equally" wrong="Add"
+fallback distractor in unitQuiz[66]: prompt="What does the ÷ symbol mean?" correct="Divide equally" wrong="Subtract"
+fallback distractor in unitQuiz[66]: prompt="What does the ÷ symbol mean?" correct="Divide equally" wrong="Multiply"
