@@ -588,7 +588,7 @@ function _renderUnitProgressMap(scores, activityEvents) {
   var units = _computeUnitInsights({
     scores:         scores,
     activityEvents: activityEvents,
-    unitsMeta:      _UNITS_META,
+    unitsMeta:      _activeDashboardUnitsMeta(),
     tagLabels:      _TAG_LABEL_MAP,
     errLabels:      _ERR_LABEL_MAP,
     errHelpMap:     _ERR_HELP_MAP,
@@ -654,7 +654,7 @@ function _renderUnitProgressMap(scores, activityEvents) {
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#c62828"></span>Needs Review</span>'
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#cfd8dc"></span>Not Started</span>'
     + '</div>'
-    + '<p class="rs-summary">' + strong + ' of 10 units strong &bull; ' + started + ' started</p>'
+    + '<p class="rs-summary">' + strong + ' of ' + units.length + ' units strong &bull; ' + started + ' started</p>'
     + '<div class="rs-track">' + nodeHTML + '</div>'
     + '</section>';
 }
@@ -1273,6 +1273,17 @@ var _K_UNITS_META = [
   { name: 'Data Analysis',                     lessons: ['Sort Into Groups','Build and Read Picture Graphs','Read Picture Graphs','Compare Data'] },
   { name: 'Financial Literacy & Money',        lessons: ['Earning Money & Jobs','Wants vs Needs','Identify Coins','Compare Coins'] },
 ];
+
+// Pick the unit metadata array for the currently active grade. Used by the
+// parent dashboard to render Unit Progress / Root System with the right names.
+// Accepts both 'K'/'k'/'kindergarten'/'0' for Kindergarten; everything else
+// (including the unset default '2') falls through to Grade 2.
+function _activeDashboardUnitsMeta() {
+  var g;
+  try { g = String(localStorage.getItem('mmr_grade') || '').toLowerCase(); }
+  catch (_e) { g = ''; }
+  return (g === 'k' || g === 'kindergarten' || g === '0') ? _K_UNITS_META : _UNITS_META;
+}
 
 // Resolve a lessonId string to { lesson, unit } name objects.
 // Handles K IDs (ku1l1) and grade-2 IDs (u1l1). Returns null when unresolvable.
