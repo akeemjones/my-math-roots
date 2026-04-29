@@ -2886,3 +2886,34 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
   margin: 0;
 }
 .db-settings-body > .db-section:first-child { margin-top: 8px; }
+
+/* ── Phase 3: Parent Action Summary card ──────────────────────────────── */
+.db-action-summary .das-pill {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+}
+.db-action-summary .das-summary {
+  font-size: 1.05rem;
+  line-height: 1.45;
+  margin: 4px 0 12px 0;
+  color: #263238;
+}
+.db-action-summary .das-action {
+  margin: 6px 0;
+  color: #263238;
+  line-height: 1.4;
+}
+.db-action-summary .das-why {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+  color: #607d8b;
+  line-height: 1.4;
+}
+@media (max-width: 480px) {
+  .db-action-summary .das-summary { font-size: 1rem; }
+}

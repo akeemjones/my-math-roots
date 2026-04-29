@@ -2156,6 +2156,117 @@ function _renderInterventionInsights(events, activityErrCounts) {
     + '</section>';
 }
 
+// ── Parent Action Summary ─────────────────────────────────────────────────
+// Top-of-dashboard card with a status pill, plain-English summary,
+// recommended action, and the data-backed "why".
+//
+// Status tiers (per Phase 3 spec):
+//   not-enough-data  — fewer than 3 total questions answered
+//   needs-review     — any mastery tag with attempts >= 3 and accuracy < 60%
+//   strong           — overall accuracy >= 80% AND no weak tags
+//   developing       — everything else
+//
+// All copy uses parent-friendly labels (_TAG_LABEL_MAP, _ERR_LABEL_MAP)
+// installed in Phase 1. No raw err_* or snake_case tags reach the UI.
+function _renderParentActionSummary(stats, mastery, activityEvents, name) {
+  var totalAttempts = (stats && stats.totalAttempted) || 0;
+  var nameSafe      = _esc(name || 'Your child');
+
+  // Tag-level weak skill (lowest accuracy with >= 3 attempts and < 60%)
+  var tagStats = _computeTagStats(mastery || {});
+  var weakTags = tagStats.filter(function(t) {
+    return t.attempts >= 3 && t.accuracy < 0.60;
+  });
+  var topWeakTag = weakTags[0] || null;
+
+  // Most common mistake across all activity events
+  var errCounts = _computeMisconceptions(activityEvents || []);
+  var topErr = null, topErrCount = 0;
+  Object.keys(errCounts).forEach(function(t) {
+    if (errCounts[t] > topErrCount) { topErr = t; topErrCount = errCounts[t]; }
+  });
+
+  // Practice recommendation: a real lesson that drilled the weak tag
+  var topRec = null;
+  if (topWeakTag && Array.isArray(activityEvents) && activityEvents.length) {
+    var tlm  = _buildTagLessonMap(activityEvents);
+    var recs = _recommendReviewLessons([topWeakTag], tlm, 1);
+    topRec = recs[0] || null;
+  }
+
+  // Resolve status tier
+  var tier;
+  if (totalAttempts < 3)         tier = 'no-data';
+  else if (topWeakTag)           tier = 'needs-review';
+  else if (stats.accuracy >= 80) tier = 'strong';
+  else                           tier = 'developing';
+
+  // Per-tier copy
+  var pillText, color, summary, action, why;
+
+  switch (tier) {
+    case 'no-data':
+      pillText = 'Not enough data';
+      color    = '#607d8b';
+      summary  = nameSafe + ' needs a few more questions before we can give a reliable recommendation.';
+      action   = 'Complete one more lesson quiz to unlock better insights.';
+      why      = 'There is not enough activity yet to identify a weak skill.';
+      break;
+
+    case 'needs-review':
+      var weakLabel = _TAG_LABEL_MAP[topWeakTag.tag] || _toTitleCase(topWeakTag.tag);
+      var weakPct   = Math.round(topWeakTag.accuracy * 100);
+      var attempts  = topWeakTag.attempts;
+      pillText = 'Needs review';
+      color    = '#c62828';
+      summary  = nameSafe + ' is developing in math. The main focus right now: '
+                 + _esc(weakLabel) + '.';
+      if (topRec && topRec.lessonId) {
+        var lid = _lessonDisplayName(topRec.lessonId);
+        action = lid
+          ? 'Review: ' + _esc(lid.lesson) + '.'
+          : 'Spend a few minutes practicing ' + _esc(weakLabel) + '.';
+      } else {
+        action = 'Spend a few minutes practicing ' + _esc(weakLabel) + '.';
+      }
+      why = _esc(weakLabel) + ' is at ' + weakPct + '% accuracy across '
+            + attempts + ' attempt' + (attempts !== 1 ? 's' : '') + '.';
+      if (topErr && _ERR_LABEL_MAP[topErr]) {
+        why += ' Most common mistake: ' + _esc(_ERR_LABEL_MAP[topErr]) + '.';
+      }
+      break;
+
+    case 'strong':
+      pillText = 'Strong';
+      color    = '#2e7d32';
+      summary  = nameSafe + ' is doing well overall. Keep practicing to build consistency.';
+      action   = 'Keep going — try a new lesson to keep growing.';
+      why      = 'Overall accuracy is ' + stats.accuracy + '% across '
+                 + totalAttempts + ' question'
+                 + (totalAttempts !== 1 ? 's' : '') + '.';
+      break;
+
+    case 'developing':
+    default:
+      pillText = 'Developing';
+      color    = '#e65100';
+      summary  = nameSafe + ' is developing in math. Steady practice is making a difference.';
+      action   = 'Continue with the recommended lessons below.';
+      why      = 'Overall accuracy is ' + stats.accuracy + '% across '
+                 + totalAttempts + ' question'
+                 + (totalAttempts !== 1 ? 's' : '') + '.';
+      break;
+  }
+
+  return '<section class="db-section db-action-summary das-' + tier + '">'
+    + '<div class="das-pill" style="background:' + color + '15;color:' + color
+    + ';border:1px solid ' + color + '">' + _esc(pillText) + '</div>'
+    + '<p class="das-summary">' + summary + '</p>'
+    + '<p class="das-action"><strong>Action:</strong> ' + action + '</p>'
+    + '<p class="das-why">' + why + '</p>'
+    + '</section>';
+}
+
 // ── Settings & Management accordion ───────────────────────────────────────
 // Wraps Manage Profiles + the seven settings/admin sections in a native
 // <details> element, closed by default. No JS toggle code needed — the
@@ -2235,6 +2346,7 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
+    _renderParentActionSummary(stats, mastery, activityEvents, student.name) +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderPracticeSpotlight(mastery, activityEvents) +
     _renderWeak(weak) +
