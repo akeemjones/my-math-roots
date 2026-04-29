@@ -2740,6 +2740,14 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
+    (function(){
+      var _gcp = (_managedProfiles||[]).find(function(p){ return p.id === _activeId; });
+      var _gcl = _dbGradeBadge(_dbResolveProfileGrade(_gcp, _activeId));
+      return '<p class="db-grade-context" style="margin:2px 0 16px;font-size:.8rem;color:#607d8b">'
+        + 'Viewing <strong>' + _esc(_gcl) + ' results</strong>'
+        + ' &middot; <button class="db-grade-change-link" data-action="openEditProfileSheet" data-arg="' + _esc(_activeId) + '" style="background:none;border:none;color:#1565c0;cursor:pointer;font-size:.8rem;padding:0;text-decoration:underline">Change grade</button>'
+        + '</p>';
+    })() +
     _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderPracticeSpotlight(mastery, activityEvents) +
