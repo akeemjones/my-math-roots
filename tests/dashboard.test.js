@@ -828,6 +828,122 @@ describe('_dbResolveProfileGrade', () => {
   });
 });
 
+// ── grade split-brain isolation ──────────────────────────────────────────
+// Regression suite for the bug where the grade context label (resolved from
+// _managedProfiles[].grade) diverged from the data sections (reading
+// localStorage.mmr_grade or hardcoded Grade 2 unit names).
+
+describe('grade split-brain isolation', () => {
+  // Mirrors _K_UNITS_META.map(u => u.name) from src/dashboard.js
+  const K_UNIT_NAMES = [
+    'Counting & Cardinality', 'Number Relationships', 'Addition & Subtraction',
+    'Counting Patterns', 'Geometry — Shapes & Solids',
+    'Measurement — Comparing & Ordering', 'Data Analysis',
+    'Financial Literacy & Money',
+  ];
+  // Mirrors _unitNames() from src/dashboard.js
+  const G2_UNIT_NAMES = [
+    'Basic Fact Strategies', 'Place Value', 'Addition & Subtraction',
+    'Subtraction', 'Multiplication', 'Division',
+    'Fractions', 'Decimals', 'Geometry', 'Measurement',
+  ];
+
+  const mixedActivity = [
+    { ts: 1, grade: 'K', unitId: 'ku3', lessonId: 'ku3l2', tags: ['shapes'],    correct: false },
+    { ts: 2, grade: '2', unitId: 'u3',  lessonId: 'u3l1',  tags: ['regrouping'],correct: false },
+    { ts: 3, grade: 'K', unitId: 'ku1', lessonId: 'ku1l1', tags: ['counting'],  correct: true  },
+    { ts: 4, grade: '2', unitId: 'u1',  lessonId: 'u1l1',  tags: ['addition'],  correct: true  },
+    { ts: 5,                            lessonId: 'legacy',                      correct: true  },
+  ];
+
+  describe('activity event isolation (_filterActivityByGrade)', () => {
+    test('K view contains only K events plus untagged — no Grade 2 events', () => {
+      const out = _filterActivityByGrade(mixedActivity, 'K');
+      expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 5]);
+      expect(out.find(function(e){ return e.unitId === 'u3'; })).toBeUndefined();
+    });
+
+    test('Grade 2 view contains only G2 events plus untagged — no K events', () => {
+      const out = _filterActivityByGrade(mixedActivity, '2');
+      expect(out.map(function(e){ return e.ts; })).toEqual([2, 4, 5]);
+      expect(out.find(function(e){ return e.unitId === 'ku3'; })).toBeUndefined();
+    });
+
+    test('K view does not contain Grade 2 weak-skill events', () => {
+      const out = _filterActivityByGrade(mixedActivity, 'K');
+      expect(out.some(function(e){ return e.tags && e.tags.includes('regrouping'); })).toBe(false);
+    });
+
+    test('Grade 2 view does not contain K weak-skill events', () => {
+      const out = _filterActivityByGrade(mixedActivity, '2');
+      expect(out.some(function(e){ return e.tags && e.tags.includes('counting'); })).toBe(false);
+    });
+  });
+
+  describe('skill breakdown isolation (_computeSkillBreakdown)', () => {
+    // Build 5+ scores at each unitIdx so _computeWeakAreas can fire
+    function makeKScores(unitIdx, pct) {
+      return Array.from({ length: 5 }, function(_, i) {
+        return makeScore({ unitIdx: unitIdx, pct: pct, score: Math.round(pct / 10), total: 10, id: i + unitIdx * 100 });
+      });
+    }
+
+    const kScores = makeKScores(0, 80).concat(makeKScores(3, 30)); // unit 3 weak
+
+    test('K scores with K unit names produce K unit labels', () => {
+      const skills = _computeSkillBreakdown(kScores, K_UNIT_NAMES);
+      const labels = skills.map(function(s){ return s.label; });
+      expect(labels).toContain('Counting & Cardinality');   // unitIdx 0
+      expect(labels).toContain('Counting Patterns');        // unitIdx 3
+    });
+
+    test('K scores with K unit names do NOT produce Grade 2 labels', () => {
+      const skills = _computeSkillBreakdown(kScores, K_UNIT_NAMES);
+      const labels = skills.map(function(s){ return s.label; });
+      expect(labels).not.toContain('Subtraction');          // G2 unitIdx 3
+      expect(labels).not.toContain('Decimals');
+      expect(labels).not.toContain('Division');
+      expect(labels).not.toContain('Multiplication');
+    });
+
+    test('K weak areas with K unit names do NOT surface Grade 2 skill names', () => {
+      const skills = _computeSkillBreakdown(kScores, K_UNIT_NAMES);
+      const weak   = _computeWeakAreas(skills);
+      const labels = weak.map(function(s){ return s.label; });
+      expect(labels).not.toContain('Subtraction');
+      expect(labels).not.toContain('Decimals');
+      expect(labels).not.toContain('Division');
+      // The actual weak unit in kScores is Counting Patterns (unitIdx 3)
+      expect(labels).toContain('Counting Patterns');
+    });
+
+    test('Grade 2 scores with G2 unit names produce G2 unit labels', () => {
+      const g2Scores = makeKScores(3, 35).concat(makeKScores(5, 25));
+      const skills   = _computeSkillBreakdown(g2Scores, G2_UNIT_NAMES);
+      const labels   = skills.map(function(s){ return s.label; });
+      expect(labels).toContain('Subtraction');              // G2 unitIdx 3
+      expect(labels).toContain('Division');                 // G2 unitIdx 5
+      expect(labels).not.toContain('Counting Patterns');   // K unit name
+    });
+  });
+
+  describe('mastery key isolation (_masteryKeyFor)', () => {
+    test('K profile reads K mastery key exclusively', () => {
+      expect(_masteryKeyFor('K')).toBe('mmr_mastery_v1_K');
+      expect(_masteryKeyFor('K')).not.toBe('mmr_mastery_v1_2');
+    });
+
+    test('Grade 2 profile reads G2 mastery key exclusively', () => {
+      expect(_masteryKeyFor('2')).toBe('mmr_mastery_v1_2');
+      expect(_masteryKeyFor('2')).not.toBe('mmr_mastery_v1_K');
+    });
+
+    test('K mastery key and G2 mastery key are distinct', () => {
+      expect(_masteryKeyFor('K')).not.toBe(_masteryKeyFor('2'));
+    });
+  });
+});
+
 // ── _unitIndexFromId ──────────────────────────────────────────────────────
 
 describe('_unitIndexFromId', () => {

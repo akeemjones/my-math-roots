@@ -2695,9 +2695,26 @@ function renderDashboard() {
     return;
   }
 
+  // Resolve the active profile's grade once — single source of truth for this render.
+  // _managedProfiles[].grade is freshest (Supabase-backed); falls back through the
+  // local per-profile cache, mmr_grade, then '2'.  Mirror the resolved value back
+  // to localStorage so any helper that still reads mmr_grade (e.g.
+  // _activeDashboardUnitsMeta) sees a consistent value throughout this render cycle.
+  var _activeProfile = (_managedProfiles||[]).find(function(p){ return p.id === _activeId; });
+  var activeGrade = (typeof normalizeGrade === 'function')
+    ? normalizeGrade(_dbResolveProfileGrade(_activeProfile, _activeId))
+    : _dbResolveProfileGrade(_activeProfile, _activeId);
+  try { localStorage.setItem('mmr_grade', activeGrade); } catch(_e) {}
+
   var scores        = student.SCORES   || [];
   var mastery       = student.MASTERY  || {};
-  var activityEvents = student.ACTIVITY || [];
+  // Filter activity events to the active grade.  Managed-profile events arrive
+  // from Supabase unfiltered; local data is already filtered in _readLocalStudentData.
+  // Unknown-grade events (e.grade == null) are kept for backwards compatibility.
+  var activityEvents = (student.ACTIVITY || []).filter(function(e) {
+    if (!e || e.grade == null) return true;
+    return (typeof normalizeGrade === 'function' ? normalizeGrade(e.grade) : String(e.grade)) === activeGrade;
+  });
   var streak        = student.STREAK   || { current: 0 };
   var appTime       = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
 
@@ -2709,8 +2726,13 @@ function renderDashboard() {
     });
   });
 
+  // Grade-appropriate unit names for skill labelling (K vs Grade 2).
+  var _activeUnitNames = activeGrade === 'K'
+    ? (_K_UNITS_META || []).map(function(u) { return u.name; })
+    : _unitNames();
+
   var stats    = _computeOverallStats(scores, streak, appTime);
-  var skills   = _computeSkillBreakdown(scores, _unitNames());
+  var skills   = _computeSkillBreakdown(scores, _activeUnitNames);
   var weak     = _computeWeakAreas(skills);
   var activity = _computeActivityData(scores, 7);
   var review   = _computeReviewQueue(mastery, qTextMap);
@@ -2740,14 +2762,10 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
-    (function(){
-      var _gcp = (_managedProfiles||[]).find(function(p){ return p.id === _activeId; });
-      var _gcl = _dbGradeBadge(_dbResolveProfileGrade(_gcp, _activeId));
-      return '<p class="db-grade-context" style="margin:2px 0 16px;font-size:.8rem;color:#607d8b">'
-        + 'Viewing <strong>' + _esc(_gcl) + ' results</strong>'
-        + ' &middot; <button class="db-grade-change-link" data-action="openEditProfileSheet" data-arg="' + _esc(_activeId) + '" style="background:none;border:none;color:#1565c0;cursor:pointer;font-size:.8rem;padding:0;text-decoration:underline">Change grade</button>'
-        + '</p>';
-    })() +
+    '<p class="db-grade-context" style="margin:2px 0 16px;font-size:.8rem;color:#607d8b">'
+    + 'Viewing <strong>' + _esc(_dbGradeBadge(activeGrade)) + ' results</strong>'
+    + ' &middot; <button class="db-grade-change-link" data-action="openEditProfileSheet" data-arg="' + _esc(_activeId) + '" style="background:none;border:none;color:#1565c0;cursor:pointer;font-size:.8rem;padding:0;text-decoration:underline">Change grade</button>'
+    + '</p>' +
     _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderPracticeSpotlight(mastery, activityEvents) +
