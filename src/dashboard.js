@@ -604,7 +604,8 @@ function _renderUnitProgressMap(scores, activityEvents) {
     var pct       = u.accuracy != null ? ' &bull; ' + u.accuracy + '%' : '';
 
     var nodeEl = '<div class="rs-node-col">'
-      + '<div class="rs-node' + (!isStarted ? ' rs-node-locked' : '') + '" style="border-color:' + col + ';background:' + (!isStarted ? '#f5f5f5' : col + '18') + '">'
+      + '<div class="rs-node' + (!isStarted ? ' rs-node-locked' : ' rs-node-tap') + '" style="border-color:' + col + ';background:' + (!isStarted ? '#f5f5f5' : col + '18') + '"'
+      + (isStarted ? ' onclick="this.closest(\'.rs-row\').classList.toggle(\'rs-open\')"' : '') + '>'
       + '<span class="rs-node-num" style="color:' + col + '">' + (u.idx + 1) + '</span>'
       + '<span class="rs-node-icon">' + icon + '</span>'
       + '</div>'
@@ -631,10 +632,8 @@ function _renderUnitProgressMap(scores, activityEvents) {
         if (u.lessonRec)    dp.push('<div class="rs-det-rec">&#x1F4CC; Review: <strong>' + _esc(u.lessonRec) + '</strong></div>');
       }
       var detailDiv = dp.length ? '<div class="rs-det" style="border-left:2px solid ' + col + '40">' + dp.join('') + '</div>' : '';
-      labelEl = '<details class="rs-label rs-label-' + (isRight ? 'right' : 'left') + ' rs-label-exp">'
-        + '<summary class="rs-lbl-sum">' + labelHeader + '</summary>'
-        + detailDiv
-        + '</details>';
+      labelEl = '<div class="rs-label rs-label-' + (isRight ? 'right' : 'left') + '">'
+        + labelHeader + detailDiv + '</div>';
     }
 
     return '<div class="rs-row' + (isRight ? ' rs-row-right' : ' rs-row-left') + '">'
