@@ -2562,6 +2562,124 @@ function buildParentInsight(opts) {
   };
 }
 
+// ── Unit progress map helper (duplicated here for testability) ───────────
+
+function _computeUnitInsights(opts) {
+  var scores         = opts.scores         || [];
+  var activityEvents = opts.activityEvents || [];
+  var unitsMeta      = opts.unitsMeta      || [];
+  var tagLabels      = opts.tagLabels      || {};
+  var errLabels      = opts.errLabels      || {};
+  var errHelpMap     = opts.errHelpMap     || {};
+  var lessonNameFn   = opts.lessonNameFn   || function() { return null; };
+
+  var _toTitle = function(s) {
+    return s ? s.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) : s;
+  };
+
+  // Group scores by unitIdx
+  var scoreMap = {};
+  scores.forEach(function(s) {
+    if (s.unitIdx == null || s.pct == null || s.total <= 0) return;
+    var k = s.unitIdx;
+    if (!scoreMap[k]) scoreMap[k] = { sumPct: 0, count: 0, correct: 0, total: 0 };
+    scoreMap[k].sumPct  += s.pct;
+    scoreMap[k].count   += 1;
+    scoreMap[k].correct += (s.score  || 0);
+    scoreMap[k].total   += (s.total  || 0);
+  });
+
+  // Group activity events by unitId
+  var actMap = {};
+  activityEvents.forEach(function(e) {
+    if (e.unitId == null) return;
+    var k = e.unitId;
+    if (!actMap[k]) actMap[k] = [];
+    actMap[k].push(e);
+  });
+
+  return unitsMeta.map(function(unit, idx) {
+    var sd     = scoreMap[idx];
+    var events = actMap[idx] || [];
+
+    if (!sd) {
+      return {
+        idx: idx, name: unit.name, lessons: unit.lessons || [],
+        status: 'not-started', accuracy: null, total: 0,
+        correct: 0, quizCount: 0,
+        weakTagLabel: null, topErrLabel: null, topErrHelp: null, lessonRec: null,
+      };
+    }
+
+    var accuracy = Math.round(sd.sumPct / sd.count);
+
+    // Tag-level accuracy from unit activity events
+    var tagBucket = {};
+    events.forEach(function(e) {
+      (e.tags || []).forEach(function(tag) {
+        if (!tagBucket[tag]) tagBucket[tag] = { attempts: 0, correct: 0 };
+        tagBucket[tag].attempts++;
+        if (e.correct) tagBucket[tag].correct++;
+      });
+    });
+    var weakTagKey = null, weakTagAcc = 1;
+    Object.keys(tagBucket).forEach(function(tag) {
+      var t = tagBucket[tag];
+      if (t.attempts < 3) return;
+      var acc = t.correct / t.attempts;
+      if (acc < 0.60 && acc < weakTagAcc) { weakTagKey = tag; weakTagAcc = acc; }
+    });
+
+    // Most common error in unit activity
+    var errCounts = {};
+    events.forEach(function(e) {
+      if (e.errorType) errCounts[e.errorType] = (errCounts[e.errorType] || 0) + 1;
+    });
+    var topErrKey = null, topErrCount = 0;
+    Object.keys(errCounts).forEach(function(t) {
+      if (errCounts[t] > topErrCount) { topErrKey = t; topErrCount = errCounts[t]; }
+    });
+
+    // Lesson recommendation: most practiced lesson for the weak tag
+    var lessonRec = null;
+    if (weakTagKey) {
+      var lessonCounts = {};
+      events.forEach(function(e) {
+        if (e.lessonId && (e.tags || []).indexOf(weakTagKey) !== -1) {
+          lessonCounts[e.lessonId] = (lessonCounts[e.lessonId] || 0) + 1;
+        }
+      });
+      var topLessonId = Object.keys(lessonCounts)
+        .sort(function(a, b) { return lessonCounts[b] - lessonCounts[a]; })[0] || null;
+      if (topLessonId) {
+        var ldn = lessonNameFn(topLessonId);
+        lessonRec = ldn ? ldn.lesson : null;
+      }
+    }
+
+    var status;
+    if (sd.total < 5)                      status = 'low-data';
+    else if (weakTagKey || accuracy < 60)  status = 'needs-review';
+    else if (accuracy < 80)                status = 'developing';
+    else                                   status = 'strong';
+
+    return {
+      idx:          idx,
+      name:         unit.name,
+      lessons:      unit.lessons || [],
+      status:       status,
+      accuracy:     accuracy,
+      total:        sd.total,
+      correct:      sd.correct,
+      quizCount:    sd.count,
+      weakTagLabel: weakTagKey ? (tagLabels[weakTagKey] || _toTitle(weakTagKey)) : null,
+      topErrLabel:  topErrKey  ? (errLabels[topErrKey]  || null) : null,
+      topErrHelp:   topErrKey  ? (errHelpMap[topErrKey] || null) : null,
+      lessonRec:    lessonRec,
+    };
+  });
+}
+
 // ── Jest bridge ───────────────────────────────────────────────────────────
 if (typeof module !== 'undefined') {
   module.exports = {
@@ -2576,5 +2694,6 @@ if (typeof module !== 'undefined') {
     _isUnitUnlockedInDraft,
     _isLessonUnlockedInDraft,
     buildParentInsight,
+    _computeUnitInsights,
   };
 }

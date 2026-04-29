@@ -12,6 +12,7 @@ const {
   _isUnitUnlockedInDraft,
   _isLessonUnlockedInDraft,
   buildParentInsight,
+  _computeUnitInsights,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -491,5 +492,81 @@ describe('buildParentInsight', () => {
       expect(f).not.toMatch(/err_/);
       expect(f).not.toMatch(/regrouping|place_value|subtraction/);
     });
+  });
+});
+
+// ── _computeUnitInsights ──────────────────────────────────────────────────
+
+const TEST_UNITS_META = [
+  { name: 'Basic Fact Strategies', lessons: ['Count Up & Count Back', 'Doubles!'] },
+  { name: 'Place Value',           lessons: ['Big Numbers', 'Skip Counting'] },
+  { name: 'Add & Subtract',        lessons: ['Adding Bigger Numbers', 'Subtracting Numbers'] },
+];
+const UI_TAG_LABELS = { regrouping: 'Regrouping', place_value: 'Place Value' };
+const UI_ERR_LABELS = { err_no_regroup: 'Forgot to regroup' };
+const UI_ERR_HELP   = { err_no_regroup: 'Write out each step.' };
+const noopLessonFnUi = () => null;
+const lessonFnUi = (id) =>
+  id === 'ku3l2' ? { lesson: 'Subtracting Numbers', unit: 'Add & Subtract' } : null;
+
+const BASE_UI = {
+  unitsMeta: TEST_UNITS_META, tagLabels: UI_TAG_LABELS,
+  errLabels: UI_ERR_LABELS,  errHelpMap: UI_ERR_HELP,
+  lessonNameFn: noopLessonFnUi,
+};
+
+describe('_computeUnitInsights', () => {
+  test('no scores → all units not-started', () => {
+    const result = _computeUnitInsights({ ...BASE_UI, scores: [], activityEvents: [] });
+    expect(result).toHaveLength(3);
+    result.forEach(function(u) {
+      expect(u.status).toBe('not-started');
+      expect(u.accuracy).toBeNull();
+      expect(u.weakTagLabel).toBeNull();
+    });
+  });
+
+  test('low-data: score exists but < 5 total questions', () => {
+    const result = _computeUnitInsights({ ...BASE_UI,
+      scores: [{ unitIdx: 0, pct: 40, score: 1, total: 3 }],
+      activityEvents: [],
+    });
+    expect(result[0].status).toBe('low-data');
+    expect(result[0].accuracy).toBe(40);
+    expect(result[1].status).toBe('not-started');
+    expect(result[2].status).toBe('not-started');
+  });
+
+  test('needs-review: weak tag resolves to parent label, error help included', () => {
+    const events = [
+      { unitId: 2, correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'ku3l2', ts: 1000 },
+      { unitId: 2, correct: false, tags: ['regrouping'], errorType: 'err_no_regroup', lessonId: 'ku3l2', ts: 2000 },
+      { unitId: 2, correct: true,  tags: ['regrouping'],                              lessonId: 'ku3l2', ts: 3000 },
+    ];
+    const result = _computeUnitInsights({ ...BASE_UI,
+      lessonNameFn: lessonFnUi,
+      scores: [{ unitIdx: 2, pct: 35, score: 7, total: 20 }],
+      activityEvents: events,
+    });
+    const u = result[2];
+    expect(u.status).toBe('needs-review');
+    expect(u.weakTagLabel).toBe('Regrouping');
+    expect(u.topErrLabel).toBe('Forgot to regroup');
+    expect(u.topErrHelp).toBe('Write out each step.');
+    expect(u.lessonRec).toBe('Subtracting Numbers');
+    expect(u.weakTagLabel).not.toMatch(/err_|regrouping/);
+    expect(u.topErrLabel).not.toMatch(/err_/);
+  });
+
+  test('strong: accuracy >= 80%, no weak tags, other units untouched', () => {
+    const result = _computeUnitInsights({ ...BASE_UI,
+      scores: [{ unitIdx: 1, pct: 88, score: 22, total: 25 }],
+      activityEvents: [],
+    });
+    expect(result[1].status).toBe('strong');
+    expect(result[1].accuracy).toBe(88);
+    expect(result[1].weakTagLabel).toBeNull();
+    expect(result[0].status).toBe('not-started');
+    expect(result[2].status).toBe('not-started');
   });
 });
