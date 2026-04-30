@@ -94,7 +94,7 @@ const _APP_GLOBALS = [
   // (all exports are block-scoped inside the IIFE — no globals registered)
   // boot.js
   '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate',
-  '_debugSafeArea','_enableSafeAreaDebug','_disableSafeAreaDebug',
+  '_debugSafeArea','_enableSafeAreaDebug','_disableSafeAreaDebug','_openSaDebugPanel',
 ];
 
 if (location.hostname === 'localhost') {
@@ -115,16 +115,18 @@ if (location.hostname === 'localhost') {
 // ════════════════════════════════════════
 
 // ════════════════════════════════════════
-//  SAFE-AREA DEBUG HELPERS  (build: safe-area-debug-v6.0.1)
+//  SAFE-AREA DEBUG HELPERS  (build: safe-area-debug-v6.0.2)
 //  Temporary helpers for diagnosing the iOS standalone bottom safe-area
-//  layout. Call from Safari Web Inspector while the app is open from the
-//  iPhone Home Screen:
+//  layout. On the iPhone Home Screen PWA, tap the bottom-right corner 5
+//  times quickly to open the in-app debug panel (no Mac/Web Inspector needed).
+//  Or append ?safeDebug=1 to the URL to auto-open it.
+//    window._openSaDebugPanel()      -- opens the in-app visual debug panel
 //    window._enableSafeAreaDebug()   -- paints each layer a distinct color
-//    window._debugSafeArea()         -- prints viewport / standalone / computed-style report
-//    window._disableSafeAreaDebug()  -- removes overlay
+//    window._debugSafeArea()         -- returns viewport / standalone / computed-style report
+//    window._disableSafeAreaDebug()  -- removes color overlay
 // ════════════════════════════════════════
-var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.1';
-var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.1-debug';
+var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.2';
+var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.2-debug';
 
 function _enableSafeAreaDebug(){
   document.documentElement.classList.add('safe-area-debug');
@@ -259,6 +261,134 @@ function _debugSafeArea(){
   };
   console.log('[MMR SAFE-AREA]', info);
   return info;
+}
+
+// ── In-app safe-area debug panel ────────────────────────────
+// Opens on 5 quick taps in the bottom-right corner (≤2 s) or ?safeDebug=1.
+// Dormant by default — no DOM cost for normal users.
+(function _initSaDebugGesture(){
+  var _tc = 0, _tt = null;
+  function _check(x, y){
+    if(x < window.innerWidth - 60 || y < window.innerHeight - 60) return;
+    _tc++;
+    if(_tt) clearTimeout(_tt);
+    if(_tc >= 5){ _tc = 0; window._openSaDebugPanel(); return; }
+    _tt = setTimeout(function(){ _tc = 0; }, 2000);
+  }
+  document.addEventListener('touchend', function(e){
+    var t = e.changedTouches[0];
+    if(t) _check(t.clientX, t.clientY);
+  }, { passive: true });
+  if(location.search.indexOf('safeDebug=1') !== -1){
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', function(){ window._openSaDebugPanel(); });
+    } else {
+      setTimeout(function(){ window._openSaDebugPanel(); }, 200);
+    }
+  }
+})();
+
+function _openSaDebugPanel(){
+  if(document.getElementById('sa-panel')) return;
+  var _d = _debugSafeArea();
+
+  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  var _rows = [
+    ['debugBuild',         _d.debugBuild],
+    ['cssPresent',         String(_d.safeAreaDebugCssPresent)],
+    ['swCache',            _d.swExpectedCache],
+    ['nav.standalone',     String(_d.standalone.navigatorStandalone)],
+    ['display:standalone', String(_d.standalone.mmStandalone)],
+    ['viewportMeta',       _d.viewportMeta],
+    ['safeInset.bottom',   _d.safeAreaInsets.bottom],
+    ['innerHeight',        String(_d.viewport.innerHeight)],
+    ['visualViewport.H',   String(_d.viewport.visualViewportH)],
+    ['docEl.clientH',      String(_d.viewport.documentElementClientH)],
+    ['body.clientH',       String(_d.viewport.bodyClientH)],
+    ['activeScreen',       String(_d.activeScreenId)],
+    ['activeScreen.btm',   _d.activeScreen ? String(Math.round(_d.activeScreen.rect.bottom)) : 'n/a'],
+    ['body bg',            _d.viewport.bodyComputedBgColor],
+    ['html bg',            _d.viewport.htmlComputedBgColor],
+  ];
+
+  var _legend = [
+    ['#f00',               'html layer'],
+    ['#00f',               'body layer'],
+    ['#0a0',               'active screen (.sc.on)'],
+    ['#ff0',               'inner / footer layer'],
+    ['#f0f',               'bottom buttons (magenta outline)'],
+    ['rgba(255,0,0,0.45)', 'env(safe-area-inset-bottom) bar'],
+  ];
+
+  var p = document.createElement('div');
+  p.id = 'sa-panel';
+  p.innerHTML =
+    '<div id="sa-ph">' +
+      '<span id="sa-pt">Safe-Area Debug v6.0.2</span>' +
+      '<div id="sa-pbtns">' +
+        '<button id="sa-en">Enable Colors</button>' +
+        '<button id="sa-dis">Disable Colors</button>' +
+        '<button id="sa-ref">Refresh</button>' +
+        '<button id="sa-cp">Copy JSON</button>' +
+        '<button id="sa-col">Collapse ▲</button>' +
+        '<button id="sa-cl">✕ Close</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="sa-pb">' +
+      '<div id="sa-sum">' +
+        _rows.map(function(r){
+          return '<div class="sa-row"><span class="sa-key">'+_esc(r[0])+'</span><span class="sa-val">'+_esc(String(r[1]))+'</span></div>';
+        }).join('') +
+      '</div>' +
+      '<div id="sa-leg">' +
+        '<div class="sa-lh">Color legend (what to look for in the gap):</div>' +
+        _legend.map(function(l){
+          return '<div class="sa-lr"><span class="sa-sw" style="background:'+l[0]+'"></span>'+_esc(l[1])+'</div>';
+        }).join('') +
+      '</div>' +
+      '<pre id="sa-json">'+_esc(JSON.stringify(_d, null, 2))+'</pre>' +
+    '</div>';
+
+  document.body.appendChild(p);
+
+  document.getElementById('sa-en').onclick  = function(){ _enableSafeAreaDebug(); };
+  document.getElementById('sa-dis').onclick = function(){ _disableSafeAreaDebug(); };
+  document.getElementById('sa-ref').onclick = function(){
+    var old = document.getElementById('sa-panel');
+    if(old) old.remove();
+    _openSaDebugPanel();
+  };
+  document.getElementById('sa-cp').onclick = function(){
+    var json = JSON.stringify(_debugSafeArea(), null, 2);
+    var btn = document.getElementById('sa-cp');
+    function _ok(){ if(btn){ btn.textContent = 'Copied ✓'; setTimeout(function(){ if(btn) btn.textContent = 'Copy JSON'; }, 2200); } }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(json).then(_ok).catch(function(){ _copyFallback(json); _ok(); });
+    } else { _copyFallback(json); _ok(); }
+  };
+  document.getElementById('sa-col').onclick = function(){
+    var pb = document.getElementById('sa-pb');
+    var btn = document.getElementById('sa-col');
+    var collapsed = pb.style.display === 'none';
+    pb.style.display = collapsed ? '' : 'none';
+    btn.innerHTML = collapsed ? 'Collapse ▲' : 'Expand ▼';
+  };
+  document.getElementById('sa-cl').onclick = function(){
+    var panel = document.getElementById('sa-panel');
+    if(panel) panel.remove();
+  };
+}
+
+function _copyFallback(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;font-size:12px;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch(e){}
+  document.body.removeChild(ta);
 }
 
 // ── Lazy-load fonts CSS (moved out of inline HTML to save ~1MB on initial load) ──
