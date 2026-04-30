@@ -330,12 +330,13 @@ body.dark #a11y-modal > div {
 input[type="range"]{ touch-action:pan-x; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
 body{ font-family:var(--font-body); font-size:20px; background-color:var(--neutral-50);
-      color:var(--txt); overflow:hidden; height:100%; width:100%;
-      /* No safe-area padding here — inner containers (.home-in, .db-header,
-         .db-ai-footer-wrap, .bar, .sc-in, etc.) own their own safe-area
-         spacing via --safe-top / --safe-bottom. Adding it here would
-         double-count in iOS standalone mode (visible as a large blank gap
-         below sticky/floating bottom buttons). */
+      color:var(--txt); overflow:hidden;
+      /* Native-app behaviour: html/body fill the full dynamic viewport so the
+         background paints edge-to-edge behind the iPhone home-indicator zone
+         (Duolingo-style). No safe-area padding here — inner containers
+         (.home-in, .db-header, .db-ai-footer-wrap, .bar, .sc-in, etc.)
+         own their own safe-area inset via --safe-top / --safe-bottom. */
+      min-height:100dvh; height:100dvh; width:100%; margin:0;
       transition:background .3s, color .3s;
       /* Prevent iOS rubber-band & callouts */
       overscroll-behavior:none;
@@ -344,17 +345,26 @@ body{ font-family:var(--font-body); font-size:20px; background-color:var(--neutr
       -webkit-tap-highlight-color:transparent; }
 /* Allow text selection inside inputs only */
 input, textarea { -webkit-user-select:text; user-select:text; }
-/* Prevent pull-to-refresh */
-html { overscroll-behavior-y:none; overflow:hidden; height:100%; }
+/* Prevent pull-to-refresh; html fills full dynamic viewport so background
+   paints edge-to-edge behind the iPhone home-indicator zone. */
+html { overscroll-behavior-y:none; overflow:hidden; min-height:100dvh; height:100dvh; background-color:var(--neutral-50); }
+body.dark, html:has(body.dark){ background-color:#08121e; }
 button{ -webkit-appearance:none; font-family:inherit;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 
-/* ── SCREENS ── */
+/* ── SCREENS ──
+   Every screen is a fixed full-viewport layer with its own background that
+   extends behind the iPhone home-indicator (Duolingo-style "background fills
+   to physical bottom, only controls inset above safe area"). The explicit
+   min-height: 100dvh + height: 100dvh on .sc.on guards against the iOS
+   standalone quirk where position:fixed; inset:0 sometimes collapses to the
+   body content box. */
 .sc{ display:none; position:fixed; inset:0; overflow-y:auto; overflow-x:hidden;
      -webkit-overflow-scrolling:touch;
      background-image:var(--app-bg-svg), var(--home-grad);
      background-size:480px 480px, 100% 100%; background-repeat:repeat, no-repeat;
-     z-index:var(--z-screen); overscroll-behavior:contain; }
+     z-index:var(--z-screen); overscroll-behavior:contain;
+     min-height:100dvh; }
 /* Login screen: vibrant gradient so white card/title have proper contrast */
 #login-screen{
   background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1a4a7a 100%);
@@ -378,7 +388,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
    children can't see prevEl bleeding through */
 .sc.swipe-active{ background-image:var(--app-bg-svg), var(--home-grad) !important;
      background-size:480px 480px, 100% 100% !important; background-repeat:repeat, no-repeat !important; }
-.sc.on{ display:block; }
+.sc.on{ display:block; min-height:100dvh; }
 
 /* ── TOP BAR ── */
 .bar{ position:sticky; top:0; z-index:var(--z-sticky); background:var(--bar-bg);
@@ -421,7 +431,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 #home{ background-color:transparent;
        overflow-y:auto; overflow-x:hidden;
        -webkit-overflow-scrolling:touch;
-       position:fixed; inset:0; }
+       position:fixed; inset:0; min-height:100dvh; }
 .home-in{ position:relative; z-index:var(--z-relative); max-width:640px; margin:0 auto;
           width:100%; min-height:100dvh; height:100dvh;
           display:flex; flex-direction:column; }
@@ -429,10 +439,12 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 /* Home screen — no outer scroll, fits viewport exactly.
    Pad both safe-areas as part of the container so the last flex child
    (.scores-link / Score History) sits just above the home indicator
-   instead of leaving a safe-area-sized blank band below it. */
+   instead of leaving a safe-area-sized blank band below it.
+   The .sc gradient background paints behind the safe-area zone (Duolingo
+   model: background extends edge-to-edge, only buttons inset). */
 #home{ overflow:hidden; }
 #home .home-in{
-  height:100dvh;
+  min-height:100dvh; height:100dvh;
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
 }
@@ -2128,7 +2140,7 @@ body.dark #spot-card{
 @media (orientation: landscape) and (max-height: 500px) {
   /* ── Home screen ── */
   .home-in{ height:100dvh; }
-  #home .home-in{ height:calc(100dvh - env(safe-area-inset-top)); }
+  #home .home-in{ height:100dvh; padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
   /* Collapse hero to a single compact row */
   .hero{ padding:2px 16px 0; display:flex; align-items:center; gap:8px; justify-content:center; width:100%; }
   .home-in .hero-ico{ font-size:var(--fs-lg); display:inline-block; animation:none; margin:0; width:22px; height:22px; flex-shrink:0; }
@@ -2513,8 +2525,9 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 /* ════════════════════════════════════════
    PARENT DASHBOARD — scoped to #dashboard-screen
    ════════════════════════════════════════ */
-#dashboard-screen { background:#f0f4f8; overflow:hidden; font-family:var(--font-parent); }
-#dashboard-screen.on { display:flex; flex-direction:column; }
+#dashboard-screen { background:#f0f4f8; overflow:hidden; font-family:var(--font-parent); min-height:100dvh; }
+#dashboard-screen.on { display:flex; flex-direction:column; min-height:100dvh; }
+body.dark #dashboard-screen { background:#0d1626; }
 
 #dashboard-screen .db-header {
   background: var(--accent);
