@@ -115,7 +115,7 @@ if (location.hostname === 'localhost') {
 // ════════════════════════════════════════
 
 // ════════════════════════════════════════
-//  SAFE-AREA DEBUG HELPERS  (build: safe-area-debug-v6.0.3)
+//  SAFE-AREA DEBUG HELPERS  (build: safe-area-debug-v6.0.4)
 //  Temporary helpers for diagnosing the iOS standalone bottom safe-area
 //  layout. On the iPhone Home Screen PWA, tap the bottom-right corner 5
 //  times quickly to open the in-app debug panel (no Mac/Web Inspector needed).
@@ -125,8 +125,8 @@ if (location.hostname === 'localhost') {
 //    window._debugSafeArea()         -- returns viewport / standalone / computed-style report
 //    window._disableSafeAreaDebug()  -- removes color overlay
 // ════════════════════════════════════════
-var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.3';
-var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.3-debug';
+var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.4';
+var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.4-debug';
 
 function _enableSafeAreaDebug(){
   document.documentElement.classList.add('safe-area-debug');
@@ -325,7 +325,7 @@ function _openSaDebugPanel(){
   p.id = 'sa-panel';
   p.innerHTML =
     '<div id="sa-ph">' +
-      '<span id="sa-pt">Safe-Area Debug v6.0.3</span>' +
+      '<span id="sa-pt">Safe-Area Debug v6.0.4</span>' +
       '<div id="sa-pbtns">' +
         '<button id="sa-en">Enable Colors</button>' +
         '<button id="sa-dis">Disable Colors</button>' +

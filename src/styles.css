@@ -433,7 +433,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
        -webkit-overflow-scrolling:touch;
        position:fixed; inset:0; min-height:100dvh; min-height:100lvh; }
 .home-in{ position:relative; z-index:var(--z-relative); max-width:640px; margin:0 auto;
-          width:100%; min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh;
+          width:100%; height:100dvh; overflow-y:auto; -webkit-overflow-scrolling:touch;
           display:flex; flex-direction:column; }
 
 /* Home screen — no outer scroll, fits viewport exactly.
@@ -444,9 +444,8 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
    model: background extends edge-to-edge, only buttons inset). */
 #home{ overflow:hidden; }
 #home .home-in{
-  min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh;
   padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
 }
 
 /* Hero compact */
