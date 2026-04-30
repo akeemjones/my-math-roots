@@ -295,6 +295,227 @@ function _lsShakePinDots(dotContainerId) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+//  Shared student-learning-session hydrator
+//  Used by:
+//    1. Family-code/PIN login success (_lsStudentLogin)
+//    2. In-session profile switcher PIN success (_psCheckPin)
+//    3. In-session profile switcher parent-bypass (psSelectProfile)
+//    4. Parent dashboard "Go to App" (dashboard.js dbGoToApp)
+//    5. Post-reload restore (restoreStudentLearningSessionFromStorage)
+//
+//  When sessionToken is provided, RPCs use the student session_token path.
+//  When sessionToken is null and _supaUser is set, RPCs use the parent's
+//  Supabase session — this is what lets parent-launched student sessions
+//  hydrate without making the parent re-enter a PIN.
+// ─────────────────────────────────────────────────────────────────────────
+async function enterStudentLearningSession(opts) {
+  opts = opts || {};
+  var studentId    = opts.studentProfileId;
+  var profile      = opts.profile;
+  var sessionToken = opts.sessionToken || null;
+  if (!studentId || !profile) return;
+  var parentAuthed = !!_supaUser;
+
+  // 1. Persist identity
+  if (sessionToken) {
+    _sessionToken = sessionToken;
+    localStorage.setItem('mmr_session_token', sessionToken);
+  } else {
+    _sessionToken = null;
+    localStorage.removeItem('mmr_session_token');
+  }
+  localStorage.setItem('mmr_active_student_id', studentId);
+  localStorage.setItem('mmr_last_student_id',   studentId);
+  localStorage.setItem('mmr_user_role',         'student');
+  localStorage.removeItem('wb_guest_mode');
+
+  // 2. Per-profile grade resolution. If grade differs from current mmr_grade,
+  //    state.js / boot.js have baked grade-derived constants — reload so they
+  //    re-init under the right grade. Set the one-shot resume flag so the
+  //    post-reload INITIAL_SESSION handler restores the learning view rather
+  //    than routing back to the parent dashboard.
+  var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
+    if (v == null) return '2';
+    var s = String(v).trim().toLowerCase();
+    return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+  };
+  var _profileGrade;
+  if (typeof _dbResolveProfileGrade === 'function') {
+    _profileGrade = _dbResolveProfileGrade(profile, profile && profile.id);
+  } else {
+    var _byId = profile && profile.id ? localStorage.getItem('mmr_profile_grade_' + profile.id) : null;
+    _profileGrade = _norm((profile && profile.grade) || _byId || localStorage.getItem('mmr_grade'));
+    if (profile && profile.id) {
+      try { localStorage.setItem('mmr_profile_grade_' + profile.id, _profileGrade); } catch (_e) {}
+    }
+  }
+  var _currentGrade = _norm(localStorage.getItem('mmr_grade'));
+  localStorage.setItem('mmr_grade', _profileGrade);
+  if (_profileGrade !== _currentGrade) {
+    try { localStorage.setItem('mmr_resume_student_session', '1'); } catch (_e) {}
+    try { location.reload(); return; } catch (_e) {}
+  }
+
+  // 3. Reset in-memory progress; reload from per-grade local keys
+  var freshDone = safeLoad(_DONE_KEY, {});
+  Object.keys(DONE).forEach(function(k){ delete DONE[k]; });
+  Object.assign(DONE, freshDone);
+  var freshScores = safeLoadSigned(_SCORES_KEY, []);
+  SCORES.length = 0;
+  freshScores.forEach(function(s){ SCORES.push(s); });
+  STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+  localStorage.setItem('wb_streak', JSON.stringify({ current:0, longest:0, lastDate:null }));
+  localStorage.setItem('wb_act_dates', JSON.stringify([]));
+
+  // 4. Render learning dashboard
+  show('home');
+  buildHome();
+  if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
+  if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
+  if (typeof tutCheckAndShow === 'function') setTimeout(tutCheckAndShow, 1500);
+
+  // 5. Cloud sync — branch by source
+  if (sessionToken) {
+    if (typeof _syncStudentSettings === 'function') _syncStudentSettings(studentId).then(function(){ buildHome(); });
+    if (typeof _pullStudentProgress === 'function') _pullStudentProgress(studentId);
+    if (typeof _startUnlockSync     === 'function') _startUnlockSync(studentId);
+  } else if (parentAuthed) {
+    _hydrateStudentFromParentSession(studentId).then(function(){ buildHome(); });
+  }
+}
+
+// Post-reload restore — used by INITIAL_SESSION when the one-shot
+// mmr_resume_student_session flag indicates the previous session reloaded
+// itself for a grade switch and wants to land back in the student view.
+async function restoreStudentLearningSessionFromStorage(studentId) {
+  if (!studentId) return;
+  var profiles = [];
+  try { profiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]'); } catch(_e) {}
+  var profile = (profiles || []).find(function(p){ return p && p.id === studentId; });
+  if (!profile) {
+    // Cache lost — fall back to parent dashboard rather than entering an unidentified state.
+    localStorage.setItem('mmr_user_role', 'parent');
+    if (typeof show === 'function') show('dashboard-screen');
+    if (typeof _dbInit === 'function') _dbInit();
+    return;
+  }
+  // INITIAL_SESSION only triggers the resume branch when _supaUser is set, so
+  // sessionToken stays null and parent's Supabase session authorizes RPCs.
+  await enterStudentLearningSession({
+    studentProfileId: studentId,
+    profile:          profile,
+    sessionToken:     null,
+    source:           'parent-dashboard'
+  });
+}
+
+// Parent-mode progress hydrator — uses parent's Supabase session (no session_token).
+// Mirrors the merge logic of _pullStudentProgress but calls the parent-authorized
+// RPC get_student_progress_by_pin (also used by dashboard at dashboard.js:3338).
+// Sets _pullSucceeded so the parent push pipeline can run after a grade-reload
+// restore that skipped _pullOnLogin.
+async function _hydrateStudentFromParentSession(studentId) {
+  if (!_supa || !_supaUser || !studentId || studentId === 'local') return;
+
+  // Settings — parent-mode loaders write to wb_unlock_<id>/wb_timer_<id>/wb_a11y_<id>.
+  if (typeof _loadUnlockSettings === 'function') _loadUnlockSettings(studentId);
+  if (typeof _loadTimerSettings  === 'function') _loadTimerSettings(studentId);
+  if (typeof _loadA11ySettings   === 'function') _loadA11ySettings(studentId);
+
+  try {
+    var result = await Promise.race([
+      _supa.rpc('get_student_progress_by_pin', { p_student_id: studentId }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    if (result.error || !result.data) return;
+    var data = result.data;
+    var changed = false;
+
+    // SCORES — append by local_id (de-duped against existing globals).
+    var remoteScores = data.scores;
+    if (Array.isArray(remoteScores) && remoteScores.length) {
+      var localIds = new Set(SCORES.map(function(s){ return s.id; }));
+      var incoming = remoteScores
+        .filter(function(r){
+          return r && typeof r.local_id === 'number' && typeof r.qid === 'string'
+            && typeof r.score === 'number' && typeof r.total === 'number'
+            && typeof r.pct === 'number' && r.pct >= 0 && r.pct <= 100
+            && !localIds.has(r.local_id);
+        })
+        .map(function(r){
+          return {
+            qid: r.qid, label: String(r.label||''), type: String(r.type||''),
+            score: r.score, total: r.total, pct: r.pct, stars: String(r.stars||''),
+            unitIdx: typeof r.unit_idx === 'number' ? r.unit_idx : 0,
+            color: String(r.color||''),
+            name: String(r.student_name||''), id: r.local_id,
+            timeTaken: typeof r.time_taken === 'number' ? r.time_taken : 0,
+            answers: Array.isArray(r.answers) ? r.answers : [],
+            date: String(r.date_str||''), time: String(r.time_str||''),
+            quit: !!r.quit, abandoned: !!r.abandoned
+          };
+        });
+      if (incoming.length) {
+        SCORES.push.apply(SCORES, incoming);
+        SCORES.sort(function(a,b){ return b.id - a.id; });
+        if (SCORES.length > 200) SCORES.length = 200;
+        if (typeof saveSc === 'function') saveSc();
+        changed = true;
+      }
+    }
+
+    // MASTERY — per-grade canonical key; higher attempts wins.
+    var masteryJson = data.progress && data.progress.mastery_json;
+    if (masteryJson && typeof masteryJson === 'object') {
+      try {
+        var _gPull = (typeof normalizeGrade === 'function')
+          ? normalizeGrade(localStorage.getItem('mmr_grade'))
+          : (localStorage.getItem('mmr_grade') || '2');
+        var _pullKey = 'mmr_mastery_v1_' + _gPull;
+        var localAgg = JSON.parse(localStorage.getItem(_pullKey) || '{}');
+        var mkeys = Object.keys(masteryJson);
+        var mchanged = false;
+        for (var mi = 0; mi < mkeys.length; mi++) {
+          var mk = mkeys[mi];
+          var cm = masteryJson[mk];
+          if (!cm || typeof cm.attempts !== 'number') continue;
+          var lm = localAgg[mk];
+          if (!lm || cm.attempts > lm.attempts ||
+              (cm.attempts === lm.attempts && (cm.correct||0) > (lm.correct||0))) {
+            localAgg[mk] = { attempts: cm.attempts, correct: cm.correct||0, lastSeen: cm.lastSeen||0 };
+            mchanged = true;
+          }
+        }
+        if (mchanged) { localStorage.setItem(_pullKey, JSON.stringify(localAgg)); changed = true; }
+      } catch (_me) {}
+    }
+
+    // ACTIVITY — union by ts.
+    var activityJson = data.progress && data.progress.activity_json;
+    if (activityJson && activityJson.v === 1 && Array.isArray(activityJson.events)) {
+      try {
+        var localActDoc = JSON.parse(localStorage.getItem('mmr_activity_v1') || 'null');
+        var localEvts = (localActDoc && localActDoc.v === 1 && Array.isArray(localActDoc.events))
+          ? localActDoc.events : [];
+        var mergedDoc = (typeof _mergeActivityEvents === 'function')
+          ? _mergeActivityEvents(localEvts, activityJson.events)
+          : { v: 1, events: localEvts.concat(activityJson.events) };
+        localStorage.setItem('mmr_activity_v1', JSON.stringify(mergedDoc));
+        changed = true;
+      } catch (_ae) {}
+    }
+
+    // Mark cloud as authoritative — gates parent push pipeline so subsequent
+    // quiz writes can sync back to Supabase as this student.
+    _pullSucceeded = true;
+
+    if (changed && typeof buildHome === 'function') buildHome();
+  } catch (_e) {
+    // offline / RPC failed — leave whatever's in cache; do NOT set _pullSucceeded.
+  }
+}
+
 async function _lsStudentLogin() {
   var msg = document.getElementById('ls-pin-msg');
 
@@ -349,37 +570,14 @@ async function _lsStudentLogin() {
     }
 
     // ── SUCCESS ──────────────────────────────────────────────────────────
-    // Clean up old localStorage lockout keys
     localStorage.removeItem(_STU_FAIL_COUNT);
     localStorage.removeItem(_STU_FAIL_KEY);
-    // Store server-issued session token for authenticated RPCs
-    _sessionToken = vr.session_token;
-    localStorage.setItem('mmr_session_token', vr.session_token);
-    localStorage.setItem('mmr_active_student_id', profile.id);
-    localStorage.setItem('mmr_last_student_id',   profile.id);
-    localStorage.setItem('mmr_user_role', 'student');
-
-    // Reload in-memory progress
-    var freshDone = safeLoad('wb_done5', {});
-    Object.keys(DONE).forEach(function(k) { delete DONE[k]; });
-    Object.assign(DONE, freshDone);
-    var freshScores = safeLoadSigned('wb_sc5', []);
-    SCORES.length = 0;
-    freshScores.forEach(function(s) { SCORES.push(s); });
-    // Clear stale streak/calendar from previous student; pull will restore correct values
-    STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
-    localStorage.setItem('wb_streak', JSON.stringify({ current: 0, longest: 0, lastDate: null }));
-    localStorage.setItem('wb_act_dates', JSON.stringify([]));
-
-    show('home');
-    buildHome();
-    if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
-    _installHistoryGuard();
-    setTimeout(tutCheckAndShow, 1500);
-
-    _syncStudentSettings(profile.id).then(function() { buildHome(); });
-    _pullStudentProgress(profile.id);
-    _startUnlockSync(profile.id);
+    await enterStudentLearningSession({
+      studentProfileId: profile.id,
+      profile:          profile,
+      sessionToken:     vr.session_token,
+      source:           'student-login'
+    });
 
   } catch (e) {
     if (nativeInp) nativeInp.disabled = false;
@@ -719,11 +917,29 @@ function supabaseInit(){
     updateAccountUI();
     if(event === 'INITIAL_SESSION'){
       if(_supaUser){
-        // Keep splash up — fetch all data first, then reveal fully-loaded home
+        // Intentional in-session reload (only set by enterStudentLearningSession's
+        // grade-switch path). Restore the student learning view directly — do NOT
+        // run _pullOnLogin (parent global-pull would clobber the student state,
+        // which is the original parent → student bug).
+        var _resumeFlag = localStorage.getItem('mmr_resume_student_session');
+        var _resumeSid  = localStorage.getItem('mmr_active_student_id');
+        if (_resumeFlag === '1' && _resumeSid && localStorage.getItem('mmr_user_role') === 'student') {
+          localStorage.removeItem('mmr_resume_student_session');
+          await restoreStudentLearningSessionFromStorage(_resumeSid);
+          if (typeof _renderCalBtn === 'function') _renderCalBtn();
+          _dismissSplash();
+          return;
+        }
+        // Normal parent return — even if mmr_user_role==='student' is stale in
+        // localStorage from a closed mid-session tab, treat this as a parent visit
+        // and route to the parent dashboard.
+        localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
-        // Any live Supabase session belongs to a parent — students use PIN only
         localStorage.setItem('mmr_user_role', 'parent');
-        show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+        show('dashboard-screen');
+        if (typeof _dbInit === 'function') _dbInit();
+        if (typeof _renderCalBtn === 'function') _renderCalBtn();
+        if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
         _dismissSplash();
         return;
       } else {
@@ -754,12 +970,17 @@ function supabaseInit(){
         _dismissSplash();
       }
     } else if(event === 'SIGNED_IN'){
-      // Any Supabase sign-in is a parent login — students use PIN only, never Supabase auth
+      // Fresh OAuth sign-in — always a parent. A resume cannot legitimately
+      // produce SIGNED_IN (only INITIAL_SESSION), so clear any stale resume flag.
       localStorage.removeItem('wb_guest_mode');
+      localStorage.removeItem('mmr_resume_student_session');
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
-      sessionStorage.removeItem('mmr_post_auth_redirect'); // clear any stale redirect value
-      show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+      sessionStorage.removeItem('mmr_post_auth_redirect');
+      show('dashboard-screen');
+      if (typeof _dbInit === 'function') _dbInit();
+      if (typeof _renderCalBtn === 'function') _renderCalBtn();
+      if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
     } else if(event === 'SIGNED_OUT'){
       _clearUserData();
       show('login-screen');

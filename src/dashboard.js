@@ -3554,7 +3554,18 @@ function _renderDashboardOnly() {
 // data-action="fnName"  data-arg="val"  data-arg2="val2"
 if (typeof document !== 'undefined') {
   var _DB_ACTIONS = {
-    dbGoToApp:               function()     { var _activeId = localStorage.getItem('mmr_active_student_id'); if(_activeId) localStorage.setItem('mmr_user_role','student'); show('home'); },
+    dbGoToApp:               function()     {
+      if (_activeId === 'local' || !_activeId) return;
+      var profile = (_managedProfiles || []).find(function(p){ return p.id === _activeId; });
+      if (!profile) return;
+      if (typeof enterStudentLearningSession !== 'function') return;
+      enterStudentLearningSession({
+        studentProfileId: _activeId,
+        profile:          profile,
+        sessionToken:     null,
+        source:           'parent-dashboard'
+      });
+    },
     dbSignOut:               function()     { dbSignOut(); },
     openQuizReview:          function(a)    { openQuizReview(Number(a)); },
     closeQuizReview:         function()     { closeQuizReview(); },

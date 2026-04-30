@@ -174,6 +174,21 @@ function psSelectProfile(id){
   var activeId = localStorage.getItem('mmr_active_student_id');
   if(id === activeId){ closeProfileSwitcher(); return; }
 
+  // Parent-authenticated bypass: when a parent's Supabase session is active,
+  // they can switch between their own children with one tap. PIN is for the
+  // PIN-only context (student logged in via family code, switching siblings).
+  if (typeof _supaUser !== 'undefined' && _supaUser
+      && typeof enterStudentLearningSession === 'function') {
+    closeProfileSwitcher();
+    enterStudentLearningSession({
+      studentProfileId: profile.id,
+      profile:          profile,
+      sessionToken:     null,
+      source:           'profile-switcher'
+    });
+    return;
+  }
+
   _psTargetProfileId = id;
   _psPinBuffer       = [];
 
@@ -283,60 +298,15 @@ async function _psCheckPin(){
     }
 
     // ── SUCCESS ──────────────────────────────────────────────────────────
-    _sessionToken = vr.session_token;
-    localStorage.setItem('mmr_session_token', vr.session_token);
-    localStorage.setItem('mmr_active_student_id', profile.id);
-    localStorage.setItem('mmr_last_student_id',   profile.id);
-    localStorage.setItem('mmr_user_role', 'student');
-
-    // Per-profile grade — resolve through the same precedence chain the
-    // dashboard uses: profile.grade (Supabase) → mmr_profile_grade_<id>
-    // (local cache) → mmr_grade (current global) → '2' (final fallback).
-    // Mirror to mmr_grade BEFORE any further state hydration so every
-    // downstream consumer (state.js key prefixes, boot.js
-    // _applyKindergartenGrade, dashboard mastery key) sees the right value.
-    // If the new grade differs from the current one, reload — state.js
-    // and boot.js bake grade-derived constants at module load.
-    var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
-      if (v === null || v === undefined) return '2';
-      var s = String(v).trim().toLowerCase();
-      return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
-    };
-    var _profileGrade;
-    if (typeof _dbResolveProfileGrade === 'function') {
-      _profileGrade = _dbResolveProfileGrade(profile, profile && profile.id);
-    } else {
-      // Fallback if dashboard.js hasn't loaded — same precedence inline
-      var _byId = profile && profile.id ? localStorage.getItem('mmr_profile_grade_' + profile.id) : null;
-      _profileGrade = _norm((profile && profile.grade) || _byId || localStorage.getItem('mmr_grade'));
-      if (profile && profile.id) {
-        try { localStorage.setItem('mmr_profile_grade_' + profile.id, _profileGrade); } catch (_e) {}
-      }
-    }
-    var _currentGrade = _norm(localStorage.getItem('mmr_grade'));
-    localStorage.setItem('mmr_grade', _profileGrade);
-    if (_profileGrade !== _currentGrade) {
-      try { location.reload(); return; } catch (_e) {}
-    }
-
-    var freshDone = safeLoad(_DONE_KEY, {});
-    Object.keys(DONE).forEach(function(k){ delete DONE[k]; });
-    Object.assign(DONE, freshDone);
-    var freshScores = safeLoadSigned(_SCORES_KEY, []);
-    SCORES.length = 0;
-    freshScores.forEach(function(s){ SCORES.push(s); });
-    // Clear stale streak/calendar from previous student; pull will restore correct values
-    STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
-    localStorage.setItem('wb_streak', JSON.stringify({ current: 0, longest: 0, lastDate: null }));
-    localStorage.setItem('wb_act_dates', JSON.stringify([]));
-
     closeProfileSwitcher();
-    _psUpdateProfileBtn();
-    show('home');
-    buildHome();
-    _syncStudentSettings(profile.id).then(function(){ buildHome(); });
-    _pullStudentProgress(profile.id);
-    _startUnlockSync(profile.id);
+    if (typeof enterStudentLearningSession === 'function') {
+      await enterStudentLearningSession({
+        studentProfileId: profile.id,
+        profile:          profile,
+        sessionToken:     vr.session_token,
+        source:           'profile-switcher'
+      });
+    }
 
   } catch(e){
     if(psInp) psInp.disabled = false;
