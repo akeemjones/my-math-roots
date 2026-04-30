@@ -388,13 +388,16 @@ async function enterStudentLearningSession(opts) {
     grade: localStorage.getItem('mmr_grade')
   });
 
-  // 5. Cloud sync — branch by source
+  // 5. Cloud sync — branch by source.
+  // Both _syncStudentSettings and _hydrateStudentFromParentSession already call
+  // buildHome() internally when data changes — do NOT add another .then(buildHome)
+  // here or the carousel will re-render 3-4 times on every session entry.
   if (sessionToken) {
-    if (typeof _syncStudentSettings === 'function') _syncStudentSettings(studentId).then(function(){ buildHome(); });
+    if (typeof _syncStudentSettings === 'function') _syncStudentSettings(studentId);
     if (typeof _pullStudentProgress === 'function') _pullStudentProgress(studentId);
     if (typeof _startUnlockSync     === 'function') _startUnlockSync(studentId);
   } else if (parentAuthed) {
-    _hydrateStudentFromParentSession(studentId).then(function(){ buildHome(); });
+    _hydrateStudentFromParentSession(studentId);
   }
 }
 
