@@ -140,18 +140,134 @@ function _computeActivityData(scores, days) {
   var DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var countMap = {};
   scores.forEach(function(s) {
-    if (s.pct != null && s.total > 0 && s.date) {
-      countMap[s.date] = (countMap[s.date] || 0) + 1;
-    }
+    if (s.pct == null || s.total <= 0) return;
+    var k = _scoreDayKey(s);
+    if (!k) return;
+    countMap[k] = (countMap[k] || 0) + 1;
   });
   var result = [];
   for (var i = 0; i < (days || 7); i++) {
-    var ts  = Date.now() - i * 86400000;
-    var d   = new Date(ts).toISOString().slice(0, 10);
-    var dow = new Date(ts).getUTCDay();
-    result.push({ date: d, dayLabel: DAY_ABBR[dow], quizCount: countMap[d] || 0 });
+    var dt  = new Date(Date.now() - i * 86400000);
+    var k   = _localDayKey(dt);
+    var dow = dt.getDay();
+    result.push({ date: k, dayLabel: DAY_ABBR[dow], quizCount: countMap[k] || 0 });
   }
   return result;
+}
+
+// ── Last-7-Days drill-down helpers ────────────────────────────────────────
+function _last7DaysCutoffMs() { return Date.now() - 7 * 86400000; }
+
+function _getLast7DaysScores(scores) {
+  var c = _last7DaysCutoffMs();
+  return scores.filter(function(s) { return typeof s.id === 'number' && s.id >= c; });
+}
+
+function _getLast7DaysAccuracyByUnit(scores) {
+  var weekly = _getLast7DaysScores(scores).filter(function(s) {
+    return s.pct != null && s.total > 0 && s.unitIdx != null;
+  });
+  var unitsMeta = _activeDashboardUnitsMeta();
+  var map = {};
+  weekly.forEach(function(s) {
+    var k = s.unitIdx;
+    if (!map[k]) map[k] = {
+      unitIdx: k, name: (unitsMeta[k] && unitsMeta[k].name) || ('Unit ' + (k + 1)),
+      correct: 0, total: 0, attempts: 0, sumPct: 0
+    };
+    map[k].correct  += (s.score || 0);
+    map[k].total    += (s.total || 0);
+    map[k].attempts += 1;
+    map[k].sumPct   += s.pct;
+  });
+  return Object.keys(map).map(function(k) {
+    var u = map[k];
+    return {
+      unitIdx: u.unitIdx, name: u.name,
+      accuracy: Math.round(u.sumPct / u.attempts),
+      correct: u.correct, total: u.total, attempts: u.attempts
+    };
+  }).sort(function(a, b) { return a.unitIdx - b.unitIdx; });
+}
+
+function _getLast7DaysTimeBreakdown(scores, appTime) {
+  var weekly = _getLast7DaysScores(scores).filter(function(s) { return s.timeTaken; });
+  var byType = { lesson: 0, unit: 0, final: 0 };
+  weekly.forEach(function(s) {
+    var t = s.type || 'lesson';
+    if (byType[t] != null) byType[t] += _parseSecs(s.timeTaken);
+  });
+  // appTime.dailySecs uses UTC ISO keys (writer is boot.js). Sum the last 7 calendar days.
+  var appWeek = 0;
+  for (var i = 0; i < 7; i++) {
+    var k = _utcDayKey(new Date(Date.now() - i * 86400000));
+    appWeek += ((appTime.dailySecs || {})[k] || 0);
+  }
+  return {
+    lessonQuizSecs: byType.lesson,
+    unitTestSecs:   byType.unit,
+    finalTestSecs:  byType.final,
+    appTotalSecs:   appWeek
+  };
+}
+
+function _getLast7DaysLessonActivity(activityEvents) {
+  var cutoffMs = _last7DaysCutoffMs();
+  var byLesson = {};
+  (activityEvents || []).forEach(function(e) {
+    if (!e || !e.lessonId || !e.ts || e.ts < cutoffMs) return;
+    if (!byLesson[e.lessonId]) byLesson[e.lessonId] = {
+      lessonId: e.lessonId, firstTs: e.ts, lastTs: e.ts, count: 0
+    };
+    var b = byLesson[e.lessonId];
+    if (e.ts < b.firstTs) b.firstTs = e.ts;
+    if (e.ts > b.lastTs)  b.lastTs  = e.ts;
+    b.count++;
+  });
+  // Sort BEFORE mapping so lastTs is still on the comparator's input objects.
+  return Object.keys(byLesson).map(function(k) { return byLesson[k]; })
+    .sort(function(a, b) { return b.lastTs - a.lastTs; })
+    .map(function(b) {
+      var dn = _lessonDisplayName(b.lessonId);
+      return {
+        lessonId:  b.lessonId,
+        lesson:    (dn ? dn.lesson : b.lessonId),
+        unit:      (dn ? dn.unit : ''),
+        firstDate: _localDayKey(new Date(b.firstTs)),
+        lastDate:  _localDayKey(new Date(b.lastTs)),
+        count:     b.count
+      };
+    });
+}
+
+function _getActivityForDay(dayKey, scores, activityEvents, appTime) {
+  var dayQuizzes = scores.filter(function(s) {
+    if (s.pct == null || s.total <= 0 || !s.type) return false;
+    return _scoreDayKey(s) === dayKey;
+  });
+  var lessonsTouched = {};
+  (activityEvents || []).forEach(function(e) {
+    if (!e || !e.lessonId || !e.ts) return;
+    if (_localDayKey(new Date(e.ts)) === dayKey) {
+      lessonsTouched[e.lessonId] = (lessonsTouched[e.lessonId] || 0) + 1;
+    }
+  });
+  var lessons = Object.keys(lessonsTouched).map(function(id) {
+    var dn = _lessonDisplayName(id);
+    return {
+      lessonId: id,
+      lesson:   (dn ? dn.lesson : id),
+      unit:     (dn ? dn.unit : ''),
+      count:    lessonsTouched[id]
+    };
+  });
+  // appTime.dailySecs uses UTC ISO key — bar dayKey is local. Convert dayKey to UTC for lookup
+  // by reconstructing the local-midnight Date and asking for its UTC ISO.
+  var parts = dayKey.split('-');
+  var localMidnight = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  var utcK = _utcDayKey(localMidnight);
+  var secs = (appTime && appTime.dailySecs && appTime.dailySecs[utcK]) || 0;
+  return { dayKey: dayKey, secs: secs, lessons: lessons, quizzes: dayQuizzes };
 }
 
 function _computeReviewQueue(mastery, qTextMap) {
@@ -327,15 +443,45 @@ function saveStudentData(studentId, data) {
 // ── Time/quiz helpers ─────────────────────────────────────────────────────
 
 function _parseSecs(t) {
-  if (!t) return 0;
-  var p = String(t).split(':');
-  return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0);
+  if (t == null || t === '') return 0;
+  if (typeof t === 'number') return t > 0 ? t : 0;          // raw seconds
+  var s = String(t);
+  if (/^\d+$/.test(s)) return parseInt(s, 10) || 0;          // numeric string = raw seconds
+  var p = s.split(':');
+  return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0); // mm:ss
 }
 
 function _fmtSecs(s) {
   if (!s) return '—';
   var m = Math.floor(s / 60), sec = Math.round(s % 60);
   return m + 'm ' + String(sec).padStart(2, '0') + 's';
+}
+
+// Local-time YYYY-MM-DD day key.
+// NOTE: appTime.dailySecs uses UTC ISO keys (boot.js writes with toISOString().slice(0,10)).
+// For appTime lookups specifically, use _utcDayKey instead. _localDayKey is for score-id /
+// activity-event timestamps and bar-day grouping where local-day boundaries match the parent's
+// expectation. s.date in scores is locale-formatted ("Apr 30, 2026"); to get a comparable
+// key we use s.id (Date.now() at write time) → _localDayKey(new Date(s.id)).
+function _localDayKey(d) {
+  var dt = (d instanceof Date) ? d : new Date(d);
+  var y = dt.getFullYear();
+  var m = String(dt.getMonth() + 1).padStart(2, '0');
+  var day = String(dt.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function _utcDayKey(d) {
+  var dt = (d instanceof Date) ? d : new Date(d);
+  return dt.toISOString().slice(0, 10);
+}
+// Day key for a score record, anchored to the parent's local time zone via s.id timestamp.
+function _scoreDayKey(s) {
+  if (s && typeof s.id === 'number' && Number.isFinite(s.id)) return _localDayKey(new Date(s.id));
+  if (s && s.date) {
+    var p = Date.parse(s.date);
+    if (!isNaN(p)) return _localDayKey(new Date(p));
+  }
+  return null;
 }
 
 function _quizAvgQSecs(s) {
@@ -436,6 +582,29 @@ function _dbValidColor(val) {
   return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v) ? v : '#f59e0b';
 }
 
+// ── Collapsible section system ─────────────────────────────────────────────
+function _dbSectionState() {
+  try { return JSON.parse(localStorage.getItem('mmr_db_section_state') || '{}'); } catch(_e) { return {}; }
+}
+function _dbSectionStateSet(key, open) {
+  var state = _dbSectionState();
+  state[key] = open;
+  try { localStorage.setItem('mmr_db_section_state', JSON.stringify(state)); } catch(_e) {}
+}
+function _dbSection(key, titleHtml, bodyHtml, defaultOpen, extraClass) {
+  var state = _dbSectionState();
+  var open = (key in state) ? state[key] : !!defaultOpen;
+  var cls = 'db-section' + (open ? ' is-open' : '') + (extraClass ? ' ' + extraClass : '');
+  return '<section class="' + cls + '" data-section="' + key + '">'
+    + '<button class="db-section-header" data-action="toggleDbSection" data-arg="' + key + '"'
+    + ' aria-expanded="' + (open ? 'true' : 'false') + '">'
+    + '<span class="db-sec-h" style="margin:0">' + titleHtml + '</span>'
+    + '<span class="db-section-toggle">&#9662;</span>'
+    + '</button>'
+    + '<div class="db-section-body">' + bodyHtml + '</div>'
+    + '</section>';
+}
+
 function _renderStudentSelector(students, activeId) {
   var opts = Object.values(students).map(function(s) {
     return '<option value="' + _esc(s.id) + '"' + (s.id === activeId ? ' selected' : '') + '>'
@@ -455,20 +624,286 @@ function _statCard(bg, color, val, lbl) {
     + '</div>';
 }
 
-function _renderOverview(stats) {
+function _renderActivitySnapshot(stats, scores, appTime, activity, streak, activityEvents) {
+  return _dbSection('stats', '&#x1F4CA; Activity Snapshot',
+    '<div id="db-snap-wrap">' + _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, activityEvents) + '</div>');
+}
+
+function _reRenderActivitySnapshot() {
+  var st = _students[_activeId]; if (!st) return;
+  var scores  = st.SCORES   || [];
+  var appTime = st.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
+  var streak  = st.STREAK   || { current: 0 };
+  var activity = _computeActivityData(scores, 7);
+  var stats    = _computeOverallStats(scores, streak, appTime);
+  var wrap = document.getElementById('db-snap-wrap');
+  if (wrap) wrap.innerHTML = _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, _activityEvents);
+}
+
+function _statCardClickable(bg, color, val, lbl, type, ariaLabel) {
+  return '<div class="db-stat-card db-snap-card" style="background:' + bg + '"'
+    + ' data-action="showActivityDetail" data-arg="' + type + '"'
+    + ' role="button" tabindex="0" aria-label="' + _esc(ariaLabel) + '">'
+    + '<div class="db-stat-val" style="color:' + color + '">' + val + '</div>'
+    + '<div class="db-stat-lbl" style="color:' + color + '">' + lbl + '</div>'
+    + '</div>';
+}
+
+function _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, activityEvents) {
+  // ── Last-7-days time + lesson count (anchored to s.id timestamps, not s.date strings) ──
+  var weekSecs = 0;
+  for (var i = 0; i < 7; i++) {
+    var k = _utcDayKey(new Date(Date.now() - i * 86400000));
+    weekSecs += ((appTime.dailySecs || {})[k] || 0);
+  }
+  var weekMins = Math.round(weekSecs / 60);
+  var timeStr = weekMins >= 60
+    ? Math.floor(weekMins / 60) + 'h ' + String(weekMins % 60).padStart(2, '0') + 'm'
+    : weekMins + 'm';
+
+  var cutoffMs = _last7DaysCutoffMs();
+  var weekLessons = scores.filter(function(s) {
+    return s.type === 'lesson' && s.pct != null && s.total > 0
+      && typeof s.id === 'number' && s.id >= cutoffMs;
+  }).length;
+
+  // Streak dots
+  var cur = (streak && streak.current) || 0;
+  var streakIcons = '';
+  var dots = Math.min(cur, 7);
+  for (var j = 0; j < 7; j++) {
+    streakIcons += '<span class="ws-dot' + (j < dots ? ' ws-dot-lit' : '') + '"></span>';
+  }
+  if (cur > 7) streakIcons += '<span class="ws-streak-more">+' + (cur - 7) + '</span>';
+
+  // ── Metric grid (4 clickable cards + streak full-width) ──
   var ac = stats.accuracy >= 80 ? '#2e7d32' : stats.accuracy >= 60 ? '#e65100' : '#c62828';
-  var wm = Math.round(stats.weekSecs / 60);
-  var tl = wm >= 60 ? Math.floor(wm/60)+'h '+String(wm%60).padStart(2,'0')+'m' : wm+'m';
-  return '<section class="db-section">'
-    + '<h2 class="db-sec-h">Overview</h2>'
-    + '<div class="db-stat-grid">'
-    + _statCard('#e8f5e9', ac,        stats.accuracy+'%',       'Accuracy')
-    + _statCard('#e3f2fd', '#1565C0', String(stats.quizCount),  'Quizzes')
-    + _statCard('#fff8e1', '#f57f17', stats.streak+'&#x1F525;', 'Streak')
-    + _statCard('#ede7f6', '#512da8', tl,                       'This Week')
+  var body = '<div class="db-stat-grid">'
+    + _statCardClickable('#e8f5e9', ac,        stats.accuracy + '%',         'Accuracy',          'accuracy', 'View accuracy details')
+    + _statCardClickable('#e3f2fd', '#1565C0', String(stats.quizCount),      'Quizzes',           'quizzes',  'View this week’s quizzes')
+    + _statCardClickable('#fff8e1', '#f57f17', weekMins > 0 ? timeStr : '—', 'Time Last 7 Days',  'time',     'View time breakdown')
+    + _statCardClickable('#fce4ec', '#ad1457', String(weekLessons),          'Lessons Last 7 Days','lessons', 'View lessons')
+    + '<div class="db-stat-card" style="background:#fff3e0;grid-column:1/-1">'
+    + '<div style="font-size:var(--db-text-xl);font-weight:700;color:#e65100;letter-spacing:-.4px">'
+    + cur + ' day' + (cur !== 1 ? 's' : '') + '</div>'
+    + '<div class="ws-streak-row" style="justify-content:center;margin:4px 0 2px">' + streakIcons + '</div>'
+    + '<div style="font-size:var(--db-text-xs);color:var(--neutral-500);margin-top:2px;letter-spacing:.2px">Current Streak</div>'
     + '</div>'
-    + (stats.lastActive ? '<p class="db-last-active">Last active: '+stats.lastActive+'</p>' : '')
-    + '</section>';
+    + '</div>'
+    + (stats.lastActive ? '<p class="db-last-active">Last active: ' + stats.lastActive + '</p>' : '');
+
+  // ── Activity bar chart — clickable days ──
+  var max = 0;
+  activity.forEach(function(d) { if (d.quizCount > max) max = d.quizCount; });
+  var bars = activity.slice().reverse().map(function(d) {
+    var pct = max > 0 ? Math.round((d.quizCount / max) * 100) : 0;
+    var activeCls = (_activityDetailDay === d.date) ? ' db-act-col-active' : '';
+    return '<button class="db-act-col' + activeCls + '" type="button"'
+      + ' data-action="showActivityDay" data-arg="' + d.date + '"'
+      + ' aria-label="Activity for ' + d.dayLabel + ', ' + (d.quizCount || 0) + ' quizzes">'
+      + '<div class="db-act-bar-wrap">'
+      + '<div class="db-act-bar" style="height:' + pct + '%;background:' + (d.quizCount > 0 ? '#1565C0' : 'rgba(0,0,0,.08)') + '"></div>'
+      + '</div>'
+      + '<div class="db-act-n">' + (d.quizCount || '') + '</div>'
+      + '<div class="db-act-day">' + d.dayLabel + '</div>'
+      + '</button>';
+  }).join('');
+  body += '<div class="db-time-sep" style="margin:14px 0 10px"></div>'
+    + '<p style="font-size:.7rem;font-weight:700;color:var(--neutral-400);letter-spacing:.4px;text-transform:uppercase;margin:0 0 6px">Quizzes &#x2014; Last 7 Days</p>'
+    + '<div class="db-act-chart">' + bars + '</div>';
+
+  // ── Drill-down detail panel ──
+  if (_activityDetailView) {
+    body += '<div class="db-snap-detail">'
+      + _renderSnapDetailHead(_activityDetailView, _activityDetailDay)
+      + _renderSnapDetailBody(_activityDetailView, _activityDetailDay, scores, activityEvents, appTime)
+      + '</div>';
+  }
+
+  // ── All-time time table (kept as-is; deferred for future cleanup once 7-day drill-down proves out) ──
+  var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  var withTime  = completed.filter(function(s) { return s.timeTaken && _parseSecs(s.timeTaken) > 0; });
+  var avgSessionSecs = appTime.sessions > 0 ? Math.round(appTime.totalSecs / appTime.sessions) : 0;
+  var timeByType = {};
+  withTime.forEach(function(s) {
+    var tp = s.type || 'lesson';
+    if (!timeByType[tp]) timeByType[tp] = { sum: 0, n: 0 };
+    timeByType[tp].sum += _parseSecs(s.timeTaken);
+    timeByType[tp].n++;
+  });
+  function avgTime(type) { var t = timeByType[type]; return t && t.n ? Math.round(t.sum / t.n) : 0; }
+  var qSum = 0, qCount = 0;
+  completed.forEach(function(s) {
+    if (s.answers) s.answers.forEach(function(a) {
+      if (a.timeSecs != null && a.timeSecs < 300) { qSum += a.timeSecs; qCount++; }
+    });
+  });
+  var avgQSecs = qCount > 0 ? Math.round(qSum / qCount) : 0;
+  var hasTime = appTime.totalSecs > 0 || withTime.length > 0;
+
+  if (hasTime) {
+    function timeRow(lbl, val) {
+      return '<div class="db-time-row"><span class="db-time-lbl">' + lbl + '</span>'
+        + '<span class="db-time-val">' + val + '</span></div>';
+    }
+    var timeRows = '';
+    if (appTime.totalSecs > 0) {
+      timeRows += timeRow('Total time in app', _fmtSecs(appTime.totalSecs));
+      timeRows += timeRow('Avg session length', _fmtSecs(avgSessionSecs));
+    }
+    if (withTime.length > 0) {
+      if (timeRows) timeRows += '<div class="db-time-sep"></div>';
+      var la = avgTime('lesson'), ua = avgTime('unit'), fa = avgTime('final');
+      if (la) timeRows += timeRow('Avg lesson quiz time', _fmtSecs(la));
+      if (ua) timeRows += timeRow('Avg unit test time', _fmtSecs(ua));
+      if (fa) timeRows += timeRow('Avg final test time', _fmtSecs(fa));
+    }
+    if (avgQSecs > 0) {
+      timeRows += '<div class="db-time-sep"></div>';
+      timeRows += timeRow('Avg time per question', avgQSecs + 's');
+    }
+    body += '<div class="db-time-sep" style="margin:14px 0 10px"></div>'
+      + '<p style="font-size:.7rem;font-weight:700;color:var(--neutral-400);letter-spacing:.4px;text-transform:uppercase;margin:0 0 6px">Time (all time)</p>'
+      + '<div class="db-time-box">' + timeRows + '</div>';
+  }
+
+  return body;
+}
+
+function _renderSnapDetailHead(view, dayKey) {
+  var title;
+  if (view === 'accuracy') title = 'Accuracy &#x2014; Last 7 Days';
+  else if (view === 'quizzes') title = 'Quizzes &#x2014; Last 7 Days';
+  else if (view === 'time')    title = 'Time &#x2014; Last 7 Days';
+  else if (view === 'lessons') title = 'Lessons &#x2014; Last 7 Days';
+  else if (view === 'day') {
+    var parts = (dayKey || '').split('-');
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    title = isNaN(d.getTime()) ? 'Day Activity'
+      : d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  } else title = '';
+  return '<div class="db-snap-detail-head">'
+    + '<div class="db-snap-detail-title">' + title + '</div>'
+    + '<button class="db-snap-detail-close" data-action="hideActivityDetail" aria-label="Close details">&#x2715;</button>'
+    + '</div>';
+}
+
+function _renderSnapDetailBody(view, dayKey, scores, activityEvents, appTime) {
+  if (view === 'accuracy') return _renderSnapAccuracy(scores);
+  if (view === 'quizzes')  return _renderSnapQuizzes(scores);
+  if (view === 'time')     return _renderSnapTime(scores, appTime);
+  if (view === 'lessons')  return _renderSnapLessons(scores, activityEvents);
+  if (view === 'day')      return _renderSnapDay(dayKey, scores, activityEvents, appTime);
+  return '';
+}
+
+function _renderSnapAccuracy(scores) {
+  var rows = _getLast7DaysAccuracyByUnit(scores);
+  if (!rows.length) return '<p class="db-snap-detail-empty">No quizzes recorded in the last 7 days.</p>';
+  return rows.map(function(r) {
+    var color = r.accuracy >= 80 ? '#2e7d32' : r.accuracy >= 60 ? '#e65100' : '#c62828';
+    return '<div class="db-snap-detail-row">'
+      + '<span>' + _esc(r.name) + '</span>'
+      + '<span style="color:' + color + ';font-weight:700">' + r.accuracy + '% '
+      + '<span style="color:var(--neutral-500);font-weight:500">(' + r.correct + '/' + r.total + ')</span></span>'
+      + '</div>';
+  }).join('');
+}
+
+// Build a quiz row HTML using the original-completed-array index so openQuizReview opens the right one.
+function _snapQuizRow(s, origIdx) {
+  var pct = (s.pct == null) ? 0 : s.pct;
+  var pctColor = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
+  var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
+  var tLabel    = typeLabel[s.type] || s.type || '';
+  var color     = _dbValidColor(s.color);
+  return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + origIdx + '"'
+    + ' role="button" tabindex="0">'
+    + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
+    + '<div class="db-quiz-info">'
+    + '<div class="db-quiz-label">' + _esc(s.label || tLabel) + '</div>'
+    + '<div class="db-quiz-sub">' + _esc(s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + '</div>'
+    + '</div>'
+    + '<div class="db-quiz-score" style="color:' + pctColor + '">' + pct + '%'
+    + '<div class="db-quiz-frac">' + (s.score || 0) + '/' + (s.total || 0) + '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function _renderSnapQuizzes(scores) {
+  var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  var cutoffMs = _last7DaysCutoffMs();
+  var rows = [];
+  completed.forEach(function(s, origIdx) {
+    if (typeof s.id === 'number' && s.id >= cutoffMs) rows.push(_snapQuizRow(s, origIdx));
+  });
+  if (!rows.length) return '<p class="db-snap-detail-empty">No quizzes taken in the last 7 days.</p>';
+  return rows.join('');
+}
+
+function _renderSnapTime(scores, appTime) {
+  var t = _getLast7DaysTimeBreakdown(scores, appTime);
+  function row(lbl, val) {
+    return '<div class="db-snap-detail-row"><span>' + lbl + '</span><span style="font-weight:700">' + val + '</span></div>';
+  }
+  var html = ''
+    + row('Lesson Quizzes', _fmtSecs(t.lessonQuizSecs))
+    + row('Unit Tests',     _fmtSecs(t.unitTestSecs))
+    + row('Final Tests',    _fmtSecs(t.finalTestSecs))
+    + row('Total app time', _fmtSecs(t.appTotalSecs));
+  html += '<p class="db-snap-detail-note">Per-lesson reading time isn’t tracked separately. Only quiz/test duration and total app time are measured.</p>';
+  return html;
+}
+
+function _renderSnapLessons(scores, activityEvents) {
+  var rows = _getLast7DaysLessonActivity(activityEvents);
+  if (!rows.length) {
+    var hadLessonQuiz = scores.some(function(s) {
+      return s.type === 'lesson' && s.pct != null && s.total > 0
+        && typeof s.id === 'number' && s.id >= _last7DaysCutoffMs();
+    });
+    if (hadLessonQuiz) {
+      return '<p class="db-snap-detail-empty">No lesson reading recorded in the last 7 days. Quiz activity was recorded — see Quizzes for details.</p>';
+    }
+    return '<p class="db-snap-detail-empty">No lesson activity in the last 7 days.</p>';
+  }
+  return rows.map(function(r) {
+    return '<div class="db-snap-detail-row">'
+      + '<span>' + (r.unit ? _esc(r.unit) + ' &middot; ' : '') + _esc(r.lesson) + '</span>'
+      + '<span style="color:var(--neutral-500);font-size:.78rem">' + r.lastDate + ' &middot; ' + r.count + ' event' + (r.count !== 1 ? 's' : '') + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function _renderSnapDay(dayKey, scores, activityEvents, appTime) {
+  if (!dayKey) return '<p class="db-snap-detail-empty">Pick a day on the chart above.</p>';
+  var d = _getActivityForDay(dayKey, scores, activityEvents, appTime);
+  var nothing = (!d.secs && !d.lessons.length && !d.quizzes.length);
+  if (nothing) return '<p class="db-snap-detail-empty">No activity recorded this day.</p>';
+  var html = '';
+  // Time row
+  html += '<div class="db-snap-detail-row"><span>Time in app</span><span style="font-weight:700">'
+    + (d.secs > 0 ? _fmtSecs(d.secs) : '&#x2014;') + '</span></div>';
+  // Lessons
+  if (d.lessons.length) {
+    html += '<div class="db-snap-detail-row"><span style="font-weight:700">Lessons</span><span></span></div>';
+    d.lessons.forEach(function(l) {
+      html += '<div class="db-snap-detail-row" style="padding-left:12px">'
+        + '<span>' + (l.unit ? _esc(l.unit) + ' &middot; ' : '') + _esc(l.lesson) + '</span>'
+        + '<span style="color:var(--neutral-500);font-size:.78rem">' + l.count + ' event' + (l.count !== 1 ? 's' : '') + '</span>'
+        + '</div>';
+    });
+  }
+  // Quizzes
+  if (d.quizzes.length) {
+    html += '<div class="db-snap-detail-row"><span style="font-weight:700">Quizzes</span><span></span></div>';
+    var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+    d.quizzes.forEach(function(q) {
+      var origIdx = completed.indexOf(q);
+      if (origIdx >= 0) html += _snapQuizRow(q, origIdx);
+    });
+  }
+  return html;
 }
 
 function _renderWeeklySnapshot(scores, appTime, streak) {
@@ -498,9 +933,7 @@ function _renderWeeklySnapshot(scores, appTime, streak) {
   }
   if (cur > 7) streakIcons += '<span class="ws-streak-more">+' + (cur - 7) + '</span>';
 
-  return '<section class="db-section ws-section">'
-    + '<h2 class="db-sec-h">&#x1F4C6; This Week</h2>'
-    + '<div class="ws-grid">'
+  var wsBody = '<div class="ws-grid">'
 
     // Time spent
     + '<div class="ws-widget ws-widget-time">'
@@ -524,8 +957,8 @@ function _renderWeeklySnapshot(scores, appTime, streak) {
     + '<div class="ws-widget-lbl">Lessons This Week</div>'
     + '</div>'
 
-    + '</div>'
-    + '</section>';
+    + '</div>';
+  return _dbSection('this-week', '&#x1F4C6; This Week', wsBody, false, 'ws-section');
 }
 
 // ── Unit progress map helpers ─────────────────────────────────────────────
@@ -753,162 +1186,400 @@ function _renderUnitProgressMap(scores, activityEvents) {
       + '</div>';
   }).join('');
 
-  var strong  = units.filter(function(u) { return u.status === 'strong'; }).length;
-  var started = units.filter(function(u) { return u.status !== 'not-started'; }).length;
+  var strong      = units.filter(function(u) { return u.status === 'strong'; }).length;
+  var developing  = units.filter(function(u) { return u.status === 'developing' || u.status === 'low-data'; }).length;
+  var needsReview = units.filter(function(u) { return u.status === 'needs-review'; }).length;
+  var started     = units.filter(function(u) { return u.status !== 'not-started'; }).length;
+  var notStarted  = units.length - started;
 
-  return '<section class="db-section">'
-    + '<h2 class="db-sec-h">' + _sproutSvg + 'The Root System</h2>'
-    + '<div class="rs-legend">'
+  var summaryParts = [started + ' of ' + units.length + ' units started'];
+  if (strong)      summaryParts.push(strong + ' strong');
+  if (developing)  summaryParts.push(developing + ' developing');
+  if (needsReview) summaryParts.push('<span style="color:#c62828">' + needsReview + ' needs review</span>');
+  if (notStarted)  summaryParts.push(notStarted + ' not started');
+
+  // Insight panel — only show rows that have data
+  var startedWithAcc = units.filter(function(u) { return u.status !== 'not-started' && u.accuracy != null; });
+  var bestUnit  = startedWithAcc.slice().sort(function(a, b) { return b.accuracy - a.accuracy; })[0] || null;
+  var focusUnit = startedWithAcc.slice().sort(function(a, b) { return a.accuracy - b.accuracy; })[0] || null;
+  var nextUnit  = null;
+  for (var ni = 0; ni < units.length; ni++) {
+    if (units[ni].status === 'not-started') { nextUnit = units[ni]; break; }
+  }
+
+  var insightRows = '';
+  if (bestUnit && focusUnit && bestUnit.idx !== focusUnit.idx) {
+    insightRows += '<div class="rs-insight-row">'
+      + '<span class="rs-insight-lbl">Strongest</span>'
+      + '<span class="rs-insight-val">' + _esc(bestUnit.name) + ' &bull; ' + bestUnit.accuracy + '%</span>'
+      + '</div>';
+  }
+  if (focusUnit && (focusUnit.status === 'needs-review' || focusUnit.status === 'developing')) {
+    insightRows += '<div class="rs-insight-row">'
+      + '<span class="rs-insight-lbl">Needs work</span>'
+      + '<span class="rs-insight-val">' + _esc(focusUnit.name) + ' &bull; ' + focusUnit.accuracy + '%</span>'
+      + '</div>';
+  }
+  if (nextUnit) {
+    insightRows += '<div class="rs-insight-row">'
+      + '<span class="rs-insight-lbl">Up next</span>'
+      + '<span class="rs-insight-val">' + _esc(nextUnit.name) + '</span>'
+      + '</div>';
+  }
+  var insightPanel = insightRows ? '<div class="rs-insights">' + insightRows + '</div>' : '';
+
+  // Compact unit list — supporting detail below the visual
+  var unitListRows = units.map(function(u) {
+    var col  = statusColor[u.status];
+    var lbl  = statusLabel[u.status];
+    var stat = lbl;
+    if (u.accuracy != null) stat += ' &bull; ' + u.accuracy + '%';
+    if (u.total)            stat += ' &bull; ' + u.total + ' attempted';
+    return '<div class="rs-unit-row">'
+      + '<span class="rs-unit-name">' + _esc(u.name) + '</span>'
+      + '<span class="rs-unit-stat" style="color:' + col + '">' + stat + '</span>'
+      + '</div>';
+  }).join('');
+
+  var rsBody = '<div class="rs-legend">'
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#2e7d32"></span>Strong</span>'
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#f57f17"></span>Developing</span>'
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#c62828"></span>Needs Review</span>'
     + '<span class="rs-leg-item"><span class="rs-leg-dot" style="background:#cfd8dc"></span>Not Started</span>'
     + '</div>'
-    + '<p class="rs-summary">' + strong + ' of ' + units.length + ' units strong &bull; ' + started + ' started</p>'
+    + '<p class="rs-summary">' + summaryParts.join(' &bull; ') + '</p>'
+    + insightPanel
     + '<div class="rs-track">' + nodeHTML + '</div>'
-    + '</section>';
+    + '<div class="rs-unit-list">' + unitListRows + '</div>';
+
+  return _dbSection('root-system', _sproutSvg + 'The Root System', rsBody, false);
 }
 
-function _renderSkills(skills) {
-  if (!skills.length) {
-    return '<section class="db-section"><h2 class="db-sec-h">Skills by Unit</h2>'
-      + '<p class="db-empty">No unit quizzes completed yet.</p></section>';
-  }
-  var rows = skills.map(function(s) {
-    var c  = s.accuracy >= 80 ? '#2e7d32' : s.accuracy >= 60 ? '#f57f17' : '#c62828';
-    var lbl = s.accuracy >= 80 ? '&#x2705; Strong' : s.accuracy >= 60 ? '&#x26A0;&#xFE0F; Developing' : '&#x274C; Needs Work';
-    return '<div class="db-skill-row">'
-      + '<div class="db-skill-top">'
-      + '<span class="db-skill-name">'+_esc(s.label)+'</span>'
-      + '<span class="db-skill-badge" style="color:'+c+'">'+lbl+'</span>'
-      + '</div>'
-      + '<div class="db-bar-bg"><div class="db-bar-fill" style="width:'+s.accuracy+'%;background:'+c+'"></div></div>'
-      + '<div class="db-skill-sub">'+s.accuracy+'% &bull; '+s.correct+' correct / '+s.total+' attempted</div>'
-      + '</div>';
-  }).join('');
-  return '<section class="db-section"><h2 class="db-sec-h">Skills by Unit</h2>'+rows+'</section>';
-}
+function _renderPracticePlan(mastery, activityEvents, weak, review) {
+  var studentName = (_students[_activeId] || {}).name || 'Your child';
 
-function _renderWeak(weak) {
-  if (!weak.length) {
-    return '<section class="db-section"><h2 class="db-sec-h">&#x26A0;&#xFE0F; Needs Attention</h2>'
-      + '<p class="db-empty">No weak areas — great work! &#x1F389;</p></section>';
-  }
-  var items = weak.map(function(s) {
-    return '<div class="db-weak-item">'
-      + '<span class="db-weak-name">'+_esc(s.label)+'</span>'
-      + '<span class="db-weak-pct">'+s.accuracy+'% &bull; '+s.total+' questions</span>'
-      + '</div>';
-  }).join('');
-  return '<section class="db-section"><h2 class="db-sec-h">&#x26A0;&#xFE0F; Needs Attention</h2>'
-    + items + '</section>';
-}
+  var tagList = Object.keys(mastery).map(function(tag) {
+    var m = mastery[tag];
+    var acc = m.attempts > 0 ? m.correct / m.attempts : 0;
+    return { tag: tag, acc: acc, attempts: m.attempts };
+  }).filter(function(t) { return t.attempts >= 2; });
 
-function _renderReview(review) {
-  if (!review.length) {
-    return '<section class="db-section"><h2 class="db-sec-h">&#x1F501; Review Queue</h2>'
-      + '<p class="db-empty">No items scheduled for review yet.</p></section>';
-  }
-  var overdue  = review.filter(function(r){ return r.overdue; }).length;
-  var upcoming = review.length - overdue;
-  var items = review.slice(0,10).map(function(r) {
-    var badge = r.overdue
-      ? '<span class="db-badge db-badge-red">Overdue</span>'
-      : '<span class="db-badge db-badge-blue">Upcoming</span>';
-    var txt = r.qText
-      ? _esc(r.qText.length > 80 ? r.qText.slice(0,77)+'...' : r.qText)
-      : '(unknown question)';
-    return '<div class="db-review-item">'+badge
-      + '<div class="db-review-txt">'+txt+'</div>'
-      + '<div class="db-review-acc">'+r.accuracy+'% correct</div>'
-      + '</div>';
-  }).join('');
-  return '<section class="db-section"><h2 class="db-sec-h">&#x1F501; Review Queue</h2>'
-    + '<div class="db-review-summary">'
-    + (overdue  ? '<span class="db-badge db-badge-red">&#x23F0; '+overdue+' overdue</span> ' : '')
-    + (upcoming ? '<span class="db-badge db-badge-blue">&#x1F4C5; '+upcoming+' upcoming</span>' : '')
-    + '</div>'
-    + items + '</section>';
-}
+  var seenTags = {};
 
-function _renderTime(scores, appTime) {
-  var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
-  var withTime  = completed.filter(function(s) { return s.timeTaken && _parseSecs(s.timeTaken) > 0; });
-  var weekSecs  = 0;
-  for (var i = 0; i < 7; i++) {
-    var d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
-    weekSecs += ((appTime.dailySecs || {})[d] || 0);
-  }
-  var avgSessionSecs = appTime.sessions > 0 ? Math.round(appTime.totalSecs / appTime.sessions) : 0;
-  var timeByType = {};
-  withTime.forEach(function(s) {
-    var tp = s.type || 'lesson';
-    if (!timeByType[tp]) timeByType[tp] = { sum: 0, n: 0 };
-    timeByType[tp].sum += _parseSecs(s.timeTaken);
-    timeByType[tp].n++;
-  });
-  function avgTime(type) { var t = timeByType[type]; return t && t.n ? Math.round(t.sum / t.n) : 0; }
-  var qSum = 0, qCount = 0;
-  completed.forEach(function(s) {
-    if (s.answers) s.answers.forEach(function(a) {
-      if (a.timeSecs != null && a.timeSecs < 300) { qSum += a.timeSecs; qCount++; }
+  var attentionItems = tagList
+    .filter(function(t) { return t.acc < 0.5; })
+    .sort(function(a, b) { return a.acc - b.acc; })
+    .slice(0, 5);
+  attentionItems.forEach(function(t) { seenTags[_normTag(t.tag)] = true; });
+
+  var practiceItems = tagList
+    .filter(function(t) { return t.acc >= 0.5 && t.acc < 0.8 && !seenTags[_normTag(t.tag)]; })
+    .sort(function(a, b) { return a.acc - b.acc; })
+    .slice(0, 5);
+  practiceItems.forEach(function(t) { seenTags[_normTag(t.tag)] = true; });
+
+  if (!attentionItems.length && !practiceItems.length && weak.length) {
+    weak.forEach(function(s) {
+      var item = { tag: s.label, acc: s.accuracy / 100, attempts: s.total, isUnit: true };
+      if (s.accuracy < 50) attentionItems.push(item);
+      else practiceItems.push(item);
     });
-  });
-  var avgQSecs = qCount > 0 ? Math.round(qSum / qCount) : 0;
-  var hasAny = appTime.totalSecs > 0 || withTime.length > 0;
-  if (!hasAny) return '';
+  }
 
-  var col = '#673ab7';
-  var rows = '';
-  function row(lbl, val) {
-    return '<div class="db-time-row"><span class="db-time-lbl">' + lbl + '</span>'
-      + '<span class="db-time-val">' + val + '</span></div>';
+  var allWeakForRecs = attentionItems.concat(practiceItems).map(function(t) {
+    return { tag: t.tag, accuracy: Math.round(t.acc * 100) };
+  });
+  var tagLessonMap = _buildTagLessonMap(activityEvents);
+  var lessonRecs = allWeakForRecs.length ? _recommendReviewLessons(allWeakForRecs, tagLessonMap, 5) : [];
+  var overdueReview = review.filter(function(r) { return r.overdue; }).slice(0, 3);
+
+  var hasAny = attentionItems.length || practiceItems.length || lessonRecs.length || overdueReview.length;
+  var defaultOpen = attentionItems.length > 0;
+  var body = '';
+
+  if (!hasAny) {
+    body = '<p class="db-empty">' + _esc(studentName) + ' is on track right now.</p>'
+      + '<p class="db-empty" style="margin-top:4px">Keep practicing this week to maintain progress.</p>';
+    return _dbSection('practice-plan', '&#x1F9ED; Practice Plan', body, false);
   }
-  if (appTime.totalSecs > 0) {
-    rows += row('This week in app', _fmtSecs(weekSecs));
-    rows += row('Total time in app', _fmtSecs(appTime.totalSecs));
-    rows += row('Avg session length', _fmtSecs(avgSessionSecs));
+
+  if (attentionItems.length) {
+    body += '<div class="db-pp-group db-pp-group--attention">'
+      + '<div class="db-pp-group-title">&#x26A0; Needs Attention</div>';
+    body += attentionItems.map(function(t) {
+      var label = t.isUnit ? t.tag : ((_TAG_LABEL_MAP && _TAG_LABEL_MAP[t.tag]) || _toTitleCase(t.tag));
+      var pct = Math.round(t.acc * 100);
+      return '<div class="db-pp-item">'
+        + '<div class="db-pp-item-name">' + _esc(label) + '</div>'
+        + '<div class="db-pp-item-sub">' + pct + '% accuracy &bull; ' + t.attempts + ' attempts</div>'
+        + '<div class="db-pp-item-action">Start here first this week.</div>'
+        + '</div>';
+    }).join('');
+    body += '</div>';
   }
-  if (withTime.length > 0) {
-    rows += '<div class="db-time-sep"></div>';
-    var la = avgTime('lesson'), ua = avgTime('unit'), fa = avgTime('final');
-    if (la) rows += row('Avg lesson quiz time', _fmtSecs(la));
-    if (ua) rows += row('Avg unit test time', _fmtSecs(ua));
-    if (fa) rows += row('Avg final test time', _fmtSecs(fa));
+
+  if (practiceItems.length) {
+    body += '<div class="db-pp-group db-pp-group--practice">'
+      + '<div class="db-pp-group-title">&#x1F4DA; Needs Practice</div>';
+    body += practiceItems.map(function(t) {
+      var label = t.isUnit ? t.tag : ((_TAG_LABEL_MAP && _TAG_LABEL_MAP[t.tag]) || _toTitleCase(t.tag));
+      var pct = Math.round(t.acc * 100);
+      return '<div class="db-pp-item">'
+        + '<div class="db-pp-item-name">' + _esc(label) + '</div>'
+        + '<div class="db-pp-item-sub">' + pct + '% accuracy</div>'
+        + '<div class="db-pp-item-action">A few more practice rounds will help.</div>'
+        + '</div>';
+    }).join('');
+    body += '</div>';
   }
-  if (avgQSecs > 0) {
-    rows += '<div class="db-time-sep"></div>';
-    rows += row('Avg time per question', avgQSecs + 's');
+
+  var reviewLines = [];
+  lessonRecs.forEach(function(r) {
+    var names = _lessonDisplayName(r.lessonId);
+    var display = names ? names.lesson + ' (' + names.unit + ')' : (r.lessonId || '');
+    reviewLines.push('<div class="db-pp-item">'
+      + '<div class="db-pp-item-name">&#x1F4CC; ' + _esc(display) + '</div>'
+      + '<div class="db-pp-item-sub">Quiz next</div>'
+      + '</div>');
+  });
+  overdueReview.forEach(function(r) {
+    var txt = r.qText
+      ? _esc(r.qText.length > 70 ? r.qText.slice(0, 67) + '...' : r.qText)
+      : '(review item)';
+    reviewLines.push('<div class="db-pp-item">'
+      + '<span class="db-badge db-badge-red" style="margin-bottom:4px">Overdue</span>'
+      + '<div class="db-pp-item-name">' + txt + '</div>'
+      + '<div class="db-pp-item-sub">' + r.accuracy + '% correct</div>'
+      + '</div>');
+  });
+
+  if (reviewLines.length) {
+    body += '<div class="db-pp-group db-pp-group--review">'
+      + '<div class="db-pp-group-title">&#x1F501; Recommended Review</div>'
+      + reviewLines.join('')
+      + '</div>';
   }
-  return '<section class="db-section"><h2 class="db-sec-h">&#x23F1; Time</h2>'
-    + '<div class="db-time-box">' + rows + '</div></section>';
+
+  return _dbSection('practice-plan', '&#x1F9ED; Practice Plan', body, defaultOpen);
 }
 
-function _renderRecentQuizzes(scores) {
+// Dashboard pass/fail threshold defaults to 70% when no app-wide threshold is available.
+var _QH_PASS_THRESHOLD = 70;
+
+function _quizHistoryRangeCutoffMs(range) {
+  var DAY = 86400000;
+  var now = Date.now();
+  switch (range) {
+    case '7d':  return now -   7 * DAY;
+    case '30d': return now -  30 * DAY;
+    case '60d': return now -  60 * DAY;
+    case '3m':  return now -  90 * DAY;
+    case '6m':  return now - 180 * DAY;
+    case '1y':  return now - 365 * DAY;
+    default:    return 0; // 'lifetime'
+  }
+}
+
+function _quizLessonKey(s) {
+  // Returns a normalized lesson key (e.g. 'u1l2', 'ku3l4') from s.qid for lesson quizzes.
+  // Returns null for unit/final tests.
+  if (!s || !s.qid) return null;
+  var m = String(s.qid).match(/^lq_(k?u\d+l\d+)$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+
+function _sortQuizHistory(rows, sort) {
+  var copy = rows.slice();
+  if (sort === 'date-desc')      copy.sort(function(a,b){ return (b.id||0) - (a.id||0); });
+  else if (sort === 'date-asc')  copy.sort(function(a,b){ return (a.id||0) - (b.id||0); });
+  else if (sort === 'accuracy-desc') copy.sort(function(a,b){ return (b.pct||0) - (a.pct||0) || (b.id||0) - (a.id||0); });
+  else if (sort === 'accuracy-asc')  copy.sort(function(a,b){ return (a.pct||0) - (b.pct||0) || (b.id||0) - (a.id||0); });
+  else if (sort === 'pass-first') copy.sort(function(a,b){
+    var ap = (a.pct||0) >= _QH_PASS_THRESHOLD ? 1 : 0;
+    var bp = (b.pct||0) >= _QH_PASS_THRESHOLD ? 1 : 0;
+    if (ap !== bp) return bp - ap;
+    return (b.id||0) - (a.id||0);
+  });
+  else if (sort === 'fail-first') copy.sort(function(a,b){
+    var ap = (a.pct||0) >= _QH_PASS_THRESHOLD ? 1 : 0;
+    var bp = (b.pct||0) >= _QH_PASS_THRESHOLD ? 1 : 0;
+    if (ap !== bp) return ap - bp;
+    return (b.id||0) - (a.id||0);
+  });
+  return copy;
+}
+
+function _getFilteredQuizHistory(scores) {
+  var f = _quizHistoryFilters;
+  // Build the canonical `completed` list — order MUST match what openQuizReview indexes into.
   var completed = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
-  if (!completed.length) return '';
-  var recent = completed.slice(0, 10);
+  // Tag each row with its index in `completed` so review opens the right quiz post-sort/filter.
+  var rows = completed.map(function(s, idx) {
+    var copy = {};
+    for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) copy[k] = s[k];
+    copy._originalIndex = idx;
+    return copy;
+  });
+  // Date range
+  if (f.range !== 'lifetime') {
+    var cutoffMs = _quizHistoryRangeCutoffMs(f.range);
+    rows = rows.filter(function(s) { return typeof s.id === 'number' && s.id >= cutoffMs; });
+  }
+  // Unit
+  if (f.unit !== 'all') {
+    var u = parseInt(f.unit, 10);
+    if (!isNaN(u)) rows = rows.filter(function(s) { return s.unitIdx === u; });
+  }
+  // Lesson
+  if (f.lesson !== 'all') {
+    if (f.lesson === 'unit-test') {
+      rows = rows.filter(function(s) { return s.type === 'unit' || s.type === 'final'; });
+    } else {
+      rows = rows.filter(function(s) { return _quizLessonKey(s) === f.lesson; });
+    }
+  }
+  // Pass/fail
+  if (f.result === 'pass') rows = rows.filter(function(s) { return (s.pct||0) >= _QH_PASS_THRESHOLD; });
+  else if (f.result === 'fail') rows = rows.filter(function(s) { return (s.pct||0) < _QH_PASS_THRESHOLD; });
+  // Sort
+  rows = _sortQuizHistory(rows, f.sort);
+  return { totalCount: completed.length, filtered: rows };
+}
+
+function _renderQuizHistoryControls(scores) {
+  var f = _quizHistoryFilters;
+  var unitsMeta = _activeDashboardUnitsMeta();
+
+  // Date range chips
+  var ranges = [
+    { v: '7d',  l: '7d'  },
+    { v: '30d', l: '30d' },
+    { v: '60d', l: '60d' },
+    { v: '3m',  l: '3m'  },
+    { v: '6m',  l: '6m'  },
+    { v: '1y',  l: '1y'  },
+    { v: 'lifetime', l: 'All' }
+  ];
+  var chipHtml = ranges.map(function(r) {
+    var on = (f.range === r.v);
+    return '<button type="button" class="db-qh-chip' + (on ? ' is-active' : '') + '"'
+      + ' data-action="setQuizHistoryFilter" data-arg="range" data-arg2="' + r.v + '"'
+      + ' aria-pressed="' + (on ? 'true' : 'false') + '">' + r.l + '</button>';
+  }).join('');
+
+  // Unit options
+  var unitOpts = '<option value="all"' + (f.unit === 'all' ? ' selected' : '') + '>All Units</option>';
+  unitsMeta.forEach(function(u, i) {
+    var sel = (f.unit === String(i)) ? ' selected' : '';
+    unitOpts += '<option value="' + i + '"' + sel + '>Unit ' + (i + 1) + ': ' + _esc(u.name) + '</option>';
+  });
+
+  // Lesson options — depend on selected unit
+  var lessonOpts = '<option value="all"' + (f.lesson === 'all' ? ' selected' : '') + '>All Lessons</option>';
+  lessonOpts += '<option value="unit-test"' + (f.lesson === 'unit-test' ? ' selected' : '') + '>Unit Tests / Finals</option>';
+  if (f.unit !== 'all') {
+    var ui = parseInt(f.unit, 10);
+    var u = unitsMeta[ui];
+    if (u && Array.isArray(u.lessons)) {
+      // Build lesson keys matching _quizLessonKey output. Grade-K uses "ku{n}l{m}", others "u{n}l{m}".
+      var grade = (function() {
+        try { return String(localStorage.getItem('mmr_grade') || '').toLowerCase(); } catch (_e) { return ''; }
+      })();
+      var prefix = (grade === 'k' || grade === 'kindergarten' || grade === '0') ? 'k' : '';
+      u.lessons.forEach(function(lName, li) {
+        var key = prefix + 'u' + (ui + 1) + 'l' + (li + 1);
+        var sel = (f.lesson === key) ? ' selected' : '';
+        lessonOpts += '<option value="' + key + '"' + sel + '>Lesson ' + (li + 1) + ': ' + _esc(lName) + '</option>';
+      });
+    }
+  }
+
+  // Result options
+  function resultOpt(v, l) {
+    return '<option value="' + v + '"' + (f.result === v ? ' selected' : '') + '>' + l + '</option>';
+  }
+  var resultOpts = resultOpt('all', 'All Results') + resultOpt('pass', 'Pass') + resultOpt('fail', 'Fail');
+
+  // Sort options
+  function sortOpt(v, l) {
+    return '<option value="' + v + '"' + (f.sort === v ? ' selected' : '') + '>' + l + '</option>';
+  }
+  var sortOpts = sortOpt('date-desc', 'Newest first')
+    + sortOpt('date-asc', 'Oldest first')
+    + sortOpt('accuracy-desc', 'Accuracy high → low')
+    + sortOpt('accuracy-asc', 'Accuracy low → high')
+    + sortOpt('pass-first', 'Pass first')
+    + sortOpt('fail-first', 'Fail first');
+
+  return '<div class="db-qh-controls">'
+    + '<div class="db-qh-chip-row">' + chipHtml + '</div>'
+    + '<div class="db-qh-filter-row">'
+    +   '<select class="db-qh-select" data-action="setQuizHistoryFilter" data-arg="unit" aria-label="Filter by unit">' + unitOpts + '</select>'
+    +   '<select class="db-qh-select" data-action="setQuizHistoryFilter" data-arg="lesson" aria-label="Filter by lesson">' + lessonOpts + '</select>'
+    + '</div>'
+    + '<div class="db-qh-filter-row">'
+    +   '<select class="db-qh-select" data-action="setQuizHistoryFilter" data-arg="result" aria-label="Filter by pass/fail">' + resultOpts + '</select>'
+    +   '<select class="db-qh-select" data-action="setQuizHistoryFilter" data-arg="sort" aria-label="Sort">' + sortOpts + '</select>'
+    + '</div>'
+    + '<button type="button" class="db-qh-reset" data-action="resetQuizHistoryFilters">Reset filters</button>'
+    + '</div>';
+}
+
+function _renderQuizHistoryInner(scores) {
+  var allCompleted = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
+  if (!allCompleted.length) return '<p class="db-empty">No quizzes recorded yet.</p>';
+
   var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
   var COLORS = ['#6c5ce7','#0984e3','#00b894','#e17055','#fdcb6e','#a29bfe','#fd79a8','#55efc4','#74b9ff','#fab1a0'];
-  var items = recent.map(function(s, idx) {
-    var pctColor = s.pct >= 80 ? '#2e7d32' : s.pct >= 60 ? '#e65100' : '#c62828';
+
+  var result = _getFilteredQuizHistory(scores);
+  var rows = result.filtered;
+
+  var controls = _renderQuizHistoryControls(scores);
+  var summary = '<p class="db-qh-summary">'
+    + (rows.length === 0
+        ? 'No quizzes match these filters.'
+        : 'Showing ' + rows.length + ' of ' + result.totalCount + ' quizzes')
+    + '</p>';
+
+  if (rows.length === 0) {
+    return controls + summary;
+  }
+
+  var items = rows.map(function(s) {
+    var pctColor = (s.pct||0) >= 80 ? '#2e7d32' : (s.pct||0) >= 60 ? '#e65100' : '#c62828';
     var tLabel   = typeLabel[s.type] || s.type || '';
     var dispLabel = _esc(s.label || tLabel);
     var qAvg     = _quizAvgQSecs(s);
     var hasQTime = s.answers && s.answers.some(function(a) { return a.timeSecs != null; });
-    var color    = s.color || COLORS[idx % COLORS.length];
-    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
-      + ' &bull; <span style="color:' + color + '">View details →</span>';
-    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + idx + '" role="button" tabindex="0">'
+    var color    = s.color || COLORS[(s._originalIndex || 0) % COLORS.length];
+    var pass     = (s.pct||0) >= _QH_PASS_THRESHOLD;
+    var passBadge = '<span class="db-qh-badge db-qh-badge-' + (pass ? 'pass' : 'fail') + '">'
+      + (pass ? 'Pass' : 'Fail') + '</span>';
+    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel
+      + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
+      + ' &bull; ' + passBadge;
+    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s._originalIndex + '" role="button" tabindex="0">'
       + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
       + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
       + '<div class="db-quiz-sub">' + sub + '</div></div>'
-      + '<div class="db-quiz-score" style="color:' + pctColor + '">' + s.pct + '%'
+      + '<div class="db-quiz-score" style="color:' + pctColor + '">' + (s.pct||0) + '%'
       + '<div class="db-quiz-frac">' + (s.score||0) + '/' + (s.total||0) + '</div></div>'
       + '</div>';
   }).join('');
-  return '<section class="db-section"><h2 class="db-sec-h">&#x1F4CB; Recent Quizzes</h2>'
-    + '<div class="db-quiz-list">' + items + '</div></section>';
+
+  return controls + summary + '<div class="db-qh-list" role="list">' + items + '</div>';
+}
+
+function _renderRecentQuizzes(scores) {
+  return _dbSection('recent-quizzes', '&#x1F4CB; Quiz History',
+    '<div id="db-qh-wrap">' + _renderQuizHistoryInner(scores) + '</div>');
+}
+
+function _reRenderQuizHistory() {
+  var st = _students[_activeId]; if (!st) return;
+  var wrap = document.getElementById('db-qh-wrap');
+  if (wrap) wrap.innerHTML = _renderQuizHistoryInner(st.SCORES || []);
 }
 
 // ── Quiz review modal ─────────────────────────────────────────────────────
@@ -984,72 +1655,6 @@ function openQuizReview(idx) {
 function closeQuizReview() {
   var modal = document.getElementById('db-review-modal');
   if (modal) modal.classList.remove('open');
-}
-
-function _renderPracticeSpotlight(mastery, activityEvents) {
-  // Identify weak tags: < 60% accuracy, >= 2 attempts
-  var weakTags = Object.keys(mastery)
-    .map(function(tag) {
-      var m = mastery[tag];
-      var accuracy = m.attempts > 0 ? m.correct / m.attempts : 0;
-      return { tag: tag, m: m, accuracy: accuracy };
-    })
-    .filter(function(e) { return e.m.attempts >= 2 && e.accuracy < 0.6; })
-    .sort(function(a, b) { return a.accuracy - b.accuracy; })
-    .slice(0, 5);
-
-  if (!weakTags.length) return '';
-
-  var tagLessonMap = _buildTagLessonMap(activityEvents);
-  var recs = _recommendReviewLessons(weakTags, tagLessonMap, 5);
-
-  var items;
-  if (recs.length) {
-    items = recs.map(function(r) {
-      var acc    = Math.round(r.accuracy * 100);
-      var names  = _lessonDisplayName(r.lessonId);
-      var display = names
-        ? names.lesson + ' (' + names.unit + ')'
-        : (r.lessonId || '');
-      var tagLabel = (_TAG_LABEL_MAP && _TAG_LABEL_MAP[r.weakTag])
-        || _toTitleCase(r.weakTag);
-      return '<div class="db-practice-item">'
-        + '<div class="db-practice-txt">&#x1F4CC; ' + _esc(display) + '</div>'
-        + '<div class="db-practice-sub">' + acc + '% on ' + _esc(tagLabel) + '</div>'
-        + '</div>';
-    }).join('');
-  } else {
-    // No activity log yet — show weak tags directly
-    items = weakTags.map(function(e) {
-      var acc      = Math.round(e.accuracy * 100);
-      var tagLabel = (_TAG_LABEL_MAP && _TAG_LABEL_MAP[e.tag])
-        || _toTitleCase(e.tag);
-      return '<div class="db-practice-item">'
-        + '<div class="db-practice-txt">&#x1F4CC; ' + _esc(tagLabel) + '</div>'
-        + '<div class="db-practice-sub">' + acc + '% correct &bull; ' + e.m.attempts + ' attempts</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  return '<section class="db-section"><h2 class="db-sec-h">&#x1F4DD; Needs More Practice</h2>'
-    + '<div class="db-practice-list">' + items + '</div></section>';
-}
-
-function _renderActivity(activity) {
-  var max = 0;
-  activity.forEach(function(d){ if(d.quizCount > max) max = d.quizCount; });
-  var bars = activity.slice().reverse().map(function(d) {
-    var pct = max > 0 ? Math.round((d.quizCount / max) * 100) : 0;
-    return '<div class="db-act-col">'
-      + '<div class="db-act-bar-wrap">'
-      + '<div class="db-act-bar" style="height:'+pct+'%;background:'+(d.quizCount > 0 ? '#1565C0' : 'rgba(0,0,0,.08)')+'"></div>'
-      + '</div>'
-      + '<div class="db-act-n">'+(d.quizCount || '')+'</div>'
-      + '<div class="db-act-day">'+d.dayLabel+'</div>'
-      + '</div>';
-  }).join('');
-  return '<section class="db-section"><h2 class="db-sec-h">&#x1F4C5; Activity — Last 7 Days</h2>'
-    + '<div class="db-act-chart">'+bars+'</div></section>';
 }
 
 // ── AI Report ─────────────────────────────────────────────────────────────
@@ -1421,6 +2026,11 @@ function _lessonDisplayName(lessonId) {
 function _toTitleCase(s) {
   return String(s).replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
 }
+function _normTag(tag) {
+  return String(tag).toLowerCase()
+    .replace(/\s*(practice|facts|skills?|basics?)\b/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
 
 // ── Skill tag labels ──────────────────────────────────────────────────────
 // Maps tag names (from mmr_mastery_v1 / defaultTags) to parent-friendly labels.
@@ -1532,10 +2142,21 @@ var _TAG_LABEL_MAP = {
 };
 
 // ── Parent controls draft state ───────────────────────────────────────────
-var _unlockDraft      = _parseUnlockSettings({});
-var _unlockDirty      = false;
-var _activeDrawerUnit = -1;
-var _timerDraft       = _parseTimerSettings({});
+var _unlockDraft       = _parseUnlockSettings({});
+var _unlockDirty       = false;
+var _activeDrawerUnit  = -1;
+var _unlockScores      = [];
+var _activityEvents    = [];     // grade-filtered ACTIVITY events for active student
+var _activityDetailView = null;  // 'accuracy' | 'quizzes' | 'time' | 'lessons' | 'day' | null
+var _activityDetailDay = null;   // 'YYYY-MM-DD' when view === 'day'
+var _quizHistoryFilters = {
+  range:  'lifetime',  // '7d' | '30d' | '60d' | '3m' | '6m' | '1y' | 'lifetime'
+  unit:   'all',       // 'all' | unitIdx as string ('0', '1', ...)
+  lesson: 'all',       // 'all' | 'unit-test' | 'u1l2' (lesson key extracted from qid)
+  result: 'all',       // 'all' | 'pass' | 'fail'
+  sort:   'date-desc'  // 'date-desc' | 'date-asc' | 'accuracy-desc' | 'accuracy-asc' | 'pass-first' | 'fail-first'
+};
+var _timerDraft        = _parseTimerSettings({});
 var _a11yDraft        = _parseA11ySettings({});
 var _dbFbRating       = 0;
 var _dbFbCategory     = '';
@@ -1626,6 +2247,31 @@ function _dbToggleLessonDrawer(unitIdx) {
   _reRenderUnlock();
 }
 
+function _isUnitNaturallyUnlocked(unitIdx, scores) {
+  if (unitIdx === 0) return true;
+  return scores.some(function(s) {
+    return s.unitIdx === (unitIdx - 1) && s.type === 'unit' && s.pct >= 80;
+  });
+}
+
+function _computePassedLessonQuizzes(scores) {
+  var done = {};
+  scores.forEach(function(s) {
+    if (s.type !== 'lesson' || !s.qid || s.pct < 80) return;
+    var m = String(s.qid).match(/^lq_u(\d+)l(\d+)$/i);
+    if (!m) return;
+    var ui = parseInt(m[1], 10) - 1;
+    var li = parseInt(m[2], 10) - 1;
+    if (!isNaN(ui) && !isNaN(li)) done[ui + '_' + li] = true;
+  });
+  return done;
+}
+
+function _isLessonNaturallyUnlocked(unitIdx, lessonIdx, passedLessons) {
+  if (lessonIdx === 0) return true;
+  return !!passedLessons[unitIdx + '_' + (lessonIdx - 1)];
+}
+
 function _reRenderUnlock() {
   var wrap = document.getElementById('db-unlock-wrap');
   if (wrap) wrap.innerHTML = _renderUnlockInner();
@@ -1713,53 +2359,90 @@ function _renderUnlockInner() {
     return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
   }
   var fm = _unlockDraft.freeMode;
+  var passedLessons = _computePassedLessonQuizzes(_unlockScores);
+  var unitsMeta = _activeDashboardUnitsMeta();
   var html = '';
 
   // Free Mode toggle
   html += '<div class="db-toggle-row">'
-    + '<div><strong>🌟 Free Mode</strong><br>'
+    + '<div><strong>&#x1F31F; Free Mode</strong><br>'
     + '<span class="db-toggle-sub">Unlock all units and lessons at once</span></div>'
     + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" data-action="_dbToggleFreeMode">'
     + (fm ? 'ON' : 'OFF') + '</button>'
     + '</div>';
 
-  // Unit cards grid
-  html += '<div class="db-unit-grid"' + (fm ? ' style="opacity:.5;pointer-events:none"' : '') + '>';
-  _UNITS_META.forEach(function(u, i) {
-    var unlocked = _isUnitUnlockedInDraft(_unlockDraft, i);
-    html += '<div class="db-unit-card' + (unlocked ? ' db-unit-unlocked' : '') + '">'
-      + '<div class="db-unit-card-top">'
-      + '<span class="db-unit-num">Unit ' + (i+1) + '</span>'
-      + '<button class="db-toggle-btn db-toggle-sm' + (unlocked ? ' db-toggle-on' : '') + '" data-action="_dbToggleUnitUnlock" data-arg="' + i + '">'
-      + (unlocked ? 'ON' : 'OFF') + '</button>'
-      + '</div>'
-      + '<div class="db-unit-name">' + _esc(u.name) + '</div>'
-      + '<button class="db-unit-lessons-link" data-action="_dbToggleLessonDrawer" data-arg="' + i + '">'
-      + 'Manage lessons ' + (_activeDrawerUnit === i ? '▲' : '▼') + '</button>'
-      + '</div>';
+  if (fm) {
+    html += '<p class="db-unlock-free-note">Free Mode is active — all units and lessons are accessible. Individual toggles are disabled.</p>';
+  }
 
-    // Lesson drawer — spans full grid width after card row
+  // Unit cards grid — dims entirely when Free Mode is on
+  html += '<div class="db-unit-grid"' + (fm ? ' style="opacity:.5;pointer-events:none"' : '') + '>';
+  unitsMeta.forEach(function(u, i) {
+    var parentUnlocked    = _isUnitUnlockedInDraft(_unlockDraft, i);
+    var naturallyUnlocked = _isUnitNaturallyUnlocked(i, _unlockScores);
+    var effective         = fm || parentUnlocked || naturallyUnlocked;
+
+    if (i === 0) {
+      // Unit 1: always available — no toggle
+      html += '<div class="db-unit-card db-unit-unlocked">'
+        + '<div class="db-unit-card-top">'
+        + '<span class="db-unit-num">Unit 1</span>'
+        + '<span class="db-unit-always-badge">Always Available</span>'
+        + '</div>'
+        + '<div class="db-unit-name">' + _esc(u.name) + '</div>'
+        + '<button class="db-unit-lessons-link" data-action="_dbToggleLessonDrawer" data-arg="0">'
+        + 'Manage lessons ' + (_activeDrawerUnit === 0 ? '▲' : '▼') + '</button>'
+        + '</div>';
+    } else {
+      var progressBadge = (!parentUnlocked && naturallyUnlocked)
+        ? '<span class="db-unit-progress-badge">&#x2713; Unlocked by progress</span>'
+        : '';
+      html += '<div class="db-unit-card' + (effective ? ' db-unit-unlocked' : '') + '">'
+        + '<div class="db-unit-card-top">'
+        + '<span class="db-unit-num">Unit ' + (i + 1) + '</span>'
+        + '<button class="db-toggle-btn db-toggle-sm' + (parentUnlocked ? ' db-toggle-on' : '') + '" data-action="_dbToggleUnitUnlock" data-arg="' + i + '">'
+        + (parentUnlocked ? 'ON' : 'OFF') + '</button>'
+        + '</div>'
+        + '<div class="db-unit-name">' + _esc(u.name) + '</div>'
+        + progressBadge
+        + '<button class="db-unit-lessons-link" data-action="_dbToggleLessonDrawer" data-arg="' + i + '">'
+        + 'Manage lessons ' + (_activeDrawerUnit === i ? '▲' : '▼') + '</button>'
+        + '</div>';
+    }
+
+    // Lesson drawer — spans full grid width
     if (_activeDrawerUnit === i) {
       html += '</div><div class="db-lesson-drawer">';
       u.lessons.forEach(function(lName, li) {
-        var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li);
-        html += '<div class="db-lesson-row">'
-          + '<span class="db-lesson-name">' + _esc(lName) + '</span>'
-          + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" data-action="_dbToggleLessonUnlock" data-arg="' + i + '" data-arg2="' + li + '">'
-          + (lu ? 'ON' : 'OFF') + '</button>'
-          + '</div>';
+        if (li === 0) {
+          // First lesson: always available — no toggle
+          html += '<div class="db-lesson-row">'
+            + '<span class="db-lesson-name">' + _esc(lName) + '</span>'
+            + '<span class="db-lesson-always-badge">Always Available</span>'
+            + '</div>';
+        } else {
+          var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li);
+          var naturalLesson = _isLessonNaturallyUnlocked(i, li, passedLessons);
+          var lProgBadge = (!lu && naturalLesson)
+            ? ' <span class="db-unit-progress-inline">&#x2713; progress</span>'
+            : '';
+          html += '<div class="db-lesson-row">'
+            + '<span class="db-lesson-name">' + _esc(lName) + lProgBadge + '</span>'
+            + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" data-action="_dbToggleLessonUnlock" data-arg="' + i + '" data-arg2="' + li + '">'
+            + (lu ? 'ON' : 'OFF') + '</button>'
+            + '</div>';
+        }
       });
       html += '</div><div class="db-unit-grid" style="margin-top:0">';
     }
   });
   html += '</div>'; // close db-unit-grid
 
-  // Save + Relock + Full Reset
+  // Save + Re-lock All (Full Reset moved to Danger Zone)
   html += '<div id="db-unlock-msg" class="db-ctrl-msg"></div>'
     + '<div class="db-ctrl-btns">'
     + '<button id="db-unlock-save-btn" class="db-ctrl-save" data-action="_dbSaveUnlock">Save Changes</button>'
-    + '<button class="db-ctrl-relock" data-action="_dbRelockAll">🔒 Re-lock All</button>'
-    + '<button class="db-ctrl-reset" data-action="_dbFullReset">🗑 Full Reset</button>'
+    + '<button class="db-ctrl-relock" data-action="_dbRelockAll">&#x1F512; Re-lock All</button>'
     + '</div>';
 
   return html;
@@ -1767,8 +2450,20 @@ function _renderUnlockInner() {
 
 function _renderUnlockSection() {
   return '<section class="db-section" id="db-unlock-section">'
-    + '<h2 class="db-sec-h">🔓 Access Controls</h2>'
+    + '<h2 class="db-sec-h">&#x1F513; Access Controls</h2>'
     + '<div id="db-unlock-wrap">' + _renderUnlockInner() + '</div>'
+    + '</section>';
+}
+
+function _renderDangerZoneSection() {
+  var isMock = (_activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2');
+  if (isMock) return '';
+  return '<section class="db-section db-danger-zone">'
+    + '<h2 class="db-sec-h db-danger-heading">&#x1F5D1;&#xFE0F; Profile Reset</h2>'
+    + '<p class="db-danger-desc">Resetting student data permanently deletes quiz scores, mastery, streaks, and progress history. This cannot be undone.</p>'
+    + '<div class="db-ctrl-btns">'
+    + '<button class="db-ctrl-reset" data-action="_dbFullReset">Reset Student Data</button>'
+    + '</div>'
     + '</section>';
 }
 
@@ -2088,7 +2783,7 @@ async function _dbSavePassword() {
 
 function _renderPasswordSection() {
   return '<section class="db-section">'
-    + '<h2 class="db-sec-h">🔒 Change Password</h2>'
+    + '<h2 class="db-sec-h">🔒 Change Account Password</h2>'
     + '<div class="db-form-row"><label class="db-form-lbl">New Password</label>'
     + '<input id="db-pw-inp" type="password" class="db-form-inp" placeholder="Min 8 characters" autocomplete="new-password"></div>'
     + '<div id="db-pw-msg" class="db-ctrl-msg"></div>'
@@ -2430,14 +3125,14 @@ function _renderInterventionInsights(events, activityErrCounts) {
       + '</div>';
   }).join('');
   var rateColor = summary.recoveryRate >= 70 ? '#2e7d32' : summary.recoveryRate >= 40 ? '#e65100' : '#c62828';
-  return '<section class="db-section">'
-    + '<h2 class="db-sec-h">&#x1F9E0; Learning Insights <button class="db-info-btn" tabindex="0" aria-label="About Learning Insights" data-tip="Skills listed here needed extra practice during quizzes. Recovery Rate shows how often your child corrected a mistake on the very next try.">ⓘ</button></h2>'
+  var insightsBody = '<button class="db-info-btn" tabindex="0" aria-label="About Learning Insights"'
+    + ' data-tip="Skills listed here needed extra practice during quizzes. Recovery Rate shows how often your child corrected a mistake on the very next try.">ⓘ</button>'
     + '<div class="db-intervention-box">'
     + '<div class="db-intervention-rate">Recovery Rate: <strong style="color:' + rateColor + '">' + summary.recoveryRate + '%</strong>'
     + ' <span style="font-size:.78rem;color:#90a4ae">(' + summary.total + ' intervention' + (summary.total !== 1 ? 's' : '') + ')</span></div>'
     + (items ? '<div class="db-intervention-tags">' + items + '</div>' : '')
-    + '</div>'
-    + '</section>';
+    + '</div>';
+  return _dbSection('insights', '&#x1F9E0; Learning Insights', insightsBody);
 }
 
 // ── Insight engine helpers (also in dashboard/dashboard.js for testability) ─
@@ -2673,37 +3368,50 @@ function _renderParentActionSummary(stats, mastery, activityEvents, name, scores
     'strong':       '#2e7d32',
   };
   var color = tierColors[insight.cssTier] || '#607d8b';
-  return '<section class="db-section db-action-summary das-' + insight.cssTier + '">'
-    + '<div class="das-pill" style="background:' + color + '15;color:' + color
+  var dasBody = '<div class="das-pill" style="background:' + color + '15;color:' + color
     + ';border:1px solid ' + color + '">' + _esc(insight.headline) + '</div>'
     + '<p class="das-summary">' + _esc(insight.summary) + '</p>'
     + '<p class="das-action"><strong>Action:</strong> ' + _esc(insight.actionLabel) + '</p>'
-    + '<p class="das-why">' + _esc(insight.why) + '</p>'
+    + '<p class="das-why">' + _esc(insight.why) + '</p>';
+  return _dbSection('action-summary', _esc(insight.headline), dasBody, true,
+    'db-action-summary das-' + insight.cssTier);
+}
+
+// ── Profiles & Settings sections ──────────────────────────────────────────
+function _renderThemeSection() {
+  var stored = localStorage.getItem('wb_theme') || 'auto';
+  function btn(mode, label) {
+    var active = mode === 'auto' ? !localStorage.getItem('wb_theme') : stored === mode;
+    return '<button id="theme-' + mode + '" class="db-theme-btn' + (active ? ' on' : '') + '"'
+      + ' data-action="setDashboardTheme" data-arg="' + mode + '"'
+      + ' aria-pressed="' + (active ? 'true' : 'false') + '">' + label + '</button>';
+  }
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">&#x1F313; Appearance</h2>'
+    + '<div class="db-theme-row">'
+    + btn('light', '&#x2600;&#xFE0F; Light')
+    + btn('dark',  '&#x1F319; Dark')
+    + btn('auto',  '&#x1F4F1; Auto')
+    + '</div>'
     + '</section>';
 }
 
-// ── Settings & Management accordion ───────────────────────────────────────
-// Wraps Manage Profiles + the seven settings/admin sections in a native
-// <details> element, closed by default. No JS toggle code needed — the
-// browser handles open/close. Inner sections keep their existing
-// <section class="db-section"> wrappers, so all data-action delegated
-// click handlers continue to work unchanged.
-function _renderSettingsAccordion() {
-  return '<details class="db-settings-details">'
-    + '<summary class="db-settings-summary">'
-    + '<h2 class="db-sec-h">&#x2699;&#xFE0F; Settings &amp; Management</h2>'
-    + '</summary>'
-    + '<div class="db-settings-body">'
-    + _renderManageProfiles()
+function _renderProfilesSection() {
+  var body = _renderManageProfiles()
     + _renderUnlockSection()
+    + _renderPasswordSection()
+    + _renderDangerZoneSection();
+  return _dbSection('profiles', '&#x1F465; Profiles &amp; Account', body, false);
+}
+
+function _renderSettingsSection() {
+  var body = _renderThemeSection()
     + _renderTimerSection()
     + _renderA11ySection()
     + _renderRemindersSection()
-    + _renderPasswordSection()
     + _renderFeedbackSection()
-    + _renderChangelogSection()
-    + '</div>'
-    + '</details>';
+    + _renderChangelogSection();
+  return _dbSection('settings', '&#x2699;&#xFE0F; Settings', body, false);
 }
 
 function renderDashboard() {
@@ -2728,6 +3436,7 @@ function renderDashboard() {
   try { localStorage.setItem('mmr_grade', activeGrade); } catch(_e) {}
 
   var scores        = student.SCORES   || [];
+  _unlockScores = scores;
   var mastery       = student.MASTERY  || {};
   // Filter activity events to the active grade.  Managed-profile events arrive
   // from Supabase unfiltered; local data is already filtered in _readLocalStudentData.
@@ -2736,6 +3445,7 @@ function renderDashboard() {
     if (!e || e.grade == null) return true;
     return (typeof normalizeGrade === 'function' ? normalizeGrade(e.grade) : String(e.grade)) === activeGrade;
   });
+  _activityEvents = activityEvents;
   var streak        = student.STREAK   || { current: 0 };
   var appTime       = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
 
@@ -2788,18 +3498,13 @@ function renderDashboard() {
     + ' &middot; <button class="db-grade-change-link" data-action="openEditProfileSheet" data-arg="' + _esc(_activeId) + '" style="background:none;border:none;color:#1565c0;cursor:pointer;font-size:.8rem;padding:0;text-decoration:underline">Change grade</button>'
     + '</p>' +
     _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
-    _renderWeeklySnapshot(scores, appTime, streak) +
-    _renderPracticeSpotlight(mastery, activityEvents) +
-    _renderWeak(weak) +
+    _renderPracticePlan(mastery, activityEvents, weak, review) +
     _renderInterventionInsights(interventionEvents, actErrCounts) +
     _renderUnitProgressMap(scores, activityEvents) +
-    _renderSkills(skills) +
     _renderRecentQuizzes(scores) +
-    _renderActivity(activity) +
-    _renderReview(review) +
-    _renderOverview(stats) +
-    _renderTime(scores, appTime) +
-    _renderSettingsAccordion();
+    _renderActivitySnapshot(stats, scores, appTime, activity, streak, activityEvents) +
+    _renderProfilesSection() +
+    _renderSettingsSection();
 
   // Render AI report footer
   var footerEl = document.getElementById('db-ai-footer');
@@ -2889,10 +3594,12 @@ function _renderManageProfiles() {
   var rows = _managedProfiles.map(function(p) {
     var lastActive = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Never';
     var gradeLabel = _dbGradeBadge(_dbResolveProfileGrade(p));
+    var displayName = p.display_name || p.name || '';
+    var avatarEmoji = p.avatar_emoji || (displayName ? displayName.charAt(0).toUpperCase() : '?');
     return '<div class="db-profile-row">'
-      + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _dbValidColor(p.avatar_color_from) + ',' + _dbValidColor(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(p.avatar_emoji) + '</div>'
+      + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,' + _dbValidColor(p.avatar_color_from) + ',' + _dbValidColor(p.avatar_color_to) + ');display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">' + _esc(avatarEmoji) + '</div>'
       + '<div style="flex:1;min-width:0">'
-      + '<div style="font-weight:700;font-size:.88rem;color:#263238">' + _esc(p.display_name) + (p.age ? ' <span style="font-weight:400;color:#90a4ae;font-size:.75rem">Age ' + _esc(String(p.age)) + '</span>' : '') + '</div>'
+      + '<div style="font-weight:700;font-size:.88rem;color:#263238">' + _esc(displayName) + (p.age ? ' <span style="font-weight:400;color:#90a4ae;font-size:.75rem">Age ' + _esc(String(p.age)) + '</span>' : '') + '</div>'
       + '<div style="font-size:.72rem;color:#90a4ae">' + _esc(gradeLabel) + ' &middot; Last active ' + _esc(lastActive) + '</div>'
       + '</div>'
       + '<div style="display:flex;gap:6px;flex-shrink:0">'
@@ -3358,7 +4065,7 @@ function _loadManagedStudentScores(studentId) {
               unitIdx: typeof r.unit_idx === 'number' ? r.unit_idx : 0,
               color: String(r.color || ''),
               name: String(r.student_name || ''), id: r.local_id,
-              timeTaken: typeof r.time_taken === 'number' ? r.time_taken : 0,
+              timeTaken: r.time_taken || 0,
               answers: Array.isArray(r.answers) ? r.answers : [],
               date: String(r.date_str || ''), time: String(r.time_str || ''),
               quit: !!r.quit, abandoned: !!r.abandoned
@@ -3617,6 +4324,29 @@ if (typeof document !== 'undefined') {
     dbEditSelectEmoji:       function(a)    { dbEditSelectEmoji(a); },
     dbEditSave:              function(a)    { dbEditSave(a); },
     dbAddSelectEmoji:        function(a)    { dbAddSelectEmoji(a); },
+    setDashboardTheme:       function(mode)  { setTheme(mode); },
+    showActivityDetail:      function(type)  { _activityDetailView = type; _activityDetailDay = null; _reRenderActivitySnapshot(); },
+    showActivityDay:         function(day)   { _activityDetailView = 'day'; _activityDetailDay = day; _reRenderActivitySnapshot(); },
+    hideActivityDetail:      function()      { _activityDetailView = null; _activityDetailDay = null; _reRenderActivitySnapshot(); },
+    setQuizHistoryFilter:    function(field, value) {
+      if (!_quizHistoryFilters || !field || value == null) return;
+      _quizHistoryFilters[field] = value;
+      // Reset lesson when unit changes — selected lesson may no longer apply
+      if (field === 'unit') _quizHistoryFilters.lesson = 'all';
+      _reRenderQuizHistory();
+    },
+    resetQuizHistoryFilters: function() {
+      _quizHistoryFilters = { range:'lifetime', unit:'all', lesson:'all', result:'all', sort:'date-desc' };
+      _reRenderQuizHistory();
+    },
+    toggleDbSection:         function(_a, _a2, el) {
+      var sec = el.closest('.db-section[data-section]');
+      if (!sec) return;
+      var open = sec.classList.toggle('is-open');
+      var btn = sec.querySelector('.db-section-header');
+      if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      _dbSectionStateSet(sec.dataset.section, open);
+    },
   };
 
   document.addEventListener('click', function(e) {
@@ -3635,10 +4365,14 @@ if (typeof document !== 'undefined') {
     fn(arg, arg2, el);
   }, true);
 
-  // Student selector change
+  // Student selector change + delegated select-change actions (data-action on <select>)
   document.addEventListener('change', function(e) {
-    if (e.target && e.target.id === 'db-student-select') {
-      switchStudent(e.target.value);
+    var t = e.target;
+    if (!t) return;
+    if (t.id === 'db-student-select') { switchStudent(t.value); return; }
+    if (t.tagName === 'SELECT' && t.dataset && t.dataset.action) {
+      var fn = _DB_ACTIONS[t.dataset.action];
+      if (fn) fn(t.dataset.arg !== undefined ? t.dataset.arg : null, t.value, t);
     }
   });
 }
@@ -3656,5 +4390,114 @@ if (typeof module !== 'undefined') {
     _parseTimerSettings,
     _isUnitUnlockedInDraft,
     _isLessonUnlockedInDraft,
+  };
+}
+
+// ── Dev-only mock quiz history injector ──────────────────────────────────
+// Browser console: window._injectMockQuizHistory(70)
+//                  window._clearMockQuizHistory()
+// Never called from production code — only for manual QA / scroll stress tests.
+if (typeof window !== 'undefined') {
+  var _MOCK_UNITS = [
+    { idx: 0, lessons: 4 },
+    { idx: 1, lessons: 4 },
+    { idx: 2, lessons: 4 },
+    { idx: 3, lessons: 3 },
+    { idx: 4, lessons: 4 },
+    { idx: 5, lessons: 4 },
+    { idx: 6, lessons: 3 },
+    { idx: 7, lessons: 3 },
+    { idx: 8, lessons: 3 },
+    { idx: 9, lessons: 3 },
+  ];
+  var _MOCK_COLORS = ['#4caf50','#2196f3','#ff9800','#e91e63','#9c27b0','#00bcd4','#8bc34a','#ff5722','#607d8b','#795548'];
+
+  window._injectMockQuizHistory = function(count) {
+    count = Math.max(1, Math.min(count || 70, 300));
+    var st = _students[_activeId];
+    if (!st) { console.warn('[MMR] No active student — open the parent dashboard first.'); return; }
+    if (!st.SCORES) st.SCORES = [];
+
+    var now = Date.now();
+    var entries = [];
+
+    for (var i = 0; i < count; i++) {
+      // Spread across last 400 days so all date-range chips get coverage
+      var daysBack = Math.floor(Math.random() * 400);
+      var ts = now - daysBack * 86400000 - Math.floor(Math.random() * 43200000);
+
+      var typeRoll = Math.random();
+      var type = typeRoll < 0.65 ? 'lesson' : (typeRoll < 0.85 ? 'unit' : 'final');
+      var unit = _MOCK_UNITS[Math.floor(Math.random() * _MOCK_UNITS.length)];
+
+      var qid;
+      if (type === 'lesson') {
+        var li = Math.floor(Math.random() * unit.lessons) + 1;
+        qid = 'lq_u' + (unit.idx + 1) + 'l' + li;
+      } else if (type === 'unit') {
+        qid = 'ut_u' + (unit.idx + 1);
+      } else {
+        qid = 'ft';
+      }
+
+      var total = type === 'lesson' ? 10 : (type === 'unit' ? 20 : 30);
+      // Skew toward mid-range to produce realistic pass/fail mix
+      var pct = Math.min(100, Math.max(0, Math.round(35 + Math.random() * 70)));
+      var score = Math.round(total * pct / 100);
+
+      var rawSecs = type === 'lesson' ? (60 + Math.floor(Math.random() * 300))
+                  : type === 'unit'   ? (120 + Math.floor(Math.random() * 600))
+                                      : (180 + Math.floor(Math.random() * 900));
+      var mm = Math.floor(rawSecs / 60);
+      var ss = rawSecs % 60;
+      var timeTaken = mm + ':' + (ss < 10 ? '0' : '') + ss;
+
+      var dt = new Date(ts);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dateStr = months[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
+      var hr = dt.getHours(); var mn = dt.getMinutes();
+      var timeStr = (hr % 12 || 12) + ':' + (mn < 10 ? '0' : '') + mn + ' ' + (hr < 12 ? 'AM' : 'PM');
+
+      entries.push({
+        _mock:     true,
+        id:        ts,
+        qid:       qid,
+        label:     type === 'lesson' ? 'Lesson Quiz' : (type === 'unit' ? 'Unit Test' : 'Final Test'),
+        type:      type,
+        score:     score,
+        total:     total,
+        pct:       pct,
+        stars:     pct >= 90 ? '★★★' : (pct >= 70 ? '★★' : '★'),
+        unitIdx:   unit.idx,
+        color:     _MOCK_COLORS[unit.idx % _MOCK_COLORS.length],
+        name:      'Mock Student',
+        timeTaken: timeTaken,
+        answers:   [],
+        date:      dateStr,
+        time:      timeStr,
+        quit:      false,
+        abandoned: false,
+      });
+    }
+
+    // Merge with existing scores, keep sorted newest-first
+    st.SCORES = st.SCORES.concat(entries);
+    st.SCORES.sort(function(a, b) { return (b.id || 0) - (a.id || 0); });
+
+    if (typeof _reRenderQuizHistory      === 'function') _reRenderQuizHistory();
+    if (typeof _reRenderActivitySnapshot === 'function') _reRenderActivitySnapshot();
+
+    console.log('[MMR] Injected ' + count + ' mock quiz entries. Total SCORES: ' + st.SCORES.length);
+    console.log('[MMR] Clear with: window._clearMockQuizHistory()');
+  };
+
+  window._clearMockQuizHistory = function() {
+    var st = _students[_activeId];
+    if (!st || !st.SCORES) { console.warn('[MMR] No active student.'); return; }
+    var before = st.SCORES.length;
+    st.SCORES = st.SCORES.filter(function(s) { return !s._mock; });
+    if (typeof _reRenderQuizHistory      === 'function') _reRenderQuizHistory();
+    if (typeof _reRenderActivitySnapshot === 'function') _reRenderActivitySnapshot();
+    console.log('[MMR] Cleared ' + (before - st.SCORES.length) + ' mock entries. Remaining: ' + st.SCORES.length);
   };
 }

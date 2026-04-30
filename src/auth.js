@@ -470,7 +470,7 @@ async function _hydrateStudentFromParentSession(studentId) {
             unitIdx: typeof r.unit_idx === 'number' ? r.unit_idx : 0,
             color: String(r.color||''),
             name: String(r.student_name||''), id: r.local_id,
-            timeTaken: typeof r.time_taken === 'number' ? r.time_taken : 0,
+            timeTaken: r.time_taken || 0,
             answers: Array.isArray(r.answers) ? r.answers : [],
             date: String(r.date_str||''), time: String(r.time_str||''),
             quit: !!r.quit, abandoned: !!r.abandoned
@@ -1600,7 +1600,7 @@ async function _pullStudentProgress(studentId) {
             unitIdx: typeof r.unit_idx === 'number' ? r.unit_idx : 0,
             color: String(r.color || ''),
             name: String(r.student_name || ''), id: r.local_id,
-            timeTaken: typeof r.time_taken === 'number' ? r.time_taken : 0,
+            timeTaken: r.time_taken || 0,
             answers: Array.isArray(r.answers) ? r.answers : [],
             date: String(r.date_str || ''), time: String(r.time_str || ''),
             quit: !!r.quit, abandoned: !!r.abandoned
@@ -1708,7 +1708,7 @@ async function _pullOnLogin(force){
           score:r.score, total:r.total, pct:r.pct, stars:String(r.stars||''),
           unitIdx:typeof r.unit_idx==='number'?r.unit_idx:0, color:String(r.color||''),
           name:String(r.student_name||''), id:r.local_id,
-          timeTaken:typeof r.time_taken==='number'?r.time_taken:0,
+          timeTaken: r.time_taken || 0,
           answers:Array.isArray(r.answers)?r.answers:[],
           date:String(r.date_str||''), time:String(r.time_str||''),
           quit:!!r.quit, abandoned:!!r.abandoned
