@@ -1556,7 +1556,10 @@ function _renderQuizHistoryInner(scores) {
     var pass     = (s.pct||0) >= _QH_PASS_THRESHOLD;
     var passBadge = '<span class="db-qh-badge db-qh-badge-' + (pass ? 'pass' : 'fail') + '">'
       + (pass ? 'Pass' : 'Fail') + '</span>';
-    var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel
+    var dateTime = (s.date || '') + (s.time ? ' &bull; ' + _esc(s.time) : '');
+    var dur = s.timeTaken ? _fmtSecs(_parseSecs(s.timeTaken)) : '';
+    var sub = dateTime + (dateTime ? ' &bull; ' : '') + tLabel
+      + (dur ? ' &bull; ' + dur : '')
       + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
       + ' &bull; ' + passBadge;
     return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s._originalIndex + '" role="button" tabindex="0">'
@@ -1631,18 +1634,60 @@ function openQuizReview(idx) {
     modal.id = 'db-review-modal';
     modal.className = 'db-review-modal';
     modal.innerHTML = '<div class="db-review-sheet" id="db-review-sheet">'
+      + '<div class="db-review-handle" aria-hidden="true"></div>'
       + '<div class="db-review-head" id="db-review-head"></div>'
       + '<div class="db-review-body" id="db-review-body"></div>'
       + '</div>';
     modal.addEventListener('click', function(e) { if (e.target === modal) closeQuizReview(); });
     document.body.appendChild(modal);
+    // Swipe-down-to-close touch handlers (sheet-level, created once)
+    var _swipeSheet = modal.querySelector('.db-review-sheet');
+    if (_swipeSheet) {
+      var _drag = { active: false, startY: 0, startX: 0, dy: 0 };
+      _swipeSheet.addEventListener('touchstart', function(e) {
+        var body = document.getElementById('db-review-body');
+        if (body && body.scrollTop > 0) { _drag.active = false; return; }
+        _drag.active = true;
+        _drag.startY = e.touches[0].clientY;
+        _drag.startX = e.touches[0].clientX;
+        _drag.dy = 0;
+        _swipeSheet.classList.remove('is-dragging');
+      }, { passive: true });
+      _swipeSheet.addEventListener('touchmove', function(e) {
+        if (!_drag.active) return;
+        var touch = e.touches[0];
+        var dy = touch.clientY - _drag.startY;
+        var dx = Math.abs(touch.clientX - _drag.startX);
+        if (dx > 20 && dx > dy) { _drag.active = false; return; }
+        if (dy <= 0) { _drag.dy = 0; return; }
+        _drag.dy = dy;
+        _swipeSheet.classList.add('is-dragging');
+        _swipeSheet.style.transform = 'translateY(' + dy + 'px)';
+        _swipeSheet.style.opacity = String(Math.max(0.6, 1 - dy / 400));
+      }, { passive: true });
+      _swipeSheet.addEventListener('touchend', function() {
+        if (!_drag.active) return;
+        _drag.active = false;
+        _swipeSheet.classList.remove('is-dragging');
+        if (_drag.dy > 80) {
+          _swipeSheet.style.transform = '';
+          _swipeSheet.style.opacity = '';
+          closeQuizReview();
+        } else {
+          _swipeSheet.style.transform = '';
+          _swipeSheet.style.opacity = '';
+        }
+      }, { passive: true });
+    }
   }
 
+  var _rDateTime = _esc(s.date || '') + (s.time ? ' &bull; ' + _esc(s.time) : '');
+  var _rDur = s.timeTaken ? _fmtSecs(_parseSecs(s.timeTaken)) : '';
   document.getElementById('db-review-head').innerHTML =
     '<button class="db-review-close" data-action="closeQuizReview">&#x2715;</button>'
     + '<div class="db-review-title">' + dispLabel + '</div>'
-    + '<div class="db-review-meta">' + _esc(s.date || '') + (s.date ? ' &bull; ' : '') + tLabel
-      + (s.timeTaken ? ' &bull; &#x23F1; ' + _esc(s.timeTaken) + ' mins' : '') + '</div>'
+    + '<div class="db-review-meta">' + _rDateTime + (_rDateTime ? ' &bull; ' : '') + tLabel
+      + (_rDur ? ' &bull; ' + _rDur : '') + '</div>'
     + '<div class="db-review-score" style="color:' + pctColor + '">' + s.pct + '%'
       + ' <span class="db-review-frac">' + (s.score||0) + '/' + (s.total||0) + '</span></div>';
 
@@ -1654,7 +1699,10 @@ function openQuizReview(idx) {
 
 function closeQuizReview() {
   var modal = document.getElementById('db-review-modal');
-  if (modal) modal.classList.remove('open');
+  if (!modal) return;
+  modal.classList.remove('open');
+  var sheet = document.getElementById('db-review-sheet');
+  if (sheet) { sheet.style.transform = ''; sheet.style.opacity = ''; sheet.classList.remove('is-dragging'); }
 }
 
 // ── AI Report ─────────────────────────────────────────────────────────────
