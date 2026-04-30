@@ -336,7 +336,7 @@ body{ font-family:var(--font-body); font-size:20px; background-color:var(--neutr
          (Duolingo-style). No safe-area padding here — inner containers
          (.home-in, .db-header, .db-ai-footer-wrap, .bar, .sc-in, etc.)
          own their own safe-area inset via --safe-top / --safe-bottom. */
-      min-height:100dvh; height:100dvh; width:100%; margin:0;
+      min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh; width:100%; margin:0;
       transition:background .3s, color .3s;
       /* Prevent iOS rubber-band & callouts */
       overscroll-behavior:none;
@@ -347,7 +347,7 @@ body{ font-family:var(--font-body); font-size:20px; background-color:var(--neutr
 input, textarea { -webkit-user-select:text; user-select:text; }
 /* Prevent pull-to-refresh; html fills full dynamic viewport so background
    paints edge-to-edge behind the iPhone home-indicator zone. */
-html { overscroll-behavior-y:none; overflow:hidden; min-height:100dvh; height:100dvh; background-color:var(--neutral-50); }
+html { overscroll-behavior-y:none; overflow:hidden; min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh; background-color:var(--neutral-50); }
 body.dark, html:has(body.dark){ background-color:#08121e; }
 button{ -webkit-appearance:none; font-family:inherit;
   touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
@@ -364,7 +364,7 @@ button{ -webkit-appearance:none; font-family:inherit;
      background-image:var(--app-bg-svg), var(--home-grad);
      background-size:480px 480px, 100% 100%; background-repeat:repeat, no-repeat;
      z-index:var(--z-screen); overscroll-behavior:contain;
-     min-height:100dvh; }
+     min-height:100dvh; min-height:100lvh; }
 /* Login screen: vibrant gradient so white card/title have proper contrast */
 #login-screen{
   background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1a4a7a 100%);
@@ -388,7 +388,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
    children can't see prevEl bleeding through */
 .sc.swipe-active{ background-image:var(--app-bg-svg), var(--home-grad) !important;
      background-size:480px 480px, 100% 100% !important; background-repeat:repeat, no-repeat !important; }
-.sc.on{ display:block; min-height:100dvh; }
+.sc.on{ display:block; min-height:100dvh; min-height:100lvh; }
 
 /* ── TOP BAR ── */
 .bar{ position:sticky; top:0; z-index:var(--z-sticky); background:var(--bar-bg);
@@ -431,9 +431,9 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
 #home{ background-color:transparent;
        overflow-y:auto; overflow-x:hidden;
        -webkit-overflow-scrolling:touch;
-       position:fixed; inset:0; min-height:100dvh; }
+       position:fixed; inset:0; min-height:100dvh; min-height:100lvh; }
 .home-in{ position:relative; z-index:var(--z-relative); max-width:640px; margin:0 auto;
-          width:100%; min-height:100dvh; height:100dvh;
+          width:100%; min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh;
           display:flex; flex-direction:column; }
 
 /* Home screen — no outer scroll, fits viewport exactly.
@@ -444,7 +444,7 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
    model: background extends edge-to-edge, only buttons inset). */
 #home{ overflow:hidden; }
 #home .home-in{
-  min-height:100dvh; height:100dvh;
+  min-height:100dvh; min-height:100lvh; height:100dvh; height:100lvh;
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
 }
@@ -2525,8 +2525,8 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 /* ════════════════════════════════════════
    PARENT DASHBOARD — scoped to #dashboard-screen
    ════════════════════════════════════════ */
-#dashboard-screen { background:#f0f4f8; overflow:hidden; font-family:var(--font-parent); min-height:100dvh; }
-#dashboard-screen.on { display:flex; flex-direction:column; min-height:100dvh; }
+#dashboard-screen { background:#f0f4f8; overflow:hidden; font-family:var(--font-parent); min-height:100dvh; min-height:100lvh; }
+#dashboard-screen.on { display:flex; flex-direction:column; min-height:100dvh; min-height:100lvh; }
 body.dark #dashboard-screen { background:#0d1626; }
 
 #dashboard-screen .db-header {
