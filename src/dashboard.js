@@ -3555,10 +3555,20 @@ function _renderDashboardOnly() {
 if (typeof document !== 'undefined') {
   var _DB_ACTIONS = {
     dbGoToApp:               function()     {
-      if (_activeId === 'local' || !_activeId) return;
+      console.log('[MMR DASHBOARD] dbGoToApp', {activeId: _activeId, managedCount: (_managedProfiles||[]).length, hasShared: typeof enterStudentLearningSession});
+      if (_activeId === 'local' || !_activeId) {
+        console.warn('[MMR DASHBOARD] dbGoToApp aborted (no real student selected)');
+        return;
+      }
       var profile = (_managedProfiles || []).find(function(p){ return p.id === _activeId; });
-      if (!profile) return;
-      if (typeof enterStudentLearningSession !== 'function') return;
+      if (!profile) {
+        console.warn('[MMR DASHBOARD] dbGoToApp aborted (profile not found in _managedProfiles)', _activeId);
+        return;
+      }
+      if (typeof enterStudentLearningSession !== 'function') {
+        console.error('[MMR DASHBOARD] dbGoToApp aborted (enterStudentLearningSession not available — bundle issue)');
+        return;
+      }
       enterStudentLearningSession({
         studentProfileId: _activeId,
         profile:          profile,

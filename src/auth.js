@@ -314,8 +314,13 @@ async function enterStudentLearningSession(opts) {
   var studentId    = opts.studentProfileId;
   var profile      = opts.profile;
   var sessionToken = opts.sessionToken || null;
-  if (!studentId || !profile) return;
+  var source       = opts.source || 'unknown';
+  if (!studentId || !profile) {
+    console.warn('[MMR SESSION] enterStudentLearningSession aborted (missing id/profile)', {studentId, hasProfile: !!profile, source});
+    return;
+  }
   var parentAuthed = !!_supaUser;
+  console.log('[MMR SESSION] enterStudentLearningSession', {source, studentId, parentAuthed, hasSessionToken: !!sessionToken});
 
   // 1. Persist identity
   if (sessionToken) {
@@ -374,6 +379,14 @@ async function enterStudentLearningSession(opts) {
   if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
   if (typeof tutCheckAndShow === 'function') setTimeout(tutCheckAndShow, 1500);
+  console.log('[MMR STORAGE]', {
+    role: localStorage.getItem('mmr_user_role'),
+    activeStudent: localStorage.getItem('mmr_active_student_id'),
+    sessionToken: !!localStorage.getItem('mmr_session_token'),
+    guest: localStorage.getItem('wb_guest_mode'),
+    resume: localStorage.getItem('mmr_resume_student_session'),
+    grade: localStorage.getItem('mmr_grade')
+  });
 
   // 5. Cloud sync — branch by source
   if (sessionToken) {
@@ -924,6 +937,7 @@ function supabaseInit(){
         var _resumeFlag = localStorage.getItem('mmr_resume_student_session');
         var _resumeSid  = localStorage.getItem('mmr_active_student_id');
         if (_resumeFlag === '1' && _resumeSid && localStorage.getItem('mmr_user_role') === 'student') {
+          console.log('[MMR AUTH] INITIAL_SESSION student restore -> hydrate student', {studentId: _resumeSid});
           localStorage.removeItem('mmr_resume_student_session');
           await restoreStudentLearningSessionFromStorage(_resumeSid);
           if (typeof _renderCalBtn === 'function') _renderCalBtn();
@@ -933,6 +947,7 @@ function supabaseInit(){
         // Normal parent return — even if mmr_user_role==='student' is stale in
         // localStorage from a closed mid-session tab, treat this as a parent visit
         // and route to the parent dashboard.
+        console.log('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role'), staleResumeFlag: _resumeFlag});
         localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
         localStorage.setItem('mmr_user_role', 'parent');
@@ -972,6 +987,7 @@ function supabaseInit(){
     } else if(event === 'SIGNED_IN'){
       // Fresh OAuth sign-in — always a parent. A resume cannot legitimately
       // produce SIGNED_IN (only INITIAL_SESSION), so clear any stale resume flag.
+      console.log('[MMR AUTH] SIGNED_IN parent route -> dashboard');
       localStorage.removeItem('wb_guest_mode');
       localStorage.removeItem('mmr_resume_student_session');
       await _pullOnLogin();
@@ -1027,6 +1043,7 @@ function _continueAsGuest() {
 }
 
 function _proceedAsGuest() {
+  console.log('[MMR GUEST] entering guest mode');
   document.getElementById('soft-gate-modal')?.remove();
   localStorage.removeItem('mmr_user_role');
   localStorage.setItem('wb_guest_mode', '1');
@@ -2698,7 +2715,10 @@ async function _parentGateEmailSignIn(){
     localStorage.setItem('mmr_user_role', 'parent');
     var modal = document.getElementById('parent-gate-modal');
     if(modal) modal.remove();
-    show('home'); buildHome(); _renderCalBtn(); _installHistoryGuard();
+    console.log('[MMR AUTH] parent-gate email sign-in success -> dashboard');
+    show('dashboard-screen');
+    if(typeof _dbInit === 'function') _dbInit();
+    if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
   } catch(e){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='Sign in failed. Please try again.'; }
   }

@@ -201,8 +201,16 @@ setTimeout(() => {
     _dismissSplash();
     const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
-      show('home'); buildHome(); _installHistoryGuard();
+      // Parent Supabase session present — route to parent dashboard.
+      // (Student sessions never sit behind a 5s+ splash — they hydrate
+      // synchronously from localStorage. If a grade-switch resume is in
+      // flight, the INITIAL_SESSION handler already consumed the flag.)
+      console.log('[MMR AUTH] safety-net 8s timeout, _supaUser present -> dashboard');
+      show('dashboard-screen');
+      if(typeof _dbInit === 'function') _dbInit();
+      if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
     } else if(localStorage.getItem('wb_guest_mode') === '1'){
+      console.log('[MMR AUTH] safety-net 8s timeout, guest mode -> home');
       buildHome(); show('home');
     } else if(_isLocal2 && new URLSearchParams(location.search).get('preview') === '1'){
       const _tsN2 = parseInt(new URLSearchParams(location.search).get('testStreak')) || 7;

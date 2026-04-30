@@ -179,6 +179,7 @@ function psSelectProfile(id){
   // PIN-only context (student logged in via family code, switching siblings).
   if (typeof _supaUser !== 'undefined' && _supaUser
       && typeof enterStudentLearningSession === 'function') {
+    console.log('[MMR SWITCHER] parent authed, bypassing PIN for studentId=' + id);
     closeProfileSwitcher();
     enterStudentLearningSession({
       studentProfileId: profile.id,
