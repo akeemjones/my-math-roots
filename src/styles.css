@@ -36,6 +36,16 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
+  /* ─── SAFE-AREA INSETS (single source of truth) ───
+     iPhone home-indicator / Dynamic Island insets. Containers that need to
+     respect them should reference these variables, not env() directly, so the
+     fallback (0px on devices without insets) is consistent everywhere. */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --bottom-action-gap: 10px;
+
   /* ─── TYPE SCALE ─── */
   --fs-xs:   0.72rem;  /* ~11.5px – tiny badges, counters */
   --fs-sm:   0.85rem;  /* ~13.5px – secondary labels, hints */
@@ -321,10 +331,11 @@ input[type="range"]{ touch-action:pan-x; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
 body{ font-family:var(--font-body); font-size:20px; background-color:var(--neutral-50);
       color:var(--txt); overflow:hidden; height:100%; width:100%;
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
+      /* No safe-area padding here — inner containers (.home-in, .db-header,
+         .db-ai-footer-wrap, .bar, .sc-in, etc.) own their own safe-area
+         spacing via --safe-top / --safe-bottom. Adding it here would
+         double-count in iOS standalone mode (visible as a large blank gap
+         below sticky/floating bottom buttons). */
       transition:background .3s, color .3s;
       /* Prevent iOS rubber-band & callouts */
       overscroll-behavior:none;
@@ -412,12 +423,19 @@ body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:n
        -webkit-overflow-scrolling:touch;
        position:fixed; inset:0; }
 .home-in{ position:relative; z-index:var(--z-relative); max-width:640px; margin:0 auto;
-          width:100%; height:100dvh;
+          width:100%; min-height:100dvh; height:100dvh;
           display:flex; flex-direction:column; }
 
-/* Home screen — no outer scroll, fits viewport exactly */
+/* Home screen — no outer scroll, fits viewport exactly.
+   Pad both safe-areas as part of the container so the last flex child
+   (.scores-link / Score History) sits just above the home indicator
+   instead of leaving a safe-area-sized blank band below it. */
 #home{ overflow:hidden; }
-#home .home-in{ height:calc(100dvh - env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+#home .home-in{
+  height:100dvh;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
 
 /* Hero compact */
 .hero{ text-align:center; padding:10px 16px 6px; }
@@ -2668,7 +2686,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 .db-rev-correct { font-size:var(--db-text-sm); color:var(--neutral-600); margin-bottom:2px; }
 .db-rev-time  { font-size:var(--db-text-xs); color:var(--neutral-500); margin-top:2px; }
 .db-rev-empty { font-size:.88rem; color:var(--neutral-500); text-align:center; padding:20px 0; }
-#dashboard-screen .db-ai-footer-wrap { position:sticky; bottom:0; background:var(--neutral-50); border-top:1px solid var(--border); padding:12px 16px; text-align:center; flex-shrink:0; }
+#dashboard-screen .db-ai-footer-wrap { position:sticky; bottom:0; background:var(--neutral-50); border-top:1px solid var(--border); padding:12px 16px calc(var(--bottom-action-gap) + var(--safe-bottom)); text-align:center; flex-shrink:0; }
 #dashboard-screen .db-ai-gen-btn  { background:var(--accent); color:var(--accent-ink); border:none; border-radius:50px; padding:12px 28px; font-size:.95rem; font-family:'Boogaloo','Arial Rounded MT Bold',system-ui,sans-serif; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.18); }
 #dashboard-screen .db-ai-powered  { font-size:.72rem; color:var(--neutral-500); margin-top:5px; }
 #dashboard-screen .db-ai-footer-btns { display:flex; gap:10px; justify-content:center; }

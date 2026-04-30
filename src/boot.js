@@ -93,7 +93,7 @@ const _APP_GLOBALS = [
   // events.js
   // (all exports are block-scoped inside the IIFE — no globals registered)
   // boot.js
-  '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate',
+  '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate','_debugSafeArea',
 ];
 
 if (location.hostname === 'localhost') {
@@ -112,6 +112,68 @@ if (location.hostname === 'localhost') {
 // ════════════════════════════════════════
 //  BOOT
 // ════════════════════════════════════════
+
+// ════════════════════════════════════════
+//  SAFE-AREA DEBUG HELPER
+//  Temporary helper for diagnosing the iOS standalone bottom safe-area
+//  layout. Call window._debugSafeArea() from Safari Web Inspector while
+//  the app is open from the iPhone Home Screen to see all relevant values.
+// ════════════════════════════════════════
+function _debugSafeArea(){
+  var probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;left:-9999px;'
+    + 'padding-top:env(safe-area-inset-top,0px);'
+    + 'padding-bottom:env(safe-area-inset-bottom,0px);'
+    + 'padding-left:env(safe-area-inset-left,0px);'
+    + 'padding-right:env(safe-area-inset-right,0px);';
+  document.body.appendChild(probe);
+  var cs = getComputedStyle(probe);
+  var insets = {
+    top:    cs.paddingTop,
+    bottom: cs.paddingBottom,
+    left:   cs.paddingLeft,
+    right:  cs.paddingRight
+  };
+  document.body.removeChild(probe);
+
+  function _get(sel){
+    var el = document.querySelector(sel);
+    if(!el) return { selector: sel, found: false };
+    var s = getComputedStyle(el);
+    return {
+      selector:       sel,
+      found:          true,
+      bottom:         s.bottom,
+      paddingBottom:  s.paddingBottom,
+      paddingTop:     s.paddingTop,
+      height:         s.height,
+      position:       s.position
+    };
+  }
+
+  var info = {
+    innerHeight:      window.innerHeight,
+    visualViewportH:  window.visualViewport ? window.visualViewport.height : null,
+    visualViewportO:  window.visualViewport ? window.visualViewport.offsetTop : null,
+    documentClientH:  document.documentElement.clientHeight,
+    devicePixelRatio: window.devicePixelRatio,
+    safeAreaInsets:   insets,
+    standaloneNav:    !!window.navigator.standalone,
+    standaloneMM:     window.matchMedia && window.matchMedia('(display-mode: standalone)').matches,
+    fullscreenMM:     window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches,
+    browserMM:        window.matchMedia && window.matchMedia('(display-mode: browser)').matches,
+    elements: {
+      generateReportFooter: _get('#dashboard-screen .db-ai-footer-wrap'),
+      generateReportBtn:    _get('#dashboard-screen .db-ai-gen-btn'),
+      scoreHistoryWrap:     _get('#home #history-link'),
+      scoreHistoryBtn:      _get('#home #history-link .big-btn'),
+      homeIn:               _get('#home .home-in'),
+      dashboardMain:        _get('#dashboard-screen .db-main')
+    }
+  };
+  console.log('[MMR SAFE-AREA]', info);
+  return info;
+}
 
 // ── Lazy-load fonts CSS (moved out of inline HTML to save ~1MB on initial load) ──
 (function _loadFonts(){
