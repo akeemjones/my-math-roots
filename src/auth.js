@@ -2886,7 +2886,26 @@ async function switchGrade(newGrade){
   await new Promise(function(resolve){ setTimeout(resolve, 280); });
   localStorage.setItem('mmr_grade', newGrade);
   console.log('GRADE SAVED:', localStorage.getItem('mmr_grade'));
-  // Preserve guest mode across reload so boot.js fast-path fires
-  if(!_supaUser) localStorage.setItem('wb_guest_mode', '1');
+  var _sid = localStorage.getItem('mmr_active_student_id');
+  if(_supaUser && _sid && localStorage.getItem('mmr_user_role') === 'student') {
+    try {
+      var _ng = (typeof normalizeGrade === 'function') ? normalizeGrade(newGrade) : newGrade;
+      // Update per-profile cache so _dbResolveProfileGrade() returns new grade on restore
+      localStorage.setItem('mmr_profile_grade_' + _sid, _ng);
+      // Update mmr_family_profiles cache so enterStudentLearningSession doesn't revert grade
+      try {
+        var _fp = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]');
+        var _pi = _fp.findIndex(function(p){ return p && p.id === _sid; });
+        if(_pi !== -1){ _fp[_pi] = Object.assign({}, _fp[_pi], { grade: _ng }); localStorage.setItem('mmr_family_profiles', JSON.stringify(_fp)); }
+      } catch(_e) {}
+      // Signal INITIAL_SESSION to restore student learning view (not dashboard)
+      localStorage.setItem('mmr_resume_student_session', '1');
+      // Fire-and-forget Supabase persistence
+      if(_supa){ _supa.from('profiles').update({ grade: _ng, updated_at: new Date().toISOString() }).eq('id', _sid).then(function(){}).catch(function(e){ console.warn('[grade switch] Supabase profile update failed', e); }); }
+    } catch(_e) {}
+  } else if(!_supaUser) {
+    // Preserve guest mode across reload so boot.js fast-path fires
+    localStorage.setItem('wb_guest_mode', '1');
+  }
   location.reload();
 }
