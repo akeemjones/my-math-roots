@@ -205,10 +205,15 @@ setTimeout(() => {
       // (Student sessions never sit behind a 5s+ splash — they hydrate
       // synchronously from localStorage. If a grade-switch resume is in
       // flight, the INITIAL_SESSION handler already consumed the flag.)
-      console.log('[MMR AUTH] safety-net 8s timeout, _supaUser present -> dashboard');
-      show('dashboard-screen');
-      if(typeof _dbInit === 'function') _dbInit();
-      if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
+      // Defense-in-depth: if any learning context is observable, suppress nav.
+      if (typeof _shouldSuppressAuthNavigation === 'function' && _shouldSuppressAuthNavigation()) {
+        console.log('[MMR AUTH] safety-net 8s timeout suppressed — active learning context');
+      } else {
+        console.log('[MMR AUTH] safety-net 8s timeout, _supaUser present -> dashboard');
+        show('dashboard-screen');
+        if(typeof _dbInit === 'function') _dbInit();
+        if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
+      }
     } else if(localStorage.getItem('wb_guest_mode') === '1'){
       console.log('[MMR AUTH] safety-net 8s timeout, guest mode -> home');
       buildHome(); show('home');

@@ -8,6 +8,10 @@ let _supa      = null;
 let _supaUser  = null;
 let _authLoading = false;
 
+// True after the first INITIAL_SESSION processes. Used only for idempotency on
+// INITIAL_SESSION re-fires — does NOT participate in the suppress-navigation gate.
+var _authInitialSessionHandled = false;
+
 let _sessionToken = localStorage.getItem('mmr_session_token') || null;
 
 function _isStudentSession(){
@@ -909,6 +913,31 @@ function _installHistoryGuard(){
   });
 }
 
+// DOM-level signal: a learning-app screen is visible right now.
+function _isOnLearningScreen() {
+  var ids = ['home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen'];
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    if (el && el.classList.contains('on')) return true;
+  }
+  return false;
+}
+
+// Authoritative composite gate: the user is currently using the learning app
+// in any observable form. Independent of _authInitialSessionHandled — even
+// during boot, if any of these signals are true we must not redirect.
+//   1. localStorage role + active_student_id (set by enterStudentLearningSession)
+//   2. DOM: a learning screen is visible
+//   3. CUR.quiz is non-null (a quiz is running)
+// Any one of the three is sufficient to suppress.
+function _shouldSuppressAuthNavigation() {
+  var inLearningSession = localStorage.getItem('mmr_user_role') === 'student'
+    && !!localStorage.getItem('mmr_active_student_id')
+    && !localStorage.getItem('wb_guest_mode');
+  var inQuiz = !!(typeof CUR !== 'undefined' && CUR && CUR.quiz);
+  return inLearningSession || _isOnLearningScreen() || inQuiz;
+}
+
 function supabaseInit(){
   if(typeof supabase === 'undefined' || !SUPA_URL || !SUPA_KEY){
     // CDN failed or credentials not set — dismiss splash and show login so user isn't stuck
@@ -931,26 +960,58 @@ function supabaseInit(){
   _supa.auth.onAuthStateChange(async (event, session) => {
     _supaUser = session ? session.user : null;
     updateAccountUI();
+    console.log('[MMR AUTH EVENT]', event, {
+      role:           localStorage.getItem('mmr_user_role'),
+      activeStudent:  localStorage.getItem('mmr_active_student_id'),
+      resume:         localStorage.getItem('mmr_resume_student_session'),
+      guest:          localStorage.getItem('wb_guest_mode'),
+      initialHandled: _authInitialSessionHandled,
+      onLearningScr:  _isOnLearningScreen(),
+      inQuiz:         !!(typeof CUR !== 'undefined' && CUR && CUR.quiz)
+    });
     if(event === 'INITIAL_SESSION'){
-      if(_supaUser){
-        // Intentional in-session reload (only set by enterStudentLearningSession's
-        // grade-switch path). Restore the student learning view directly — do NOT
-        // run _pullOnLogin (parent global-pull would clobber the student state,
-        // which is the original parent → student bug).
+      // (0) Resume from grade-switch reload: must run before any suppress gate,
+      //     because role='student' + resume='1' would also satisfy the suppress
+      //     check, but here the navigation IS intended.
+      if (_supaUser) {
         var _resumeFlag = localStorage.getItem('mmr_resume_student_session');
         var _resumeSid  = localStorage.getItem('mmr_active_student_id');
         if (_resumeFlag === '1' && _resumeSid && localStorage.getItem('mmr_user_role') === 'student') {
           console.log('[MMR AUTH] INITIAL_SESSION student restore -> hydrate student', {studentId: _resumeSid});
+          _authInitialSessionHandled = true;
           localStorage.removeItem('mmr_resume_student_session');
           await restoreStudentLearningSessionFromStorage(_resumeSid);
           if (typeof _renderCalBtn === 'function') _renderCalBtn();
           _dismissSplash();
           return;
         }
+      }
+      // (i) Suppress: any other learning context → no nav, just dismiss splash.
+      if (_shouldSuppressAuthNavigation()) {
+        console.log('[MMR AUTH] INITIAL_SESSION ignored — active learning context', {
+          role:          localStorage.getItem('mmr_user_role'),
+          activeStudent: localStorage.getItem('mmr_active_student_id'),
+          onLearningScr: _isOnLearningScreen(),
+          inQuiz:        !!(typeof CUR !== 'undefined' && CUR && CUR.quiz),
+          initialHandled: _authInitialSessionHandled
+        });
+        _authInitialSessionHandled = true;
+        if (typeof _dismissSplash === 'function') _dismissSplash();
+        return;
+      }
+      // (ii) Idempotency: if INITIAL_SESSION re-fires after we've already routed,
+      //      do nothing (defensive — Supabase normally fires it once per registration).
+      if (_authInitialSessionHandled) {
+        console.log('[MMR AUTH] INITIAL_SESSION re-fire ignored');
+        return;
+      }
+      _authInitialSessionHandled = true;
+      // (iii) Existing routing.
+      if(_supaUser){
         // Normal parent return — even if mmr_user_role==='student' is stale in
         // localStorage from a closed mid-session tab, treat this as a parent visit
         // and route to the parent dashboard.
-        console.log('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role'), staleResumeFlag: _resumeFlag});
+        console.log('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role')});
         localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
         localStorage.setItem('mmr_user_role', 'parent');
@@ -988,6 +1049,18 @@ function supabaseInit(){
         _dismissSplash();
       }
     } else if(event === 'SIGNED_IN'){
+      // Suppress on token refresh, session restore, or visibility-fired SIGNED_IN
+      // while the user is in any observable learning context. Stands alone — no
+      // dependency on _authInitialSessionHandled.
+      if (_shouldSuppressAuthNavigation()) {
+        console.log('[MMR AUTH] SIGNED_IN ignored — active learning/quiz screen', {
+          role:          localStorage.getItem('mmr_user_role'),
+          activeStudent: localStorage.getItem('mmr_active_student_id'),
+          onLearningScr: _isOnLearningScreen(),
+          inQuiz:        !!(typeof CUR !== 'undefined' && CUR && CUR.quiz)
+        });
+        return;
+      }
       // Fresh OAuth sign-in — always a parent. A resume cannot legitimately
       // produce SIGNED_IN (only INITIAL_SESSION), so clear any stale resume flag.
       console.log('[MMR AUTH] SIGNED_IN parent route -> dashboard');
