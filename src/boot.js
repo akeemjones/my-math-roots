@@ -93,7 +93,8 @@ const _APP_GLOBALS = [
   // events.js
   // (all exports are block-scoped inside the IIFE — no globals registered)
   // boot.js
-  '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate','_debugSafeArea',
+  '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate',
+  '_debugSafeArea','_enableSafeAreaDebug','_disableSafeAreaDebug',
 ];
 
 if (location.hostname === 'localhost') {
@@ -114,11 +115,44 @@ if (location.hostname === 'localhost') {
 // ════════════════════════════════════════
 
 // ════════════════════════════════════════
-//  SAFE-AREA DEBUG HELPER
-//  Temporary helper for diagnosing the iOS standalone bottom safe-area
-//  layout. Call window._debugSafeArea() from Safari Web Inspector while
-//  the app is open from the iPhone Home Screen to see all relevant values.
+//  SAFE-AREA DEBUG HELPERS  (build: safe-area-debug-v6.0.1)
+//  Temporary helpers for diagnosing the iOS standalone bottom safe-area
+//  layout. Call from Safari Web Inspector while the app is open from the
+//  iPhone Home Screen:
+//    window._enableSafeAreaDebug()   -- paints each layer a distinct color
+//    window._debugSafeArea()         -- prints viewport / standalone / computed-style report
+//    window._disableSafeAreaDebug()  -- removes overlay
 // ════════════════════════════════════════
+var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.1';
+var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.1-debug';
+
+function _enableSafeAreaDebug(){
+  document.documentElement.classList.add('safe-area-debug');
+  if(!document.getElementById('sa-debug-bar')){
+    var bar = document.createElement('div');
+    bar.id = 'sa-debug-bar';
+    document.body.appendChild(bar);
+  }
+  console.log('[MMR SAFE-AREA] debug overlay ENABLED — call _debugSafeArea() for the report, _disableSafeAreaDebug() to remove.');
+}
+function _disableSafeAreaDebug(){
+  document.documentElement.classList.remove('safe-area-debug');
+  var bar = document.getElementById('sa-debug-bar');
+  if(bar) bar.remove();
+  console.log('[MMR SAFE-AREA] debug overlay DISABLED.');
+}
+
+// Probes whether the .safe-area-debug CSS rule actually shipped in the
+// served HTML by toggling the class and reading the computed background.
+// Returns true iff html.safe-area-debug paints rgb(255, 0, 0).
+function _hasSafeAreaDebugCss(){
+  var hadClass = document.documentElement.classList.contains('safe-area-debug');
+  if(!hadClass) document.documentElement.classList.add('safe-area-debug');
+  var bg = getComputedStyle(document.documentElement).backgroundColor;
+  if(!hadClass) document.documentElement.classList.remove('safe-area-debug');
+  return /rgba?\(\s*255\s*,\s*0\s*,\s*0/.test(bg);
+}
+
 function _debugSafeArea(){
   var probe = document.createElement('div');
   probe.style.cssText = 'position:fixed;left:-9999px;'
@@ -127,48 +161,100 @@ function _debugSafeArea(){
     + 'padding-left:env(safe-area-inset-left,0px);'
     + 'padding-right:env(safe-area-inset-right,0px);';
   document.body.appendChild(probe);
-  var cs = getComputedStyle(probe);
-  var insets = {
-    top:    cs.paddingTop,
-    bottom: cs.paddingBottom,
-    left:   cs.paddingLeft,
-    right:  cs.paddingRight
-  };
+  var pcs = getComputedStyle(probe);
+  var insets = { top: pcs.paddingTop, bottom: pcs.paddingBottom, left: pcs.paddingLeft, right: pcs.paddingRight };
   document.body.removeChild(probe);
 
-  function _get(sel){
+  function _rect(sel){
     var el = document.querySelector(sel);
     if(!el) return { selector: sel, found: false };
+    var r = el.getBoundingClientRect();
     var s = getComputedStyle(el);
     return {
-      selector:       sel,
-      found:          true,
-      bottom:         s.bottom,
-      paddingBottom:  s.paddingBottom,
-      paddingTop:     s.paddingTop,
-      height:         s.height,
-      position:       s.position
+      selector: sel,
+      found: true,
+      rect: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width, height: r.height },
+      computed: {
+        position:        s.position,
+        top:             s.top,
+        bottom:          s.bottom,
+        left:            s.left,
+        right:           s.right,
+        width:           s.width,
+        height:          s.height,
+        minHeight:       s.minHeight,
+        paddingTop:      s.paddingTop,
+        paddingBottom:   s.paddingBottom,
+        backgroundColor: s.backgroundColor,
+        backgroundImage: s.backgroundImage,
+        zIndex:          s.zIndex,
+        overflow:        s.overflow
+      }
     };
   }
 
+  var activeScreen = document.querySelector('.sc.on');
+  var activeId = activeScreen ? activeScreen.id : null;
+
+  var htmlCS = getComputedStyle(document.documentElement);
+  var bodyCS = getComputedStyle(document.body);
+
   var info = {
-    innerHeight:      window.innerHeight,
-    visualViewportH:  window.visualViewport ? window.visualViewport.height : null,
-    visualViewportO:  window.visualViewport ? window.visualViewport.offsetTop : null,
-    documentClientH:  document.documentElement.clientHeight,
-    devicePixelRatio: window.devicePixelRatio,
-    safeAreaInsets:   insets,
-    standaloneNav:    !!window.navigator.standalone,
-    standaloneMM:     window.matchMedia && window.matchMedia('(display-mode: standalone)').matches,
-    fullscreenMM:     window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches,
-    browserMM:        window.matchMedia && window.matchMedia('(display-mode: browser)').matches,
+    // ── Build identity (proves the iPhone is on the new debug build) ──
+    debugBuild:               _SAFE_AREA_DEBUG_BUILD,
+    swExpectedCache:          _SAFE_AREA_DEBUG_SW_CACHE,
+    safeAreaDebugCssPresent:  _hasSafeAreaDebugCss(),
+    documentURL:              location.href,
+    userAgent:                navigator.userAgent,
+
+    // Viewport meta (proves the served value)
+    viewportMeta: (function(){
+      var m = document.querySelector('meta[name="viewport"]');
+      return m ? m.content : '(MISSING)';
+    })(),
+
+    standalone: {
+      navigatorStandalone: !!window.navigator.standalone,
+      mmStandalone:        window.matchMedia && window.matchMedia('(display-mode: standalone)').matches,
+      mmFullscreen:        window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches,
+      mmBrowser:           window.matchMedia && window.matchMedia('(display-mode: browser)').matches
+    },
+
+    viewport: {
+      innerHeight:                window.innerHeight,
+      outerHeight:                window.outerHeight,
+      visualViewportH:            window.visualViewport ? window.visualViewport.height : null,
+      visualViewportO:            window.visualViewport ? window.visualViewport.offsetTop : null,
+      documentElementClientH:     document.documentElement.clientHeight,
+      bodyClientH:                document.body.clientHeight,
+      htmlComputedHeight:         htmlCS.height,
+      bodyComputedHeight:         bodyCS.height,
+      htmlComputedBgColor:        htmlCS.backgroundColor,
+      bodyComputedBgColor:        bodyCS.backgroundColor,
+      devicePixelRatio:           window.devicePixelRatio
+    },
+
+    safeAreaInsets: insets,
+
+    activeScreenId: activeId,
+    activeScreen:   activeScreen ? _rect('#' + activeId) : null,
+
     elements: {
-      generateReportFooter: _get('#dashboard-screen .db-ai-footer-wrap'),
-      generateReportBtn:    _get('#dashboard-screen .db-ai-gen-btn'),
-      scoreHistoryWrap:     _get('#home #history-link'),
-      scoreHistoryBtn:      _get('#home #history-link .big-btn'),
-      homeIn:               _get('#home .home-in'),
-      dashboardMain:        _get('#dashboard-screen .db-main')
+      html:                _rect('html'),
+      body:                _rect('body'),
+      home:                _rect('#home'),
+      dashboardScreen:     _rect('#dashboard-screen'),
+      homeIn:              _rect('#home .home-in'),
+      dbAiFooterWrap:      _rect('#dashboard-screen .db-ai-footer-wrap'),
+      historyLink:         _rect('#history-link'),
+      historyLinkBigBtn:   _rect('#home #history-link .big-btn'),
+      generateReportBtn:   _rect('#dashboard-screen .db-ai-gen-btn')
+    },
+
+    cssSupport: {
+      dvh:                CSS && CSS.supports && CSS.supports('height: 100dvh'),
+      webkitFillAvail:    CSS && CSS.supports && CSS.supports('height: -webkit-fill-available'),
+      envSafeAreaInsetB:  CSS && CSS.supports && CSS.supports('padding-bottom: env(safe-area-inset-bottom)')
     }
   };
   console.log('[MMR SAFE-AREA]', info);

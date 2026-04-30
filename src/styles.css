@@ -3192,3 +3192,33 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
 #dashboard-screen .db-upm-rec strong {
   color: var(--neutral-700);
 }
+
+/* ════════════════════════════════════════
+   SAFE-AREA DEBUG MODE (toggle via window._enableSafeAreaDebug())
+   Each layer paints a distinct color so the gap owner is visible
+   on the real iPhone PWA. Active only when <html class="safe-area-debug">.
+   Remove this entire block once diagnosis is complete.
+   ════════════════════════════════════════ */
+html.safe-area-debug                       { background: #ff0000 !important; }
+html.safe-area-debug body                  { background: #0000ff !important; }
+html.safe-area-debug body.dark             { background: #0000ff !important; }
+html.safe-area-debug .sc.on                { background: #00aa00 !important; background-image: none !important; }
+html.safe-area-debug #home                 { background: rgba(0,170,0,0.6) !important; }
+html.safe-area-debug #home .home-in        { background: rgba(255,255,0,0.35) !important; }
+html.safe-area-debug #dashboard-screen     { background: #00aa00 !important; }
+html.safe-area-debug #dashboard-screen.on  { background: #00aa00 !important; }
+html.safe-area-debug .db-ai-footer-wrap    { background: #ffff00 !important; }
+html.safe-area-debug .db-ai-gen-btn        { outline: 3px solid #ff00ff !important; outline-offset: -3px; }
+html.safe-area-debug #history-link         { outline: 3px solid #ff00ff !important; outline-offset: -3px; background: rgba(255,0,255,0.2) !important; }
+html.safe-area-debug #history-link .big-btn{ outline: 3px solid #ff00ff !important; outline-offset: -3px; }
+
+#sa-debug-bar{
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom, 0px);
+  background: rgba(255, 0, 0, 0.45);
+  z-index: 999999;
+  pointer-events: none;
+  display: none;
+}
+html.safe-area-debug #sa-debug-bar{ display: block; }
