@@ -878,7 +878,17 @@ function _dismissSplash(fadeInId){
       setTimeout(()=>{ el.style.transition=''; el.style.opacity=''; }, 1000);
     }
   }
-  if(splash){ splash.style.opacity='0'; setTimeout(()=>{ splash.style.display='none'; },950); }
+  if(splash){
+    splash.style.opacity='0';
+    setTimeout(()=>{
+      splash.style.display='none';
+      if(typeof _recoverVisibleScreen==='function' && !document.querySelector('.sc.on')){
+        _recoverVisibleScreen('post-splash');
+      } else if(window._recoverVisibleScreen && !document.querySelector('.sc.on')){
+        window._recoverVisibleScreen('post-splash-window');
+      }
+    },950);
+  }
 }
 
 // ── History guard ──────────────────────────────────────────────────────────

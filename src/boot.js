@@ -95,6 +95,7 @@ const _APP_GLOBALS = [
   // boot.js
   '_APP_GLOBALS','_showUpdatedToast','_autoApplyUpdate',
   '_debugSafeArea','_enableSafeAreaDebug','_disableSafeAreaDebug','_openSaDebugPanel',
+  '_recoverVisibleScreen',
 ];
 
 if (location.hostname === 'localhost') {
@@ -125,8 +126,8 @@ if (location.hostname === 'localhost') {
 //    window._debugSafeArea()         -- returns viewport / standalone / computed-style report
 //    window._disableSafeAreaDebug()  -- removes color overlay
 // ════════════════════════════════════════
-var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.4';
-var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.4-debug';
+var _SAFE_AREA_DEBUG_BUILD = 'safe-area-debug-v6.0.5';
+var _SAFE_AREA_DEBUG_SW_CACHE = 'math-workbook-v6.0.5-debug';
 
 function _enableSafeAreaDebug(){
   document.documentElement.classList.add('safe-area-debug');
@@ -325,7 +326,7 @@ function _openSaDebugPanel(){
   p.id = 'sa-panel';
   p.innerHTML =
     '<div id="sa-ph">' +
-      '<span id="sa-pt">Safe-Area Debug v6.0.4</span>' +
+      '<span id="sa-pt">Safe-Area Debug v6.0.5</span>' +
       '<div id="sa-pbtns">' +
         '<button id="sa-en">Enable Colors</button>' +
         '<button id="sa-dis">Disable Colors</button>' +
@@ -390,6 +391,67 @@ function _copyFallback(text){
   try { document.execCommand('copy'); } catch(e){}
   document.body.removeChild(ta);
 }
+
+// ════════════════════════════════════════
+//  PWA BLANK-SCREEN RECOVERY
+//  Restores visible screen state after BFCache restore, visibilitychange, or
+//  post-splash when the auth suppress gate fires on force-close/reopen.
+// ════════════════════════════════════════
+function _recoverVisibleScreen(reason){
+  var splash = document.getElementById('auth-splash');
+  if(splash && splash.style.display !== 'none') return;
+
+  var screens = document.querySelectorAll('.sc');
+  screens.forEach(function(screen){
+    screen.style.display = '';
+    screen.style.opacity = '';
+    screen.style.visibility = '';
+    screen.style.transform = '';
+  });
+
+  var active = document.querySelector('.sc.on');
+  if(active){
+    active.style.opacity = '1';
+    active.style.visibility = 'visible';
+    active.getBoundingClientRect();
+    console.log('[MMR PWA recovery]', reason, 'active:', active.id);
+    return;
+  }
+
+  console.warn('[MMR PWA recovery]', reason, 'no active screen; restoring route');
+
+  var role = localStorage.getItem('mmr_user_role');
+  var activeStudent = localStorage.getItem('mmr_active_student_id');
+  var guest = localStorage.getItem('wb_guest_mode') === '1';
+
+  if(typeof _supaUser !== 'undefined' && _supaUser){
+    if(typeof show === 'function') show('dashboard-screen');
+    if(typeof _dbInit === 'function') _dbInit();
+    return;
+  }
+
+  if((role === 'student' && activeStudent) || guest){
+    if(typeof buildHome === 'function') buildHome();
+    if(typeof show === 'function') show('home');
+    return;
+  }
+
+  if(typeof show === 'function') show('login-screen');
+}
+window._recoverVisibleScreen = _recoverVisibleScreen;
+
+// BFCache restore (iOS fast app-switch freeze/thaw)
+window.addEventListener('pageshow', function(e){
+  if(e.persisted) _recoverVisibleScreen('pageshow-bfcache');
+});
+// Tab/app becomes visible again
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden) _recoverVisibleScreen('visibilitychange-visible');
+});
+// Window regains focus (secondary signal)
+window.addEventListener('focus', function(){
+  _recoverVisibleScreen('window-focus');
+});
 
 // ── Lazy-load fonts CSS (moved out of inline HTML to save ~1MB on initial load) ──
 (function _loadFonts(){
@@ -511,6 +573,9 @@ setTimeout(() => {
   }
 }, 8000);
 
+// Deferred safety net: catch post-splash blank screen when auth suppress gate fires
+// on force-close/reopen (fires after splash fade completes at 950ms)
+setTimeout(function(){ _recoverVisibleScreen('post-init'); }, 1200);
 
 
 
