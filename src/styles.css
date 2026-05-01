@@ -2647,15 +2647,9 @@ body.dark #dashboard-screen { background:#0d1626; }
 #dashboard-screen .db-stat-card {
   border-radius:12px; padding:16px 10px 14px; text-align:center;
   background:var(--neutral-50); border:1px solid var(--border);
-  border-top:3px solid var(--border2);
   box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
-/* Per-type accent via border-top */
-#dashboard-screen .db-stat-card.is-accuracy { border-top-color:#2e7d32; }
-#dashboard-screen .db-stat-card.is-quizzes  { border-top-color:#1565c0; }
-#dashboard-screen .db-stat-card.is-time     { border-top-color:#f57f17; }
-#dashboard-screen .db-stat-card.is-lessons  { border-top-color:#ad1457; }
-#dashboard-screen .db-stat-card.is-streak   { border-top-color:var(--accent-600); grid-column:1/-1; }
+#dashboard-screen .db-stat-card.is-streak { grid-column:1/-1; }
 /* Value and label */
 #dashboard-screen .db-stat-val {
   font-size:var(--db-text-xl); font-weight:700; line-height:1.1;
