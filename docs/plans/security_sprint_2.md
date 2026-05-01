@@ -85,5 +85,5 @@ npx netlify-cli deploy --prod --dir=dist --site=d7bda627-be6f-4588-bc38-33a26e39
 
 - `wb_device_key` and `mmr_email_enc` intentionally survive logout (Remember Me persists)
 - `crypto.subtle` fallback in `_submitSoftGate`: stores grade/referral/date without email if encryption fails
-- Privacy Policy placeholder emails (`[privacy@mymathroots.app]`) must be replaced before launch
+- Privacy Policy contact email is `privacy@mymathroots.com` (update displayed address in privacy.html if different)
 - Supabase `leads` table insert still uses in-memory plain email — only localStorage is encrypted
