@@ -790,14 +790,16 @@ function setSound(mode){
 function setTheme(mode){
   const effectiveDark = mode==='dark' || (mode==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', effectiveDark);
-  // Sync theme toggles — only the selected one is "on"
+  // Sync theme toggles — student settings (theme-*) and dashboard (db-theme-*)
   ['auto','light','dark'].forEach(function(m){
-    const btn = document.getElementById('theme-'+m);
-    if(btn){
-      const active = m === mode;
-      btn.classList.toggle('on', active);
-      btn.setAttribute('aria-pressed', String(active));
-    }
+    const active = m === mode;
+    ['theme-'+m, 'db-theme-'+m].forEach(function(id){
+      const btn = document.getElementById(id);
+      if(btn){
+        btn.classList.toggle('on', active);
+        btn.setAttribute('aria-pressed', String(active));
+      }
+    });
   });
   if(mode==='auto'){ localStorage.removeItem('wb_theme'); }
   else { localStorage.setItem('wb_theme', mode); }

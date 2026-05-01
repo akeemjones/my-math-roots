@@ -3430,7 +3430,7 @@ function _renderThemeSection() {
   var stored = localStorage.getItem('wb_theme') || 'auto';
   function btn(mode, label) {
     var active = mode === 'auto' ? !localStorage.getItem('wb_theme') : stored === mode;
-    return '<button id="theme-' + mode + '" class="db-theme-btn' + (active ? ' on' : '') + '"'
+    return '<button id="db-theme-' + mode + '" class="db-theme-btn' + (active ? ' on' : '') + '"'
       + ' data-action="setDashboardTheme" data-arg="' + mode + '"'
       + ' aria-pressed="' + (active ? 'true' : 'false') + '">' + label + '</button>';
   }

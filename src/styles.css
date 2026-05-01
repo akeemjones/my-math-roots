@@ -1961,10 +1961,10 @@ body.dark #upm-pin-inp.set-inp:focus, body.dark #new-pin-inp.set-inp:focus {
   box-shadow:0 3px 10px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,0.55);
   border-top:1.5px solid rgba(255,255,255,0.7);
   flex:1; min-width:140px; }
-.theme-btn.active{ border-color:var(--accent); background:var(--accent); color:var(--accent-ink);
+.theme-btn.on{ border-color:var(--accent); background:var(--accent); color:var(--accent-ink);
   box-shadow:0 4px 14px rgba(255,140,0,.4), inset 0 1px 0 rgba(255,255,255,0.35);
   border-top:1.5px solid rgba(255,255,255,0.55); }
-.theme-btn:hover:not(.active){ border-color:var(--accent); }
+.theme-btn:hover:not(.on){ border-color:var(--accent); }
 .toggle-lbl{ font-weight:800; font-size:var(--fs-base); }
 
 
