@@ -2938,6 +2938,9 @@ body.dark .db-rev-q { color:var(--txt); }
 body.dark .db-rev-item  { background:rgba(255,255,255,.04); }
 body.dark .db-rev-wrong { background:rgba(198,40,40,.12); border-color:rgba(198,40,40,.25); }
 body.dark .db-rev-right { background:rgba(46,125,50,.10);  border-color:rgba(46,125,50,.25); }
+/* Generate Report footer */
+body.dark #dashboard-screen .db-ai-footer-wrap { background:#0d1626; border-top-color:rgba(255,255,255,.10); }
+body.dark #dashboard-screen .db-ai-powered { color:oklch(50% 0.005 75); }
 /* ──────────────────────────────────────────────────────────────── */
 
 /* ══════════════════════════════════════════
