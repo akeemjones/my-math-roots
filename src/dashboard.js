@@ -2113,7 +2113,10 @@ function viewLastReport() {
   if (!text) return;
   var student = _students[_activeId];
   var name    = student ? (student.name || 'Student') : 'Student';
-  // Snapshot current dashboard so backToStats works
+  // Snapshot the current dashboard HTML so backToStats can restore it.
+  // Guard: only capture when _prStatsHtml is empty — prevents overwriting the
+  // stats snapshot with report HTML if viewLastReport is somehow re-invoked
+  // from inside the report view.
   var bodyEl = document.getElementById('db-root');
   if (bodyEl && !_prStatsHtml) _prStatsHtml = bodyEl.innerHTML;
   _prReportText = text;
