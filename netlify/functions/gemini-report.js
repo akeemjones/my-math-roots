@@ -54,15 +54,18 @@ async function _checkRateLimit(ip) {
 }
 
 // ── Server-side cooldown check ────────────────────────────────────────────
-// Verifies the 14-day window using student_profiles (service role — not user-forgeable)
+// Verifies the 14-day window using student_profiles (service role — not user-forgeable).
+// Returns:
+//   null                                          → no cooldown active, allow generation
+//   { nextAvailMs, savedText: string|null }       → cooldown active; savedText is the previously generated report (if any)
 async function _checkServerCooldown(studentId) {
   const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supaUrl = process.env.SUPABASE_URL;
-  if (!svcKey || !supaUrl || !studentId) return null; // null = can't verify, allow
+  if (!svcKey || !supaUrl || !studentId) return null;
 
   try {
     const res = await fetch(
-      `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}&select=report_last_generated`,
+      `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}&select=report_last_generated,report_last_text`,
       {
         headers: {
           'apikey': svcKey,
@@ -74,13 +77,14 @@ async function _checkServerCooldown(studentId) {
     const rows = await res.json();
     if (!rows || rows.length === 0) return null;
     const ts = rows[0].report_last_generated;
-    if (!ts) return null; // never generated — allow
+    if (!ts) return null;
     const lastMs = new Date(ts).getTime();
     if (isNaN(lastMs)) return null;
     const nextAvailMs = lastMs + REPORT_COOL_MS;
-    return nextAvailMs > Date.now() ? nextAvailMs : null; // null = cooldown expired, allow
+    if (nextAvailMs <= Date.now()) return null;
+    return { nextAvailMs: nextAvailMs, savedText: rows[0].report_last_text || null };
   } catch (e) {
-    return null; // on error, allow
+    return null;
   }
 }
 
@@ -334,6 +338,36 @@ function _buildUserMessage(studentName, reportData) {
   return JSON.stringify(payload, null, 2);
 }
 
+// ── Persist report (server-side write) ────────────────────────────────────
+// Server-side write so cooldown enforcement and re-view-during-cooldown both
+// see the same source of truth. Uses service role to bypass RLS.
+async function _persistReport(studentId, reportText) {
+  const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supaUrl = process.env.SUPABASE_URL;
+  if (!svcKey || !supaUrl || !studentId) return;
+  try {
+    await fetch(
+      `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': svcKey,
+          'Authorization': 'Bearer ' + svcKey,
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
+          report_last_generated: new Date().toISOString(),
+          report_last_text: reportText,
+        }),
+      }
+    );
+  } catch (e) {
+    // Non-fatal — client also stores localStorage timestamp; cooldown check will retry.
+    console.error('persistReport failed:', e.message);
+  }
+}
+
 // ── CORS ──────────────────────────────────────────────────────────────────
 const ALLOWED_ORIGINS = [
   'https://mymathroots.com',
@@ -393,17 +427,23 @@ exports.handler = async function(event) {
     return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'studentName too long' }) };
   }
 
-  // Server-side 14-day cooldown check (not bypassable by the client)
+  // Server-side 14-day cooldown check (not bypassable by the client).
+  // Returns the saved report text if cooldown is active so the client can show "View Last Report".
   if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
-    const cooldownNextAvail = await _checkServerCooldown(studentId);
-    if (cooldownNextAvail) {
-      const nextDate = new Date(cooldownNextAvail).toLocaleDateString('en-US', {
+    const cooldown = await _checkServerCooldown(studentId);
+    if (cooldown) {
+      const nextDate = new Date(cooldown.nextAvailMs).toLocaleDateString('en-US', {
         month: 'long', day: 'numeric', year: 'numeric',
       });
       return {
         statusCode: 429,
-        headers: corsH,
-        body: JSON.stringify({ error: 'cooldown', nextAvailable: cooldownNextAvail, nextDate }),
+        headers: { 'Content-Type': 'application/json', ...corsH },
+        body: JSON.stringify({
+          error: 'cooldown',
+          nextAvailable: cooldown.nextAvailMs,
+          nextDate: nextDate,
+          report: cooldown.savedText,
+        }),
       };
     }
   }
@@ -413,6 +453,9 @@ exports.handler = async function(event) {
 
   try {
     const text = await callGemini(sysInstr, userMsg);
+    if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
+      await _persistReport(studentId, text);
+    }
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json', ...corsH },
