@@ -2,7 +2,7 @@
 
 > **Status:** Shipped to production  
 > **Date:** 2026-04-12  
-> **Live URL:** https://mymathroots.netlify.app  
+> **Live URL:** https://mymathroots.com  
 > **Repo:** `mymathroots-v1.1` (master branch, tag `v1.1`)
 
 ---
