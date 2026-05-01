@@ -35,6 +35,7 @@ const COPY_FILES = [
   'icon-512.png',
   'privacy.html', // SEC-8: COPPA privacy policy (linked from Soft Gate consent form)
   'terms.html',   // Terms of Service
+  'robots.txt',   // SEO — crawler directives
 ];
 
 // ── Load .env file (key=value pairs) ──
