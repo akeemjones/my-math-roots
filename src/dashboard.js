@@ -3730,7 +3730,7 @@ async function _fetchManagedProfiles() {
     var result = await Promise.race([
       _supa
         .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, grade')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade')
         .order('created_at', { ascending: true }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
