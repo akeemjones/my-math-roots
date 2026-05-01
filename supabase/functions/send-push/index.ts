@@ -5,7 +5,7 @@ const SUPABASE_URL        = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const VAPID_PUBLIC_KEY    = Deno.env.get('VAPID_PUBLIC_KEY')!;
 const VAPID_PRIVATE_KEY   = Deno.env.get('VAPID_PRIVATE_KEY')!;
-const VAPID_SUBJECT       = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:developer@mymathroots.app';
+const VAPID_SUBJECT       = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:support@mymathroots.com';
 
 webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
