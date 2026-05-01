@@ -3109,8 +3109,6 @@ button:focus-visible.cal-btn{ outline:3px solid rgba(255,140,0,0.7); outline-off
 
 /* ── Phase 4 (polish): Tier left-border accents on Action Summary ──────── */
 #dashboard-screen .db-action-summary.das-no-data {
-  border-left: 4px solid #607d8b;
-  padding-left: 12px;
 }
 #dashboard-screen .db-action-summary.das-needs-review {
   border-left: 4px solid #c62828;
