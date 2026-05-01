@@ -2646,7 +2646,8 @@ body.dark #dashboard-screen { background:#0d1626; }
 /* ── Stat card base — unified surface ─────────────────────────── */
 #dashboard-screen .db-stat-card {
   border-radius:12px; padding:16px 10px 14px; text-align:center;
-  background:var(--neutral-50); border-top:3px solid var(--border2);
+  background:var(--neutral-50); border:1px solid var(--border);
+  border-top:3px solid var(--border2);
   box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
 /* Per-type accent via border-top */
