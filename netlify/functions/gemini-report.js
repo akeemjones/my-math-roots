@@ -346,7 +346,7 @@ async function _persistReport(studentId, reportText) {
   const supaUrl = process.env.SUPABASE_URL;
   if (!svcKey || !supaUrl || !studentId) return;
   try {
-    await fetch(
+    const res = await fetch(
       `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}`,
       {
         method: 'PATCH',
@@ -362,6 +362,10 @@ async function _persistReport(studentId, reportText) {
         }),
       }
     );
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '');
+      console.error('persistReport non-ok:', res.status, txt.slice(0, 200));
+    }
   } catch (e) {
     // Non-fatal — client also stores localStorage timestamp; cooldown check will retry.
     console.error('persistReport failed:', e.message);
@@ -429,6 +433,10 @@ exports.handler = async function(event) {
 
   // Server-side 14-day cooldown check (not bypassable by the client).
   // Returns the saved report text if cooldown is active so the client can show "View Last Report".
+  // SECURITY: studentId is client-supplied and only length-validated here.
+  // The function relies on IP rate-limiting + the 14-day cooldown for abuse
+  // resistance. A future hardening pass should JWT-verify that the studentId
+  // belongs to the authenticated parent (student_profiles.parent_id = auth.uid()).
   if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
     const cooldown = await _checkServerCooldown(studentId);
     if (cooldown) {
@@ -453,6 +461,9 @@ exports.handler = async function(event) {
 
   try {
     const text = await callGemini(sysInstr, userMsg);
+    // Awaited (not fire-and-forget): Netlify can freeze the container after the
+    // response, dropping pending promises. Losing this write would let the next
+    // request re-call Gemini and burn the cooldown twice.
     if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
       await _persistReport(studentId, text);
     }
