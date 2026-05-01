@@ -1750,23 +1750,42 @@ function _deriveReportDiagnostics(events, mastery, labelFn, helpFn) {
     }
   });
 
-  var topErrorTags = Object.keys(byTag)
-    .map(function(t){ return { tag: t, count: byTag[t].triggered }; })
-    .filter(function(t){ return t.count > 0; })
-    .sort(function(a,b){ return b.count - a.count; })
-    .slice(0, 6)
-    .map(function(t){ return { label: labelFn(t.tag), count: t.count }; });
+  function _clampPct(n) { return Math.max(0, Math.min(100, n)); }
 
-  var misconceptionPatterns = topErrorTags
-    .filter(function(t){ return helpFn(_tagFromLabel(t.label, byTag, labelFn)); })
+  // Per-tag entries with raw tag preserved so misconceptionPatterns can look up
+  // the right help text directly (avoids a fragile reverse lookup from label → tag).
+  var taggedEntries = Object.keys(byTag)
+    .map(function(t){ return { tag: t, label: labelFn(t), count: byTag[t].triggered }; })
+    .filter(function(t){ return t.count > 0; })
+    .sort(function(a,b){ return b.count - a.count; });
+
+  // Dedupe by parent-facing label so two err_* tags that share a label don't
+  // appear twice in the report. Counts sum; the first tag's identity is kept
+  // for downstream help-text lookup.
+  var dedupedByLabel = [];
+  var labelIndex = {};
+  taggedEntries.forEach(function(e){
+    if (labelIndex[e.label] != null) {
+      dedupedByLabel[labelIndex[e.label]].count += e.count;
+    } else {
+      labelIndex[e.label] = dedupedByLabel.length;
+      dedupedByLabel.push({ tag: e.tag, label: e.label, count: e.count });
+    }
+  });
+
+  var topErrorTags = dedupedByLabel.slice(0, 6).map(function(t){
+    return { label: t.label, count: t.count };
+  });
+
+  var misconceptionPatterns = dedupedByLabel
+    .filter(function(t){ return helpFn(t.tag); })
     .slice(0, 5)
     .map(function(t){
-      var rawTag = _tagFromLabel(t.label, byTag, labelFn);
-      return { label: t.label, description: helpFn(rawTag) };
+      return { label: t.label, description: helpFn(t.tag) };
     });
 
   var interventionSummary = totalTrig > 0
-    ? { total: totalTrig, recoveryRate: Math.round((totalResolved / totalTrig) * 100) }
+    ? { total: totalTrig, recoveryRate: _clampPct(Math.round((totalResolved / totalTrig) * 100)) }
     : null;
 
   var recoveryPatterns = Object.keys(byTag)
@@ -1775,7 +1794,7 @@ function _deriveReportDiagnostics(events, mastery, labelFn, helpFn) {
       return {
         label:        labelFn(t),
         attempts:     byTag[t].triggered,
-        recoveryRate: Math.round((byTag[t].resolved / byTag[t].triggered) * 100),
+        recoveryRate: _clampPct(Math.round((byTag[t].resolved / byTag[t].triggered) * 100)),
       };
     })
     .sort(function(a,b){ return b.attempts - a.attempts; })
@@ -1799,17 +1818,6 @@ function _deriveReportDiagnostics(events, mastery, labelFn, helpFn) {
     recoveryPatterns:      recoveryPatterns,
     repeatedMistakes:      repeatedMistakes,
   };
-}
-
-// Reverse-lookup tag from label; we keep the mapping local because labelFn
-// is not necessarily injective.
-function _tagFromLabel(label, byTag, labelFn) {
-  var found = null;
-  Object.keys(byTag).some(function(t){
-    if (labelFn(t) === label) { found = t; return true; }
-    return false;
-  });
-  return found;
 }
 
 function _buildDashboardPayload(scores, appTime, streak, mastery, days) {
