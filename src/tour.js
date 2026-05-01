@@ -18,7 +18,29 @@ let _tutIdx = 0;
 let _tutShowing = false;     // blocks per-screen spot tours while tutorial is open
 let _onboardingActive = false; // blocks swipe gestures during install prompt + tutorial
 
+// ── Device-level tour seen state ─────────────────────────────
+// Per-device flag: set once when the tour auto-fires, never cleared on sign-out.
+// Prevents the tutorial/spotlight from re-triggering on reload, PWA reopen,
+// grade switch, session restore, or screen navigation.
+function _hasSeenSpotlightTour() {
+  return localStorage.getItem('mmr_spotlight_tour_seen_v1') === '1';
+}
+function _markSpotlightTourSeen() {
+  try { localStorage.setItem('mmr_spotlight_tour_seen_v1', '1'); } catch(_e) {}
+}
+var _spotlightTourAutoStartedThisSession = false; // prevents double-start within one session
+var _tutContinuationForHome = false;              // allows tutorial→home spotlight chain
+// Migrate: existing users who completed the old tutorial count as already seen
+(function(){
+  if (localStorage.getItem('wb_tutorial_v2') === '1' && !localStorage.getItem('mmr_spotlight_tour_seen_v1')) {
+    localStorage.setItem('mmr_spotlight_tour_seen_v1', '1');
+  }
+})();
+// ─────────────────────────────────────────────────────────────
+
 function _startTutorial(){
+  _markSpotlightTourSeen();           // mark immediately — prevents re-fire if closed mid-tour
+  _spotlightTourAutoStartedThisSession = true;
   _onboardingActive = true;
   _tutShowing = true;
   _tutIdx = 0;
@@ -40,6 +62,8 @@ function tutCheckAndShow(){
     showInstall();
     return;
   }
+  if(_hasSeenSpotlightTour()) return;           // device already completed the tour
+  if(_spotlightTourAutoStartedThisSession) return; // already fired in this session
   if(localStorage.getItem('wb_tutorial_v2')) return;
   _startTutorial();
 }
@@ -167,6 +191,7 @@ function tutSkip(){
   document.body.style.touchAction = '';
   // Hold scroll lock across the gap between tutorial end and spotlight start
   document.body.classList.add('spot-scroll-lock');
+  _tutContinuationForHome = true; // allow home spotlight as direct tutorial continuation
   setTimeout(() => _spotCheckScreen('home'), 350);
 }
 
@@ -304,6 +329,12 @@ let _pendingTimerColor = '';
 
 function _spotCheckScreen(screenId){
   const _releaseLock = () => document.body.classList.remove('spot-scroll-lock');
+  // Allow the tutorial→home chain; gate all other auto-triggers once device has seen the tour.
+  // _tutContinuationForHome is a one-shot flag set by tutSkip() — consumed here and never
+  // re-armed, so later screen navigation cannot bypass the master key check.
+  const isContinuation = (screenId === 'home' && _tutContinuationForHome);
+  if (isContinuation) { _tutContinuationForHome = false; }
+  else if (_hasSeenSpotlightTour()) { _releaseLock(); return; }
   if(_spotActive || _tutShowing || _onboardingActive){ _releaseLock(); return; }
   if(!localStorage.getItem('install_seen')){ _releaseLock(); return; }
   if(!localStorage.getItem('wb_tutorial_v2')){ _releaseLock(); return; }

@@ -1155,7 +1155,7 @@ function _proceedAsGuest() {
   show('home');
   // Lock the screen immediately if install/tutorial hasn't been shown yet,
   // so the user can't scroll or tap unit cards during the delay.
-  if(!localStorage.getItem('install_seen') || !localStorage.getItem('wb_tutorial_v2')){
+  if(!localStorage.getItem('install_seen') || !_hasSeenSpotlightTour()){
     _onboardingActive = true;
     document.body.classList.add('tut-active');
   }

@@ -1975,7 +1975,7 @@ function closeInstall(){
   const firstTime = !localStorage.getItem('install_seen');
   localStorage.setItem('install_seen','1');
   // If first-open onboarding: fire tutorial immediately after install prompt closes
-  if(firstTime && !localStorage.getItem('wb_tutorial_v2')){
+  if(firstTime && !_hasSeenSpotlightTour()){
     setTimeout(_startTutorial, 400);
   } else {
     _onboardingActive = false;
