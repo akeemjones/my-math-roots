@@ -2108,13 +2108,35 @@ function backToStats() {
   if (footerEl) footerEl.innerHTML = _genReportFooter();
 }
 
+function viewLastReport() {
+  var text = _savedReportText();
+  if (!text) return;
+  var student = _students[_activeId];
+  var name    = student ? (student.name || 'Student') : 'Student';
+  // Snapshot current dashboard so backToStats works
+  var bodyEl = document.getElementById('db-root');
+  if (bodyEl && !_prStatsHtml) _prStatsHtml = bodyEl.innerHTML;
+  _prReportText = text;
+  _renderAIReportView(text, name);
+}
+
+function _savedReportText() {
+  var profile = _managedProfiles.find(function(p){ return p.id === _activeId; });
+  if (profile && profile.report_last_text) return profile.report_last_text;
+  // Local mode — fall back to in-memory text from this session
+  return _prReportText || null;
+}
+
 function _genReportFooter() {
   var nextAvail = _reportNextAvailable();
   var onCooldown = nextAvail && Date.now() < nextAvail;
   if (onCooldown) {
     var nextDate = new Date(nextAvail).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    var hasSaved = !!_savedReportText();
     return '<div style="text-align:center">'
-      + '<button class="db-ai-gen-btn" disabled style="opacity:0.45;cursor:not-allowed">📋 Generate Report</button>'
+      + (hasSaved
+          ? '<button class="db-ai-gen-btn" data-action="viewLastReport">📋 View Last Report</button>'
+          : '<button class="db-ai-gen-btn" disabled style="opacity:0.45;cursor:not-allowed">📋 Generate Report</button>')
       + '<div class="db-ai-powered">Next report available ' + nextDate + '</div></div>';
   }
   return '<div style="text-align:center">'
@@ -4501,6 +4523,7 @@ if (typeof document !== 'undefined') {
     closeQuizReview:         function()     { closeQuizReview(); },
     backToStats:             function()     { backToStats(); },
     generateAIReport:        function()     { generateAIReport(); },
+    viewLastReport:          function()     { viewLastReport(); },
     downloadReportPDF:       function()     { downloadReportPDF(); },
     windowPrint:             function()     { window.print(); },
     _dbToggleFreeMode:       function()     { _dbToggleFreeMode(); },
