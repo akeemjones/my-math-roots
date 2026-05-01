@@ -2000,20 +2000,58 @@ async function generateAIReport() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ studentName: name, reportData: payload, studentId: _activeId })
     });
+
+    // Read body once, even on non-OK, so we can branch on the server's error type.
+    var data = null;
+    try { data = await resp.json(); } catch (e) { data = null; }
+
+    // ── Cooldown 429: render the saved report (if any) and update the footer ──
+    if (resp.status === 429 && data && data.error === 'cooldown') {
+      // Mirror the server cooldown into local state so the footer renders correctly
+      // without waiting for the next profile fetch.
+      if (typeof data.nextAvailable === 'number') {
+        var lastMs = data.nextAvailable - _REPORT_COOL_MS;
+        localStorage.setItem(_reportCooldownKey(), String(lastMs));
+        var _mp1 = _managedProfiles.find(function(p){ return p.id === _activeId; });
+        if (_mp1) {
+          _mp1.report_last_generated = new Date(lastMs).toISOString();
+          if (data.report) _mp1.report_last_text = data.report;
+        }
+      }
+      if (data.report) {
+        _prReportText = data.report;
+        _renderAIReportView(data.report, name);
+      } else {
+        // Cooldown active but no saved text — restore stats and show cooldown footer.
+        if (bodyEl && _prStatsHtml) bodyEl.innerHTML = _prStatsHtml;
+        if (footerEl) footerEl.innerHTML = _genReportFooter();
+      }
+      return;
+    }
+
+    // ── Rate-limit 429: friendly message, no cooldown burned ──
+    if (resp.status === 429) {
+      if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
+        + '<div style="font-size:2rem;margin-bottom:14px">⏱️</div>'
+        + '<div style="color:#37474f">Too many report requests. Please try again soon.</div></div>';
+      if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
+        + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button>'
+        + '<button class="db-ai-pdf-btn" data-action="generateAIReport">↺ Try Again</button></div>';
+      return;
+    }
+
     if (!resp.ok) throw new Error('Server error ' + resp.status);
-    var data = await resp.json();
-    if (data.error) throw new Error(data.error);
+    if (!data || data.error) throw new Error((data && data.error) || 'Empty response');
+
     _prReportText = data.report;
-    // Record successful generation — localStorage for speed, Supabase for cross-device sync
+    // Record successful generation locally too — server already wrote it,
+    // but localStorage gives instant cooldown feedback before next profile fetch.
     var _nowIso = new Date().toISOString();
     localStorage.setItem(_reportCooldownKey(), String(Date.now()));
-    if (typeof _supa !== 'undefined' && _supa && _activeId !== 'local') {
-      _supa.from('student_profiles')
-        .update({ report_last_generated: _nowIso })
-        .eq('id', _activeId);
-      // Update in-memory profile so the footer re-renders correctly without a refetch
-      var _mp = _managedProfiles.find(function(p){ return p.id === _activeId; });
-      if (_mp) _mp.report_last_generated = _nowIso;
+    var _mp2 = _managedProfiles.find(function(p){ return p.id === _activeId; });
+    if (_mp2) {
+      _mp2.report_last_generated = _nowIso;
+      _mp2.report_last_text      = data.report;
     }
     _renderAIReportView(data.report, name);
   } catch(e) {
