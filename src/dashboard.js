@@ -1709,6 +1709,109 @@ function closeQuizReview() {
 var _prStatsHtml  = '';
 var _prReportText = '';
 
+// Safe wrappers: _friendlyInterventionTag and _ERR_HELP_MAP live further down
+// the file, so guard against ordering issues / unit tests where they are absent.
+function _friendlyInterventionTagSafe(tag) {
+  if (typeof _friendlyInterventionTag === 'function') {
+    var label = _friendlyInterventionTag(tag);
+    if (label) return label;
+  }
+  return _toTitleCase ? _toTitleCase(String(tag).replace(/^err_/, '')) : String(tag);
+}
+function _interventionHelpSafe(tag) {
+  if (typeof _ERR_HELP_MAP === 'object' && _ERR_HELP_MAP) return _ERR_HELP_MAP[tag] || null;
+  return null;
+}
+
+// Pure helper: turn raw intervention events + mastery into the parent-facing
+// diagnostic shape Gemini sees. Kept pure so it can be unit-tested.
+//
+// events  : array from _getInterventionEvents() / _remoteInterventionEvents
+//           shape: { type, errorTag, sessionId, resolvedCorrectly, timestamp }
+// mastery : student.MASTERY map { qid → { attempts, correct } }
+// labelFn : function(tag) → friendly label (parent-facing, no err_ prefix)
+// helpFn  : function(tag) → short description / null
+function _deriveReportDiagnostics(events, mastery, labelFn, helpFn) {
+  events  = Array.isArray(events) ? events : [];
+  mastery = mastery && typeof mastery === 'object' ? mastery : {};
+  labelFn = typeof labelFn === 'function' ? labelFn : function(t){ return t; };
+  helpFn  = typeof helpFn  === 'function' ? helpFn  : function(){ return null; };
+
+  // ── interventionSummary + per-tag recovery from events ──
+  var byTag = {};
+  var totalTrig = 0;
+  var totalResolved = 0;
+  events.forEach(function(e) {
+    if (!e || !e.errorTag) return;
+    if (!byTag[e.errorTag]) byTag[e.errorTag] = { triggered: 0, resolved: 0 };
+    if (e.type === 'triggered') { byTag[e.errorTag].triggered++; totalTrig++; }
+    if (e.type === 'resolved' && e.resolvedCorrectly) {
+      byTag[e.errorTag].resolved++; totalResolved++;
+    }
+  });
+
+  var topErrorTags = Object.keys(byTag)
+    .map(function(t){ return { tag: t, count: byTag[t].triggered }; })
+    .filter(function(t){ return t.count > 0; })
+    .sort(function(a,b){ return b.count - a.count; })
+    .slice(0, 6)
+    .map(function(t){ return { label: labelFn(t.tag), count: t.count }; });
+
+  var misconceptionPatterns = topErrorTags
+    .filter(function(t){ return helpFn(_tagFromLabel(t.label, byTag, labelFn)); })
+    .slice(0, 5)
+    .map(function(t){
+      var rawTag = _tagFromLabel(t.label, byTag, labelFn);
+      return { label: t.label, description: helpFn(rawTag) };
+    });
+
+  var interventionSummary = totalTrig > 0
+    ? { total: totalTrig, recoveryRate: Math.round((totalResolved / totalTrig) * 100) }
+    : null;
+
+  var recoveryPatterns = Object.keys(byTag)
+    .filter(function(t){ return byTag[t].triggered >= 2; })
+    .map(function(t){
+      return {
+        label:        labelFn(t),
+        attempts:     byTag[t].triggered,
+        recoveryRate: Math.round((byTag[t].resolved / byTag[t].triggered) * 100),
+      };
+    })
+    .sort(function(a,b){ return b.attempts - a.attempts; })
+    .slice(0, 6);
+
+  // ── repeatedMistakes from MASTERY (qid wrong ≥2 times) ──
+  var repeatedMistakes = Object.keys(mastery)
+    .map(function(k){
+      var m = mastery[k] || {};
+      var wrong = (m.attempts || 0) - (m.correct || 0);
+      return { label: k, wrongCount: wrong };
+    })
+    .filter(function(r){ return r.wrongCount >= 2; })
+    .sort(function(a,b){ return b.wrongCount - a.wrongCount; })
+    .slice(0, 8);
+
+  return {
+    topErrorTags:          topErrorTags,
+    misconceptionPatterns: misconceptionPatterns,
+    interventionSummary:   interventionSummary,
+    recoveryPatterns:      recoveryPatterns,
+    repeatedMistakes:      repeatedMistakes,
+  };
+}
+
+// Reverse-lookup tag from label; we keep the mapping local because labelFn
+// is not necessarily injective.
+function _tagFromLabel(label, byTag, labelFn) {
+  var found = null;
+  Object.keys(byTag).some(function(t){
+    if (labelFn(t) === label) { found = t; return true; }
+    return false;
+  });
+  return found;
+}
+
 function _buildDashboardPayload(scores, appTime, streak, mastery, days) {
   var cutoff = Date.now() - days * 86400000;
   var period = scores.filter(function(s) { return s.pct != null && s.total > 0 && s.id && s.id > cutoff; });
@@ -1801,6 +1904,18 @@ function _buildDashboardPayload(scores, appTime, streak, mastery, days) {
     return { label: s.label||s.type||'Quiz', date: s.date||null, type: s.type||null, pct: s.pct, score: (s.score||0)+'/'+s.total };
   });
 
+  // Diagnostic fields — only included when intervention events exist.
+  // Tries remote-synced events first, falls back to local events store.
+  var rawEvents = (typeof _remoteInterventionEvents !== 'undefined' && _remoteInterventionEvents && _remoteInterventionEvents.length)
+    ? _remoteInterventionEvents
+    : _getInterventionEvents();
+  var diagnostics = _deriveReportDiagnostics(
+    rawEvents,
+    mastery,
+    _friendlyInterventionTagSafe,
+    _interventionHelpSafe
+  );
+
   return {
     reportDate: new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),
     period: 'Last '+days+' days',
@@ -1822,6 +1937,11 @@ function _buildDashboardPayload(scores, appTime, streak, mastery, days) {
     quizTypeBreakdown: quizTypeBreakdown,
     recentQuizzes: recentQuizzes,
     masteryStats: masteryStats,
+    topErrorTags:          diagnostics.topErrorTags,
+    misconceptionPatterns: diagnostics.misconceptionPatterns,
+    interventionSummary:   diagnostics.interventionSummary,
+    recoveryPatterns:      diagnostics.recoveryPatterns,
+    repeatedMistakes:      diagnostics.repeatedMistakes,
   };
 }
 
@@ -4437,6 +4557,7 @@ if (typeof module !== 'undefined') {
     _parseTimerSettings,
     _isUnitUnlockedInDraft,
     _isLessonUnlockedInDraft,
+    _deriveReportDiagnostics,
   };
 }
 
