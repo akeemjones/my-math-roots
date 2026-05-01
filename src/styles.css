@@ -2524,7 +2524,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 /* ════════════════════════════════════════
    PARENT DASHBOARD — scoped to #dashboard-screen
    ════════════════════════════════════════ */
-#dashboard-screen { background:#f0f4f8; overflow:hidden; font-family:var(--font-parent); min-height:100dvh; min-height:100lvh; }
+#dashboard-screen { background:#fff; overflow:hidden; font-family:var(--font-parent); min-height:100dvh; min-height:100lvh; }
 #dashboard-screen.on { display:flex; flex-direction:column; min-height:100dvh; min-height:100lvh; }
 body.dark #dashboard-screen { background:#0d1626; }
 
