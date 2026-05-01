@@ -62,6 +62,10 @@ function openUnit(idx){
   // Never block returning to the unit just completed (guards against race condition when session expires mid-quiz)
   if(idx !== CUR.unitIdx && !isUnitUnlocked(idx)){ showLockToast(`Finish Unit ${idx} with 80%+ first!`, true); return; }
   CUR.unitIdx = idx;
+  try {
+    var _g = localStorage.getItem('mmr_grade');
+    _trackEvent('unit_started', { unit_id: 'u' + idx, grade: _g || null });
+  } catch (_) {}
   const u = UNITS_DATA[idx];
   document.getElementById('unit-back').style.color = u.color;
   document.getElementById('unit-bar-title').textContent = u.name;

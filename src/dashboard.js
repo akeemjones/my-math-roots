@@ -2091,6 +2091,7 @@ async function generateAIReport() {
       _mp2.report_last_generated = _nowIso;
       _mp2.report_last_text      = data.report;
     }
+    try { _trackEvent('report_generated', {}); } catch (_) {}
     _renderAIReportView(data.report, name);
   } catch(e) {
     if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'

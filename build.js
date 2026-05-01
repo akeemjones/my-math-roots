@@ -75,7 +75,7 @@ async function build(){
   const fontsCss   = fs.readFileSync(path.join(ROOT, 'src',  'styles-fonts.css'),       'utf8');
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
-    'data/shared.js','data/shared_k.js','util.js','state.js','auth.js','nav.js','home.js','unit.js',
+    'data/shared.js','data/shared_k.js','util.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
     'visuals.js','question-engine.js','quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
@@ -280,6 +280,22 @@ async function build(){
   }
 
   // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed
+
+  // ── Admin analytics dashboard (standalone, not in app.js bundle) ──────────
+  const adminHtmlSrc = path.join(ROOT, 'admin-analytics.html');
+  const adminJsSrc   = path.join(ROOT, 'src', 'admin-analytics.js');
+  if (fs.existsSync(adminHtmlSrc)) {
+    fs.copyFileSync(adminHtmlSrc, path.join(DIST, 'admin-analytics.html'));
+    console.log('📋 Copied:  admin-analytics.html');
+  }
+  if (fs.existsSync(adminJsSrc)) {
+    let adminJs = fs.readFileSync(adminJsSrc, 'utf8');
+    adminJs = adminJs
+      .replace(/%%SUPA_URL%%/g, process.env.SUPA_URL || '')
+      .replace(/%%SUPA_KEY%%/g, process.env.SUPA_KEY || '');
+    fs.writeFileSync(path.join(DIST, 'admin-analytics.js'), adminJs, 'utf8');
+    console.log('📋 Copied:  admin-analytics.js (tokens substituted)');
+  }
 
   console.log('\n🚀 Build complete → dist/');
 }

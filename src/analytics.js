@@ -1,0 +1,187 @@
+// ════════════════════════════════════════════════════════
+//  ANALYTICS — Privacy-first internal event tracker
+//  COPPA-safe: no PII, no third-party calls, fail-silent.
+//  Batches events and flushes via sendBeacon (unload) or
+//  fetch every 10s. parent_id/student_id are NEVER in the
+//  event payload — they are stamped server-side from
+//  verified credentials sent at flush time.
+// ════════════════════════════════════════════════════════
+
+var _ANA_INGEST_URL     = '/.netlify/functions/analytics-ingest';
+var _ANA_MAX_QUEUE      = 50;
+var _ANA_FLUSH_INTERVAL = 10000;
+var _ANA_RATE_KEY       = 'analytics';
+var _ANA_RATE_MAX       = 20;
+var _ANA_META_MAX       = 500;
+var _ANA_PII_KEYS       = ['email','name','password','phone','address'];
+
+var _ANA_VALID_EVENTS = new Set([
+  'app_opened','session_started','session_ended','grade_selected',
+  'unit_started','lesson_started','lesson_completed','quiz_started',
+  'quiz_completed','unit_test_started','unit_test_completed',
+  'intervention_shown','intervention_completed','report_generated',
+  'parent_dashboard_opened','subscription_started',
+]);
+
+var _anaQueue            = [];
+var _anaFlushTimer       = null;
+var _anaFlushing         = false;
+var _anaSessionStartTs   = 0;
+var _anaSessionEndedSent = false; // dedup: only fire session_ended once per page
+var _anaParentDashFired  = false; // dedup: only fire parent_dashboard_opened once per load
+
+// ── Privacy: strip PII keys from metadata ────────────────────────────────
+function _anaStripPii(metadata) {
+  if (!metadata || typeof metadata !== 'object') return {};
+  var out = {}, keys = Object.keys(metadata);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i], kl = k.toLowerCase(), isPii = false;
+    for (var j = 0; j < _ANA_PII_KEYS.length; j++) {
+      if (kl.indexOf(_ANA_PII_KEYS[j]) !== -1) { isPii = true; break; }
+    }
+    if (!isPii) out[k] = metadata[k];
+  }
+  return out;
+}
+
+// ── Auth context for flush (credentials only, not raw IDs) ───────────────
+function _anaGetAuthContext() {
+  var supaJwt       = null;
+  var sessionToken  = null;
+  var claimedSid    = null;
+
+  try {
+    var raw = localStorage.getItem('sb-auth-auth-token') || localStorage.getItem('supabase.auth.token');
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      var tok = parsed && (parsed.access_token || (parsed.currentSession && parsed.currentSession.access_token));
+      if (tok) supaJwt = tok;
+    }
+  } catch (_) {}
+
+  try {
+    var role = localStorage.getItem('mmr_user_role');
+    if (role === 'student') {
+      var st  = localStorage.getItem('mmr_session_token');
+      var sid = localStorage.getItem('mmr_active_student_id');
+      if (st && sid && sid !== 'local') {
+        sessionToken = st;
+        claimedSid   = sid;
+      }
+    } else if (supaJwt) {
+      var parentSid = localStorage.getItem('mmr_active_student_id');
+      if (parentSid && parentSid !== 'local') claimedSid = parentSid;
+    }
+  } catch (_) {}
+
+  return { supaJwt: supaJwt, sessionToken: sessionToken, claimedSid: claimedSid };
+}
+
+// ── Flush ─────────────────────────────────────────────────────────────────
+function _anaFlush(useBeacon) {
+  if (_anaFlushing && !useBeacon) return;
+  if (_anaQueue.length === 0) return;
+
+  var auth   = _anaGetAuthContext();
+  var events = _anaQueue.splice(0, _anaQueue.length);
+
+  if (useBeacon && typeof navigator !== 'undefined' && navigator.sendBeacon) {
+    try {
+      var beaconBody = JSON.stringify({
+        events:        events,
+        student_id:    auth.claimedSid    || undefined,
+        session_token: auth.sessionToken  || undefined,
+        _supaJwt:      auth.supaJwt       || undefined,
+      });
+      navigator.sendBeacon(_ANA_INGEST_URL, new Blob([beaconBody], { type: 'application/json' }));
+    } catch (_) {}
+    return;
+  }
+
+  var headers = { 'Content-Type': 'application/json' };
+  if (auth.supaJwt) headers['Authorization'] = 'Bearer ' + auth.supaJwt;
+
+  var payload = JSON.stringify({
+    events:        events,
+    student_id:    auth.claimedSid   || undefined,
+    session_token: auth.sessionToken || undefined,
+  });
+
+  _anaFlushing = true;
+  fetch(_ANA_INGEST_URL, { method: 'POST', headers: headers, body: payload, keepalive: true })
+    .catch(function() {})
+    .finally(function() { _anaFlushing = false; });
+}
+
+function _anaScheduleFlush() {
+  if (_anaFlushTimer) return;
+  _anaFlushTimer = setInterval(function() { try { _anaFlush(false); } catch (_) {} }, _ANA_FLUSH_INTERVAL);
+}
+
+// ── Visibility / unload handlers ─────────────────────────────────────────
+(function() {
+  if (typeof document === 'undefined') return;
+  document.addEventListener('visibilitychange', function() {
+    try {
+      if (document.visibilityState === 'hidden') {
+        var role = localStorage.getItem('mmr_user_role');
+        if (role === 'student' && _anaSessionStartTs && !_anaSessionEndedSent) {
+          _anaSessionEndedSent = true;
+          var g = localStorage.getItem('mmr_grade');
+          _trackEvent('session_ended', {
+            duration_secs: Math.round((Date.now() - _anaSessionStartTs) / 1000),
+            grade: g || null,
+          });
+        }
+        _anaFlush(true);
+      }
+    } catch (_) {}
+  });
+  window.addEventListener('pagehide', function() {
+    try {
+      var role = localStorage.getItem('mmr_user_role');
+      if (role === 'student' && _anaSessionStartTs && !_anaSessionEndedSent) {
+        _anaSessionEndedSent = true;
+        var g = localStorage.getItem('mmr_grade');
+        _trackEvent('session_ended', {
+          duration_secs: Math.round((Date.now() - _anaSessionStartTs) / 1000),
+          grade: g || null,
+        });
+      }
+      _anaFlush(true);
+    } catch (_) {}
+  });
+})();
+
+// ── Public API ────────────────────────────────────────────────────────────
+// _trackEvent(event_name, metadata)
+//   Fail-silent: never throws, never surfaces errors to caller.
+function _trackEvent(event_name, metadata) {
+  try {
+    if (typeof event_name !== 'string' || !_ANA_VALID_EVENTS.has(event_name)) return;
+    if (typeof _rateLimit === 'function' && !_rateLimit(_ANA_RATE_KEY, _ANA_RATE_MAX)) return;
+
+    var safeMeta = _anaStripPii(metadata || {});
+    if (JSON.stringify(safeMeta).length > _ANA_META_MAX) safeMeta = {};
+
+    var evt = {
+      client_event_id: event_name + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9),
+      event_name:      event_name,
+      metadata_json:   safeMeta,
+      grade:           safeMeta.grade || null,
+      unit_id:         null,
+      lesson_id:       null,
+    };
+
+    if (safeMeta.unit_id)   { evt.unit_id   = safeMeta.unit_id;   delete safeMeta.unit_id;   }
+    if (safeMeta.lesson_id) { evt.lesson_id = safeMeta.lesson_id; delete safeMeta.lesson_id; }
+    if (safeMeta.grade)     { delete safeMeta.grade; }
+
+    _anaQueue.push(evt);
+    if (_anaQueue.length > _ANA_MAX_QUEUE) _anaQueue.shift();
+    if (_anaQueue.length >= 10) { try { _anaFlush(false); } catch (_) {} }
+    _anaScheduleFlush();
+  } catch (_) {
+    if (typeof _isDev !== 'undefined' && _isDev) console.warn('[analytics] _trackEvent error', _);
+  }
+}

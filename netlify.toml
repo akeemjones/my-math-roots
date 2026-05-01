@@ -52,6 +52,12 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+# ── Admin analytics — keep out of search indexes ────────────────────────────
+[[headers]]
+  for = "/admin-analytics.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ── Service worker — must control the full origin ────────────────────────────
 [[headers]]
   for = "/sw.js"

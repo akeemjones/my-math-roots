@@ -300,6 +300,10 @@ function startLessonQuiz(unitIdx, lessonIdx){
   CUR.lessonIdx = lessonIdx;
   _loadUnit(unitIdx).then(function(){
     const l = UNITS_DATA[unitIdx].lessons[lessonIdx];
+    try {
+      var _g = localStorage.getItem('mmr_grade');
+      _trackEvent('lesson_started', { unit_id: 'u' + unitIdx, lesson_id: l.id, grade: _g || null });
+    } catch (_) {}
     _runQuiz(l.qBank||l.quiz, 'lq_'+l.id, l.icon+' '+l.title, 'lesson', unitIdx);
   }).catch(function(){ alert('Could not load quiz. Check your connection.'); });
 }
@@ -307,6 +311,11 @@ function startLessonQuiz(unitIdx, lessonIdx){
 function startUnitQuiz(unitIdx){
   _loadUnit(unitIdx).then(function(){
     const u = UNITS_DATA[unitIdx];
+    try {
+      var _g = localStorage.getItem('mmr_grade');
+      _trackEvent('quiz_started',      { unit_id: 'u' + unitIdx, quiz_type: 'unit', grade: _g || null });
+      _trackEvent('unit_test_started', { unit_id: 'u' + unitIdx });
+    } catch (_) {}
     if(u.quizBlueprint && typeof _buildKUnitQuiz === 'function'){
       // Blueprint sampler enforces per-lesson counts — bypass _runQuiz's
       // _weightedSample by passing the bank as _prebuiltQs.
@@ -822,6 +831,14 @@ function _handleAnswer(selectedIndex){
     interventionEvents.push(resolvedEvt);
     _appendInterventionEvent(resolvedEvt);
     console.log("Intervention event:", resolvedEvt);
+    try {
+      _trackEvent('intervention_completed', {
+        unit_id:            CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
+        lesson_id:          activeIntervention.lessonId || null,
+        resolved_correctly: !!(resolvedEvt.resolvedCorrectly),
+        error_tag:          resolvedEvt.errorTag || null,
+      });
+    } catch (_) {}
     activeIntervention = null;
   }
 
@@ -1579,6 +1596,13 @@ function _pauseForIntervention(errorTag, selectedIndex){
   interventionEvents.push(triggeredEvt);
   _appendInterventionEvent(triggeredEvt);
   console.log("Intervention event:", triggeredEvt);
+  try {
+    _trackEvent('intervention_shown', {
+      unit_id:   CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
+      lesson_id: CUR.lesson || null,
+      error_tag: errorTag || null,
+    });
+  } catch (_) {}
 
   activeIntervention = {
     questionId: triggeredEvt.questionId,
@@ -1961,11 +1985,29 @@ function _finishQuiz(){
     saveDone();
     if(_isFirstTimePass || (_isPassing && _allContentComplete())) _updateStreak();
     _checkSoftGate('lesson');
+    try {
+      _trackEvent('lesson_completed', {
+        unit_id:   CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
+        lesson_id: lid,
+        score:     qz.score,
+        pct:       pct,
+        quit:      !!(qz.quit),
+        abandoned: !!(qz.abandoned),
+      });
+    } catch (_) {}
   } else if(qz.type === 'unit'){
     if(_isFirstTimePass || (_isPassing && _allContentComplete())) _updateStreak();
     _checkSoftGate('unit');
+    try {
+      var _uid = CUR.unitIdx != null ? 'u' + CUR.unitIdx : null;
+      _trackEvent('quiz_completed',      { unit_id: _uid, quiz_type: 'unit', score: qz.score, pct: pct, quit: !!(qz.quit), abandoned: !!(qz.abandoned) });
+      _trackEvent('unit_test_completed', { unit_id: _uid, pct: pct, quit: !!(qz.quit) });
+    } catch (_) {}
   } else if(qz.type === 'final'){
     if(_isFirstTimePass || (_isPassing && _allContentComplete())) _updateStreak();
+    try {
+      _trackEvent('quiz_completed', { quiz_type: 'final', score: qz.score, pct: pct, quit: !!(qz.quit), abandoned: !!(qz.abandoned) });
+    } catch (_) {}
   }
 
   let emoji, msg, stars;
@@ -2331,6 +2373,7 @@ function startFinalTest(){
       const bank = UNITS_DATA.flatMap(u => u.unitQuiz || u.testBank || []);
       if(!bank.length){ alert('No questions available for the Final Test.'); return; }
       playSwooshForward();
+      try { _trackEvent('quiz_started', { quiz_type: 'final' }); } catch (_) {}
       _runQuiz(bank, 'final_test', `${_ICO.graduation} Final Test — All Units`, 'final', null);
     })
     .catch(function(){

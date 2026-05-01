@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Analytics — My Math Roots Admin</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5rem; background: #f8f9fa; color: #1a1a2e; }
+    h1 { font-size: 1.4rem; margin-bottom: 1.5rem; }
+    #auth-gate { padding: 2rem; color: #c0392b; font-weight: bold; }
+    #metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+    .metric-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem; }
+    .metric-card h3 { font-size: .85rem; letter-spacing: .05em; color: #666; margin: 0 0 .5rem; text-transform: uppercase; }
+    .metric-card pre { font-size: .75rem; overflow: auto; max-height: 220px; margin: 0; white-space: pre-wrap; word-break: break-word; background: #f4f4f4; padding: .5rem; border-radius: 4px; }
+    #loading { padding: 2rem; color: #666; }
+  </style>
+</head>
+<body>
+  <div id="auth-gate" style="display:none">Not authorized — admin role required.</div>
+  <div id="loading">Verifying access…</div>
+  <div id="dashboard" style="display:none">
+    <h1>My Math Roots — Internal Analytics</h1>
+    <div id="metrics-grid"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/admin-analytics.js"></script>
+</body>
+</html>

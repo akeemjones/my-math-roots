@@ -728,3 +728,11 @@ if(sessionStorage.getItem('app-just-updated')){
     img.src = url;
   } catch(e){}
 })();
+
+// ── Analytics: app_opened ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    var _g = localStorage.getItem('mmr_grade');
+    _trackEvent('app_opened', _g ? { grade: _g } : {});
+  } catch (_) {}
+});

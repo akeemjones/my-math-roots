@@ -396,6 +396,13 @@ async function enterStudentLearningSession(opts) {
   // Both _syncStudentSettings and _hydrateStudentFromParentSession already call
   // buildHome() internally when data changes — do NOT add another .then(buildHome)
   // here or the carousel will re-render 3-4 times on every session entry.
+  try {
+    _anaSessionStartTs   = Date.now();
+    _anaSessionEndedSent = false;
+    var _g = localStorage.getItem('mmr_grade');
+    _trackEvent('session_started', { grade: _g || null });
+  } catch (_) {}
+
   if (sessionToken) {
     if (typeof _syncStudentSettings === 'function') _syncStudentSettings(studentId);
     if (typeof _pullStudentProgress === 'function') _pullStudentProgress(studentId);
@@ -1043,6 +1050,12 @@ function supabaseInit(){
         localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
         localStorage.setItem('mmr_user_role', 'parent');
+        try {
+          if (!_anaParentDashFired) {
+            _anaParentDashFired = true;
+            _trackEvent('parent_dashboard_opened', {});
+          }
+        } catch (_) {}
         show('dashboard-screen');
         if (typeof _dbInit === 'function') _dbInit();
         if (typeof _renderCalBtn === 'function') _renderCalBtn();
@@ -1096,6 +1109,12 @@ function supabaseInit(){
       localStorage.removeItem('mmr_resume_student_session');
       await _pullOnLogin();
       localStorage.setItem('mmr_user_role', 'parent');
+      try {
+        if (!_anaParentDashFired) {
+          _anaParentDashFired = true;
+          _trackEvent('parent_dashboard_opened', {});
+        }
+      } catch (_) {}
       sessionStorage.removeItem('mmr_post_auth_redirect');
       show('dashboard-screen');
       if (typeof _dbInit === 'function') _dbInit();
@@ -2965,5 +2984,10 @@ async function switchGrade(newGrade){
     // Preserve guest mode across reload so boot.js fast-path fires
     localStorage.setItem('wb_guest_mode', '1');
   }
+  try {
+    var _newG = localStorage.getItem('mmr_grade');
+    _trackEvent('grade_selected', { grade: _newG || null });
+    _anaFlush(true);
+  } catch (_) {}
   location.reload();
 }

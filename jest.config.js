@@ -4,5 +4,6 @@ module.exports = {
   testPathIgnorePatterns: [
     '\\.claude[\\\\/]worktrees',
     'tests/(security|core)\\.test\\.js',
+    'tests/analytics(-ingest)?\\.test\\.js',
   ],
 };
