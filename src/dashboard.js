@@ -640,12 +640,12 @@ function _reRenderActivitySnapshot() {
   if (wrap) wrap.innerHTML = _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, _activityEvents);
 }
 
-function _statCardClickable(bg, color, val, lbl, type, ariaLabel) {
-  return '<div class="db-stat-card db-snap-card" style="background:' + bg + '"'
+function _statCardClickable(val, lbl, type, ariaLabel, valClass) {
+  return '<div class="db-stat-card db-snap-card is-' + type + '"'
     + ' data-action="showActivityDetail" data-arg="' + type + '"'
     + ' role="button" tabindex="0" aria-label="' + _esc(ariaLabel) + '">'
-    + '<div class="db-stat-val" style="color:' + color + '">' + val + '</div>'
-    + '<div class="db-stat-lbl" style="color:' + color + '">' + lbl + '</div>'
+    + '<div class="db-stat-val' + (valClass ? ' ' + valClass : '') + '">' + val + '</div>'
+    + '<div class="db-stat-lbl">' + lbl + '</div>'
     + '</div>';
 }
 
@@ -677,17 +677,16 @@ function _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, 
   if (cur > 7) streakIcons += '<span class="ws-streak-more">+' + (cur - 7) + '</span>';
 
   // ── Metric grid (4 clickable cards + streak full-width) ──
-  var ac = stats.accuracy >= 80 ? '#2e7d32' : stats.accuracy >= 60 ? '#e65100' : '#c62828';
+  var acClass = stats.accuracy >= 80 ? 'is-good' : stats.accuracy >= 60 ? 'is-ok' : 'is-bad';
   var body = '<div class="db-stat-grid">'
-    + _statCardClickable('#e8f5e9', ac,        stats.accuracy + '%',         'Accuracy',          'accuracy', 'View accuracy details')
-    + _statCardClickable('#e3f2fd', '#1565C0', String(stats.quizCount),      'Quizzes',           'quizzes',  'View this week’s quizzes')
-    + _statCardClickable('#fff8e1', '#f57f17', weekMins > 0 ? timeStr : '—', 'Time Last 7 Days',  'time',     'View time breakdown')
-    + _statCardClickable('#fce4ec', '#ad1457', String(weekLessons),          'Lessons Last 7 Days','lessons', 'View lessons')
-    + '<div class="db-stat-card" style="background:#fff3e0;grid-column:1/-1">'
-    + '<div style="font-size:var(--db-text-xl);font-weight:700;color:#e65100;letter-spacing:-.4px">'
-    + cur + ' day' + (cur !== 1 ? 's' : '') + '</div>'
-    + '<div class="ws-streak-row" style="justify-content:center;margin:4px 0 2px">' + streakIcons + '</div>'
-    + '<div style="font-size:var(--db-text-xs);color:var(--neutral-500);margin-top:2px;letter-spacing:.2px">Current Streak</div>'
+    + _statCardClickable(stats.accuracy + '%',         'Accuracy',           'accuracy', 'View accuracy details',    acClass)
+    + _statCardClickable(String(stats.quizCount),      'Quizzes',            'quizzes',  'View this week’s quizzes')
+    + _statCardClickable(weekMins > 0 ? timeStr : '—', 'Time Last 7 Days',   'time',     'View time breakdown')
+    + _statCardClickable(String(weekLessons),           'Lessons Last 7 Days','lessons',  'View lessons')
+    + '<div class="db-stat-card is-streak">'
+    + '<div class="db-stat-val db-streak-val">' + cur + ' day' + (cur !== 1 ? 's' : '') + '</div>'
+    + '<div class="ws-streak-row">' + streakIcons + '</div>'
+    + '<div class="db-stat-lbl">Current Streak</div>'
     + '</div>'
     + '</div>'
     + (stats.lastActive ? '<p class="db-last-active">Last active: ' + stats.lastActive + '</p>' : '');
