@@ -24,6 +24,8 @@
       connect-src 'self'
         https://omjegwtzirskgmgeojdn.supabase.co
         wss://omjegwtzirskgmgeojdn.supabase.co
+        https://auth.mymathroots.com
+        wss://auth.mymathroots.com
         https://accounts.google.com
         https://cdn.jsdelivr.net;
       img-src 'self' data: blob:
@@ -37,6 +39,18 @@
       object-src 'none';
       base-uri 'self';
     """
+
+# ── Netlify Functions — never cache (most return private user data) ──────────
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# ── Parent dashboard — keep out of search indexes ────────────────────────────
+[[headers]]
+  for = "/dashboard/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 
 # ── Service worker — must control the full origin ────────────────────────────
 [[headers]]
