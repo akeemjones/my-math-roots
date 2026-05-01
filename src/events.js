@@ -219,8 +219,18 @@
     _fbSetCat:              (a, b, el) => typeof _fbSetCat === 'function' && _fbSetCat(el, a),
     _submitFeedback:        ()    => typeof _submitFeedback === 'function' && _submitFeedback(),
 
-    // ── Login-screen compound: show login-screen and switch to login tab ──────
-    _showLoginScreen:       ()    => { show('login-screen'); typeof _lsSwitchTab === 'function' && _lsSwitchTab('login'); },
+    // ── Login-screen compound: exit guest mode (if active), show login-screen, re-init login UI ──────
+    _showLoginScreen:       ()    => {
+      if (localStorage.getItem('wb_guest_mode') === '1') {
+        if (typeof _clearAuthRouteState === 'function') _clearAuthRouteState('exit-guest-for-signin');
+        if (typeof updateAccountUI === 'function') updateAccountUI();
+      }
+      show('login-screen');
+      if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
+      if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+      if (typeof _initOneTap === 'function') _initOneTap();
+      if (typeof _lsSwitchTab === 'function') _lsSwitchTab('login');
+    },
 
     // ── Parent Dashboard: soft gate for guests, go straight to dashboard if signed in ──
     _goParentDashboard:     ()    => typeof _goParentDashboard === 'function' && _goParentDashboard(),

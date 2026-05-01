@@ -941,6 +941,12 @@ function _isOnLearningScreen() {
 //   3. CUR.quiz is non-null (a quiz is running)
 // Any one of the three is sufficient to suppress.
 function _shouldSuppressAuthNavigation() {
+  // Hard guard: signed-out (no Supabase user, no explicit guest mode) must
+  // never suppress auth navigation. Stale localStorage from a previous
+  // session cannot authorize a "learning context" without real auth.
+  var hasAuth = !!_supaUser || localStorage.getItem('wb_guest_mode') === '1';
+  if (!hasAuth) return false;
+
   var inLearningSession = localStorage.getItem('mmr_user_role') === 'student'
     && !!localStorage.getItem('mmr_active_student_id')
     && !localStorage.getItem('wb_guest_mode');
@@ -2624,6 +2630,27 @@ async function submitAuth(){
   }
 }
 
+// Surgical, synchronous cleanup of routing-relevant state. Used by sign-out
+// so a force-close mid-signout cannot resurrect the session on next launch.
+// Does NOT touch progress data, theme, tutorial flags, or other preferences —
+// _clearUserData() handles the broader cleanup from the SIGNED_OUT handler.
+function _clearAuthRouteState(reason){
+  console.log('[MMR clear auth route state]', reason || '');
+  try {
+    localStorage.removeItem('mmr_user_role');
+    localStorage.removeItem('mmr_active_student_id');
+    localStorage.removeItem('mmr_last_student_id');
+    localStorage.removeItem('mmr_resume_student_session');
+    localStorage.removeItem('wb_guest_mode');
+    // Kill cached Supabase auth tokens (sb-<ref>-auth-token and PKCE verifier)
+    // so a hung _supa.auth.signOut() can't resurrect the session on reopen.
+    Object.keys(localStorage).forEach(function(k){
+      if (/^sb-.*-auth-token/.test(k)) localStorage.removeItem(k);
+    });
+  } catch(_e) {}
+  _supaUser = null;
+}
+
 function _clearUserData(){
   // ── Wipe in-memory state ──────────────────────────────────────
   SCORES.length = 0;
@@ -2673,6 +2700,8 @@ function _clearUserData(){
   localStorage.removeItem('mmr_active_student_id');
   localStorage.removeItem('mmr_last_student_id');
   localStorage.removeItem('mmr_user_role');
+  localStorage.removeItem('mmr_resume_student_session');
+  localStorage.removeItem('wb_guest_mode');
   localStorage.removeItem(_STU_FAIL_KEY);
   localStorage.removeItem(_STU_FAIL_COUNT);
   _lsFamilyProfiles = null;
@@ -2686,6 +2715,8 @@ function _clearUserData(){
 async function supaSignOut(){
   if(!_supa) return;
   if(!confirm('Sign out? Your progress is saved to your account and will reload on next login.')) return;
+  // Sync cleanup before async signOut — protects against force-close mid-signout.
+  _clearAuthRouteState('supaSignOut');
   await _supa.auth.signOut();
   // _clearUserData() and show('login-screen') handled by SIGNED_OUT auth event
   showLockToast('Signed out.');
@@ -2830,19 +2861,29 @@ function _parentGateClose(){
 
 async function _signOut(){
   const _soRole = localStorage.getItem('mmr_user_role');
-  // Student PIN session: no Supabase session, just clear role and return to login
-  if(_soRole === 'student'){
-    localStorage.removeItem('mmr_user_role');
-    localStorage.removeItem('mmr_active_student_id');
-    localStorage.removeItem('mmr_last_student_id');
-    show('login-screen');
-    _lsInitCarousel();
-    _lsRenderStudentCard();
-    return;
+
+  // (1) Sync cleanup of routing keys + Supabase auth tokens. Protects against
+  //     force-close happening mid-signout — by the time the user reopens the
+  //     PWA, no stale state can route them back into dashboard or student home.
+  _clearAuthRouteState('explicit-signout');
+
+  // (2) Show login immediately so UI matches the new state regardless of
+  //     whether the async Supabase signOut completes.
+  if (typeof show === 'function') show('login-screen');
+  if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
+  if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+
+  // (3) Student PIN session: no Supabase signOut needed.
+  if (_soRole === 'student') return;
+
+  // (4) Parent: best-effort async Supabase signOut. UI is already correct;
+  //     SIGNED_OUT handler runs _clearUserData() for full progress wipe.
+  if (!_supa) return;
+  try {
+    await _supa.auth.signOut();
+  } catch (err) {
+    console.warn('[MMR signOut] supabase signOut failed', err);
   }
-  if(!_supa) return;
-  await _supa.auth.signOut();
-  // onAuthStateChange SIGNED_OUT will redirect to login-screen
 }
 
 function updateSyncLabel(){

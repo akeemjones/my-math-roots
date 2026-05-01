@@ -420,17 +420,27 @@ function _recoverVisibleScreen(reason){
 
   console.warn('[MMR PWA recovery]', reason, 'no active screen; restoring route');
 
+  var hasUser = typeof _supaUser !== 'undefined' && !!_supaUser;
+  var isGuest = localStorage.getItem('wb_guest_mode') === '1';
+
+  // Hard guard: signed-out state must always route to login, regardless of
+  // stale mmr_user_role / mmr_active_student_id from a previous session.
+  if(!hasUser && !isGuest){
+    console.log('[MMR PWA recovery] signed-out → login', reason);
+    if(typeof show === 'function') show('login-screen');
+    return;
+  }
+
   var role = localStorage.getItem('mmr_user_role');
   var activeStudent = localStorage.getItem('mmr_active_student_id');
-  var guest = localStorage.getItem('wb_guest_mode') === '1';
 
-  if(typeof _supaUser !== 'undefined' && _supaUser){
+  if(hasUser){
     if(typeof show === 'function') show('dashboard-screen');
     if(typeof _dbInit === 'function') _dbInit();
     return;
   }
 
-  if((role === 'student' && activeStudent) || guest){
+  if((role === 'student' && activeStudent) || isGuest){
     if(typeof buildHome === 'function') buildHome();
     if(typeof show === 'function') show('home');
     return;
@@ -523,10 +533,14 @@ if(!localStorage.getItem('wb_app_secret')){
     if(_splEl) _splEl.textContent = 'Loading ' + _gsl + '\u2026';
   }
 })();
-// Guest fast-path: skip Supabase auth entirely on grade-switch reload
+// Guest fast-path: show home immediately, but also initialize Supabase in
+// the background so a later "Sign In" from guest can succeed without a
+// reload. INITIAL_SESSION fires with no session, hits the suppress gate
+// (guest + on home → suppress), and is a no-op routing-wise.
 if(localStorage.getItem('wb_guest_mode') === '1'){
   console.log('GRADE SAVED:', localStorage.getItem('mmr_grade'));
   buildHome(); show('home'); _dismissSplash();
+  if(typeof supabaseInit === 'function') supabaseInit();
 } else {
   supabaseInit();
 }
