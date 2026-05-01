@@ -1969,6 +1969,18 @@ function _reportNextAvailable() {
   return last ? last + _REPORT_COOL_MS : 0;
 }
 
+// Minimum signal threshold — prevents brand-new students from burning the
+// 14-day cooldown on a thin report. Tunable: adjust as we learn.
+function _hasEnoughDataForReport(scores, mastery, events) {
+  var completedQuizzes = (scores || []).filter(function(s){ return s.pct != null && s.total > 0; }).length;
+  if (completedQuizzes >= 3) return true;
+  var totalQuestions = (scores || []).reduce(function(sum, s){ return sum + (s.total || 0); }, 0);
+  if (totalQuestions >= 10) return true;
+  var triggered = (events || []).filter(function(e){ return e && e.type === 'triggered'; }).length;
+  if (triggered >= 3) return true;
+  return false;
+}
+
 async function generateAIReport() {
   var footerEl = document.getElementById('db-ai-footer');
   var bodyEl   = document.getElementById('db-root');
@@ -1976,6 +1988,25 @@ async function generateAIReport() {
   var student   = _students[_activeId];
   if (!student) return;
   var name      = student.name || 'Student';
+
+  // Don't burn the 14-day cooldown if there's not enough data to write a useful report.
+  var rawEvents = (typeof _remoteInterventionEvents !== 'undefined' && _remoteInterventionEvents && _remoteInterventionEvents.length)
+    ? _remoteInterventionEvents
+    : _getInterventionEvents();
+  if (!_hasEnoughDataForReport(student.SCORES || [], student.MASTERY || {}, rawEvents)) {
+    if (bodyEl) {
+      _prStatsHtml = bodyEl.innerHTML;
+      bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
+        + '<div style="font-size:2rem;margin-bottom:14px">📚</div>'
+        + '<div style="color:#37474f;font-weight:600;margin-bottom:8px">Not enough activity yet</div>'
+        + '<div style="font-size:.9rem;color:#607d8b;max-width:320px;margin:0 auto">'
+        + 'Complete a few lessons or quizzes first. Reports become useful after more activity is recorded.'
+        + '</div></div>';
+    }
+    if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
+      + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button></div>';
+    return;
+  }
 
   // Enforce 2-week cooldown
   var nextAvail = _reportNextAvailable();
