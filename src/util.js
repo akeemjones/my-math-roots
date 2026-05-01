@@ -77,6 +77,20 @@ const _rateLimit = (()=>{
   };
 })();
 
+// ── Dev-only logging helpers ─────────────────────────────────────────────
+// Gates PII-bearing console output (studentId, role, session-token presence,
+// localStorage state dumps) so it only appears on local dev hosts.
+// In production the calls are no-ops, so child identifiers never reach the
+// browser console where shared-device users could read them.
+const _isDev = (function(){
+  try {
+    var h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || /^192\.168\./.test(h);
+  } catch(_) { return false; }
+})();
+function _devLog(){  if(_isDev) console.log.apply(console, arguments);  }
+function _devWarn(){ if(_isDev) console.warn.apply(console, arguments); }
+
 // Error logging — captures unexpected errors silently in background
 const _appErrors = [];
 function _logError(context, err){

@@ -2026,9 +2026,16 @@ async function generateAIReport() {
   var payload = _buildDashboardPayload(student.SCORES||[], student.APP_TIME||{totalSecs:0,sessions:0,dailySecs:{}}, student.STREAK||{current:0,longest:0}, student.MASTERY||{}, 30);
 
   try {
+    var _hdrs = { 'Content-Type': 'application/json' };
+    try {
+      var _sess = (typeof _supa !== 'undefined' && _supa)
+        ? (await _supa.auth.getSession()).data.session
+        : null;
+      if (_sess && _sess.access_token) _hdrs['Authorization'] = 'Bearer ' + _sess.access_token;
+    } catch (_e) {}
     var resp = await fetch('/.netlify/functions/gemini-report', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: _hdrs,
       body: JSON.stringify({ studentName: name, reportData: payload, studentId: _activeId })
     });
 
@@ -4531,14 +4538,14 @@ function _renderDashboardOnly() {
 if (typeof document !== 'undefined') {
   var _DB_ACTIONS = {
     dbGoToApp:               function()     {
-      console.log('[MMR DASHBOARD] dbGoToApp', {activeId: _activeId, managedCount: (_managedProfiles||[]).length, hasShared: typeof enterStudentLearningSession});
+      _devLog('[MMR DASHBOARD] dbGoToApp', {activeId: _activeId, managedCount: (_managedProfiles||[]).length, hasShared: typeof enterStudentLearningSession});
       if (_activeId === 'local' || !_activeId) {
-        console.warn('[MMR DASHBOARD] dbGoToApp aborted (no real student selected)');
+        _devWarn('[MMR DASHBOARD] dbGoToApp aborted (no real student selected)');
         return;
       }
       var profile = (_managedProfiles || []).find(function(p){ return p.id === _activeId; });
       if (!profile) {
-        console.warn('[MMR DASHBOARD] dbGoToApp aborted (profile not found in _managedProfiles)', _activeId);
+        _devWarn('[MMR DASHBOARD] dbGoToApp aborted (profile not found in _managedProfiles)', _activeId);
         return;
       }
       if (typeof enterStudentLearningSession !== 'function') {

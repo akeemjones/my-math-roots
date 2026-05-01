@@ -1,7 +1,21 @@
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
-const NOTIFY_EMAIL   = 'akeemjones93@gmail.com';
+const RESEND_API_KEY        = Deno.env.get('RESEND_API_KEY')!;
+const NOTIFY_VISITOR_SECRET = Deno.env.get('NOTIFY_NEW_VISITOR_SECRET');
+const NOTIFY_EMAIL          = 'akeemjones93@gmail.com';
 
 Deno.serve(async (req) => {
+  // Auth: only the Postgres trigger (which sends Authorization: Bearer <secret>
+  // after the 2026-05-01 launch hardening migration) may invoke this function.
+  // Without this check, anyone with the public function URL could POST a fake
+  // `record` payload and trigger emails to the support inbox via Resend
+  // (bill-risk + spam vector). Fail closed if the env var isn't configured.
+  if (!NOTIFY_VISITOR_SECRET) {
+    return new Response('Server misconfigured', { status: 500 });
+  }
+  const auth = req.headers.get('Authorization');
+  if (auth !== `Bearer ${NOTIFY_VISITOR_SECRET}`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   let payload: any;
   try { payload = await req.json(); } catch { return new Response('Bad JSON', { status: 400 }); }
 

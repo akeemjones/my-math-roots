@@ -320,11 +320,11 @@ async function enterStudentLearningSession(opts) {
   var sessionToken = opts.sessionToken || null;
   var source       = opts.source || 'unknown';
   if (!studentId || !profile) {
-    console.warn('[MMR SESSION] enterStudentLearningSession aborted (missing id/profile)', {studentId, hasProfile: !!profile, source});
+    _devWarn('[MMR SESSION] enterStudentLearningSession aborted (missing id/profile)', {studentId, hasProfile: !!profile, source});
     return;
   }
   var parentAuthed = !!_supaUser;
-  console.log('[MMR SESSION] enterStudentLearningSession', {source, studentId, parentAuthed, hasSessionToken: !!sessionToken});
+  _devLog('[MMR SESSION] enterStudentLearningSession', {source, studentId, parentAuthed, hasSessionToken: !!sessionToken});
 
   // 1. Persist identity
   if (sessionToken) {
@@ -383,7 +383,7 @@ async function enterStudentLearningSession(opts) {
   if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
   if (typeof tutCheckAndShow === 'function') setTimeout(tutCheckAndShow, 1500);
-  console.log('[MMR STORAGE]', {
+  _devLog('[MMR STORAGE]', {
     role: localStorage.getItem('mmr_user_role'),
     activeStudent: localStorage.getItem('mmr_active_student_id'),
     sessionToken: !!localStorage.getItem('mmr_session_token'),
@@ -988,7 +988,7 @@ function supabaseInit(){
   _supa.auth.onAuthStateChange(async (event, session) => {
     _supaUser = session ? session.user : null;
     updateAccountUI();
-    console.log('[MMR AUTH EVENT]', event, {
+    _devLog('[MMR AUTH EVENT]', event, {
       role:           localStorage.getItem('mmr_user_role'),
       activeStudent:  localStorage.getItem('mmr_active_student_id'),
       resume:         localStorage.getItem('mmr_resume_student_session'),
@@ -1005,7 +1005,7 @@ function supabaseInit(){
         var _resumeFlag = localStorage.getItem('mmr_resume_student_session');
         var _resumeSid  = localStorage.getItem('mmr_active_student_id');
         if (_resumeFlag === '1' && _resumeSid && localStorage.getItem('mmr_user_role') === 'student') {
-          console.log('[MMR AUTH] INITIAL_SESSION student restore -> hydrate student', {studentId: _resumeSid});
+          _devLog('[MMR AUTH] INITIAL_SESSION student restore -> hydrate student', {studentId: _resumeSid});
           _authInitialSessionHandled = true;
           localStorage.removeItem('mmr_resume_student_session');
           await restoreStudentLearningSessionFromStorage(_resumeSid);
@@ -1016,7 +1016,7 @@ function supabaseInit(){
       }
       // (i) Suppress: any other learning context → no nav, just dismiss splash.
       if (_shouldSuppressAuthNavigation()) {
-        console.log('[MMR AUTH] INITIAL_SESSION ignored — active learning context', {
+        _devLog('[MMR AUTH] INITIAL_SESSION ignored — active learning context', {
           role:          localStorage.getItem('mmr_user_role'),
           activeStudent: localStorage.getItem('mmr_active_student_id'),
           onLearningScr: _isOnLearningScreen(),
@@ -1039,7 +1039,7 @@ function supabaseInit(){
         // Normal parent return — even if mmr_user_role==='student' is stale in
         // localStorage from a closed mid-session tab, treat this as a parent visit
         // and route to the parent dashboard.
-        console.log('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role')});
+        _devLog('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role')});
         localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
         localStorage.setItem('mmr_user_role', 'parent');
@@ -1081,7 +1081,7 @@ function supabaseInit(){
       // while the user is in any observable learning context. Stands alone — no
       // dependency on _authInitialSessionHandled.
       if (_shouldSuppressAuthNavigation()) {
-        console.log('[MMR AUTH] SIGNED_IN ignored — active learning/quiz screen', {
+        _devLog('[MMR AUTH] SIGNED_IN ignored — active learning/quiz screen', {
           role:          localStorage.getItem('mmr_user_role'),
           activeStudent: localStorage.getItem('mmr_active_student_id'),
           onLearningScr: _isOnLearningScreen(),

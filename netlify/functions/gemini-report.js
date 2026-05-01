@@ -53,6 +53,51 @@ async function _checkRateLimit(ip) {
   return entry.count > 10;
 }
 
+// ── Ownership verification ────────────────────────────────────────────────
+// Confirms the caller's Supabase JWT belongs to the parent who owns studentId.
+// Without this check a parent could spoof another family's studentId to view
+// their saved report, burn their 14-day cooldown, or trigger Gemini calls
+// against another child's profile id.
+// Returns the verified parent user.id on success, or null on any failure.
+function _isUuid(s) {
+  return typeof s === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+}
+
+async function _verifyParentOwnsStudent(authHeader, studentId) {
+  const supaUrl = process.env.SUPABASE_URL;
+  const svcKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supaUrl || !svcKey || !authHeader || !studentId) return null;
+
+  const m = /^Bearer\s+([^\s]+)$/.exec(authHeader);
+  if (!m) return null;
+  const userJwt = m[1];
+
+  // 1. Verify JWT by asking Supabase Auth for the user it identifies.
+  let userId;
+  try {
+    const res = await fetch(`${supaUrl}/auth/v1/user`, {
+      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + userJwt },
+    });
+    if (!res.ok) return null;
+    const user = await res.json();
+    if (!user || !user.id) return null;
+    userId = user.id;
+  } catch (e) { return null; }
+
+  // 2. Confirm parent_id on the student_profiles row matches that user.
+  try {
+    const res = await fetch(
+      `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}&select=parent_id`,
+      { headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey } }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    return rows[0].parent_id === userId ? userId : null;
+  } catch (e) { return null; }
+}
+
 // ── Server-side cooldown check ────────────────────────────────────────────
 // Verifies the 14-day window using student_profiles (service role — not user-forgeable).
 // Returns:
@@ -433,11 +478,24 @@ exports.handler = async function(event) {
 
   // Server-side 14-day cooldown check (not bypassable by the client).
   // Returns the saved report text if cooldown is active so the client can show "View Last Report".
-  // SECURITY: studentId is client-supplied and only length-validated here.
-  // The function relies on IP rate-limiting + the 14-day cooldown for abuse
-  // resistance. A future hardening pass should JWT-verify that the studentId
-  // belongs to the authenticated parent (student_profiles.parent_id = auth.uid()).
-  if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
+  // For real student profile UUIDs we require the caller to prove ownership via
+  // their Supabase JWT — otherwise studentId would be client-trusted and a
+  // parent could pull another family's saved report or burn their cooldown.
+  // Non-UUID studentIds (e.g. 'local' preview mode) skip both verification and
+  // DB persistence — the lookup would fail anyway and there's nothing to leak.
+  let _verifiedStudentId = null;
+  if (studentId && typeof studentId === 'string' && studentId.length <= 64 && _isUuid(studentId)) {
+    const authHdr = event.headers.authorization || event.headers.Authorization || '';
+    const ownerId = await _verifyParentOwnsStudent(authHdr, studentId);
+    if (!ownerId) {
+      return {
+        statusCode: 403,
+        headers: { 'Content-Type': 'application/json', ...corsH },
+        body: JSON.stringify({ error: 'Not authorized for this student' }),
+      };
+    }
+    _verifiedStudentId = studentId;
+
     const cooldown = await _checkServerCooldown(studentId);
     if (cooldown) {
       const nextDate = new Date(cooldown.nextAvailMs).toLocaleDateString('en-US', {
@@ -464,8 +522,9 @@ exports.handler = async function(event) {
     // Awaited (not fire-and-forget): Netlify can freeze the container after the
     // response, dropping pending promises. Losing this write would let the next
     // request re-call Gemini and burn the cooldown twice.
-    if (studentId && typeof studentId === 'string' && studentId.length <= 64) {
-      await _persistReport(studentId, text);
+    // Only persist for studentIds we verified the caller owns above.
+    if (_verifiedStudentId) {
+      await _persistReport(_verifiedStudentId, text);
     }
     return {
       statusCode: 200,
