@@ -226,6 +226,61 @@ function _sanitizeReportData(d) {
     });
   }
 
+  // Diagnostic fields (added 2026-04-30 — Generate Report diagnostics upgrade).
+  // All sourced from intervention_events + MASTERY; capped tightly.
+  s.topErrorTags = [];
+  if (Array.isArray(d.topErrorTags)) {
+    d.topErrorTags.slice(0, 6).forEach(t => {
+      if (!t || typeof t !== 'object') return;
+      s.topErrorTags.push({
+        label: _sanitizeStr(t.label, 80),
+        count: _sanitizeNum(t.count, 0),
+      });
+    });
+  }
+
+  s.misconceptionPatterns = [];
+  if (Array.isArray(d.misconceptionPatterns)) {
+    d.misconceptionPatterns.slice(0, 5).forEach(m => {
+      if (!m || typeof m !== 'object') return;
+      s.misconceptionPatterns.push({
+        label:       _sanitizeStr(m.label, 80),
+        description: _sanitizeStr(m.description, 200),
+      });
+    });
+  }
+
+  s.interventionSummary = null;
+  if (d.interventionSummary && typeof d.interventionSummary === 'object') {
+    s.interventionSummary = {
+      total:        _sanitizeNum(d.interventionSummary.total, 0),
+      recoveryRate: _sanitizeNum(d.interventionSummary.recoveryRate, 0),
+    };
+  }
+
+  s.recoveryPatterns = [];
+  if (Array.isArray(d.recoveryPatterns)) {
+    d.recoveryPatterns.slice(0, 6).forEach(r => {
+      if (!r || typeof r !== 'object') return;
+      s.recoveryPatterns.push({
+        label:        _sanitizeStr(r.label, 80),
+        attempts:     _sanitizeNum(r.attempts, 0),
+        recoveryRate: _sanitizeNum(r.recoveryRate, 0),
+      });
+    });
+  }
+
+  s.repeatedMistakes = [];
+  if (Array.isArray(d.repeatedMistakes)) {
+    d.repeatedMistakes.slice(0, 8).forEach(m => {
+      if (!m || typeof m !== 'object') return;
+      s.repeatedMistakes.push({
+        label:       _sanitizeStr(m.label, 80),
+        wrongCount:  _sanitizeNum(m.wrongCount, 0),
+      });
+    });
+  }
+
   return s;
 }
 
