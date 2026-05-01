@@ -422,17 +422,21 @@ function _recoverVisibleScreen(reason){
 
   var hasUser = typeof _supaUser !== 'undefined' && !!_supaUser;
   var isGuest = localStorage.getItem('wb_guest_mode') === '1';
+  // Family-code student session: role + active-student + session-token.
+  // The session token is set only by a successful verify_student_pin RPC,
+  // so it's the proof that the user actually authenticated.
+  var hasStudentSession =
+    localStorage.getItem('mmr_user_role') === 'student'
+    && !!localStorage.getItem('mmr_active_student_id')
+    && !!localStorage.getItem('mmr_session_token');
 
-  // Hard guard: signed-out state must always route to login, regardless of
-  // stale mmr_user_role / mmr_active_student_id from a previous session.
-  if(!hasUser && !isGuest){
+  // Hard guard: no auth, no guest, no valid student session → login.
+  // Stale role/active-student WITHOUT mmr_session_token does not qualify.
+  if(!hasUser && !isGuest && !hasStudentSession){
     console.log('[MMR PWA recovery] signed-out → login', reason);
     if(typeof show === 'function') show('login-screen');
     return;
   }
-
-  var role = localStorage.getItem('mmr_user_role');
-  var activeStudent = localStorage.getItem('mmr_active_student_id');
 
   if(hasUser){
     if(typeof show === 'function') show('dashboard-screen');
@@ -440,7 +444,8 @@ function _recoverVisibleScreen(reason){
     return;
   }
 
-  if((role === 'student' && activeStudent) || isGuest){
+  // Family-code student or guest → home
+  if(hasStudentSession || isGuest){
     if(typeof buildHome === 'function') buildHome();
     if(typeof show === 'function') show('home');
     return;
@@ -539,6 +544,16 @@ if(!localStorage.getItem('wb_app_secret')){
 // (guest + on home → suppress), and is a no-op routing-wise.
 if(localStorage.getItem('wb_guest_mode') === '1'){
   console.log('GRADE SAVED:', localStorage.getItem('mmr_grade'));
+  buildHome(); show('home'); _dismissSplash();
+  if(typeof supabaseInit === 'function') supabaseInit();
+} else if (
+  localStorage.getItem('mmr_user_role') === 'student'
+  && localStorage.getItem('mmr_active_student_id')
+  && localStorage.getItem('mmr_session_token')
+) {
+  // Family-code student fast-path: home immediately. Supabase init runs in
+  // the background so RPCs (progress sync, unlocks) work right away. The
+  // suppress gate prevents INITIAL_SESSION from re-routing.
   buildHome(); show('home'); _dismissSplash();
   if(typeof supabaseInit === 'function') supabaseInit();
 } else {

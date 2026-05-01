@@ -940,11 +940,23 @@ function _isOnLearningScreen() {
 //   2. DOM: a learning screen is visible
 //   3. CUR.quiz is non-null (a quiz is running)
 // Any one of the three is sufficient to suppress.
+// A family-code student session has no Supabase user. Validity requires
+// the role + active-student keys AND mmr_session_token (set only by a
+// successful verify_student_pin RPC). The token's presence proves PIN
+// auth happened; without it, treat the state as stale → route to login.
+function _hasValidStudentSession() {
+  return localStorage.getItem('mmr_user_role') === 'student'
+      && !!localStorage.getItem('mmr_active_student_id')
+      && !!localStorage.getItem('mmr_session_token');
+}
+
 function _shouldSuppressAuthNavigation() {
-  // Hard guard: signed-out (no Supabase user, no explicit guest mode) must
-  // never suppress auth navigation. Stale localStorage from a previous
-  // session cannot authorize a "learning context" without real auth.
-  var hasAuth = !!_supaUser || localStorage.getItem('wb_guest_mode') === '1';
+  // Hard guard: signed-out (no Supabase user, no explicit guest mode, no
+  // valid family-code student session) must never suppress auth navigation.
+  // Stale localStorage alone cannot authorize a "learning context."
+  var hasAuth = !!_supaUser
+    || localStorage.getItem('wb_guest_mode') === '1'
+    || _hasValidStudentSession();
   if (!hasAuth) return false;
 
   var inLearningSession = localStorage.getItem('mmr_user_role') === 'student'
@@ -2642,6 +2654,10 @@ function _clearAuthRouteState(reason){
     localStorage.removeItem('mmr_last_student_id');
     localStorage.removeItem('mmr_resume_student_session');
     localStorage.removeItem('wb_guest_mode');
+    // Family-code student session token. Without this, _hasValidStudentSession
+    // would still return true after sign-out and incorrectly route the next
+    // reopen to home instead of login.
+    localStorage.removeItem('mmr_session_token');
     // Kill cached Supabase auth tokens (sb-<ref>-auth-token and PKCE verifier)
     // so a hung _supa.auth.signOut() can't resurrect the session on reopen.
     Object.keys(localStorage).forEach(function(k){
@@ -2649,6 +2665,7 @@ function _clearAuthRouteState(reason){
     });
   } catch(_e) {}
   _supaUser = null;
+  if (typeof _sessionToken !== 'undefined') _sessionToken = null;
 }
 
 function _clearUserData(){
