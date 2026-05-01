@@ -2843,6 +2843,103 @@ body.dark #dashboard-screen { background:#0d1626; }
 #dashboard-screen .cs-lock-hint { display:inline-block; font-size:1rem; cursor:default; user-select:none; }
 @media (min-width:480px) { #dashboard-screen .db-stat-grid { grid-template-columns:repeat(4,1fr); } }
 
+/* ── Parent Dashboard — dark mode ────────────────────────────────
+   All section cards, inner rows, form controls, and modals.
+   Do NOT add footer (.db-ai-footer-wrap / .db-ai-gen-btn) here.
+   ──────────────────────────────────────────────────────────────── */
+/* Student selector bar */
+body.dark #dashboard-screen .db-selector-wrap {
+  background:#0d1626; border-bottom-color:rgba(255,255,255,.10); }
+body.dark #dashboard-screen .db-selector-label { color:oklch(66% 0.005 55); }
+body.dark #dashboard-screen .db-selector {
+  background:#182438; color:var(--txt); border-color:rgba(255,255,255,.15); }
+/* Section cards (all collapsed accordion cards) */
+body.dark #dashboard-screen .db-section { background:#111c2d; color:var(--txt); }
+body.dark #dashboard-screen .db-sec-h { color:oklch(74% 0.010 75); }
+/* Practice Plan items */
+body.dark #dashboard-screen .db-pp-item { background:#17253a; }
+body.dark #dashboard-screen .db-pp-item-name,
+body.dark #dashboard-screen .db-pp-item-action { color:var(--txt); }
+body.dark #dashboard-screen .db-pp-item-sub { color:oklch(66% 0.005 55); }
+/* Root System */
+body.dark #dashboard-screen .rs-insights { background:rgba(255,255,255,.04); }
+body.dark #dashboard-screen .rs-lbl-name,
+body.dark #dashboard-screen .rs-unit-name { color:oklch(74% 0.010 75); }
+body.dark #dashboard-screen .rs-insight-val,
+body.dark #dashboard-screen .rs-det-val,
+body.dark #dashboard-screen .rs-det-rec strong { color:var(--txt); }
+body.dark #dashboard-screen .rs-det { background:#17253a; }
+body.dark #dashboard-screen .rs-spine { background:rgba(255,255,255,.12); }
+body.dark #dashboard-screen .rs-spine-active { background:rgba(255,255,255,.20); }
+/* Activity Snapshot widgets + drill-down */
+body.dark #dashboard-screen .ws-widget { background:rgba(255,255,255,.04); }
+body.dark #dashboard-screen .ws-widget-val { color:var(--txt); }
+body.dark #dashboard-screen .db-snap-detail { background:rgba(255,255,255,.04); }
+body.dark #dashboard-screen .db-snap-detail-title { color:oklch(74% 0.010 75); }
+/* Quiz History filters + rows */
+body.dark #dashboard-screen .db-qh-chip {
+  background:#182438; color:var(--txt); border-color:rgba(255,255,255,.15); }
+body.dark #dashboard-screen .db-qh-chip:hover { background:#1c2c40; }
+body.dark #dashboard-screen .db-qh-select,
+body.dark #dashboard-screen .db-qh-reset {
+  background:#182438; color:var(--txt); border-color:rgba(255,255,255,.15); }
+body.dark #dashboard-screen .db-qh-reset:hover { background:#1c2c40; }
+body.dark #dashboard-screen .db-qh-badge-pass { background:rgba(46,125,50,.25); color:#81c784; }
+body.dark #dashboard-screen .db-qh-badge-fail { background:rgba(198,40,40,.25); color:#ef9a9a; }
+body.dark #dashboard-screen .db-quiz-row { background:rgba(255,255,255,.04); }
+body.dark #dashboard-screen .db-quiz-row:hover { background:rgba(255,255,255,.08); }
+body.dark #dashboard-screen .db-quiz-label { color:oklch(74% 0.010 75); }
+/* Access Controls — unit/lesson unlock grid */
+body.dark #dashboard-screen .db-unit-card { background:#17253a; }
+body.dark #dashboard-screen .db-unit-card.db-unit-unlocked {
+  background:rgba(46,125,50,.18); border-color:rgba(165,214,167,.25); }
+body.dark #dashboard-screen .db-unit-name { color:var(--txt); }
+body.dark #dashboard-screen .db-unit-num  { color:oklch(58% 0.010 75); }
+body.dark #dashboard-screen .db-lesson-drawer {
+  background:#0d1626; border-color:rgba(255,255,255,.10); }
+body.dark #dashboard-screen .db-lesson-row { border-bottom-color:rgba(255,255,255,.08); }
+body.dark #dashboard-screen .db-lesson-name { color:oklch(74% 0.010 75); }
+body.dark #dashboard-screen .db-unlock-free-note {
+  background:rgba(21,101,192,.18); color:#90caf9; border-color:rgba(144,202,249,.25); }
+/* Profiles & Account */
+body.dark #dashboard-screen .db-profiles-list { background:#111c2d; }
+body.dark #dashboard-screen .db-profile-row { border-bottom-color:rgba(255,255,255,.08); }
+body.dark #dashboard-screen .db-profile-edit-btn {
+  background:#182438; color:oklch(74% 0.010 75); }
+body.dark #dashboard-screen .db-profile-pin-btn {
+  background:rgba(230,81,0,.20); color:#ffcc80; }
+/* Forms, inputs, feedback */
+body.dark #dashboard-screen .db-form-inp,
+body.dark #dashboard-screen .db-fb-comment {
+  background:#182438; color:var(--txt); border-color:rgba(255,255,255,.15); }
+body.dark #dashboard-screen .db-fb-cat {
+  background:#182438; border-color:rgba(255,255,255,.15); color:oklch(74% 0.010 75); }
+/* Timer / toggle controls */
+body.dark #dashboard-screen .db-timer-lbl { color:oklch(74% 0.010 75); }
+body.dark #dashboard-screen .db-toggle-btn {
+  background:rgba(255,255,255,.12); color:oklch(74% 0.010 75); }
+body.dark #dashboard-screen .db-time-box { background:rgba(103,58,183,.12); }
+body.dark #dashboard-screen .db-time-sep { background:rgba(255,255,255,.08); }
+/* Danger Zone */
+body.dark #dashboard-screen .db-danger-zone {
+  border-color:rgba(239,83,80,.35) !important; background:rgba(183,28,28,.12) !important; }
+body.dark #dashboard-screen .db-danger-desc { color:#ef9a9a; }
+/* Badges */
+body.dark #dashboard-screen .db-badge-red  { background:rgba(198,40,40,.20);  color:#ef9a9a; }
+body.dark #dashboard-screen .db-badge-blue { background:rgba(255,140,0,.15);  color:oklch(77% 0.17 55); }
+/* AI report content sections */
+body.dark #dashboard-screen .db-ai-section { background:rgba(255,255,255,.04); }
+body.dark #dashboard-screen .db-ai-section-body { color:oklch(66% 0.005 55); }
+/* Review modal (not scoped to #dashboard-screen in base rules) */
+body.dark .db-review-sheet { background:#111c2d; }
+body.dark .db-review-handle { background:rgba(255,255,255,.15); }
+body.dark .db-review-title,
+body.dark .db-rev-q { color:var(--txt); }
+body.dark .db-rev-item  { background:rgba(255,255,255,.04); }
+body.dark .db-rev-wrong { background:rgba(198,40,40,.12); border-color:rgba(198,40,40,.25); }
+body.dark .db-rev-right { background:rgba(46,125,50,.10);  border-color:rgba(46,125,50,.25); }
+/* ──────────────────────────────────────────────────────────────── */
+
 /* ══════════════════════════════════════════
    PROFILE BUTTON (top-left, mirrors cog-btn)
 ══════════════════════════════════════════ */
