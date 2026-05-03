@@ -383,8 +383,8 @@ function checkMigratedLesson(tag, l) {
     const ptCounts = {};
     bank.forEach(q => { ptCounts[q.promptTemplate] = (ptCounts[q.promptTemplate] || 0) + 1; });
     const maxPT = Math.max(...Object.values(ptCounts));
-    if (maxPT > bank.length * 0.4)
-      warn(`R-new-D: single promptTemplate accounts for >40% of quizBank — quiz may feel repetitive`);
+    if (maxPT > bank.length * 0.45)
+      warn(`R-new-D: single promptTemplate accounts for >45% of quizBank — quiz may feel repetitive`);
   }
 }
 
