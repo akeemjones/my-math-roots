@@ -2481,7 +2481,7 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 }
 
 /* ── Login carousel ── */
-.ls-carousel-outer{width:100%;max-width:400px;border-radius:28px;overflow:hidden;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);box-shadow:0 24px 64px rgba(0,0,0,0.45),0 4px 16px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.30);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.ls-carousel-outer{width:100%;max-width:400px;border-radius:28px;overflow-x:hidden;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);box-shadow:0 24px 64px rgba(0,0,0,0.45),0 4px 16px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.30);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
 .ls-carousel-track{display:flex;width:200%;transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;align-items:flex-start}
 .ls-card{width:50%;background:transparent;padding:22px 24px;box-sizing:border-box}
 .ls-card-role-hd{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.16)}
@@ -2496,6 +2496,35 @@ button:focus-visible, .abtn:focus-visible, .cog-btn:focus-visible,
 #login-screen .ls-google-btn{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.28)!important;color:#fff!important}
 #login-screen #ls-submit-btn{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.28)!important;box-shadow:none!important;color:#fff!important}
 #login-screen .auth-tab-btn.idle{color:rgba(255,255,255,.72)}
+
+/* ── Compact layout for short screens — signup form fits without scrolling ── */
+@media (max-height: 860px) {
+  /* Branding */
+  #ls-main-wrap             { padding: 4px 20px 6px !important; }
+  .ls-logo-wrap             { width:32px !important; height:32px !important; }
+  .ls-brand-sub             { margin-bottom: 6px !important; }
+  #ls-main-wrap h1          { font-size: var(--fs-xl) !important; margin: 0 0 1px !important; }
+  /* Card shell */
+  .ls-card                  { padding: 8px 24px; }
+  .ls-card-role-hd          { margin-bottom: 6px; padding-bottom: 6px; }
+  .ls-card-role-icon        { margin-bottom: 2px; }
+  .ls-card-role-icon svg    { width:24px !important; height:24px !important; }
+  .ls-card-role-sub         { display:none; }
+  /* Inputs */
+  #login-screen .set-inp    { padding: 8px 14px !important; }
+  /* Form element gaps */
+  .ls-google-btn            { padding: 8px !important; margin-bottom: 4px !important; }
+  #ls-or-divider            { margin-bottom: 5px !important; }
+  #ls-tabs-bar              { margin-bottom: 6px !important; }
+  #ls-name-row              { margin-bottom: 5px !important; }
+  #ls-consent-row           { margin-bottom: 4px !important; font-size: var(--fs-xs) !important; }
+  #ls-consent-row label     { padding: 5px 8px !important; }
+  #ls-msg                   { min-height: 0.9rem !important; margin-bottom: 3px !important; }
+  #ls-submit-btn            { padding: 11px !important; }
+  /* Below-card elements */
+  .ls-dots                  { margin-top: 6px !important; }
+  #ls-guest-btn             { margin-top: 8px !important; }
+}
 
 
 /* ── Student card: avatar picker ── */

@@ -8,6 +8,8 @@ const _APP_GLOBALS = [
   'q','_ICO','UNITS_DATA','_unitLoadPromises','_mergeUnitData','_loadUnit',
   // data/shared_k.js
   '_UNITS_DATA_K','_kUnitLoadPromises','_mergeKUnitData','_loadKUnit','_applyKindergartenGrade',
+  // data/shared_g1.js
+  '_UNITS_DATA_G1','_g1UnitLoadPromises','_mergeG1UnitData','_loadG1Unit','_applyGrade1Grade',
   // util.js
 
   '_sr','_shuffle','_sanitize','_escHtml','_validEmail','_friendlyError','_rateLimit',
@@ -520,6 +522,7 @@ applyA11y();
   var _g = localStorage.getItem('mmr_grade') || '2';
   console.log('BOOT GRADE:', _g);
   if(_g === 'K'){ console.log('APPLYING GRADE:', 'K'); _applyKindergartenGrade(); }
+  else if(_g === '1'){ console.log('APPLYING GRADE:', '1'); _applyGrade1Grade(); }
 })();
 buildHome();
 // Set version display

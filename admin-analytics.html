@@ -6,22 +6,68 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Analytics — My Math Roots Admin</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5rem; background: #f8f9fa; color: #1a1a2e; }
-    h1 { font-size: 1.4rem; margin-bottom: 1.5rem; }
-    #auth-gate { padding: 2rem; color: #c0392b; font-weight: bold; }
-    #metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
-    .metric-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem; }
-    .metric-card h3 { font-size: .85rem; letter-spacing: .05em; color: #666; margin: 0 0 .5rem; text-transform: uppercase; }
-    .metric-card pre { font-size: .75rem; overflow: auto; max-height: 220px; margin: 0; white-space: pre-wrap; word-break: break-word; background: #f4f4f4; padding: .5rem; border-radius: 4px; }
-    #loading { padding: 2rem; color: #666; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1.5rem 2rem; background: #f0f2f5; color: #1a1a2e; }
+
+    h1 { font-size: 1.5rem; font-weight: 800; margin: 0 0 0.2rem; }
+    .subtitle { font-size: 0.85rem; color: #888; margin-bottom: 2.5rem; }
+
+    /* Sections */
+    .section { margin-bottom: 2.5rem; }
+    .section-title {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: #666; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.5rem; margin: 0 0 1rem;
+    }
+
+    /* Stat cards */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .stat-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; padding: 1.1rem 1.25rem; }
+    .stat-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #888; margin-bottom: 0.35rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; color: #1a1a2e; }
+    .stat-hint { font-size: 0.72rem; color: #aaa; line-height: 1.4; }
+
+    /* Badges */
+    .badge { display: inline-block; border-radius: 4px; padding: 0.15rem 0.55rem; font-size: 0.7rem; font-weight: 700; margin-top: 0.5rem; }
+    .badge-ok   { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .badge-warn { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+    .badge-high { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* Tables */
+    .tables-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    @media (max-width: 700px) { .tables-row { grid-template-columns: 1fr; } }
+    .table-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; overflow: hidden; }
+    .table-card-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #666; padding: 0.9rem 1rem 0.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { background: #f8f8f8; padding: 0.45rem 1rem; text-align: left; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; color: #999; text-transform: uppercase; border-bottom: 1px solid #ececec; }
+    td { padding: 0.55rem 1rem; border-bottom: 1px solid #f4f4f4; color: #333; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Retention */
+    .retention-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .retention-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; padding: 1.25rem; }
+    .ret-pct { font-size: 2.4rem; font-weight: 800; line-height: 1; margin: 0.3rem 0; }
+    .ret-pct.color-high { color: #059669; }
+    .ret-pct.color-mid  { color: #d97706; }
+    .ret-pct.color-low  { color: #dc2626; }
+    .ret-pct.color-none { color: #d1d5db; }
+    .ret-detail { font-size: 0.78rem; color: #555; margin-top: 0.3rem; }
+    .ret-explain { font-size: 0.7rem; color: #aaa; margin-top: 0.3rem; line-height: 1.4; }
+
+    /* Empty state */
+    .empty { color: #ccc; font-size: 0.82rem; padding: 1.5rem 1rem; text-align: center; }
+
+    /* Auth / loading states */
+    #auth-gate { padding: 3rem 1rem; color: #b91c1c; font-weight: 700; font-size: 1rem; }
+    #loading { padding: 3rem 1rem; color: #888; }
   </style>
 </head>
 <body>
   <div id="auth-gate" style="display:none">Not authorized — admin role required.</div>
   <div id="loading">Verifying access…</div>
   <div id="dashboard" style="display:none">
-    <h1>My Math Roots — Internal Analytics</h1>
-    <div id="metrics-grid"></div>
+    <h1>My Math Roots</h1>
+    <p class="subtitle">Internal Analytics — Admin only · Last 30 days unless noted</p>
+    <div id="dash-content"></div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="/admin-analytics.js"></script>

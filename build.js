@@ -75,7 +75,7 @@ async function build(){
   const fontsCss   = fs.readFileSync(path.join(ROOT, 'src',  'styles-fonts.css'),       'utf8');
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
-    'data/shared.js','data/shared_k.js','util.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
+    'data/shared.js','data/shared_k.js','data/shared_g1.js','util.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
     'visuals.js','question-engine.js','quiz.js','settings.js','ui.js','tour.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
@@ -276,6 +276,27 @@ async function build(){
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, path.join(K_DATA_DIR, name + '.js'));
       console.log(`📋 Copied:  data/k/${name}.js`);
+    }
+  }
+
+  // ── Build G1 unit data files → dist/data/g1/ ──────────────────────────────
+  // The source files use ES module syntax (export const / export default) for the
+  // spec validator.  We strip those keywords and append _mergeG1UnitData(idx, …)
+  // so the browser can load them as plain scripts.
+  const G1_DATA_DIR = path.join(DIST, 'data', 'g1');
+  if (!fs.existsSync(G1_DATA_DIR)) fs.mkdirSync(G1_DATA_DIR, { recursive: true });
+  const G1_UNIT_MAP = { 1: 0 }; // source file number → _UNITS_DATA_G1 index
+  for (const [fileNum, mergeIdx] of Object.entries(G1_UNIT_MAP)) {
+    const g1Src = path.join(ROOT, 'src', 'data', 'g1', 'u' + fileNum + '.js');
+    if (fs.existsSync(g1Src)) {
+      let g1Content = fs.readFileSync(g1Src, 'utf8');
+      // Strip ES module keywords: 'export const' → 'const', 'export default …;' → removed
+      g1Content = g1Content.replace(/^export const /mg, 'const ');
+      g1Content = g1Content.replace(/^export default\s+\S+;\s*$/m, '');
+      // Append the runtime registration call
+      g1Content += '\n_mergeG1UnitData(' + mergeIdx + ', G1_U1_SPEC);\n';
+      fs.writeFileSync(path.join(G1_DATA_DIR, 'u' + fileNum + '.js'), g1Content, 'utf8');
+      console.log(`📋 Built:   data/g1/u${fileNum}.js`);
     }
   }
 
