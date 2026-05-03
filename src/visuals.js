@@ -118,10 +118,103 @@ function drawShapes(cfg, lArgIdx, rArgIdx) {
   return '<div class="q-visual"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalW + ' ' + totalH + '" style="max-width:' + totalW + 'px;width:100%;height:auto;display:block;margin:0 auto" aria-label="' + label + '" role="img">' + svgContent + '</svg></div>';
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+//  Grade 1 Unit 1 visual renderers
+//  Called from _buildVisualHTML for types: tenFrame, fivFrame,
+//  dicePattern, domino.  (objectSet re-uses the existing drawObjectSet.)
+//
+//  Dot positions within a 100×100 half-space (standard dice grid):
+//    0:(25,25)  1:(50,25)  2:(75,25)
+//    3:(25,50)  4:(50,50)  5:(75,50)
+//    6:(25,75)  7:(50,75)  8:(75,75)
+// ════════════════════════════════════════════════════════════════════════════
+
+var _G1_DICE_DOTS = {
+  0: [],
+  1: [4],
+  2: [2, 6],
+  3: [2, 4, 6],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 3, 6, 2, 5, 8]
+};
+var _G1_DICE_XY = [
+  [25,25],[50,25],[75,25],
+  [25,50],[50,50],[75,50],
+  [25,75],[50,75],[75,75]
+];
+
+// Return SVG <circle> elements for a dice face, offset by (ox,oy) in the SVG.
+function _g1DiceDots(face, ox, oy, r) {
+  var indices = _G1_DICE_DOTS[Math.max(0, Math.min(6, +face || 0))] || [];
+  return indices.map(function(i) {
+    return '<circle cx="' + (ox + _G1_DICE_XY[i][0]) + '" cy="' + (oy + _G1_DICE_XY[i][1]) + '" r="' + r + '" fill="#1e293b"/>';
+  }).join('');
+}
+
+// Ten-frame: 2 rows × 5 columns, N filled cells (N = 0–10).
+// Reuses the .ten-frame / .tf-cell / .tf-fill CSS already defined in styles.css.
+function _drawTenFrame(cfg) {
+  var n = Math.max(0, Math.min(10, +(cfg && cfg.count) || 0));
+  var cells = '';
+  for (var i = 0; i < 10; i++) {
+    var f = i < n;
+    cells += '<div class="tf-cell' + (f ? ' tf-fill' : '') + '">' + (f ? '🔵' : '') + '</div>';
+  }
+  return '<div class="q-visual" style="text-align:center;padding:6px 0">' +
+         '<div class="ten-frame">' + cells + '</div></div>';
+}
+
+// Five-frame: 1 row × 5 columns, N filled cells (N = 0–5).
+// Same CSS as ten-frame — 5 cells in a 5-column grid = exactly one row.
+function _drawFivFrame(cfg) {
+  var n = Math.max(0, Math.min(5, +(cfg && cfg.count) || 0));
+  var cells = '';
+  for (var i = 0; i < 5; i++) {
+    var f = i < n;
+    cells += '<div class="tf-cell' + (f ? ' tf-fill' : '') + '">' + (f ? '🔵' : '') + '</div>';
+  }
+  return '<div class="q-visual" style="text-align:center;padding:6px 0">' +
+         '<div class="ten-frame">' + cells + '</div></div>';
+}
+
+// Dice pattern: standard dot layout for face 1–6, 100×100 SVG.
+function _drawDicePattern(cfg) {
+  var face = Math.max(1, Math.min(6, +(cfg && cfg.face) || 1));
+  var dots = _g1DiceDots(face, 0, 0, 9);
+  return '<div class="q-visual" style="text-align:center;padding:6px 0">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"' +
+    ' style="display:block;margin:0 auto" role="img" aria-label="Dice showing ' + face + '">' +
+    '<rect x="2" y="2" width="96" height="96" rx="14" fill="#fff" stroke="#1e293b" stroke-width="2.5"/>' +
+    dots +
+    '</svg></div>';
+}
+
+// Domino: two dice halves (left/right, 0–6) side by side in a 208×104 SVG.
+// Layout: [2px border] [100px left half] [4px divider] [100px right half] [2px border]
+function _drawDomino(cfg) {
+  var left  = Math.max(0, Math.min(6, +(cfg && cfg.left)  || 0));
+  var right = Math.max(0, Math.min(6, +(cfg && cfg.right) || 0));
+  var lDots = _g1DiceDots(left,  2,   2, 8);   // left half offset (2, 2)
+  var rDots = _g1DiceDots(right, 106, 2, 8);   // right half offset (106, 2)
+  return '<div class="q-visual" style="text-align:center;padding:6px 0">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 104" width="208" height="104"' +
+    ' style="display:block;margin:0 auto" role="img" aria-label="Domino ' + left + ' and ' + right + '">' +
+    '<rect x="1" y="1" width="206" height="102" rx="12" fill="#fff" stroke="#1e293b" stroke-width="2"/>' +
+    lDots +
+    '<line x1="104" y1="6" x2="104" y2="98" stroke="#1e293b" stroke-width="3"/>' +
+    rDots +
+    '</svg></div>';
+}
+
 // ── Entry point called from quiz.js _renderQ() ───────────────────────────────
 // Returns HTML string (div or button wrapper) or '' when v is absent/invalid.
 function _buildVisualHTML(v) {
   if (!v || !v.type || !v.config) return '';
+  if (v.type === 'tenFrame')    return _drawTenFrame(v.config);
+  if (v.type === 'fivFrame')    return _drawFivFrame(v.config);
+  if (v.type === 'dicePattern') return _drawDicePattern(v.config);
+  if (v.type === 'domino')      return _drawDomino(v.config);
   if (v.type === 'tapGroup')   return _buildTapGroupVisual(v.config);
   if (v.type === 'comparison') return drawComparison(v.config, null, null);
   if (v.type === 'objectSet')  return drawObjectSet(v.config, null);
@@ -262,11 +355,15 @@ function drawBase10(cfg) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  drawNumberLine({ min, max, ticks[], jumps?:[{from,to,label}], mark? })
+//  drawNumberLine({ min, max, ticks[], jumps?:[{from,to,label,hideToLabel?}],
+//                   mark?, hideLabels?:number[] })
 //
 //  • Fixed height, width derived from tick count × pitch
 //  • Jump arcs drawn as quadratic SVG curves above the baseline
-//  • mark highlights the destination tick (bold, full opacity)
+//  • mark highlights the start tick (bold, full opacity)
+//  • hideLabels: suppress number labels for these tick values (tick line still shown)
+//  • jump.hideToLabel: suppress the destination tick label for a jump
+//    (used in assessment mode so the answer is not readable from the visual)
 // ═══════════════════════════════════════════════════════════════════════════════
 function drawNumberLine(cfg) {
   const uid  = 'vis-' + (++_visUid);
@@ -275,6 +372,13 @@ function drawNumberLine(cfg) {
   const ticks = (cfg.ticks && cfg.ticks.length) ? cfg.ticks : [min, max];
   const jumps = cfg.jumps || [];
   const mark  = cfg.mark != null ? +cfg.mark : null;
+
+  // ── Assessment-mode: build set of tick labels to suppress ──
+  // hideLabels config + any jump destination marked hideToLabel:true
+  const hideSet = new Set((cfg.hideLabels || []).map(Number));
+  jumps.forEach(j => { if (j.hideToLabel) hideSet.add(Number(j.to)); });
+  const assessMode     = cfg.mode === 'assessment';
+  const explicitLabels = cfg.labels != null ? cfg.labels : {};
 
   const PAD_L  = 20, PAD_R = 24, PAD_T = 42, PAD_B = 28;
   const n  = ticks.length;
@@ -311,18 +415,42 @@ function drawNumberLine(cfg) {
   ticks.forEach(v => {
     const x      = valToX(v);
     const isMark = v === mark;
+    const key    = String(v);
+
+    const showLabel = assessMode
+      ? isMark || (key in explicitLabels)
+      : isMark || !hideSet.has(v);
+
+    const labelText = (assessMode && key in explicitLabels)
+      ? explicitLabels[key]
+      : String(v);
+
     parts.push(`<line x1="${x}" y1="${LINE_Y - 8}" x2="${x}" y2="${LINE_Y + 8}" stroke="currentColor" stroke-width="${isMark ? 3 : 1.5}" opacity="${isMark ? 1 : 0.65}"/>`);
-    parts.push(`<text x="${x}" y="${LINE_Y + 22}" text-anchor="middle" font-size="${tickFont}" fill="currentColor" opacity="${isMark ? 1 : 0.8}" font-family="sans-serif"${isMark ? ' font-weight="bold"' : ''}>${v}</text>`);
+    if (showLabel) {
+      parts.push(`<text x="${x}" y="${LINE_Y + 22}" text-anchor="middle" font-size="${tickFont}" fill="currentColor" opacity="${isMark ? 1 : 0.8}" font-family="sans-serif"${isMark ? ' font-weight="bold"' : ''}>${_escHtml(labelText)}</text>`);
+    }
   });
 
   // ── Aria label ──
-  let ariaLabel = `Number line from ${min} to ${max}`;
-  if (jumps.length) {
-    ariaLabel += ' showing ' + jumps.map(j =>
-      `a jump of ${j.label != null ? j.label : j.to - j.from} from ${j.from} to ${j.to}`
-    ).join(' and ');
+  let ariaLabel;
+  if (assessMode) {
+    ariaLabel = mark != null ? `Number line starting at ${mark}` : 'Number line';
+    if (jumps.length) {
+      const desc = jumps.map(j => {
+        const step = j.label != null ? j.label : (j.to - j.from);
+        return +step < 0 ? 'one step backward' : 'one step forward';
+      }).join(' and ');
+      ariaLabel += ` with ${desc}`;
+    }
+  } else {
+    ariaLabel = `Number line from ${min} to ${max}`;
+    if (jumps.length) {
+      ariaLabel += ' showing ' + jumps.map(j =>
+        `a jump of ${j.label != null ? j.label : j.to - j.from} from ${j.from} to ${j.to}`
+      ).join(' and ');
+    }
+    if (mark != null) ariaLabel += `, starting at ${mark}`;
   }
-  if (mark != null) ariaLabel += `, landing on ${mark}`;
   const label = cfg.label || ariaLabel;
 
   return `<svg role="img" aria-labelledby="${uid}" focusable="false" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto"><title id="${uid}">${_escHtml(label)}</title>${parts.join('')}</svg>`;
