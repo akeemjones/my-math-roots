@@ -1125,10 +1125,12 @@ function _tapGroupSubmit() {
 
 function _pauseForInterventionTapGroup(errorTag, q) {
   isPaused = true;
-  var content = _buildInterventionContent(errorTag, q, null, null);
-  var title   = content.title;
-  var text    = content.text;
+  var content    = _buildInterventionContent(errorTag, q, null, null);
+  var title      = content.title;
+  var text       = content.text;
   var visualHTML = content.visualHTML;
+  var _teachStepsTG = (content.teachingSteps && content.teachingSteps.length) ? content.teachingSteps : null;
+  var _caeTG        = content.correctAnswerExplanation || '';
 
   var existing = document.querySelector('[data-focus-overlay]');
   if (existing) existing.remove();
@@ -1157,11 +1159,27 @@ function _pauseForInterventionTapGroup(errorTag, q) {
       '<p style="margin:0;font-size:1rem;font-weight:600;line-height:1.4;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(q.t || q.prompt) + '</p>' +
     '</div>' : '';
 
-  var fixSection = text ?
-    '<div style="text-align:left;">' +
+  var fixSection = '';
+  if (_teachStepsTG) {
+    var _fsTG = '<div style="text-align:left;">';
+    _fsTG += '<div style="' + LABEL_STYLE + '">' + _escHtml(title) + '</div>';
+    _fsTG += _teachStepsTG.map(function(s) {
+      return '<div style="font-size:1rem;line-height:1.5;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif);' +
+        'padding:5px 10px 5px 14px;border-left:3px solid #e74c3c;margin-bottom:6px">' + _escHtml(s) + '</div>';
+    }).join('');
+    if (_caeTG) {
+      _fsTG += '<p style="margin:8px 0 0;font-size:0.9rem;line-height:1.5;color:var(--txt2,#5a7080);' +
+        'font-family:var(--ff2,\'Nunito\',sans-serif);background:rgba(46,204,113,.08);border-radius:8px;padding:6px 10px">' +
+        '💡 ' + _escHtml(_caeTG) + '</p>';
+    }
+    _fsTG += '</div>';
+    fixSection = _fsTG;
+  } else if (text) {
+    fixSection = '<div style="text-align:left;">' +
       '<div style="' + LABEL_STYLE + '">Let\'s look again</div>' +
       '<p style="margin:0;font-size:1rem;line-height:1.5;color:var(--txt2,#5a7080);font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(text) + '</p>' +
-    '</div>' : '';
+    '</div>';
+  }
 
   var trySection = visualHTML ?
     '<div><div style="' + LABEL_STYLE + ';text-align:left">Try it this way</div>' +
@@ -1186,7 +1204,7 @@ function _pauseForInterventionTapGroup(errorTag, q) {
           'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;' +
           'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);' +
           'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">' +
-          'Got it \u2014 try a similar one! \u2192' +
+          'Try a new one \u2192' +
         '</button>' +
       '</div>' +
     '</div>';
@@ -1250,6 +1268,19 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       + '<div style="margin-top:4px;font-size:1.1rem;color:#FF9800">\u2193</div>'
       + answerHTML
       + '</div>';
+  }
+
+  // v0.2.0 rich intervention — use question-specific teaching content when available
+  if (q && q.i && Array.isArray(q.i.teachingSteps) && q.i.teachingSteps.length) {
+    var _iVis = '';
+    if (q.v) try { _iVis = _buildVisualHTML(q.v); } catch(e) {}
+    return {
+      title:                    q.i.title || 'Let\'s Review',
+      text:                     q.i.teachingSteps.join('\n'),
+      teachingSteps:            q.i.teachingSteps,
+      correctAnswerExplanation: q.i.correctAnswerExplanation || '',
+      visualHTML:               _iVis
+    };
   }
 
   var title='', text='', visualHTML='';
@@ -1594,6 +1625,9 @@ function _pauseForIntervention(errorTag, selectedIndex){
   var title      = content.title;
   var text       = content.text;
   var visualHTML = content.visualHTML;
+  var _teachSteps = (content.teachingSteps && content.teachingSteps.length) ? content.teachingSteps : null;
+  var _cae        = content.correctAnswerExplanation || '';
+  var _misconception = (q && q.o && selectedIndex != null && typeof q.o[selectedIndex] === 'object') ? q.o[selectedIndex].me : null;
 
   // ── Log triggered intervention event ──
   var triggeredEvt = {
@@ -1666,12 +1700,27 @@ function _pauseForIntervention(errorTag, selectedIndex){
       (qVisualHTML ? '<div style="margin-top:4px">'+qVisualHTML+'</div>' : '')+
     '</div>' : '';
 
-  // § 3 — LET'S FIX IT  (situation-specific text from _buildInterventionContent)
-  var fixSection = text ?
-    '<div style="text-align:left;">'+
+  // § 3 — LET'S FIX IT
+  var fixSection = '';
+  if (_teachSteps) {
+    var _fs = '<div style="text-align:left;">';
+    if (_misconception) {
+      _fs += '<div style="'+LABEL_STYLE+'">Why it was tricky</div>'+
+        '<p style="margin:0 0 10px;font-size:0.92rem;line-height:1.4;color:var(--txt2,#5a7080);background:rgba(255,193,7,.18);border-radius:8px;padding:5px 10px;font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(_misconception)+'</p>';
+    }
+    _fs += '<div style="'+LABEL_STYLE+'">'+_escHtml(title)+'</div>';
+    _fs += _teachSteps.map(function(s){
+      return '<div style="font-size:0.93rem;line-height:1.5;color:var(--txt,#1a2535);padding:4px 0 4px 12px;border-left:3px solid #e74c3c;margin-bottom:5px;font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(s)+'</div>';
+    }).join('');
+    if (_cae) _fs += '<p style="margin:8px 0 0;font-size:0.93rem;line-height:1.4;color:var(--txt,#1a2535);font-family:var(--ff2,\'Nunito\',sans-serif)">💡 '+_escHtml(_cae)+'</p>';
+    _fs += '</div>';
+    fixSection = _fs;
+  } else if (text) {
+    fixSection = '<div style="text-align:left;">'+
       '<div style="'+LABEL_STYLE+'">Let\'s fix it</div>'+
       '<p style="margin:0;font-size:1rem;line-height:1.5;color:var(--txt2,#5a7080);font-family:var(--ff2,\'Nunito\',sans-serif)">'+_escHtml(text)+'</p>'+
-    '</div>' : '';
+    '</div>';
+  }
 
   // § 4 — TRY IT THIS WAY  (situation-specific visual from _buildInterventionContent)
   var trySection = visualHTML ?
@@ -1704,7 +1753,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
           'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;'+
           'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);'+
           'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">'+
-          (_ACTIVE_GRADE === 'K' ? 'Got it \u2014 try a similar one! \u2192' : 'Got it \u2014 try again! \u2192')+
+          'Try a new one \u2192'+
         '</button>'+
       '</div>'+
     '</div>';
@@ -1762,6 +1811,33 @@ function _resumeQuiz(){
         }
       }
     } catch(e){ /* silent — fall through to re-render current question */ }
+  }
+
+  // G1: swap to a different question so the answer isn't repeated verbatim
+  if (_ACTIVE_GRADE === 'G1' && qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null) {
+    var g1CurQ = qz.questions[qz.idx];
+    var g1CurText = g1CurQ && g1CurQ.t;
+    try {
+      var g1L = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
+      var g1Bank = (g1L.qBank || g1L.quiz || []);
+      var g1Used = qz.questions.map(function(q) { return q.t; });
+      // Prefer same difficulty; fall back to any different question not in current set
+      var g1Diff = g1CurQ && g1CurQ.difficulty;
+      var g1Pool = g1Bank.filter(function(q) {
+        return q.t !== g1CurText && g1Used.indexOf(q.t) === -1 && (!g1Diff || q.difficulty === g1Diff);
+      });
+      if (g1Pool.length === 0) {
+        g1Pool = g1Bank.filter(function(q) { return q.t !== g1CurText && g1Used.indexOf(q.t) === -1; });
+      }
+      if (g1Pool.length === 0) {
+        g1Pool = g1Bank.filter(function(q) { return q.t !== g1CurText; });
+      }
+      if (g1Pool.length > 0) {
+        var g1Pick = g1Pool[Math.floor(Math.random() * g1Pool.length)];
+        qz.questions[qz.idx] = g1Pick;
+        qz._opts = null;
+      }
+    } catch(e) { /* silent — fall through to re-render current question */ }
   }
 
   _renderQ();
