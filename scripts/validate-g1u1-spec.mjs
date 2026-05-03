@@ -209,6 +209,13 @@ function checkMigratedLesson(tag, l) {
     if (lqa.noDuplicatesWithinAttempt !== true) err(`${tag} R11: lessonQuizAttempt.noDuplicatesWithinAttempt must be true`);
   }
 
+  // R-new-C: L1.3 lessonQuizAttempt must have specific rate-limiting caps
+  if (l.lessonId === 'g1-u1-l3' && lqa) {
+    if (!lqa.maxNumberLineQuestions)         err(`${tag} R-new-C: _l3QuizAttempt missing maxNumberLineQuestions`);
+    if (!lqa.maxSamePromptTemplate)          err(`${tag} R-new-C: _l3QuizAttempt missing maxSamePromptTemplate`);
+    if (!lqa.maxSimplePreviousNumberPrompts) err(`${tag} R-new-C: _l3QuizAttempt missing maxSimplePreviousNumberPrompts`);
+  }
+
   // workedExamples shape (existing fields)
   l.workedExamples.forEach((ex, ei) => {
     const need = ['id', 'title', 'prompt', 'visual', 'steps', 'finalAnswer', 'teachingNote', 'relatedKeyIdea'];
@@ -242,6 +249,11 @@ function checkMigratedLesson(tag, l) {
     if (p.visual && p.visual.type === 'numberLine') {
       _checkR13NL(`${tag} p${pi + 1}`, p.visual, p.answer);
     }
+    // R-new-B: L1.3 multipleChoice practice questions must have non-empty choices
+    if (l.lessonId === 'g1-u1-l3' && p.interactionType === 'multipleChoice') {
+      if (!Array.isArray(p.choices) || p.choices.length === 0)
+        err(`${tag} p${pi + 1} R-new-B: multipleChoice practice question has no choices`);
+    }
     if (seenIds.has(p.id)) err(`R5: duplicate id ${p.id}`);
     seenIds.add(p.id);
   });
@@ -269,6 +281,12 @@ function checkMigratedLesson(tag, l) {
     if (!VALID_DIFFICULTIES.has(q.difficulty)) err(`${qtag} R1: difficulty invalid: ${q.difficulty}`);
     if (!VALID_INTERACTION.has(q.interactionType)) err(`${qtag} R1: interactionType invalid: ${q.interactionType}`);
     if (!VALID_FOLLOWUP_RULES.has(q.followUpRule)) err(`${qtag} R1: followUpRule invalid: ${q.followUpRule}`);
+
+    // R-new-A: L1.3 requires subSkill and promptTemplate on every quizBank question
+    if (l.lessonId === 'g1-u1-l3') {
+      if (!q.subSkill)       err(`${qtag} R-new-A: missing subSkill`);
+      if (!q.promptTemplate) err(`${qtag} R-new-A: missing promptTemplate`);
+    }
 
     // Visual checks
     if (q.visual?.type && !SUPPORTED_VISUALS.has(q.visual.type)) {
@@ -348,6 +366,26 @@ function checkMigratedLesson(tag, l) {
     if (set.has(r7choiceKey)) err(`${qtag} R7: duplicate answer-choice set for prompt "${q.prompt}"`);
     set.add(r7choiceKey);
   });
+
+  // R-new-D: L1.3 subSkill coverage and promptTemplate diversity
+  if (l.lessonId === 'g1-u1-l3') {
+    const bank = l.quizBank;
+    const qa   = l.lessonQuizAttempt;
+
+    // All requiredSubSkills must have ≥1 question in the bank
+    ((qa && qa.requiredSubSkills) || []).forEach(ss => {
+      const count = bank.filter(q => q.subSkill === ss).length;
+      if (count === 0) err(`R-new-D: no quizBank questions found for requiredSubSkill '${ss}'`);
+      if (count < 3)   warn(`R-new-D: subSkill '${ss}' has only ${count} question(s) — low coverage`);
+    });
+
+    // Prompt template diversity — no single template should dominate >40%
+    const ptCounts = {};
+    bank.forEach(q => { ptCounts[q.promptTemplate] = (ptCounts[q.promptTemplate] || 0) + 1; });
+    const maxPT = Math.max(...Object.values(ptCounts));
+    if (maxPT > bank.length * 0.4)
+      warn(`R-new-D: single promptTemplate accounts for >40% of quizBank — quiz may feel repetitive`);
+  }
 }
 
 // ─── Legacy checks (lessons not yet migrated) ───────────────────────────────
