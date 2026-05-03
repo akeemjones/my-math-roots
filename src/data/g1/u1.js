@@ -162,7 +162,8 @@ function _toAssessmentNL(visual, answerNum) {
   }
 
   if (newJumps.length === 0 && Number.isFinite(dest)) {
-    newJumps.push({ from: markVal, to: dest, label: '+1', hideToLabel: true });
+    var autoLabel = dest < markVal ? '-1' : '+1';
+    newJumps.push({ from: markVal, to: dest, label: autoLabel, hideToLabel: true });
   }
 
   if (!Number.isFinite(dest)) {
@@ -255,6 +256,84 @@ function _l2P(n, o) {
 function _l2E(n, o) {
   return {
     id: `g1-u1-l2-ex-${String(n).padStart(3, '0')}`,
+    title:          o.title,
+    prompt:         o.prompt,
+    visual:         o.visual || null,
+    steps:          o.steps,
+    finalAnswer:    o.finalAnswer,
+    teachingNote:   o.teachingNote,
+    relatedKeyIdea: o.relatedKeyIdea
+  };
+}
+
+// ─── Helper factories (private; build L1.3 content in v0.2.0 schema) ─────────
+
+function _l3Q(n, o) {
+  var choices = (o.choices || []).map(function(c) {
+    if (c.correct) return c;
+    if (!c.distractorType && c.errorTag) {
+      return Object.assign({}, c, { distractorType: c.errorTag.replace(/^err_/, '') });
+    }
+    return c;
+  });
+  var ts = o.intervention.teachingSteps;
+  if (!Array.isArray(ts)) ts = [ts, 'To check: start at the original number and count exactly one step backward.'];
+  var visual = o.visual || null;
+  if (visual && visual.type === 'numberLine') {
+    visual = _toAssessmentNL(visual, Number(o.answer));
+  }
+  return {
+    id: 'g1-u1-l3-q-' + String(n).padStart(3, '0'),
+    teks: ['1.5A'],
+    lessonId: 'g1-u1-l3',
+    skill: 'count_backward_from_any_number',
+    subSkill:        o.subSkill,
+    promptTemplate:  o.promptTemplate,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: o.interactionType || 'multipleChoice',
+    prompt: o.prompt,
+    visual: visual,
+    answer: o.answer,
+    choices: choices,
+    hint: o.hint,
+    intervention: {
+      errorTag:                    o.intervention.errorTag,
+      title:                       o.intervention.title,
+      teachingSteps:               ts,
+      correctAnswerExplanation:    o.intervention.correctAnswerExplanation,
+      followUpRule:                o.intervention.followUpRule || 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    },
+    followUpRule: o.followUpRule || 'same_skill_new_numbers'
+  };
+}
+
+function _l3P(n, o) {
+  var visual = o.visual || null;
+  if (visual && visual.type === 'numberLine') {
+    visual = _toAssessmentNL(visual, Number(o.answer));
+  }
+  return {
+    id: 'g1-u1-l3-p-' + String(n).padStart(3, '0'),
+    teks: ['1.5A'],
+    lessonId: 'g1-u1-l3',
+    skill: 'count_backward_from_any_number',
+    interactionType: o.interactionType || 'multipleChoice',
+    prompt:      o.prompt,
+    visual:      visual,
+    answer:      o.answer,
+    choices:     o.choices || null,
+    hint:        o.hint,
+    explanation: o.explanation,
+    difficulty:  o.difficulty,
+    keyIdea:     o.keyIdea
+  };
+}
+
+function _l3E(n, o) {
+  return {
+    id: 'g1-u1-l3-ex-' + String(n).padStart(3, '0'),
     title:          o.title,
     prompt:         o.prompt,
     visual:         o.visual || null,
@@ -3274,6 +3353,1003 @@ const _l2Spec = {
 };
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 1.3 — Count Backward (v0.2.0)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ─── Shared intervention templates ───────────────────────────────────────────
+
+const _l3IntForward = {
+  errorTag: 'err_counted_forward_instead',
+  title: 'Count Backward, Not Forward',
+  teachingSteps: [
+    'Backward means the numbers get smaller. Subtract 1 each time.',
+    'To check: each number should be 1 less than the one before it. If numbers are growing, you are counting the wrong way.'
+  ],
+  correctAnswerExplanation: 'Counting backward subtracts 1 and gives a smaller number, not a bigger one.'
+};
+const _l3IntSkipped = {
+  errorTag: 'err_skipped_backward_number',
+  title: 'Count One Step at a Time Backward',
+  teachingSteps: [
+    'Counting backward subtracts exactly 1 each step.',
+    'Slow down and count one step at a time. Each step is just 1 less.'
+  ],
+  correctAnswerExplanation: 'You jumped 2 steps backward instead of 1. Subtract exactly 1 to count backward correctly.'
+};
+const _l3IntRepeated = {
+  errorTag: 'err_repeated_number',
+  title: 'Move Backward — Do Not Stay',
+  teachingSteps: [
+    'When counting backward, say a NEW number each time. Subtract 1 from the last number.',
+    'If you say the same number twice, you did not move backward.'
+  ],
+  correctAnswerExplanation: 'The previous number is always 1 less. Saying the same number twice means you did not move backward.'
+};
+const _l3IntTens = {
+  errorTag: 'err_backward_tens_transition_error',
+  title: 'Crossing Back Across a Ten',
+  teachingSteps: [
+    'Before the round ten (like 30), the number is 29 — the tens digit goes down by 1 and the ones digit becomes 9.',
+    'So 30 goes to 29, 40 goes to 39, 50 goes to 49, and so on.'
+  ],
+  correctAnswerExplanation: 'When counting backward past a round ten, the tens digit drops by 1 and ones become 9. That is how 30 becomes 29.'
+};
+const _l3IntHundred = {
+  errorTag: 'err_backward_hundred_transition_error',
+  title: 'Crossing Back Across 100',
+  teachingSteps: [
+    'Before 100 comes 99. The same rule applies: subtract 1.',
+    '100 − 1 = 99. Count backward, not forward.'
+  ],
+  correctAnswerExplanation: '100 − 1 = 99. This steps back into the two-digit numbers. Counting always subtracts 1, even at 100.'
+};
+const _l3IntSeq = {
+  errorTag: 'err_sequence_order_error',
+  title: 'Find the Missing Backward Number',
+  teachingSteps: [
+    'Look at the number before the blank and subtract 1. That gives you the missing number.',
+    'You can also look at the number after the blank and add 1 — both ways should give the same answer.'
+  ],
+  correctAnswerExplanation: 'In a backward-counting sequence, each number is exactly 1 less than the one before it.'
+};
+const _l3IntBackward_generic = {
+  errorTag: 'err_counted_forward_instead',
+  title: 'Count Backward, Not Forward',
+  teachingSteps: [
+    'Backward means subtract 1 each time. Numbers get smaller.',
+    'To check: is each number smaller than the one before? If not, you went the wrong way.'
+  ],
+  correctAnswerExplanation: 'Each step backward subtracts 1. After 99 comes 98, then 97, and so on.'
+};
+
+// ─── Key Ideas (6) ───────────────────────────────────────────────────────────
+
+const _l3KeyIdeas = [
+  'Counting backward means the numbers get smaller by 1 each time.',
+  'You can start counting backward from any number.',
+  'The number before is one less.',
+  'When counting backward across a ten, 30 goes to 29, 40 goes to 39, and so on.',
+  'Before 100 comes 99.',
+  'On a number line, counting backward means moving to the left.'
+];
+const _l3KI1 = _l3KeyIdeas[0];
+const _l3KI2 = _l3KeyIdeas[1];
+const _l3KI3 = _l3KeyIdeas[2];
+const _l3KI4 = _l3KeyIdeas[3];
+const _l3KI5 = _l3KeyIdeas[4];
+const _l3KI6 = _l3KeyIdeas[5];
+
+// ─── Worked Examples (12) ────────────────────────────────────────────────────
+
+const _l3Examples = [
+  _l3E(1, {
+    title: 'Simple Count Backward',
+    prompt: 'Start at 8. Count backward 4 numbers. What are those 4 numbers?',
+    visual: null,
+    steps: ['Start at 8.', 'Subtract 1 each time: 7, 6, 5, 4.', 'Each step takes away exactly 1.'],
+    finalAnswer: '7, 6, 5, 4',
+    teachingNote: 'Count slowly. Point to each number. Reinforce "one less each time."',
+    relatedKeyIdea: _l3KI1
+  }),
+  _l3E(2, {
+    title: 'What Comes Before',
+    prompt: 'What number comes before 16?',
+    visual: { type: 'numberLine', min: 13, max: 19, ticks: [13,14,15,16,17,18,19], mark: 16, jumps: [{ from: 16, to: 15, label: '-1' }] },
+    steps: ['Find 16 on the number line.', 'The arrow moves 1 step to the left.', 'One step left from 16 lands on 15.'],
+    finalAnswer: '15',
+    teachingNote: 'Moving left on the number line is the same as counting backward. The jump arrow goes left here.',
+    relatedKeyIdea: _l3KI6
+  }),
+  _l3E(3, {
+    title: 'Missing Number in Backward Sequence',
+    prompt: 'Fill in: 27, 26, ___, 24',
+    visual: { type: 'numberLine', min: 22, max: 29, ticks: [22,23,24,25,26,27,28,29], mark: 26 },
+    steps: ['Look at 27, 26 — each goes down by 1.', 'Subtract 1 from 26: 26 − 1 = 25.', 'Check: 25 − 1 = 24. Correct!'],
+    finalAnswer: '25',
+    teachingNote: 'Point to the gap on the number line and count backward one step from 26.',
+    relatedKeyIdea: _l3KI1
+  }),
+  _l3E(4, {
+    title: 'Start From Any Number',
+    prompt: 'Start at 87. Count backward 3 numbers. What are those numbers?',
+    visual: null,
+    steps: ['Start at 87.', 'Subtract 1: 86.', 'Subtract 1 more: 85.', 'Subtract 1 more: 84.', 'The three numbers are 86, 85, 84.'],
+    finalAnswer: '86, 85, 84',
+    teachingNote: 'Stress that counting backward can begin anywhere. Students do not need to count down from 100.',
+    relatedKeyIdea: _l3KI2
+  }),
+  _l3E(5, {
+    title: 'Across a Ten Going Backward',
+    prompt: 'Count backward: 31, 30, ___, 28',
+    visual: { type: 'numberLine', min: 27, max: 33, ticks: [27,28,29,30,31,32,33], mark: 30, jumps: [{ from: 30, to: 29, label: '-1' }] },
+    steps: ['31, 30 — the ones digit just crossed 0.', 'Subtract 1 from 30: the tens digit drops from 3 to 2 and ones become 9. That is 29.', 'Check: 29 − 1 = 28. Correct!'],
+    finalAnswer: '29',
+    teachingNote: 'Highlight the leftward jump on the number line at the ten boundary. Students often stall at 30.',
+    relatedKeyIdea: _l3KI4
+  }),
+  _l3E(6, {
+    title: 'Across 100 to 99',
+    prompt: 'Count backward: 102, 101, ___, 99',
+    visual: { type: 'numberLine', min: 97, max: 104, ticks: [97,98,99,100,101,102,103,104], mark: 101, jumps: [{ from: 101, to: 100, label: '-1' }] },
+    steps: ['102, 101 — we are counting down through the hundreds.', 'Subtract 1 from 101: 100.', 'Check: 100 − 1 = 99. Correct!'],
+    finalAnswer: '100',
+    teachingNote: 'Show that the same rule applies at 100. Before 101 is 100; before 100 is 99.',
+    relatedKeyIdea: _l3KI5
+  }),
+  _l3E(7, {
+    title: 'Number Line Backward Movement',
+    prompt: 'The number line shows 53. Move 1 step to the left. Where do you land?',
+    visual: { type: 'numberLine', min: 50, max: 57, ticks: [50,51,52,53,54,55,56,57], mark: 53, jumps: [{ from: 53, to: 52, label: '-1' }] },
+    steps: ['Find 53 on the number line.', 'Moving left means counting backward.', '1 step left from 53 lands on 52.'],
+    finalAnswer: '52',
+    teachingNote: 'Connect moving left on the number line to subtracting 1. Contrast with the forward lesson.',
+    relatedKeyIdea: _l3KI6
+  }),
+  _l3E(8, {
+    title: 'Common Mistake — Counting Forward Instead',
+    prompt: 'A student counted: 45, 46, 47. What mistake did they make?',
+    visual: null,
+    steps: ['Look at the numbers: 45, 46, 47.', 'Each number is getting BIGGER — that is counting forward.', 'To count backward, each number must be 1 LESS than the last.'],
+    finalAnswer: 'They counted forward instead of backward.',
+    teachingNote: 'Use this to build self-checking: ask "Is each number smaller than the last?"',
+    relatedKeyIdea: _l3KI1
+  }),
+  _l3E(9, {
+    title: 'Common Mistake — Skipping a Number',
+    prompt: 'A student counted: 34, 33, 31. What number did they skip?',
+    visual: null,
+    steps: ['Check each step: 34 to 33 is −1. Good.', '33 to 31 is −2 — that jumps over 32!', 'The missing number is 32.'],
+    finalAnswer: '32',
+    teachingNote: 'Count each backward step carefully. One step at a time, always −1.',
+    relatedKeyIdea: _l3KI1
+  }),
+  _l3E(10, {
+    title: 'Common Mistake — Repeating a Number',
+    prompt: 'A student counted: 50, 49, 49, 48. What mistake did they make?',
+    visual: null,
+    steps: ['Check each step: 50 to 49 is −1. Good.', '49 to 49 is 0 — same number repeated!', '49 to 48 is −1. Good.', 'They said 49 twice instead of moving backward.'],
+    finalAnswer: 'They repeated 49 instead of moving backward.',
+    teachingNote: 'Remind students: every backward step must be a NEW, smaller number.',
+    relatedKeyIdea: _l3KI1
+  }),
+  _l3E(11, {
+    title: 'Harder Sequence Near 120',
+    prompt: 'Fill in: 119, 118, ___, 116, 115',
+    visual: { type: 'numberLine', min: 114, max: 121, ticks: [114,115,116,117,118,119,120,121], mark: 118 },
+    steps: ['119, 118 — each goes down by 1.', 'Subtract 1 from 118: 118 − 1 = 117.', 'Check: 117 − 1 = 116, 116 − 1 = 115. Correct!'],
+    finalAnswer: '117',
+    teachingNote: 'Show that the one-less rule works all the way down from 120.',
+    relatedKeyIdea: _l3KI2
+  }),
+  _l3E(12, {
+    title: 'Mixed Backward Review — Two Blanks',
+    prompt: 'Count backward from 92: 92, 91, ___, ___, 88. Fill in both missing numbers.',
+    visual: null,
+    steps: ['92, 91 — subtract 1: 90. That crosses a new ten.', 'Subtract 1 from 90: 89.', 'Check: 89 − 1 = 88. Correct!', 'The two missing numbers are 90 and 89.'],
+    finalAnswer: '90, 89',
+    teachingNote: 'This crosses a ten going backward. Use as a bridge to the tens-transition quizBank questions.',
+    relatedKeyIdea: _l3KI4
+  })
+];
+
+// ─── Practice Questions (22) ─────────────────────────────────────────────────
+
+const _l3Practice = [
+  _l3P(1,  { difficulty:'easy',   keyIdea:_l3KI1, prompt:'What number comes before 8?',   answer:'7',   hint:'What is 1 less than 8?',  explanation:'8 − 1 = 7.',
+    choices:[{value:'7',correct:true},{value:'9',correct:false,errorTag:'err_counted_forward_instead'},{value:'8',correct:false,errorTag:'err_repeated_number'},{value:'6',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(2,  { difficulty:'easy',   keyIdea:_l3KI1, prompt:'What number comes before 15?',  answer:'14',  hint:'What is 1 less than 15?', explanation:'15 − 1 = 14.',
+    choices:[{value:'14',correct:true},{value:'16',correct:false,errorTag:'err_counted_forward_instead'},{value:'15',correct:false,errorTag:'err_repeated_number'},{value:'13',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(3,  { difficulty:'easy',   keyIdea:_l3KI1, prompt:'What number comes before 22?',  answer:'21',  hint:'What is 1 less than 22?', explanation:'22 − 1 = 21.',
+    choices:[{value:'21',correct:true},{value:'23',correct:false,errorTag:'err_counted_forward_instead'},{value:'22',correct:false,errorTag:'err_repeated_number'},{value:'20',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(4,  { difficulty:'easy',   keyIdea:_l3KI1, prompt:'Fill in: 11, 10, ___, 8',       answer:'9',   hint:'What comes after 10 when counting backward?', explanation:'10 − 1 = 9.',
+    choices:[{value:'9',correct:true},{value:'10',correct:false,errorTag:'err_repeated_number'},{value:'8',correct:false,errorTag:'err_sequence_order_error'},{value:'11',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(5,  { difficulty:'easy',   keyIdea:_l3KI1, prompt:'Fill in: 7, 6, ___, 4',         answer:'5',   hint:'What comes after 6 when counting backward?', explanation:'6 − 1 = 5.',
+    choices:[{value:'5',correct:true},{value:'6',correct:false,errorTag:'err_repeated_number'},{value:'4',correct:false,errorTag:'err_sequence_order_error'},{value:'7',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(6,  { difficulty:'easy',   keyIdea:_l3KI3, prompt:'What number comes before 20?',  answer:'19',  hint:'What is 1 less than 20?', explanation:'20 − 1 = 19. When counting backward, 20 goes to 19.',
+    choices:[{value:'19',correct:true},{value:'21',correct:false,errorTag:'err_counted_forward_instead'},{value:'20',correct:false,errorTag:'err_repeated_number'},{value:'10',correct:false,errorTag:'err_backward_tens_transition_error'}] }),
+  _l3P(7,  { difficulty:'easy',   keyIdea:_l3KI3, prompt:'What number comes before 40?',  answer:'39',  hint:'Before the round ten is the number with 9 in the ones.', explanation:'40 − 1 = 39.',
+    choices:[{value:'39',correct:true},{value:'41',correct:false,errorTag:'err_counted_forward_instead'},{value:'40',correct:false,errorTag:'err_repeated_number'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error'}] }),
+  _l3P(8,  { difficulty:'medium', keyIdea:_l3KI2, prompt:'What number comes before 37?',  answer:'36',  hint:'What is 1 less than 37?', explanation:'37 − 1 = 36.',
+    choices:[{value:'36',correct:true},{value:'38',correct:false,errorTag:'err_counted_forward_instead'},{value:'37',correct:false,errorTag:'err_repeated_number'},{value:'35',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(9,  { difficulty:'medium', keyIdea:_l3KI2, prompt:'Fill in: 54, 53, ___, 51',      answer:'52',  hint:'What comes after 53 when counting backward?', explanation:'53 − 1 = 52.',
+    choices:[{value:'52',correct:true},{value:'53',correct:false,errorTag:'err_repeated_number'},{value:'51',correct:false,errorTag:'err_sequence_order_error'},{value:'54',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(10, { difficulty:'medium', keyIdea:_l3KI2, prompt:'Fill in: 68, ___, 66',          answer:'67',  hint:'What comes between 68 and 66?', explanation:'68 − 1 = 67.',
+    choices:[{value:'67',correct:true},{value:'68',correct:false,errorTag:'err_repeated_number'},{value:'66',correct:false,errorTag:'err_sequence_order_error'},{value:'69',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(11, { difficulty:'medium', keyIdea:_l3KI2, prompt:'Fill in: 76, 75, ___, 73',      answer:'74',  hint:'What comes after 75 when counting backward?', explanation:'75 − 1 = 74.',
+    choices:[{value:'74',correct:true},{value:'75',correct:false,errorTag:'err_repeated_number'},{value:'73',correct:false,errorTag:'err_sequence_order_error'},{value:'76',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(12, { difficulty:'medium', keyIdea:_l3KI4, prompt:'Fill in: 31, 30, ___, 28',      answer:'29',  hint:'Before the round ten, the ones digit is 9.', explanation:'30 − 1 = 29. The tens digit drops from 3 to 2 and ones become 9.',
+    choices:[{value:'29',correct:true},{value:'30',correct:false,errorTag:'err_repeated_number'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error'},{value:'28',correct:false,errorTag:'err_sequence_order_error'}] }),
+  _l3P(13, { difficulty:'medium', keyIdea:_l3KI4, prompt:'Fill in: 51, ___, 49',          answer:'50',  hint:'What comes between 51 and 49 when counting backward?', explanation:'51 − 1 = 50.',
+    choices:[{value:'50',correct:true},{value:'51',correct:false,errorTag:'err_repeated_number'},{value:'49',correct:false,errorTag:'err_sequence_order_error'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error'}] }),
+  _l3P(14, { difficulty:'medium', keyIdea:_l3KI4, prompt:'What number comes before 60?',  answer:'59',  hint:'Before the round ten is the number with 9 in the ones.', explanation:'60 − 1 = 59.',
+    choices:[{value:'59',correct:true},{value:'61',correct:false,errorTag:'err_counted_forward_instead'},{value:'60',correct:false,errorTag:'err_repeated_number'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error'}] }),
+  _l3P(15, { difficulty:'medium', keyIdea:_l3KI4, prompt:'What number comes before 80?',  answer:'79',  hint:'Before 80 comes the number with 7 tens and 9 ones.', explanation:'80 − 1 = 79.',
+    choices:[{value:'79',correct:true},{value:'81',correct:false,errorTag:'err_counted_forward_instead'},{value:'80',correct:false,errorTag:'err_repeated_number'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error'}] }),
+  _l3P(16, { difficulty:'medium', keyIdea:_l3KI6, prompt:'The number line shows 47. Move 1 step to the left. Where do you land?',
+    visual: { type:'numberLine', mark:47, jumps:[{from:47, to:46, label:'-1'}] },
+    answer:'46', hint:'Moving left on the number line is counting backward.', explanation:'47 − 1 = 46. One step left from 47 lands on 46.',
+    choices:[{value:'46',correct:true},{value:'48',correct:false,errorTag:'err_counted_forward_instead'},{value:'47',correct:false,errorTag:'err_repeated_number'},{value:'45',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(17, { difficulty:'medium', keyIdea:_l3KI6, prompt:'The number line shows 33. Move 1 step to the left. Where do you land?',
+    visual: { type:'numberLine', mark:33, jumps:[{from:33, to:32, label:'-1'}] },
+    answer:'32', hint:'Moving left is counting backward.', explanation:'33 − 1 = 32.',
+    choices:[{value:'32',correct:true},{value:'34',correct:false,errorTag:'err_counted_forward_instead'},{value:'33',correct:false,errorTag:'err_repeated_number'},{value:'31',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(18, { difficulty:'hard',   keyIdea:_l3KI5, prompt:'What number comes before 100?', answer:'99',  hint:'Before 100 comes 99.', explanation:'100 − 1 = 99. We step back from a hundred into two-digit numbers.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead'},{value:'100',correct:false,errorTag:'err_repeated_number'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error'}] }),
+  _l3P(19, { difficulty:'hard',   keyIdea:_l3KI5, prompt:'Fill in: 101, 100, ___',        answer:'99',  hint:'After 100 comes 99 when counting backward.', explanation:'100 − 1 = 99.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error'},{value:'98',correct:false,errorTag:'err_skipped_backward_number'}] }),
+  _l3P(20, { difficulty:'hard',   keyIdea:_l3KI5, prompt:'The arrow shows 1 step backward from 100. What number does the arrow point to?',
+    visual: { type:'numberLine', mark:100, jumps:[{from:100, to:99, label:'-1'}] },
+    answer:'99', hint:'Count backward 1 from 100. Remember: before 100 comes 99.', explanation:'100 − 1 = 99. The arrow lands on 99.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead'},{value:'100',correct:false,errorTag:'err_repeated_number'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error'}] }),
+  _l3P(21, { difficulty:'hard',   keyIdea:_l3KI2, prompt:'Fill in: 115, 114, ___, 112',   answer:'113', hint:'What comes after 114 when counting backward?', explanation:'114 − 1 = 113.',
+    choices:[{value:'113',correct:true},{value:'114',correct:false,errorTag:'err_repeated_number'},{value:'112',correct:false,errorTag:'err_sequence_order_error'},{value:'115',correct:false,errorTag:'err_counted_forward_instead'}] }),
+  _l3P(22, { difficulty:'hard',   keyIdea:_l3KI2, prompt:'Fill in: 119, ___, 117',        answer:'118', hint:'What comes between 119 and 117?', explanation:'119 − 1 = 118.',
+    choices:[{value:'118',correct:true},{value:'119',correct:false,errorTag:'err_repeated_number'},{value:'117',correct:false,errorTag:'err_sequence_order_error'},{value:'120',correct:false,errorTag:'err_counted_forward_instead'}] })
+];
+
+// ─── QuizBank Part A: what_comes_before + missing_number_backward_sequence ───
+
+const _l3QuizBank = [
+  // ── Block A: what comes before — easy (q-001 to q-010) ──────────────────────
+  _l3Q(1, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 5?',visual:null,answer:'4',hint:'What is 1 less than 5?',
+    choices:[{value:'4',correct:true},{value:'6',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'5',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'3',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(2, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 9?',visual:null,answer:'8',hint:'What is 1 less than 9?',
+    choices:[{value:'8',correct:true},{value:'10',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'9',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'7',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(3, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 12?',visual:null,answer:'11',hint:'What is 1 less than 12?',
+    choices:[{value:'11',correct:true},{value:'13',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'12',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'10',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(4, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 17?',visual:null,answer:'16',hint:'What is 1 less than 17?',
+    choices:[{value:'16',correct:true},{value:'18',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'17',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'15',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(5, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 23?',visual:null,answer:'22',hint:'What is 1 less than 23?',
+    choices:[{value:'22',correct:true},{value:'24',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'23',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'21',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(6, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 6?',visual:null,answer:'5',hint:'What is 1 less than 6?',
+    choices:[{value:'5',correct:true},{value:'7',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'6',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'4',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(7, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 10?',visual:null,answer:'9',hint:'What is 1 less than 10?',
+    choices:[{value:'9',correct:true},{value:'11',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'10',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'8',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(8, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 14?',visual:null,answer:'13',hint:'What is 1 less than 14?',
+    choices:[{value:'13',correct:true},{value:'15',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'14',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'12',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(9, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 18?',visual:null,answer:'17',hint:'What is 1 less than 18?',
+    choices:[{value:'17',correct:true},{value:'19',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'18',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'16',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(10, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 21?',visual:null,answer:'20',hint:'What is 1 less than 21?',
+    choices:[{value:'20',correct:true},{value:'22',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'21',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'19',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  // ── Block B: what comes before — medium (q-011 to q-025) ───────────────────
+  _l3Q(11, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 28?',visual:null,answer:'27',hint:'What is 1 less than 28?',
+    choices:[{value:'27',correct:true},{value:'29',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'28',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'26',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(12, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 35?',visual:null,answer:'34',hint:'What is 1 less than 35?',
+    choices:[{value:'34',correct:true},{value:'36',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'35',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'33',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(13, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 44?',visual:null,answer:'43',hint:'What is 1 less than 44?',
+    choices:[{value:'43',correct:true},{value:'45',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'44',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'42',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(14, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 56?',visual:null,answer:'55',hint:'What is 1 less than 56?',
+    choices:[{value:'55',correct:true},{value:'57',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'56',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'54',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(15, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 67?',visual:null,answer:'66',hint:'What is 1 less than 67?',
+    choices:[{value:'66',correct:true},{value:'68',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'67',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'65',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(16, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 72?',visual:null,answer:'71',hint:'What is 1 less than 72?',
+    choices:[{value:'71',correct:true},{value:'73',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'72',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'70',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(17, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 78?',visual:null,answer:'77',hint:'What is 1 less than 78?',
+    choices:[{value:'77',correct:true},{value:'79',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'78',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'76',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(18, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 83?',visual:null,answer:'82',hint:'What is 1 less than 83?',
+    choices:[{value:'82',correct:true},{value:'84',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'83',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'81',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(19, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 88?',visual:null,answer:'87',hint:'What is 1 less than 88?',
+    choices:[{value:'87',correct:true},{value:'89',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'88',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'86',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(20, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 26?',visual:null,answer:'25',hint:'What is 1 less than 26?',
+    choices:[{value:'25',correct:true},{value:'27',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'26',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'24',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(21, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 31?',visual:null,answer:'30',hint:'What is 1 less than 31?',
+    choices:[{value:'30',correct:true},{value:'32',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'31',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'29',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(22, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 42?',visual:null,answer:'41',hint:'What is 1 less than 42?',
+    choices:[{value:'41',correct:true},{value:'43',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'42',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'40',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(23, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 53?',visual:null,answer:'52',hint:'What is 1 less than 53?',
+    choices:[{value:'52',correct:true},{value:'54',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'53',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'51',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(24, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 62?',visual:null,answer:'61',hint:'What is 1 less than 62?',
+    choices:[{value:'61',correct:true},{value:'63',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'62',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'60',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(25, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 71?',visual:null,answer:'70',hint:'What is 1 less than 71?',
+    choices:[{value:'70',correct:true},{value:'72',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'71',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'69',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  // ── Block C: what comes before — hard (q-026 to q-035) ──────────────────────
+  _l3Q(26, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 94?',visual:null,answer:'93',hint:'What is 1 less than 94?',
+    choices:[{value:'93',correct:true},{value:'95',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'94',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'92',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(27, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 107?',visual:null,answer:'106',hint:'What is 1 less than 107?',
+    choices:[{value:'106',correct:true},{value:'108',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'107',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'105',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(28, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 113?',visual:null,answer:'112',hint:'What is 1 less than 113?',
+    choices:[{value:'112',correct:true},{value:'114',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'113',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'111',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(29, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 98?',visual:null,answer:'97',hint:'What is 1 less than 98?',
+    choices:[{value:'97',correct:true},{value:'99',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'98',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'96',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(30, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 104?',visual:null,answer:'103',hint:'What is 1 less than 104?',
+    choices:[{value:'103',correct:true},{value:'105',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'104',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'102',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(31, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 110?',visual:null,answer:'109',hint:'What is 1 less than 110?',
+    choices:[{value:'109',correct:true},{value:'111',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'110',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'108',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(32, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 116?',visual:null,answer:'115',hint:'What is 1 less than 116?',
+    choices:[{value:'115',correct:true},{value:'117',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'116',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'114',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(33, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 119?',visual:null,answer:'118',hint:'What is 1 less than 119?',
+    choices:[{value:'118',correct:true},{value:'120',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'119',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'117',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(34, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 120?',visual:null,answer:'119',hint:'What is 1 less than 120?',
+    choices:[{value:'119',correct:true},{value:'121',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'120',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'118',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  _l3Q(35, {subSkill:'what_comes_before',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'hard',prompt:'What number comes before 115?',visual:null,answer:'114',hint:'What is 1 less than 115?',
+    choices:[{value:'114',correct:true},{value:'116',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'115',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number'},{value:'113',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back instead of one'}],
+    intervention:_l3IntForward}),
+  // ── Block D: fill in missing — easy (q-036 to q-049) ────────────────────────
+  _l3Q(36, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 9, 8, ___, 6',visual:null,answer:'7',hint:'Subtract 1 from 8.',
+    choices:[{value:'7',correct:true},{value:'8',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'6',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'9',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(37, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 14, 13, ___, 11',visual:null,answer:'12',hint:'Subtract 1 from 13.',
+    choices:[{value:'12',correct:true},{value:'13',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'11',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'14',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(38, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 18, 17, ___, 15',visual:null,answer:'16',hint:'Subtract 1 from 17.',
+    choices:[{value:'16',correct:true},{value:'17',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'15',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'18',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(39, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 5, ___, 3',visual:null,answer:'4',hint:'Subtract 1 from 5.',
+    choices:[{value:'4',correct:true},{value:'5',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'3',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'6',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(40, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 22, ___, 20',visual:null,answer:'21',hint:'Subtract 1 from 22.',
+    choices:[{value:'21',correct:true},{value:'22',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'20',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'23',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(41, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 16, ___, 14',visual:null,answer:'15',hint:'Subtract 1 from 16.',
+    choices:[{value:'15',correct:true},{value:'16',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'14',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'17',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(42, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 12, 11, ___, 9',visual:null,answer:'10',hint:'Subtract 1 from 11.',
+    choices:[{value:'10',correct:true},{value:'11',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'9',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'12',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(43, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 24, 23, ___, 21',visual:null,answer:'22',hint:'Subtract 1 from 23.',
+    choices:[{value:'22',correct:true},{value:'23',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'21',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'24',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(44, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 8, 7, ___, 5',visual:null,answer:'6',hint:'Subtract 1 from 7.',
+    choices:[{value:'6',correct:true},{value:'7',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'5',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'8',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(45, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 20, 19, ___, 17',visual:null,answer:'18',hint:'Subtract 1 from 19.',
+    choices:[{value:'18',correct:true},{value:'19',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'17',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'20',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(46, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 6, ___, 4',visual:null,answer:'5',hint:'Subtract 1 from 6.',
+    choices:[{value:'5',correct:true},{value:'6',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'4',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'7',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(47, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 13, 12, ___, 10',visual:null,answer:'11',hint:'Subtract 1 from 12.',
+    choices:[{value:'11',correct:true},{value:'12',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'10',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'13',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(48, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 4, ___, 2',visual:null,answer:'3',hint:'Subtract 1 from 4.',
+    choices:[{value:'3',correct:true},{value:'4',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'2',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'5',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(49, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 17, ___, 15',visual:null,answer:'16',hint:'Subtract 1 from 17.',
+    choices:[{value:'16',correct:true},{value:'17',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'15',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'18',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'}],
+    intervention:_l3IntSeq}),
+  // ── Block E: fill in missing — medium (q-050 to q-061) ──────────────────────
+  _l3Q(50, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 34, 33, ___, 31',visual:null,answer:'32',hint:'Subtract 1 from 33.',
+    choices:[{value:'32',correct:true},{value:'33',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'31',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'34',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(51, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 48, 47, ___, 45',visual:null,answer:'46',hint:'Subtract 1 from 47.',
+    choices:[{value:'46',correct:true},{value:'47',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'45',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'48',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(52, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 64, 63, ___, 61',visual:null,answer:'62',hint:'Subtract 1 from 63.',
+    choices:[{value:'62',correct:true},{value:'63',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'61',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'64',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(53, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 79, 78, ___, 76',visual:null,answer:'77',hint:'Subtract 1 from 78.',
+    choices:[{value:'77',correct:true},{value:'78',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'76',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'79',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(54, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 86, 85, ___, 83',visual:null,answer:'84',hint:'Subtract 1 from 85.',
+    choices:[{value:'84',correct:true},{value:'85',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'83',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'86',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(55, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 53, 52, ___, 50',visual:null,answer:'51',hint:'Subtract 1 from 52.',
+    choices:[{value:'51',correct:true},{value:'52',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'50',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'53',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(56, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 69, 68, ___, 66',visual:null,answer:'67',hint:'Subtract 1 from 68.',
+    choices:[{value:'67',correct:true},{value:'68',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'66',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'69',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(57, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 75, 74, ___, 72',visual:null,answer:'73',hint:'Subtract 1 from 74.',
+    choices:[{value:'73',correct:true},{value:'74',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'72',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'75',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(58, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 82, 81, ___, 79',visual:null,answer:'80',hint:'Subtract 1 from 81.',
+    choices:[{value:'80',correct:true},{value:'81',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'79',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'82',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(59, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 90, 89, ___, 87',visual:null,answer:'88',hint:'Subtract 1 from 89.',
+    choices:[{value:'88',correct:true},{value:'89',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'87',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'90',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(60, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 37, 36, ___, 34',visual:null,answer:'35',hint:'Subtract 1 from 36.',
+    choices:[{value:'35',correct:true},{value:'36',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'34',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'37',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(61, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 56, 55, ___, 53',visual:null,answer:'54',hint:'Subtract 1 from 55.',
+    choices:[{value:'54',correct:true},{value:'55',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'53',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'56',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  // ── Block F: fill in missing — hard (q-062 to q-071) ────────────────────────
+  _l3Q(62, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 97, 96, ___, 94',visual:null,answer:'95',hint:'Subtract 1 from 96.',
+    choices:[{value:'95',correct:true},{value:'96',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'94',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'97',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(63, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 105, 104, ___, 102',visual:null,answer:'103',hint:'Subtract 1 from 104.',
+    choices:[{value:'103',correct:true},{value:'104',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'102',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'105',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(64, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 112, 111, ___, 109',visual:null,answer:'110',hint:'Subtract 1 from 111.',
+    choices:[{value:'110',correct:true},{value:'111',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'109',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'112',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(65, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 119, 118, ___, 116',visual:null,answer:'117',hint:'Subtract 1 from 118.',
+    choices:[{value:'117',correct:true},{value:'118',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'116',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'119',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(66, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 94, 93, ___, 91',visual:null,answer:'92',hint:'Subtract 1 from 93.',
+    choices:[{value:'92',correct:true},{value:'93',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'91',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'94',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(67, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 99, 98, ___, 96',visual:null,answer:'97',hint:'Subtract 1 from 98.',
+    choices:[{value:'97',correct:true},{value:'98',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'96',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'99',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(68, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 109, 108, ___, 106',visual:null,answer:'107',hint:'Subtract 1 from 108.',
+    choices:[{value:'107',correct:true},{value:'108',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'106',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'109',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(69, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 114, 113, ___, 111',visual:null,answer:'112',hint:'Subtract 1 from 113.',
+    choices:[{value:'112',correct:true},{value:'113',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'111',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'114',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(70, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 121, 120, ___, 118',visual:null,answer:'119',hint:'Subtract 1 from 120.',
+    choices:[{value:'119',correct:true},{value:'120',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'118',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'121',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  _l3Q(71, {subSkill:'missing_number_backward_sequence',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 116, 115, ___, 113',visual:null,answer:'114',hint:'Subtract 1 from 115.',
+    choices:[{value:'114',correct:true},{value:'115',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last shown number'},{value:'113',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the number after the blank'},{value:'116',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used the number before the blank'}],
+    intervention:_l3IntSeq}),
+  // ── Block G: across_ten_backward (q-072 to q-106) ───────────────────────────
+  // 20→19 cluster
+  _l3Q(72, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 22, 21, 20, ___',visual:null,answer:'19',hint:'After 20, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'19',correct:true},{value:'21',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 20 instead of moving back'},{value:'10',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(73, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 21, 20, ___',visual:null,answer:'19',hint:'After 20 comes 19 when counting backward.',
+    choices:[{value:'19',correct:true},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'10',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'18',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(74, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 22, 21, 20, ___, 18',visual:null,answer:'19',hint:'The blank is right after 20. What tens-transition comes next?',
+    choices:[{value:'19',correct:true},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'10',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'18',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(75, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'medium',prompt:'What number comes before 20?',visual:null,answer:'19',hint:'Before 20 comes 19 — the ones digit becomes 9.',
+    choices:[{value:'19',correct:true},{value:'21',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'10',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 30→29 cluster
+  _l3Q(76, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 32, 31, 30, ___',visual:null,answer:'29',hint:'After 30, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'29',correct:true},{value:'31',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'30',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 30 instead of moving back'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(77, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 31, 30, ___',visual:null,answer:'29',hint:'After 30 comes 29 when counting backward.',
+    choices:[{value:'29',correct:true},{value:'30',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'28',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(78, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 32, 31, 30, ___, 28',visual:null,answer:'29',hint:'The blank is right after 30.',
+    choices:[{value:'29',correct:true},{value:'30',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'28',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(79, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'medium',prompt:'What number comes before 30?',visual:null,answer:'29',hint:'Before 30 comes 29 — the ones digit becomes 9.',
+    choices:[{value:'29',correct:true},{value:'31',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'30',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 40→39 cluster
+  _l3Q(80, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 42, 41, 40, ___',visual:null,answer:'39',hint:'After 40, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'39',correct:true},{value:'41',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'40',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 40 instead of moving back'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(81, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 41, 40, ___',visual:null,answer:'39',hint:'After 40 comes 39 when counting backward.',
+    choices:[{value:'39',correct:true},{value:'40',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'38',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(82, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 42, 41, 40, ___, 38',visual:null,answer:'39',hint:'The blank is right after 40.',
+    choices:[{value:'39',correct:true},{value:'40',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'38',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(83, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 40?',visual:null,answer:'39',hint:'Before 40 comes 39 — the ones digit becomes 9.',
+    choices:[{value:'39',correct:true},{value:'41',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'40',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 50→49 cluster
+  _l3Q(84, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 52, 51, 50, ___',visual:null,answer:'49',hint:'After 50, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'49',correct:true},{value:'51',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 50 instead of moving back'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(85, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 51, 50, ___',visual:null,answer:'49',hint:'After 50 comes 49 when counting backward.',
+    choices:[{value:'49',correct:true},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'48',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(86, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 52, 51, 50, ___, 48',visual:null,answer:'49',hint:'The blank is right after 50.',
+    choices:[{value:'49',correct:true},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'48',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(87, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 50?',visual:null,answer:'49',hint:'Before 50 comes 49 — the ones digit becomes 9.',
+    choices:[{value:'49',correct:true},{value:'51',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 60→59 cluster
+  _l3Q(88, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 62, 61, 60, ___',visual:null,answer:'59',hint:'After 60, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'59',correct:true},{value:'61',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 60 instead of moving back'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(89, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 61, 60, ___',visual:null,answer:'59',hint:'After 60 comes 59 when counting backward.',
+    choices:[{value:'59',correct:true},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'58',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(90, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 62, 61, 60, ___, 58',visual:null,answer:'59',hint:'The blank is right after 60.',
+    choices:[{value:'59',correct:true},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'58',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(91, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 60?',visual:null,answer:'59',hint:'Before 60 comes 59 — the ones digit becomes 9.',
+    choices:[{value:'59',correct:true},{value:'61',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 70→69 cluster
+  _l3Q(92, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 72, 71, 70, ___',visual:null,answer:'69',hint:'After 70, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'69',correct:true},{value:'71',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 70 instead of moving back'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(93, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 71, 70, ___',visual:null,answer:'69',hint:'After 70 comes 69 when counting backward.',
+    choices:[{value:'69',correct:true},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'68',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(94, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 72, 71, 70, ___, 68',visual:null,answer:'69',hint:'The blank is right after 70.',
+    choices:[{value:'69',correct:true},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'68',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(95, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 70?',visual:null,answer:'69',hint:'Before 70 comes 69 — the ones digit becomes 9.',
+    choices:[{value:'69',correct:true},{value:'71',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 80→79 cluster
+  _l3Q(96, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 82, 81, 80, ___',visual:null,answer:'79',hint:'After 80, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'79',correct:true},{value:'81',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 80 instead of moving back'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(97, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 81, 80, ___',visual:null,answer:'79',hint:'After 80 comes 79 when counting backward.',
+    choices:[{value:'79',correct:true},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'78',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(98, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 82, 81, 80, ___, 78',visual:null,answer:'79',hint:'The blank is right after 80.',
+    choices:[{value:'79',correct:true},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'78',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(99, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 80?',visual:null,answer:'79',hint:'Before 80 comes 79 — the ones digit becomes 9.',
+    choices:[{value:'79',correct:true},{value:'81',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // 90→89 cluster
+  _l3Q(100, {subSkill:'across_ten_backward',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 92, 91, 90, ___',visual:null,answer:'89',hint:'After 90, the ones digit becomes 9 and tens drop by 1.',
+    choices:[{value:'89',correct:true},{value:'91',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 90 instead of moving back'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(101, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 91, 90, ___',visual:null,answer:'89',hint:'After 90 comes 89 when counting backward.',
+    choices:[{value:'89',correct:true},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'88',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntTens}),
+  _l3Q(102, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 92, 91, 90, ___, 88',visual:null,answer:'89',hint:'The blank is right after 90.',
+    choices:[{value:'89',correct:true},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'88',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(103, {subSkill:'across_ten_backward',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'hard',prompt:'What number comes before 90?',visual:null,answer:'89',hint:'Before 90 comes 89 — the ones digit becomes 9.',
+    choices:[{value:'89',correct:true},{value:'91',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  // Extra across-ten questions to reach 35 (q-104 to q-106)
+  _l3Q(104, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 51, 50, ___, 48',visual:null,answer:'49',hint:'50 − 1 = 49. Ones digit becomes 9.',
+    choices:[{value:'49',correct:true},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'48',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(105, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 71, 70, ___, 68',visual:null,answer:'69',hint:'70 − 1 = 69. Ones digit becomes 9.',
+    choices:[{value:'69',correct:true},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'68',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  _l3Q(106, {subSkill:'across_ten_backward',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'hard',prompt:'Fill in: 81, 80, ___, 78',visual:null,answer:'79',hint:'80 − 1 = 79. Ones digit becomes 9.',
+    choices:[{value:'79',correct:true},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'78',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'}],
+    intervention:_l3IntTens}),
+  // ── Block H: across_100_to_99 (q-107 to q-128) ──────────────────────────────
+  _l3Q(107, {subSkill:'across_100_to_99',promptTemplate:'what_comes_before',keyIdea:_l3KI5,difficulty:'hard',prompt:'What number comes before 100?',visual:null,answer:'99',hint:'Before 100 comes 99.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(108, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 101, 100, ___',visual:null,answer:'99',hint:'After 100 comes 99 when counting backward.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'},{value:'98',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntHundred}),
+  _l3Q(109, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 102, 101, 100, ___',visual:null,answer:'99',hint:'100 − 1 = 99. We step into two-digit numbers.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'},{value:'98',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntHundred}),
+  _l3Q(110, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 101, ___, 99',visual:null,answer:'100',hint:'What number is between 101 and 99?',
+    choices:[{value:'100',correct:true},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated first shown'},{value:'99',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(111, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 100, 99, ___',visual:null,answer:'98',hint:'99 − 1 = 98.',
+    choices:[{value:'98',correct:true},{value:'99',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'},{value:'97',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntHundred}),
+  _l3Q(112, {subSkill:'across_100_to_99',promptTemplate:'what_comes_before',keyIdea:_l3KI5,difficulty:'hard',prompt:'What number comes before 101?',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'102',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(113, {subSkill:'across_100_to_99',promptTemplate:'count_backward_sequence',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 103, 102, 101, 100, ___',visual:null,answer:'99',hint:'100 − 1 = 99. We cross into two-digit numbers.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(114, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 102, 101, ___, 99',visual:null,answer:'100',hint:'What is between 101 and 99?',
+    choices:[{value:'100',correct:true},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'99',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(115, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 104, 103, ___, 101',visual:null,answer:'102',hint:'103 − 1 = 102.',
+    choices:[{value:'102',correct:true},{value:'103',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'101',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'104',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used number before blank'}],
+    intervention:_l3IntHundred}),
+  _l3Q(116, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 100, ___, 98',visual:null,answer:'99',hint:'100 − 1 = 99.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'98',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(117, {subSkill:'across_100_to_99',promptTemplate:'count_backward_sequence',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 102, 101, ___',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'102',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(118, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 103, ___, 101',visual:null,answer:'102',hint:'103 − 1 = 102.',
+    choices:[{value:'102',correct:true},{value:'103',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'101',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'104',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntHundred}),
+  _l3Q(119, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 105, 104, ___, 102',visual:null,answer:'103',hint:'104 − 1 = 103.',
+    choices:[{value:'103',correct:true},{value:'104',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'102',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'105',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used number before blank'}],
+    intervention:_l3IntHundred}),
+  _l3Q(120, {subSkill:'across_100_to_99',promptTemplate:'count_backward_sequence',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 104, 103, 102, 101, ___',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'102',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(121, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 103, 102, 101, ___, 99',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'99',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(122, {subSkill:'across_100_to_99',promptTemplate:'what_comes_before',keyIdea:_l3KI5,difficulty:'hard',prompt:'What number comes before 102?',visual:null,answer:'101',hint:'102 − 1 = 101.',
+    choices:[{value:'101',correct:true},{value:'103',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'102',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(123, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 101, ___, 99',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'99',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(124, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 99, 98, ___, 96',visual:null,answer:'97',hint:'98 − 1 = 97.',
+    choices:[{value:'97',correct:true},{value:'98',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'96',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'99',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used number before blank'}],
+    intervention:_l3IntHundred}),
+  _l3Q(125, {subSkill:'across_100_to_99',promptTemplate:'count_backward_sequence',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 100, 99, ___',visual:null,answer:'98',hint:'99 − 1 = 98.',
+    choices:[{value:'98',correct:true},{value:'100',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'99',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(126, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 102, ___, 100',visual:null,answer:'101',hint:'102 − 1 = 101.',
+    choices:[{value:'101',correct:true},{value:'102',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'100',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied number after blank'},{value:'103',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntHundred}),
+  _l3Q(127, {subSkill:'across_100_to_99',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 101, 100, 99, ___',visual:null,answer:'98',hint:'99 − 1 = 98.',
+    choices:[{value:'98',correct:true},{value:'99',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'},{value:'97',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntHundred}),
+  _l3Q(128, {subSkill:'across_100_to_99',promptTemplate:'count_backward_sequence',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 103, 102, 101, ___',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'102',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  // ── Block I: number_line_backward (q-129 to q-155) ───────────────────────────
+  // q-129 to q-143: promptTemplate:'number_line_move_left', medium
+  _l3Q(129, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 14. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:14,jumps:[{from:14,to:13,label:'-1'}]},
+    answer:'13',hint:'One step left = one less.',
+    choices:[{value:'13',correct:true},{value:'15',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'14',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'12',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(130, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 27. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:27,jumps:[{from:27,to:26,label:'-1'}]},
+    answer:'26',hint:'One step left = one less.',
+    choices:[{value:'26',correct:true},{value:'28',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'27',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'25',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(131, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 38. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:38,jumps:[{from:38,to:37,label:'-1'}]},
+    answer:'37',hint:'One step left = one less.',
+    choices:[{value:'37',correct:true},{value:'39',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'38',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'36',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(132, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 45. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:45,jumps:[{from:45,to:44,label:'-1'}]},
+    answer:'44',hint:'One step left = one less.',
+    choices:[{value:'44',correct:true},{value:'46',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'45',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'43',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(133, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 51. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:51,jumps:[{from:51,to:50,label:'-1'}]},
+    answer:'50',hint:'One step left = one less. 51 − 1 = 50.',
+    choices:[{value:'50',correct:true},{value:'52',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'51',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(134, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 63. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:63,jumps:[{from:63,to:62,label:'-1'}]},
+    answer:'62',hint:'One step left = one less.',
+    choices:[{value:'62',correct:true},{value:'64',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'63',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'61',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(135, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 72. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:72,jumps:[{from:72,to:71,label:'-1'}]},
+    answer:'71',hint:'One step left = one less.',
+    choices:[{value:'71',correct:true},{value:'73',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'72',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'70',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(136, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 84. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:84,jumps:[{from:84,to:83,label:'-1'}]},
+    answer:'83',hint:'One step left = one less.',
+    choices:[{value:'83',correct:true},{value:'85',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'84',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'82',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(137, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 56. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:56,jumps:[{from:56,to:55,label:'-1'}]},
+    answer:'55',hint:'One step left = one less.',
+    choices:[{value:'55',correct:true},{value:'57',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'56',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'54',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(138, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 34. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:34,jumps:[{from:34,to:33,label:'-1'}]},
+    answer:'33',hint:'One step left = one less.',
+    choices:[{value:'33',correct:true},{value:'35',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'34',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'32',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(139, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 67. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:67,jumps:[{from:67,to:66,label:'-1'}]},
+    answer:'66',hint:'One step left = one less.',
+    choices:[{value:'66',correct:true},{value:'68',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'67',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'65',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(140, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 78. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:78,jumps:[{from:78,to:77,label:'-1'}]},
+    answer:'77',hint:'One step left = one less.',
+    choices:[{value:'77',correct:true},{value:'79',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'78',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'76',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(141, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 43. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:43,jumps:[{from:43,to:42,label:'-1'}]},
+    answer:'42',hint:'One step left = one less.',
+    choices:[{value:'42',correct:true},{value:'44',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'43',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'41',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(142, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 31. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:31,jumps:[{from:31,to:30,label:'-1'}]},
+    answer:'30',hint:'One step left = one less. 31 − 1 = 30.',
+    choices:[{value:'30',correct:true},{value:'32',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'31',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(143, {subSkill:'number_line_backward',promptTemplate:'number_line_move_left',keyIdea:_l3KI6,difficulty:'medium',prompt:'The number line shows 71. Move 1 step to the left. Where do you land?',
+    visual:{type:'numberLine',mark:71,jumps:[{from:71,to:70,label:'-1'}]},
+    answer:'70',hint:'One step left = one less. 71 − 1 = 70.',
+    choices:[{value:'70',correct:true},{value:'72',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'71',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  // q-144 to q-155: promptTemplate:'number_line_arrow_lands', hard
+  _l3Q(144, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:42,jumps:[{from:42,to:41,label:'-1'}]},
+    answer:'41',hint:'The arrow moves 1 step left from 42.',
+    choices:[{value:'41',correct:true},{value:'43',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'42',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'40',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(145, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:60,jumps:[{from:60,to:59,label:'-1'}]},
+    answer:'59',hint:'The arrow moves 1 step left from 60. That crosses the ten boundary.',
+    choices:[{value:'59',correct:true},{value:'61',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(146, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:100,jumps:[{from:100,to:99,label:'-1'}]},
+    answer:'99',hint:'The arrow moves 1 step left from 100. Before 100 comes 99.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(147, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:110,jumps:[{from:110,to:109,label:'-1'}]},
+    answer:'109',hint:'The arrow moves 1 step left from 110.',
+    choices:[{value:'109',correct:true},{value:'111',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'110',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'100',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(148, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:74,jumps:[{from:74,to:73,label:'-1'}]},
+    answer:'73',hint:'The arrow moves 1 step left from 74.',
+    choices:[{value:'73',correct:true},{value:'75',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'74',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'72',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(149, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:85,jumps:[{from:85,to:84,label:'-1'}]},
+    answer:'84',hint:'The arrow moves 1 step left from 85.',
+    choices:[{value:'84',correct:true},{value:'86',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'85',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'83',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(150, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:97,jumps:[{from:97,to:96,label:'-1'}]},
+    answer:'96',hint:'The arrow moves 1 step left from 97.',
+    choices:[{value:'96',correct:true},{value:'98',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'97',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'95',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(151, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:53,jumps:[{from:53,to:52,label:'-1'}]},
+    answer:'52',hint:'The arrow moves 1 step left from 53.',
+    choices:[{value:'52',correct:true},{value:'54',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'53',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'51',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(152, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:69,jumps:[{from:69,to:68,label:'-1'}]},
+    answer:'68',hint:'The arrow moves 1 step left from 69.',
+    choices:[{value:'68',correct:true},{value:'70',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'69',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'67',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(153, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:79,jumps:[{from:79,to:78,label:'-1'}]},
+    answer:'78',hint:'The arrow moves 1 step left from 79.',
+    choices:[{value:'78',correct:true},{value:'80',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'79',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'77',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  _l3Q(154, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:91,jumps:[{from:91,to:90,label:'-1'}]},
+    answer:'90',hint:'The arrow moves 1 step left from 91.',
+    choices:[{value:'90',correct:true},{value:'92',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'91',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(155, {subSkill:'number_line_backward',promptTemplate:'number_line_arrow_lands',keyIdea:_l3KI6,difficulty:'hard',prompt:'What number does the arrow land on?',
+    visual:{type:'numberLine',mark:118,jumps:[{from:118,to:117,label:'-1'}]},
+    answer:'117',hint:'The arrow moves 1 step left from 118.',
+    choices:[{value:'117',correct:true},{value:'119',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Moved right instead of left'},{value:'118',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start'},{value:'116',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps left'}],
+    intervention:_l3IntForward}),
+  // ── Block K: count_backward_multiple_steps (q-156 to q-170) ─────────────────
+  _l3Q(156, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI1,difficulty:'easy',prompt:'Start at 10. Count backward 3 numbers. What are they?',
+    visual:null,answer:'9, 8, 7',hint:'Subtract 1 three times starting at 10.',
+    choices:[{value:'9, 8, 7',correct:true},{value:'11, 12, 13',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'9, 8, 6',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'9, 9, 8',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 9 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(157, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI1,difficulty:'easy',prompt:'Start at 15. Count backward 3 numbers. What are they?',
+    visual:null,answer:'14, 13, 12',hint:'Subtract 1 three times starting at 15.',
+    choices:[{value:'14, 13, 12',correct:true},{value:'16, 17, 18',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'14, 13, 11',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'14, 14, 13',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 14 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(158, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI1,difficulty:'easy',prompt:'Start at 20. Count backward 3 numbers. What are they?',
+    visual:null,answer:'19, 18, 17',hint:'Subtract 1 three times starting at 20.',
+    choices:[{value:'19, 18, 17',correct:true},{value:'21, 22, 23',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'19, 18, 16',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'19, 19, 18',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 19 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(159, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI1,difficulty:'easy',prompt:'Start at 8. Count backward 3 numbers. What are they?',
+    visual:null,answer:'7, 6, 5',hint:'Subtract 1 three times starting at 8.',
+    choices:[{value:'7, 6, 5',correct:true},{value:'9, 10, 11',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'7, 6, 4',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'7, 7, 6',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 7 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(160, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI2,difficulty:'easy',prompt:'Start at 25. Count backward 4 numbers. What are they?',
+    visual:null,answer:'24, 23, 22, 21',hint:'Subtract 1 four times starting at 25.',
+    choices:[{value:'24, 23, 22, 21',correct:true},{value:'26, 27, 28, 29',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'24, 23, 22, 20',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'24, 24, 23, 22',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 24 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(161, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI2,difficulty:'medium',prompt:'Start at 45. Count backward 4 steps. What number do you land on?',
+    visual:null,answer:'41',hint:'Subtract 1 four times: 44, 43, 42, 41.',
+    choices:[{value:'41',correct:true},{value:'49',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'42',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 3 steps'},{value:'40',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Went 5 steps instead of 4'}],
+    intervention:_l3IntForward}),
+  _l3Q(162, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI4,difficulty:'medium',prompt:'Start at 32. Count backward 3 steps. What number do you land on?',
+    visual:null,answer:'29',hint:'32 → 31 → 30 → 29. Crossing a ten means the ones become 9.',
+    choices:[{value:'29',correct:true},{value:'35',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'30',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 2 steps'},{value:'20',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(163, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_multiple_steps',keyIdea:_l3KI2,difficulty:'medium',prompt:'Start at 67. Count backward 3 numbers. What are they?',
+    visual:null,answer:'66, 65, 64',hint:'Subtract 1 three times starting at 67.',
+    choices:[{value:'66, 65, 64',correct:true},{value:'68, 69, 70',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'66, 65, 63',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps on the last step'},{value:'66, 66, 65',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated 66 instead of continuing backward'}],
+    intervention:_l3IntForward}),
+  _l3Q(164, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI2,difficulty:'medium',prompt:'Start at 58. Count backward 5 steps. What number do you land on?',
+    visual:null,answer:'53',hint:'Subtract 1 five times: 57, 56, 55, 54, 53.',
+    choices:[{value:'53',correct:true},{value:'63',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'54',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 4 steps'},{value:'52',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Went 6 steps instead of 5'}],
+    intervention:_l3IntForward}),
+  _l3Q(165, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI4,difficulty:'medium',prompt:'Start at 41. Count backward 2 steps. What number do you land on?',
+    visual:null,answer:'39',hint:'41 → 40 → 39. Crosses a ten going backward.',
+    choices:[{value:'39',correct:true},{value:'43',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'40',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 1 step'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(166, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI2,difficulty:'medium',prompt:'Start at 80. Count backward 4 steps. What number do you land on?',
+    visual:null,answer:'76',hint:'80 → 79 → 78 → 77 → 76.',
+    choices:[{value:'76',correct:true},{value:'84',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'77',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 3 steps'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(167, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI2,difficulty:'medium',prompt:'Start at 73. Count backward 3 steps. What number do you land on?',
+    visual:null,answer:'70',hint:'73 → 72 → 71 → 70.',
+    choices:[{value:'70',correct:true},{value:'76',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'71',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 2 steps'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntForward}),
+  _l3Q(168, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI5,difficulty:'hard',prompt:'Start at 102. Count backward 3 steps. What number do you land on?',
+    visual:null,answer:'99',hint:'102 → 101 → 100 → 99. This crosses from 100 into two-digit numbers.',
+    choices:[{value:'99',correct:true},{value:'105',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'100',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 2 steps'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(169, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI5,difficulty:'hard',prompt:'Start at 101. Count backward 2 steps. What number do you land on?',
+    visual:null,answer:'99',hint:'101 → 100 → 99.',
+    choices:[{value:'99',correct:true},{value:'103',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'100',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 1 step'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(170, {subSkill:'count_backward_multiple_steps',promptTemplate:'count_backward_last_number',keyIdea:_l3KI2,difficulty:'hard',prompt:'Start at 117. Count backward 5 steps. What number do you land on?',
+    visual:null,answer:'112',hint:'117 → 116 → 115 → 114 → 113 → 112.',
+    choices:[{value:'112',correct:true},{value:'122',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward instead of backward'},{value:'113',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Only went 4 steps'},{value:'111',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Went 6 steps instead of 5'}],
+    intervention:_l3IntForward}),
+  // ── Block J: mixed_backward_review (q-171 to q-195) ──────────────────────────
+  _l3Q(171, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 10, 9, ___, 7',visual:null,answer:'8',hint:'What comes after 9 when counting backward?',
+    choices:[{value:'8',correct:true},{value:'9',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'7',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'10',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(172, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 11?',visual:null,answer:'10',hint:'What is 1 less than 11?',
+    choices:[{value:'10',correct:true},{value:'12',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'11',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'9',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntForward}),
+  _l3Q(173, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 6, ___, 4',visual:null,answer:'5',hint:'What comes between 6 and 4?',
+    choices:[{value:'5',correct:true},{value:'6',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'4',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'7',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(174, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI1,difficulty:'easy',prompt:'Fill in: 13, 12, ___, 10',visual:null,answer:'11',hint:'Subtract 1 from 12.',
+    choices:[{value:'11',correct:true},{value:'12',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'10',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'13',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used start number'}],
+    intervention:_l3IntSeq}),
+  _l3Q(175, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI1,difficulty:'easy',prompt:'What number comes before 16?',visual:null,answer:'15',hint:'What is 1 less than 16?',
+    choices:[{value:'15',correct:true},{value:'17',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'16',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'14',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntForward}),
+  _l3Q(176, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 45, 44, ___, 42',visual:null,answer:'43',hint:'Subtract 1 from 44.',
+    choices:[{value:'43',correct:true},{value:'44',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'42',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'45',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used start number'}],
+    intervention:_l3IntSeq}),
+  _l3Q(177, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI2,difficulty:'medium',prompt:'What number comes before 57?',visual:null,answer:'56',hint:'57 − 1 = 56.',
+    choices:[{value:'56',correct:true},{value:'58',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'57',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'55',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntForward}),
+  _l3Q(178, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 41, 40, ___, 38',visual:null,answer:'39',hint:'Before 40 comes 39 — crosses a ten.',
+    choices:[{value:'39',correct:true},{value:'40',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'30',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'38',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(179, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 61, 60, ___, 58',visual:null,answer:'59',hint:'Before 60 comes 59 — crosses a ten.',
+    choices:[{value:'59',correct:true},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'50',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'58',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(180, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 87, 86, ___, 84',visual:null,answer:'85',hint:'Subtract 1 from 86.',
+    choices:[{value:'85',correct:true},{value:'86',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'84',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'87',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used start number'}],
+    intervention:_l3IntSeq}),
+  _l3Q(181, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI4,difficulty:'medium',prompt:'What number comes before 50?',visual:null,answer:'49',hint:'Before 50 comes 49.',
+    choices:[{value:'49',correct:true},{value:'51',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'}],
+    intervention:_l3IntTens}),
+  _l3Q(182, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 91, 90, ___, 88',visual:null,answer:'89',hint:'Before 90 comes 89.',
+    choices:[{value:'89',correct:true},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'80',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'88',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(183, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 63, ___, 61',visual:null,answer:'62',hint:'63 − 1 = 62.',
+    choices:[{value:'62',correct:true},{value:'63',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'61',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'64',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(184, {subSkill:'mixed_backward_review',promptTemplate:'count_backward_sequence',keyIdea:_l3KI2,difficulty:'medium',prompt:'Count backward: 55, 54, 53, ___',visual:null,answer:'52',hint:'53 − 1 = 52.',
+    choices:[{value:'52',correct:true},{value:'54',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'53',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'51',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntForward}),
+  _l3Q(185, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 81, 80, ___, 78',visual:null,answer:'79',hint:'Before 80 comes 79.',
+    choices:[{value:'79',correct:true},{value:'80',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'70',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'78',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(186, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 102, 101, 100, ___',visual:null,answer:'99',hint:'100 − 1 = 99.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'},{value:'98',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntHundred}),
+  _l3Q(187, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 112, 111, ___, 109',visual:null,answer:'110',hint:'111 − 1 = 110.',
+    choices:[{value:'110',correct:true},{value:'111',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'109',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'112',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used start number'}],
+    intervention:_l3IntSeq}),
+  _l3Q(188, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI5,difficulty:'hard',prompt:'What number comes before 100?',visual:null,answer:'99',hint:'100 − 1 = 99.',
+    choices:[{value:'99',correct:true},{value:'101',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated start'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(189, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'hard',prompt:'Fill in: 116, ___, 114',visual:null,answer:'115',hint:'116 − 1 = 115.',
+    choices:[{value:'115',correct:true},{value:'116',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'114',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'117',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'}],
+    intervention:_l3IntSeq}),
+  _l3Q(190, {subSkill:'mixed_backward_review',promptTemplate:'count_backward_sequence',keyIdea:_l3KI4,difficulty:'medium',prompt:'Count backward: 33, 32, 31, ___',visual:null,answer:'30',hint:'31 − 1 = 30.',
+    choices:[{value:'30',correct:true},{value:'32',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Counted forward'},{value:'31',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'29',correct:false,errorTag:'err_skipped_backward_number',misconceptionExplanation:'Jumped two steps back'}],
+    intervention:_l3IntForward}),
+  _l3Q(191, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 51, 50, ___, 48',visual:null,answer:'49',hint:'50 − 1 = 49.',
+    choices:[{value:'49',correct:true},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'40',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'48',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(192, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI2,difficulty:'medium',prompt:'Fill in: 74, 73, ___, 71',visual:null,answer:'72',hint:'73 − 1 = 72.',
+    choices:[{value:'72',correct:true},{value:'73',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'71',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'74',correct:false,errorTag:'err_counted_forward_instead',misconceptionExplanation:'Used start number'}],
+    intervention:_l3IntSeq}),
+  _l3Q(193, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI5,difficulty:'hard',prompt:'Fill in: 101, ___, 99',visual:null,answer:'100',hint:'101 − 1 = 100.',
+    choices:[{value:'100',correct:true},{value:'101',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'99',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied next number'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred}),
+  _l3Q(194, {subSkill:'mixed_backward_review',promptTemplate:'fill_in_middle',keyIdea:_l3KI4,difficulty:'medium',prompt:'Fill in: 71, 70, ___, 68',visual:null,answer:'69',hint:'Before 70 comes the number with 6 tens and 9 ones.',
+    choices:[{value:'69',correct:true},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated last shown'},{value:'60',correct:false,errorTag:'err_backward_tens_transition_error',misconceptionExplanation:'Dropped to wrong ten'},{value:'68',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied the next number'}],
+    intervention:_l3IntTens}),
+  _l3Q(195, {subSkill:'mixed_backward_review',promptTemplate:'what_comes_before',keyIdea:_l3KI5,difficulty:'hard',prompt:'Count backward: 100, ___, 98',visual:null,answer:'99',hint:'After 100 comes 99.',
+    choices:[{value:'99',correct:true},{value:'100',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated A'},{value:'98',correct:false,errorTag:'err_sequence_order_error',misconceptionExplanation:'Copied C'},{value:'90',correct:false,errorTag:'err_backward_hundred_transition_error',misconceptionExplanation:'Dropped to wrong hundred'}],
+    intervention:_l3IntHundred})
+]; // end _l3QuizBank — 195 questions total
+
+// ─── Lesson Quiz Attempt ──────────────────────────────────────────────────────
+
+const _l3QuizAttempt = {
+  questionCount: 8,
+  difficultyMix: { easy: 3, medium: 4, hard: 1 },
+  sourceRule: 'this_lesson_quizbank_only',
+  avoidRecentlySeen: true,
+  noDuplicatesWithinAttempt: true,
+  balanceBySubSkill: true,
+  maxNumberLineQuestions: 2,
+  maxSamePromptTemplate: 2,
+  maxSimplePreviousNumberPrompts: 2,
+  requiredSubSkills: [
+    'what_comes_before',
+    'missing_number_backward_sequence',
+    'count_backward_multiple_steps',
+    'across_ten_backward',
+    'across_100_to_99',
+    'number_line_backward',
+    'mixed_backward_review'
+  ]
+};
+
+// ─── Diagnostics ──────────────────────────────────────────────────────────────
+
+const _l3Diagnostics = {
+  errorTags: [
+    'err_counted_forward_instead',
+    'err_skipped_backward_number',
+    'err_repeated_number',
+    'err_backward_tens_transition_error',
+    'err_backward_hundred_transition_error',
+    'err_sequence_direction_error',
+    'err_sequence_order_error'
+  ],
+  interventionRules: [
+    { errorTag: 'err_counted_forward_instead',           style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_skipped_backward_number',           style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_repeated_number',                   style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_backward_tens_transition_error',    style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_backward_hundred_transition_error', style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_sequence_direction_error',          style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+    { errorTag: 'err_sequence_order_error',              style: 'reteach',      followUpRule: 'same_skill_new_numbers' }
+  ]
+};
+
+// ─── Spec Object ──────────────────────────────────────────────────────────────
+
+const _l3Spec = {
+  lessonId: 'g1-u1-l3',
+  title: 'Count Backward',
+  teks: ['1.5A'],
+  skill: 'count_backward_from_any_number',
+  keyIdeas:          _l3KeyIdeas,
+  workedExamples:    _l3Examples,
+  practiceQuestions: _l3Practice,
+  quizBank:          _l3QuizBank,
+  lessonQuizAttempt: _l3QuizAttempt,
+  diagnostics:       _l3Diagnostics
+};
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec Export
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -3314,121 +4390,10 @@ export const G1_U1_SPEC = {
     _l2Spec,
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 1.3 — Count Backward
+    //  Lesson 1.3 — Count Backward (v0.2.0)
     //  TEKS 1.5A · count_backward_from_any_number
     // ═══════════════════════════════════════════════════════════════════════
-    {
-      lessonId: 'g1-u1-l3',
-      title: 'Count Backward',
-      teks: ['1.5A'],
-      skill: 'count_backward_from_any_number',
-      keyIdeas: [
-        'Counting backward means the numbers get smaller.',
-        'Each next number is one less than the one before it.',
-        'Before 20 comes 19. Before 30 comes 29. Decades work the same way going back.',
-        'You can count backward from any number.'
-      ],
-      workedExamples: [
-        {
-          id: 'g1-u1-l3-ex-001',
-          title: 'Example 1: Count Back From 22',
-          prompt: 'Start at 22 and count backward. What are the next three numbers?',
-          visual: {
-            type: 'numberLine',
-            config: { min: 18, max: 23, ticks: [18, 19, 20, 21, 22, 23], mark: 22 }
-          },
-          steps: [
-            'Find 22 on the number line.',
-            'Each step to the left is one less.',
-            'Count: 21, 20, 19.'
-          ],
-          finalAnswer: '21, 20, 19',
-          teachingNote: 'Same number line, opposite direction. Use the leftward step explicitly.',
-          relatedKeyIdea: 'Each next number is one less than the one before it.'
-        },
-        {
-          id: 'g1-u1-l3-ex-002',
-          title: 'Example 2: Crossing 80',
-          prompt: 'Start at 80 and count backward. What are the next three numbers?',
-          visual: {
-            type: 'numberLine',
-            config: { min: 76, max: 81, ticks: [76, 77, 78, 79, 80, 81], mark: 80 }
-          },
-          steps: [
-            'Find 80 on the number line.',
-            'Step back. Before 80 is 79.',
-            'Count: 79, 78, 77.'
-          ],
-          finalAnswer: '79, 78, 77',
-          teachingNote: 'Decade boundaries are just as tricky going backward — emphasize 80 → 79.',
-          relatedKeyIdea: 'Before 20 comes 19. Before 30 comes 29. Decades work the same way going back.'
-        },
-        {
-          id: 'g1-u1-l3-ex-003',
-          title: 'Example 3: Crossing 100',
-          prompt: 'Start at 102 and count backward. What are the next three numbers?',
-          visual: {
-            type: 'numberLine',
-            config: { min: 98, max: 103, ticks: [98, 99, 100, 101, 102, 103], mark: 102 }
-          },
-          steps: [
-            'Find 102 on the number line.',
-            'Step back three times.',
-            'Count: 101, 100, 99.'
-          ],
-          finalAnswer: '101, 100, 99',
-          teachingNote: 'The 100 → 99 transition mirrors the 89 → 90 forward crossing.',
-          relatedKeyIdea: 'You can count backward from any number.'
-        }
-      ],
-      allowedQuestionTypes: ['multipleChoice'],
-      diagnostics: {
-        commonDistractors: [
-          { value: 'prev + 1',  meaning: 'Counted forward instead of backward.',                 errorTag: 'err_count_forward_instead' },
-          { value: 'prev - 2',  meaning: 'Skipped a number — went two back.',                    errorTag: 'err_off_by_one' },
-          { value: 'prev + 10', meaning: 'Stalled at decade boundary (e.g. 80 → 90 instead).',   errorTag: 'err_decade_boundary' },
-          { value: 'start',     meaning: 'Repeated the start number; did not move.',             errorTag: 'err_off_by_one' }
-        ],
-        errorTags: ['err_count_forward_instead', 'err_off_by_one', 'err_decade_boundary'],
-        interventionRules: [
-          { errorTag: 'err_count_forward_instead', style: 'reteach',      followUpRule: 'same_skill_new_instance' },
-          { errorTag: 'err_off_by_one',            style: 'reteach',      followUpRule: 'same_skill_new_instance' },
-          { errorTag: 'err_decade_boundary',       style: 'visual_model', followUpRule: 'same_skill_new_instance' }
-        ]
-      },
-      sampleDiagnosticQuestions: [
-        {
-          t: 'What number comes before 60? Count backward.',
-          v: { type: 'numberLine', config: { min: 57, max: 62, ticks: [57, 58, 59, 60, 61, 62], mark: 60 } },
-          o: [
-            { val: '61', tag: 'err_count_forward_instead' },
-            { val: '59' },
-            { val: '50', tag: 'err_decade_boundary' },
-            { val: '70', tag: 'err_decade_boundary' }
-          ],
-          a: 1,
-          e: 'One less than 60 is 59. Step left on the number line.',
-          d: 'e',
-          h: 'What is one less than 60?',
-          s: null
-        },
-        {
-          t: 'Start at 35 and count back 4 times. What number do you say last?',
-          v: { type: 'numberLine', config: { min: 30, max: 36, ticks: [30, 31, 32, 33, 34, 35, 36], mark: 35 } },
-          o: [
-            { val: '32', tag: 'err_off_by_one' },
-            { val: '30', tag: 'err_off_by_one' },
-            { val: '31' },
-            { val: '39', tag: 'err_count_forward_instead' }
-          ],
-          a: 2,
-          e: '35 → 34 → 33 → 32 → 31. Four steps back lands on 31.',
-          d: 'm',
-          h: 'Step back four times: 34, 33, 32, 31.',
-          s: null
-        }
-      ]
-    },
+    _l3Spec,
 
     // ═══════════════════════════════════════════════════════════════════════
     //  Lesson 1.4 — Skip Count by 2s, 5s, and 10s
