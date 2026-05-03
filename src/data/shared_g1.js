@@ -226,10 +226,16 @@ function _mergeG1UnitData(idx, spec){
       }
       return {
         t: q.prompt || '',
-        o: choices.map(function(c){ return String(c.value); }),
+        o: choices.map(function(c){
+          if (!c.correct && c.errorTag) {
+            return { val: String(c.value), tag: c.errorTag, me: c.misconceptionExplanation || null };
+          }
+          return String(c.value);
+        }),
         a: correctIdx,
         e: q.hint   || '',
-        v: _g1VisToV(q.visual)   // converts v0.2.0 visual → {type,config} for _buildVisualHTML
+        v: _g1VisToV(q.visual),  // converts v0.2.0 visual → {type,config} for _buildVisualHTML
+        i: q.intervention || null
       };
     });
 

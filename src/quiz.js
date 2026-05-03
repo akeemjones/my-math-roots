@@ -773,11 +773,27 @@ function _pickAnswer(btnIdx){
       const nudge = _nudges[(qz.idx || 0) % _nudges.length];
       const revId = 'rev-'+Date.now();
       rev.className = 'reveal show '+(isOk?'ok':'no');
-      rev.innerHTML =
-        '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
-        (!isOk ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
-        '<div class="rev-exp" id="'+revId+'-exp">' + _ICO.lightbulb + ' '+_escHtml(q.e)+'</div>'+
-        (!isOk ? '<div class="rev-tip">'+_escHtml(nudge)+'</div>' : '');
+      const _selectedRawOpt = q.o ? q.o[qz._opts[btnIdx].i] : null;
+      const _intv = q.i || null;
+      let _revHtml = '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>';
+      if (!isOk) {
+        _revHtml += '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>';
+        const _me = (_selectedRawOpt && typeof _selectedRawOpt === 'object') ? _selectedRawOpt.me : null;
+        if (_intv && Array.isArray(_intv.teachingSteps) && _intv.teachingSteps.length) {
+          if (_me) _revHtml += '<div class="rev-misconception">'+_escHtml(_me)+'</div>';
+          _revHtml += '<div class="rev-intervention">';
+          if (_intv.title) _revHtml += '<div class="rev-intv-title">'+_escHtml(_intv.title)+'</div>';
+          _revHtml += _intv.teachingSteps.map(function(s){ return '<div class="rev-step">'+_escHtml(s)+'</div>'; }).join('');
+          if (_intv.correctAnswerExplanation) _revHtml += '<div class="rev-exp">'+_ICO.lightbulb+' '+_escHtml(_intv.correctAnswerExplanation)+'</div>';
+          _revHtml += '</div>';
+        } else {
+          _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
+          _revHtml += '<div class="rev-tip">'+_escHtml(nudge)+'</div>';
+        }
+      } else {
+        _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
+      }
+      rev.innerHTML = _revHtml;
     }
 
     // Disable hint button after answering
