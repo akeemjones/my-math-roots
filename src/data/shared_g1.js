@@ -241,7 +241,9 @@ function _mergeG1UnitData(idx, spec){
         e: q.hint   || '',
         v: _g1VisToV(q.visual),  // converts v0.2.0 visual → {type,config} for _buildVisualHTML
         i: q.intervention || null,
-        sk: q.subSkill || null
+        sk: q.subSkill || null,
+        d: q.difficulty ? q.difficulty[0] : null,   // 'e','m','h'
+        pt: q.promptTemplate || null
       };
     });
 

@@ -318,7 +318,11 @@ function startLessonQuiz(unitIdx, lessonIdx){
       var _g = localStorage.getItem('mmr_grade');
       _trackEvent('lesson_started', { unit_id: 'u' + unitIdx, lesson_id: l.id, grade: _g || null });
     } catch (_) {}
-    _runQuiz(l.qBank||l.quiz, 'lq_'+l.id, l.icon+' '+l.title, 'lesson', unitIdx);
+    var lqa = l.lessonQuizAttempt;
+    var prebuilt = (lqa && lqa.balanceBySubSkill && (l.qBank||l.quiz))
+      ? _buildLessonAttempt(l.qBank || l.quiz, lqa)
+      : null;
+    _runQuiz(l.qBank||l.quiz, 'lq_'+l.id, l.icon+' '+l.title, 'lesson', unitIdx, prebuilt);
   }).catch(function(){ alert('Could not load quiz. Check your connection.'); });
 }
 
@@ -492,6 +496,83 @@ function _weightedSample(bank, n, quizType){
     const tmp = result[i]; result[i] = result[j]; result[j] = tmp;
   }
   return result;
+}
+
+// Builds an 8-question attempt from the full quizBank using lessonQuizAttempt rules.
+// Only used when lqa.balanceBySubSkill === true.
+function _buildLessonAttempt(bank, lqa) {
+  const n          = lqa.questionCount || 8;
+  const mix        = lqa.difficultyMix || { easy: 3, medium: 4, hard: 1 };
+  const required   = lqa.requiredSubSkills || [];
+  const maxNL      = lqa.maxNumberLineQuestions   != null ? lqa.maxNumberLineQuestions   : 99;
+  const maxGO      = lqa.maxGroupedObjectQuestions != null ? lqa.maxGroupedObjectQuestions : 99;
+  const maxPT      = lqa.maxSamePromptTemplate    != null ? lqa.maxSamePromptTemplate    : 99;
+
+  function _isNL(q) { return q.v && q.v.type === 'numberLine'; }
+  function _isGO(q) { return q.v && q.v.type === 'objectSet' && q.v.config && q.v.config.groups != null; }
+  function _pick(pool, exclude) {
+    const available = pool.filter(function(q) { return exclude.indexOf(q) === -1; });
+    if (!available.length) return null;
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
+  const selected = [];
+  const ptCounts = {};
+
+  function _wouldExceed(q) {
+    if (_isNL(q)  && selected.filter(_isNL).length  >= maxNL) return true;
+    if (_isGO(q)  && selected.filter(_isGO).length  >= maxGO) return true;
+    if (q.pt && (ptCounts[q.pt] || 0) >= maxPT) return true;
+    return false;
+  }
+  function _addQ(q) {
+    selected.push(q);
+    if (q.pt) ptCounts[q.pt] = (ptCounts[q.pt] || 0) + 1;
+  }
+
+  // Phase 1: seed with one question per requiredSubSkill
+  required.forEach(function(sk) {
+    if (selected.length >= n) return;
+    const pool = bank.filter(function(q) { return q.sk === sk; });
+    // Try multiple candidates to satisfy caps
+    const shuffled = pool.slice().sort(function() { return Math.random() - 0.5; });
+    for (let i = 0; i < shuffled.length; i++) {
+      const q = shuffled[i];
+      if (selected.indexOf(q) === -1 && !_wouldExceed(q)) { _addQ(q); break; }
+    }
+  });
+
+  // Phase 2: fill remaining slots respecting difficultyMix
+  const diffTargets = { e: mix.easy || 0, m: mix.medium || 0, h: mix.hard || 0 };
+  // Subtract already-seeded questions from targets
+  selected.forEach(function(q) { if (diffTargets[q.d] > 0) diffTargets[q.d]--; });
+
+  const tiers = { e: 'easy', m: 'medium', h: 'hard' };
+  Object.keys(tiers).forEach(function(dk) {
+    let remaining = diffTargets[dk];
+    const pool = bank.filter(function(q) { return q.d === dk; });
+    const shuffled = pool.slice().sort(function() { return Math.random() - 0.5; });
+    for (let i = 0; i < shuffled.length && remaining > 0 && selected.length < n; i++) {
+      const q = shuffled[i];
+      if (selected.indexOf(q) === -1 && !_wouldExceed(q)) { _addQ(q); remaining--; }
+    }
+  });
+
+  // Phase 3: if still short, fill with anything available
+  if (selected.length < n) {
+    const shuffled = bank.slice().sort(function() { return Math.random() - 0.5; });
+    for (let i = 0; i < shuffled.length && selected.length < n; i++) {
+      const q = shuffled[i];
+      if (selected.indexOf(q) === -1 && !_wouldExceed(q)) _addQ(q);
+    }
+  }
+
+  // Shuffle final set
+  for (let i = selected.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = selected[i]; selected[i] = selected[j]; selected[j] = tmp;
+  }
+  return selected;
 }
 
 function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
