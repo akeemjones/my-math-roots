@@ -329,6 +329,30 @@ function checkMigratedLesson(tag, l) {
       }
     }
 
+    // R-new-F: L1.4 numberLine visual completeness
+    if (l.lessonId === 'g1-u1-l4' && q.visual && q.visual.type === 'numberLine') {
+      const vis = q.visual;
+      if (vis.min == null)                         err(`${qtag} R-new-F: numberLine visual missing min`);
+      if (vis.max == null)                         err(`${qtag} R-new-F: numberLine visual missing max`);
+      if (vis.mark == null)                        err(`${qtag} R-new-F: numberLine visual missing mark`);
+      if (!Array.isArray(vis.ticks) || vis.ticks.length === 0) err(`${qtag} R-new-F: numberLine visual missing/empty ticks`);
+      if (!Array.isArray(vis.jumps) || vis.jumps.length === 0) err(`${qtag} R-new-F: numberLine visual missing/empty jumps`);
+      if (vis.mode !== 'assessment')               err(`${qtag} R-new-F: numberLine visual mode must be 'assessment'`);
+      if (vis.labels) {
+        const labelKeys = Object.keys(vis.labels);
+        const ansStr = String(q.answer);
+        if (labelKeys.includes(ansStr))            err(`${qtag} R-new-F: answer "${ansStr}" must not appear in numberLine labels`);
+      }
+      if (Array.isArray(vis.jumps)) {
+        vis.jumps.forEach((jmp, ji) => {
+          if (jmp.from == null)         err(`${qtag} R-new-F: jump[${ji}] missing from`);
+          if (jmp.to   == null)         err(`${qtag} R-new-F: jump[${ji}] missing to`);
+          if (!jmp.label)               err(`${qtag} R-new-F: jump[${ji}] missing label`);
+          if (jmp.hideToLabel !== true) err(`${qtag} R-new-F: jump[${ji}] hideToLabel must be true`);
+        });
+      }
+    }
+
     // R5: question id uniqueness
     if (q.id) {
       if (seenIds.has(q.id)) err(`R5: duplicate id ${q.id}`);
