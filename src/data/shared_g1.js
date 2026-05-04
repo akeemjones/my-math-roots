@@ -150,7 +150,7 @@ function _loadG1Unit(idx){
 //    fivFrame    { count:N }             → 1×5 row,  N filled cells
 //    dicePattern { face:N }              → standard dice dot pattern, face 1–6
 //    domino      { left:L, right:R }     → two dice halves side by side
-//    objectSet   { count:N, layout:? }   → organized dot rows (existing renderer)
+//    objectSet   { count:N, layout:?, emoji:?, groups:?, groupSize:? }  → organized dot rows
 //    numberLine  { min,max,ticks,jumps,mark } → SVG number line (L1.2+)
 function _g1VisToV(vis) {
   if (!vis || !vis.type) return null;
