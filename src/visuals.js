@@ -569,6 +569,8 @@ function drawArray(cfg) {
 //  drawObjectSet({count, emoji, layout}, argIdx)
 //
 //  count: number of objects (1–20)   emoji: display character
+//  groups: number of groups (optional, enables grouped rendering)
+//  groupSize: objects per group (required when groups is set)
 //  layout: 'grid' | 'line'  (ignored for answer buttons — always compact)
 //  argIdx: null → static question visual  |  number → clickable answer button
 // ─────────────────────────────────────────────────────────────────────────────
@@ -577,18 +579,20 @@ function drawObjectSet(config, argIdx) {
   var isBtn   = argIdx != null;
 
   // Grouped rendering (skip count)
-  if (config.groups && config.groupSize) {
-    var groups = [];
-    for (var g = 0; g < config.groups; g++) {
-      groups.push('<span class="obj-group">' +
-        Array(config.groupSize).fill(emoji).join('​') +
+  var groups    = +config.groups    || 0;
+  var groupSize = +config.groupSize || 0;
+  if (groups && groupSize) {
+    var groupsArr = [];
+    for (var g = 0; g < groups; g++) {
+      groupsArr.push('<span class="obj-group">' +
+        Array(groupSize).fill(emoji).join('​') +
         '</span>');
     }
-    var gridHTML = '<div class="obj-set-grid" style="display:flex; gap:0.5em">' +
-      groups.join('') +
+    var gridHTML = '<div class="obj-set-grid" style="display:flex; flex-direction:row; gap:0.5em">' +
+      groupsArr.join('') +
       '</div>';
     if (isBtn) {
-      var totalCount = config.groups * config.groupSize;
+      var totalCount = groups * groupSize;
       return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
              ' data-action="_pickAnswer" data-arg="'+argIdx+'"'+
              ' aria-label="'+totalCount+' '+_escHtml(emoji)+'">'+

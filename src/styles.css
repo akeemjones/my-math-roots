@@ -951,6 +951,7 @@ body.dark .vchoice{ background:rgba(12,22,42,0.82);
 .obj-set-visual{ padding:12px 8px; }
 .obj-set-grid{ display:flex; flex-direction:column; gap:4px; align-items:center; }
 .obj-row{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
+.obj-group{ font-size:1.5rem; line-height:1.4; letter-spacing:2px; }
 
 /* ── TwoGroups visual ────────────────────────────────────────────────── */
 .two-groups-visual{ display:flex; flex-direction:column; align-items:center; gap:12px; justify-content:center;
