@@ -573,14 +573,39 @@ function drawArray(cfg) {
 //  argIdx: null → static question visual  |  number → clickable answer button
 // ─────────────────────────────────────────────────────────────────────────────
 function drawObjectSet(config, argIdx) {
-  var count   = +config.count || 0;
   var emoji   = config.emoji  || '●';
   var isBtn   = argIdx != null;
+
+  // Grouped rendering (skip count)
+  if (config.groups && config.groupSize) {
+    var groups = [];
+    for (var g = 0; g < config.groups; g++) {
+      groups.push('<span class="obj-group">' +
+        Array(config.groupSize).fill(emoji).join('​') +
+        '</span>');
+    }
+    var gridHTML = '<div class="obj-set-grid" style="display:flex; gap:0.5em">' +
+      groups.join('') +
+      '</div>';
+    if (isBtn) {
+      var totalCount = config.groups * config.groupSize;
+      return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
+             ' data-action="_pickAnswer" data-arg="'+argIdx+'"'+
+             ' aria-label="'+totalCount+' '+_escHtml(emoji)+'">'+
+        gridHTML+
+        '<span class="vchoice-label">'+totalCount+'</span>'+
+      '</button>';
+    }
+    return '<div class="q-visual obj-set-visual">'+gridHTML+'</div>';
+  }
+
+  // Flat rendering (original behavior)
+  var count   = +config.count || 0;
   var MAX_ROW = isBtn ? 5 : (config.layout === 'line' ? 20 : 5);
   var rows = [], rem = count;
   while (rem > 0) {
     var n = Math.min(rem, MAX_ROW);
-    rows.push(Array(n).fill(emoji).join('\u200B'));
+    rows.push(Array(n).fill(emoji).join('​'));
     rem -= n;
   }
   var gridHTML = '<div class="obj-set-grid">' +
@@ -596,6 +621,7 @@ function drawObjectSet(config, argIdx) {
   }
   return '<div class="q-visual obj-set-visual">'+gridHTML+'</div>';
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  drawTwoGroups({leftCount, leftObj, rightCount, rightObj, op},
