@@ -216,7 +216,7 @@ function checkMigratedLesson(tag, l) {
     if (!lqa.maxNumberLineQuestions)  err(`${tag} R-new-C: lessonQuizAttempt missing maxNumberLineQuestions`);
     if (!lqa.maxSamePromptTemplate)   err(`${tag} R-new-C: lessonQuizAttempt missing maxSamePromptTemplate`);
     if (l.lessonId === 'g1-u1-l3') {
-      if (!lqa.maxSimplePreviousNumberPrompts) err(`${tag} R-new-C: _l3QuizAttempt missing maxSimplePreviousNumberPrompts`);
+      if (!lqa.maxSimplePreviousNumberPrompts) err(`${tag} R-new-C: lessonQuizAttempt missing maxSimplePreviousNumberPrompts`);
     }
     if (l.lessonId === 'g1-u1-l4') {
       if (!lqa.maxGroupedObjectQuestions) err(`${tag} R-new-C: lessonQuizAttempt missing maxGroupedObjectQuestions`);
@@ -268,7 +268,7 @@ function checkMigratedLesson(tag, l) {
       if (typeof vis.groupSize !== 'number' || vis.groupSize < 1) err(`${tag} p${pi + 1} R-new-E: groupSize must be a positive number`);
       if (p.subSkill === 'grouped_object_total') {
         const expected = String(vis.groups * vis.groupSize);
-        if (p.answer !== expected) warn(`${tag} p${pi + 1} R-new-E: groups×groupSize=${expected} but answer="${p.answer}" — verify intent`);
+        if (String(p.answer) !== expected) warn(`${tag} p${pi + 1} R-new-E: groups×groupSize=${expected} but answer="${p.answer}" — verify intent`);
       }
     }
     if (seenIds.has(p.id)) err(`R5: duplicate id ${p.id}`);
@@ -325,7 +325,7 @@ function checkMigratedLesson(tag, l) {
       if (typeof vis.groupSize !== 'number' || vis.groupSize < 1) err(`${qtag} R-new-E: groupSize must be a positive number`);
       if (q.subSkill === 'grouped_object_total') {
         const expected = String(vis.groups * vis.groupSize);
-        if (q.answer !== expected) warn(`${qtag} R-new-E: groups×groupSize=${expected} but answer="${q.answer}" — verify intent`);
+        if (String(q.answer) !== expected) warn(`${qtag} R-new-E: groups×groupSize=${expected} but answer="${q.answer}" — verify intent`);
       }
     }
 
