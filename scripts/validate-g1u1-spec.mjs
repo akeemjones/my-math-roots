@@ -56,6 +56,8 @@ const FORBIDDEN_TOPICS = [
   'tally', 'bar graph', 'pictograph'
 ];
 
+const EXTENDED_SCHEMA_LESSONS = new Set(['g1-u1-l3', 'g1-u1-l4']);
+
 // ─── Top-level unit checks ───────────────────────────────────────────────────
 if (G1_U1_SPEC.unitId !== 'g1u1') err(`unitId should be 'g1u1', got ${G1_U1_SPEC.unitId}`);
 if (G1_U1_SPEC.lessons.length !== 8) err(`expected 8 lessons, got ${G1_U1_SPEC.lessons.length}`);
@@ -209,11 +211,16 @@ function checkMigratedLesson(tag, l) {
     if (lqa.noDuplicatesWithinAttempt !== true) err(`${tag} R11: lessonQuizAttempt.noDuplicatesWithinAttempt must be true`);
   }
 
-  // R-new-C: L1.3 lessonQuizAttempt must have specific rate-limiting caps
-  if (l.lessonId === 'g1-u1-l3' && lqa) {
-    if (!lqa.maxNumberLineQuestions)         err(`${tag} R-new-C: _l3QuizAttempt missing maxNumberLineQuestions`);
-    if (!lqa.maxSamePromptTemplate)          err(`${tag} R-new-C: _l3QuizAttempt missing maxSamePromptTemplate`);
-    if (!lqa.maxSimplePreviousNumberPrompts) err(`${tag} R-new-C: _l3QuizAttempt missing maxSimplePreviousNumberPrompts`);
+  // R-new-C: L1.3 and L1.4 lessonQuizAttempt must have specific rate-limiting caps
+  if (EXTENDED_SCHEMA_LESSONS.has(l.lessonId) && lqa) {
+    if (!lqa.maxNumberLineQuestions)  err(`${tag} R-new-C: lessonQuizAttempt missing maxNumberLineQuestions`);
+    if (!lqa.maxSamePromptTemplate)   err(`${tag} R-new-C: lessonQuizAttempt missing maxSamePromptTemplate`);
+    if (l.lessonId === 'g1-u1-l3') {
+      if (!lqa.maxSimplePreviousNumberPrompts) err(`${tag} R-new-C: _l3QuizAttempt missing maxSimplePreviousNumberPrompts`);
+    }
+    if (l.lessonId === 'g1-u1-l4') {
+      if (!lqa.maxGroupedObjectQuestions) err(`${tag} R-new-C: lessonQuizAttempt missing maxGroupedObjectQuestions`);
+    }
   }
 
   // workedExamples shape (existing fields)
@@ -249,10 +256,20 @@ function checkMigratedLesson(tag, l) {
     if (p.visual && p.visual.type === 'numberLine') {
       _checkR13NL(`${tag} p${pi + 1}`, p.visual, p.answer);
     }
-    // R-new-B: L1.3 multipleChoice practice questions must have non-empty choices
-    if (l.lessonId === 'g1-u1-l3' && p.interactionType === 'multipleChoice') {
+    // R-new-B: L1.3/L1.4 multipleChoice practice questions must have non-empty choices
+    if (EXTENDED_SCHEMA_LESSONS.has(l.lessonId) && p.interactionType === 'multipleChoice') {
       if (!Array.isArray(p.choices) || p.choices.length === 0)
         err(`${tag} p${pi + 1} R-new-B: multipleChoice practice question has no choices`);
+    }
+    // R-new-E: grouped objectSet shape (practiceQuestions)
+    if (p.visual && p.visual.type === 'objectSet' && p.visual.groups != null) {
+      const vis = p.visual;
+      if (typeof vis.groups    !== 'number' || vis.groups    < 1) err(`${tag} p${pi + 1} R-new-E: groups must be a positive number`);
+      if (typeof vis.groupSize !== 'number' || vis.groupSize < 1) err(`${tag} p${pi + 1} R-new-E: groupSize must be a positive number`);
+      if (p.subSkill === 'grouped_object_total') {
+        const expected = String(vis.groups * vis.groupSize);
+        if (p.answer !== expected) warn(`${tag} p${pi + 1} R-new-E: groups×groupSize=${expected} but answer="${p.answer}" — verify intent`);
+      }
     }
     if (seenIds.has(p.id)) err(`R5: duplicate id ${p.id}`);
     seenIds.add(p.id);
@@ -282,8 +299,8 @@ function checkMigratedLesson(tag, l) {
     if (!VALID_INTERACTION.has(q.interactionType)) err(`${qtag} R1: interactionType invalid: ${q.interactionType}`);
     if (!VALID_FOLLOWUP_RULES.has(q.followUpRule)) err(`${qtag} R1: followUpRule invalid: ${q.followUpRule}`);
 
-    // R-new-A: L1.3 requires subSkill and promptTemplate on every quizBank question
-    if (l.lessonId === 'g1-u1-l3') {
+    // R-new-A: L1.3/L1.4 requires subSkill and promptTemplate on every quizBank question
+    if (EXTENDED_SCHEMA_LESSONS.has(l.lessonId)) {
       if (!q.subSkill)       err(`${qtag} R-new-A: missing subSkill`);
       if (!q.promptTemplate) err(`${qtag} R-new-A: missing promptTemplate`);
     }
@@ -299,6 +316,17 @@ function checkMigratedLesson(tag, l) {
     // R13: strict assessment-mode check. Worked examples are exempt.
     if (q.visual && q.visual.type === 'numberLine') {
       _checkR13NL(qtag, q.visual, q.answer);
+    }
+
+    // R-new-E: grouped objectSet shape
+    if (q.visual && q.visual.type === 'objectSet' && q.visual.groups != null) {
+      const vis = q.visual;
+      if (typeof vis.groups    !== 'number' || vis.groups    < 1) err(`${qtag} R-new-E: groups must be a positive number`);
+      if (typeof vis.groupSize !== 'number' || vis.groupSize < 1) err(`${qtag} R-new-E: groupSize must be a positive number`);
+      if (q.subSkill === 'grouped_object_total') {
+        const expected = String(vis.groups * vis.groupSize);
+        if (q.answer !== expected) warn(`${qtag} R-new-E: groups×groupSize=${expected} but answer="${q.answer}" — verify intent`);
+      }
     }
 
     // R5: question id uniqueness
@@ -367,8 +395,8 @@ function checkMigratedLesson(tag, l) {
     set.add(r7choiceKey);
   });
 
-  // R-new-D: L1.3 subSkill coverage and promptTemplate diversity
-  if (l.lessonId === 'g1-u1-l3') {
+  // R-new-D: L1.3/L1.4 subSkill coverage and promptTemplate diversity
+  if (EXTENDED_SCHEMA_LESSONS.has(l.lessonId)) {
     const bank = l.quizBank;
     const qa   = l.lessonQuizAttempt;
 
