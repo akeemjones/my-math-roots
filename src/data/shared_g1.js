@@ -159,7 +159,12 @@ function _g1VisToV(vis) {
     case 'fivFrame':    return { type: 'fivFrame',    config: { count: vis.count } };
     case 'dicePattern': return { type: 'dicePattern', config: { face:  vis.face  } };
     case 'domino':      return { type: 'domino',      config: { left:  vis.left, right: vis.right } };
-    case 'objectSet':   return { type: 'objectSet',   config: { count: vis.count, layout: vis.layout || 'rows', emoji: '●' } };
+    case 'objectSet': {
+      const cfg = { count: vis.count, layout: vis.layout || 'rows', emoji: vis.emoji || '●' };
+      if (vis.groups    != null) cfg.groups    = vis.groups;
+      if (vis.groupSize != null) cfg.groupSize = vis.groupSize;
+      return { type: 'objectSet', config: cfg };
+    }
     case 'numberLine': {
       const nlCfg = { min: vis.min, max: vis.max, ticks: vis.ticks || [], jumps: vis.jumps || [], mark: vis.mark != null ? vis.mark : null };
       if (vis.mode       != null) nlCfg.mode       = vis.mode;
