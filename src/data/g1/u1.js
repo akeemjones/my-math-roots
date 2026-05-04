@@ -4350,6 +4350,459 @@ const _l3Spec = {
 };
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 1.4 — Skip Count by 2s, 5s, and 10s (v0.2.0)
+//  TEKS 1.5B · skip_count_to_find_totals
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Key ideas ────────────────────────────────────────────────────────────────
+const _l4KeyIdeas = [
+  'Skip counting means counting by equal jumps.',
+  'Counting by 2s means saying every second number.',
+  'Counting by 5s means adding 5 each time.',
+  'Counting by 10s means adding 10 each time.',
+  'Equal groups help you count faster.',
+  'On a number line, skip counting means making equal jumps.'
+];
+const _l4KI1 = _l4KeyIdeas[0];
+const _l4KI2 = _l4KeyIdeas[1];
+const _l4KI3 = _l4KeyIdeas[2];
+const _l4KI4 = _l4KeyIdeas[3];
+const _l4KI5 = _l4KeyIdeas[4];
+const _l4KI6 = _l4KeyIdeas[5];
+
+// ── Shared interventions ──────────────────────────────────────────────────────
+const _l4IntCountedByOnes = {
+  errorTag: 'err_counted_by_ones_instead',
+  title: 'Skip Count, Not Count by 1s',
+  teachingSteps: [
+    'Skip counting means jumping by the same amount each time, not adding 1.',
+    'For counting by 2s, say every second number: 2, 4, 6, 8 — each jump is +2.'
+  ],
+  correctAnswerExplanation: 'Each jump adds 2 (or 5 or 10). Count the jumps, not each step of 1.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntWrongInterval = {
+  errorTag: 'err_wrong_skip_count_interval',
+  title: 'Use the Right Jump Size',
+  teachingSteps: [
+    'Look at the numbers in the sequence. How much does each number increase?',
+    'That increase is your jump size. Use the same jump size every time.'
+  ],
+  correctAnswerExplanation: 'Find the gap between two consecutive numbers. Keep that same gap every jump.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntPatternBreak = {
+  errorTag: 'err_skip_count_pattern_break',
+  title: 'Keep the Pattern Going',
+  teachingSteps: [
+    'In a skip-count sequence, every jump is exactly the same size.',
+    'Add the same amount to the last number in the sequence to find the next one.'
+  ],
+  correctAnswerExplanation: 'The pattern never changes size. Find the jump and add it one more time.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntGroupCounting = {
+  errorTag: 'err_group_counting_error',
+  title: 'Count the Total, Not the Groups',
+  teachingSteps: [
+    'The question asks for the total number of objects, not how many groups there are.',
+    'Skip count the group size for every group: each group adds the same amount.'
+  ],
+  correctAnswerExplanation: 'Count each group by the group size. Add that amount once per group.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntTensTransition = {
+  errorTag: 'err_skip_count_tens_transition_error',
+  title: 'Keep Going Past the Round Number',
+  teachingSteps: [
+    'When skip counting reaches a round number like 10, 20, or 100, keep going.',
+    'Add the same jump size again: 8, 10, 12 — the jump is +2, so after 10 comes 12.'
+  ],
+  correctAnswerExplanation: 'The jump size never changes at tens. Add it past the round number.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntRepeated = {
+  errorTag: 'err_repeated_number',
+  title: 'Move Forward, Not Stay',
+  teachingSteps: [
+    'The next number in a sequence must be different from the last one.',
+    'Add the jump size to the last number to find the next number.'
+  ],
+  correctAnswerExplanation: 'Skip counting always moves forward. Add the jump size once more.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntSkippedGroup = {
+  errorTag: 'err_skipped_group',
+  title: 'Count Every Group',
+  teachingSteps: [
+    'Make sure you count each group exactly once.',
+    'Point to each group and say the next skip-count number out loud.'
+  ],
+  correctAnswerExplanation: 'Every group adds to the total. Skip counting one group is a big jump.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+const _l4IntOvercounted = {
+  errorTag: 'err_overcounted_group',
+  title: 'Stop After the Last Group',
+  teachingSteps: [
+    'Count one number per group. When you run out of groups, stop.',
+    'If there are 3 groups of 2: say 2, 4, 6 — then stop.'
+  ],
+  correctAnswerExplanation: 'Count exactly one number per group, then stop.',
+  followUpRule: 'same_skill_new_numbers',
+  doNotRepeatOriginalQuestion: true
+};
+
+// ── Factory functions ─────────────────────────────────────────────────────────
+function _l4Q(n, obj) {
+  return Object.assign({
+    id: 'g1-u1-l4-q-' + String(n).padStart(3,'0'),
+    teks: ['1.5B'],
+    lessonId: 'g1-u1-l4',
+    skill: 'skip_count_to_find_totals',
+    interactionType: 'multipleChoice',
+    followUpRule: 'same_skill_new_numbers'
+  }, obj);
+}
+function _l4P(n, obj) {
+  return Object.assign({
+    id: 'g1-u1-l4-p-' + String(n).padStart(3,'0'),
+    teks: ['1.5B'],
+    lessonId: 'g1-u1-l4',
+    skill: 'skip_count_to_find_totals',
+    interactionType: 'multipleChoice'
+  }, obj);
+}
+
+// ── Worked examples ───────────────────────────────────────────────────────────
+const _l4Examples = [
+  {
+    id: 'g1-u1-l4-ex-001',
+    title: 'Count Pairs by 2s',
+    prompt: 'There are 4 pairs of mittens. How many mittens in all?',
+    visual: { type: 'objectSet', emoji: '🧤', groups: 4, groupSize: 2 },
+    steps: [
+      'Each pair is a group of 2.',
+      'Count by 2s, one number for each pair: 2, 4, 6, 8.',
+      'There are 8 mittens in all.'
+    ],
+    finalAnswer: '8',
+    teachingNote: 'Pairs are the most natural 2s context. Emphasize the +2 jump for each pair.',
+    relatedKeyIdea: 'Counting by 2s means saying every second number.'
+  },
+  {
+    id: 'g1-u1-l4-ex-002',
+    title: 'Count Hands by 5s',
+    prompt: 'How many fingers are on 3 hands?',
+    visual: { type: 'objectSet', emoji: '✋', groups: 3, groupSize: 5 },
+    steps: [
+      'Each hand has 5 fingers.',
+      'Count by 5s, one number for each hand: 5, 10, 15.',
+      'There are 15 fingers in all.'
+    ],
+    finalAnswer: '15',
+    teachingNote: 'Hands are the canonical 5s context. Use the rhythm "five, ten, fifteen".',
+    relatedKeyIdea: 'Counting by 5s means adding 5 each time.'
+  },
+  {
+    id: 'g1-u1-l4-ex-003',
+    title: 'Count Stacks by 10s',
+    prompt: 'There are 5 stacks of 10 cubes. How many cubes in all?',
+    visual: { type: 'base10', config: { tens: 5, ones: 0 } },
+    steps: [
+      'Each stack has 10 cubes.',
+      'Count by 10s, one number for each stack: 10, 20, 30, 40, 50.',
+      'There are 50 cubes in all.'
+    ],
+    finalAnswer: '50',
+    teachingNote: 'Base-ten rods reinforce that one rod = ten.',
+    relatedKeyIdea: 'Counting by 10s means adding 10 each time.'
+  },
+  {
+    id: 'g1-u1-l4-ex-004',
+    title: 'Missing Number in a 2s Sequence',
+    prompt: 'Fill in the blank: 4, 6, ___, 10',
+    visual: null,
+    steps: [
+      'Look at the jump from 4 to 6. That is +2.',
+      'Each jump adds 2, so after 6 comes 8.',
+      'Check: 8 + 2 = 10. ✓'
+    ],
+    finalAnswer: '8',
+    teachingNote: 'Have students state the jump size before filling in the blank.',
+    relatedKeyIdea: 'Skip counting means counting by equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-005',
+    title: 'Missing Number in a 5s Sequence',
+    prompt: 'Fill in the blank: 10, 15, ___, 25',
+    visual: null,
+    steps: [
+      'Look at the jump from 10 to 15. That is +5.',
+      'Each jump adds 5, so after 15 comes 20.',
+      'Check: 20 + 5 = 25. ✓'
+    ],
+    finalAnswer: '20',
+    teachingNote: 'Reinforce that the jump stays the same throughout the sequence.',
+    relatedKeyIdea: 'Skip counting means counting by equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-006',
+    title: 'Missing Number in a 10s Sequence',
+    prompt: 'Fill in the blank: 30, 40, ___, 60',
+    visual: null,
+    steps: [
+      'Look at the jump from 30 to 40. That is +10.',
+      'Each jump adds 10, so after 40 comes 50.',
+      'Check: 50 + 10 = 60. ✓'
+    ],
+    finalAnswer: '50',
+    teachingNote: 'Ten-jumps are large and visible — great for building number sense.',
+    relatedKeyIdea: 'Skip counting means counting by equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-007',
+    title: 'Number Line Jumps by 2',
+    prompt: 'This number line shows equal jumps of 2. Start at 0 and make 4 jumps. Where do you land?',
+    visual: {
+      type: 'numberLine',
+      min: 0, max: 10,
+      ticks: [0, 2, 4, 6, 8, 10],
+      mark: 0,
+      jumps: [
+        { from: 0, to: 2, label: '+2', hideToLabel: false },
+        { from: 2, to: 4, label: '+2', hideToLabel: false },
+        { from: 4, to: 6, label: '+2', hideToLabel: false },
+        { from: 6, to: 8, label: '+2', hideToLabel: false }
+      ]
+    },
+    steps: [
+      'Start at 0.',
+      'Each arc jumps +2. Count the arcs: 2, 4, 6, 8.',
+      'After 4 jumps you land on 8.'
+    ],
+    finalAnswer: '8',
+    teachingNote: 'The arc labels +2 make the equal-jump structure explicit.',
+    relatedKeyIdea: 'On a number line, skip counting means making equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-008',
+    title: 'Number Line Jumps by 5',
+    prompt: 'This number line shows equal jumps of 5. Start at 0 and make 3 jumps. Where do you land?',
+    visual: {
+      type: 'numberLine',
+      min: 0, max: 20,
+      ticks: [0, 5, 10, 15, 20],
+      mark: 0,
+      jumps: [
+        { from: 0,  to: 5,  label: '+5', hideToLabel: false },
+        { from: 5,  to: 10, label: '+5', hideToLabel: false },
+        { from: 10, to: 15, label: '+5', hideToLabel: false }
+      ]
+    },
+    steps: [
+      'Start at 0.',
+      'Each arc jumps +5. Count: 5, 10, 15.',
+      'After 3 jumps you land on 15.'
+    ],
+    finalAnswer: '15',
+    teachingNote: 'Large arcs for +5 make the rhythm visible.',
+    relatedKeyIdea: 'On a number line, skip counting means making equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-009',
+    title: 'Number Line Jumps by 10',
+    prompt: 'This number line shows equal jumps of 10. Start at 0 and make 4 jumps. Where do you land?',
+    visual: {
+      type: 'numberLine',
+      min: 0, max: 50,
+      ticks: [0, 10, 20, 30, 40, 50],
+      mark: 0,
+      jumps: [
+        { from: 0,  to: 10, label: '+10', hideToLabel: false },
+        { from: 10, to: 20, label: '+10', hideToLabel: false },
+        { from: 20, to: 30, label: '+10', hideToLabel: false },
+        { from: 30, to: 40, label: '+10', hideToLabel: false }
+      ]
+    },
+    steps: [
+      'Start at 0.',
+      'Each arc jumps +10. Count: 10, 20, 30, 40.',
+      'After 4 jumps you land on 40.'
+    ],
+    finalAnswer: '40',
+    teachingNote: '+10 jumps feel large. Emphasize that each arc is equal.',
+    relatedKeyIdea: 'On a number line, skip counting means making equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-010',
+    title: 'Common Mistake: Counting by 1s',
+    prompt: 'Here are 3 pairs of shoes. A student says there are 4 shoes. What is the mistake?',
+    visual: { type: 'objectSet', emoji: '👟', groups: 3, groupSize: 2 },
+    steps: [
+      'The student counted: 1, 2, 3, 4 — but stopped too early.',
+      'Each pair is a group of 2, not just 1.',
+      'Count by 2s for each pair: 2, 4, 6. There are 6 shoes.'
+    ],
+    finalAnswer: '6',
+    teachingNote: 'Common error: students count groups as individuals. Use this to emphasize "count the size of each group".',
+    relatedKeyIdea: 'Equal groups help you count faster.'
+  },
+  {
+    id: 'g1-u1-l4-ex-011',
+    title: 'Common Mistake: Switching Interval',
+    prompt: 'A student is counting by 5s and writes: 5, 10, 12, 15. What is wrong?',
+    visual: null,
+    steps: [
+      'From 10 to 12 is only +2 — the student switched to counting by 2s.',
+      'When counting by 5s, every jump must be +5.',
+      'The correct sequence is: 5, 10, 15, 20.'
+    ],
+    finalAnswer: '5, 10, 15, 20',
+    teachingNote: 'Switching intervals is a common error. Have students check each gap.',
+    relatedKeyIdea: 'Skip counting means counting by equal jumps.'
+  },
+  {
+    id: 'g1-u1-l4-ex-012',
+    title: 'Mixed Review: Groups and Number Line',
+    prompt: 'There are 2 groups of 10 blocks. How many blocks in all?',
+    visual: { type: 'objectSet', emoji: '🟦', groups: 2, groupSize: 10 },
+    steps: [
+      'Each group has 10 blocks.',
+      'Count by 10s: 10, 20.',
+      'There are 20 blocks in all.'
+    ],
+    finalAnswer: '20',
+    teachingNote: 'Consolidation: connect equal groups to the 10s skip-count sequence.',
+    relatedKeyIdea: 'Equal groups help you count faster.'
+  }
+];
+
+// ── Practice questions ────────────────────────────────────────────────────────
+const _l4Practice = [
+  _l4P(1,  { difficulty:'easy',   subSkill:'skip_count_by_2s',            promptTemplate:'count_by_2s_sequence',     keyIdea:_l4KI2,
+    prompt:'Count by 2s: 2, 4, ___', answer:'6', hint:'What is 2 more than 4?', explanation:'Adding 2 each time: 2, 4, 6.',
+    choices:[{value:'6',correct:true},{value:'5',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'8',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Jumped two steps',distractorType:'skipped_group'},{value:'4',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(2,  { difficulty:'easy',   subSkill:'skip_count_by_2s',            promptTemplate:'count_by_2s_sequence',     keyIdea:_l4KI2,
+    prompt:'Count by 2s: 6, 8, ___', answer:'10', hint:'What is 2 more than 8?', explanation:'Adding 2 each time: 6, 8, 10.',
+    choices:[{value:'10',correct:true},{value:'9',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'12',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Jumped two steps',distractorType:'skipped_group'},{value:'8',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(3,  { difficulty:'medium', subSkill:'skip_count_by_2s',            promptTemplate:'count_by_2s_sequence',     keyIdea:_l4KI2,
+    prompt:'Fill in: 20, 22, ___, 26', answer:'24', hint:'Count by 2s from 22.', explanation:'22 + 2 = 24.',
+    choices:[{value:'24',correct:true},{value:'23',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'25',correct:false,errorTag:'err_skip_count_pattern_break',misconceptionExplanation:'Did not follow the +2 pattern',distractorType:'pattern_break'},{value:'22',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(4,  { difficulty:'hard',   subSkill:'skip_count_by_2s',            promptTemplate:'missing_skip_count_number', keyIdea:_l4KI2,
+    prompt:'Fill in: 46, 48, ___, 52', answer:'50', hint:'Count by 2s from 48.', explanation:'48 + 2 = 50.',
+    choices:[{value:'50',correct:true},{value:'49',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'51',correct:false,errorTag:'err_skip_count_pattern_break',misconceptionExplanation:'Did not keep the +2 pattern',distractorType:'pattern_break'},{value:'54',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Jumped two steps',distractorType:'skipped_group'}] }),
+  _l4P(5,  { difficulty:'easy',   subSkill:'skip_count_by_5s',            promptTemplate:'count_by_5s_sequence',     keyIdea:_l4KI3,
+    prompt:'Count by 5s: 5, 10, ___', answer:'15', hint:'What is 5 more than 10?', explanation:'Adding 5 each time: 5, 10, 15.',
+    choices:[{value:'15',correct:true},{value:'11',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'20',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Used +10 instead of +5',distractorType:'wrong_interval'},{value:'10',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(6,  { difficulty:'easy',   subSkill:'skip_count_by_5s',            promptTemplate:'count_by_5s_sequence',     keyIdea:_l4KI3,
+    prompt:'Count by 5s: 15, 20, ___', answer:'25', hint:'What is 5 more than 20?', explanation:'Adding 5 each time: 15, 20, 25.',
+    choices:[{value:'25',correct:true},{value:'21',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'30',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Used +10 instead of +5',distractorType:'wrong_interval'},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(7,  { difficulty:'medium', subSkill:'skip_count_by_5s',            promptTemplate:'count_by_5s_sequence',     keyIdea:_l4KI3,
+    prompt:'Fill in: 40, 45, ___, 55', answer:'50', hint:'Count by 5s from 45.', explanation:'45 + 5 = 50.',
+    choices:[{value:'50',correct:true},{value:'46',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'48',correct:false,errorTag:'err_skip_count_pattern_break',misconceptionExplanation:'Did not keep the +5 pattern',distractorType:'pattern_break'},{value:'45',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(8,  { difficulty:'hard',   subSkill:'skip_count_by_5s',            promptTemplate:'missing_skip_count_number', keyIdea:_l4KI3,
+    prompt:'Fill in: 85, ___, 95, 100', answer:'90', hint:'Count by 5s. What comes after 85?', explanation:'85 + 5 = 90.',
+    choices:[{value:'90',correct:true},{value:'86',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'88',correct:false,errorTag:'err_skip_count_pattern_break',misconceptionExplanation:'Did not keep the +5 pattern',distractorType:'pattern_break'},{value:'85',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number',distractorType:'repeated_number'}] }),
+  _l4P(9,  { difficulty:'easy',   subSkill:'skip_count_by_10s',           promptTemplate:'count_by_10s_sequence',    keyIdea:_l4KI4,
+    prompt:'Count by 10s: 10, 20, ___', answer:'30', hint:'What is 10 more than 20?', explanation:'Adding 10 each time: 10, 20, 30.',
+    choices:[{value:'30',correct:true},{value:'21',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 10',distractorType:'counted_by_ones'},{value:'22',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Added 2 instead of 10',distractorType:'wrong_interval'},{value:'20',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(10, { difficulty:'easy',   subSkill:'skip_count_by_10s',           promptTemplate:'count_by_10s_sequence',    keyIdea:_l4KI4,
+    prompt:'Count by 10s: 40, 50, ___', answer:'60', hint:'What is 10 more than 50?', explanation:'Adding 10 each time: 40, 50, 60.',
+    choices:[{value:'60',correct:true},{value:'51',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 10',distractorType:'counted_by_ones'},{value:'55',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Added 5 instead of 10',distractorType:'wrong_interval'},{value:'50',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(11, { difficulty:'medium', subSkill:'skip_count_by_10s',           promptTemplate:'count_by_10s_sequence',    keyIdea:_l4KI4,
+    prompt:'Fill in: 60, 70, ___, 90', answer:'80', hint:'Count by 10s from 70.', explanation:'70 + 10 = 80.',
+    choices:[{value:'80',correct:true},{value:'71',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 10',distractorType:'counted_by_ones'},{value:'75',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Added 5 instead of 10',distractorType:'wrong_interval'},{value:'70',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(12, { difficulty:'hard',   subSkill:'skip_count_by_10s',           promptTemplate:'missing_skip_count_number', keyIdea:_l4KI4,
+    prompt:'Fill in: 80, 90, ___, 110', answer:'100', hint:'Count by 10s from 90.', explanation:'90 + 10 = 100.',
+    choices:[{value:'100',correct:true},{value:'91',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 10',distractorType:'counted_by_ones'},{value:'95',correct:false,errorTag:'err_skip_count_tens_transition_error',misconceptionExplanation:'Made an error at the round hundred',distractorType:'tens_transition'},{value:'90',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(13, { difficulty:'easy',   subSkill:'grouped_object_total',        promptTemplate:'grouped_objects_total',    keyIdea:_l4KI5,
+    prompt:'There are 3 groups with 2 dots in each group. How many dots in all?',
+    visual: { type: 'objectSet', emoji: '●', groups: 3, groupSize: 2 },
+    answer:'6', hint:'Count by 2s, one number for each group.', explanation:'2, 4, 6 — three groups of 2 makes 6.',
+    choices:[{value:'6',correct:true},{value:'3',correct:false,errorTag:'err_group_counting_error',misconceptionExplanation:'Counted the number of groups, not the total',distractorType:'group_count_error'},{value:'8',correct:false,errorTag:'err_overcounted_group',misconceptionExplanation:'Counted one extra group',distractorType:'overcounted'},{value:'2',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Only counted one group',distractorType:'skipped_group'}] }),
+  _l4P(14, { difficulty:'medium', subSkill:'grouped_object_total',        promptTemplate:'grouped_objects_total',    keyIdea:_l4KI5,
+    prompt:'There are 4 groups with 5 dots in each group. How many dots in all?',
+    visual: { type: 'objectSet', emoji: '●', groups: 4, groupSize: 5 },
+    answer:'20', hint:'Count by 5s, one number for each group: 5, 10, 15, 20.', explanation:'4 groups of 5: 5, 10, 15, 20.',
+    choices:[{value:'20',correct:true},{value:'4',correct:false,errorTag:'err_group_counting_error',misconceptionExplanation:'Counted the groups, not the objects',distractorType:'group_count_error'},{value:'25',correct:false,errorTag:'err_overcounted_group',misconceptionExplanation:'Counted one extra group',distractorType:'overcounted'},{value:'9',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added items one by one and made an error',distractorType:'counted_by_ones'}] }),
+  _l4P(15, { difficulty:'hard',   subSkill:'grouped_object_total',        promptTemplate:'grouped_objects_total',    keyIdea:_l4KI5,
+    prompt:'There are 6 groups with 10 dots in each group. How many dots in all?',
+    visual: { type: 'objectSet', emoji: '●', groups: 6, groupSize: 10 },
+    answer:'60', hint:'Count by 10s: 10, 20, 30, 40, 50, 60.', explanation:'6 groups of 10: 10, 20, 30, 40, 50, 60.',
+    choices:[{value:'60',correct:true},{value:'6',correct:false,errorTag:'err_group_counting_error',misconceptionExplanation:'Counted the groups, not the total',distractorType:'group_count_error'},{value:'70',correct:false,errorTag:'err_overcounted_group',misconceptionExplanation:'Counted one extra group',distractorType:'overcounted'},{value:'50',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Counted one too few groups',distractorType:'skipped_group'}] }),
+  _l4P(16, { difficulty:'easy',   subSkill:'missing_skip_count_number',   promptTemplate:'missing_skip_count_number', keyIdea:_l4KI1,
+    prompt:'Fill in: 0, 2, ___, 6', answer:'4', hint:'Count by 2s. What comes after 2?', explanation:'0, 2, 4, 6 — count by 2s.',
+    choices:[{value:'4',correct:true},{value:'3',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'8',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Jumped two steps ahead',distractorType:'skipped_group'},{value:'2',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(17, { difficulty:'medium', subSkill:'missing_skip_count_number',   promptTemplate:'missing_skip_count_number', keyIdea:_l4KI1,
+    prompt:'Fill in: 25, ___, 35, 40', answer:'30', hint:'Count by 5s. What comes after 25?', explanation:'25 + 5 = 30.',
+    choices:[{value:'30',correct:true},{value:'26',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'28',correct:false,errorTag:'err_skip_count_pattern_break',misconceptionExplanation:'Did not follow the +5 pattern',distractorType:'pattern_break'},{value:'25',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the starting number',distractorType:'repeated_number'}] }),
+  _l4P(18, { difficulty:'medium', subSkill:'missing_skip_count_number',   promptTemplate:'missing_skip_count_number', keyIdea:_l4KI1,
+    prompt:'Fill in: 50, 60, ___, 80', answer:'70', hint:'Count by 10s. What comes after 60?', explanation:'60 + 10 = 70.',
+    choices:[{value:'70',correct:true},{value:'61',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 10',distractorType:'counted_by_ones'},{value:'65',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Added 5 instead of 10',distractorType:'wrong_interval'},{value:'60',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(19, { difficulty:'hard',   subSkill:'missing_skip_count_number',   promptTemplate:'missing_skip_count_number', keyIdea:_l4KI1,
+    prompt:'Fill in: 94, 96, ___, 100', answer:'98', hint:'Count by 2s. What comes after 96?', explanation:'96 + 2 = 98.',
+    choices:[{value:'98',correct:true},{value:'97',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'100',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Jumped two steps forward',distractorType:'skipped_group'},{value:'96',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Repeated the last number',distractorType:'repeated_number'}] }),
+  _l4P(20, { difficulty:'easy',   subSkill:'number_line_skip_count',      promptTemplate:'number_line_equal_jumps',  keyIdea:_l4KI6,
+    prompt:'The number line starts at 4 and shows one jump of +2. Where does the arrow land?',
+    visual: { type:'numberLine', mode:'assessment', mark:4, jumps:[{from:4, to:6, label:'+2', hideToLabel:true}], labels:{'4':'4'}, ticks:[4,5,6] },
+    answer:'6', hint:'Start at 4. Add 2.', explanation:'4 + 2 = 6.',
+    choices:[{value:'6',correct:true},{value:'5',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 2',distractorType:'counted_by_ones'},{value:'8',correct:false,errorTag:'err_skipped_group',misconceptionExplanation:'Added 4 instead of 2',distractorType:'skipped_group'},{value:'4',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start',distractorType:'repeated_number'}] }),
+  _l4P(21, { difficulty:'medium', subSkill:'number_line_skip_count',      promptTemplate:'number_line_equal_jumps',  keyIdea:_l4KI6,
+    prompt:'The number line starts at 10 and shows one jump of +5. Where does the arrow land?',
+    visual: { type:'numberLine', mode:'assessment', mark:10, jumps:[{from:10, to:15, label:'+5', hideToLabel:true}], labels:{'10':'10'}, ticks:[10,12,15] },
+    answer:'15', hint:'Start at 10. Add 5.', explanation:'10 + 5 = 15.',
+    choices:[{value:'15',correct:true},{value:'11',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'Added 1 instead of 5',distractorType:'counted_by_ones'},{value:'20',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'Added 10 instead of 5',distractorType:'wrong_interval'},{value:'10',correct:false,errorTag:'err_repeated_number',misconceptionExplanation:'Did not move from start',distractorType:'repeated_number'}] }),
+  _l4P(22, { difficulty:'hard',   subSkill:'mixed_skip_count_review',     promptTemplate:'mixed_skip_count_review',  keyIdea:_l4KI1,
+    prompt:'Which sequence is counting by 5s?',
+    visual: null,
+    answer:'10, 15, 20, 25', hint:'Each jump in a 5s sequence adds exactly 5.', explanation:'10 + 5 = 15, 15 + 5 = 20, 20 + 5 = 25. Each jump is +5.',
+    choices:[{value:'10, 15, 20, 25',correct:true},{value:'10, 12, 14, 16',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'This is counting by 2s, not 5s',distractorType:'wrong_interval'},{value:'10, 20, 30, 40',correct:false,errorTag:'err_wrong_skip_count_interval',misconceptionExplanation:'This is counting by 10s, not 5s',distractorType:'wrong_interval'},{value:'10, 11, 12, 13',correct:false,errorTag:'err_counted_by_ones_instead',misconceptionExplanation:'This is counting by 1s',distractorType:'counted_by_ones'}] })
+];
+
+// ── Lesson quiz attempt ───────────────────────────────────────────────────────
+const _l4QuizAttempt = {
+  questionCount: 8,
+  difficultyMix: { easy: 3, medium: 4, hard: 1 },
+  sourceRule: 'this_lesson_quizbank_only',
+  avoidRecentlySeen: true,
+  noDuplicatesWithinAttempt: true,
+  balanceBySubSkill: true,
+  maxNumberLineQuestions: 2,
+  maxGroupedObjectQuestions: 2,
+  maxSamePromptTemplate: 2,
+  requiredSubSkills: [
+    'skip_count_by_2s',
+    'skip_count_by_5s',
+    'skip_count_by_10s',
+    'grouped_object_total',
+    'missing_skip_count_number',
+    'number_line_skip_count',
+    'mixed_skip_count_review'
+  ]
+};
+
+// ── Spec (quizBank added in subsequent batches) ───────────────────────────────
+const _l4Spec = {
+  lessonId: 'g1-u1-l4',
+  title: 'Skip Count by 2s, 5s, and 10s',
+  teks: ['1.5B'],
+  skill: 'skip_count_to_find_totals',
+  keyIdeas:          _l4KeyIdeas,
+  workedExamples:    _l4Examples,
+  practiceQuestions: _l4Practice,
+  quizBank:          [],
+  lessonQuizAttempt: _l4QuizAttempt
+};
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec Export
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -4395,114 +4848,7 @@ export const G1_U1_SPEC = {
     // ═══════════════════════════════════════════════════════════════════════
     _l3Spec,
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 1.4 — Skip Count by 2s, 5s, and 10s
-    //  TEKS 1.5B · skip_count_to_find_totals
-    // ═══════════════════════════════════════════════════════════════════════
-    {
-      lessonId: 'g1-u1-l4',
-      title: 'Skip Count by 2s, 5s, and 10s',
-      teks: ['1.5B'],
-      skill: 'skip_count_to_find_totals',
-      keyIdeas: [
-        'Skip counting jumps over numbers to count groups.',
-        'By 2s: 2, 4, 6, 8, 10. Each jump is two more.',
-        'By 5s: 5, 10, 15, 20. Each jump is five more.',
-        'By 10s: 10, 20, 30, 40. Each jump is ten more.',
-        'Skip counting helps find a total faster than counting one by one.'
-      ],
-      workedExamples: [
-        {
-          id: 'g1-u1-l4-ex-001',
-          title: 'Example 1: Pairs of Socks (2s)',
-          prompt: 'There are 4 pairs of socks. How many socks in all?',
-          visual: { type: 'objectSet', config: { count: 8, emoji: '🧦', layout: 'grid' } },
-          steps: [
-            'Each pair is a group of 2.',
-            'Skip count by 2s, one count for each pair.',
-            '2, 4, 6, 8.'
-          ],
-          finalAnswer: '8',
-          teachingNote: 'Tie skip counting to a real grouped object — pairs make 2s natural.',
-          relatedKeyIdea: 'By 2s: 2, 4, 6, 8, 10. Each jump is two more.'
-        },
-        {
-          id: 'g1-u1-l4-ex-002',
-          title: 'Example 2: Hands of Fingers (5s)',
-          prompt: 'How many fingers on 3 hands?',
-          visual: { type: 'objectSet', config: { count: 15, emoji: '✋', layout: 'line' } },
-          steps: [
-            'Each hand has 5 fingers.',
-            'Skip count by 5s, one count for each hand.',
-            '5, 10, 15.'
-          ],
-          finalAnswer: '15',
-          teachingNote: 'Hands are the canonical 5s grouping. Use the rhythm "five, ten, fifteen".',
-          relatedKeyIdea: 'By 5s: 5, 10, 15, 20. Each jump is five more.'
-        },
-        {
-          id: 'g1-u1-l4-ex-003',
-          title: 'Example 3: Stacks of Cubes (10s)',
-          prompt: 'How many cubes are in 5 stacks of 10?',
-          visual: { type: 'base10', config: { tens: 5, ones: 0 } },
-          steps: [
-            'Each stack is a group of 10.',
-            'Skip count by 10s, one count for each stack.',
-            '10, 20, 30, 40, 50.'
-          ],
-          finalAnswer: '50',
-          teachingNote: 'Base-ten rods reinforce that one rod = ten and prepares Lesson 1.6.',
-          relatedKeyIdea: 'By 10s: 10, 20, 30, 40. Each jump is ten more.'
-        }
-      ],
-      allowedQuestionTypes: ['multipleChoice'],
-      diagnostics: {
-        commonDistractors: [
-          { value: 'group_count',           meaning: 'Counted groups, not items (e.g. "4 pairs" → 4).', errorTag: 'err_count_groups_not_items' },
-          { value: 'total / 2 + 1',         meaning: 'Lost track of the skip rate mid-count.',          errorTag: 'err_skip_count_drift' },
-          { value: 'sum_with_wrong_step',   meaning: 'Used the wrong skip step (e.g. 2s instead of 5s).', errorTag: 'err_wrong_skip_rate' },
-          { value: 'one_extra_jump',        meaning: 'Added one extra group to the count.',             errorTag: 'err_skip_count_drift' }
-        ],
-        errorTags: ['err_count_groups_not_items', 'err_skip_count_drift', 'err_wrong_skip_rate'],
-        interventionRules: [
-          { errorTag: 'err_count_groups_not_items', style: 'visual_model', followUpRule: 'same_skill_new_instance' },
-          { errorTag: 'err_skip_count_drift',       style: 'reteach',      followUpRule: 'same_skill_new_instance' },
-          { errorTag: 'err_wrong_skip_rate',        style: 'reteach',      followUpRule: 'same_skill_new_instance' }
-        ]
-      },
-      sampleDiagnosticQuestions: [
-        {
-          t: 'How many shoes are in 6 pairs?',
-          v: { type: 'objectSet', config: { count: 12, emoji: '👟', layout: 'grid' } },
-          o: [
-            { val: '6',  tag: 'err_count_groups_not_items' },
-            { val: '12' },
-            { val: '8',  tag: 'err_skip_count_drift' },
-            { val: '10', tag: 'err_skip_count_drift' }
-          ],
-          a: 1,
-          e: 'Skip count by 2s, six times: 2, 4, 6, 8, 10, 12.',
-          d: 'e',
-          h: 'Each pair is 2 shoes. Count by 2s.',
-          s: null
-        },
-        {
-          t: 'How many cubes are in 4 stacks of 10?',
-          v: { type: 'base10', config: { tens: 4, ones: 0 } },
-          o: [
-            { val: '4',  tag: 'err_count_groups_not_items' },
-            { val: '14', tag: 'err_wrong_skip_rate' },
-            { val: '40' },
-            { val: '44', tag: 'err_skip_count_drift' }
-          ],
-          a: 2,
-          e: 'Skip count by 10s, four times: 10, 20, 30, 40.',
-          d: 'e',
-          h: 'Each stack is 10. Count by 10s.',
-          s: null
-        }
-      ]
-    },
+    _l4Spec,
 
     // ═══════════════════════════════════════════════════════════════════════
     //  Lesson 1.5 — One More and One Less
