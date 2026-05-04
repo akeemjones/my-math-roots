@@ -158,7 +158,21 @@ function playHintReveal(){
 // ── Distractor-Mapped Adaptive Engine — session state ──────────────────────
 let errorProfile = {};
 let isPaused = false;
-const INTERVENTION_THRESHOLD = 3;
+let _totalWrong = 0;
+let _consecutiveWrong = 0;
+let _qAttemptMap = {};
+let _errTagCounts = {};
+let _subSkillWrongCounts = {};
+
+function _shouldShowFullIntervention(opts) {
+  return (
+    opts.questionAttemptCount >= 2 ||
+    opts.errorTagCount >= 2 ||
+    opts.subSkillWrongCount >= 2 ||
+    opts.consecutiveWrongCount >= 2 ||
+    opts.totalWrongCount >= 3
+  );
+}
 const INTERVENTION_EVENTS_KEY = "mmr_intervention_events_v1";
 
 // ── Intervention telemetry ────────────────────────────────────────────────
@@ -491,6 +505,11 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
   CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0 };
   _quizStartedAt = Date.now();
   errorProfile = {};
+  _totalWrong = 0;
+  _consecutiveWrong = 0;
+  _qAttemptMap = {};
+  _errTagCounts = {};
+  _subSkillWrongCounts = {};
   isPaused = false;
   interventionEvents = _readInterventionEvents();
   activeIntervention = null;
@@ -778,18 +797,8 @@ function _pickAnswer(btnIdx){
       let _revHtml = '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>';
       if (!isOk) {
         _revHtml += '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>';
-        const _me = (_selectedRawOpt && typeof _selectedRawOpt === 'object') ? _selectedRawOpt.me : null;
-        if (_intv && Array.isArray(_intv.teachingSteps) && _intv.teachingSteps.length) {
-          if (_me) _revHtml += '<div class="rev-misconception">'+_escHtml(_me)+'</div>';
-          _revHtml += '<div class="rev-intervention">';
-          if (_intv.title) _revHtml += '<div class="rev-intv-title">'+_escHtml(_intv.title)+'</div>';
-          _revHtml += _intv.teachingSteps.map(function(s){ return '<div class="rev-step">'+_escHtml(s)+'</div>'; }).join('');
-          if (_intv.correctAnswerExplanation) _revHtml += '<div class="rev-exp">'+_ICO.lightbulb+' '+_escHtml(_intv.correctAnswerExplanation)+'</div>';
-          _revHtml += '</div>';
-        } else {
-          _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
-          _revHtml += '<div class="rev-tip">'+_escHtml(nudge)+'</div>';
-        }
+        _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
+        _revHtml += '<div class="rev-tip">'+_escHtml(nudge)+'</div>';
       } else {
         _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
       }
@@ -868,17 +877,33 @@ function _handleAnswer(selectedIndex){
   }
 
   // Correct answer — nothing more to track
-  if(selectedIndex === q.a) return;
+  if(selectedIndex === q.a) {
+    _consecutiveWrong = 0;
+    return;
+  }
 
   var option = q.o[selectedIndex];
   var tag = (option && typeof option === 'object') ? option.tag : null;
-  if(!tag) return;
 
-  errorProfile[tag] = (errorProfile[tag] || 0) + 1;
+  var _qKey = q.t || '';
+  _qAttemptMap[_qKey] = (_qAttemptMap[_qKey] || 0) + 1;
+  if (tag) {
+    errorProfile[tag] = (errorProfile[tag] || 0) + 1;
+    _errTagCounts[tag] = (_errTagCounts[tag] || 0) + 1;
+  }
+  var _sk = q.sk || null;
+  if (_sk) { _subSkillWrongCounts[_sk] = (_subSkillWrongCounts[_sk] || 0) + 1; }
+  _totalWrong++;
+  _consecutiveWrong++;
 
-  if(errorProfile[tag] >= INTERVENTION_THRESHOLD){
+  if (_shouldShowFullIntervention({
+    questionAttemptCount: _qAttemptMap[_qKey],
+    errorTagCount: tag ? _errTagCounts[tag] : 0,
+    subSkillWrongCount: _sk ? _subSkillWrongCounts[_sk] : 0,
+    consecutiveWrongCount: _consecutiveWrong,
+    totalWrongCount: _totalWrong
+  })) {
     _pauseForIntervention(tag, selectedIndex);
-    errorProfile[tag] = 0;
   }
 }
 
@@ -1116,9 +1141,27 @@ function _tapGroupSubmit() {
 
     // Immediately trigger intervention on wrong — tapGroup needs teach, not retry count
     if (!isOk) {
-      setTimeout(function() {
-        _pauseForInterventionTapGroup(gradeResult.errorType, q);
-      }, 600);
+      var _tgQKey = q.t || '';
+      _qAttemptMap[_tgQKey] = (_qAttemptMap[_tgQKey] || 0) + 1;
+      var _tgTag = gradeResult.errorType || null;
+      if (_tgTag) { _errTagCounts[_tgTag] = (_errTagCounts[_tgTag] || 0) + 1; }
+      var _tgSk = q.sk || null;
+      if (_tgSk) { _subSkillWrongCounts[_tgSk] = (_subSkillWrongCounts[_tgSk] || 0) + 1; }
+      _totalWrong++;
+      _consecutiveWrong++;
+      if (_shouldShowFullIntervention({
+        questionAttemptCount: _qAttemptMap[_tgQKey],
+        errorTagCount: _tgTag ? _errTagCounts[_tgTag] : 0,
+        subSkillWrongCount: _tgSk ? _subSkillWrongCounts[_tgSk] : 0,
+        consecutiveWrongCount: _consecutiveWrong,
+        totalWrongCount: _totalWrong
+      })) {
+        setTimeout(function() {
+          _pauseForInterventionTapGroup(_tgTag, q);
+        }, 600);
+      }
+    } else {
+      _consecutiveWrong = 0;
     }
   }, 120);
 }
