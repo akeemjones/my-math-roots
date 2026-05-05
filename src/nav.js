@@ -104,7 +104,7 @@ function isUnitQuizUnlocked(unitIdx){
     'lesson-screen':  { prev:'unit-screen',     back:()=>goUnit() },
     'results-screen': { prev:'unit-screen',     back:()=>afterResults() },
     'history-screen': { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
-    'settings-screen':{ prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
+    'settings-screen':{ prev:()=>_settingsReturnScreen||'home', back:()=>goSettingsBack() },
     'parent-screen':  { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); const _se=document.getElementById('settings-screen'); if(_se&&_se._savedScrollTop) requestAnimationFrame(()=>{ _se.scrollTop=_se._savedScrollTop; }); } },
   };
 
@@ -201,7 +201,8 @@ function isUnitQuizUnlocked(unitIdx){
     entry = MAP[id];
     if(!entry){ entry=null; return; }
     curEl  = document.getElementById(id);
-    prevEl = entry.prev ? document.getElementById(entry.prev) : null;
+    const _prevId = typeof entry.prev === 'function' ? entry.prev() : entry.prev;
+    prevEl = _prevId ? document.getElementById(_prevId) : null;
     const t = e.touches[0];
     sx=t.clientX; sy=t.clientY; t0=Date.now();
     intentDecided=false; swiping=false; swipeAbsorbed=false;
