@@ -31,6 +31,7 @@
 
     // ── App navigation ──────────────────────────────────────────────────────
     goSettings:             ()    => goSettings(),
+    goSettingsBack:         ()    => goSettingsBack(),
     goHome:                 ()    => goHome(),
     goUnit:                 ()    => goUnit(),
     goHistory:              ()    => goHistory(),
