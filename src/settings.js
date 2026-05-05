@@ -1669,7 +1669,10 @@ function switchGradeUI(newGrade){
   if(typeof switchGrade === 'function') switchGrade(newGrade);
 }
 
+let _settingsReturnScreen = 'home';
+
 function goSettings(){
+  _settingsReturnScreen = ALL_SCREENS.find(s => document.getElementById(s)?.classList.contains('on')) || 'home';
   playTap();
   updateAccountUI();
   const cfg = loadSettings();
@@ -1703,8 +1706,17 @@ function goSettings(){
   show('settings-screen');
 }
 
-
-
+function goSettingsBack(){
+  playSwooshBack();
+  const ret = _settingsReturnScreen || 'home';
+  _settingsReturnScreen = 'home';
+  if(ret === 'home' || ret === 'settings-screen' || ret === 'login-screen'
+     || ret === 'parent-screen' || ret === 'dashboard-screen'){
+    goHome();
+  } else {
+    show(ret);
+  }
+}
 
 // ════════════════════════════════════════
 //  INSTALL MODAL
