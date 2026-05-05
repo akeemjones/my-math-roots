@@ -937,6 +937,12 @@ function _handleAnswer(selectedIndex){
     interventionEvents.push(resolvedEvt);
     _appendInterventionEvent(resolvedEvt);
     console.log("Intervention event:", resolvedEvt);
+    // Record follow-up recovery result
+    if(qz._followUp){
+      qz._followUp.followUpCorrect = retryCorrect;
+      qz._followUp.recovered       = retryCorrect;
+      console.log('[intervention] follow-up recovery:', qz._followUp);
+    }
     try {
       _trackEvent('intervention_completed', {
         unit_id:            CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
@@ -1255,6 +1261,16 @@ function _pauseForInterventionTapGroup(errorTag, q) {
   var visualHTML = content.visualHTML;
   var _teachStepsTG = (content.teachingSteps && content.teachingSteps.length) ? content.teachingSteps : null;
   var _caeTG        = content.correctAnswerExplanation || '';
+
+  // Track active intervention so _resumeQuiz can read errorTag for follow-up selection
+  activeIntervention = {
+    questionId:   q && (q.id || q.t) || null,
+    unitId:       CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
+    lessonId:     CUR.lesson  || null,
+    questionText: q && (q.t || q.prompt) || null,
+    errorTag:     errorTag,
+    lessonTitle:  title
+  };
 
   var existing = document.querySelector('[data-focus-overlay]');
   if (existing) existing.remove();
@@ -1897,71 +1913,47 @@ function _resumeQuiz(){
   if(!qz) return;
   qz._answered = false;
 
-  // K grade: swap in a similar question instead of repeating the one whose answer was just revealed.
-  if(_ACTIVE_GRADE === 'K' && qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null){
-    var curQ    = qz.questions[qz.idx];
-    var curType = curQ && curQ.v && curQ.v.type;
-    var isTapGroupRetry = curQ && (curQ.type === 'tapGroup' || curType === 'tapGroup');
-    var curText = curQ && curQ.t;
+  // After any intervention the answer has been revealed, so showing the same question
+  // again only tests memory. Always replace with a skill-matched follow-up question.
+  //
+  // Scoring: remediation-only (Option A). The original question stays marked wrong in
+  // the quiz score. The follow-up result is tracked in qz._followUp but does not affect
+  // the score — it exists only to measure recovery.
+  if(qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null
+      && typeof QE !== 'undefined'){
+    var curQ = qz.questions[qz.idx];
     try {
       var l    = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
       var bank = (l.qBank || l.quiz || []);
 
-      if(isTapGroupRetry && typeof QE !== 'undefined'){
-        // Tag-aware retry via QE.selectRetry
-        var normCurQ = QE.normalize(curQ, (typeof _lessonContextFor === 'function') ? _lessonContextFor(curQ) : null);
-        var pick = QE.selectRetry(normCurQ, bank);
-        if(pick){
-          qz.questions[qz.idx] = pick;
-          qz._opts = null;
-        }
-      } else {
-        // Candidates: same visual type, different question text, not already in current quiz set
-        var usedTexts = qz.questions.map(function(q){ return q.t; });
-        var pool = bank.filter(function(q){
-          var qType = q.v && q.v.type;
-          return qType === curType && q.t !== curText && usedTexts.indexOf(q.t) === -1;
-        });
-        // Fall back to any same-type question not identical to the current one
-        if(pool.length === 0){
-          pool = bank.filter(function(q){
-            return q.v && q.v.type === curType && q.t !== curText;
-          });
-        }
-        if(pool.length > 0){
-          var pick2 = pool[Math.floor(Math.random() * pool.length)];
-          qz.questions[qz.idx] = pick2;
-          qz._opts = null;
-        }
-      }
-    } catch(e){ /* silent — fall through to re-render current question */ }
-  }
+      // For K tapGroup, normalize first so QE.selectRetry sees type:'tapGroup'
+      var qForRetry = (_ACTIVE_GRADE === 'K' && typeof _lessonContextFor === 'function')
+        ? QE.normalize(curQ, _lessonContextFor(curQ))
+        : curQ;
 
-  // G1: swap to a different question so the answer isn't repeated verbatim
-  if (_ACTIVE_GRADE === 'G1' && qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null) {
-    var g1CurQ = qz.questions[qz.idx];
-    var g1CurText = g1CurQ && g1CurQ.t;
-    try {
-      var g1L = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
-      var g1Bank = (g1L.qBank || g1L.quiz || []);
-      var g1Used = qz.questions.map(function(q) { return q.t; });
-      // Prefer same difficulty; fall back to any different question not in current set
-      var g1Diff = g1CurQ && g1CurQ.difficulty;
-      var g1Pool = g1Bank.filter(function(q) {
-        return q.t !== g1CurText && g1Used.indexOf(q.t) === -1 && (!g1Diff || q.difficulty === g1Diff);
-      });
-      if (g1Pool.length === 0) {
-        g1Pool = g1Bank.filter(function(q) { return q.t !== g1CurText && g1Used.indexOf(q.t) === -1; });
-      }
-      if (g1Pool.length === 0) {
-        g1Pool = g1Bank.filter(function(q) { return q.t !== g1CurText; });
-      }
-      if (g1Pool.length > 0) {
-        var g1Pick = g1Pool[Math.floor(Math.random() * g1Pool.length)];
-        qz.questions[qz.idx] = g1Pick;
+      // Pass the triggered errorTag so Tier-1 can prefer same-misconception questions
+      var triggeredTag = activeIntervention ? activeIntervention.errorTag : null;
+
+      var pick = QE.selectRetry(qForRetry, bank, triggeredTag);
+
+      // Confirm the pick is genuinely different before swapping
+      var pickText = pick && (pick.t || pick.prompt);
+      var curText  = curQ  && (curQ.t  || curQ.prompt);
+      if(pick && pickText !== curText){
+        // Track recovery: originalQuestionId, followUpQuestionId, errorTag, result
+        qz._followUp = {
+          originalQuestionId: curQ.id  || curText,
+          followUpQuestionId: pick.id  || pickText,
+          originalErrorTag:   triggeredTag,
+          followUpCorrect:    null,   // set in _handleAnswer when the follow-up is graded
+          recovered:          null
+        };
+        qz.questions[qz.idx] = pick;
         qz._opts = null;
+      } else if(pick) {
+        console.warn('[_resumeQuiz] selectRetry returned same question — pool may be size 1');
       }
-    } catch(e) { /* silent — fall through to re-render current question */ }
+    } catch(e){ console.warn('[_resumeQuiz] follow-up selection error:', e); }
   }
 
   _renderQ();

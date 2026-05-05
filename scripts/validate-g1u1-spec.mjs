@@ -56,7 +56,7 @@ const FORBIDDEN_TOPICS = [
   'tally', 'bar graph', 'pictograph'
 ];
 
-const EXTENDED_SCHEMA_LESSONS = new Set(['g1-u1-l3', 'g1-u1-l4']);
+const EXTENDED_SCHEMA_LESSONS = new Set(['g1-u1-l3', 'g1-u1-l4', 'g1-u1-l5', 'g1-u1-l6', 'g1-u1-l7']);
 
 // ─── Top-level unit checks ───────────────────────────────────────────────────
 if (G1_U1_SPEC.unitId !== 'g1u1') err(`unitId should be 'g1u1', got ${G1_U1_SPEC.unitId}`);
@@ -220,6 +220,16 @@ function checkMigratedLesson(tag, l) {
     }
     if (l.lessonId === 'g1-u1-l4') {
       if (!lqa.maxGroupedObjectQuestions) err(`${tag} R-new-C: lessonQuizAttempt missing maxGroupedObjectQuestions`);
+    }
+    if (l.lessonId === 'g1-u1-l5') {
+      if (!lqa.maxBasicNeighborQuestions) err(`${tag} R-new-G: lessonQuizAttempt missing maxBasicNeighborQuestions`);
+    }
+    if (l.lessonId === 'g1-u1-l6') {
+      if (!lqa.maxBase10Questions)               err(`${tag} R-new-H: lessonQuizAttempt missing maxBase10Questions`);
+      if (!lqa.maxBasicTenMoreLessQuestions)     err(`${tag} R-new-H: lessonQuizAttempt missing maxBasicTenMoreLessQuestions`);
+    }
+    if (l.lessonId === 'g1-u1-l7') {
+      if (!lqa.maxFindExtremeQuestions)          err(`${tag} R-new-I: lessonQuizAttempt missing maxFindExtremeQuestions`);
     }
   }
 

@@ -152,28 +152,105 @@ QE.grade = function(q, response) {
 };
 
 // ── Retry Selector ────────────────────────────────────────────────────────────
-// Finds a replacement question after intervention. Tag-aware, excludes current q.
+// Selects a follow-up question after intervention. Never returns the same question
+// when alternatives exist. Uses tiered matching: subSkill+errorTag → subSkill →
+// matchTags → same-type → any-different.
+//
+// SCORING: follow-up questions are remediation-only. The original question stays
+// marked wrong in the quiz score; the follow-up result is tracked separately in
+// qz._followUp and not added to the quiz score.
+//
+// Parameters:
+//   q         – current question (legacy format: {t, o, sk, d, v, ...} or normalized)
+//   pool      – full lesson quizBank (legacy format)
+//   errorTag  – the specific errorTag the student triggered (from activeIntervention)
 
-QE.selectRetry = function(q, pool) {
-  var matchTags = (q.intervention && q.intervention.retry && q.intervention.retry.matchTags)
-               || q.tags || [];
-  var type = q.type || 'multipleChoice';
+QE.selectRetry = function(q, pool, errorTag) {
+  var currentId   = q.id   || null;
+  var currentText = q.t    || q.prompt || null;
+  // Support both legacy (v.type) and normalized (q.type) question formats
+  var type        = q.type || (q.v && q.v.type) || 'multipleChoice';
+  var subSkill    = q.sk   || null;
+  var matchTags   = (q.intervention && q.intervention.retry && q.intervention.retry.matchTags)
+                 || q.tags || [];
 
-  var candidates = pool.filter(function(candidate) {
-    if (candidate.id && candidate.id === q.id) return false;
-    if ((candidate.type || 'multipleChoice') !== type) return false;
-    if (!matchTags.length) return true;
-    var cTags = candidate.tags || [];
-    return matchTags.some(function(tag) { return cTags.indexOf(tag) !== -1; });
-  });
-
-  if (!candidates.length) {
-    candidates = pool.filter(function(c) {
-      return c.id !== q.id && (c.type || 'multipleChoice') === type;
+  // Build the set of errorTags to match: the triggered tag (highest priority) plus
+  // any distractor tags on the current question (broadens the pool slightly)
+  var errorTagsToMatch = [];
+  if (errorTag) errorTagsToMatch.push(errorTag);
+  if (Array.isArray(q.o)) {
+    q.o.forEach(function(opt) {
+      var t = opt && typeof opt === 'object' ? (opt.tag || opt.errorTag || null) : null;
+      if (t && errorTagsToMatch.indexOf(t) === -1) errorTagsToMatch.push(t);
     });
   }
-  if (!candidates.length) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
+
+  // Returns true when candidate c is a different question from q
+  function _notCurrent(c) {
+    if (currentId   && c.id && c.id === currentId)               return false;
+    if (currentText && (c.t || c.prompt) === currentText)        return false;
+    return true;
+  }
+
+  // Returns true when candidate matches the question type.
+  // Checks both c.type (normalized) and c.v.type (legacy visual type).
+  function _sameType(c) {
+    var cType = c.type || (c.v && c.v.type) || 'multipleChoice';
+    return cType === type;
+  }
+
+  // Returns true when candidate has at least one distractor whose errorTag is in tags[]
+  function _hasErrorTag(c, tags) {
+    if (!tags.length) return false;
+    var opts = c.o || c.choices || [];
+    return opts.some(function(opt) {
+      var t = (opt && typeof opt === 'object') ? (opt.tag || opt.errorTag || null) : null;
+      return t && tags.indexOf(t) !== -1;
+    });
+  }
+
+  var pick;
+
+  // Tier 1: same subSkill + has a distractor matching the triggered errorTag
+  if (subSkill && errorTagsToMatch.length) {
+    var t1 = pool.filter(function(c) {
+      return _notCurrent(c) && _sameType(c) && c.sk === subSkill && _hasErrorTag(c, errorTagsToMatch);
+    });
+    if (t1.length) return t1[Math.floor(Math.random() * t1.length)];
+  }
+
+  // Tier 2: same subSkill (any question)
+  if (subSkill) {
+    var t2 = pool.filter(function(c) {
+      return _notCurrent(c) && _sameType(c) && c.sk === subSkill;
+    });
+    if (t2.length) return t2[Math.floor(Math.random() * t2.length)];
+  }
+
+  // Tier 3: matchTags (legacy tag-based matching)
+  if (matchTags.length) {
+    var t3 = pool.filter(function(c) {
+      if (!_notCurrent(c) || !_sameType(c)) return false;
+      var cTags = c.tags || [];
+      return matchTags.some(function(tag) { return cTags.indexOf(tag) !== -1; });
+    });
+    if (t3.length) return t3[Math.floor(Math.random() * t3.length)];
+  }
+
+  // Tier 4: any different question of the same type
+  var t4 = pool.filter(function(c) { return _notCurrent(c) && _sameType(c); });
+  if (t4.length) return t4[Math.floor(Math.random() * t4.length)];
+
+  // Tier 5: any different question regardless of type (cross-type last resort)
+  var t5 = pool.filter(function(c) { return _notCurrent(c); });
+  if (t5.length) {
+    console.warn('[QE.selectRetry] No same-type follow-up found; using cross-type fallback');
+    return t5[Math.floor(Math.random() * t5.length)];
+  }
+
+  // Pool has only the current question — cannot avoid repeating
+  if (pool.length > 0) console.warn('[QE.selectRetry] Pool size ' + pool.length + ' — cannot avoid repeating question');
+  return pool.length > 0 ? pool[0] : null;
 };
 
 // ── Mastery + Activity Logger ─────────────────────────────────────────────────
