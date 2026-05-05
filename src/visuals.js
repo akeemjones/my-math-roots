@@ -215,11 +215,12 @@ function _buildVisualHTML(v) {
   if (v.type === 'fivFrame')    return _drawFivFrame(v.config);
   if (v.type === 'dicePattern') return _drawDicePattern(v.config);
   if (v.type === 'domino')      return _drawDomino(v.config);
-  if (v.type === 'tapGroup')   return _buildTapGroupVisual(v.config);
-  if (v.type === 'comparison') return drawComparison(v.config, null, null);
-  if (v.type === 'objectSet')  return drawObjectSet(v.config, null);
-  if (v.type === 'twoGroups')  return drawTwoGroups(v.config);
-  if (v.type === 'shapes')     return drawShapes(v.config);
+  if (v.type === 'tapGroup')     return _buildTapGroupVisual(v.config);
+  if (v.type === 'comparison')   return drawComparison(v.config, null, null);
+  if (v.type === 'objectSet')    return drawObjectSet(v.config, null);
+  if (v.type === 'twoGroups')    return drawTwoGroups(v.config);
+  if (v.type === 'shapes')       return drawShapes(v.config);
+  if (v.type === 'numberCards')  return drawNumberCards(v.config);
   let svg = '';
   if      (v.type === 'base10')     svg = drawBase10(v.config);
   else if (v.type === 'numberLine') svg = drawNumberLine(v.config);
@@ -701,6 +702,34 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
     leftHTML+
     '<div class="tg-op">'+opStr+'</div>'+
     rightHTML+
+  '</div>';
+}
+
+// ── numberCards: shows 2–4 numbers as place-value cards for ordering examples ─
+// config: { cards: [{value, note?}], layout: 'ordered'|'input' }
+//   ordered → cards appear left-to-right in sorted order with a chevron between
+//   input   → cards appear in original (prompt) order, no chevrons
+// Typical use: teach tens-first ordering ("2 tens", "4 tens", "8 tens").
+function drawNumberCards(cfg) {
+  var cards  = Array.isArray(cfg.cards) ? cfg.cards : [];
+  var layout = cfg.layout || 'input';
+  if (!cards.length) return '';
+
+  var items = cards.map(function(card) {
+    var noteHTML = card.note
+      ? '<div class="nc-note">' + _escHtml(String(card.note)) + '</div>'
+      : '';
+    return '<div class="nc-card">' +
+      '<div class="nc-value">' + _escHtml(String(card.value)) + '</div>' +
+      noteHTML +
+    '</div>';
+  });
+
+  var sep = layout === 'ordered' ? '<div class="nc-arrow">›</div>' : '';
+  var inner = items.join(sep);
+
+  return '<div class="q-visual">' +
+    '<div class="nc-row">' + inner + '</div>' +
   '</div>';
 }
 

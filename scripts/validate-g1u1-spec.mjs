@@ -32,7 +32,7 @@ const warn = (m) => warns.push(m);
 
 const SUPPORTED_VISUALS = new Set([
   'objectSet', 'base10', 'numberLine', 'array', 'comparison',
-  'twoGroups', 'shapes', 'tapGroup',
+  'twoGroups', 'shapes', 'tapGroup', 'numberCards',
   'tenFrame', 'fivFrame', 'dicePattern', 'domino'  // structured-quantity types (TODO renderer)
 ]);
 const TENFRAME_FAMILY = new Set(['tenFrame', 'fivFrame', 'dicePattern', 'domino']);

@@ -172,6 +172,9 @@ function _g1VisToV(vis) {
       if (vis.hideLabels != null) nlCfg.hideLabels = vis.hideLabels;
       return { type: 'numberLine', config: nlCfg };
     }
+    case 'numberCards': {
+      return { type: 'numberCards', config: { cards: vis.cards || [], layout: vis.layout || 'input' } };
+    }
     default:            return null;
   }
 }
