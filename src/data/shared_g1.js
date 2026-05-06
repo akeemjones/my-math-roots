@@ -24,6 +24,14 @@ const _G1_U1_LESSONS = [
   { id:'g1-u1-l8', title:'Compare Numbers',                      icon:'⚖️', desc:'Compare two numbers using greater than, less than, or equal to',             teks:'TEKS 1.2D, 1.2E, 1.2G' }
 ];
 
+// ── Unit 2 lesson shells ─────────────────────────────────────────────────────
+const _G1_U2_LESSONS = [
+  { id:'g1-u2-l1', title:'Groups of Ten',     icon:'📦', desc:'Make groups of ten to understand place value',              teks:'TEKS 1.2B' },
+  { id:'g1-u2-l2', title:'Tens and Ones',     icon:'🔢', desc:'Represent two-digit numbers as tens and ones',              teks:'TEKS 1.2B' },
+  { id:'g1-u2-l3', title:'Numbers to 120',    icon:'🔭', desc:'Extend place value understanding past 99 to 120',           teks:'TEKS 1.2B' },
+  { id:'g1-u2-l4', title:'Represent Numbers', icon:'✏️', desc:'Write numbers in standard, expanded, and word form',        teks:'TEKS 1.2C' }
+];
+
 // ── Grade 1 unit shells ───────────────────────────────────────────────────────
 const _UNITS_DATA_G1 = [
   {
@@ -41,11 +49,9 @@ const _UNITS_DATA_G1 = [
     id: 'g1u2', name: 'Place Value',
     icon: '📦',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#0095FF" opacity="0.1"/><rect x="3" y="20" width="54" height="30" rx="5" fill="#0095FF" opacity="0.15" stroke="#0095FF" stroke-width="2"/><line x1="21" y1="20" x2="21" y2="50" stroke="#0095FF" stroke-width="2"/><line x1="39" y1="20" x2="39" y2="50" stroke="#0095FF" stroke-width="2"/></svg>',
-    color: '#0095FF', gp: 1, teks: 'TEKS 1.2A-C, 1.2B',
-    lessons: [
-      { id:'g1u2l1', title:'Tens and Ones', icon:'📦', desc:'Understand tens and ones up to 120' }
-    ],
-    _loaded: true
+    color: '#0095FF', gp: 1, teks: 'TEKS 1.2A, 1.2B, 1.2C',
+    lessons: _G1_U2_LESSONS.map(function(l){ return Object.assign({}, l); }),
+    _loaded: false
   },
   {
     id: 'g1u3', name: 'Addition and Subtraction to 20',
@@ -129,13 +135,14 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Only Unit 0 (U1) has a data file right now
-  if(idx !== 0){
+  // Units with data files: idx 0 → u1.js, idx 1 → u2.js
+  if(idx !== 0 && idx !== 1){
     u._loaded = true;
     return Promise.resolve();
   }
 
-  _g1UnitLoadPromises[idx] = _loadG1SourceFile(1).then(function(){
+  var fileNum = idx + 1; // idx 0 → u1.js, idx 1 → u2.js
+  _g1UnitLoadPromises[idx] = _loadG1SourceFile(fileNum).then(function(){
     if(!u._loaded) u._loaded = true;  // fallback if script didn't call _mergeG1UnitData
   });
   return _g1UnitLoadPromises[idx];
@@ -176,6 +183,7 @@ function _g1VisToV(vis) {
       return { type: 'numberCards', config: { cards: vis.cards || [], layout: vis.layout || 'input' } };
     }
     case 'comparison':  return { type: 'comparison', config: vis.config };
+    case 'base10':      return { type: 'base10', config: { hundreds: vis.hundreds || 0, tens: vis.tens || 0, ones: vis.ones || 0 } };
     default:            return null;
   }
 }

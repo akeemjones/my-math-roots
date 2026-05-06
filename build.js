@@ -285,7 +285,7 @@ async function build(){
   // so the browser can load them as plain scripts.
   const G1_DATA_DIR = path.join(DIST, 'data', 'g1');
   if (!fs.existsSync(G1_DATA_DIR)) fs.mkdirSync(G1_DATA_DIR, { recursive: true });
-  const G1_UNIT_MAP = { 1: 0 }; // source file number → _UNITS_DATA_G1 index
+  const G1_UNIT_MAP = { 1: 0, 2: 1 }; // source file number → _UNITS_DATA_G1 index
   for (const [fileNum, mergeIdx] of Object.entries(G1_UNIT_MAP)) {
     const g1Src = path.join(ROOT, 'src', 'data', 'g1', 'u' + fileNum + '.js');
     if (fs.existsSync(g1Src)) {
@@ -293,8 +293,8 @@ async function build(){
       // Strip ES module keywords: 'export const' → 'const', 'export default …;' → removed
       g1Content = g1Content.replace(/^export const /mg, 'const ');
       g1Content = g1Content.replace(/^export default\s+\S+;\s*$/m, '');
-      // Append the runtime registration call
-      g1Content += '\n_mergeG1UnitData(' + mergeIdx + ', G1_U1_SPEC);\n';
+      // Append the runtime registration call (spec variable follows G1_U{N}_SPEC naming convention)
+      g1Content += '\n_mergeG1UnitData(' + mergeIdx + ', G1_U' + fileNum + '_SPEC);\n';
       fs.writeFileSync(path.join(G1_DATA_DIR, 'u' + fileNum + '.js'), g1Content, 'utf8');
       console.log(`📋 Built:   data/g1/u${fileNum}.js`);
     }
