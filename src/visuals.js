@@ -253,6 +253,17 @@ function drawBase10(cfg) {
   const o = Math.max(0, Math.min(9, +cfg.ones     || 0));
   const uid = 'vis-' + (++_visUid);
 
+  // ── Color palette (kid-friendly, readable on light AND dark panels) ──
+  // Hundreds & tens share the blue family so they read as the "groups of ten"
+  // denomination. Ones cubes use a warm orange to be unmistakably distinct.
+  // Internal grid lines are white@70% so each unit segment is clearly visible
+  // (this is what tells a Grade 1 child "one rod is made of 10 ones").
+  const C_BLUE_FILL    = '#3B82F6';  // tailwind blue-500
+  const C_BLUE_STROKE  = '#1E3A8A';  // blue-900 — strong outline for contrast
+  const C_GRID         = '#FFFFFF';  // white interior grid lines on rods/flats
+  const C_ORANGE_FILL  = '#F59E0B';  // amber-500 — warm orange/yellow
+  const C_ORANGE_STROKE = '#B45309'; // amber-700 — clear outline
+
   // ── Geometry constants ──
   const U          = 11;  // grid cell size (viewBox units)
   const GAP        = 8;   // gap between sibling blocks in same row
@@ -306,12 +317,12 @@ function drawBase10(cfg) {
     for (let i = 0; i < h; i++) {
       const row = Math.floor(i / H_PER_ROW), col = i % H_PER_ROW;
       const bx = PAD + col * (HW + GAP), by = curY + row * (HH + GAP);
-      // Block body
-      parts.push(`<rect x="${bx}" y="${by}" width="${HW}" height="${HH}" fill="currentColor" opacity="0.09" stroke="currentColor" stroke-width="0.8" rx="1"/>`);
-      // 10×10 inner grid lines
+      // Hundreds flat — solid blue with white 10×10 grid showing 100 unit cubes
+      parts.push(`<rect x="${bx}" y="${by}" width="${HW}" height="${HH}" fill="${C_BLUE_FILL}" stroke="${C_BLUE_STROKE}" stroke-width="1" rx="1"/>`);
+      // 10×10 inner grid lines (white, semi-transparent)
       for (let r = 1; r < 10; r++) {
-        parts.push(`<line x1="${bx}" y1="${by + r*U}" x2="${bx+HW}" y2="${by + r*U}" stroke="currentColor" opacity="0.2" stroke-width="0.3"/>`);
-        parts.push(`<line x1="${bx + r*U}" y1="${by}" x2="${bx + r*U}" y2="${by+HH}" stroke="currentColor" opacity="0.2" stroke-width="0.3"/>`);
+        parts.push(`<line x1="${bx}" y1="${by + r*U}" x2="${bx+HW}" y2="${by + r*U}" stroke="${C_GRID}" opacity="0.7" stroke-width="0.5"/>`);
+        parts.push(`<line x1="${bx + r*U}" y1="${by}" x2="${bx + r*U}" y2="${by+HH}" stroke="${C_GRID}" opacity="0.7" stroke-width="0.5"/>`);
       }
     }
     curY += hRows * HH + Math.max(0, hRows - 1) * GAP;
@@ -327,11 +338,11 @@ function drawBase10(cfg) {
     for (let i = 0; i < t; i++) {
       const row = Math.floor(i / T_PER_ROW), col = i % T_PER_ROW;
       const bx = PAD + col * (TW + GAP), by = curY + row * (TH + GAP);
-      // Rod body — denser opacity than hundreds to visually distinguish
-      parts.push(`<rect x="${bx}" y="${by}" width="${TW}" height="${TH}" fill="currentColor" opacity="0.22" stroke="currentColor" stroke-width="0.8" rx="0.5"/>`);
-      // 9 horizontal segment dividers
+      // Tens rod — solid blue with white horizontal dividers showing 10 unit segments
+      parts.push(`<rect x="${bx}" y="${by}" width="${TW}" height="${TH}" fill="${C_BLUE_FILL}" stroke="${C_BLUE_STROKE}" stroke-width="1" rx="0.5"/>`);
+      // 9 horizontal segment dividers (white, semi-transparent)
       for (let r = 1; r < 10; r++) {
-        parts.push(`<line x1="${bx}" y1="${by + r*U}" x2="${bx+TW}" y2="${by + r*U}" stroke="currentColor" opacity="0.4" stroke-width="0.4"/>`);
+        parts.push(`<line x1="${bx}" y1="${by + r*U}" x2="${bx+TW}" y2="${by + r*U}" stroke="${C_GRID}" opacity="0.7" stroke-width="0.6"/>`);
       }
     }
     curY += tRows * TH + Math.max(0, tRows - 1) * GAP;
@@ -347,8 +358,8 @@ function drawBase10(cfg) {
     for (let i = 0; i < o; i++) {
       const row = Math.floor(i / O_PER_ROW), col = i % O_PER_ROW;
       const bx = PAD + col * (OW + GAP), by = curY + row * (OH + GAP);
-      // Solid cube — highest opacity to distinguish from tens and hundreds
-      parts.push(`<rect x="${bx}" y="${by}" width="${OW}" height="${OH}" fill="currentColor" opacity="0.55" stroke="currentColor" stroke-width="0.8" rx="0.5"/>`);
+      // Ones cube — solid orange/amber with darker outline (visually distinct from blue rods)
+      parts.push(`<rect x="${bx}" y="${by}" width="${OW}" height="${OH}" fill="${C_ORANGE_FILL}" stroke="${C_ORANGE_STROKE}" stroke-width="1" rx="0.5"/>`);
     }
   }
 
