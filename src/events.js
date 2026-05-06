@@ -30,7 +30,6 @@
   const _ACTIONS = {
 
     // ── App navigation ──────────────────────────────────────────────────────
-    goSettings:             ()    => goSettings(),
     goSettingsBack:         ()    => goSettingsBack(),
     goHome:                 ()    => goHome(),
     goUnit:                 ()    => goUnit(),
