@@ -5577,216 +5577,222 @@ const _l22QuizBank = [
     }
   }),
 
-  // q161–q170  place_value_to_120  (text)
+  // q161–q170  hard in-scope replacements (two-digit, expanded form / tens-ones)
 
   _l22Q(161, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'missing_part',
+    keyIdea: 'Expanded form breaks a number into its tens and ones: 34 = 30 + 4.',
     difficulty: 'hard',
-    prompt: '1 hundred, 1 ten, and 3 ones = ___',
+    prompt: '86 = ___ + 6',
     visual: null,
-    answer: '113',
-    choices: ['113', '131', '103', '1013'],
-    hint: '100 + 10 + 3 = ?',
+    answer: '80',
+    choices: ['8', '60', '80', '86'],
+    hint: '86 has 8 tens. What is 8 tens worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Hundreds, tens, and ones',
+      errorTag: 'err_tens_digit_not_value',
+      title: 'Tens part = tens digit × 10',
       teachingSteps: [
-        '1 hundred = 100.',
-        '1 ten = 10.',
-        '3 ones = 3.',
-        '100 + 10 + 3 = 113.'
+        '86 = tens part + ones part.',
+        'The ones part is 6.',
+        'The tens part: 86 − 6 = 80.',
+        '8 tens = 80, not just 8.'
       ],
-      correctAnswerExplanation: '1 hundred + 1 ten + 3 ones = 100 + 10 + 3 = 113.'
+      correctAnswerExplanation: '86 = 80 + 6. The tens part is 80.'
     }
   }),
 
   _l22Q(162, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'missing_part',
+    keyIdea: 'The ones digit tells how many leftover ones.',
     difficulty: 'hard',
-    prompt: '100 + 20 + 0 = ___',
+    prompt: '53 = 50 + ___',
     visual: null,
-    answer: '120',
-    choices: ['12', '102', '120', '1020'],
-    hint: '100 + 20 = ?',
+    answer: '3',
+    choices: ['5', '3', '53', '50'],
+    hint: '53 has 5 tens and how many ones?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Add hundreds, tens, and ones',
+      errorTag: 'err_ones_missing',
+      title: 'Find the ones part',
       teachingSteps: [
-        '100 is 1 hundred.',
-        '20 is 2 tens.',
-        '0 is 0 ones.',
-        '100 + 20 + 0 = 120.'
+        '53 = 50 + ones.',
+        '53 − 50 = 3.',
+        'The ones part is 3.'
       ],
-      correctAnswerExplanation: '100 + 20 + 0 = 120.'
+      correctAnswerExplanation: '53 = 50 + 3. The ones digit is 3.'
     }
   }),
 
   _l22Q(163, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'write_expanded_form',
+    keyIdea: 'Expanded form breaks a number into its tens and ones: 34 = 30 + 4.',
     difficulty: 'hard',
-    prompt: 'What is the expanded form of 105?',
+    prompt: 'What is 74 in expanded form?',
     visual: null,
-    answer: '100 + 5',
-    choices: ['10 + 5', '100 + 5', '1 + 0 + 5', '105 + 0'],
-    hint: '105 = 1 hundred + 0 tens + 5 ones.',
+    answer: '70 + 4',
+    choices: ['7 + 4', '70 + 4', '40 + 7', '70 + 0'],
+    hint: '74 has 7 tens. What is 7 tens worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: '105 has a hundred and some ones',
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens digit vs. tens value',
       teachingSteps: [
-        '105: the 1 is in the hundreds place = 100.',
-        'The 0 is in the tens place = 0.',
-        'The 5 is in the ones place = 5.',
-        '105 = 100 + 0 + 5 = 100 + 5.'
+        'The 7 in 74 is in the tens place.',
+        '7 tens = 70, not 7.',
+        'The 4 is in the ones place = 4.',
+        '74 = 70 + 4.'
       ],
-      correctAnswerExplanation: '105 = 100 + 5.'
+      correctAnswerExplanation: '74 = 70 + 4. The 7 is worth 70, not 7.'
     }
   }),
 
   _l22Q(164, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'read_expanded_form',
+    keyIdea: 'The tens digit comes first when you write a two-digit number.',
     difficulty: 'hard',
-    prompt: '100 + 10 + 7 = ___',
+    prompt: '60 + 8 = ___',
     visual: null,
-    answer: '117',
-    choices: ['107', '117', '127', '1017'],
-    hint: '100 + 10 = 110. 110 + 7 = ?',
+    answer: '68',
+    choices: ['86', '68', '14', '60'],
+    hint: '60 is the tens part. 8 is the ones part.',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Add all three parts',
+      errorTag: 'err_tens_ones_swap',
+      title: 'Tens first, then ones',
       teachingSteps: [
-        '100 + 10 = 110.',
-        '110 + 7 = 117.'
+        '60 = 6 tens. 8 = 8 ones.',
+        '6 tens and 8 ones → write 6 first, then 8.',
+        '60 + 8 = 68.',
+        '86 would be 80 + 6 — the tens and ones are swapped.'
       ],
-      correctAnswerExplanation: '100 + 10 + 7 = 117.'
+      correctAnswerExplanation: '60 + 8 = 68. The tens digit comes first.'
     }
   }),
 
   _l22Q(165, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'tens_value',
+    keyIdea: 'The value of the tens digit is the digit times 10.',
     difficulty: 'hard',
-    prompt: 'Which number has 1 hundred, 1 ten, and 0 ones?',
+    prompt: 'In 92, the 9 means ___',
     visual: null,
-    answer: '110',
-    choices: ['11', '101', '110', '1010'],
-    hint: '100 + 10 + 0 = ?',
+    answer: '90',
+    choices: ['9', '2', '20', '90'],
+    hint: '9 is in the tens place. What is 9 tens worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Hundred + ten + zero ones',
+      errorTag: 'err_tens_digit_not_value',
+      title: 'The 9 is in the tens place',
       teachingSteps: [
-        '1 hundred = 100. 1 ten = 10. 0 ones = 0.',
-        '100 + 10 + 0 = 110.'
+        'In 92, the 9 is in the tens place.',
+        '9 tens = 90.',
+        'The 9 means 90, not 9.'
       ],
-      correctAnswerExplanation: '1 hundred, 1 ten, 0 ones = 110.'
+      correctAnswerExplanation: 'In 92, the 9 is worth 90 (9 tens).'
     }
   }),
 
   _l22Q(166, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'ones_value',
+    keyIdea: 'The ones digit tells how many leftover ones.',
     difficulty: 'hard',
-    prompt: '119 = 100 + 10 + ___',
+    prompt: 'In 92, the 2 means ___',
     visual: null,
-    answer: '9',
-    choices: ['1', '9', '19', '90'],
-    hint: '119 − 110 = ?',
+    answer: '2',
+    choices: ['20', '90', '9', '2'],
+    hint: '2 is in the ones place.',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Find the ones part',
+      errorTag: 'err_expanded_form_digit',
+      title: 'The 2 is in the ones place',
       teachingSteps: [
-        '119 = 100 + 10 + ones.',
-        '100 + 10 = 110.',
-        '119 − 110 = 9.',
-        'The ones part is 9.'
+        'In 92, the 2 is in the ones place.',
+        'The ones place tells how many single ones.',
+        'The 2 means 2 ones = 2.'
       ],
-      correctAnswerExplanation: '119 = 100 + 10 + 9.'
+      correctAnswerExplanation: 'In 92, the 2 is worth 2 (2 ones).'
     }
   }),
 
   _l22Q(167, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'write_expanded_form',
+    keyIdea: 'Expanded form breaks a number into its tens and ones: 34 = 30 + 4.',
     difficulty: 'hard',
-    prompt: '1 hundred and 2 tens is the same as ___',
+    prompt: 'A student says 53 = 5 + 3. What should it be?',
     visual: null,
-    answer: '120',
-    choices: ['12', '102', '120', '210'],
-    hint: '100 + 20 = ?',
+    answer: '50 + 3',
+    choices: ['5 + 3', '50 + 3', '53 + 0', '30 + 5'],
+    hint: 'What is the 5 in 53 really worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'One hundred and two tens',
+      errorTag: 'err_expanded_form_digit',
+      title: 'The digit 5 is worth 50 here',
       teachingSteps: [
-        '1 hundred = 100.',
-        '2 tens = 20.',
-        '100 + 20 = 120.'
+        'In 53, the 5 is in the tens place.',
+        '5 tens = 50, not just 5.',
+        'The 3 is in the ones place = 3.',
+        'Correct expanded form: 50 + 3.'
       ],
-      correctAnswerExplanation: '1 hundred and 2 tens = 120.'
+      correctAnswerExplanation: '53 = 50 + 3. The student wrote the digit 5 instead of its value 50.'
     }
   }),
 
   _l22Q(168, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'missing_part',
+    keyIdea: 'The value of the tens digit is the digit times 10.',
     difficulty: 'hard',
-    prompt: 'Which is greater: 9 tens and 9 ones, or 1 hundred?',
+    prompt: '47 = ___ + 7',
     visual: null,
-    answer: '1 hundred (100)',
-    choices: ['9 tens and 9 ones (99)', '1 hundred (100)', 'They are equal', 'Cannot tell'],
-    hint: '9 tens and 9 ones = 99. 1 hundred = 100.',
+    answer: '40',
+    choices: ['4', '70', '47', '40'],
+    hint: 'What is the tens part of 47?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Compare 99 and 100',
+      errorTag: 'err_tens_digit_not_value',
+      title: 'Four tens = 40',
       teachingSteps: [
-        '9 tens and 9 ones = 99.',
-        '1 hundred = 100.',
-        '100 > 99, so 1 hundred is greater.'
+        '47 = tens part + 7.',
+        'The tens digit is 4.',
+        '4 tens = 40, not 4.',
+        '47 = 40 + 7.'
       ],
-      correctAnswerExplanation: '99 < 100, so 1 hundred is greater.'
+      correctAnswerExplanation: '47 = 40 + 7. The tens part is 40.'
     }
   }),
 
   _l22Q(169, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'write_expanded_form',
+    keyIdea: 'Expanded form breaks a number into its tens and ones: 34 = 30 + 4.',
     difficulty: 'hard',
-    prompt: '100 is the same as ___ tens',
+    prompt: 'What is 29 in expanded form?',
     visual: null,
-    answer: '10',
-    choices: ['1', '10', '100', '0'],
-    hint: '10 groups of 10 make 100.',
+    answer: '20 + 9',
+    choices: ['2 + 9', '90 + 2', '20 + 9', '20 + 0'],
+    hint: '29 has 2 tens. What is 2 tens worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'One hundred = ten tens',
+      errorTag: 'err_expanded_form_digit',
+      title: 'Two tens = 20',
       teachingSteps: [
-        'Each ten is worth 10.',
-        '10 tens = 100.',
-        'So 100 = 10 tens.'
+        'The 2 in 29 is in the tens place.',
+        '2 tens = 20.',
+        'The 9 is in the ones place = 9.',
+        '29 = 20 + 9.'
       ],
-      correctAnswerExplanation: '100 = 10 tens.'
+      correctAnswerExplanation: '29 = 20 + 9. The 2 is worth 20, not 2.'
     }
   }),
 
   _l22Q(170, {
-    subSkill: 'place_value_to_120',
-    keyIdea: 'Numbers to 120 can have 1 hundred, some tens, and some ones.',
+    subSkill: 'write_expanded_form',
+    keyIdea: 'Expanded form breaks a number into its tens and ones: 34 = 30 + 4.',
     difficulty: 'hard',
-    prompt: '100 + 10 + 2 is the expanded form of ___',
+    prompt: 'A student says 61 = 6 + 1. What is the correct expanded form?',
     visual: null,
-    answer: '112',
-    choices: ['12', '102', '112', '1012'],
-    hint: '100 + 10 = 110. 110 + 2 = ?',
+    answer: '60 + 1',
+    choices: ['6 + 1', '60 + 1', '10 + 6', '61 + 0'],
+    hint: 'What is the 6 in 61 really worth?',
     intervention: {
-      errorTag: 'err_hundred_confusion',
-      title: 'Three-part expanded form',
+      errorTag: 'err_expanded_form_digit',
+      title: 'The digit 6 is worth 60 here',
       teachingSteps: [
-        '100 + 10 = 110.',
-        '110 + 2 = 112.'
+        'In 61, the 6 is in the tens place.',
+        '6 tens = 60, not just 6.',
+        'The 1 is in the ones place = 1.',
+        'Correct expanded form: 60 + 1.'
       ],
-      correctAnswerExplanation: '100 + 10 + 2 = 112.'
+      correctAnswerExplanation: '61 = 60 + 1. The student wrote the digit 6 instead of its value 60.'
     }
   })
 
