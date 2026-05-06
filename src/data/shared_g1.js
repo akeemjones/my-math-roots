@@ -183,7 +183,7 @@ function _g1VisToV(vis) {
       return { type: 'numberCards', config: { cards: vis.cards || [], layout: vis.layout || 'input' } };
     }
     case 'comparison':  return { type: 'comparison', config: vis.config };
-    case 'base10':      return { type: 'base10', config: { hundreds: vis.hundreds || 0, tens: vis.tens || 0, ones: vis.ones || 0 } };
+    case 'base10':      return { type: 'base10', config: vis.config || { hundreds: vis.hundreds || 0, tens: vis.tens || 0, ones: vis.ones || 0 } };
     default:            return null;
   }
 }
