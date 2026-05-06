@@ -9350,6 +9350,493 @@ const _l6Spec = {
   lessonQuizAttempt: _l6QuizAttempt,
 };
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 1.8 — Compare Numbers — helper factory + quiz bank
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l8Q(n, o) {
+  return {
+    id: 'g1-u1-l8-q-' + String(n).padStart(3, '0'),
+    teks: ['1.2D', '1.2E', '1.2G'],
+    lessonId: 'g1-u1-l8',
+    skill: 'compare_numbers_to_100',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+const _l8QuizBank = [
+
+  // ── Easy: different tens, obvious comparison ─────────────────────────────
+
+  _l8Q(1, {
+    difficulty: 'easy',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 30 ___ 70',
+    visual: { type: 'comparison', config: { left: { label: '30', barLen: 3 }, right: { label: '70', barLen: 7 } } },
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student flipped the symbol direction — chose > instead of <.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'Count the tens. 30 has 3 tens. 70 has 7 tens.',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'The symbol opens toward the bigger number',
+      teachingSteps: [
+        '30 has 3 tens. 70 has 7 tens.',
+        '7 tens is more than 3 tens, so 70 is bigger.',
+        'The wide, open side of the symbol always points to the bigger number: 30 < 70.'
+      ],
+      correctAnswerExplanation: '70 has more tens than 30. The open side of < faces 70, so 30 < 70.'
+    }
+  }),
+
+  _l8Q(2, {
+    difficulty: 'easy',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 85 ___ 42',
+    visual: { type: 'comparison', config: { left: { label: '85', barLen: 8 }, right: { label: '42', barLen: 4 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student flipped the comparison symbol direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: '85 has 8 tens. 42 has 4 tens. Which has more?',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'More tens means the bigger number',
+      teachingSteps: [
+        '85 has 8 tens. 42 has 4 tens.',
+        '8 tens is more than 4 tens, so 85 is bigger.',
+        'Use >: 85 > 42. The open side of > points to 85.'
+      ],
+      correctAnswerExplanation: '85 has 8 tens and 42 has 4 tens. 85 is bigger, so 85 > 42.'
+    }
+  }),
+
+  _l8Q(3, {
+    difficulty: 'easy',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 19 ___ 61',
+    visual: { type: 'comparison', config: { left: { label: '19', barLen: 1 }, right: { label: '61', barLen: 6 } } },
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student may have compared ones digits (9 > 1) and chose the wrong symbol.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'Look at the tens first. How many tens does 19 have? How many does 61 have?',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'Always look at the tens digit first',
+      teachingSteps: [
+        '19 has 1 ten. 61 has 6 tens.',
+        '6 tens is more than 1 ten, so 61 is bigger.',
+        '19 < 61. The open side of < faces 61.'
+      ],
+      correctAnswerExplanation: '19 has 1 ten and 61 has 6 tens. 61 is bigger, so 19 < 61.'
+    }
+  }),
+
+  _l8Q(4, {
+    difficulty: 'easy',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 50 ___ 20',
+    visual: { type: 'comparison', config: { left: { label: '50', barLen: 5 }, right: { label: '20', barLen: 2 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student flipped the symbol direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: '50 has 5 tens. 20 has 2 tens. Which is bigger?',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'The open side points to the bigger number',
+      teachingSteps: [
+        '50 has 5 tens. 20 has 2 tens.',
+        '5 tens is more than 2 tens, so 50 is bigger.',
+        'Use >: 50 > 20. The wide side opens toward 50.'
+      ],
+      correctAnswerExplanation: '50 has 5 tens and 20 has 2 tens. 50 is bigger, so 50 > 20.'
+    }
+  }),
+
+  _l8Q(5, {
+    difficulty: 'easy',
+    subSkill: 'compare_equal',
+    keyIdea: 'The symbol = means "equal to".',
+    prompt: 'Which symbol belongs? 27 ___ 27',
+    visual: { type: 'comparison', config: { left: { label: '27', barLen: 2 }, right: { label: '27', barLen: 2 } } },
+    answer: '=',
+    choices: [
+      { value: '=', correct: true },
+      { value: '>', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student chose a comparison symbol when the numbers are equal.' },
+      { value: '<', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student chose a comparison symbol when the numbers are equal.' }
+    ],
+    hint: 'Are these numbers the same or different?',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'When both numbers are the same, use =',
+      teachingSteps: [
+        'Look at both numbers: 27 and 27.',
+        'Both numbers have 2 tens and 7 ones — they are exactly the same.',
+        'Use =: 27 = 27.'
+      ],
+      correctAnswerExplanation: 'Both numbers are 27. They are equal, so 27 = 27.'
+    }
+  }),
+
+  _l8Q(6, {
+    difficulty: 'easy',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 74 ___ 31',
+    visual: { type: 'comparison', config: { left: { label: '74', barLen: 7 }, right: { label: '31', barLen: 3 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student flipped the symbol direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: '74 has 7 tens. 31 has 3 tens.',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'More tens means the bigger number',
+      teachingSteps: [
+        '74 has 7 tens. 31 has 3 tens.',
+        '7 tens is more than 3 tens, so 74 is bigger.',
+        '74 > 31. The open side points to 74.'
+      ],
+      correctAnswerExplanation: '74 has more tens than 31, so 74 > 31.'
+    }
+  }),
+
+  // ── Medium: different tens (ones can mislead), digit-order traps ─────────
+
+  _l8Q(7, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 67 ___ 73',
+    visual: { type: 'comparison', config: { left: { label: '67', barLen: 6 }, right: { label: '73', barLen: 7 } } },
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_ones_only_compare', misconceptionExplanation: 'Student compared ones digits (7 > 3) and picked > instead of checking tens first.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'Compare the tens first. 67 has 6 tens. 73 has 7 tens.',
+    intervention: {
+      errorTag: 'err_ones_only_compare',
+      title: 'Compare tens first — ones come second!',
+      teachingSteps: [
+        '67 has 6 tens. 73 has 7 tens.',
+        '7 tens is more than 6 tens, so 73 is bigger — even though the ones digit of 67 is bigger.',
+        '67 < 73.'
+      ],
+      correctAnswerExplanation: '67 has 6 tens and 73 has 7 tens. More tens makes 73 bigger, so 67 < 73.'
+    }
+  }),
+
+  _l8Q(8, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 84 ___ 79',
+    visual: { type: 'comparison', config: { left: { label: '84', barLen: 8 }, right: { label: '79', barLen: 7 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_ones_only_compare', misconceptionExplanation: 'Student compared ones digits (4 < 9) and picked < instead of checking tens first.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'What are the tens digits? 84 has 8 tens. 79 has 7 tens.',
+    intervention: {
+      errorTag: 'err_ones_only_compare',
+      title: 'Tens always come before ones!',
+      teachingSteps: [
+        '84 has 8 tens. 79 has 7 tens.',
+        '8 tens is more than 7 tens, so 84 is bigger — even though 4 ones is less than 9 ones.',
+        '84 > 79.'
+      ],
+      correctAnswerExplanation: '84 has 8 tens and 79 has 7 tens. The tens decide: 84 > 79.'
+    }
+  }),
+
+  _l8Q(9, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 46 ___ 54',
+    visual: { type: 'comparison', config: { left: { label: '46', barLen: 4 }, right: { label: '54', barLen: 5 } } },
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_ones_only_compare', misconceptionExplanation: 'Student compared ones digits (6 > 4) and picked > instead of checking tens first.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'Tens first! 46 has 4 tens. 54 has 5 tens.',
+    intervention: {
+      errorTag: 'err_ones_only_compare',
+      title: 'The tens digit decides which number is bigger',
+      teachingSteps: [
+        '46 has 4 tens. 54 has 5 tens.',
+        '5 tens is more than 4 tens, so 54 is bigger.',
+        '46 < 54.'
+      ],
+      correctAnswerExplanation: '46 has 4 tens and 54 has 5 tens. More tens means bigger, so 46 < 54.'
+    }
+  }),
+
+  _l8Q(10, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 72 ___ 27',
+    visual: { type: 'comparison', config: { left: { label: '72', barLen: 7 }, right: { label: '27', barLen: 2 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_place_value_confusion', misconceptionExplanation: 'Student confused digit positions — both numbers use 2 and 7, but in different places.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',         misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: 'The first digit is the tens digit. 72 has 7 tens. 27 has 2 tens.',
+    intervention: {
+      errorTag: 'err_place_value_confusion',
+      title: 'The tens digit is always on the left',
+      teachingSteps: [
+        'In 72, the 7 is in the tens place — 72 has 7 tens.',
+        'In 27, the 2 is in the tens place — 27 has 2 tens.',
+        '7 tens is more than 2 tens, so 72 > 27.'
+      ],
+      correctAnswerExplanation: '72 has 7 tens and 27 has 2 tens. The tens digit (left digit) decides: 72 > 27.'
+    }
+  }),
+
+  _l8Q(11, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'The wide side of the symbol points to the bigger number.',
+    prompt: 'Which one is correct?',
+    visual: null,
+    answer: '61 < 79',
+    choices: [
+      { value: '61 < 79', correct: true },
+      { value: '61 > 79', correct: false, errorTag: 'err_symbol_reversal',       misconceptionExplanation: 'Student chose the wrong symbol direction.' },
+      { value: '61 = 79', correct: false, errorTag: 'err_equal_misread',          misconceptionExplanation: 'Student assumed the numbers were equal.' },
+      { value: '79 < 61', correct: false, errorTag: 'err_place_value_confusion',  misconceptionExplanation: 'Student reversed which number is bigger.' }
+    ],
+    hint: 'Compare the tens. 61 has 6 tens. 79 has 7 tens.',
+    intervention: {
+      errorTag: 'err_symbol_reversal',
+      title: 'The symbol points toward the smaller number',
+      teachingSteps: [
+        '61 has 6 tens. 79 has 7 tens.',
+        '7 tens is more than 6 tens, so 79 is bigger.',
+        '61 < 79: the pointed end of < aims at 61 (smaller), the open side faces 79 (bigger).'
+      ],
+      correctAnswerExplanation: '61 has 6 tens and 79 has 7 tens. 79 is bigger, so 61 < 79.'
+    }
+  }),
+
+  _l8Q(12, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 53 ___ 35',
+    visual: { type: 'comparison', config: { left: { label: '53', barLen: 5 }, right: { label: '35', barLen: 3 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_place_value_confusion', misconceptionExplanation: 'Student confused digit positions — 53 and 35 share the same digits in different places.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',         misconceptionExplanation: 'Student thought the numbers were equal because they use the same digits.' }
+    ],
+    hint: 'The tens digit is the first digit. 53 starts with 5, so it has 5 tens.',
+    intervention: {
+      errorTag: 'err_place_value_confusion',
+      title: 'Same digits, different order — different numbers!',
+      teachingSteps: [
+        '53 has 5 in the tens place: 5 tens.',
+        '35 has 3 in the tens place: 3 tens.',
+        '5 tens is more than 3 tens, so 53 > 35.'
+      ],
+      correctAnswerExplanation: '53 has 5 tens and 35 has 3 tens. 53 is bigger, so 53 > 35.'
+    }
+  }),
+
+  _l8Q(13, {
+    difficulty: 'medium',
+    subSkill: 'compare_different_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 98 ___ 89',
+    visual: { type: 'comparison', config: { left: { label: '98', barLen: 9 }, right: { label: '89', barLen: 8 } } },
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_ones_only_compare', misconceptionExplanation: 'Student compared ones digits (8 < 9) and picked < instead of using tens first.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student assumed the numbers were equal.' }
+    ],
+    hint: '98 has 9 tens. 89 has 8 tens. Which has more tens?',
+    intervention: {
+      errorTag: 'err_ones_only_compare',
+      title: 'Check the tens first, even with big numbers',
+      teachingSteps: [
+        '98 has 9 tens. 89 has 8 tens.',
+        '9 tens is more than 8 tens, so 98 is bigger.',
+        '98 > 89.'
+      ],
+      correctAnswerExplanation: '98 has 9 tens and 89 has 8 tens. More tens means bigger: 98 > 89.'
+    }
+  }),
+
+  // ── Hard: same tens, compare ones ────────────────────────────────────────
+
+  _l8Q(14, {
+    difficulty: 'hard',
+    subSkill: 'compare_same_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 45 ___ 47',
+    visual: null,
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student identified the correct smaller number but used the wrong symbol direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student saw matching tens digits and assumed the numbers were equal without checking ones.' }
+    ],
+    hint: 'Both numbers have 4 tens. Now compare the ones: 5 ones vs 7 ones.',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'Same tens? Then compare the ones!',
+      teachingSteps: [
+        '45 and 47 both have 4 tens — the tens are the same!',
+        'When tens are equal, compare the ones: 5 ones vs 7 ones.',
+        '5 ones is less than 7 ones, so 45 < 47.'
+      ],
+      correctAnswerExplanation: 'Both numbers have 4 tens. The ones decide: 5 < 7, so 45 < 47.'
+    }
+  }),
+
+  _l8Q(15, {
+    difficulty: 'hard',
+    subSkill: 'compare_same_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 62 ___ 68',
+    visual: null,
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student reversed the symbol direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student saw both numbers start with 6 and assumed they were equal.' }
+    ],
+    hint: 'Both numbers have 6 tens. Compare the ones: 2 ones vs 8 ones.',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'Equal tens — use the ones to decide!',
+      teachingSteps: [
+        '62 has 6 tens. 68 has 6 tens. The tens are the same.',
+        'Compare the ones: 2 ones vs 8 ones.',
+        '2 ones is less than 8 ones, so 62 < 68.'
+      ],
+      correctAnswerExplanation: 'Both numbers have 6 tens. The ones decide: 2 < 8, so 62 < 68.'
+    }
+  }),
+
+  _l8Q(16, {
+    difficulty: 'hard',
+    subSkill: 'compare_same_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 55 ___ 52',
+    visual: null,
+    answer: '>',
+    choices: [
+      { value: '>', correct: true },
+      { value: '<', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student reversed the comparison direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student saw both numbers start with 5 and assumed they were equal.' }
+    ],
+    hint: 'Both start with 5 tens. Now look at the ones: 5 ones vs 2 ones.',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'When tens match, the ones tell you the answer',
+      teachingSteps: [
+        '55 has 5 tens. 52 has 5 tens. Tens are equal.',
+        'Compare the ones: 5 ones vs 2 ones.',
+        '5 ones is more than 2 ones, so 55 > 52.'
+      ],
+      correctAnswerExplanation: 'Both numbers have 5 tens. The ones decide: 5 > 2, so 55 > 52.'
+    }
+  }),
+
+  _l8Q(17, {
+    difficulty: 'hard',
+    subSkill: 'compare_same_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which one is correct?',
+    visual: null,
+    answer: '91 < 93',
+    choices: [
+      { value: '91 < 93', correct: true },
+      { value: '91 > 93', correct: false, errorTag: 'err_symbol_reversal', misconceptionExplanation: 'Student reversed the comparison direction.' },
+      { value: '91 = 93', correct: false, errorTag: 'err_equal_misread',   misconceptionExplanation: 'Student saw matching tens (both 9) and assumed the numbers were equal.' }
+    ],
+    hint: 'Both numbers have 9 tens. Compare the ones: 1 one vs 3 ones.',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'Same tens — check the ones!',
+      teachingSteps: [
+        '91 has 9 tens. 93 has 9 tens. The tens match.',
+        'Compare the ones: 1 one vs 3 ones.',
+        '1 one is less than 3 ones, so 91 < 93.'
+      ],
+      correctAnswerExplanation: 'Both numbers have 9 tens. The ones decide: 1 < 3, so 91 < 93.'
+    }
+  }),
+
+  _l8Q(18, {
+    difficulty: 'hard',
+    subSkill: 'compare_same_tens',
+    keyIdea: 'Compare the tens first. If the tens are the same, compare the ones.',
+    prompt: 'Which symbol belongs? 73 ___ 78',
+    visual: null,
+    answer: '<',
+    choices: [
+      { value: '<', correct: true },
+      { value: '>', correct: false, errorTag: 'err_symbol_reversal',   misconceptionExplanation: 'Student reversed the comparison direction.' },
+      { value: '=', correct: false, errorTag: 'err_equal_misread',     misconceptionExplanation: 'Student saw both numbers start with 7 and assumed they were equal.' }
+    ],
+    hint: 'Both have 7 tens. Now compare the ones: 3 ones vs 8 ones.',
+    intervention: {
+      errorTag: 'err_equal_misread',
+      title: 'When tens are equal, the ones digit decides',
+      teachingSteps: [
+        '73 has 7 tens. 78 has 7 tens. Tens are equal.',
+        'Compare the ones: 3 ones vs 8 ones.',
+        '3 ones is less than 8 ones, so 73 < 78.'
+      ],
+      correctAnswerExplanation: 'Both numbers have 7 tens. The ones decide: 3 < 8, so 73 < 78.'
+    }
+  }),
+
+]; // end _l8QuizBank
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec Export
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -9432,7 +9919,7 @@ export const G1_U1_SPEC = {
           visual: {
             type: 'comparison',
             config: {
-              left:  { label: '56', barLen: 6 },
+              left:  { label: '56', barLen: 5 },
               right: { label: '43', barLen: 4 }
             }
           },
@@ -9452,8 +9939,8 @@ export const G1_U1_SPEC = {
           visual: {
             type: 'comparison',
             config: {
-              left:  { label: '78', barLen: 8 },
-              right: { label: '78', barLen: 8 }
+              left:  { label: '78', barLen: 7 },
+              right: { label: '78', barLen: 7 }
             }
           },
           steps: [
@@ -9472,8 +9959,8 @@ export const G1_U1_SPEC = {
           visual: {
             type: 'comparison',
             config: {
-              left:  { label: '25', barLen: 3 },
-              right: { label: '32', barLen: 4 }
+              left:  { label: '25', barLen: 2 },
+              right: { label: '32', barLen: 3 }
             }
           },
           steps: [
@@ -9487,6 +9974,7 @@ export const G1_U1_SPEC = {
         }
       ],
       allowedQuestionTypes: ['multipleChoice'],
+      quizBank: _l8QuizBank,
       diagnostics: {
         commonDistractors: [
           { value: 'flipped_symbol', meaning: 'Picked < when > is correct (or vice versa).',                 errorTag: 'err_compare_symbol_swap' },
@@ -9505,7 +9993,7 @@ export const G1_U1_SPEC = {
       sampleDiagnosticQuestions: [
         {
           t: 'Which sign goes between 67 and 73? 67 ___ 73',
-          v: { type: 'comparison', config: { left: { label: '67', barLen: 7 }, right: { label: '73', barLen: 7 } } },
+          v: { type: 'comparison', config: { left: { label: '67', barLen: 6 }, right: { label: '73', barLen: 7 } } },
           o: [
             { val: '<' },
             { val: '>', tag: 'err_compare_symbol_swap' },

@@ -175,6 +175,7 @@ function _g1VisToV(vis) {
     case 'numberCards': {
       return { type: 'numberCards', config: { cards: vis.cards || [], layout: vis.layout || 'input' } };
     }
+    case 'comparison':  return { type: 'comparison', config: vis.config };
     default:            return null;
   }
 }
