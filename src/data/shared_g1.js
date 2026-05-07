@@ -188,6 +188,77 @@ function _g1VisToV(vis) {
   }
 }
 
+// ── Unit test bank assembly helpers ──────────────────────────────────────────
+
+// Local Fisher-Yates shuffle — self-contained so shared_g1.js has no
+// dependency on _shuffle from util.js (which loads after this file in bundle).
+function _g1Shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+// Returns up to `count` questions sampled from `bank`.
+// When `balanced` is true, targets ~25% hard / ~37.5% medium / ~37.5% easy
+// (formula: tH = round(count*0.25), tE = round((count-tH)/2), tM = rest).
+// If any tier is short, the deficit is filled from remaining questions.
+// Never mutates `bank`.
+function _sampleFromBank(bank, count, balanced) {
+  if (!bank || bank.length === 0) return [];
+  count = Math.min(count, bank.length);
+
+  if (!balanced) {
+    var pool = bank.slice();
+    _g1Shuffle(pool);
+    return pool.slice(0, count);
+  }
+
+  var easy   = bank.filter(function(q) { return q.d === 'e'; });
+  var medium = bank.filter(function(q) { return q.d === 'm'; });
+  var hard   = bank.filter(function(q) { return q.d === 'h'; });
+
+  _g1Shuffle(easy); _g1Shuffle(medium); _g1Shuffle(hard);
+
+  var tH = Math.round(count * 0.25);
+  var tE = Math.round((count - tH) / 2);
+  var tM = count - tH - tE;
+
+  var usedE = easy.slice(0, tE);
+  var usedM = medium.slice(0, tM);
+  var usedH = hard.slice(0, tH);
+  var selected = usedE.concat(usedM).concat(usedH);
+
+  if (selected.length < count) {
+    var spillover = easy.slice(tE).concat(medium.slice(tM)).concat(hard.slice(tH));
+    _g1Shuffle(spillover);
+    var needed = count - selected.length;
+    for (var j = 0; j < needed && j < spillover.length; j++) {
+      selected.push(spillover[j]);
+    }
+  }
+
+  return selected;
+}
+
+// Assembles a unit testBank from lesson qBanks.
+// Called when spec.unitTest.sourceRule === 'all_lesson_quizbanks'.
+// u.lessons must already be fully merged before this runs.
+function _assembleUnitTestBank(u, utSpec) {
+  var perLesson = utSpec.perLessonCount || 5;
+  var balanced  = !!utSpec.difficultyMixBalanced;
+  var result    = [];
+
+  u.lessons.forEach(function(lesson) {
+    var bank   = (lesson.qBank || []).slice();
+    var sample = _sampleFromBank(bank, perLesson, balanced);
+    for (var i = 0; i < sample.length; i++) result.push(sample[i]);
+  });
+
+  return result;
+}
+
 // ── Data merge (called by dist/data/g1/u1.js at parse time) ──────────────────
 function _mergeG1UnitData(idx, spec){
   var u = _UNITS_DATA_G1[idx];
@@ -268,9 +339,13 @@ function _mergeG1UnitData(idx, spec){
     });
   });
 
-  // Unit test bank — pull from spec.unitTest if wired in future
-  if(spec.unitTest && Array.isArray(spec.unitTest.bank)){
-    u.testBank = spec.unitTest.bank;
+  // Unit test bank assembly
+  if (spec.unitTest) {
+    if (spec.unitTest.sourceRule === 'all_lesson_quizbanks') {
+      u.testBank = _assembleUnitTestBank(u, spec.unitTest);
+    } else if (Array.isArray(spec.unitTest.bank)) {
+      u.testBank = spec.unitTest.bank;
+    }
   }
   u._loaded = true;
 }
