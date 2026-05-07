@@ -8498,6 +8498,2877 @@ const _l23QuizBank = [
 
 ];
 
+// ── L2.4 helpers ──────────────────────────────────────────────────────────────
+var _w24ones = [
+  'zero','one','two','three','four','five','six','seven','eight','nine',
+  'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen',
+  'seventeen','eighteen','nineteen'
+];
+var _w24tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function _numToWord24(n) {
+  if (n < 20) return _w24ones[n];
+  if (n < 100) {
+    var t = _w24tens[Math.floor(n / 10)];
+    var o = n % 10;
+    return o === 0 ? t : (t + '-' + _w24ones[o]);
+  }
+  var r = n - 100;
+  return r === 0 ? 'one hundred' : ('one hundred ' + _numToWord24(r));
+}
+function _numToExp24(n) {
+  if (n < 100) return (Math.floor(n / 10) * 10) + ' + ' + (n % 10);
+  var r = n - 100;
+  return '100 + ' + (Math.floor(r / 10) * 10) + ' + ' + (r % 10);
+}
+
+// ── L2.4 factory ──────────────────────────────────────────────────────────────
+function _l24Q(n, o) {
+  return {
+    id: 'g1-u2-l4-q-' + String(n).padStart(3, '0'),
+    teks: ['1.2C'],
+    lessonId: 'g1-u2-l4',
+    skill: 'represent_numbers_to_120',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices.map(function(v) {
+      return { value: String(v), correct: String(v) === String(o.answer) };
+    }),
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+// ── L2.4 worked examples ──────────────────────────────────────────────────────
+const _l24Examples = [
+  {
+    title: '47 in Three Forms',
+    steps: [
+      'Standard form uses digits: 47.',
+      'Expanded form shows each place value: 40 + 7.',
+      'Word form writes it in words: forty-seven.',
+      '4 tens rods and 7 ones cubes show the same amount.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 0, tens: 4, ones: 7 } }
+  },
+  {
+    title: '50 in Three Forms',
+    steps: [
+      'Standard form: 50.',
+      'Expanded form: 50 + 0. The + 0 shows the ones place is empty.',
+      'Word form: fifty.',
+      '5 tens rods and 0 ones cubes in the base-10 model.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 0, tens: 5, ones: 0 } }
+  },
+  {
+    title: '113 in Three Forms',
+    steps: [
+      'Standard form: 113.',
+      'Expanded form: 100 + 10 + 3. Each place shown as its value.',
+      'Word form: one hundred thirteen.',
+      '1 hundreds flat, 1 tens rod, and 3 ones cubes.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 3 } }
+  }
+];
+
+// ── L2.4 quiz bank ────────────────────────────────────────────────────────────
+const _l24QuizBank = [
+  // ── easy (q1–q50) ─────────────────────────────────────────────────────────
+
+  // Cat 1: standard → expanded, 2-digit (q1–q10)
+  _l24Q(1, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 24?',
+    answer: '20 + 4',
+    choices: ['20 + 4', '2 + 4', '40 + 2', '20 + 40'],
+    hint: 'The 2 is in the tens place. 2 tens = 20.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens place means tens, not the digit',
+      teachingSteps: [
+        '24 has 2 in the tens place and 4 in the ones place.',
+        '2 tens is worth 20, not just 2.',
+        'Expanded form: 20 + 4.'
+      ],
+      correctAnswerExplanation: '24 = 20 + 4. The digit 2 means 2 tens = 20.'
+    }
+  }),
+  _l24Q(2, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 31?',
+    answer: '30 + 1',
+    choices: ['30 + 1', '3 + 1', '10 + 3', '30 + 10'],
+    hint: 'The 3 is in the tens place. 3 tens = 30.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens digit names tens, not ones',
+      teachingSteps: [
+        '31 has 3 in the tens place and 1 in the ones place.',
+        '3 tens is worth 30.',
+        'Expanded form: 30 + 1.'
+      ],
+      correctAnswerExplanation: '31 = 30 + 1. The 3 means 3 tens = 30.'
+    }
+  }),
+  _l24Q(3, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 43?',
+    answer: '40 + 3',
+    choices: ['40 + 3', '4 + 3', '30 + 4', '40 + 30'],
+    hint: 'The 4 is in the tens place. 4 tens = 40.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens digit shows tens value',
+      teachingSteps: [
+        '43 has 4 in the tens place and 3 in the ones place.',
+        '4 tens is worth 40, not just 4.',
+        'Expanded form: 40 + 3.'
+      ],
+      correctAnswerExplanation: '43 = 40 + 3. The 4 means 4 tens = 40.'
+    }
+  }),
+  _l24Q(4, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 62?',
+    answer: '60 + 2',
+    choices: ['60 + 2', '6 + 2', '20 + 6', '60 + 20'],
+    hint: 'The 6 is in the tens place. 6 tens = 60.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens place value is larger than the digit',
+      teachingSteps: [
+        '62 has 6 in the tens place and 2 in the ones place.',
+        '6 tens is 60, not 6.',
+        'Expanded form: 60 + 2.'
+      ],
+      correctAnswerExplanation: '62 = 60 + 2. The digit 6 means 6 tens = 60.'
+    }
+  }),
+  _l24Q(5, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 75?',
+    answer: '70 + 5',
+    choices: ['70 + 5', '7 + 5', '50 + 7', '70 + 50'],
+    hint: 'The 7 is in the tens place. 7 tens = 70.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Expanded form uses place values, not digits',
+      teachingSteps: [
+        '75 has 7 in the tens place and 5 in the ones place.',
+        '7 tens is worth 70.',
+        'Expanded form: 70 + 5.'
+      ],
+      correctAnswerExplanation: '75 = 70 + 5. The 7 means 7 tens = 70.'
+    }
+  }),
+  _l24Q(6, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 86?',
+    answer: '80 + 6',
+    choices: ['80 + 6', '8 + 6', '60 + 8', '80 + 60'],
+    hint: 'The 8 is in the tens place. 8 tens = 80.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens digit value is 10 times the digit',
+      teachingSteps: [
+        '86 has 8 in the tens place and 6 in the ones place.',
+        '8 tens is worth 80.',
+        'Expanded form: 80 + 6.'
+      ],
+      correctAnswerExplanation: '86 = 80 + 6. The 8 means 8 tens = 80.'
+    }
+  }),
+  _l24Q(7, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: 'What is the expanded form of 93?',
+    answer: '90 + 3',
+    choices: ['90 + 3', '9 + 3', '30 + 9', '90 + 30'],
+    hint: 'The 9 is in the tens place. 9 tens = 90.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens place is worth ten times the digit',
+      teachingSteps: [
+        '93 has 9 in the tens place and 3 in the ones place.',
+        '9 tens is worth 90, not just 9.',
+        'Expanded form: 90 + 3.'
+      ],
+      correctAnswerExplanation: '93 = 90 + 3. The 9 means 9 tens = 90.'
+    }
+  }),
+  _l24Q(8, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: 'What is the expanded form of 30?',
+    answer: '30 + 0',
+    choices: ['30 + 0', '3 + 0', '30 + 3', '20 + 0'],
+    hint: '30 has 3 tens and 0 ones. Write 30 + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show the ones place even when it is zero',
+      teachingSteps: [
+        '30 has 3 in the tens place and 0 in the ones place.',
+        'We write + 0 to show the ones place is empty.',
+        'Expanded form: 30 + 0.'
+      ],
+      correctAnswerExplanation: '30 = 30 + 0. The + 0 shows the ones place is empty.'
+    }
+  }),
+  _l24Q(9, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: 'What is the expanded form of 60?',
+    answer: '60 + 0',
+    choices: ['60 + 0', '6 + 0', '60 + 6', '70 + 0'],
+    hint: '60 has 6 tens and 0 ones. Write 60 + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show every place value, even empty ones',
+      teachingSteps: [
+        '60 has 6 in the tens place and 0 in the ones place.',
+        'We still write the + 0 to show the ones place is empty.',
+        'Expanded form: 60 + 0.'
+      ],
+      correctAnswerExplanation: '60 = 60 + 0. The + 0 shows the ones place is empty.'
+    }
+  }),
+  _l24Q(10, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: 'What is the expanded form of 80?',
+    answer: '80 + 0',
+    choices: ['80 + 0', '8 + 0', '80 + 8', '70 + 0'],
+    hint: '80 has 8 tens and 0 ones. The ones place is empty.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Zero ones still gets written in expanded form',
+      teachingSteps: [
+        '80 has 8 tens and 0 ones.',
+        'We write 80 + 0 to show both places.',
+        'The + 0 reminds us the ones place has nothing in it.'
+      ],
+      correctAnswerExplanation: '80 = 80 + 0. We include the + 0 to show the ones place is empty.'
+    }
+  }),
+
+  // Cat 2: expanded → standard, 2-digit (q11–q20)
+  _l24Q(11, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '20 + 5 = ___',
+    answer: '25',
+    choices: ['25', '52', '205', '20'],
+    hint: '20 is 2 tens. Add 5 ones. Tens come first.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens come first, then ones',
+      teachingSteps: [
+        '20 + 5 means 2 tens and 5 ones.',
+        'In standard form, tens come first: 25.',
+        '52 would mean 5 tens and 2 ones — that is different.'
+      ],
+      correctAnswerExplanation: '20 + 5 = 25. Two tens and five ones make 25.'
+    }
+  }),
+  _l24Q(12, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: '30 + 0 = ___',
+    answer: '30',
+    choices: ['30', '3', '300', '31'],
+    hint: '30 is 3 tens. Plus 0 ones. The number is 30.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: '3 tens is 30, not 3',
+      teachingSteps: [
+        '30 + 0 means 3 tens and 0 ones.',
+        '3 tens is the number 30, not just 3.',
+        'Standard form: 30.'
+      ],
+      correctAnswerExplanation: '30 + 0 = 30. Three tens and zero ones is 30.'
+    }
+  }),
+  _l24Q(13, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '40 + 6 = ___',
+    answer: '46',
+    choices: ['46', '64', '406', '40'],
+    hint: '40 is 4 tens. Add 6 ones. Write the tens digit first.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'The tens digit comes before the ones digit',
+      teachingSteps: [
+        '40 + 6 means 4 tens and 6 ones.',
+        'Write the tens digit first: 4, then the ones digit: 6.',
+        'Standard form: 46, not 64.'
+      ],
+      correctAnswerExplanation: '40 + 6 = 46. Four tens and six ones is 46.'
+    }
+  }),
+  _l24Q(14, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '50 + 3 = ___',
+    answer: '53',
+    choices: ['53', '35', '503', '50'],
+    hint: '50 is 5 tens. Add 3 ones. The tens digit goes first.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens digit before ones digit in standard form',
+      teachingSteps: [
+        '50 + 3 means 5 tens and 3 ones.',
+        'Standard form: 53. The 5 goes in the tens place.',
+        '35 would be 3 tens and 5 ones — the opposite.'
+      ],
+      correctAnswerExplanation: '50 + 3 = 53. Five tens and three ones make 53.'
+    }
+  }),
+  _l24Q(15, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: '60 + 0 = ___',
+    answer: '60',
+    choices: ['60', '6', '600', '61'],
+    hint: '60 is 6 tens. Plus 0 ones. What is the number?',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Six tens is 60, not just 6',
+      teachingSteps: [
+        '60 + 0 means 6 tens and 0 ones.',
+        '6 tens makes the number 60.',
+        'Standard form: 60.'
+      ],
+      correctAnswerExplanation: '60 + 0 = 60. Six tens and zero ones is 60.'
+    }
+  }),
+  _l24Q(16, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '70 + 8 = ___',
+    answer: '78',
+    choices: ['78', '87', '708', '70'],
+    hint: '70 is 7 tens. Add 8 ones. Write tens first.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens come before ones in the number',
+      teachingSteps: [
+        '70 + 8 means 7 tens and 8 ones.',
+        'Write the 7 first (tens place), then 8 (ones place).',
+        'Standard form: 78.'
+      ],
+      correctAnswerExplanation: '70 + 8 = 78. Seven tens and eight ones make 78.'
+    }
+  }),
+  _l24Q(17, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '80 + 4 = ___',
+    answer: '84',
+    choices: ['84', '48', '804', '80'],
+    hint: '80 is 8 tens. Add 4 ones. The 8 goes in the tens place.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'The larger value goes first',
+      teachingSteps: [
+        '80 + 4 means 8 tens and 4 ones.',
+        'Standard form: 84. The 8 goes in the tens place.',
+        '48 would be 4 tens and 8 ones — a different number.'
+      ],
+      correctAnswerExplanation: '80 + 4 = 84. Eight tens and four ones make 84.'
+    }
+  }),
+  _l24Q(18, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '90 + 1 = ___',
+    answer: '91',
+    choices: ['91', '19', '901', '90'],
+    hint: '90 is 9 tens. Add 1 one. Write 9 first, then 1.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens go first in standard form',
+      teachingSteps: [
+        '90 + 1 means 9 tens and 1 one.',
+        'Standard form: 91. The 9 goes in the tens place.',
+        '19 is a different number — it has 1 ten and 9 ones.'
+      ],
+      correctAnswerExplanation: '90 + 1 = 91. Nine tens and one one make 91.'
+    }
+  }),
+  _l24Q(19, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: '20 + 0 = ___',
+    answer: '20',
+    choices: ['20', '2', '200', '22'],
+    hint: '20 is 2 tens. Plus 0 ones. The number is 20.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Two tens is 20, not 2',
+      teachingSteps: [
+        '20 + 0 means 2 tens and 0 ones.',
+        '2 tens makes the number 20, not just 2.',
+        'Standard form: 20.'
+      ],
+      correctAnswerExplanation: '20 + 0 = 20. Two tens and zero ones is the number 20.'
+    }
+  }),
+  _l24Q(20, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'easy',
+    prompt: '30 + 7 = ___',
+    answer: '37',
+    choices: ['37', '73', '307', '30'],
+    hint: '30 is 3 tens. Add 7 ones. Write tens first, then ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens digit goes in the tens place',
+      teachingSteps: [
+        '30 + 7 means 3 tens and 7 ones.',
+        'Standard form: 37. The 3 is in the tens place.',
+        '73 would be 7 tens and 3 ones — different from 37.'
+      ],
+      correctAnswerExplanation: '30 + 7 = 37. Three tens and seven ones make 37.'
+    }
+  }),
+
+  // Cat 5: visual → expanded, 2-digit (q21–q30)
+  _l24Q(21, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 2, ones: 3 } },
+    answer: '20 + 3',
+    choices: ['20 + 3', '2 + 3', '30 + 2', '20 + 30'],
+    hint: 'Count the rods (tens) and cubes (ones). Write their values.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Each rod is worth 10, not 1',
+      teachingSteps: [
+        '2 blue rods = 2 tens = 20.',
+        '3 orange cubes = 3 ones = 3.',
+        'Expanded form: 20 + 3.'
+      ],
+      correctAnswerExplanation: '2 rods (20) + 3 cubes (3) = 20 + 3.'
+    }
+  }),
+  _l24Q(22, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 4, ones: 1 } },
+    answer: '40 + 1',
+    choices: ['40 + 1', '4 + 1', '10 + 4', '40 + 10'],
+    hint: 'Count the tens rods first, then the ones cubes.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Rods show tens, cubes show ones',
+      teachingSteps: [
+        '4 blue rods = 4 tens = 40.',
+        '1 orange cube = 1 one = 1.',
+        'Expanded form: 40 + 1.'
+      ],
+      correctAnswerExplanation: '4 rods (40) + 1 cube (1) = 40 + 1.'
+    }
+  }),
+  _l24Q(23, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 5, ones: 2 } },
+    answer: '50 + 2',
+    choices: ['50 + 2', '5 + 2', '20 + 5', '50 + 20'],
+    hint: '5 rods = 50. 2 cubes = 2.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Place value tells you the worth, not the count',
+      teachingSteps: [
+        '5 blue rods = 5 tens = 50.',
+        '2 orange cubes = 2 ones = 2.',
+        'Expanded form: 50 + 2.'
+      ],
+      correctAnswerExplanation: '5 rods (50) + 2 cubes (2) = 50 + 2.'
+    }
+  }),
+  _l24Q(24, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 3, ones: 4 } },
+    answer: '30 + 4',
+    choices: ['30 + 4', '3 + 4', '40 + 3', '30 + 40'],
+    hint: '3 rods = 30. 4 cubes = 4. Write the tens first.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Rods are worth 10 each',
+      teachingSteps: [
+        '3 blue rods = 3 tens = 30.',
+        '4 orange cubes = 4 ones = 4.',
+        'Expanded form: 30 + 4.'
+      ],
+      correctAnswerExplanation: '3 rods (30) + 4 cubes (4) = 30 + 4.'
+    }
+  }),
+  _l24Q(25, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 6, ones: 1 } },
+    answer: '60 + 1',
+    choices: ['60 + 1', '6 + 1', '10 + 6', '60 + 10'],
+    hint: '6 rods = 60. 1 cube = 1.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Each tens rod equals 10',
+      teachingSteps: [
+        '6 blue rods = 6 tens = 60.',
+        '1 orange cube = 1 one = 1.',
+        'Expanded form: 60 + 1.'
+      ],
+      correctAnswerExplanation: '6 rods (60) + 1 cube (1) = 60 + 1.'
+    }
+  }),
+  _l24Q(26, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 7, ones: 3 } },
+    answer: '70 + 3',
+    choices: ['70 + 3', '7 + 3', '30 + 7', '70 + 30'],
+    hint: '7 rods = 70. 3 cubes = 3.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Count rods as tens, cubes as ones',
+      teachingSteps: [
+        '7 blue rods = 7 tens = 70.',
+        '3 orange cubes = 3 ones = 3.',
+        'Expanded form: 70 + 3.'
+      ],
+      correctAnswerExplanation: '7 rods (70) + 3 cubes (3) = 70 + 3.'
+    }
+  }),
+  _l24Q(27, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 8, ones: 5 } },
+    answer: '80 + 5',
+    choices: ['80 + 5', '8 + 5', '50 + 8', '80 + 50'],
+    hint: '8 rods = 80. 5 cubes = 5.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens rods show the tens value',
+      teachingSteps: [
+        '8 blue rods = 8 tens = 80.',
+        '5 orange cubes = 5 ones = 5.',
+        'Expanded form: 80 + 5.'
+      ],
+      correctAnswerExplanation: '8 rods (80) + 5 cubes (5) = 80 + 5.'
+    }
+  }),
+  _l24Q(28, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 9, ones: 2 } },
+    answer: '90 + 2',
+    choices: ['90 + 2', '9 + 2', '20 + 9', '90 + 20'],
+    hint: '9 rods = 90. 2 cubes = 2.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Each rod stands for ten, not one',
+      teachingSteps: [
+        '9 blue rods = 9 tens = 90.',
+        '2 orange cubes = 2 ones = 2.',
+        'Expanded form: 90 + 2.'
+      ],
+      correctAnswerExplanation: '9 rods (90) + 2 cubes (2) = 90 + 2.'
+    }
+  }),
+  _l24Q(29, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 2, ones: 0 } },
+    answer: '20 + 0',
+    choices: ['20 + 0', '2 + 0', '20', '20 + 2'],
+    hint: 'There are no ones cubes. Write + 0 for the empty ones place.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show the empty ones place with + 0',
+      teachingSteps: [
+        '2 blue rods = 2 tens = 20.',
+        'No orange cubes means 0 ones.',
+        'Expanded form: 20 + 0.'
+      ],
+      correctAnswerExplanation: '2 rods (20) + 0 cubes (0) = 20 + 0.'
+    }
+  }),
+  _l24Q(30, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 5, difficulty: 'easy',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 4, ones: 0 } },
+    answer: '40 + 0',
+    choices: ['40 + 0', '4 + 0', '40', '40 + 4'],
+    hint: 'Count the rods. There are no cubes — write + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Always include the ones place in expanded form',
+      teachingSteps: [
+        '4 blue rods = 4 tens = 40.',
+        'No orange cubes = 0 ones.',
+        'Expanded form: 40 + 0. We include the + 0.'
+      ],
+      correctAnswerExplanation: '4 rods (40) + 0 cubes (0) = 40 + 0.'
+    }
+  }),
+
+  // Cat 3: standard → word, 2-digit (q31–q40)
+  _l24Q(31, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 20 in word form.',
+    answer: 'twenty',
+    choices: ['twenty', 'two', 'twenty-zero', 'two-zero'],
+    hint: '20 is a decade number. It has a special word.',
+    intervention: {
+      errorTag: 'err_word_form_digit_not_word',
+      title: '20 is called twenty',
+      teachingSteps: [
+        '20 is a decade: 2 tens and 0 ones.',
+        'The word for 20 is "twenty," not "two."',
+        'Decade words are special: twenty, thirty, forty, fifty...'
+      ],
+      correctAnswerExplanation: '20 in word form is "twenty."'
+    }
+  }),
+  _l24Q(32, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 30 in word form.',
+    answer: 'thirty',
+    choices: ['thirty', 'three', 'thirty-zero', 'three-zero'],
+    hint: '30 is a decade number. The -ty ending signals a decade.',
+    intervention: {
+      errorTag: 'err_word_form_digit_not_word',
+      title: '30 is called thirty',
+      teachingSteps: [
+        '30 is a decade: 3 tens and 0 ones.',
+        'The word for 30 is "thirty," not "three."',
+        'The -ty ending signals a decade number.'
+      ],
+      correctAnswerExplanation: '30 in word form is "thirty."'
+    }
+  }),
+  _l24Q(33, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 40 in word form.',
+    answer: 'forty',
+    choices: ['forty', 'fourty', 'four', 'four-zero'],
+    hint: '40 is forty — watch the spelling: f-o-r-t-y.',
+    intervention: {
+      errorTag: 'err_word_form_spelling',
+      title: '40 is "forty" — no u after the o',
+      teachingSteps: [
+        '40 is a decade number: 4 tens.',
+        'The word is "forty" — spelled f-o-r-t-y.',
+        '"Fourty" is a common misspelling. The correct word has no u.'
+      ],
+      correctAnswerExplanation: '40 in word form is "forty." Spelled f-o-r-t-y.'
+    }
+  }),
+  _l24Q(34, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 50 in word form.',
+    answer: 'fifty',
+    choices: ['fifty', 'fivety', 'five', 'five-zero'],
+    hint: '50 is fifty — it uses "fif," not "five."',
+    intervention: {
+      errorTag: 'err_word_form_spelling',
+      title: '50 is "fifty" — not "fivety"',
+      teachingSteps: [
+        '50 is a decade number: 5 tens.',
+        'The word is "fifty," spelled f-i-f-t-y.',
+        '"Fivety" is not a word — the correct word is "fifty."'
+      ],
+      correctAnswerExplanation: '50 in word form is "fifty."'
+    }
+  }),
+  _l24Q(35, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 60 in word form.',
+    answer: 'sixty',
+    choices: ['sixty', 'sixteen', 'six', 'sixty-zero'],
+    hint: '60 is sixty — not sixteen. Sixty has 6 tens.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Sixty (60) is not sixteen (16)',
+      teachingSteps: [
+        '60 has 6 tens. The word is "sixty."',
+        '"Sixteen" is the word for 16, which has only 1 ten.',
+        'Sixty = 60; sixteen = 16.'
+      ],
+      correctAnswerExplanation: '60 in word form is "sixty." Sixteen is the word for 16.'
+    }
+  }),
+  _l24Q(36, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 70 in word form.',
+    answer: 'seventy',
+    choices: ['seventy', 'seventeen', 'seven', 'seventy-zero'],
+    hint: '70 is seventy. Seventeen is a different number (17).',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Seventy (70) is not seventeen (17)',
+      teachingSteps: [
+        '70 has 7 tens. The word is "seventy."',
+        '"Seventeen" is the word for 17, a teen number.',
+        'Seventy = 70; seventeen = 17.'
+      ],
+      correctAnswerExplanation: '70 in word form is "seventy."'
+    }
+  }),
+  _l24Q(37, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 80 in word form.',
+    answer: 'eighty',
+    choices: ['eighty', 'eighteen', 'eight', 'eighty-zero'],
+    hint: '80 is eighty. Eighteen is 18.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Eighty (80) is not eighteen (18)',
+      teachingSteps: [
+        '80 has 8 tens. The word is "eighty."',
+        '"Eighteen" is 18, a teen number with 1 ten.',
+        'Eighty = 80; eighteen = 18.'
+      ],
+      correctAnswerExplanation: '80 in word form is "eighty."'
+    }
+  }),
+  _l24Q(38, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 90 in word form.',
+    answer: 'ninety',
+    choices: ['ninety', 'nineteen', 'nine', 'ninety-zero'],
+    hint: '90 is ninety. Nineteen is 19.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Ninety (90) is not nineteen (19)',
+      teachingSteps: [
+        '90 has 9 tens. The word is "ninety."',
+        '"Nineteen" is 19, a teen number.',
+        'Ninety = 90; nineteen = 19.'
+      ],
+      correctAnswerExplanation: '90 in word form is "ninety."'
+    }
+  }),
+  _l24Q(39, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 21 in word form.',
+    answer: 'twenty-one',
+    choices: ['twenty-one', 'twelve', 'one-twenty', 'twenty-ten'],
+    hint: '21 = 2 tens and 1 one. Say the tens first: twenty-one.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Say tens first: twenty-one, not twelve',
+      teachingSteps: [
+        '21 has 2 tens and 1 one.',
+        'Word form: say the tens first — "twenty," then the ones — "one."',
+        '21 = "twenty-one." Twelve (12) is a different number.'
+      ],
+      correctAnswerExplanation: '21 in word form is "twenty-one." Twelve is the word for 12.'
+    }
+  }),
+  _l24Q(40, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'Write 32 in word form.',
+    answer: 'thirty-two',
+    choices: ['thirty-two', 'twenty-three', 'two-thirty', 'thirty'],
+    hint: '32 = 3 tens and 2 ones. Tens word first, then ones word.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Tens word comes before ones word',
+      teachingSteps: [
+        '32 has 3 tens and 2 ones.',
+        'Word form: "thirty" (for 3 tens) then "two" (for 2 ones).',
+        '32 = "thirty-two." Twenty-three is 23, a different number.'
+      ],
+      correctAnswerExplanation: '32 in word form is "thirty-two."'
+    }
+  }),
+
+  // Cat 4: word → standard, 2-digit (q41–q50)
+  _l24Q(41, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "twenty"?',
+    answer: '20',
+    choices: ['20', '2', '200', '12'],
+    hint: 'Twenty is a decade. It has 2 tens and 0 ones.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Twenty means 2 tens = 20',
+      teachingSteps: [
+        '"Twenty" means 2 tens.',
+        '2 tens is the number 20, not just 2.',
+        'Standard form: 20.'
+      ],
+      correctAnswerExplanation: '"Twenty" = 20. Two tens is the number 20.'
+    }
+  }),
+  _l24Q(42, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "thirty"?',
+    answer: '30',
+    choices: ['30', '3', '300', '13'],
+    hint: 'Thirty means 3 tens. What is 3 tens as a number?',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Thirty means 3 tens = 30',
+      teachingSteps: [
+        '"Thirty" means 3 tens.',
+        '3 tens is 30.',
+        'Standard form: 30.'
+      ],
+      correctAnswerExplanation: '"Thirty" = 30. Three tens is the number 30.'
+    }
+  }),
+  _l24Q(43, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "forty"?',
+    answer: '40',
+    choices: ['40', '4', '400', '14'],
+    hint: 'Forty means 4 tens. That is the number 40.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Forty means 4 tens = 40',
+      teachingSteps: [
+        '"Forty" means 4 tens.',
+        '4 tens is 40.',
+        'Standard form: 40.'
+      ],
+      correctAnswerExplanation: '"Forty" = 40. Four tens is the number 40.'
+    }
+  }),
+  _l24Q(44, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "fifty"?',
+    answer: '50',
+    choices: ['50', '5', '500', '15'],
+    hint: 'Fifty means 5 tens. That is 50.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Fifty means 5 tens = 50',
+      teachingSteps: [
+        '"Fifty" means 5 tens.',
+        '5 tens is 50.',
+        'Standard form: 50.'
+      ],
+      correctAnswerExplanation: '"Fifty" = 50. Five tens is the number 50.'
+    }
+  }),
+  _l24Q(45, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "sixty"?',
+    answer: '60',
+    choices: ['60', '6', '600', '16'],
+    hint: 'Sixty means 6 tens. That is 60.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Sixty means 6 tens = 60',
+      teachingSteps: [
+        '"Sixty" means 6 tens.',
+        '6 tens is 60.',
+        'Standard form: 60.'
+      ],
+      correctAnswerExplanation: '"Sixty" = 60. Six tens is the number 60.'
+    }
+  }),
+  _l24Q(46, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "seventy"?',
+    answer: '70',
+    choices: ['70', '7', '700', '17'],
+    hint: 'Seventy means 7 tens. That is 70.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Seventy means 7 tens = 70',
+      teachingSteps: [
+        '"Seventy" means 7 tens.',
+        '7 tens is 70.',
+        'Standard form: 70.'
+      ],
+      correctAnswerExplanation: '"Seventy" = 70. Seven tens is the number 70.'
+    }
+  }),
+  _l24Q(47, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "eighty"?',
+    answer: '80',
+    choices: ['80', '8', '800', '18'],
+    hint: 'Eighty means 8 tens. That is 80.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Eighty means 8 tens = 80',
+      teachingSteps: [
+        '"Eighty" means 8 tens.',
+        '8 tens is 80.',
+        'Standard form: 80.'
+      ],
+      correctAnswerExplanation: '"Eighty" = 80. Eight tens is the number 80.'
+    }
+  }),
+  _l24Q(48, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "ninety"?',
+    answer: '90',
+    choices: ['90', '9', '900', '19'],
+    hint: 'Ninety means 9 tens. That is 90.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Ninety means 9 tens = 90',
+      teachingSteps: [
+        '"Ninety" means 9 tens.',
+        '9 tens is 90.',
+        'Standard form: 90.'
+      ],
+      correctAnswerExplanation: '"Ninety" = 90. Nine tens is the number 90.'
+    }
+  }),
+  _l24Q(49, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "twenty-one"?',
+    answer: '21',
+    choices: ['21', '12', '201', '120'],
+    hint: 'Twenty is 2 tens. One is 1 one. Tens digit goes first.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Tens digit goes first in standard form',
+      teachingSteps: [
+        '"Twenty-one" means 2 tens and 1 one.',
+        'The tens digit (2) goes first, then the ones digit (1).',
+        'Standard form: 21. (Not 12 — that would be twelve.)'
+      ],
+      correctAnswerExplanation: '"Twenty-one" = 21. The 2 is in the tens place.'
+    }
+  }),
+  _l24Q(50, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'easy',
+    prompt: 'What is the standard form of "thirty-two"?',
+    answer: '32',
+    choices: ['32', '23', '302', '320'],
+    hint: 'Thirty is 3 tens. Two is 2 ones. Tens come first.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Read the tens part first',
+      teachingSteps: [
+        '"Thirty-two" means 3 tens and 2 ones.',
+        'The tens digit (3) goes first: 32.',
+        '23 would be "twenty-three," which is different.'
+      ],
+      correctAnswerExplanation: '"Thirty-two" = 32. The 3 is in the tens place.'
+    }
+  }),
+
+  // ── easy end
+
+  // ── medium (q51–q110) ─────────────────────────────────────────────────────
+
+  // Cat 1 medium: standard → expanded, full 2-digit range (q51–q62)
+  _l24Q(51, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 47?',
+    answer: '40 + 7',
+    choices: ['40 + 7', '4 + 7', '70 + 4', '40 + 70'],
+    hint: 'The 4 is in the tens place. 4 tens = 40.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Expanded form uses place values',
+      teachingSteps: [
+        '47 has 4 in the tens place and 7 in the ones place.',
+        '4 tens is worth 40.',
+        'Expanded form: 40 + 7.'
+      ],
+      correctAnswerExplanation: '47 = 40 + 7. The 4 means 4 tens = 40.'
+    }
+  }),
+  _l24Q(52, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 58?',
+    answer: '50 + 8',
+    choices: ['50 + 8', '5 + 8', '80 + 5', '50 + 80'],
+    hint: 'The 5 is in the tens place. 5 tens = 50.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens digit × 10 gives the tens value',
+      teachingSteps: [
+        '58 has 5 in the tens place and 8 in the ones place.',
+        '5 tens = 50.',
+        'Expanded form: 50 + 8.'
+      ],
+      correctAnswerExplanation: '58 = 50 + 8.'
+    }
+  }),
+  _l24Q(53, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 64?',
+    answer: '60 + 4',
+    choices: ['60 + 4', '6 + 4', '40 + 6', '64 + 0'],
+    hint: 'The 6 is in the tens place. 6 tens = 60.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Write the value of each place',
+      teachingSteps: [
+        '64 has 6 in the tens place and 4 in the ones place.',
+        '6 tens = 60.',
+        'Expanded form: 60 + 4.'
+      ],
+      correctAnswerExplanation: '64 = 60 + 4.'
+    }
+  }),
+  _l24Q(54, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 72?',
+    answer: '70 + 2',
+    choices: ['70 + 2', '7 + 2', '20 + 7', '72 + 0'],
+    hint: 'The 7 is in the tens place. 7 tens = 70.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens digit stands for tens, not ones',
+      teachingSteps: [
+        '72 has 7 in the tens place and 2 in the ones place.',
+        '7 tens = 70.',
+        'Expanded form: 70 + 2.'
+      ],
+      correctAnswerExplanation: '72 = 70 + 2.'
+    }
+  }),
+  _l24Q(55, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 89?',
+    answer: '80 + 9',
+    choices: ['80 + 9', '8 + 9', '90 + 8', '80 + 90'],
+    hint: 'The 8 is in the tens place. 8 tens = 80.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Expanded form shows place value, not digits',
+      teachingSteps: [
+        '89 has 8 in the tens place and 9 in the ones place.',
+        '8 tens = 80.',
+        'Expanded form: 80 + 9.'
+      ],
+      correctAnswerExplanation: '89 = 80 + 9.'
+    }
+  }),
+  _l24Q(56, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 5, difficulty: 'medium',
+    prompt: 'What is the expanded form of 50?',
+    answer: '50 + 0',
+    choices: ['50 + 0', '5 + 0', '50', '5 + 5'],
+    hint: '50 has 5 tens and 0 ones. Include the + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Always write + 0 for an empty ones place',
+      teachingSteps: [
+        '50 has 5 tens and 0 ones.',
+        'Expanded form must show both places: 50 + 0.',
+        'Writing just "50" is standard form, not expanded form.'
+      ],
+      correctAnswerExplanation: '50 = 50 + 0. The + 0 shows the ones place is empty.'
+    }
+  }),
+  _l24Q(57, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 5, difficulty: 'medium',
+    prompt: 'What is the expanded form of 70?',
+    answer: '70 + 0',
+    choices: ['70 + 0', '7 + 0', '70', '7 + 10'],
+    hint: '70 has 7 tens and 0 ones. Show both places.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Expanded form includes the empty place',
+      teachingSteps: [
+        '70 has 7 tens and 0 ones.',
+        'Both places must appear: 70 + 0.',
+        'Just "70" is the standard form, not expanded form.'
+      ],
+      correctAnswerExplanation: '70 = 70 + 0.'
+    }
+  }),
+  _l24Q(58, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 96?',
+    answer: '90 + 6',
+    choices: ['90 + 6', '9 + 6', '60 + 9', '90 + 60'],
+    hint: 'The 9 is in the tens place. 9 tens = 90.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens place value is 10 times the digit',
+      teachingSteps: [
+        '96 has 9 in the tens place and 6 in the ones place.',
+        '9 tens = 90.',
+        'Expanded form: 90 + 6.'
+      ],
+      correctAnswerExplanation: '96 = 90 + 6.'
+    }
+  }),
+  _l24Q(59, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 15?',
+    answer: '10 + 5',
+    choices: ['10 + 5', '1 + 5', '50 + 1', '15 + 0'],
+    hint: '15 has 1 ten and 5 ones. 1 ten = 10.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Even 1 ten is worth 10, not 1',
+      teachingSteps: [
+        '15 has 1 in the tens place and 5 in the ones place.',
+        '1 ten is worth 10, not just 1.',
+        'Expanded form: 10 + 5.'
+      ],
+      correctAnswerExplanation: '15 = 10 + 5. The 1 in the tens place is worth 10.'
+    }
+  }),
+  _l24Q(60, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 13?',
+    answer: '10 + 3',
+    choices: ['10 + 3', '1 + 3', '30 + 1', '13 + 0'],
+    hint: '13 has 1 ten and 3 ones. 1 ten = 10.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: '1 ten is worth 10',
+      teachingSteps: [
+        '13 has 1 in the tens place and 3 in the ones place.',
+        '1 ten = 10.',
+        'Expanded form: 10 + 3.'
+      ],
+      correctAnswerExplanation: '13 = 10 + 3.'
+    }
+  }),
+  _l24Q(61, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 18?',
+    answer: '10 + 8',
+    choices: ['10 + 8', '1 + 8', '80 + 1', '18 + 0'],
+    hint: '18 has 1 ten and 8 ones.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'One ten equals 10',
+      teachingSteps: [
+        '18 has 1 in the tens place and 8 in the ones place.',
+        '1 ten = 10.',
+        'Expanded form: 10 + 8.'
+      ],
+      correctAnswerExplanation: '18 = 10 + 8.'
+    }
+  }),
+  _l24Q(62, {
+    subSkill: 'standard_to_expanded_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: 'What is the expanded form of 35?',
+    answer: '30 + 5',
+    choices: ['30 + 5', '3 + 5', '50 + 3', '35 + 0'],
+    hint: 'The 3 is in the tens place. 3 tens = 30.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Tens place shows a multiple of 10',
+      teachingSteps: [
+        '35 has 3 in the tens place and 5 in the ones place.',
+        '3 tens = 30.',
+        'Expanded form: 30 + 5.'
+      ],
+      correctAnswerExplanation: '35 = 30 + 5.'
+    }
+  }),
+
+  // Cat 2 medium: expanded → standard, full 2-digit range (q63–q72)
+  _l24Q(63, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '10 + 6 = ___',
+    answer: '16',
+    choices: ['16', '61', '106', '10'],
+    hint: '10 is 1 ten. Add 6 ones. Tens digit goes first.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens digit comes before ones digit',
+      teachingSteps: [
+        '10 + 6 means 1 ten and 6 ones.',
+        'Tens digit first: 1, then ones digit: 6.',
+        'Standard form: 16.'
+      ],
+      correctAnswerExplanation: '10 + 6 = 16.'
+    }
+  }),
+  _l24Q(64, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '10 + 9 = ___',
+    answer: '19',
+    choices: ['19', '91', '109', '10'],
+    hint: '10 is 1 ten. Add 9 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'One ten and nine ones makes 19',
+      teachingSteps: [
+        '10 + 9 means 1 ten and 9 ones.',
+        'Standard form: 19.',
+        '91 would be 9 tens and 1 one.'
+      ],
+      correctAnswerExplanation: '10 + 9 = 19.'
+    }
+  }),
+  _l24Q(65, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '50 + 7 = ___',
+    answer: '57',
+    choices: ['57', '75', '507', '50'],
+    hint: '50 is 5 tens. Add 7 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens place value comes first',
+      teachingSteps: [
+        '50 + 7 means 5 tens and 7 ones.',
+        'Standard form: 57.',
+        '75 would be 7 tens and 5 ones.'
+      ],
+      correctAnswerExplanation: '50 + 7 = 57.'
+    }
+  }),
+  _l24Q(66, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '60 + 9 = ___',
+    answer: '69',
+    choices: ['69', '96', '609', '60'],
+    hint: '60 is 6 tens. Add 9 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Six tens and nine ones makes 69',
+      teachingSteps: [
+        '60 + 9 means 6 tens and 9 ones.',
+        'Standard form: 69.',
+        '96 would be 9 tens and 6 ones.'
+      ],
+      correctAnswerExplanation: '60 + 9 = 69.'
+    }
+  }),
+  _l24Q(67, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '70 + 5 = ___',
+    answer: '75',
+    choices: ['75', '57', '705', '70'],
+    hint: '70 is 7 tens. Add 5 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens then ones in standard form',
+      teachingSteps: [
+        '70 + 5 means 7 tens and 5 ones.',
+        'Standard form: 75.',
+        '57 would be 5 tens and 7 ones.'
+      ],
+      correctAnswerExplanation: '70 + 5 = 75.'
+    }
+  }),
+  _l24Q(68, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '40 + 9 = ___',
+    answer: '49',
+    choices: ['49', '94', '409', '40'],
+    hint: '40 is 4 tens. Add 9 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens digit first, ones digit second',
+      teachingSteps: [
+        '40 + 9 means 4 tens and 9 ones.',
+        'Standard form: 49.',
+        '94 would be 9 tens and 4 ones.'
+      ],
+      correctAnswerExplanation: '40 + 9 = 49.'
+    }
+  }),
+  _l24Q(69, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 5, difficulty: 'medium',
+    prompt: '50 + 0 = ___',
+    answer: '50',
+    choices: ['50', '5', '500', '55'],
+    hint: '50 is 5 tens. Plus 0 ones. The number is 50.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Five tens makes the number 50',
+      teachingSteps: [
+        '50 + 0 means 5 tens and 0 ones.',
+        '5 tens is 50, not 5.',
+        'Standard form: 50.'
+      ],
+      correctAnswerExplanation: '50 + 0 = 50.'
+    }
+  }),
+  _l24Q(70, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 5, difficulty: 'medium',
+    prompt: '70 + 0 = ___',
+    answer: '70',
+    choices: ['70', '7', '700', '77'],
+    hint: '70 is 7 tens. Plus 0 ones.',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: 'Seven tens is 70',
+      teachingSteps: [
+        '70 + 0 means 7 tens and 0 ones.',
+        '7 tens = 70.',
+        'Standard form: 70.'
+      ],
+      correctAnswerExplanation: '70 + 0 = 70.'
+    }
+  }),
+  _l24Q(71, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '80 + 3 = ___',
+    answer: '83',
+    choices: ['83', '38', '803', '80'],
+    hint: '80 is 8 tens. Add 3 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Eight tens and three ones is 83',
+      teachingSteps: [
+        '80 + 3 means 8 tens and 3 ones.',
+        'Standard form: 83.',
+        '38 would be 3 tens and 8 ones.'
+      ],
+      correctAnswerExplanation: '80 + 3 = 83.'
+    }
+  }),
+  _l24Q(72, {
+    subSkill: 'expanded_to_standard_2digit', keyIdea: 1, difficulty: 'medium',
+    prompt: '90 + 4 = ___',
+    answer: '94',
+    choices: ['94', '49', '904', '90'],
+    hint: '90 is 9 tens. Add 4 ones.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Nine tens and four ones is 94',
+      teachingSteps: [
+        '90 + 4 means 9 tens and 4 ones.',
+        'Standard form: 94.',
+        '49 would be 4 tens and 9 ones.'
+      ],
+      correctAnswerExplanation: '90 + 4 = 94.'
+    }
+  }),
+
+  // Cat 3 medium: standard → word, full 2-digit including teens (q73–q82)
+  _l24Q(73, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 11 in word form.',
+    answer: 'eleven',
+    choices: ['eleven', 'one-one', 'ten-one', 'twenty-one'],
+    hint: '11 is a special word. It is not "ten-one."',
+    intervention: {
+      errorTag: 'err_word_form_irregular',
+      title: '11 is called eleven — a special word',
+      teachingSteps: [
+        '11 is a teen number with an irregular name.',
+        'The word for 11 is "eleven."',
+        'Teen numbers 11–19 do not follow the regular pattern.'
+      ],
+      correctAnswerExplanation: '11 in word form is "eleven."'
+    }
+  }),
+  _l24Q(74, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 12 in word form.',
+    answer: 'twelve',
+    choices: ['twelve', 'one-two', 'ten-two', 'twenty-two'],
+    hint: '12 is a special word — not "ten-two."',
+    intervention: {
+      errorTag: 'err_word_form_irregular',
+      title: '12 is called twelve — another special word',
+      teachingSteps: [
+        '12 is a teen number with an irregular name.',
+        'The word for 12 is "twelve."',
+        'It does not follow the tens + ones pattern.'
+      ],
+      correctAnswerExplanation: '12 in word form is "twelve."'
+    }
+  }),
+  _l24Q(75, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 14 in word form.',
+    answer: 'fourteen',
+    choices: ['fourteen', 'forty', 'four-ten', 'forty-one'],
+    hint: '14 is a teen number. The ones part comes first in the word.',
+    intervention: {
+      errorTag: 'err_word_form_irregular',
+      title: 'Fourteen is 14, not forty',
+      teachingSteps: [
+        '14 is a teen number.',
+        'The word is "fourteen" — four + teen.',
+        '"Forty" (40) is a different number with 4 tens.'
+      ],
+      correctAnswerExplanation: '14 in word form is "fourteen." Forty is the word for 40.'
+    }
+  }),
+  _l24Q(76, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 16 in word form.',
+    answer: 'sixteen',
+    choices: ['sixteen', 'sixty', 'six-ten', 'sixty-one'],
+    hint: '16 is a teen. "Sixty" is 60, not 16.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Sixteen is 16 — not sixty (60)',
+      teachingSteps: [
+        '16 is a teen number.',
+        'The word is "sixteen."',
+        '"Sixty" is the word for 60, a much larger number.'
+      ],
+      correctAnswerExplanation: '16 in word form is "sixteen." Sixty means 60.'
+    }
+  }),
+  _l24Q(77, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 45 in word form.',
+    answer: 'forty-five',
+    choices: ['forty-five', 'fifty-four', 'four-five', 'forty-fifteen'],
+    hint: '45 = 4 tens and 5 ones. Tens word first: forty-five.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Tens word comes first: forty-five',
+      teachingSteps: [
+        '45 has 4 tens and 5 ones.',
+        'Word form: "forty" (4 tens) then "five" (5 ones).',
+        'Standard form: 45; word form: forty-five.'
+      ],
+      correctAnswerExplanation: '45 in word form is "forty-five."'
+    }
+  }),
+  _l24Q(78, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 63 in word form.',
+    answer: 'sixty-three',
+    choices: ['sixty-three', 'thirty-six', 'six-three', 'sixty-thirteen'],
+    hint: '63 = 6 tens and 3 ones. Tens word first.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Tens word before ones word',
+      teachingSteps: [
+        '63 has 6 tens and 3 ones.',
+        'Word form: "sixty" (6 tens) then "three" (3 ones).',
+        '63 = "sixty-three."'
+      ],
+      correctAnswerExplanation: '63 in word form is "sixty-three."'
+    }
+  }),
+  _l24Q(79, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 78 in word form.',
+    answer: 'seventy-eight',
+    choices: ['seventy-eight', 'eighty-seven', 'seven-eight', 'seventy-eighteen'],
+    hint: '78 = 7 tens and 8 ones. Say tens first.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Seventy comes before eight',
+      teachingSteps: [
+        '78 has 7 tens and 8 ones.',
+        'Word form: "seventy" then "eight."',
+        '78 = "seventy-eight."'
+      ],
+      correctAnswerExplanation: '78 in word form is "seventy-eight."'
+    }
+  }),
+  _l24Q(80, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 94 in word form.',
+    answer: 'ninety-four',
+    choices: ['ninety-four', 'forty-nine', 'nine-four', 'ninety-fourteen'],
+    hint: '94 = 9 tens and 4 ones. Tens word: ninety.',
+    intervention: {
+      errorTag: 'err_word_form_reversed',
+      title: 'Ninety comes first, then four',
+      teachingSteps: [
+        '94 has 9 tens and 4 ones.',
+        'Word form: "ninety" then "four."',
+        '94 = "ninety-four."'
+      ],
+      correctAnswerExplanation: '94 in word form is "ninety-four."'
+    }
+  }),
+  _l24Q(81, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 19 in word form.',
+    answer: 'nineteen',
+    choices: ['nineteen', 'ninety', 'nine-ten', 'ninety-one'],
+    hint: '19 is a teen. "Ninety" is 90.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Nineteen is 19 — not ninety (90)',
+      teachingSteps: [
+        '19 is a teen number.',
+        'The word is "nineteen."',
+        '"Ninety" is the word for 90, a much larger number.'
+      ],
+      correctAnswerExplanation: '19 in word form is "nineteen." Ninety means 90.'
+    }
+  }),
+  _l24Q(82, {
+    subSkill: 'standard_to_word_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'Write 17 in word form.',
+    answer: 'seventeen',
+    choices: ['seventeen', 'seventy', 'seven-ten', 'seventy-one'],
+    hint: '17 is a teen. "Seventy" is 70.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Seventeen is 17 — not seventy (70)',
+      teachingSteps: [
+        '17 is a teen number.',
+        'The word is "seventeen."',
+        '"Seventy" is the word for 70.'
+      ],
+      correctAnswerExplanation: '17 in word form is "seventeen." Seventy means 70.'
+    }
+  }),
+
+  // Cat 4 medium: word → standard, full 2-digit (q83–q90)
+  _l24Q(83, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "forty-seven"?',
+    answer: '47',
+    choices: ['47', '74', '407', '470'],
+    hint: 'Forty is 4 tens. Seven is 7 ones. Tens digit goes first.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Tens come before ones in standard form',
+      teachingSteps: [
+        '"Forty-seven" means 4 tens and 7 ones.',
+        'Tens digit first: 4, ones digit: 7.',
+        'Standard form: 47.'
+      ],
+      correctAnswerExplanation: '"Forty-seven" = 47.'
+    }
+  }),
+  _l24Q(84, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "sixty-five"?',
+    answer: '65',
+    choices: ['65', '56', '605', '650'],
+    hint: 'Sixty is 6 tens. Five is 5 ones.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Six tens and five ones is 65',
+      teachingSteps: [
+        '"Sixty-five" means 6 tens and 5 ones.',
+        'Standard form: 65.',
+        '56 would be "fifty-six," a different number.'
+      ],
+      correctAnswerExplanation: '"Sixty-five" = 65.'
+    }
+  }),
+  _l24Q(85, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "eighty-two"?',
+    answer: '82',
+    choices: ['82', '28', '802', '820'],
+    hint: 'Eighty is 8 tens. Two is 2 ones.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Eight tens and two ones is 82',
+      teachingSteps: [
+        '"Eighty-two" means 8 tens and 2 ones.',
+        'Standard form: 82.',
+        '28 would be "twenty-eight."'
+      ],
+      correctAnswerExplanation: '"Eighty-two" = 82.'
+    }
+  }),
+  _l24Q(86, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "fourteen"?',
+    answer: '14',
+    choices: ['14', '40', '41', '104'],
+    hint: 'Fourteen is a teen number: 1 ten and 4 ones.',
+    intervention: {
+      errorTag: 'err_word_form_irregular',
+      title: 'Fourteen means 1 ten and 4 ones = 14',
+      teachingSteps: [
+        '"Fourteen" is a teen number.',
+        'It means 1 ten and 4 ones.',
+        'Standard form: 14, not 40.'
+      ],
+      correctAnswerExplanation: '"Fourteen" = 14. One ten and four ones.'
+    }
+  }),
+  _l24Q(87, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "sixteen"?',
+    answer: '16',
+    choices: ['16', '60', '61', '106'],
+    hint: 'Sixteen is a teen: 1 ten and 6 ones.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Sixteen means 1 ten and 6 ones = 16',
+      teachingSteps: [
+        '"Sixteen" is a teen number.',
+        'It means 1 ten and 6 ones.',
+        'Standard form: 16. Sixty (60) is a different word.'
+      ],
+      correctAnswerExplanation: '"Sixteen" = 16. Sixty is 60.'
+    }
+  }),
+  _l24Q(88, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "ninety-three"?',
+    answer: '93',
+    choices: ['93', '39', '903', '930'],
+    hint: 'Ninety is 9 tens. Three is 3 ones.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Nine tens and three ones is 93',
+      teachingSteps: [
+        '"Ninety-three" means 9 tens and 3 ones.',
+        'Standard form: 93.',
+        '39 would be "thirty-nine."'
+      ],
+      correctAnswerExplanation: '"Ninety-three" = 93.'
+    }
+  }),
+  _l24Q(89, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "fifty-six"?',
+    answer: '56',
+    choices: ['56', '65', '506', '560'],
+    hint: 'Fifty is 5 tens. Six is 6 ones.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Five tens and six ones is 56',
+      teachingSteps: [
+        '"Fifty-six" means 5 tens and 6 ones.',
+        'Standard form: 56.',
+        '65 would be "sixty-five."'
+      ],
+      correctAnswerExplanation: '"Fifty-six" = 56.'
+    }
+  }),
+  _l24Q(90, {
+    subSkill: 'word_to_standard_2digit', keyIdea: 2, difficulty: 'medium',
+    prompt: 'What is the standard form of "seventy-eight"?',
+    answer: '78',
+    choices: ['78', '87', '708', '780'],
+    hint: 'Seventy is 7 tens. Eight is 8 ones.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Seven tens and eight ones is 78',
+      teachingSteps: [
+        '"Seventy-eight" means 7 tens and 8 ones.',
+        'Standard form: 78.',
+        '87 would be "eighty-seven."'
+      ],
+      correctAnswerExplanation: '"Seventy-eight" = 78.'
+    }
+  }),
+
+  // Cat 7: standard → expanded, 3-digit 100–120 (q91–q100)
+  _l24Q(91, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 100?',
+    answer: '100 + 0 + 0',
+    choices: ['100 + 0 + 0', '1 + 0 + 0', '100', '10 + 0'],
+    hint: '100 has 1 hundred, 0 tens, and 0 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '100 needs all three places shown',
+      teachingSteps: [
+        '100 has 1 hundred, 0 tens, and 0 ones.',
+        'Expanded form shows all three places: 100 + 0 + 0.',
+        'The + 0 + 0 shows the tens and ones places are both empty.'
+      ],
+      correctAnswerExplanation: '100 = 100 + 0 + 0.'
+    }
+  }),
+  _l24Q(92, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 105?',
+    answer: '100 + 0 + 5',
+    choices: ['100 + 0 + 5', '100 + 5', '1 + 0 + 5', '10 + 5'],
+    hint: '105 has 1 hundred, 0 tens, and 5 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Show all three places: hundreds, tens, ones',
+      teachingSteps: [
+        '105 has 1 hundred, 0 tens, and 5 ones.',
+        'Expanded form: 100 + 0 + 5.',
+        'We include + 0 for the empty tens place.'
+      ],
+      correctAnswerExplanation: '105 = 100 + 0 + 5.'
+    }
+  }),
+  _l24Q(93, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 110?',
+    answer: '100 + 10 + 0',
+    choices: ['100 + 10 + 0', '100 + 10', '1 + 1 + 0', '110'],
+    hint: '110 has 1 hundred, 1 ten, and 0 ones.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show the empty ones place with + 0',
+      teachingSteps: [
+        '110 has 1 hundred, 1 ten, and 0 ones.',
+        'Expanded form: 100 + 10 + 0.',
+        'We include + 0 to show the ones place is empty.'
+      ],
+      correctAnswerExplanation: '110 = 100 + 10 + 0.'
+    }
+  }),
+  _l24Q(94, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 113?',
+    answer: '100 + 10 + 3',
+    choices: ['100 + 10 + 3', '1 + 1 + 3', '100 + 13', '10 + 13'],
+    hint: '113 has 1 hundred, 1 ten, and 3 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Write each place separately: 100 + 10 + 3',
+      teachingSteps: [
+        '113 has 1 hundred, 1 ten, and 3 ones.',
+        '1 hundred = 100, 1 ten = 10, 3 ones = 3.',
+        'Expanded form: 100 + 10 + 3.'
+      ],
+      correctAnswerExplanation: '113 = 100 + 10 + 3.'
+    }
+  }),
+  _l24Q(95, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 120?',
+    answer: '100 + 20 + 0',
+    choices: ['100 + 20 + 0', '100 + 20', '1 + 2 + 0', '120'],
+    hint: '120 has 1 hundred, 2 tens, and 0 ones.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Include + 0 for the empty ones place',
+      teachingSteps: [
+        '120 has 1 hundred, 2 tens, and 0 ones.',
+        '1 hundred = 100, 2 tens = 20, 0 ones = 0.',
+        'Expanded form: 100 + 20 + 0.'
+      ],
+      correctAnswerExplanation: '120 = 100 + 20 + 0.'
+    }
+  }),
+  _l24Q(96, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 107?',
+    answer: '100 + 0 + 7',
+    choices: ['100 + 0 + 7', '100 + 7', '1 + 0 + 7', '107'],
+    hint: '107 has 1 hundred, 0 tens, and 7 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Show the empty tens place with + 0',
+      teachingSteps: [
+        '107 has 1 hundred, 0 tens, and 7 ones.',
+        'Expanded form: 100 + 0 + 7.',
+        'The + 0 shows the tens place is empty.'
+      ],
+      correctAnswerExplanation: '107 = 100 + 0 + 7.'
+    }
+  }),
+  _l24Q(97, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 115?',
+    answer: '100 + 10 + 5',
+    choices: ['100 + 10 + 5', '1 + 1 + 5', '100 + 15', '10 + 15'],
+    hint: '115 has 1 hundred, 1 ten, and 5 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Write each place as its value',
+      teachingSteps: [
+        '115 has 1 hundred, 1 ten, and 5 ones.',
+        '1 hundred = 100, 1 ten = 10, 5 ones = 5.',
+        'Expanded form: 100 + 10 + 5.'
+      ],
+      correctAnswerExplanation: '115 = 100 + 10 + 5.'
+    }
+  }),
+  _l24Q(98, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 119?',
+    answer: '100 + 10 + 9',
+    choices: ['100 + 10 + 9', '1 + 1 + 9', '100 + 19', '119'],
+    hint: '119 has 1 hundred, 1 ten, and 9 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Each place gets its own term',
+      teachingSteps: [
+        '119 has 1 hundred, 1 ten, and 9 ones.',
+        '100 + 10 + 9 shows each place separately.',
+        'Expanded form: 100 + 10 + 9.'
+      ],
+      correctAnswerExplanation: '119 = 100 + 10 + 9.'
+    }
+  }),
+  _l24Q(99, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 103?',
+    answer: '100 + 0 + 3',
+    choices: ['100 + 0 + 3', '100 + 3', '1 + 0 + 3', '10 + 3'],
+    hint: '103 has 1 hundred, 0 tens, and 3 ones. Include + 0 for tens.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Show the empty tens place',
+      teachingSteps: [
+        '103 has 1 hundred, 0 tens, and 3 ones.',
+        'Expanded form: 100 + 0 + 3.',
+        'We include + 0 for the empty tens place.'
+      ],
+      correctAnswerExplanation: '103 = 100 + 0 + 3.'
+    }
+  }),
+  _l24Q(100, {
+    subSkill: 'standard_to_expanded_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: 'What is the expanded form of 118?',
+    answer: '100 + 10 + 8',
+    choices: ['100 + 10 + 8', '1 + 1 + 8', '100 + 18', '10 + 18'],
+    hint: '118 has 1 hundred, 1 ten, and 8 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Write the value of every place',
+      teachingSteps: [
+        '118 has 1 hundred, 1 ten, and 8 ones.',
+        '1 hundred = 100, 1 ten = 10, 8 ones = 8.',
+        'Expanded form: 100 + 10 + 8.'
+      ],
+      correctAnswerExplanation: '118 = 100 + 10 + 8.'
+    }
+  }),
+
+  // Cat 8: expanded → standard, 3-digit (q101–q106)
+  _l24Q(101, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 0 + 0 = ___',
+    answer: '100',
+    choices: ['100', '10', '1', '1000'],
+    hint: '1 hundred, 0 tens, 0 ones. The number is 100.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'One hundred is the number 100',
+      teachingSteps: [
+        '100 + 0 + 0 means 1 hundred, 0 tens, 0 ones.',
+        'Standard form: 100.',
+        '10 would only be 1 ten, which is much smaller.'
+      ],
+      correctAnswerExplanation: '100 + 0 + 0 = 100.'
+    }
+  }),
+  _l24Q(102, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 10 + 3 = ___',
+    answer: '113',
+    choices: ['113', '131', '1013', '103'],
+    hint: '1 hundred, 1 ten, 3 ones. Hundreds first, then tens, then ones.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Hundreds, tens, ones — in that order',
+      teachingSteps: [
+        '100 + 10 + 3 means 1 hundred, 1 ten, 3 ones.',
+        'Hundreds digit first (1), tens digit next (1), ones digit last (3).',
+        'Standard form: 113.'
+      ],
+      correctAnswerExplanation: '100 + 10 + 3 = 113.'
+    }
+  }),
+  _l24Q(103, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 20 + 0 = ___',
+    answer: '120',
+    choices: ['120', '102', '1020', '12'],
+    hint: '1 hundred, 2 tens, 0 ones. What is the number?',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'One hundred twenty is 120',
+      teachingSteps: [
+        '100 + 20 + 0 means 1 hundred, 2 tens, 0 ones.',
+        'Standard form: 120.',
+        '102 would be 100 + 0 + 2 — different arrangement.'
+      ],
+      correctAnswerExplanation: '100 + 20 + 0 = 120.'
+    }
+  }),
+  _l24Q(104, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 0 + 7 = ___',
+    answer: '107',
+    choices: ['107', '170', '17', '1007'],
+    hint: '1 hundred, 0 tens, 7 ones. Write all three digits.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Write all three digits: 1, 0, 7',
+      teachingSteps: [
+        '100 + 0 + 7 means 1 hundred, 0 tens, 7 ones.',
+        'Hundreds digit: 1, Tens digit: 0, Ones digit: 7.',
+        'Standard form: 107.'
+      ],
+      correctAnswerExplanation: '100 + 0 + 7 = 107.'
+    }
+  }),
+  _l24Q(105, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 10 + 5 = ___',
+    answer: '115',
+    choices: ['115', '151', '1015', '105'],
+    hint: '1 hundred, 1 ten, 5 ones. Hundreds first.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Hundreds, tens, ones — 115',
+      teachingSteps: [
+        '100 + 10 + 5 means 1 hundred, 1 ten, 5 ones.',
+        'Standard form: 115.',
+        '151 would require a 5 in the tens place, not 1.'
+      ],
+      correctAnswerExplanation: '100 + 10 + 5 = 115.'
+    }
+  }),
+  _l24Q(106, {
+    subSkill: 'expanded_to_standard_3digit', keyIdea: 4, difficulty: 'medium',
+    prompt: '100 + 0 + 9 = ___',
+    answer: '109',
+    choices: ['109', '190', '19', '1009'],
+    hint: '1 hundred, 0 tens, 9 ones.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Write all three digits: 1, 0, 9',
+      teachingSteps: [
+        '100 + 0 + 9 means 1 hundred, 0 tens, 9 ones.',
+        'Standard form: 109.',
+        '190 would be 100 + 90 + 0 — different.'
+      ],
+      correctAnswerExplanation: '100 + 0 + 9 = 109.'
+    }
+  }),
+
+  // Cat 11 medium: visual → form, 3-digit (q107–q110)
+  _l24Q(107, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'medium',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } },
+    answer: '100 + 0 + 0',
+    choices: ['100 + 0 + 0', '1 + 0 + 0', '100', '10 + 0'],
+    hint: 'The large blue square is 1 hundred = 100. No rods, no cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'The flat = 100, not 1',
+      teachingSteps: [
+        'The large blue flat shows 1 hundred = 100.',
+        'No rods = 0 tens. No cubes = 0 ones.',
+        'Expanded form: 100 + 0 + 0.'
+      ],
+      correctAnswerExplanation: '1 flat (100) = 100 + 0 + 0.'
+    }
+  }),
+  _l24Q(108, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'medium',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 3 } },
+    answer: '100 + 10 + 3',
+    choices: ['100 + 10 + 3', '1 + 1 + 3', '100 + 13', '113'],
+    hint: '1 flat = 100, 1 rod = 10, 3 cubes = 3.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Flat = 100, rod = 10, cube = 1',
+      teachingSteps: [
+        '1 blue flat = 1 hundred = 100.',
+        '1 blue rod = 1 ten = 10.',
+        '3 orange cubes = 3 ones = 3. Expanded form: 100 + 10 + 3.'
+      ],
+      correctAnswerExplanation: '1 flat (100) + 1 rod (10) + 3 cubes (3) = 100 + 10 + 3.'
+    }
+  }),
+  _l24Q(109, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'medium',
+    prompt: 'What is the standard form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 5 } },
+    answer: '105',
+    choices: ['105', '150', '15', '1005'],
+    hint: '1 flat = 100. No rods = 0 tens. 5 cubes = 5.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Flat is 1 hundred, write 3 digits',
+      teachingSteps: [
+        '1 flat = 100. No rods = 0 tens. 5 cubes = 5 ones.',
+        'Hundreds digit: 1, Tens digit: 0, Ones digit: 5.',
+        'Standard form: 105.'
+      ],
+      correctAnswerExplanation: '1 flat + 0 rods + 5 cubes = 105.'
+    }
+  }),
+  _l24Q(110, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'medium',
+    prompt: 'What is the standard form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '120',
+    choices: ['120', '102', '12', '1020'],
+    hint: '1 flat = 100. 2 rods = 20. No cubes = 0.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Flat + 2 rods = 120',
+      teachingSteps: [
+        '1 flat = 100. 2 rods = 20. No cubes = 0 ones.',
+        'Hundreds: 1, Tens: 2, Ones: 0.',
+        'Standard form: 120.'
+      ],
+      correctAnswerExplanation: '1 flat (100) + 2 rods (20) + 0 cubes = 120.'
+    }
+  }),
+
+  // ── medium end
+
+  // ── hard (q111–q160) ──────────────────────────────────────────────────────
+
+  // Cat 9: standard → word, 3-digit 100–120 (q111–q120)
+  _l24Q(111, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 100 in word form.',
+    answer: 'one hundred',
+    choices: ['one hundred', 'ten', 'one hundred zero', 'one-zero-zero'],
+    hint: '100 is one group of a hundred. The word is "one hundred."',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '100 in words is "one hundred"',
+      teachingSteps: [
+        '100 has 1 hundred, 0 tens, 0 ones.',
+        'We say the hundreds part: "one hundred."',
+        'We do not say the zero tens or zero ones.'
+      ],
+      correctAnswerExplanation: '100 in word form is "one hundred."'
+    }
+  }),
+  _l24Q(112, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 105 in word form.',
+    answer: 'one hundred five',
+    choices: ['one hundred five', 'one hundred fifty', 'one zero five', 'hundred five'],
+    hint: '105 = 1 hundred and 5 ones. Say "one hundred" then "five."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred five is not one hundred fifty',
+      teachingSteps: [
+        '105 has 1 hundred, 0 tens, and 5 ones.',
+        'Word form: "one hundred" then "five."',
+        '"One hundred fifty" is 150 — a different number.'
+      ],
+      correctAnswerExplanation: '105 in word form is "one hundred five."'
+    }
+  }),
+  _l24Q(113, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 110 in word form.',
+    answer: 'one hundred ten',
+    choices: ['one hundred ten', 'one hundred one', 'one ten', 'eleven'],
+    hint: '110 = 1 hundred and 1 ten. Say "one hundred ten."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred ten is 110, not 11',
+      teachingSteps: [
+        '110 has 1 hundred, 1 ten, and 0 ones.',
+        'Word form: "one hundred ten."',
+        '"Eleven" is 11, which is much smaller.'
+      ],
+      correctAnswerExplanation: '110 in word form is "one hundred ten."'
+    }
+  }),
+  _l24Q(114, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 113 in word form.',
+    answer: 'one hundred thirteen',
+    choices: ['one hundred thirteen', 'one hundred thirty', 'thirteen', 'one thirteen'],
+    hint: '113 = 1 hundred, 1 ten, 3 ones. "One hundred thirteen."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred thirteen vs one hundred thirty',
+      teachingSteps: [
+        '113 has 1 hundred, 1 ten, and 3 ones.',
+        'Word form: "one hundred thirteen."',
+        '"One hundred thirty" is 130 — outside our range.'
+      ],
+      correctAnswerExplanation: '113 in word form is "one hundred thirteen."'
+    }
+  }),
+  _l24Q(115, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 115 in word form.',
+    answer: 'one hundred fifteen',
+    choices: ['one hundred fifteen', 'one hundred fifty', 'fifteen', 'one fifteen'],
+    hint: '115 = 1 hundred, 1 ten, 5 ones. "One hundred fifteen."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Fifteen vs fifty: different words',
+      teachingSteps: [
+        '115 has 1 hundred, 1 ten, and 5 ones.',
+        'Word form: "one hundred fifteen."',
+        '"Fifteen" alone means 15; "one hundred fifteen" means 115.'
+      ],
+      correctAnswerExplanation: '115 in word form is "one hundred fifteen."'
+    }
+  }),
+  _l24Q(116, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 120 in word form.',
+    answer: 'one hundred twenty',
+    choices: ['one hundred twenty', 'one hundred two', 'twelve', 'one twenty'],
+    hint: '120 = 1 hundred and 2 tens. "One hundred twenty."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred twenty is 120',
+      teachingSteps: [
+        '120 has 1 hundred, 2 tens, and 0 ones.',
+        'Word form: "one hundred twenty."',
+        '"Twelve" is 12, which is much smaller.'
+      ],
+      correctAnswerExplanation: '120 in word form is "one hundred twenty."'
+    }
+  }),
+  _l24Q(117, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 108 in word form.',
+    answer: 'one hundred eight',
+    choices: ['one hundred eight', 'one hundred eighty', 'eighteen', 'one eight'],
+    hint: '108 = 1 hundred and 8 ones. "One hundred eight."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Eight vs eighty: different words',
+      teachingSteps: [
+        '108 has 1 hundred, 0 tens, and 8 ones.',
+        'Word form: "one hundred eight."',
+        '"One hundred eighty" would be 180 — too big.'
+      ],
+      correctAnswerExplanation: '108 in word form is "one hundred eight."'
+    }
+  }),
+  _l24Q(118, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 119 in word form.',
+    answer: 'one hundred nineteen',
+    choices: ['one hundred nineteen', 'one hundred ninety', 'nineteen', 'one nineteen'],
+    hint: '119 = 1 hundred, 1 ten, 9 ones. "One hundred nineteen."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Nineteen vs ninety: different words',
+      teachingSteps: [
+        '119 has 1 hundred, 1 ten, and 9 ones.',
+        'Word form: "one hundred nineteen."',
+        '"Nineteen" alone means 19; add "one hundred" for 119.'
+      ],
+      correctAnswerExplanation: '119 in word form is "one hundred nineteen."'
+    }
+  }),
+  _l24Q(119, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 116 in word form.',
+    answer: 'one hundred sixteen',
+    choices: ['one hundred sixteen', 'one hundred sixty', 'sixteen', 'one sixteen'],
+    hint: '116 = 1 hundred, 1 ten, 6 ones. "One hundred sixteen."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Sixteen (16) vs sixty (60): different numbers',
+      teachingSteps: [
+        '116 has 1 hundred, 1 ten, and 6 ones.',
+        'Word form: "one hundred sixteen."',
+        '"One hundred sixty" would be 160 — outside our range.'
+      ],
+      correctAnswerExplanation: '116 in word form is "one hundred sixteen."'
+    }
+  }),
+  _l24Q(120, {
+    subSkill: 'standard_to_word_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Write 112 in word form.',
+    answer: 'one hundred twelve',
+    choices: ['one hundred twelve', 'one hundred twenty', 'twelve', 'one twelve'],
+    hint: '112 = 1 hundred, 1 ten, 2 ones. "One hundred twelve."',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Twelve (12) vs twenty (20): different words',
+      teachingSteps: [
+        '112 has 1 hundred, 1 ten, and 2 ones.',
+        'Word form: "one hundred twelve."',
+        '"One hundred twenty" is 120, a different number.'
+      ],
+      correctAnswerExplanation: '112 in word form is "one hundred twelve."'
+    }
+  }),
+
+  // Cat 10: word → standard, 3-digit (q121–q128)
+  _l24Q(121, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred"?',
+    answer: '100',
+    choices: ['100', '10', '1', '1000'],
+    hint: 'One hundred = 1 hundred, 0 tens, 0 ones.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'One hundred is 100, not 10',
+      teachingSteps: [
+        '"One hundred" means 1 hundred.',
+        '1 hundred is written as 100.',
+        '10 is only 1 ten, which is much smaller.'
+      ],
+      correctAnswerExplanation: '"One hundred" = 100.'
+    }
+  }),
+  _l24Q(122, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred thirteen"?',
+    answer: '113',
+    choices: ['113', '131', '1013', '103'],
+    hint: 'One hundred = 100. Thirteen = 13. Put them together: 113.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'One hundred thirteen = 113, not 131',
+      teachingSteps: [
+        '"One hundred thirteen" means 100 + 13.',
+        '100 + 13 = 113.',
+        '131 would be "one hundred thirty-one," a different number.'
+      ],
+      correctAnswerExplanation: '"One hundred thirteen" = 113.'
+    }
+  }),
+  _l24Q(123, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred twenty"?',
+    answer: '120',
+    choices: ['120', '102', '12', '1020'],
+    hint: 'One hundred = 100. Twenty = 20. Together: 120.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'One hundred twenty = 120',
+      teachingSteps: [
+        '"One hundred twenty" means 100 + 20.',
+        '100 + 20 = 120.',
+        '102 would be "one hundred two," a different number.'
+      ],
+      correctAnswerExplanation: '"One hundred twenty" = 120.'
+    }
+  }),
+  _l24Q(124, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred seven"?',
+    answer: '107',
+    choices: ['107', '170', '17', '1007'],
+    hint: 'One hundred = 100. Seven = 7. Together: 107.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'One hundred seven = 107, not 170',
+      teachingSteps: [
+        '"One hundred seven" means 100 + 7.',
+        '100 + 7 = 107.',
+        '170 would be "one hundred seventy" — outside our range.'
+      ],
+      correctAnswerExplanation: '"One hundred seven" = 107.'
+    }
+  }),
+  _l24Q(125, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred fifteen"?',
+    answer: '115',
+    choices: ['115', '150', '15', '1015'],
+    hint: 'One hundred = 100. Fifteen = 15. Together: 115.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred fifteen = 115, not 150',
+      teachingSteps: [
+        '"One hundred fifteen" means 100 + 15.',
+        '100 + 15 = 115.',
+        '"One hundred fifty" would be 150 — outside our range.'
+      ],
+      correctAnswerExplanation: '"One hundred fifteen" = 115.'
+    }
+  }),
+  _l24Q(126, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred nineteen"?',
+    answer: '119',
+    choices: ['119', '190', '19', '1019'],
+    hint: 'One hundred = 100. Nineteen = 19. Together: 119.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred nineteen = 119',
+      teachingSteps: [
+        '"One hundred nineteen" means 100 + 19.',
+        '100 + 19 = 119.',
+        '"One hundred ninety" would be 190 — outside our range.'
+      ],
+      correctAnswerExplanation: '"One hundred nineteen" = 119.'
+    }
+  }),
+  _l24Q(127, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred twelve"?',
+    answer: '112',
+    choices: ['112', '120', '12', '1012'],
+    hint: 'One hundred = 100. Twelve = 12. Together: 112.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Twelve (12) vs twenty (20): read carefully',
+      teachingSteps: [
+        '"One hundred twelve" means 100 + 12.',
+        '100 + 12 = 112.',
+        '"One hundred twenty" is 120 — twelve and twenty are different words.'
+      ],
+      correctAnswerExplanation: '"One hundred twelve" = 112.'
+    }
+  }),
+  _l24Q(128, {
+    subSkill: 'word_to_standard_3digit', keyIdea: 4, difficulty: 'hard',
+    prompt: 'What is the standard form of "one hundred ten"?',
+    answer: '110',
+    choices: ['110', '101', '11', '1010'],
+    hint: 'One hundred = 100. Ten = 10. Together: 110.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred ten = 110, not 101',
+      teachingSteps: [
+        '"One hundred ten" means 100 + 10.',
+        '100 + 10 = 110.',
+        '101 would be "one hundred one" — ten and one are different.'
+      ],
+      correctAnswerExplanation: '"One hundred ten" = 110.'
+    }
+  }),
+
+  // Cat 12: equivalence matching — all three forms (q129–q140)
+  _l24Q(129, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which shows the same number as 47?',
+    answer: '40 + 7',
+    choices: ['40 + 7', '70 + 4', '4 + 7', 'forty-eight'],
+    hint: '47 in expanded form is 40 + 7. Match the value.',
+    intervention: {
+      errorTag: 'err_expanded_form_reversed',
+      title: 'All forms must show the same amount',
+      teachingSteps: [
+        '47 has 4 tens and 7 ones.',
+        'Expanded form: 40 + 7.',
+        '"70 + 4" would be 74, a different number.'
+      ],
+      correctAnswerExplanation: '47 = 40 + 7. All three forms show the same amount.'
+    }
+  }),
+  _l24Q(130, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which shows the same number as "sixty-three"?',
+    answer: '63',
+    choices: ['63', '36', '630', '60 + 30'],
+    hint: '"Sixty-three" = 6 tens and 3 ones = 63.',
+    intervention: {
+      errorTag: 'err_word_reversal',
+      title: 'Sixty-three = 63, not 36',
+      teachingSteps: [
+        '"Sixty-three" means 6 tens and 3 ones.',
+        'Standard form: 63.',
+        '36 would be "thirty-six," not sixty-three.'
+      ],
+      correctAnswerExplanation: '"Sixty-three" = 63.'
+    }
+  }),
+  _l24Q(131, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which shows the same number as 80 + 0?',
+    answer: 'eighty',
+    choices: ['eighty', 'eight', 'eighteen', 'eighty-one'],
+    hint: '80 + 0 = 80. What is the word form of 80?',
+    intervention: {
+      errorTag: 'err_decade_digit_only',
+      title: '80 + 0 equals eighty',
+      teachingSteps: [
+        '80 + 0 = 80.',
+        'Word form of 80 is "eighty."',
+        '"Eight" is only 8, and "eighteen" is 18.'
+      ],
+      correctAnswerExplanation: '80 + 0 = 80 = "eighty."'
+    }
+  }),
+  _l24Q(132, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as 113?',
+    answer: '100 + 10 + 3',
+    choices: ['100 + 10 + 3', '100 + 30 + 1', '1 + 1 + 3', '100 + 13'],
+    hint: '113 = 1 hundred, 1 ten, 3 ones = 100 + 10 + 3.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Match each digit to its place value',
+      teachingSteps: [
+        '113 has 1 hundred, 1 ten, and 3 ones.',
+        'Expanded: 100 + 10 + 3.',
+        '"100 + 30 + 1" would be 131, a different number.'
+      ],
+      correctAnswerExplanation: '113 = 100 + 10 + 3.'
+    }
+  }),
+  _l24Q(133, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as "one hundred fifteen"?',
+    answer: '115',
+    choices: ['115', '150', '151', '105'],
+    hint: '"One hundred fifteen" = 100 + 15 = 115.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred fifteen = 115',
+      teachingSteps: [
+        '"One hundred fifteen" means 100 + 15.',
+        '100 + 15 = 115.',
+        '150 would be "one hundred fifty" — fifteen and fifty are different.'
+      ],
+      correctAnswerExplanation: '"One hundred fifteen" = 115.'
+    }
+  }),
+  _l24Q(134, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which shows the same number as 50 + 0?',
+    answer: 'fifty',
+    choices: ['fifty', 'five', 'fifty-zero', 'fifteen'],
+    hint: '50 + 0 = 50. Word form of 50 is "fifty."',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: '50 = fifty — not fifteen',
+      teachingSteps: [
+        '50 + 0 = 50.',
+        'Word form: "fifty."',
+        '"Fifteen" is 15, which is much smaller than 50.'
+      ],
+      correctAnswerExplanation: '50 + 0 = 50 = "fifty."'
+    }
+  }),
+  _l24Q(135, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as 100 + 20 + 0?',
+    answer: 'one hundred twenty',
+    choices: ['one hundred twenty', 'one hundred two', 'twelve', 'one hundred twelve'],
+    hint: '100 + 20 + 0 = 120. What is the word form?',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: '120 = one hundred twenty',
+      teachingSteps: [
+        '100 + 20 + 0 = 120.',
+        'Word form: "one hundred twenty."',
+        '"One hundred two" is 102 — twenty and two are different.'
+      ],
+      correctAnswerExplanation: '100 + 20 + 0 = 120 = "one hundred twenty."'
+    }
+  }),
+  _l24Q(136, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which three all show the same number? Pick the odd one out.',
+    answer: '70 + 4',
+    choices: ['70 + 4', '74', 'seventy-four', '47'],
+    hint: '74 and "seventy-four" match. Which expanded form does NOT match 74?',
+    intervention: {
+      errorTag: 'err_expanded_form_reversed',
+      title: '70 + 4 = 74, but 40 + 7 = 47',
+      teachingSteps: [
+        '74 = 7 tens and 4 ones.',
+        'Expanded form of 74 is 70 + 4.',
+        '47 is a different number — 4 tens and 7 ones = 40 + 7.'
+      ],
+      correctAnswerExplanation: '74, "seventy-four," and 70 + 4 all match. 47 is the odd one out.'
+    }
+  }),
+  _l24Q(137, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as 100 + 0 + 6?',
+    answer: '106',
+    choices: ['106', '160', '16', '1006'],
+    hint: '100 + 0 + 6 = 1 hundred, 0 tens, 6 ones.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '100 + 0 + 6 = 106',
+      teachingSteps: [
+        '100 + 0 + 6 means 1 hundred, 0 tens, 6 ones.',
+        'Standard form: 106.',
+        '160 would be "one hundred sixty" — outside our range.'
+      ],
+      correctAnswerExplanation: '100 + 0 + 6 = 106.'
+    }
+  }),
+  _l24Q(138, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as "one hundred twelve"?',
+    answer: '100 + 10 + 2',
+    choices: ['100 + 10 + 2', '100 + 20 + 1', '100 + 2', '10 + 12'],
+    hint: '"One hundred twelve" = 112 = 100 + 10 + 2.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Twelve = 12 = 10 + 2',
+      teachingSteps: [
+        '"One hundred twelve" = 112.',
+        '112 = 1 hundred, 1 ten, 2 ones.',
+        'Expanded: 100 + 10 + 2.'
+      ],
+      correctAnswerExplanation: '"One hundred twelve" = 112 = 100 + 10 + 2.'
+    }
+  }),
+  _l24Q(139, {
+    subSkill: 'equivalence_match', keyIdea: 0, difficulty: 'hard',
+    prompt: 'Which shows the same number as "thirty"?',
+    answer: '30 + 0',
+    choices: ['30 + 0', '3 + 0', '13 + 0', '30 + 3'],
+    hint: '"Thirty" = 30. What is the expanded form of 30?',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Thirty = 30 = 30 + 0',
+      teachingSteps: [
+        '"Thirty" means 3 tens = 30.',
+        'Expanded form of 30: 30 + 0.',
+        '"3 + 0" uses digits, not place values.'
+      ],
+      correctAnswerExplanation: '"Thirty" = 30 = 30 + 0.'
+    }
+  }),
+  _l24Q(140, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as 100 + 10 + 9?',
+    answer: 'one hundred nineteen',
+    choices: ['one hundred nineteen', 'one hundred ninety', 'nineteen', 'one hundred nine'],
+    hint: '100 + 10 + 9 = 119. What is the word form of 119?',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: '119 = one hundred nineteen',
+      teachingSteps: [
+        '100 + 10 + 9 = 119.',
+        'Word form: "one hundred nineteen."',
+        '"One hundred ninety" would be 190 — outside our range.'
+      ],
+      correctAnswerExplanation: '100 + 10 + 9 = 119 = "one hundred nineteen."'
+    }
+  }),
+
+  // Cat 13: error repair (q141–q155)
+  _l24Q(141, {
+    subSkill: 'error_repair', keyIdea: 1, difficulty: 'hard',
+    prompt: 'A student wrote the expanded form of 56 as "5 + 6." What is the correct expanded form?',
+    answer: '50 + 6',
+    choices: ['50 + 6', '5 + 6', '60 + 5', '5 + 60'],
+    hint: 'The 5 is in the tens place. 5 tens = 50, not 5.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'The tens digit means tens, not ones',
+      teachingSteps: [
+        'The student wrote the digit 5 instead of its value (50).',
+        '5 is in the tens place. 5 tens = 50.',
+        'Correct expanded form: 50 + 6.'
+      ],
+      correctAnswerExplanation: '56 = 50 + 6. The 5 means 5 tens = 50.'
+    }
+  }),
+  _l24Q(142, {
+    subSkill: 'error_repair', keyIdea: 1, difficulty: 'hard',
+    prompt: 'A student says 40 + 8 = 84. What is the correct standard form?',
+    answer: '48',
+    choices: ['48', '84', '408', '40'],
+    hint: 'Tens come first in standard form. 40 is 4 tens → 4 goes in the tens place.',
+    intervention: {
+      errorTag: 'err_reversed_digits',
+      title: 'Tens digit goes first, not second',
+      teachingSteps: [
+        '40 + 8 means 4 tens and 8 ones.',
+        'The tens digit (4) goes first: 48.',
+        '84 would mean 8 tens and 4 ones — the opposite.'
+      ],
+      correctAnswerExplanation: '40 + 8 = 48. The tens digit comes first.'
+    }
+  }),
+  _l24Q(143, {
+    subSkill: 'error_repair', keyIdea: 5, difficulty: 'hard',
+    prompt: 'A student writes the expanded form of 70 as "70." What is missing?',
+    answer: '70 + 0',
+    choices: ['70 + 0', '70', '7 + 0', '70 + 7'],
+    hint: '70 is the standard form. Expanded form must show both places.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Expanded form needs to show the ones place too',
+      teachingSteps: [
+        '"70" by itself is standard form, not expanded form.',
+        'Expanded form shows every place: 70 + 0.',
+        'The + 0 shows the ones place is empty.'
+      ],
+      correctAnswerExplanation: 'Expanded form of 70 is 70 + 0, not just "70."'
+    }
+  }),
+  _l24Q(144, {
+    subSkill: 'error_repair', keyIdea: 2, difficulty: 'hard',
+    prompt: 'A student writes the word form of 19 as "ninety." What is the correct word form?',
+    answer: 'nineteen',
+    choices: ['nineteen', 'ninety', 'nine-teen', 'nine-one'],
+    hint: '19 is a teen number, not a decade. "Ninety" is 90.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Nineteen (19) vs ninety (90)',
+      teachingSteps: [
+        '19 is a teen number: 1 ten and 9 ones.',
+        'Word form: "nineteen."',
+        '"Ninety" is the word for 90, which has 9 tens.'
+      ],
+      correctAnswerExplanation: '19 in word form is "nineteen." Ninety means 90.'
+    }
+  }),
+  _l24Q(145, {
+    subSkill: 'error_repair', keyIdea: 4, difficulty: 'hard',
+    prompt: 'A student writes the expanded form of 113 as "1 + 1 + 3." What is the correct expanded form?',
+    answer: '100 + 10 + 3',
+    choices: ['100 + 10 + 3', '1 + 1 + 3', '100 + 13', '110 + 3'],
+    hint: '113 has a hundreds place. 1 hundred = 100, 1 ten = 10.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Write place values, not digits',
+      teachingSteps: [
+        'The student wrote digits (1, 1, 3) instead of place values.',
+        '1 hundred = 100, 1 ten = 10, 3 ones = 3.',
+        'Correct expanded form: 100 + 10 + 3.'
+      ],
+      correctAnswerExplanation: '113 = 100 + 10 + 3. Each digit becomes its place value.'
+    }
+  }),
+  _l24Q(146, {
+    subSkill: 'error_repair', keyIdea: 4, difficulty: 'hard',
+    prompt: 'A student says 100 + 20 + 0 = 102. What is the correct standard form?',
+    answer: '120',
+    choices: ['120', '102', '100', '1020'],
+    hint: '100 is 1 hundred. 20 is 2 tens. 0 ones. The number is 120.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '100 + 20 + 0 = 120, not 102',
+      teachingSteps: [
+        '100 + 20 + 0 means 1 hundred, 2 tens, 0 ones.',
+        'Standard form: 120.',
+        '102 would be 100 + 0 + 2 — zero tens, two ones.'
+      ],
+      correctAnswerExplanation: '100 + 20 + 0 = 120.'
+    }
+  }),
+  _l24Q(147, {
+    subSkill: 'error_repair', keyIdea: 2, difficulty: 'hard',
+    prompt: 'A student writes "forty" for the number 14. What is the correct word form of 14?',
+    answer: 'fourteen',
+    choices: ['fourteen', 'forty', 'four-ten', 'four-one'],
+    hint: '14 is a teen (1 ten + 4 ones). Forty is 40 (4 tens).',
+    intervention: {
+      errorTag: 'err_word_form_irregular',
+      title: 'Fourteen (14) vs forty (40)',
+      teachingSteps: [
+        '14 is a teen: 1 ten and 4 ones.',
+        'Word form: "fourteen."',
+        '"Forty" is 40 — four tens, which is much bigger than 14.'
+      ],
+      correctAnswerExplanation: '14 in word form is "fourteen." Forty means 40.'
+    }
+  }),
+  _l24Q(148, {
+    subSkill: 'error_repair', keyIdea: 4, difficulty: 'hard',
+    prompt: 'A student says "one hundred thirteen" means 131. What does "one hundred thirteen" really equal?',
+    answer: '113',
+    choices: ['113', '131', '1013', '103'],
+    hint: '"Thirteen" = 13 (1 ten + 3 ones). Not thirty-one.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: 'Thirteen (13) vs thirty-one (31)',
+      teachingSteps: [
+        '"One hundred thirteen" = 100 + 13.',
+        '13 is thirteen — 1 ten and 3 ones.',
+        '100 + 13 = 113, not 131.'
+      ],
+      correctAnswerExplanation: '"One hundred thirteen" = 113. Thirteen = 13.'
+    }
+  }),
+  _l24Q(149, {
+    subSkill: 'error_repair', keyIdea: 5, difficulty: 'hard',
+    prompt: 'A student writes the expanded form of 110 as "100 + 10." What is missing?',
+    answer: '100 + 10 + 0',
+    choices: ['100 + 10 + 0', '100 + 10', '1 + 1 + 0', '110'],
+    hint: 'The ones place must be shown. 110 has 0 ones — write + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show all three places — including + 0 for ones',
+      teachingSteps: [
+        '110 has 1 hundred, 1 ten, and 0 ones.',
+        'Expanded form must include all three: 100 + 10 + 0.',
+        'The + 0 shows the ones place is empty.'
+      ],
+      correctAnswerExplanation: '110 = 100 + 10 + 0. We include + 0 for the empty ones place.'
+    }
+  }),
+  _l24Q(150, {
+    subSkill: 'error_repair', keyIdea: 1, difficulty: 'hard',
+    prompt: 'A student writes the expanded form of 92 as "90 + 20." What is correct?',
+    answer: '90 + 2',
+    choices: ['90 + 2', '90 + 20', '9 + 2', '9 + 20'],
+    hint: '92 has 9 tens and 2 ones. 2 ones = 2, not 20.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Ones digit stays as ones — not tens',
+      teachingSteps: [
+        '92 has 9 in the tens place and 2 in the ones place.',
+        '9 tens = 90. 2 ones = 2 (not 20).',
+        'Correct expanded form: 90 + 2.'
+      ],
+      correctAnswerExplanation: '92 = 90 + 2. The ones digit 2 is worth 2, not 20.'
+    }
+  }),
+  _l24Q(151, {
+    subSkill: 'error_repair', keyIdea: 2, difficulty: 'hard',
+    prompt: 'A student writes the word form of 80 as "eighty-zero." What is the correct word form?',
+    answer: 'eighty',
+    choices: ['eighty', 'eighty-zero', 'eight', 'eighteen'],
+    hint: 'We do not say the zero ones. 80 in words is just "eighty."',
+    intervention: {
+      errorTag: 'err_word_form_digit_not_word',
+      title: 'Do not say the zero ones in word form',
+      teachingSteps: [
+        '80 has 8 tens and 0 ones.',
+        'In word form, we do not say the zero ones.',
+        'Word form: "eighty."'
+      ],
+      correctAnswerExplanation: '80 in word form is "eighty" — we do not say "zero."'
+    }
+  }),
+  _l24Q(152, {
+    subSkill: 'error_repair', keyIdea: 4, difficulty: 'hard',
+    prompt: 'A student says 100 + 0 + 7 = 170. What is the correct standard form?',
+    answer: '107',
+    choices: ['107', '170', '17', '1007'],
+    hint: '0 in the tens place means 0 tens — not 7 tens.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '100 + 0 + 7 = 107, not 170',
+      teachingSteps: [
+        '100 + 0 + 7 means 1 hundred, 0 tens, 7 ones.',
+        'Standard form: 107.',
+        '170 would mean 1 hundred, 7 tens, 0 ones = 100 + 70 + 0.'
+      ],
+      correctAnswerExplanation: '100 + 0 + 7 = 107. Zero tens, seven ones.'
+    }
+  }),
+
+  // Visual error repair / hard visual (q153–q160)
+  _l24Q(153, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'hard',
+    prompt: 'What is the word form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 5 } },
+    answer: 'one hundred fifteen',
+    choices: ['one hundred fifteen', 'one hundred fifty', 'fifteen', 'one fifteen'],
+    hint: '1 flat = 100, 1 rod = 10, 5 cubes = 5. The number is 115.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Flat + rod + 5 cubes = 115 = one hundred fifteen',
+      teachingSteps: [
+        '1 flat = 100, 1 rod = 10, 5 cubes = 5.',
+        '100 + 10 + 5 = 115.',
+        'Word form: "one hundred fifteen."'
+      ],
+      correctAnswerExplanation: '1 flat + 1 rod + 5 cubes = 115 = "one hundred fifteen."'
+    }
+  }),
+  _l24Q(154, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'hard',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 9 } },
+    answer: '100 + 0 + 9',
+    choices: ['100 + 0 + 9', '100 + 9', '1 + 0 + 9', '190'],
+    hint: '1 flat = 100. No rods = 0 tens. 9 cubes = 9.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Include + 0 for the empty tens place',
+      teachingSteps: [
+        '1 flat = 100. No rods = 0 tens. 9 cubes = 9.',
+        'Expanded form must show all three places: 100 + 0 + 9.',
+        'We include + 0 for the empty tens place.'
+      ],
+      correctAnswerExplanation: '1 flat (100) + 0 rods (0) + 9 cubes (9) = 100 + 0 + 9.'
+    }
+  }),
+  _l24Q(155, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'hard',
+    prompt: 'What is the word form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: 'one hundred twenty',
+    choices: ['one hundred twenty', 'one hundred two', 'twelve', 'one twenty'],
+    hint: '1 flat = 100. 2 rods = 20. No cubes = 0. The number is 120.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'One hundred twenty is 120',
+      teachingSteps: [
+        '1 flat (100) + 2 rods (20) + 0 cubes = 120.',
+        'Word form: "one hundred twenty."',
+        '"One hundred two" would be 102 — a different number.'
+      ],
+      correctAnswerExplanation: '120 in word form is "one hundred twenty."'
+    }
+  }),
+  _l24Q(156, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 3, difficulty: 'hard',
+    prompt: 'What is the word form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 1, ones: 9 } },
+    answer: 'nineteen',
+    choices: ['nineteen', 'ninety', 'nine-ten', 'ninety-one'],
+    hint: '1 rod = 10. 9 cubes = 9. The number is 19.',
+    intervention: {
+      errorTag: 'err_word_form_teen_confusion',
+      title: 'Nineteen (19) vs ninety (90)',
+      teachingSteps: [
+        '1 rod = 1 ten. 9 cubes = 9 ones.',
+        '1 ten and 9 ones = 19.',
+        'Word form: "nineteen." Ninety is 90.'
+      ],
+      correctAnswerExplanation: '1 rod (10) + 9 cubes (9) = 19 = "nineteen."'
+    }
+  }),
+  _l24Q(157, {
+    subSkill: 'visual_to_expanded_2digit', keyIdea: 5, difficulty: 'hard',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 0, tens: 5, ones: 0 } },
+    answer: '50 + 0',
+    choices: ['50 + 0', '5 + 0', '50', '50 + 5'],
+    hint: '5 rods = 50. No cubes = 0 ones. Include the + 0.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Include + 0 even when no cubes are shown',
+      teachingSteps: [
+        '5 rods = 5 tens = 50.',
+        'No cubes = 0 ones.',
+        'Expanded form: 50 + 0. We must show the ones place.'
+      ],
+      correctAnswerExplanation: '5 rods (50) + 0 cubes (0) = 50 + 0.'
+    }
+  }),
+  _l24Q(158, {
+    subSkill: 'visual_to_form_3digit', keyIdea: 3, difficulty: 'hard',
+    prompt: 'What is the expanded form of the number shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 0 } },
+    answer: '100 + 10 + 0',
+    choices: ['100 + 10 + 0', '100 + 10', '1 + 1 + 0', '110'],
+    hint: '1 flat = 100. 1 rod = 10. No cubes = 0 ones.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Show all three places including + 0',
+      teachingSteps: [
+        '1 flat = 100. 1 rod = 10. No cubes = 0 ones.',
+        'Expanded form: 100 + 10 + 0.',
+        'We include + 0 for the empty ones place.'
+      ],
+      correctAnswerExplanation: '1 flat (100) + 1 rod (10) + 0 cubes = 100 + 10 + 0.'
+    }
+  }),
+  _l24Q(159, {
+    subSkill: 'equivalence_match', keyIdea: 4, difficulty: 'hard',
+    prompt: 'Which shows the same number as "one hundred eight"?',
+    answer: '100 + 0 + 8',
+    choices: ['100 + 0 + 8', '100 + 80', '100 + 8', '100 + 0 + 80'],
+    hint: '"Eight" = 8 ones. "Eighty" = 80. One hundred eight = 100 + 0 + 8.',
+    intervention: {
+      errorTag: 'err_word_form_hundred_teen',
+      title: 'Eight (8) is ones, not tens',
+      teachingSteps: [
+        '"One hundred eight" = 1 hundred, 0 tens, 8 ones.',
+        'Expanded: 100 + 0 + 8.',
+        '"100 + 80" would be "one hundred eighty" — a different number.'
+      ],
+      correctAnswerExplanation: '"One hundred eight" = 108 = 100 + 0 + 8.'
+    }
+  }),
+  _l24Q(160, {
+    subSkill: 'error_repair', keyIdea: 4, difficulty: 'hard',
+    prompt: 'A student says "one hundred twenty" means 100 + 2 + 0. What is the correct expanded form?',
+    answer: '100 + 20 + 0',
+    choices: ['100 + 20 + 0', '100 + 2 + 0', '100 + 2', '120'],
+    hint: '"Twenty" = 2 tens = 20, not 2. 2 tens goes in the tens spot.',
+    intervention: {
+      errorTag: 'err_expanded_form_digit',
+      title: 'Twenty = 20 in expanded form, not 2',
+      teachingSteps: [
+        '"One hundred twenty" = 120.',
+        '120 has 1 hundred, 2 tens, 0 ones.',
+        '2 tens = 20. Expanded form: 100 + 20 + 0.'
+      ],
+      correctAnswerExplanation: '"One hundred twenty" = 120 = 100 + 20 + 0.'
+    }
+  }),
+
+  // ── hard end
+];
+
 // ════════════════════════════════════════════════════════════════════════════
 //  Unit 2 Spec
 // ════════════════════════════════════════════════════════════════════════════
@@ -8583,7 +11454,7 @@ export const G1_U2_SPEC = {
 
     // ═══════════════════════════════════════════════════════════════════════
     //  Lesson 2.4 — Represent Numbers
-    //  TEKS 1.2C · represent_numbers_to_120  ← stub
+    //  TEKS 1.2C · represent_numbers_to_120
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u2-l4',
@@ -8592,13 +11463,15 @@ export const G1_U2_SPEC = {
       skill: 'represent_numbers_to_120',
       allowedQuestionTypes: ['multipleChoice'],
       keyIdeas: [
-        'Numbers can be written in standard form: 47.',
-        'Numbers can be written in expanded form: 40 + 7.',
-        'Numbers can be written in word form: forty-seven.',
-        'All three forms show the same amount in different ways.'
+        'Standard form uses digits to write a number: 47.',
+        'Expanded form shows the value of each place: 40 + 7.',
+        'Word form writes a number in words: forty-seven.',
+        'A base-10 model can match all three forms — the amount is always the same.',
+        'Numbers to 120 can be written in all three forms, including hundreds: 113 = 100 + 10 + 3.',
+        'Zero terms show empty places: 50 = 50 + 0, and 110 = 100 + 10 + 0.'
       ],
-      workedExamples: [],
-      quizBank: []
+      workedExamples: _l24Examples,
+      quizBank: _l24QuizBank
     }
 
   ]
