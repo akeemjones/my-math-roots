@@ -245,15 +245,29 @@ function _sampleFromBank(bank, count, balanced) {
 // Assembles a unit testBank from lesson qBanks.
 // Called when spec.unitTest.sourceRule === 'all_lesson_quizbanks'.
 // u.lessons must already be fully merged before this runs.
+//
+// Each returned question is a SHALLOW CLONE of the lesson question, with
+// source-lesson metadata attached:
+//   sourceLessonId, sourceLessonTitle, sourceLessonIndex, sourceUnitId
+// The original lesson qBank arrays and question objects are never mutated.
 function _assembleUnitTestBank(u, utSpec) {
   var perLesson = utSpec.perLessonCount || 5;
   var balanced  = !!utSpec.difficultyMixBalanced;
   var result    = [];
 
-  u.lessons.forEach(function(lesson) {
+  u.lessons.forEach(function(lesson, lessonIdx) {
     var bank   = (lesson.qBank || []).slice();
     var sample = _sampleFromBank(bank, perLesson, balanced);
-    for (var i = 0; i < sample.length; i++) result.push(sample[i]);
+    for (var i = 0; i < sample.length; i++) {
+      // Clone so attaching source metadata never mutates the lesson's qBank
+      var tagged = Object.assign({}, sample[i], {
+        sourceLessonId:    lesson.id || null,
+        sourceLessonTitle: lesson.title || null,
+        sourceLessonIndex: lessonIdx,
+        sourceUnitId:      u.id || null
+      });
+      result.push(tagged);
+    }
   });
 
   return result;
