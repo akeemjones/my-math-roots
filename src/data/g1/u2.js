@@ -5798,6 +5798,2706 @@ const _l22QuizBank = [
 
 ];
 
+// ── L2.3 factory ──────────────────────────────────────────────────────────────
+function _l23Q(n, o) {
+  return {
+    id: 'g1-u2-l3-q-' + String(n).padStart(3, '0'),
+    teks: ['1.2B'],
+    lessonId: 'g1-u2-l3',
+    skill: 'place_value_to_120',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices.map(function(v) {
+      return { value: String(v), correct: String(v) === String(o.answer) };
+    }),
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+// ── L2.3 worked examples ──────────────────────────────────────────────────────
+const _l23Examples = [
+  {
+    title: '100 = 1 Hundred',
+    steps: [
+      'The large blue square is a hundreds flat. It shows 100.',
+      '100 has 1 hundred, 0 tens, and 0 ones.',
+      '10 tens make 1 hundred. The hundreds flat = 10 rods.',
+      '100 is the first three-digit number.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } }
+  },
+  {
+    title: '113 = 1 Hundred, 1 Ten, 3 Ones',
+    steps: [
+      'The blue flat shows 1 hundred = 100.',
+      'The blue rod shows 1 ten = 10.',
+      'The three orange cubes show 3 ones = 3.',
+      '100 + 10 + 3 = 113. We write it as 1 hundred, 1 ten, and 3 ones.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 3 } }
+  },
+  {
+    title: '120 = 1 Hundred, 2 Tens, 0 Ones',
+    steps: [
+      'The blue flat shows 1 hundred = 100.',
+      'Two blue rods show 2 tens = 20.',
+      'No orange cubes — 0 ones.',
+      '100 + 20 + 0 = 120. 120 is the largest number in our range.'
+    ],
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } }
+  }
+];
+
+// ── L2.3 quiz bank ────────────────────────────────────────────────────────────
+const _l23QuizBank = [
+
+  // ── Easy (q1–q40) ──────────────────────────────────────────────────────────
+  // Category A: ten_tens_is_hundred (q1–q6)
+
+  _l23Q(1, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: '10 tens = ___',
+    visual: null,
+    answer: '100',
+    choices: ['10', '100', '110', '1000'],
+    hint: 'Count 10 groups of 10. What is the total?',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '10 tens make 100',
+      teachingSteps: [
+        '1 ten = 10.',
+        '2 tens = 20.',
+        '10 tens = 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10.',
+        '10 tens = 100.'
+      ],
+      correctAnswerExplanation: '10 tens make 100. That is one hundred.'
+    }
+  }),
+
+  _l23Q(2, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: '100 = ___ tens',
+    visual: null,
+    answer: '10',
+    choices: ['1', '10', '20', '100'],
+    hint: 'How many rods would you need to build 100?',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '100 equals 10 tens',
+      teachingSteps: [
+        'Each tens rod is worth 10.',
+        'To get to 100, you need 10 rods.',
+        '10 × 10 = 100.',
+        '100 = 10 tens.'
+      ],
+      correctAnswerExplanation: '100 equals 10 tens. You need 10 rods to make 100.'
+    }
+  }),
+
+  _l23Q(3, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: 'How many tens equal 100?',
+    visual: null,
+    answer: '10',
+    choices: ['1', '10', '20', '100'],
+    hint: 'Think about how many groups of 10 fit in 100.',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '10 tens equal 100',
+      teachingSteps: [
+        '10 + 10 = 20. That is 2 tens.',
+        'Keep adding tens: 30, 40, 50, 60, 70, 80, 90, 100.',
+        'You added 10 tens to reach 100.',
+        '10 tens = 100.'
+      ],
+      correctAnswerExplanation: '10 tens equal 100. Count up by 10s: 10, 20, 30 ... 100.'
+    }
+  }),
+
+  _l23Q(4, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: '1 hundred is the same as ___ tens',
+    visual: null,
+    answer: '10',
+    choices: ['1', '10', '100', '20'],
+    hint: 'A hundreds flat is made from exactly 10 tens rods.',
+    intervention: {
+      errorTag: 'err_hundred_is_one_ten',
+      title: '1 hundred = 10 tens',
+      teachingSteps: [
+        '1 hundred = 100.',
+        'One tens rod = 10.',
+        '100 ÷ 10 = 10.',
+        '1 hundred = 10 tens.'
+      ],
+      correctAnswerExplanation: '1 hundred equals 10 tens. The hundreds flat is made from 10 rods.'
+    }
+  }),
+
+  _l23Q(5, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: '10 groups of 10 = ___',
+    visual: null,
+    answer: '100',
+    choices: ['10', '100', '110', '1000'],
+    hint: 'Count by 10s ten times: 10, 20, 30 ...',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '10 groups of 10 make 100',
+      teachingSteps: [
+        'Count by tens: 10, 20, 30, 40, 50.',
+        'Keep going: 60, 70, 80, 90, 100.',
+        'That is 10 jumps of 10.',
+        '10 groups of 10 = 100.'
+      ],
+      correctAnswerExplanation: '10 groups of 10 equal 100.'
+    }
+  }),
+
+  _l23Q(6, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'easy',
+    prompt: 'A hundreds flat is made of ___ tens rods.',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } },
+    answer: '10',
+    choices: ['1', '5', '10', '100'],
+    hint: 'Count the rows inside the hundreds flat. Each row is one rod.',
+    intervention: {
+      errorTag: 'err_hundred_is_one_ten',
+      title: 'The flat equals 10 rods',
+      teachingSteps: [
+        'Look at the hundreds flat.',
+        'It has 10 rows of 10.',
+        'Each row equals 1 rod (10).',
+        '10 rows = 10 rods = 100.'
+      ],
+      correctAnswerExplanation: 'A hundreds flat is made of 10 tens rods.'
+    }
+  }),
+
+  // Category B: count_hundreds (q7–q12)
+
+  _l23Q(7, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'How many hundreds are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } },
+    answer: '1',
+    choices: ['0', '1', '10', '100'],
+    hint: 'Count the large blue squares.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'Count the hundreds flat',
+      teachingSteps: [
+        'The large blue square is 1 hundreds flat.',
+        '1 flat = 1 hundred.',
+        'There is 1 flat, so there is 1 hundred.'
+      ],
+      correctAnswerExplanation: 'One hundreds flat means 1 hundred.'
+    }
+  }),
+
+  _l23Q(8, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'In 105, how many hundreds?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '5', '10'],
+    hint: '105 has three digits. The first digit tells the hundreds.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'The first digit in 105 is hundreds',
+      teachingSteps: [
+        '105 has three digits: 1, 0, 5.',
+        'The first digit (1) is in the hundreds place.',
+        'The hundreds digit is 1.',
+        '105 has 1 hundred.'
+      ],
+      correctAnswerExplanation: '105 has 1 hundred. The first digit tells you.'
+    }
+  }),
+
+  _l23Q(9, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'How many hundreds are in this model?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 3 } },
+    answer: '1',
+    choices: ['0', '1', '10', '13'],
+    hint: 'Count only the large blue flat, not the rods or cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'One flat = one hundred',
+      teachingSteps: [
+        'The large blue square is the hundreds flat.',
+        'Count only the flats: there is 1.',
+        'Rods and cubes are tens and ones — not hundreds.',
+        '1 flat = 1 hundred.'
+      ],
+      correctAnswerExplanation: 'This model has 1 hundreds flat, so 1 hundred.'
+    }
+  }),
+
+  _l23Q(10, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'In 120, how many hundreds?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '2', '12'],
+    hint: 'Look at the first digit of 120.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '120 has 1 hundred',
+      teachingSteps: [
+        '120 has three digits: 1, 2, 0.',
+        'The 1 is in the hundreds place.',
+        'So 120 has 1 hundred.',
+        'The 2 and 0 are tens and ones, not hundreds.'
+      ],
+      correctAnswerExplanation: '120 has 1 hundred. The digit 1 is in the hundreds place.'
+    }
+  }),
+
+  _l23Q(11, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'How many hundreds does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 7 } },
+    answer: '1',
+    choices: ['0', '1', '7', '17'],
+    hint: 'Find the large blue square. That is 1 hundred.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: 'The flat shows hundreds',
+      teachingSteps: [
+        'Count only the large blue squares.',
+        'There is 1 large square = 1 hundred.',
+        'The small orange cubes are ones, not hundreds.'
+      ],
+      correctAnswerExplanation: 'There is 1 hundreds flat, so the model shows 1 hundred.'
+    }
+  }),
+
+  _l23Q(12, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'In 100, how many hundreds?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '10', '100'],
+    hint: '100 starts with the digit 1 in the hundreds place.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '100 has 1 hundred',
+      teachingSteps: [
+        '100 has the digit 1 in the hundreds place.',
+        '100 = 1 hundred, 0 tens, 0 ones.',
+        'Even though tens and ones are both 0, there is still 1 hundred.'
+      ],
+      correctAnswerExplanation: '100 has 1 hundred. The digit 1 is in the hundreds place.'
+    }
+  }),
+
+  // Category C: read_base10_model easy (q13–q24)
+
+  _l23Q(13, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } },
+    answer: '100',
+    choices: ['10', '100', '1000', '110'],
+    hint: '1 flat, 0 rods, 0 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat = 100',
+      teachingSteps: [
+        'Count: 1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '0 ones cubes = 0.',
+        '100 + 0 + 0 = 100.'
+      ],
+      correctAnswerExplanation: '1 flat and nothing else = 100.'
+    }
+  }),
+
+  _l23Q(14, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 1 } },
+    answer: '101',
+    choices: ['11', '100', '101', '110'],
+    hint: '1 flat, 0 rods, 1 cube. Start with 100.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 cube = 101',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '1 ones cube = 1.',
+        '100 + 0 + 1 = 101.'
+      ],
+      correctAnswerExplanation: '1 flat and 1 cube = 100 + 1 = 101.'
+    }
+  }),
+
+  _l23Q(15, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 2 } },
+    answer: '102',
+    choices: ['12', '100', '102', '120'],
+    hint: '1 flat, 0 rods, 2 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 2 cubes = 102',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '2 ones cubes = 2.',
+        '100 + 0 + 2 = 102.'
+      ],
+      correctAnswerExplanation: '1 flat and 2 cubes = 100 + 2 = 102.'
+    }
+  }),
+
+  _l23Q(16, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 5 } },
+    answer: '105',
+    choices: ['15', '100', '105', '115'],
+    hint: '1 flat, 0 rods, 5 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 5 cubes = 105',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '5 ones cubes = 5.',
+        '100 + 0 + 5 = 105.'
+      ],
+      correctAnswerExplanation: '1 flat and 5 cubes = 100 + 5 = 105.'
+    }
+  }),
+
+  _l23Q(17, {
+    subSkill: 'read_base10_model',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 0 } },
+    answer: '110',
+    choices: ['11', '10', '100', '110'],
+    hint: '1 flat, 1 rod, 0 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod = 110',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '0 ones cubes = 0.',
+        '100 + 10 + 0 = 110.'
+      ],
+      correctAnswerExplanation: '1 flat and 1 rod = 100 + 10 = 110.'
+    }
+  }),
+
+  _l23Q(18, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 2 } },
+    answer: '112',
+    choices: ['12', '102', '112', '121'],
+    hint: '1 flat, 1 rod, 2 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 2 cubes = 112',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '2 ones cubes = 2.',
+        '100 + 10 + 2 = 112.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 2 cubes = 100 + 10 + 2 = 112.'
+    }
+  }),
+
+  _l23Q(19, {
+    subSkill: 'read_base10_model',
+    keyIdea: '115 means 1 hundred, 1 ten, and 5 ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 5 } },
+    answer: '115',
+    choices: ['15', '105', '115', '151'],
+    hint: '1 flat, 1 rod, 5 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 5 cubes = 115',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '5 ones cubes = 5.',
+        '100 + 10 + 5 = 115.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 5 cubes = 100 + 10 + 5 = 115.'
+    }
+  }),
+
+  _l23Q(20, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 7 } },
+    answer: '117',
+    choices: ['17', '107', '117', '171'],
+    hint: '1 flat, 1 rod, 7 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 7 cubes = 117',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '7 ones cubes = 7.',
+        '100 + 10 + 7 = 117.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 7 cubes = 100 + 10 + 7 = 117.'
+    }
+  }),
+
+  _l23Q(21, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 8 } },
+    answer: '118',
+    choices: ['18', '108', '118', '181'],
+    hint: '1 flat, 1 rod, 8 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 8 cubes = 118',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '8 ones cubes = 8.',
+        '100 + 10 + 8 = 118.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 8 cubes = 100 + 10 + 8 = 118.'
+    }
+  }),
+
+  _l23Q(22, {
+    subSkill: 'read_base10_model',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '120',
+    choices: ['20', '102', '120', '210'],
+    hint: '1 flat, 2 rods, 0 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 2 rods = 120',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '2 tens rods = 20.',
+        '0 ones cubes = 0.',
+        '100 + 20 + 0 = 120.'
+      ],
+      correctAnswerExplanation: '1 flat and 2 rods = 100 + 20 = 120.'
+    }
+  }),
+
+  _l23Q(23, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 3 } },
+    answer: '103',
+    choices: ['13', '30', '100', '103'],
+    hint: '1 flat, 0 rods, 3 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 3 cubes = 103',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '3 ones cubes = 3.',
+        '100 + 0 + 3 = 103.'
+      ],
+      correctAnswerExplanation: '1 flat and 3 cubes = 100 + 3 = 103.'
+    }
+  }),
+
+  _l23Q(24, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'What number is shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 8 } },
+    answer: '108',
+    choices: ['18', '80', '100', '108'],
+    hint: '1 flat, 0 rods, 8 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 8 cubes = 108',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '8 ones cubes = 8.',
+        '100 + 0 + 8 = 108.'
+      ],
+      correctAnswerExplanation: '1 flat and 8 cubes = 100 + 8 = 108.'
+    }
+  }),
+
+  // Category D: build_from_parts easy (q25–q34)
+
+  _l23Q(25, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 0 tens, and 0 ones = ___',
+    visual: null,
+    answer: '100',
+    choices: ['10', '100', '1000', '110'],
+    hint: '1 hundred = 100. No tens or ones to add.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '1 hundred = 100',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '0 ones = 0.',
+        '100 + 0 + 0 = 100.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 0 ones = 100.'
+    }
+  }),
+
+  _l23Q(26, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 0 tens, and 1 one = ___',
+    visual: null,
+    answer: '101',
+    choices: ['11', '100', '101', '111'],
+    hint: 'Start at 100. Add 1 one.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 1 = 101',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '1 one = 1.',
+        '100 + 0 + 1 = 101.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 1 one = 101.'
+    }
+  }),
+
+  _l23Q(27, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 0 tens, and 5 ones = ___',
+    visual: null,
+    answer: '105',
+    choices: ['15', '100', '105', '150'],
+    hint: 'Start at 100. Add 5 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 5 = 105',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '5 ones = 5.',
+        '100 + 0 + 5 = 105.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 5 ones = 105.'
+    }
+  }),
+
+  _l23Q(28, {
+    subSkill: 'build_from_parts',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 1 ten, and 0 ones = ___',
+    visual: null,
+    answer: '110',
+    choices: ['10', '11', '100', '110'],
+    hint: 'Start at 100. Add 10.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 = 110',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '0 ones = 0.',
+        '100 + 10 + 0 = 110.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 0 ones = 110.'
+    }
+  }),
+
+  _l23Q(29, {
+    subSkill: 'build_from_parts',
+    keyIdea: '115 means 1 hundred, 1 ten, and 5 ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 1 ten, and 3 ones = ___',
+    visual: null,
+    answer: '113',
+    choices: ['13', '103', '113', '131'],
+    hint: 'Start at 100. Add 10. Then add 3.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 3 = 113',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '3 ones = 3.',
+        '100 + 10 + 3 = 113.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 3 ones = 113.'
+    }
+  }),
+
+  _l23Q(30, {
+    subSkill: 'build_from_parts',
+    keyIdea: '115 means 1 hundred, 1 ten, and 5 ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 1 ten, and 5 ones = ___',
+    visual: null,
+    answer: '115',
+    choices: ['15', '105', '115', '151'],
+    hint: 'Start at 100. Add 10. Then add 5.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 5 = 115',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '5 ones = 5.',
+        '100 + 10 + 5 = 115.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 5 ones = 115.'
+    }
+  }),
+
+  _l23Q(31, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 1 ten, and 7 ones = ___',
+    visual: null,
+    answer: '117',
+    choices: ['17', '107', '117', '170'],
+    hint: 'Start at 100. Add 10. Then add 7.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 7 = 117',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '7 ones = 7.',
+        '100 + 10 + 7 = 117.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 7 ones = 117.'
+    }
+  }),
+
+  _l23Q(32, {
+    subSkill: 'build_from_parts',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 2 tens, and 0 ones = ___',
+    visual: null,
+    answer: '120',
+    choices: ['20', '102', '120', '200'],
+    hint: 'Start at 100. Add 20.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 20 = 120',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '2 tens = 20.',
+        '0 ones = 0.',
+        '100 + 20 + 0 = 120.'
+      ],
+      correctAnswerExplanation: '1 hundred, 2 tens, 0 ones = 120.'
+    }
+  }),
+
+  _l23Q(33, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 0 tens, and 8 ones = ___',
+    visual: null,
+    answer: '108',
+    choices: ['18', '80', '100', '108'],
+    hint: 'Start at 100. Add 8 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 8 = 108',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '8 ones = 8.',
+        '100 + 0 + 8 = 108.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 8 ones = 108.'
+    }
+  }),
+
+  _l23Q(34, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: '1 hundred, 1 ten, and 2 ones = ___',
+    visual: null,
+    answer: '112',
+    choices: ['12', '102', '112', '121'],
+    hint: 'Start at 100. Add 10. Then add 2.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 2 = 112',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '2 ones = 2.',
+        '100 + 10 + 2 = 112.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 2 ones = 112.'
+    }
+  }),
+
+  // Category E: count_ones_in_120range easy (q35–q40)
+
+  _l23Q(35, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'easy',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 5 } },
+    answer: '5',
+    choices: ['1', '5', '10', '105'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Do not count the flat or rods.',
+        'Count the cubes: 1, 2, 3, 4, 5.',
+        'There are 5 ones.'
+      ],
+      correctAnswerExplanation: '5 orange cubes = 5 ones.'
+    }
+  }),
+
+  _l23Q(36, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'easy',
+    prompt: 'In 113, how many ones?',
+    visual: null,
+    answer: '3',
+    choices: ['1', '3', '10', '13'],
+    hint: 'The last digit of 113 tells the ones.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'The last digit is the ones',
+      teachingSteps: [
+        '113 has three digits: 1, 1, 3.',
+        'The last digit (3) is in the ones place.',
+        '113 has 3 ones.'
+      ],
+      correctAnswerExplanation: '113 has 3 in the ones place, so 3 ones.'
+    }
+  }),
+
+  _l23Q(37, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'easy',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 7 } },
+    answer: '7',
+    choices: ['1', '7', '10', '17'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Do not count the flat or rods.',
+        'Count the cubes: 1, 2, 3, 4, 5, 6, 7.',
+        'There are 7 ones.'
+      ],
+      correctAnswerExplanation: '7 orange cubes = 7 ones.'
+    }
+  }),
+
+  _l23Q(38, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'easy',
+    prompt: 'In 120, how many ones?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '2', '10', '20'],
+    hint: 'Look at the last digit of 120.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '120 has 0 ones',
+      teachingSteps: [
+        '120 has three digits: 1, 2, 0.',
+        'The last digit (0) is in the ones place.',
+        '120 has 0 ones.'
+      ],
+      correctAnswerExplanation: '120 ends in 0, so it has 0 ones.'
+    }
+  }),
+
+  _l23Q(39, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'easy',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 8 } },
+    answer: '8',
+    choices: ['1', '8', '10', '108'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Do not count the flat.',
+        'Count the cubes: 1, 2, 3, 4, 5, 6, 7, 8.',
+        'There are 8 ones.'
+      ],
+      correctAnswerExplanation: '8 orange cubes = 8 ones.'
+    }
+  }),
+
+  _l23Q(40, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'easy',
+    prompt: 'In 100, how many ones?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '10', '100'],
+    hint: 'Look at the last digit of 100.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '100 has 0 ones',
+      teachingSteps: [
+        '100 has three digits: 1, 0, 0.',
+        'The last digit (0) is in the ones place.',
+        '100 has 0 ones.'
+      ],
+      correctAnswerExplanation: '100 ends in 0, so it has 0 ones.'
+    }
+  }),
+
+  // ── Medium (q41–q90) ───────────────────────────────────────────────────────
+  // Group 1: count_tens_in_120range (q41–q52)
+
+  _l23Q(41, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: '115 means 1 hundred, 1 ten, and 5 ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 5 } },
+    answer: '1',
+    choices: ['0', '1', '5', '15'],
+    hint: 'Count only the blue rods — not the flat and not the cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the tens rods',
+      teachingSteps: [
+        'The blue rods are the tens.',
+        'Do not count the large flat or the small cubes.',
+        'Count the rods: there is 1.',
+        '1 rod = 1 ten.'
+      ],
+      correctAnswerExplanation: '1 blue rod = 1 ten.'
+    }
+  }),
+
+  _l23Q(42, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 114, how many tens?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '4', '14'],
+    hint: 'Look at the tens digit — the middle digit of 114.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'The middle digit is tens',
+      teachingSteps: [
+        '114 has three digits: 1, 1, 4.',
+        'The middle digit (1) is in the tens place.',
+        '114 has 1 ten.'
+      ],
+      correctAnswerExplanation: '114 has 1 in the tens place, so 1 ten.'
+    }
+  }),
+
+  _l23Q(43, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 9 } },
+    answer: '0',
+    choices: ['0', '1', '9', '10'],
+    hint: 'Look for blue rods. If there are none, the answer is 0.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'No rods means 0 tens',
+      teachingSteps: [
+        'Count the blue rods.',
+        'There are no rods in this model.',
+        '0 rods = 0 tens.'
+      ],
+      correctAnswerExplanation: 'No blue rods means 0 tens.'
+    }
+  }),
+
+  _l23Q(44, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 109, how many tens?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '9', '10'],
+    hint: 'Look at the tens digit — the middle digit of 109.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'The middle digit of 109 is 0',
+      teachingSteps: [
+        '109 has three digits: 1, 0, 9.',
+        'The middle digit (0) is in the tens place.',
+        '109 has 0 tens.'
+      ],
+      correctAnswerExplanation: '109 has 0 in the tens place, so 0 tens.'
+    }
+  }),
+
+  _l23Q(45, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '2',
+    choices: ['0', '1', '2', '20'],
+    hint: 'Count only the blue rods, not the flat.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count the rods: there are 2',
+      teachingSteps: [
+        'The blue rods are the tens.',
+        'Count them: 1, 2.',
+        '2 rods = 2 tens.'
+      ],
+      correctAnswerExplanation: '2 blue rods = 2 tens.'
+    }
+  }),
+
+  _l23Q(46, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 116, how many tens?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '6', '16'],
+    hint: 'Find the tens digit — the middle digit of 116.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'Middle digit of 116 is tens',
+      teachingSteps: [
+        '116 has three digits: 1, 1, 6.',
+        'The middle digit (1) is in the tens place.',
+        '116 has 1 ten.'
+      ],
+      correctAnswerExplanation: '116 has 1 in the tens place, so 1 ten.'
+    }
+  }),
+
+  _l23Q(47, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 4 } },
+    answer: '1',
+    choices: ['0', '1', '4', '14'],
+    hint: 'Count only the blue rods.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the tens rods',
+      teachingSteps: [
+        'The blue rods are the tens.',
+        'Do not count the flat or the orange cubes.',
+        'There is 1 rod.',
+        '1 rod = 1 ten.'
+      ],
+      correctAnswerExplanation: '1 blue rod = 1 ten.'
+    }
+  }),
+
+  _l23Q(48, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'medium',
+    prompt: 'In 120, how many tens?',
+    visual: null,
+    answer: '2',
+    choices: ['0', '1', '2', '20'],
+    hint: 'Look at the tens digit — the middle digit of 120.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'Middle digit of 120 is tens',
+      teachingSteps: [
+        '120 has three digits: 1, 2, 0.',
+        'The middle digit (2) is in the tens place.',
+        '120 has 2 tens.'
+      ],
+      correctAnswerExplanation: '120 has 2 in the tens place, so 2 tens.'
+    }
+  }),
+
+  _l23Q(49, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 6 } },
+    answer: '0',
+    choices: ['0', '1', '6', '10'],
+    hint: 'Look for blue rods. Count only those.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'No rods means 0 tens',
+      teachingSteps: [
+        'The blue rods are the tens.',
+        'There are no rods in this model.',
+        '0 rods = 0 tens.'
+      ],
+      correctAnswerExplanation: 'No blue rods = 0 tens.'
+    }
+  }),
+
+  _l23Q(50, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 102, how many tens?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '2', '10'],
+    hint: 'The middle digit of 102 is in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'Middle digit of 102 is 0',
+      teachingSteps: [
+        '102 has three digits: 1, 0, 2.',
+        'The middle digit (0) is in the tens place.',
+        '102 has 0 tens.'
+      ],
+      correctAnswerExplanation: '102 has 0 in the tens place, so 0 tens.'
+    }
+  }),
+
+  _l23Q(51, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'How many tens rods are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 9 } },
+    answer: '1',
+    choices: ['0', '1', '9', '19'],
+    hint: 'Count only the blue rods.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the tens rods',
+      teachingSteps: [
+        'The blue rods are the tens.',
+        'Do not count the flat or the cubes.',
+        'There is 1 rod.',
+        '1 rod = 1 ten.'
+      ],
+      correctAnswerExplanation: '1 blue rod = 1 ten.'
+    }
+  }),
+
+  _l23Q(52, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 110, how many tens?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '10', '11'],
+    hint: 'Look at the tens digit — the middle digit of 110.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'Middle digit of 110 is 1',
+      teachingSteps: [
+        '110 has three digits: 1, 1, 0.',
+        'The middle digit (1) is in the tens place.',
+        '110 has 1 ten.'
+      ],
+      correctAnswerExplanation: '110 has 1 in the tens place, so 1 ten.'
+    }
+  }),
+
+  // Group 2: count_ones_in_120range medium (q53–q60)
+
+  _l23Q(53, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 4 } },
+    answer: '4',
+    choices: ['1', '4', '10', '14'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Do not count the flat or the rods.',
+        'Count the cubes: 1, 2, 3, 4.',
+        'There are 4 ones.'
+      ],
+      correctAnswerExplanation: '4 orange cubes = 4 ones.'
+    }
+  }),
+
+  _l23Q(54, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 116, how many ones?',
+    visual: null,
+    answer: '6',
+    choices: ['1', '6', '10', '16'],
+    hint: 'The last digit of 116 tells the ones.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'Last digit of 116 is ones',
+      teachingSteps: [
+        '116 has three digits: 1, 1, 6.',
+        'The last digit (6) is in the ones place.',
+        '116 has 6 ones.'
+      ],
+      correctAnswerExplanation: '116 has 6 in the ones place, so 6 ones.'
+    }
+  }),
+
+  _l23Q(55, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 9 } },
+    answer: '9',
+    choices: ['0', '1', '9', '19'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Count them: 1, 2, 3, 4, 5, 6, 7, 8, 9.',
+        'There are 9 ones.'
+      ],
+      correctAnswerExplanation: '9 orange cubes = 9 ones.'
+    }
+  }),
+
+  _l23Q(56, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 110, how many ones?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '10', '11'],
+    hint: 'Look at the last digit of 110.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '110 has 0 ones',
+      teachingSteps: [
+        '110 has three digits: 1, 1, 0.',
+        'The last digit (0) is in the ones place.',
+        '110 has 0 ones.'
+      ],
+      correctAnswerExplanation: '110 ends in 0, so it has 0 ones.'
+    }
+  }),
+
+  _l23Q(57, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'medium',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '0',
+    choices: ['0', '2', '10', '20'],
+    hint: 'Look for orange cubes. If there are none, the answer is 0.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'No cubes means 0 ones',
+      teachingSteps: [
+        'Count the orange cubes.',
+        'There are no orange cubes in this model.',
+        '0 cubes = 0 ones.'
+      ],
+      correctAnswerExplanation: 'No orange cubes = 0 ones.'
+    }
+  }),
+
+  _l23Q(58, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 119, how many ones?',
+    visual: null,
+    answer: '9',
+    choices: ['1', '9', '10', '19'],
+    hint: 'The last digit of 119 tells the ones.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'Last digit of 119 is ones',
+      teachingSteps: [
+        '119 has three digits: 1, 1, 9.',
+        'The last digit (9) is in the ones place.',
+        '119 has 9 ones.'
+      ],
+      correctAnswerExplanation: '119 has 9 in the ones place, so 9 ones.'
+    }
+  }),
+
+  _l23Q(59, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'How many ones cubes are shown?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 6 } },
+    answer: '6',
+    choices: ['1', '6', '10', '16'],
+    hint: 'Count only the small orange cubes.',
+    intervention: {
+      errorTag: 'err_count_all_not_group',
+      title: 'Count only the ones cubes',
+      teachingSteps: [
+        'The orange cubes are the ones.',
+        'Do not count the flat or the rod.',
+        'Count the cubes: 1, 2, 3, 4, 5, 6.',
+        'There are 6 ones.'
+      ],
+      correctAnswerExplanation: '6 orange cubes = 6 ones.'
+    }
+  }),
+
+  _l23Q(60, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: 'In 104, how many ones?',
+    visual: null,
+    answer: '4',
+    choices: ['0', '1', '4', '14'],
+    hint: 'The last digit of 104 tells the ones.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'Last digit of 104 is ones',
+      teachingSteps: [
+        '104 has three digits: 1, 0, 4.',
+        'The last digit (4) is in the ones place.',
+        '104 has 4 ones.'
+      ],
+      correctAnswerExplanation: '104 has 4 in the ones place, so 4 ones.'
+    }
+  }),
+
+  // Group 3: read_base10_model medium — fresh number configs (q61–q69)
+
+  _l23Q(61, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 4 } },
+    answer: '104',
+    choices: ['14', '40', '100', '104'],
+    hint: 'Start with the flat: 100. Then count the cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 4 cubes = 104',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '4 ones cubes = 4.',
+        '100 + 0 + 4 = 104.'
+      ],
+      correctAnswerExplanation: '1 flat and 4 cubes = 100 + 4 = 104.'
+    }
+  }),
+
+  _l23Q(62, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 6 } },
+    answer: '106',
+    choices: ['16', '60', '100', '106'],
+    hint: 'Start with the flat: 100. Then count the cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 6 cubes = 106',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '6 ones cubes = 6.',
+        '100 + 0 + 6 = 106.'
+      ],
+      correctAnswerExplanation: '1 flat and 6 cubes = 100 + 6 = 106.'
+    }
+  }),
+
+  _l23Q(63, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 7 } },
+    answer: '107',
+    choices: ['17', '70', '100', '107'],
+    hint: '1 flat, 0 rods, 7 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 7 cubes = 107',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '7 ones cubes = 7.',
+        '100 + 0 + 7 = 107.'
+      ],
+      correctAnswerExplanation: '1 flat and 7 cubes = 100 + 7 = 107.'
+    }
+  }),
+
+  _l23Q(64, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 9 } },
+    answer: '109',
+    choices: ['19', '90', '100', '109'],
+    hint: '1 flat, 0 rods, 9 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 9 cubes = 109',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '0 tens rods = 0.',
+        '9 ones cubes = 9.',
+        '100 + 0 + 9 = 109.'
+      ],
+      correctAnswerExplanation: '1 flat and 9 cubes = 100 + 9 = 109.'
+    }
+  }),
+
+  _l23Q(65, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 1 } },
+    answer: '111',
+    choices: ['11', '101', '111', '121'],
+    hint: '1 flat, 1 rod, 1 cube.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 1 cube = 111',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '1 ones cube = 1.',
+        '100 + 10 + 1 = 111.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 1 cube = 100 + 10 + 1 = 111.'
+    }
+  }),
+
+  _l23Q(66, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 3 } },
+    answer: '113',
+    choices: ['13', '103', '113', '130'],
+    hint: '1 flat, 1 rod, 3 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 3 cubes = 113',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '3 ones cubes = 3.',
+        '100 + 10 + 3 = 113.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 3 cubes = 100 + 10 + 3 = 113.'
+    }
+  }),
+
+  _l23Q(67, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 4 } },
+    answer: '114',
+    choices: ['14', '104', '114', '141'],
+    hint: '1 flat, 1 rod, 4 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 4 cubes = 114',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '4 ones cubes = 4.',
+        '100 + 10 + 4 = 114.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 4 cubes = 100 + 10 + 4 = 114.'
+    }
+  }),
+
+  _l23Q(68, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 6 } },
+    answer: '116',
+    choices: ['16', '106', '116', '160'],
+    hint: '1 flat, 1 rod, 6 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 6 cubes = 116',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '6 ones cubes = 6.',
+        '100 + 10 + 6 = 116.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 6 cubes = 100 + 10 + 6 = 116.'
+    }
+  }),
+
+  _l23Q(69, {
+    subSkill: 'read_base10_model',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: 'What number does this model show?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 1, ones: 9 } },
+    answer: '119',
+    choices: ['19', '109', '119', '191'],
+    hint: '1 flat, 1 rod, 9 cubes.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '1 flat + 1 rod + 9 cubes = 119',
+      teachingSteps: [
+        '1 hundreds flat = 100.',
+        '1 tens rod = 10.',
+        '9 ones cubes = 9.',
+        '100 + 10 + 9 = 119.'
+      ],
+      correctAnswerExplanation: '1 flat, 1 rod, 9 cubes = 100 + 10 + 9 = 119.'
+    }
+  }),
+
+  // Group 4: missing_part_120range (q70–q81)
+
+  _l23Q(70, {
+    subSkill: 'missing_part_120range',
+    keyIdea: '115 means 1 hundred, 1 ten, and 5 ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 5 ones = 115',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '5', '10'],
+    hint: '115 has 1 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '115 has 1 ten',
+      teachingSteps: [
+        '115 = 1 hundred + ? tens + 5 ones.',
+        'Look at the tens digit of 115: it is 1.',
+        '1 hundred, 1 ten, 5 ones = 115.'
+      ],
+      correctAnswerExplanation: '115 = 1 hundred, 1 ten, 5 ones. The missing tens is 1.'
+    }
+  }),
+
+  _l23Q(71, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and ___ ones = 117',
+    visual: null,
+    answer: '7',
+    choices: ['1', '7', '10', '17'],
+    hint: '117 has 7 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '117 has 7 ones',
+      teachingSteps: [
+        '117 = 1 hundred + 1 ten + ? ones.',
+        'Look at the ones digit of 117: it is 7.',
+        '1 hundred, 1 ten, 7 ones = 117.'
+      ],
+      correctAnswerExplanation: '117 = 1 hundred, 1 ten, 7 ones. The missing ones is 7.'
+    }
+  }),
+
+  _l23Q(72, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 0 ones = 110',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '2', '10'],
+    hint: '110 has 1 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '110 has 1 ten',
+      teachingSteps: [
+        '110 = 1 hundred + ? tens + 0 ones.',
+        'Look at the tens digit of 110: it is 1.',
+        '1 hundred, 1 ten, 0 ones = 110.'
+      ],
+      correctAnswerExplanation: '110 = 1 hundred, 1 ten, 0 ones. The missing tens is 1.'
+    }
+  }),
+
+  _l23Q(73, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and ___ ones = 113',
+    visual: null,
+    answer: '3',
+    choices: ['0', '1', '3', '13'],
+    hint: '113 has 3 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '113 has 3 ones',
+      teachingSteps: [
+        '113 = 1 hundred + 1 ten + ? ones.',
+        'Look at the ones digit of 113: it is 3.',
+        '1 hundred, 1 ten, 3 ones = 113.'
+      ],
+      correctAnswerExplanation: '113 = 1 hundred, 1 ten, 3 ones. The missing ones is 3.'
+    }
+  }),
+
+  _l23Q(74, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 8 ones = 118',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '8', '10'],
+    hint: '118 has 1 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '118 has 1 ten',
+      teachingSteps: [
+        '118 = 1 hundred + ? tens + 8 ones.',
+        'Look at the tens digit of 118: it is 1.',
+        '1 hundred, 1 ten, 8 ones = 118.'
+      ],
+      correctAnswerExplanation: '118 = 1 hundred, 1 ten, 8 ones. The missing tens is 1.'
+    }
+  }),
+
+  _l23Q(75, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and ___ ones = 107',
+    visual: null,
+    answer: '7',
+    choices: ['0', '1', '7', '17'],
+    hint: '107 has 7 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '107 has 7 ones',
+      teachingSteps: [
+        '107 = 1 hundred + 0 tens + ? ones.',
+        'Look at the ones digit of 107: it is 7.',
+        '1 hundred, 0 tens, 7 ones = 107.'
+      ],
+      correctAnswerExplanation: '107 = 1 hundred, 0 tens, 7 ones. The missing ones is 7.'
+    }
+  }),
+
+  _l23Q(76, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 9 ones = 119',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '9', '10'],
+    hint: '119 has 1 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '119 has 1 ten',
+      teachingSteps: [
+        '119 = 1 hundred + ? tens + 9 ones.',
+        'Look at the tens digit of 119: it is 1.',
+        '1 hundred, 1 ten, 9 ones = 119.'
+      ],
+      correctAnswerExplanation: '119 = 1 hundred, 1 ten, 9 ones. The missing tens is 1.'
+    }
+  }),
+
+  _l23Q(77, {
+    subSkill: 'missing_part_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 2 tens, and ___ ones = 120',
+    visual: null,
+    answer: '0',
+    choices: ['0', '2', '10', '20'],
+    hint: '120 has 0 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '120 has 0 ones',
+      teachingSteps: [
+        '120 = 1 hundred + 2 tens + ? ones.',
+        'Look at the ones digit of 120: it is 0.',
+        '1 hundred, 2 tens, 0 ones = 120.'
+      ],
+      correctAnswerExplanation: '120 = 1 hundred, 2 tens, 0 ones. The missing ones is 0.'
+    }
+  }),
+
+  _l23Q(78, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 4 ones = 114',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '4', '14'],
+    hint: '114 has 1 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '114 has 1 ten',
+      teachingSteps: [
+        '114 = 1 hundred + ? tens + 4 ones.',
+        'Look at the tens digit of 114: it is 1.',
+        '1 hundred, 1 ten, 4 ones = 114.'
+      ],
+      correctAnswerExplanation: '114 = 1 hundred, 1 ten, 4 ones. The missing tens is 1.'
+    }
+  }),
+
+  _l23Q(79, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and ___ ones = 116',
+    visual: null,
+    answer: '6',
+    choices: ['0', '1', '6', '16'],
+    hint: '116 has 6 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '116 has 6 ones',
+      teachingSteps: [
+        '116 = 1 hundred + 1 ten + ? ones.',
+        'Look at the ones digit of 116: it is 6.',
+        '1 hundred, 1 ten, 6 ones = 116.'
+      ],
+      correctAnswerExplanation: '116 = 1 hundred, 1 ten, 6 ones. The missing ones is 6.'
+    }
+  }),
+
+  _l23Q(80, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, ___ tens, and 3 ones = 103',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '3', '10'],
+    hint: '103 has 0 in the tens place.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '103 has 0 tens',
+      teachingSteps: [
+        '103 = 1 hundred + ? tens + 3 ones.',
+        'Look at the tens digit of 103: it is 0.',
+        '1 hundred, 0 tens, 3 ones = 103.'
+      ],
+      correctAnswerExplanation: '103 = 1 hundred, 0 tens, 3 ones. The missing tens is 0.'
+    }
+  }),
+
+  _l23Q(81, {
+    subSkill: 'missing_part_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and ___ ones = 109',
+    visual: null,
+    answer: '9',
+    choices: ['0', '1', '9', '19'],
+    hint: '109 has 9 in the ones place.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: '109 has 9 ones',
+      teachingSteps: [
+        '109 = 1 hundred + 0 tens + ? ones.',
+        'Look at the ones digit of 109: it is 9.',
+        '1 hundred, 0 tens, 9 ones = 109.'
+      ],
+      correctAnswerExplanation: '109 = 1 hundred, 0 tens, 9 ones. The missing ones is 9.'
+    }
+  }),
+
+  // Group 5: build_from_parts medium — fresh numbers (q82–q90)
+
+  _l23Q(82, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and 4 ones = ___',
+    visual: null,
+    answer: '104',
+    choices: ['14', '40', '100', '104'],
+    hint: 'Start at 100. Add 4 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 4 = 104',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '4 ones = 4.',
+        '100 + 0 + 4 = 104.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 4 ones = 104.'
+    }
+  }),
+
+  _l23Q(83, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and 6 ones = ___',
+    visual: null,
+    answer: '106',
+    choices: ['16', '60', '100', '106'],
+    hint: 'Start at 100. Add 6 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 6 = 106',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '6 ones = 6.',
+        '100 + 0 + 6 = 106.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 6 ones = 106.'
+    }
+  }),
+
+  _l23Q(84, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and 7 ones = ___',
+    visual: null,
+    answer: '107',
+    choices: ['17', '70', '100', '107'],
+    hint: 'Start at 100. Add 7 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 7 = 107',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '7 ones = 7.',
+        '100 + 0 + 7 = 107.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 7 ones = 107.'
+    }
+  }),
+
+  _l23Q(85, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 0 tens, and 9 ones = ___',
+    visual: null,
+    answer: '109',
+    choices: ['19', '90', '100', '109'],
+    hint: 'Start at 100. Add 9 ones.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 9 = 109',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '9 ones = 9.',
+        '100 + 0 + 9 = 109.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 9 ones = 109.'
+    }
+  }),
+
+  _l23Q(86, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and 1 one = ___',
+    visual: null,
+    answer: '111',
+    choices: ['11', '101', '111', '121'],
+    hint: 'Start at 100. Add 10. Then add 1.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 1 = 111',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '1 one = 1.',
+        '100 + 10 + 1 = 111.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 1 one = 111.'
+    }
+  }),
+
+  _l23Q(87, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and 4 ones = ___',
+    visual: null,
+    answer: '114',
+    choices: ['14', '104', '114', '141'],
+    hint: 'Start at 100. Add 10. Then add 4.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 4 = 114',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '4 ones = 4.',
+        '100 + 10 + 4 = 114.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 4 ones = 114.'
+    }
+  }),
+
+  _l23Q(88, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and 6 ones = ___',
+    visual: null,
+    answer: '116',
+    choices: ['16', '106', '116', '160'],
+    hint: 'Start at 100. Add 10. Then add 6.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 6 = 116',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '6 ones = 6.',
+        '100 + 10 + 6 = 116.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 6 ones = 116.'
+    }
+  }),
+
+  _l23Q(89, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and 8 ones = ___',
+    visual: null,
+    answer: '118',
+    choices: ['18', '108', '118', '181'],
+    hint: 'Start at 100. Add 10. Then add 8.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 8 = 118',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '8 ones = 8.',
+        '100 + 10 + 8 = 118.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 8 ones = 118.'
+    }
+  }),
+
+  _l23Q(90, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'medium',
+    prompt: '1 hundred, 1 ten, and 9 ones = ___',
+    visual: null,
+    answer: '119',
+    choices: ['19', '109', '119', '191'],
+    hint: 'Start at 100. Add 10. Then add 9.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '100 + 10 + 9 = 119',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '9 ones = 9.',
+        '100 + 10 + 9 = 119.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 9 ones = 119.'
+    }
+  }),
+
+  // ── Hard (q91–q120) ────────────────────────────────────────────────────────
+  // Group 1: hundreds_digit_value (q91–q98)
+
+  _l23Q(91, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'In 112, what is the value of the hundreds digit?',
+    visual: null,
+    answer: '100',
+    choices: ['1', '10', '100', '12'],
+    hint: 'The hundreds digit is 1. What is 1 hundred worth?',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'The hundreds digit is worth 100',
+      teachingSteps: [
+        'In 112, the first digit (1) is in the hundreds place.',
+        'The hundreds digit means how many hundreds.',
+        '1 hundred = 100.',
+        'The 1 in 112 is worth 100, not 1.'
+      ],
+      correctAnswerExplanation: 'In 112, the hundreds digit (1) is worth 100.'
+    }
+  }),
+
+  _l23Q(92, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'In 107, what does the first digit stand for?',
+    visual: null,
+    answer: '100',
+    choices: ['1', '7', '10', '100'],
+    hint: 'The first digit in 107 is in the hundreds place.',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'First digit of 107 stands for 100',
+      teachingSteps: [
+        'In 107, the first digit (1) is in the hundreds place.',
+        '1 hundred = 100.',
+        'The first digit stands for 100, not 1.'
+      ],
+      correctAnswerExplanation: 'The first digit in 107 is the hundreds digit, worth 100.'
+    }
+  }),
+
+  _l23Q(93, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'In 115, the digit 1 in the hundreds place is worth ___',
+    visual: null,
+    answer: '100',
+    choices: ['1', '5', '10', '100'],
+    hint: '1 in the hundreds place = 1 hundred = 100.',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'Hundreds digit worth 100',
+      teachingSteps: [
+        'In 115, the first 1 is in the hundreds place.',
+        'The hundreds place holds groups of 100.',
+        '1 group of 100 = 100.',
+        'The 1 is worth 100, not 1 or 10.'
+      ],
+      correctAnswerExplanation: 'In 115, the hundreds digit (1) is worth 100.'
+    }
+  }),
+
+  _l23Q(94, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'In 120, what is the value of the hundreds digit?',
+    visual: null,
+    answer: '100',
+    choices: ['1', '12', '20', '100'],
+    hint: '120 has 1 in the hundreds place. What is 1 hundred worth?',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'Hundreds digit in 120 is worth 100',
+      teachingSteps: [
+        'In 120, the first digit (1) is in the hundreds place.',
+        '1 hundred = 100.',
+        'The 1 is worth 100, not 1 or 12.'
+      ],
+      correctAnswerExplanation: 'In 120, the hundreds digit (1) is worth 100.'
+    }
+  }),
+
+  _l23Q(95, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'In 103, the 1 means ___',
+    visual: null,
+    answer: '100',
+    choices: ['1', '3', '10', '100'],
+    hint: 'The 1 is the hundreds digit. What is 1 hundred worth?',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'The 1 in 103 means 100',
+      teachingSteps: [
+        'In 103, the first digit (1) is in the hundreds place.',
+        '1 hundred = 100.',
+        'So the 1 means 100.'
+      ],
+      correctAnswerExplanation: 'In 103, the digit 1 is in the hundreds place and means 100.'
+    }
+  }),
+
+  _l23Q(96, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'In 119, the hundreds digit is worth ___',
+    visual: null,
+    answer: '100',
+    choices: ['1', '10', '19', '100'],
+    hint: 'The hundreds digit of 119 is 1. That means 1 hundred.',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'Hundreds digit of 119 worth 100',
+      teachingSteps: [
+        'In 119, the digits are 1, 1, 9.',
+        'The first 1 is in the hundreds place.',
+        '1 hundred = 100.',
+        'The hundreds digit is worth 100.'
+      ],
+      correctAnswerExplanation: 'In 119, the hundreds digit (1) is worth 100.'
+    }
+  }),
+
+  _l23Q(97, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'In 110, the digit 1 in the hundreds place stands for ___',
+    visual: null,
+    answer: '100',
+    choices: ['1', '10', '11', '100'],
+    hint: 'The first 1 in 110 is in the hundreds place, not the tens place.',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'First 1 in 110 stands for 100',
+      teachingSteps: [
+        'In 110, the digits are 1, 1, 0.',
+        'The first 1 is in the hundreds place.',
+        'The second 1 is in the tens place (worth 10).',
+        'The hundreds 1 stands for 100.'
+      ],
+      correctAnswerExplanation: 'In 110, the first digit (hundreds place) stands for 100.'
+    }
+  }),
+
+  _l23Q(98, {
+    subSkill: 'hundreds_digit_value',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'In 117, what does the first digit (1) stand for?',
+    visual: null,
+    answer: '100',
+    choices: ['1', '7', '10', '100'],
+    hint: 'The first digit in any three-digit number is the hundreds digit.',
+    intervention: {
+      errorTag: 'err_hundreds_digit_not_value',
+      title: 'First digit of 117 stands for 100',
+      teachingSteps: [
+        'In 117, the first digit (1) is in the hundreds place.',
+        '1 hundred = 100.',
+        'The first digit stands for 100.'
+      ],
+      correctAnswerExplanation: 'In 117, the first digit is the hundreds digit, worth 100.'
+    }
+  }),
+
+  // Group 2: ten_tens_misconception traps (q99–q102)
+
+  _l23Q(99, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'A student says 10 tens = 10. What should 10 tens equal?',
+    visual: null,
+    answer: '100',
+    choices: ['10', '100', '110', '1000'],
+    hint: 'Count up by 10s ten times.',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '10 tens = 100, not 10',
+      teachingSteps: [
+        'The student confused 10 tens with 1 ten.',
+        '1 ten = 10. 10 tens = 10 × 10.',
+        '10 × 10 = 100.',
+        '10 tens = 100.'
+      ],
+      correctAnswerExplanation: '10 tens equals 100. The student forgot to multiply by 10.'
+    }
+  }),
+
+  _l23Q(100, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: '10 tens rods bundled together make ___',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 0 } },
+    answer: '100',
+    choices: ['10', '100', '110', '1000'],
+    hint: 'The flat shown is made from exactly 10 rods.',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '10 rods bundled = 1 flat = 100',
+      teachingSteps: [
+        'Each rod = 10.',
+        '10 rods = 10 × 10 = 100.',
+        'When you bundle 10 rods, you get 1 hundreds flat.',
+        '10 tens rods = 100.'
+      ],
+      correctAnswerExplanation: '10 tens rods bundled together make 100 (1 hundreds flat).'
+    }
+  }),
+
+  _l23Q(101, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: 'Which is the same as 1 hundred?',
+    visual: null,
+    answer: '10 tens',
+    choices: ['1 ten', '10 ones', '10 tens', '100 tens'],
+    hint: '100 = 10 × 10. How many tens is that?',
+    intervention: {
+      errorTag: 'err_ten_tens_confusion',
+      title: '1 hundred = 10 tens',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '100 ÷ 10 = 10.',
+        '1 hundred = 10 tens.'
+      ],
+      correctAnswerExplanation: '1 hundred equals 10 tens.'
+    }
+  }),
+
+  _l23Q(102, {
+    subSkill: 'ten_tens_is_hundred',
+    keyIdea: '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+    difficulty: 'hard',
+    prompt: '1 hundred = ___ tens. Which number completes this correctly?',
+    visual: null,
+    answer: '10',
+    choices: ['1', '10', '100', '1000'],
+    hint: 'How many tens rods fit inside a hundreds flat?',
+    intervention: {
+      errorTag: 'err_hundred_is_one_ten',
+      title: '1 hundred = 10 tens',
+      teachingSteps: [
+        '1 hundred = 100.',
+        'A tens rod = 10.',
+        'How many tens fit in 100? 100 ÷ 10 = 10.',
+        '1 hundred = 10 tens.'
+      ],
+      correctAnswerExplanation: '1 hundred equals 10 tens. The answer is 10.'
+    }
+  }),
+
+  // Group 3: reversed_tens_ones_trap (q103–q108)
+
+  _l23Q(103, {
+    subSkill: 'build_from_parts',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'hard',
+    prompt: '1 hundred, 2 tens, and 0 ones = ___',
+    visual: null,
+    answer: '120',
+    choices: ['20', '102', '120', '200'],
+    hint: '2 tens = 20. Add that to 100.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '2 tens goes in the tens place',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '2 tens = 20 (not 2).',
+        '0 ones = 0.',
+        '100 + 20 + 0 = 120, not 102.'
+      ],
+      correctAnswerExplanation: '1 hundred, 2 tens, 0 ones = 120. The 2 is in the tens place.'
+    }
+  }),
+
+  _l23Q(104, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'hard',
+    prompt: '1 hundred, 1 ten, and 0 ones = ___',
+    visual: null,
+    answer: '110',
+    choices: ['11', '101', '110', '111'],
+    hint: '1 ten = 10. Add 10 to 100.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '1 ten means add 10, not 1',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '0 ones = 0.',
+        '100 + 10 + 0 = 110, not 101.'
+      ],
+      correctAnswerExplanation: '1 hundred, 1 ten, 0 ones = 110. The 1 in tens is worth 10.'
+    }
+  }),
+
+  _l23Q(105, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: '1 hundred, 0 tens, and 2 ones = ___',
+    visual: null,
+    answer: '102',
+    choices: ['20', '102', '120', '200'],
+    hint: '0 tens means no rods. 2 ones means 2 cubes.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '0 tens, 2 ones = 102, not 120',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '2 ones = 2.',
+        '100 + 0 + 2 = 102, not 120.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 2 ones = 102. The 2 is in the ones place.'
+    }
+  }),
+
+  _l23Q(106, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: '1 hundred, 0 tens, and 1 one = ___',
+    visual: null,
+    answer: '101',
+    choices: ['11', '101', '110', '111'],
+    hint: '0 tens and 1 one. The 1 one goes in the ones place.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '0 tens, 1 one = 101, not 110',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '1 one = 1.',
+        '100 + 0 + 1 = 101, not 110.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 1 one = 101. The 1 one is in the ones place.'
+    }
+  }),
+
+  _l23Q(107, {
+    subSkill: 'build_from_parts',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'hard',
+    prompt: 'A student says 1 hundred, 2 tens, 0 ones = 102. What should it be?',
+    visual: null,
+    answer: '120',
+    choices: ['20', '102', '120', '200'],
+    hint: '2 tens = 20. The 2 goes in the tens place.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '2 in tens place makes 120',
+      teachingSteps: [
+        'The student put the 2 in the ones place.',
+        '2 tens means the 2 goes in the tens place.',
+        '1 hundred, 2 tens, 0 ones = 120.',
+        '102 would be 1 hundred, 0 tens, 2 ones.'
+      ],
+      correctAnswerExplanation: '1 hundred, 2 tens, 0 ones = 120, not 102.'
+    }
+  }),
+
+  _l23Q(108, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'A student says 1 hundred, 0 tens, 5 ones = 150. What should it be?',
+    visual: null,
+    answer: '105',
+    choices: ['15', '105', '150', '500'],
+    hint: '0 tens means no tens. 5 ones means the 5 is in the ones place.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '5 ones is in the ones place: 105',
+      teachingSteps: [
+        'The student put the 5 in the tens place.',
+        '5 ones means the 5 goes in the ones place.',
+        '1 hundred, 0 tens, 5 ones = 105.',
+        '150 would be 1 hundred, 5 tens, 0 ones.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 5 ones = 105, not 150.'
+    }
+  }),
+
+  // Group 4: zero_confusion hard (q109–q113)
+
+  _l23Q(109, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'How many tens does 105 have?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '5', '10'],
+    hint: 'Look at the middle digit of 105.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '105 has 0 tens',
+      teachingSteps: [
+        '105 has three digits: 1, 0, 5.',
+        'The middle digit (0) is in the tens place.',
+        '0 in the tens place means 0 tens.',
+        '105 = 1 hundred, 0 tens, 5 ones.'
+      ],
+      correctAnswerExplanation: '105 has 0 in the tens place, so 0 tens.'
+    }
+  }),
+
+  _l23Q(110, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'hard',
+    prompt: 'Which number has 0 ones?',
+    visual: null,
+    answer: '110',
+    choices: ['105', '107', '110', '115'],
+    hint: 'Look for a number that ends in 0.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'A number ending in 0 has 0 ones',
+      teachingSteps: [
+        'The ones digit is the last digit.',
+        '105 ends in 5 — has 5 ones.',
+        '107 ends in 7 — has 7 ones.',
+        '110 ends in 0 — has 0 ones.'
+      ],
+      correctAnswerExplanation: '110 ends in 0, so it has 0 ones.'
+    }
+  }),
+
+  _l23Q(111, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'Which number has 0 tens?',
+    visual: null,
+    answer: '105',
+    choices: ['110', '115', '105', '120'],
+    hint: 'Look for a number with 0 in the tens place (the middle digit).',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'A 0 in the middle means 0 tens',
+      teachingSteps: [
+        'The tens digit is the middle digit.',
+        '110: middle digit is 1 — has 1 ten.',
+        '115: middle digit is 1 — has 1 ten.',
+        '105: middle digit is 0 — has 0 tens.'
+      ],
+      correctAnswerExplanation: '105 has 0 in the tens place, so 0 tens.'
+    }
+  }),
+
+  _l23Q(112, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'hard',
+    prompt: 'A model shows 1 flat and 2 rods. How many ones cubes are there?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '0',
+    choices: ['0', '2', '10', '20'],
+    hint: 'Look for orange cubes. If there are none, the answer is 0.',
+    intervention: {
+      errorTag: 'err_ignore_ones',
+      title: 'No cubes means 0 ones',
+      teachingSteps: [
+        'Count the orange cubes in the model.',
+        'There are no orange cubes.',
+        '0 cubes = 0 ones.',
+        'This model shows 120 = 1 hundred, 2 tens, 0 ones.'
+      ],
+      correctAnswerExplanation: 'No orange cubes in this model means 0 ones.'
+    }
+  }),
+
+  _l23Q(113, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'A model shows 1 flat and 5 cubes. How many tens rods are there?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 0, ones: 5 } },
+    answer: '0',
+    choices: ['0', '1', '5', '15'],
+    hint: 'Look for blue rods. If there are none, the answer is 0.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: 'No rods means 0 tens',
+      teachingSteps: [
+        'Count the blue rods in the model.',
+        'There are no blue rods.',
+        '0 rods = 0 tens.',
+        'This model shows 105 = 1 hundred, 0 tens, 5 ones.'
+      ],
+      correctAnswerExplanation: 'No blue rods in this model means 0 tens.'
+    }
+  }),
+
+  // Group 5: error_repair (q114–q120)
+
+  _l23Q(114, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'hard',
+    prompt: 'A student says 114 has 4 tens. What is the correct number of tens in 114?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '4', '14'],
+    hint: 'The middle digit of 114 is the tens digit.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '114 has 1 ten, not 4',
+      teachingSteps: [
+        'In 114, the digits are 1, 1, 4.',
+        'The middle digit (1) is in the tens place.',
+        'The last digit (4) is in the ones place.',
+        '114 has 1 ten and 4 ones.'
+      ],
+      correctAnswerExplanation: '114 has 1 in the tens place, so 1 ten. The 4 is in the ones place.'
+    }
+  }),
+
+  _l23Q(115, {
+    subSkill: 'count_hundreds',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'A student says 110 has 0 hundreds. How many hundreds does 110 really have?',
+    visual: null,
+    answer: '1',
+    choices: ['0', '1', '10', '11'],
+    hint: 'The first digit of 110 tells you the hundreds.',
+    intervention: {
+      errorTag: 'err_ignore_hundreds',
+      title: '110 has 1 hundred',
+      teachingSteps: [
+        'The student ignored the hundreds digit.',
+        'In 110, the first digit (1) is in the hundreds place.',
+        '1 in the hundreds place = 1 hundred.',
+        '110 has 1 hundred.'
+      ],
+      correctAnswerExplanation: '110 has 1 in the hundreds place, so 1 hundred.'
+    }
+  }),
+
+  _l23Q(116, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'A student writes 1 hundred, 0 tens, 5 ones = 150. What is the correct answer?',
+    visual: null,
+    answer: '105',
+    choices: ['15', '105', '150', '500'],
+    hint: '0 tens means no tens. 5 ones goes in the ones place.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '0 tens + 5 ones = 105, not 150',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '0 tens = 0.',
+        '5 ones = 5.',
+        '100 + 0 + 5 = 105.'
+      ],
+      correctAnswerExplanation: '1 hundred, 0 tens, 5 ones = 105. The 5 is in the ones place.'
+    }
+  }),
+
+  _l23Q(117, {
+    subSkill: 'count_tens_in_120range',
+    keyIdea: 'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+    difficulty: 'hard',
+    prompt: 'A student says 105 = 1 hundred and 5 tens. How many tens does 105 really have?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '1', '5', '10'],
+    hint: 'The middle digit of 105 is the tens digit.',
+    intervention: {
+      errorTag: 'err_ignore_tens',
+      title: '105 has 0 tens, not 5',
+      teachingSteps: [
+        'In 105, the digits are 1, 0, 5.',
+        'The middle digit (0) is in the tens place.',
+        'The 5 is in the ones place, not tens.',
+        '105 = 1 hundred, 0 tens, 5 ones.'
+      ],
+      correctAnswerExplanation: '105 has 0 tens. The student mistook the ones digit (5) for tens.'
+    }
+  }),
+
+  _l23Q(118, {
+    subSkill: 'read_base10_model',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'hard',
+    prompt: 'A model shows 1 flat and 2 rods. A student says the number is 102. What is the correct number?',
+    visual: { type: 'base10', config: { hundreds: 1, tens: 2, ones: 0 } },
+    answer: '120',
+    choices: ['20', '102', '120', '200'],
+    hint: '2 rods = 2 tens = 20. Add 20 to 100.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '1 flat + 2 rods = 120, not 102',
+      teachingSteps: [
+        'The student confused the rods with ones.',
+        'Each rod is a ten, not a one.',
+        '1 flat = 100. 2 rods = 20.',
+        '100 + 20 = 120.'
+      ],
+      correctAnswerExplanation: '1 flat and 2 rods = 100 + 20 = 120. Rods are tens, not ones.'
+    }
+  }),
+
+  _l23Q(119, {
+    subSkill: 'build_from_parts',
+    keyIdea: 'After 100, tens and ones still work the same way.',
+    difficulty: 'hard',
+    prompt: 'A student says 1 hundred + 1 ten = 11. What should it equal?',
+    visual: null,
+    answer: '110',
+    choices: ['11', '101', '110', '111'],
+    hint: '1 ten = 10. Add 10 to 100.',
+    intervention: {
+      errorTag: 'err_hundred_confusion',
+      title: '1 hundred + 1 ten = 110',
+      teachingSteps: [
+        '1 hundred = 100.',
+        '1 ten = 10.',
+        '100 + 10 = 110.',
+        'The student forgot that 1 hundred = 100, not 1.'
+      ],
+      correctAnswerExplanation: '1 hundred + 1 ten = 100 + 10 = 110.'
+    }
+  }),
+
+  _l23Q(120, {
+    subSkill: 'count_ones_in_120range',
+    keyIdea: '120 means 1 hundred, 2 tens, and 0 ones.',
+    difficulty: 'hard',
+    prompt: 'A student says 120 = 1 hundred, 0 tens, and 2 ones. How many ones does 120 really have?',
+    visual: null,
+    answer: '0',
+    choices: ['0', '2', '10', '20'],
+    hint: 'Look at the last digit of 120.',
+    intervention: {
+      errorTag: 'err_reversed_tens_ones',
+      title: '120 has 0 ones, not 2',
+      teachingSteps: [
+        'In 120, the digits are 1, 2, 0.',
+        'The last digit (0) is in the ones place.',
+        'The 2 is in the tens place, not ones.',
+        '120 = 1 hundred, 2 tens, 0 ones.'
+      ],
+      correctAnswerExplanation: '120 has 0 in the ones place. The 2 is in the tens place.'
+    }
+  })
+
+];
+
 // ════════════════════════════════════════════════════════════════════════════
 //  Unit 2 Spec
 // ════════════════════════════════════════════════════════════════════════════
@@ -5861,7 +8561,7 @@ export const G1_U2_SPEC = {
 
     // ═══════════════════════════════════════════════════════════════════════
     //  Lesson 2.3 — Numbers to 120
-    //  TEKS 1.2B · place_value_to_120  ← stub
+    //  TEKS 1.2B · place_value_to_120
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u2-l3',
@@ -5870,13 +8570,15 @@ export const G1_U2_SPEC = {
       skill: 'place_value_to_120',
       allowedQuestionTypes: ['multipleChoice'],
       keyIdeas: [
-        'Numbers past 100 have a hundreds place, a tens place, and an ones place.',
-        '115 = 1 hundred, 1 ten, and 5 ones.',
-        'The pattern of tens and ones keeps going past 100.',
-        'We can use blocks to show numbers all the way to 120.'
+        '10 tens make 100. That is why 100 has a 1 in the hundreds place.',
+        'Numbers from 100 to 120 have 1 hundred, some tens, and some ones.',
+        'After 100, tens and ones still work the same way.',
+        '115 means 1 hundred, 1 ten, and 5 ones.',
+        '120 means 1 hundred, 2 tens, and 0 ones.',
+        'Numbers from 100 to 120 have a hundreds place, a tens place, and a ones place.'
       ],
-      workedExamples: [],
-      quizBank: []
+      workedExamples: _l23Examples,
+      quizBank: _l23QuizBank
     },
 
     // ═══════════════════════════════════════════════════════════════════════
