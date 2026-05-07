@@ -255,6 +255,23 @@ function _l31MkCountOnQ(n, opts) {
   var a = opts.a, b = opts.b, sum = a + b;
   var bigger  = a >= b ? a : b;
   var smaller = a >= b ? b : a;
+  // Build distractors with deduplication. When smaller === 1, `bigger` equals
+  // `sum - 1` and would duplicate the off-by-one (less) distractor.
+  var seen = { };
+  seen[sum] = true;
+  var distractors = [];
+  function addDistractor(val, tag, me) {
+    if (!seen[val]) {
+      seen[val] = true;
+      distractors.push({ value: String(val), correct: false, errorTag: tag, misconceptionExplanation: me });
+    }
+  }
+  addDistractor(sum - 1,    'err_off_by_one',      'Student counted one too few.');
+  addDistractor(sum + 1,    'err_off_by_one',      'Student counted one too many.');
+  addDistractor(bigger,     'err_count_all_wrong', 'Student forgot to count on the smaller.');
+  // Spillover when the bigger distractor duplicated sum-1 (smaller === 1)
+  if (distractors.length < 3) addDistractor(sum + 2, 'err_count_all_wrong', 'Student miscounted by 2.');
+  if (distractors.length < 3) addDistractor(smaller, 'err_count_all_wrong', 'Student picked the smaller addend.');
   return _l31Q(n, {
     difficulty: opts.difficulty || 'medium',
     subSkill: 'count_on_from_bigger',
@@ -262,12 +279,7 @@ function _l31MkCountOnQ(n, opts) {
     prompt: 'Use the number line. ' + a + ' + ' + b + ' = ?',
     visual: _l31VisNumberLine(bigger, smaller),
     answer: String(sum),
-    choices: [
-      { value: String(sum),     correct: true },
-      { value: String(sum - 1), correct: false, errorTag: 'err_off_by_one',           misconceptionExplanation: 'Student counted one too few.' },
-      { value: String(sum + 1), correct: false, errorTag: 'err_off_by_one',           misconceptionExplanation: 'Student counted one too many.' },
-      { value: String(bigger),  correct: false, errorTag: 'err_count_all_wrong',      misconceptionExplanation: 'Student forgot to count on the smaller.' }
-    ],
+    choices: [{ value: String(sum), correct: true }].concat(distractors.slice(0, 3)),
     hint: 'Start at ' + bigger + '. Count up ' + smaller + ' more.',
     intervention: _l31IntCountOn(a, b, sum)
   });
