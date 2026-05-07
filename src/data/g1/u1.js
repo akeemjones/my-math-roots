@@ -9848,8 +9848,7 @@ export const G1_U1_SPEC = {
 
   unitTest: {
     sourceRule: 'all_lesson_quizbanks',
-    totalQuestions: 40,
-    perLessonCount: 5,
+    totalQuestions: 25,
     difficultyMixBalanced: true,
     preserveDiagnosticMetadata: true
   },

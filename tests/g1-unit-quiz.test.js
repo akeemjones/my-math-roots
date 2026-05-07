@@ -463,6 +463,78 @@ describe('_sampleUnitTestAttempt — repeated attempts vary', () => {
   });
 });
 
+// -- _sampleUnitTestAttempt: Unit 1 (8 lessons, n=25) ----------------------
+
+describe('_sampleUnitTestAttempt — Unit 1 attempt (8 lessons, n=25)', () => {
+  function makeU1() {
+    return {
+      id: 'g1u1',
+      lessons: Array.from({ length: 8 }, function(_, i) {
+        return makeLesson('l' + (i + 1), 30, 30, 30);
+      })
+    };
+  }
+
+  it('produces exactly 25 questions', () => {
+    var u = makeU1();
+    var pool = _assembleUnitTestBank(u, U2_SPEC);
+    var attempt = _sampleUnitTestAttempt(pool, 25);
+    assert.strictEqual(attempt.length, 25);
+  });
+
+  it('lesson distribution is 4/3/3/3/3/3/3/3 (one lesson with 4, seven with 3)', () => {
+    for (var run = 0; run < 50; run++) {
+      var u = makeU1();
+      var pool = _assembleUnitTestBank(u, U2_SPEC);
+      var attempt = _sampleUnitTestAttempt(pool, 25);
+      var byLesson = {};
+      for (var li = 0; li < 8; li++) byLesson[li] = 0;
+      attempt.forEach(function(q) { byLesson[q.sourceLessonIndex]++; });
+
+      var counts = [];
+      for (var i = 0; i < 8; i++) counts.push(byLesson[i]);
+      counts.sort(function(a, b) { return b - a; });
+      assert.deepStrictEqual(counts, [4, 3, 3, 3, 3, 3, 3, 3],
+        'run ' + run + ' counts=' + JSON.stringify(counts));
+    }
+  });
+
+  it('hits exact 8E + 10M + 7H difficulty target', () => {
+    for (var run = 0; run < 30; run++) {
+      var u = makeU1();
+      var pool = _assembleUnitTestBank(u, U2_SPEC);
+      var attempt = _sampleUnitTestAttempt(pool, 25);
+      var e = attempt.filter(function(q) { return q.d === 'e'; }).length;
+      var m = attempt.filter(function(q) { return q.d === 'm'; }).length;
+      var h = attempt.filter(function(q) { return q.d === 'h'; }).length;
+      assert.strictEqual(e, 8,  'run ' + run);
+      assert.strictEqual(m, 10, 'run ' + run);
+      assert.strictEqual(h, 7,  'run ' + run);
+    }
+  });
+
+  it('the +1 bonus rotates across lessons over many attempts', () => {
+    var u = makeU1();
+    var pool = _assembleUnitTestBank(u, U2_SPEC);
+    var bonusLessons = {};
+    for (var i = 0; i < 80; i++) {
+      var attempt = _sampleUnitTestAttempt(pool, 25);
+      var byLesson = {};
+      for (var li = 0; li < 8; li++) byLesson[li] = 0;
+      attempt.forEach(function(q) { byLesson[q.sourceLessonIndex]++; });
+      for (var idx = 0; idx < 8; idx++) {
+        if (byLesson[idx] === 4) {
+          bonusLessons[idx] = (bonusLessons[idx] || 0) + 1;
+          break;
+        }
+      }
+    }
+    // Across 80 attempts we expect bonus to land on at least 5 different lessons
+    assert.ok(Object.keys(bonusLessons).length >= 5,
+      'bonus should rotate across >=5 of 8 lessons; got ' + JSON.stringify(bonusLessons));
+  });
+});
+
 // -- _sampleUnitTestAttempt: edge cases -------------------------------------
 
 describe('_sampleUnitTestAttempt — edge cases', () => {
