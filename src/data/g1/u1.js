@@ -9495,12 +9495,23 @@ function _l8IntLanguage(left, right, op) {
 // "Which symbol belongs?" with 3-symbol choices
 function _l8MkSymbolQ(n, opts) {
   var ans = opts.answer;
-  var ans2 = ans === '<' ? '>' : ans === '>' ? '<' : '<';
-  var ans3 = ans === '=' ? '<' : '=';
-  var t1 = ans2 === '=' ? 'err_equal_misread' : 'err_symbol_reversal';
-  var t2 = ans3 === '=' ? 'err_equal_misread' : 'err_symbol_reversal';
-  var explain1 = ans2 === '=' ? 'Student picked = when the numbers are not equal.' : 'Student flipped the symbol direction.';
-  var explain2 = ans3 === '=' ? 'Student picked = when the numbers are not equal.' : 'Student picked the wrong direction.';
+  // Distractor pair: the two symbols that are NOT the answer.
+  var ans2, ans3, t1, t2, explain1, explain2;
+  if (ans === '=') {
+    // Equal question: distractors are < and > (both miss the equality)
+    ans2 = '<'; ans3 = '>';
+    t1 = 'err_equal_misread'; t2 = 'err_equal_misread';
+    explain1 = 'Student picked < when the numbers are equal.';
+    explain2 = 'Student picked > when the numbers are equal.';
+  } else {
+    // Inequality question: one distractor reverses the symbol, the other picks =
+    ans2 = ans === '<' ? '>' : '<';
+    ans3 = '=';
+    t1 = 'err_symbol_reversal';
+    t2 = 'err_equal_misread';
+    explain1 = 'Student flipped the symbol direction.';
+    explain2 = 'Student picked = when the numbers are not equal.';
+  }
   return _l8Q(n, {
     difficulty: opts.difficulty,
     subSkill: opts.subSkill,
@@ -9569,12 +9580,19 @@ function _l8MkLangQ(n, opts) {
 function _l8MkStmtQ(n, opts) {
   var op  = opts.op;
   var stmt_correct = opts.left + ' ' + op + ' ' + opts.right;
-  var op2 = op === '<' ? '>' : op === '>' ? '<' : '<';
-  var op3 = op === '=' ? '<' : '=';
+  // Distractor pair: the two symbols that are NOT the correct op.
+  var op2, op3, t1, t2;
+  if (op === '=') {
+    op2 = '<'; op3 = '>';
+    t1 = 'err_equal_misread'; t2 = 'err_equal_misread';
+  } else {
+    op2 = op === '<' ? '>' : '<';
+    op3 = '=';
+    t1 = 'err_symbol_reversal';
+    t2 = 'err_equal_misread';
+  }
   var stmt_wrong1 = opts.left + ' ' + op2 + ' ' + opts.right;
   var stmt_wrong2 = opts.left + ' ' + op3 + ' ' + opts.right;
-  var t1 = op2 === '=' ? 'err_equal_misread' : 'err_symbol_reversal';
-  var t2 = op3 === '=' ? 'err_equal_misread' : 'err_symbol_reversal';
   return _l8Q(n, {
     difficulty: opts.difficulty || 'hard',
     subSkill: 'select_correct_statement',
