@@ -242,25 +242,54 @@ function _sampleFromBank(bank, count, balanced) {
   return selected;
 }
 
-// Assembles a unit testBank from lesson qBanks.
+// Largest-remainder apportionment.
+// Returns an array of integers summing to `total`, distributed across
+// `weights` proportional to each weight. Random tie-break for fairness.
+// Used to apportion difficulty quotas (8E, 10M, 7H) across lessons in a way
+// that preserves both per-difficulty totals and per-lesson totals.
+function _apportion(total, weights) {
+  if (!weights || weights.length === 0) return [];
+  var sumW = 0;
+  for (var i = 0; i < weights.length; i++) sumW += weights[i];
+  if (sumW === 0 || total === 0) return weights.map(function() { return 0; });
+
+  var quotas = weights.map(function(w) { return total * w / sumW; });
+  var floors = quotas.map(function(q) { return Math.floor(q); });
+  var allocated = 0;
+  for (var k = 0; k < floors.length; k++) allocated += floors[k];
+  var deficit = total - allocated;
+  if (deficit <= 0) return floors;
+
+  var indexed = quotas.map(function(q, i) {
+    return { i: i, frac: q - Math.floor(q), tie: Math.random() };
+  });
+  indexed.sort(function(a, b) {
+    if (Math.abs(b.frac - a.frac) > 1e-9) return b.frac - a.frac;
+    return a.tie - b.tie;
+  });
+  for (var d = 0; d < deficit && d < indexed.length; d++) {
+    floors[indexed[d].i]++;
+  }
+  return floors;
+}
+
+// Assembles the FULL unit test POOL from every lesson quizBank question.
 // Called when spec.unitTest.sourceRule === 'all_lesson_quizbanks'.
 // u.lessons must already be fully merged before this runs.
 //
-// Each returned question is a SHALLOW CLONE of the lesson question, with
-// source-lesson metadata attached:
+// Returns the full pool (no sampling). Each returned question is a SHALLOW
+// CLONE of the lesson question, with source-lesson metadata attached:
 //   sourceLessonId, sourceLessonTitle, sourceLessonIndex, sourceUnitId
 // The original lesson qBank arrays and question objects are never mutated.
+//
+// Per-attempt sampling happens later in startUnitQuiz via
+// _sampleUnitTestAttempt(pool, n).
 function _assembleUnitTestBank(u, utSpec) {
-  var perLesson = utSpec.perLessonCount || 5;
-  var balanced  = !!utSpec.difficultyMixBalanced;
-  var result    = [];
-
+  var result = [];
   u.lessons.forEach(function(lesson, lessonIdx) {
-    var bank   = (lesson.qBank || []).slice();
-    var sample = _sampleFromBank(bank, perLesson, balanced);
-    for (var i = 0; i < sample.length; i++) {
-      // Clone so attaching source metadata never mutates the lesson's qBank
-      var tagged = Object.assign({}, sample[i], {
+    var bank = lesson.qBank || [];
+    for (var i = 0; i < bank.length; i++) {
+      var tagged = Object.assign({}, bank[i], {
         sourceLessonId:    lesson.id || null,
         sourceLessonTitle: lesson.title || null,
         sourceLessonIndex: lessonIdx,
@@ -269,7 +298,109 @@ function _assembleUnitTestBank(u, utSpec) {
       result.push(tagged);
     }
   });
+  return result;
+}
 
+// Samples `n` questions from the full unit test pool, balanced across
+// lessons (as evenly as possible) and difficulty (target 8E + 10M + 7H
+// for n=25, scaled for other n).
+//
+// Lesson distribution: floor(n / numLessons) per lesson, with the
+// remainder randomly assigned to single lessons (e.g., n=25, 4 lessons →
+// 6,6,6,6 base + 1 random bonus → one of 7/6/6/6, 6/7/6/6, 6/6/7/6, 6/6/6/7).
+//
+// Difficulty distribution: globally apportioned across lessons via
+// _apportion, so per-difficulty totals match the target exactly while
+// per-lesson totals match the chosen lesson sizes.
+//
+// Spillover: if a (lesson, difficulty) bucket is short, the deficit is
+// filled from remaining questions in that lesson regardless of difficulty.
+//
+// Never mutates `pool`.
+function _sampleUnitTestAttempt(pool, n) {
+  if (!pool || pool.length === 0) return [];
+  if (pool.length <= n) {
+    var copy = pool.slice();
+    _g1Shuffle(copy);
+    return copy;
+  }
+
+  // Group by sourceLessonIndex. Use a sparse-array approach because indices
+  // come from lesson positions and should be sortable as integers.
+  var byLesson = {};
+  for (var p = 0; p < pool.length; p++) {
+    var idx = pool[p].sourceLessonIndex != null ? pool[p].sourceLessonIndex : 0;
+    if (!byLesson[idx]) byLesson[idx] = [];
+    byLesson[idx].push(pool[p]);
+  }
+  var lessonIndices = Object.keys(byLesson).map(Number).sort(function(a, b) { return a - b; });
+  var numLessons = lessonIndices.length;
+  if (numLessons === 0) return [];
+
+  // Step 1: Pick lesson sizes (base + random bonus).
+  var base  = Math.floor(n / numLessons);
+  var bonus = n - base * numLessons;
+  var lessonSizes = lessonIndices.map(function() { return base; });
+  if (bonus > 0) {
+    var bonusOrder = lessonIndices.slice();
+    _g1Shuffle(bonusOrder);
+    for (var b = 0; b < bonus; b++) {
+      lessonSizes[lessonIndices.indexOf(bonusOrder[b])]++;
+    }
+  }
+
+  // Step 2: Difficulty targets (8E + 10M + 7H for n=25, scaled by ratio).
+  var eTotal = Math.round(n * 8 / 25);
+  var mTotal = Math.round(n * 10 / 25);
+  var hTotal = n - eTotal - mTotal;
+
+  // Step 3: Apportion E across lessons proportional to lesson size.
+  var ePerLesson = _apportion(eTotal, lessonSizes);
+
+  // Step 4: Remaining capacity (M + H) per lesson after E.
+  var afterE = lessonSizes.map(function(s, i) { return s - ePerLesson[i]; });
+
+  // Step 5: Apportion H across lessons proportional to remaining capacity.
+  var hPerLesson = _apportion(hTotal, afterE);
+
+  // Step 6: M fills the gap per lesson (so per-lesson totals match exactly).
+  var mPerLesson = lessonSizes.map(function(s, i) { return afterE[i] - hPerLesson[i]; });
+
+  // Step 7: Sample from each (lesson, difficulty) bucket.
+  var result = [];
+  lessonIndices.forEach(function(lIdx, i) {
+    var lessonPool = byLesson[lIdx];
+    var ePool = lessonPool.filter(function(q) { return q.d === 'e'; });
+    var mPool = lessonPool.filter(function(q) { return q.d === 'm'; });
+    var hPool = lessonPool.filter(function(q) { return q.d === 'h'; });
+
+    _g1Shuffle(ePool); _g1Shuffle(mPool); _g1Shuffle(hPool);
+
+    var ePicks = ePool.slice(0, ePerLesson[i]);
+    var mPicks = mPool.slice(0, mPerLesson[i]);
+    var hPicks = hPool.slice(0, hPerLesson[i]);
+    var picks  = ePicks.concat(mPicks).concat(hPicks);
+
+    // Spillover: if any difficulty tier was short, fill from remaining
+    // questions in this lesson.
+    var lessonTarget = lessonSizes[i];
+    if (picks.length < lessonTarget) {
+      var picked = picks.slice();
+      var spillover = lessonPool.filter(function(q) {
+        return picked.indexOf(q) === -1;
+      });
+      _g1Shuffle(spillover);
+      var needed = lessonTarget - picks.length;
+      for (var s = 0; s < needed && s < spillover.length; s++) {
+        picks.push(spillover[s]);
+      }
+    }
+
+    for (var pi = 0; pi < picks.length; pi++) result.push(picks[pi]);
+  });
+
+  // Final shuffle so questions don't appear in lesson order.
+  _g1Shuffle(result);
   return result;
 }
 
@@ -355,7 +486,13 @@ function _mergeG1UnitData(idx, spec){
 
   // Unit test bank assembly
   if (spec.unitTest) {
+    // Expose unitTest config to runtime (totalQuestions, sourceRule, etc.) so
+    // startUnitQuiz can size attempts and unit.js can label the quiz button.
+    u.unitTest = spec.unitTest;
     if (spec.unitTest.sourceRule === 'all_lesson_quizbanks') {
+      // testBank holds the FULL POOL of every lesson question, cloned and
+      // tagged with source-lesson metadata. Per-attempt sampling happens in
+      // startUnitQuiz via _sampleUnitTestAttempt.
       u.testBank = _assembleUnitTestBank(u, spec.unitTest);
     } else if (Array.isArray(spec.unitTest.bank)) {
       u.testBank = spec.unitTest.bank;

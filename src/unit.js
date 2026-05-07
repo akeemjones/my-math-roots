@@ -62,13 +62,15 @@ function openUnit(idx){
   // Never block returning to the unit just completed (guards against race condition when session expires mid-quiz)
   if(idx !== CUR.unitIdx && !isUnitUnlocked(idx)){ showLockToast(`Finish Unit ${idx} with 80%+ first!`, true); return; }
   CUR.unitIdx = idx;
-  // After unit data loads, patch the quiz question count label with actual testBank length
+  // After unit data loads, patch the quiz question count label with the
+  // actual attempt size (unitTest.totalQuestions if present, else testBank length).
   if(typeof _loadUnit === 'function') _loadUnit(idx).then(function(){
     if(CUR.unitIdx !== idx) return; // user navigated away
     const _u = UNITS_DATA[idx];
     const _h3 = document.getElementById('uq-h3');
-    if(_u && _u.testBank && _h3 && _h3.textContent.startsWith('Unit Quiz —')){
-      _h3.textContent = 'Unit Quiz — ' + _u.testBank.length + ' Questions';
+    if(_u && _h3 && _h3.textContent.startsWith('Unit Quiz —')){
+      const _n = (_u.unitTest && _u.unitTest.totalQuestions) || (_u.testBank && _u.testBank.length);
+      if(_n) _h3.textContent = 'Unit Quiz — ' + _n + ' Questions';
     }
   });
   try {
@@ -172,7 +174,9 @@ function openUnit(idx){
     } else {
       uqResumeArea.innerHTML = '';
       document.getElementById('uq-ico').textContent = uqPct>=80 ? '✅' : '▶️';
-      const uqCount = (u.testBank && u.testBank.length) || (u.quizBank && u.quizBank.length) || 25;
+      // Prefer unitTest.totalQuestions (G1 attempt size, e.g., 25) over the
+      // raw testBank length (which for G1 is the full 530-q pool).
+      const uqCount = (u.unitTest && u.unitTest.totalQuestions) || (u.testBank && u.testBank.length) || (u.quizBank && u.quizBank.length) || 25;
       document.getElementById('uq-h3').textContent = `Unit Quiz — ${uqCount} Questions`;
       document.getElementById('uq-h3').style.color = u.color;
       document.getElementById('uq-p').textContent = uqPct>0 ? `Best score: ${uqPct}% — need 80%+ to unlock next unit` : 'Test everything you learned in this unit!';

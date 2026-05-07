@@ -339,12 +339,15 @@ function startUnitQuiz(unitIdx){
       // _weightedSample by passing the bank as _prebuiltQs.
       const prebuilt = _buildKUnitQuiz(u);
       _runQuiz(u.testBank || u.unitQuiz, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx, prebuilt);
-    } else if(u.testBank && u.testBank.length > 0 && u.testBank[0] && u.testBank[0].sourceLessonId){
-      // testBank was pre-assembled from lesson quizBanks (G1 sourceRule:
-      // 'all_lesson_quizbanks'). Use it verbatim — bypass _runQuiz's
-      // _weightedSample so per-lesson coverage and total count are preserved.
-      const prebuilt = u.testBank.slice();
-      _shuffle(prebuilt);
+    } else if(u.testBank && u.testBank.length > 0 && u.testBank[0] && u.testBank[0].sourceLessonId && typeof _sampleUnitTestAttempt === 'function'){
+      // testBank is the FULL POOL of all lesson quizBank questions
+      // (G1 sourceRule: 'all_lesson_quizbanks'). Sample a fresh attempt of
+      // unitTest.totalQuestions (default 25) on each start so repeated
+      // attempts produce different question sets. Pass as _prebuiltQs to
+      // bypass _runQuiz's _weightedSample (which would re-sample with
+      // {e:8,m:10,h:7} but ignore lesson-level balance).
+      const attemptSize = (u.unitTest && u.unitTest.totalQuestions) || 25;
+      const prebuilt = _sampleUnitTestAttempt(u.testBank, attemptSize);
       _runQuiz(u.testBank, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx, prebuilt);
     } else {
       _runQuiz(u.testBank || u.unitQuiz, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx);
