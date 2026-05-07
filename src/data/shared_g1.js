@@ -32,6 +32,15 @@ const _G1_U2_LESSONS = [
   { id:'g1-u2-l4', title:'Represent Numbers', icon:'✏️', desc:'Write numbers in standard, expanded, and word form',        teks:'TEKS 1.2C' }
 ];
 
+// ── Unit 3 lesson shells ─────────────────────────────────────────────────────
+const _G1_U3_LESSONS = [
+  { id:'g1-u3-l1', title:'Add Within 20',                  icon:'➕', desc:'Add within 20 using counting-on and modeling',                       teks:'TEKS 1.3D, 1.3E' },
+  { id:'g1-u3-l2', title:'Subtract Within 20',             icon:'➖', desc:'Subtract within 20 using take-away and counting-back',                teks:'TEKS 1.3D, 1.3E' },
+  { id:'g1-u3-l3', title:'Doubles and Near Doubles',       icon:'👯', desc:'Use doubles and near-doubles to add fluently within 20',              teks:'TEKS 1.3D, 1.3E' },
+  { id:'g1-u3-l4', title:'Make 10',                        icon:'🔟', desc:'Compose 10 and decompose to a 10 to add and subtract within 20',     teks:'TEKS 1.3C, 1.3D' },
+  { id:'g1-u3-l5', title:'Fact Families and Word Problems',icon:'📖', desc:'Relate addition and subtraction; solve word problems within 20',      teks:'TEKS 1.3B, 1.3E, 1.3F' }
+];
+
 // ── Grade 1 unit shells ───────────────────────────────────────────────────────
 const _UNITS_DATA_G1 = [
   {
@@ -57,12 +66,9 @@ const _UNITS_DATA_G1 = [
     id: 'g1u3', name: 'Addition and Subtraction to 20',
     icon: '➕',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FF2200" opacity="0.1"/><rect x="8" y="27" width="18" height="7" rx="3.5" fill="#FF2200"/><rect x="13.5" y="21.5" width="7" height="18" rx="3.5" fill="#FF2200"/><rect x="34" y="27" width="18" height="7" rx="3.5" fill="#FF2200" opacity="0.75"/></svg>',
-    color: '#FF2200', gp: 1, teks: 'TEKS 1.3A-D, 1.4',
-    lessons: [
-      { id:'g1u3l1', title:'Add Within 20', icon:'➕', desc:'Use strategies to add within 20' },
-      { id:'g1u3l2', title:'Subtract Within 20', icon:'➖', desc:'Use strategies to subtract within 20' }
-    ],
-    _loaded: true
+    color: '#FF2200', gp: 1, teks: 'TEKS 1.3B-F, 1.5D-G',
+    lessons: _G1_U3_LESSONS.map(function(l){ return Object.assign({}, l); }),
+    _loaded: false
   },
   {
     id: 'g1u4', name: 'Two-Digit Addition and Subtraction',
@@ -135,13 +141,15 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js, idx 1 → u2.js
-  if(idx !== 0 && idx !== 1){
+  // Units with data files: idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js.
+  // Units 4-8 (idx 3-7) are still shell-only — short-circuit so the loader
+  // does not try to fetch a file that doesn't exist yet.
+  if(idx > 2){
     u._loaded = true;
     return Promise.resolve();
   }
 
-  var fileNum = idx + 1; // idx 0 → u1.js, idx 1 → u2.js
+  var fileNum = idx + 1; // idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js
   _g1UnitLoadPromises[idx] = _loadG1SourceFile(fileNum).then(function(){
     if(!u._loaded) u._loaded = true;  // fallback if script didn't call _mergeG1UnitData
   });
@@ -184,6 +192,13 @@ function _g1VisToV(vis) {
     }
     case 'comparison':  return { type: 'comparison', config: vis.config };
     case 'base10':      return { type: 'base10', config: vis.config || { hundreds: vis.hundreds || 0, tens: vis.tens || 0, ones: vis.ones || 0 } };
+    case 'twoGroups':   return { type: 'twoGroups', config: vis.config || {
+                          leftCount:  vis.leftCount,
+                          leftObj:    vis.leftObj  || '●',
+                          rightCount: vis.rightCount,
+                          rightObj:   vis.rightObj || '●',
+                          op:         vis.op       || 'add'
+                        }};
     default:            return null;
   }
 }
