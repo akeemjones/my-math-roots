@@ -62,6 +62,15 @@ function openUnit(idx){
   // Never block returning to the unit just completed (guards against race condition when session expires mid-quiz)
   if(idx !== CUR.unitIdx && !isUnitUnlocked(idx)){ showLockToast(`Finish Unit ${idx} with 80%+ first!`, true); return; }
   CUR.unitIdx = idx;
+  // After unit data loads, patch the quiz question count label with actual testBank length
+  if(typeof _loadUnit === 'function') _loadUnit(idx).then(function(){
+    if(CUR.unitIdx !== idx) return; // user navigated away
+    const _u = UNITS_DATA[idx];
+    const _h3 = document.getElementById('uq-h3');
+    if(_u && _u.testBank && _h3 && _h3.textContent.startsWith('Unit Quiz —')){
+      _h3.textContent = 'Unit Quiz — ' + _u.testBank.length + ' Questions';
+    }
+  });
   try {
     var _g = localStorage.getItem('mmr_grade');
     _trackEvent('unit_started', { unit_id: 'u' + idx, grade: _g || null });
@@ -163,7 +172,8 @@ function openUnit(idx){
     } else {
       uqResumeArea.innerHTML = '';
       document.getElementById('uq-ico').textContent = uqPct>=80 ? '✅' : '▶️';
-      document.getElementById('uq-h3').textContent = 'Unit Quiz — 25 Questions';
+      const uqCount = (u.testBank && u.testBank.length) || (u.quizBank && u.quizBank.length) || 25;
+      document.getElementById('uq-h3').textContent = `Unit Quiz — ${uqCount} Questions`;
       document.getElementById('uq-h3').style.color = u.color;
       document.getElementById('uq-p').textContent = uqPct>0 ? `Best score: ${uqPct}% — need 80%+ to unlock next unit` : 'Test everything you learned in this unit!';
       uqBtn.onclick = () => startUnitQuiz(idx);
