@@ -9,9 +9,9 @@
  *  Lessons:
  *    L3.1  Add Within 20                        ← COMPLETE (170 questions)
  *    L3.2  Subtract Within 20                   ← COMPLETE (170 questions)
- *    L3.3  Doubles and Near Doubles             ← stub
- *    L3.4  Make 10                              ← stub
- *    L3.5  Fact Families and Word Problems      ← stub
+ *    L3.3  Doubles and Near Doubles             ← COMPLETE (165 questions)
+ *    L3.4  Make 10                              ← COMPLETE (170 questions)
+ *    L3.5  Fact Families and Word Problems      ← COMPLETE (175 questions)
  * ════════════════════════════════════════════════════════════════════════════ */
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -1879,6 +1879,1245 @@ _l33_H3.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkMissingNearDouble
 _l33_H4.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkAbstractMixedQ(_l33N, { a: t[0], b: t[1], difficulty: 'hard' })); });
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 3.4 — Make 10 — helpers, intervention templates, quizBank
+//  Skill: make_ten_strategy · TEKS 1.3C, 1.3D, 1.3E
+//  Target: 170 questions (55 easy / 70 medium / 45 hard)
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l34Q(n, o) {
+  return {
+    id: 'g1-u3-l4-q-' + String(n).padStart(3, '0'),
+    teks: ['1.3C', '1.3D', '1.3E'],
+    lessonId: 'g1-u3-l4',
+    skill: 'make_ten_strategy',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+// ── Visual builder (question side — flat form, converted by _g1VisToV) ───────
+
+function _l34VisTenFrame(n) { return { type: 'tenFrame', count: n }; }
+
+// ── Teaching visuals (renderer-ready {type, config} form) ────────────────────
+//
+// These bypass _g1VisToV and go straight to _buildVisualHTML, so they must
+// already be in {type, config:{…}} form.
+
+function _l34TeachingTenFrameHowMany(n) {
+  return {
+    type: 'tenFrame',
+    config: {
+      count: 10,
+      highlightFromIdx: n,
+      caption: n + ' + ' + (10 - n) + ' = 10.'
+    }
+  };
+}
+
+function _l34TeachingTenFrameFillToTen(a) {
+  return {
+    type: 'tenFrame',
+    config: {
+      count: 10,
+      highlightFromIdx: a,
+      caption: a + ' + ' + (10 - a) + ' = 10. Now add the rest.'
+    }
+  };
+}
+
+function _l34TeachingNumberLineMake10(a, b) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = sum - 10;
+  var min = Math.max(0, a - 1);
+  var max = sum + 1;
+  var ticks = [];
+  for (var i = min; i <= max; i++) ticks.push(i);
+  return {
+    type: 'numberLine',
+    config: {
+      min: min, max: max,
+      ticks: ticks,
+      jumps: [
+        { from: a, to: 10, label: '+' + fill },
+        { from: 10, to: sum, label: '+' + remainder }
+      ],
+      mark: a,
+      endMark: sum
+    }
+  };
+}
+
+// ── Distractor helper ────────────────────────────────────────────────────────
+
+function _l34Opts(correct, candidates, tag) {
+  var sc = String(correct);
+  var seen = {}; seen[sc] = true;
+  var opts = [{ value: sc, correct: true }];
+  for (var i = 0; i < candidates.length && opts.length < 4; i++) {
+    var sv = String(candidates[i]);
+    if (!seen[sv] && +sv >= 0 && +sv <= 20) {
+      seen[sv] = true;
+      opts.push({ value: sv, correct: false, errorTag: tag || 'err_wrong_answer', misconceptionExplanation: '' });
+    }
+  }
+  return opts;
+}
+
+// ── Intervention templates ───────────────────────────────────────────────────
+
+function _l34IntWrongPartner(n) {
+  var partner = 10 - n;
+  return {
+    errorTag: 'err_wrong_ten_partner',
+    title: n + ' pairs with ' + partner + ' to make 10',
+    teachingSteps: [
+      'A ten frame has 10 spots.',
+      n + ' spots are filled. Count the empty ones.',
+      'There are ' + partner + ' empty spots.',
+      n + ' + ' + partner + ' = 10.'
+    ],
+    correctAnswerExplanation: n + ' + ' + partner + ' = 10. The ten frame shows ' + partner + ' empty spots.',
+    teachingVisual: _l34TeachingTenFrameHowMany(n)
+  };
+}
+
+function _l34IntTenPlusN(n) {
+  var sum = 10 + n;
+  return {
+    errorTag: 'err_ten_plus_n',
+    title: 'A full ten frame, then count on',
+    teachingSteps: [
+      'The ten frame is full — that is 10.',
+      'Count on ' + n + ' more after 10.',
+      '10 + ' + n + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: '10 + ' + n + ' = ' + sum + '. Start at 10 and count on ' + n + '.',
+    teachingVisual: {
+      type: 'tenFrame',
+      config: { count: 10, caption: '10 + ' + n + ' = ' + sum + '.' }
+    }
+  };
+}
+
+function _l34IntForgotRemainder(a, b) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = sum - 10;
+  return {
+    errorTag: 'err_forgot_remainder',
+    title: 'After making 10, add the leftover',
+    teachingSteps: [
+      a + ' + ' + fill + ' = 10. Good start!',
+      'But there is still ' + remainder + ' left over from ' + b + '.',
+      '10 + ' + remainder + ' = ' + sum + '.',
+      a + ' + ' + b + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + b + ' = ' + a + ' + ' + fill + ' + ' + remainder + ' = 10 + ' + remainder + ' = ' + sum + '.',
+    teachingVisual: _l34TeachingNumberLineMake10(a, b)
+  };
+}
+
+function _l34IntWrongDecompose(a, b) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = b - fill;
+  return {
+    errorTag: 'err_wrong_decompose',
+    title: 'Split the second number to fill to 10',
+    teachingSteps: [
+      a + ' needs ' + fill + ' more to make 10.',
+      'Split ' + b + ' into ' + fill + ' and ' + remainder + '.',
+      a + ' + ' + fill + ' = 10. Then 10 + ' + remainder + ' = ' + sum + '.',
+      a + ' + ' + b + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + b + ': split ' + b + ' into ' + fill + ' and ' + remainder + '. Make 10, then add ' + remainder + ' = ' + sum + '.',
+    teachingVisual: _l34TeachingTenFrameFillToTen(a)
+  };
+}
+
+// ── Easy factories ───────────────────────────────────────────────────────────
+
+function _l34MkHowManyMoreQ(n, qNum) {
+  var ans = 10 - n;
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'how_many_more_to_ten',
+    keyIdea: 'Every number from 1 to 9 has a partner that makes 10.',
+    prompt: 'There are ' + n + ' dots in the ten frame. How many more to make 10?',
+    visual: _l34VisTenFrame(n),
+    answer: String(ans),
+    choices: _l34Opts(ans, [ans + 1, ans > 0 ? ans - 1 : ans + 2, n, ans + 2], 'err_wrong_ten_partner'),
+    hint: 'Count the empty spots in the ten frame.',
+    intervention: _l34IntWrongPartner(n)
+  });
+}
+
+function _l34MkPairEquationQ(n, qNum) {
+  var ans = 10 - n;
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'pair_to_ten',
+    keyIdea: 'Every number from 1 to 9 has a partner that makes 10.',
+    prompt: n + ' + __ = 10. What is the missing number?',
+    visual: null,
+    answer: String(ans),
+    choices: _l34Opts(ans, [ans + 1, ans > 0 ? ans - 1 : ans + 2, n, ans + 2], 'err_wrong_ten_partner'),
+    hint: n + ' + ? = 10. What goes with ' + n + ' to make 10?',
+    intervention: _l34IntWrongPartner(n)
+  });
+}
+
+function _l34MkTenPlusNQ(n, qNum) {
+  var ans = 10 + n;
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'ten_plus_n',
+    keyIdea: 'When you add 10 to any number, just put a 1 in the tens place.',
+    prompt: '10 + ' + n + ' = ?',
+    visual: _l34VisTenFrame(10),
+    answer: String(ans),
+    choices: [
+      { value: String(ans),     correct: true },
+      { value: String(ans + 1), correct: false, errorTag: 'err_ten_plus_n', misconceptionExplanation: 'Counted on one too many.' },
+      { value: String(n),       correct: false, errorTag: 'err_ten_plus_n', misconceptionExplanation: 'Forgot to include the 10.' },
+      { value: String(ans - 1), correct: false, errorTag: 'err_ten_plus_n', misconceptionExplanation: 'Counted on one too few.' }
+    ],
+    hint: 'Start at 10 and count on ' + n + ' more.',
+    intervention: _l34IntTenPlusN(n)
+  });
+}
+
+function _l34MkRecognizePairQ(n, qNum) {
+  var ans = 10 - n;
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'pair_to_ten',
+    keyIdea: 'Every number from 1 to 9 has a partner that makes 10.',
+    prompt: 'Which number goes with ' + n + ' to make 10?',
+    visual: null,
+    answer: String(ans),
+    choices: _l34Opts(ans, [ans + 1, ans > 0 ? ans - 1 : ans + 2, n, ans + 2], 'err_wrong_ten_partner'),
+    hint: n + ' + ? = 10.',
+    intervention: _l34IntWrongPartner(n)
+  });
+}
+
+var _l34_E5_OBJECTS = ['apples', 'crayons', 'stickers', 'buttons', 'rocks', 'fish', 'pennies', 'balls', 'books'];
+
+function _l34MkHowManyMoreTextQ(n, qNum) {
+  var ans = 10 - n;
+  var obj = _l34_E5_OBJECTS[(n - 1) % _l34_E5_OBJECTS.length];
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'how_many_more_to_ten',
+    keyIdea: 'Every number from 1 to 9 has a partner that makes 10.',
+    prompt: 'You have ' + n + ' ' + obj + '. How many more to have 10?',
+    visual: null,
+    answer: String(ans),
+    choices: _l34Opts(ans, [ans + 1, ans > 0 ? ans - 1 : ans + 2, n, ans + 2], 'err_wrong_ten_partner'),
+    hint: n + ' + ? = 10.',
+    intervention: _l34IntWrongPartner(n)
+  });
+}
+
+function _l34MkReversePairQ(n, qNum) {
+  var ans = 10 - n;
+  return _l34Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'pair_to_ten',
+    keyIdea: 'Every number from 1 to 9 has a partner that makes 10.',
+    prompt: '__ + ' + n + ' = 10. What is the missing number?',
+    visual: null,
+    answer: String(ans),
+    choices: _l34Opts(ans, [ans + 1, ans > 0 ? ans - 1 : ans + 2, n, ans + 2], 'err_wrong_ten_partner'),
+    hint: '? + ' + n + ' = 10. What goes before ' + n + ' to make 10?',
+    intervention: _l34IntWrongPartner(n)
+  });
+}
+
+// ── Medium factories ─────────────────────────────────────────────────────────
+
+function _l34MkDecomposeIdentifyQ(a, b, qNum) {
+  var fill = 10 - a;
+  return _l34Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'decompose_for_ten',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: 'To add ' + a + ' + ' + b + ', first make a 10. ' + a + ' + ? = 10. What is the missing number?',
+    visual: _l34VisTenFrame(a),
+    answer: String(fill),
+    choices: _l34Opts(fill, [fill + 1, fill > 1 ? fill - 1 : fill + 2, b, a + b - 10], 'err_wrong_decompose'),
+    hint: 'How many more does ' + a + ' need to make 10?',
+    intervention: _l34IntWrongDecompose(a, b)
+  });
+}
+
+function _l34MkApplyMakeTenQ(a, b, qNum) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = sum - 10;
+  var intv = _l34IntForgotRemainder(a, b);
+  intv.teachingVisual = _l34TeachingNumberLineMake10(a, b);
+  return _l34Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'apply_make_ten',
+    keyIdea: 'Make 10 helps you add bigger numbers.',
+    prompt: a + ' + ' + b + ' = ?',
+    visual: _l34VisTenFrame(a),
+    answer: String(sum),
+    choices: _l34Opts(sum, [sum - 1, sum + 1, 10, 10 + fill], 'err_forgot_remainder'),
+    hint: 'Try Make 10: ' + a + ' + ' + fill + ' = 10, then add ' + remainder + ' more.',
+    intervention: intv
+  });
+}
+
+function _l34MkFirstStepQ(a, b, qNum) {
+  var fill = 10 - a;
+  return _l34Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'decompose_for_ten',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: 'To add ' + a + ' + ' + b + ' using Make 10, you first add ? to ' + a + ' to make 10. What is the missing number?',
+    visual: null,
+    answer: String(fill),
+    choices: _l34Opts(fill, [fill + 1, fill > 1 ? fill - 1 : fill + 2, b, a + b - 10], 'err_wrong_decompose'),
+    hint: a + ' + ? = 10.',
+    intervention: _l34IntWrongDecompose(a, b)
+  });
+}
+
+function _l34MkBridgeEquationQ(a, b, qNum) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = sum - 10;
+  var intv = _l34IntForgotRemainder(a, b);
+  intv.teachingVisual = _l34TeachingNumberLineMake10(a, b);
+  return _l34Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'apply_make_ten',
+    keyIdea: 'After you make 10, add the leftover.',
+    prompt: a + ' + ' + b + ' = 10 + ?. What is the missing number?',
+    visual: _l34VisTenFrame(a),
+    answer: String(remainder),
+    choices: _l34Opts(remainder, [remainder + 1, fill, remainder > 1 ? remainder - 1 : remainder + 2, b], 'err_forgot_remainder'),
+    hint: 'Make 10 first: ' + a + ' + ' + fill + ' = 10. Then how much is left from ' + b + '?',
+    intervention: intv
+  });
+}
+
+function _l34MkIdentifyRemainderQ(a, b, qNum) {
+  var fill = 10 - a;
+  var remainder = a + b - 10;
+  return _l34Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'apply_make_ten',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: 'To add ' + a + ' + ' + b + ': ' + a + ' + ' + fill + ' = 10. How many of ' + b + ' are left over?',
+    visual: null,
+    answer: String(remainder),
+    choices: _l34Opts(remainder, [fill, remainder + 1, b, remainder > 1 ? remainder - 1 : remainder + 2], 'err_forgot_remainder'),
+    hint: b + ' − ' + fill + ' = ?',
+    intervention: _l34IntForgotRemainder(a, b)
+  });
+}
+
+// ── Hard factories ───────────────────────────────────────────────────────────
+
+function _l34MkApplyHardQ(a, b, qNum) {
+  var sum = a + b;
+  var fill = 10 - a;
+  var remainder = sum - 10;
+  var intv = _l34IntForgotRemainder(a, b);
+  intv.teachingVisual = _l34TeachingNumberLineMake10(a, b);
+  return _l34Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'apply_make_ten',
+    keyIdea: 'Make 10 helps you add bigger numbers.',
+    prompt: a + ' + ' + b + ' = ?',
+    visual: null,
+    answer: String(sum),
+    choices: _l34Opts(sum, [sum - 1, sum + 1, 10, 10 + fill], 'err_forgot_remainder'),
+    hint: 'Use Make 10: ' + a + ' needs ' + fill + ' more, then add the rest of ' + b + '.',
+    intervention: intv
+  });
+}
+
+function _l34MkStrategyChoiceQ(a, b, qNum) {
+  var fill = 10 - a;
+  var remainder = a + b - 10;
+  var correct = fill + ' and ' + remainder;
+  var c1 = (fill + 1) + ' and ' + (remainder >= 1 ? remainder - 1 : remainder + 1);
+  var c2 = (fill > 0 ? fill - 1 : fill + 1) + ' and ' + (remainder + 1);
+  var c3 = fill + ' and ' + b;
+  var seen = {}; seen[correct] = true;
+  var finalChoices = [{ value: correct, correct: true }];
+  [c1, c2, c3].forEach(function(cv) {
+    if (!seen[cv] && finalChoices.length < 4) {
+      seen[cv] = true;
+      finalChoices.push({ value: cv, correct: false, errorTag: 'err_wrong_decompose', misconceptionExplanation: 'Wrong split of ' + b + ' for Make 10.' });
+    }
+  });
+  return _l34Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'make_ten_strategy_choice',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: 'To add ' + a + ' + ' + b + ' using Make 10, you split ' + b + ' into two parts. (' + a + ' + first part = 10.) Which split is correct?',
+    visual: null,
+    answer: correct,
+    choices: finalChoices,
+    hint: a + ' + ? = 10. The first part is ' + fill + '.',
+    intervention: _l34IntWrongDecompose(a, b)
+  });
+}
+
+function _l34MkChainFillQ(a, b, qNum) {
+  var fill = 10 - a;
+  var sum = a + b;
+  var remainder = sum - 10;
+  return _l34Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'decompose_for_ten',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: a + ' + ' + b + ' = ' + a + ' + __ + ' + remainder + ' = ' + sum + '. What is the missing number (__)?',
+    visual: null,
+    answer: String(fill),
+    choices: _l34Opts(fill, [remainder, fill + 1, b, fill > 1 ? fill - 1 : fill + 2], 'err_wrong_decompose'),
+    hint: 'What do you add to ' + a + ' to make 10?',
+    intervention: _l34IntWrongDecompose(a, b)
+  });
+}
+
+function _l34MkSplitPartQ(a, b, qNum) {
+  var fill = 10 - a;
+  var remainder = a + b - 10;
+  return _l34Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'decompose_for_ten',
+    keyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+    prompt: 'To add ' + a + ' + ' + b + ', split ' + b + ' into ' + fill + ' and __. What is the missing number?',
+    visual: null,
+    answer: String(remainder),
+    choices: _l34Opts(remainder, [fill, remainder + 1, b, remainder > 1 ? remainder - 1 : remainder + 2], 'err_wrong_decompose'),
+    hint: b + ' = ' + fill + ' + ?',
+    intervention: _l34IntForgotRemainder(a, b)
+  });
+}
+
+// ── Data arrays ──────────────────────────────────────────────────────────────
+
+// Easy: E1=9, E2=9, E3=9, E4=10, E5=9, E6=9  →  55 total
+var _l34_E1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var _l34_E2 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var _l34_E3 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var _l34_E4 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+var _l34_E5 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var _l34_E6 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// Medium: M1=15, M2=15, M3=15, M4=15, M5=10  →  70 total
+var _l34_M1 = [[9,2],[9,3],[9,4],[9,5],[9,6],[8,3],[8,4],[8,5],[8,6],[8,7],[7,4],[7,5],[7,6],[7,7],[6,5]];
+var _l34_M2 = [[9,4],[9,5],[9,6],[9,7],[9,8],[8,4],[8,5],[8,6],[8,7],[8,8],[7,5],[7,6],[7,7],[7,8],[6,6]];
+var _l34_M3 = [[9,2],[9,3],[9,4],[8,2],[8,3],[8,4],[8,5],[7,3],[7,4],[7,5],[6,4],[6,5],[6,6],[5,5],[5,6]];
+var _l34_M4 = [[9,2],[9,3],[9,4],[9,5],[9,6],[8,3],[8,4],[8,5],[8,6],[8,7],[7,4],[7,5],[7,6],[7,8],[6,5]];
+var _l34_M5 = [[9,4],[9,5],[9,6],[8,5],[8,6],[8,7],[7,6],[7,7],[6,7],[6,8]];
+
+// Hard: H1=15, H2=10, H3=10, H4=10  →  45 total
+var _l34_H1 = [[8,7],[8,8],[9,7],[9,8],[9,9],[7,8],[7,9],[8,9],[6,8],[6,9],[7,7],[6,6],[6,7],[5,8],[5,9]];
+var _l34_H2 = [[8,5],[9,4],[7,6],[8,6],[9,3],[7,5],[8,4],[6,7],[9,7],[8,7]];
+var _l34_H3 = [[9,4],[9,5],[9,6],[8,4],[8,5],[8,6],[8,7],[7,5],[7,6],[7,7]];
+var _l34_H4 = [[9,4],[9,5],[8,5],[8,6],[7,6],[7,7],[8,7],[9,6],[6,7],[7,8]];
+
+// ── Bank assembly ─────────────────────────────────────────────────────────────
+
+var _l34QuizBank = [];
+var _l34N = 0;
+
+// Easy
+_l34_E1.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkHowManyMoreQ(n, _l34N)); });
+_l34_E2.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkPairEquationQ(n, _l34N)); });
+_l34_E3.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkTenPlusNQ(n, _l34N)); });
+_l34_E4.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkRecognizePairQ(n, _l34N)); });
+_l34_E5.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkHowManyMoreTextQ(n, _l34N)); });
+_l34_E6.forEach(function(n) { _l34N++; _l34QuizBank.push(_l34MkReversePairQ(n, _l34N)); });
+
+// Medium
+_l34_M1.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkDecomposeIdentifyQ(t[0], t[1], _l34N)); });
+_l34_M2.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkApplyMakeTenQ(t[0], t[1], _l34N)); });
+_l34_M3.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkFirstStepQ(t[0], t[1], _l34N)); });
+_l34_M4.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkBridgeEquationQ(t[0], t[1], _l34N)); });
+_l34_M5.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkIdentifyRemainderQ(t[0], t[1], _l34N)); });
+
+// Hard
+_l34_H1.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkApplyHardQ(t[0], t[1], _l34N)); });
+_l34_H2.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkStrategyChoiceQ(t[0], t[1], _l34N)); });
+_l34_H3.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkChainFillQ(t[0], t[1], _l34N)); });
+_l34_H4.forEach(function(t) { _l34N++; _l34QuizBank.push(_l34MkSplitPartQ(t[0], t[1], _l34N)); });
+
+// ── Worked examples ──────────────────────────────────────────────────────────
+
+const _l34Examples = [
+  {
+    id: 'g1-u3-l4-ex-001',
+    title: 'Example 1: How Many More to Make 10?',
+    prompt: 'There are 7 dots in the ten frame. How many more to make 10?',
+    visual: _l34VisTenFrame(7),
+    steps: [
+      'The ten frame has 10 spots.',
+      '7 spots are filled. Count the empty ones.',
+      '8, 9, 10 — there are 3 empty spots.',
+      '7 + 3 = 10.'
+    ],
+    finalAnswer: '3',
+    teachingNote: 'Students should "see" the missing count by looking at empty cells in the ten frame.',
+    relatedKeyIdea: 'Every number from 1 to 9 has a partner that makes 10.'
+  },
+  {
+    id: 'g1-u3-l4-ex-002',
+    title: 'Example 2: Adding to Ten',
+    prompt: 'What is 10 + 6?',
+    visual: _l34VisTenFrame(10),
+    steps: [
+      'The ten frame is full — that is 10.',
+      '10 + 6 means 6 more after 10.',
+      'Count on: 11, 12, 13, 14, 15, 16.',
+      '10 + 6 = 16.'
+    ],
+    finalAnswer: '16',
+    teachingNote: 'Emphasize that a full ten frame shows exactly 10. Then counting on becomes straightforward.',
+    relatedKeyIdea: 'When you add 10 to any number, just put a 1 in the tens place.'
+  },
+  {
+    id: 'g1-u3-l4-ex-003',
+    title: 'Example 3: Make 10 to Add 8 + 5',
+    prompt: 'What is 8 + 5?',
+    visual: _l34VisTenFrame(8),
+    steps: [
+      '8 needs 2 more to make 10.',
+      'Split 5 into 2 and 3.',
+      '8 + 2 = 10.',
+      '10 + 3 = 13.',
+      '8 + 5 = 13.'
+    ],
+    finalAnswer: '13',
+    teachingNote: 'Model the split explicitly: show 5 splitting into 2 (goes to fill the ten) and 3 (stays behind).',
+    relatedKeyIdea: 'Make 10 helps you add bigger numbers.'
+  },
+  {
+    id: 'g1-u3-l4-ex-004',
+    title: 'Example 4: Make 10 to Add 9 + 4',
+    prompt: 'What is 9 + 4?',
+    visual: _l34VisTenFrame(9),
+    steps: [
+      '9 needs 1 more to make 10.',
+      'Split 4 into 1 and 3.',
+      '9 + 1 = 10.',
+      '10 + 3 = 13.',
+      '9 + 4 = 13.'
+    ],
+    finalAnswer: '13',
+    teachingNote: 'Nine-plus facts are great starters for Make 10 since 9 only needs 1 more to fill.',
+    relatedKeyIdea: 'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.'
+  },
+  {
+    id: 'g1-u3-l4-ex-005',
+    title: 'Example 5: Make 10 to Add 7 + 6',
+    prompt: 'What is 7 + 6?',
+    visual: _l34VisTenFrame(7),
+    steps: [
+      '7 needs 3 more to make 10.',
+      'Split 6 into 3 and 3.',
+      '7 + 3 = 10.',
+      '10 + 3 = 13.',
+      '7 + 6 = 13.'
+    ],
+    finalAnswer: '13',
+    teachingNote: 'Notice 7+6, 8+5, and 9+4 all equal 13 — a fun pattern to point out.',
+    relatedKeyIdea: 'After you make 10, add the leftover.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  Lesson 3.5 — Fact Families and Word Problems — helpers, intervention templates, quizBank
+//  Skill: fact_families_and_word_problems · TEKS 1.3B, 1.3E, 1.3F (supporting 1.5D, 1.5E, 1.5F)
+//  Target: 175 questions (55 easy / 70 medium / 50 hard)
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l35Q(n, o) {
+  return {
+    id: 'g1-u3-l5-q-' + String(n).padStart(3, '0'),
+    teks: ['1.3B', '1.3E', '1.3F', '1.5D', '1.5E', '1.5F'],
+    lessonId: 'g1-u3-l5',
+    skill: 'fact_families_and_word_problems',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+// ── Visual builders ──────────────────────────────────────────────────────────
+
+function _l35VisTwoGroups(a, b, emoji, op) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount:  a, leftObj:  emoji || '⭐',
+      rightCount: b, rightObj: emoji || '⭐',
+      op: op || 'add'
+    }
+  };
+}
+
+function _l35TeachingTwoGroups(a, b, emoji) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount:  a, leftObj:  emoji || '●',
+      rightCount: b, rightObj: emoji || '●',
+      op: 'add'
+    }
+  };
+}
+
+// ── Distractor helper ─────────────────────────────────────────────────────────
+
+function _l35Opts(correct, candidates, tag) {
+  var sc = String(correct);
+  var seen = {}; seen[sc] = true;
+  var opts = [{ value: sc, correct: true }];
+  for (var i = 0; i < candidates.length && opts.length < 4; i++) {
+    var sv = String(candidates[i]);
+    if (!seen[sv] && +sv >= 0 && +sv <= 20) {
+      seen[sv] = true;
+      opts.push({ value: sv, correct: false, errorTag: tag || 'err_wrong_answer', misconceptionExplanation: '' });
+    }
+  }
+  return opts;
+}
+
+// ── Intervention templates ────────────────────────────────────────────────────
+
+function _l35IntFactFamilyLink(a, b) {
+  var sum = a + b;
+  return {
+    errorTag: 'err_fact_family_link',
+    title: 'One fact family, four equations',
+    teachingSteps: [
+      'The three numbers ' + a + ', ' + b + ', and ' + sum + ' make a fact family.',
+      'Addition fact 1: ' + a + ' + ' + b + ' = ' + sum + '.',
+      'Addition fact 2: ' + b + ' + ' + a + ' = ' + sum + '.',
+      'Subtraction fact 1: ' + sum + ' − ' + a + ' = ' + b + '.',
+      'Subtraction fact 2: ' + sum + ' − ' + b + ' = ' + a + '.'
+    ],
+    correctAnswerExplanation: 'The numbers ' + a + ', ' + b + ', and ' + sum + ' always go together. If you know any one fact, you know all four.',
+    teachingVisual: _l35TeachingTwoGroups(a, b, '●')
+  };
+}
+
+function _l35IntOperationSwap(a, b, isAdd) {
+  var sum = a + b;
+  return {
+    errorTag: 'err_operation_swap',
+    title: isAdd ? 'This is an addition story' : 'This is a subtraction story',
+    teachingSteps: isAdd ? [
+      'When two groups join together, we add.',
+      a + ' + ' + b + ' = ' + sum + '.',
+      'Look for joining words: "altogether," "in all," "joined."'
+    ] : [
+      'When something is taken away or given away, we subtract.',
+      sum + ' − ' + b + ' = ' + a + '.',
+      'Look for separating words: "gave away," "left," "ate," "flew away."'
+    ],
+    correctAnswerExplanation: isAdd
+      ? 'The story is about joining two groups: ' + a + ' + ' + b + ' = ' + sum + '.'
+      : 'The story is about taking away: ' + sum + ' − ' + b + ' = ' + a + '.',
+    teachingVisual: _l35TeachingTwoGroups(a, b, '●')
+  };
+}
+
+function _l35IntUnknownPosition(a, b) {
+  var sum = a + b;
+  return {
+    errorTag: 'err_unknown_position',
+    title: 'Use the fact family to find the unknown',
+    teachingSteps: [
+      'You know two of the three numbers: ' + b + ' and ' + sum + '.',
+      'Think: ' + b + ' + ? = ' + sum + '.',
+      'Or think: ' + sum + ' − ' + b + ' = ?',
+      sum + ' − ' + b + ' = ' + a + '.'
+    ],
+    correctAnswerExplanation: 'The unknown is ' + a + '. You can check: ' + a + ' + ' + b + ' = ' + sum + '.',
+    teachingVisual: _l35TeachingTwoGroups(a, b, '●')
+  };
+}
+
+function _l35IntEqualSign(a, b, c) {
+  var sum = a + b;
+  var unknown = sum - c;
+  return {
+    errorTag: 'err_equal_sign_meaning',
+    title: 'Equal sign means "is the same as"',
+    teachingSteps: [
+      'The = sign means both sides have the same value.',
+      'Left side: ' + a + ' + ' + b + ' = ' + sum + '.',
+      'Right side must also equal ' + sum + '.',
+      c + ' + ? = ' + sum + ', so ? = ' + unknown + '.',
+      a + ' + ' + b + ' = ' + unknown + ' + ' + c + ' ← both sides equal ' + sum + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + b + ' = ' + sum + ' and ' + unknown + ' + ' + c + ' = ' + sum + '. The = sign connects two equal amounts.',
+    teachingVisual: null
+  };
+}
+
+function _l35IntWordProblemSetup(total, part) {
+  var other = total - part;
+  return {
+    errorTag: 'err_word_problem_setup',
+    title: 'Set up the equation from the story',
+    teachingSteps: [
+      'Read the story carefully.',
+      'Find the total (whole): ' + total + '.',
+      'Find the part you know: ' + part + '.',
+      'The unknown part is: ' + total + ' − ' + part + ' = ' + other + '.'
+    ],
+    correctAnswerExplanation: 'Total − known part = unknown part. ' + total + ' − ' + part + ' = ' + other + '.',
+    teachingVisual: null
+  };
+}
+
+// ── Easy factories ────────────────────────────────────────────────────────────
+
+// E1: "a + b = sum, so sum − b = __"
+function _l35MkRelatedSubtQ(a, b, qNum) {
+  var sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'fact_family_link',
+    keyIdea: 'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.',
+    prompt: a + ' + ' + b + ' = ' + sum + '. So ' + sum + ' − ' + b + ' = __',
+    visual: null,
+    answer: String(a),
+    choices: _l35Opts(a, [a + 1, a > 1 ? a - 1 : a + 2, b, sum], 'err_fact_family_link'),
+    hint: 'Addition and subtraction are opposites. If ' + a + ' + ' + b + ' = ' + sum + ', then ' + sum + ' − ' + b + ' = ' + a + '.',
+    intervention: _l35IntFactFamilyLink(a, b)
+  });
+}
+
+// E2: "Which equation belongs to the same family as a + b = sum?"
+function _l35MkFamilyMemberQ(a, b, qNum) {
+  var sum = a + b;
+  var correct = sum + ' − ' + a + ' = ' + b;
+  var w1 = (sum + 1) + ' − ' + a + ' = ' + (b + 1);
+  var w2 = (a - 1) + ' + ' + b + ' = ' + (sum - 1);
+  var w3 = sum + ' + ' + a + ' = ' + (sum + a);
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'fact_family_link',
+    keyIdea: 'Addition and subtraction are opposite operations — if you know one fact, you know three more.',
+    prompt: a + ' + ' + b + ' = ' + sum + '. Which equation is in the same fact family?',
+    visual: null,
+    answer: correct,
+    choices: [
+      { value: correct, correct: true },
+      { value: w1, correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'Wrong numbers — not from the same three.' },
+      { value: w2, correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'Different numbers, different family.' },
+      { value: w3, correct: false, errorTag: 'err_operation_swap', misconceptionExplanation: 'Adding the whole and a part gives a new sum, not a family member.' }
+    ],
+    hint: 'A fact family uses the same 3 numbers: ' + a + ', ' + b + ', and ' + sum + '.',
+    intervention: _l35IntFactFamilyLink(a, b)
+  });
+}
+
+// E3: "a + __ = sum" (missing second addend)
+function _l35MkMissingAddendQ(a, b, qNum) {
+  var sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'missing_addend',
+    keyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.',
+    prompt: a + ' + __ = ' + sum + '. What is the missing number?',
+    visual: null,
+    answer: String(b),
+    choices: _l35Opts(b, [b + 1, b > 1 ? b - 1 : b + 2, a, sum], 'err_unknown_position'),
+    hint: 'Think: ' + sum + ' − ' + a + ' = __. Start at ' + a + ' and count up to ' + sum + '.',
+    intervention: _l35IntUnknownPosition(b, a)
+  });
+}
+
+// E4: "__ + b = sum" (missing first addend)
+function _l35MkMissingFirstQ(a, b, qNum) {
+  var sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'missing_addend',
+    keyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.',
+    prompt: '__ + ' + b + ' = ' + sum + '. What is the missing number?',
+    visual: null,
+    answer: String(a),
+    choices: _l35Opts(a, [a + 1, a > 1 ? a - 1 : a + 2, b, sum], 'err_unknown_position'),
+    hint: 'Think: ' + sum + ' − ' + b + ' = __. Count up from ' + b + ' to ' + sum + '.',
+    intervention: _l35IntUnknownPosition(a, b)
+  });
+}
+
+// E5: "sum − a = __" (simple subtraction from family)
+function _l35MkSimpleSubtQ(a, b, qNum) {
+  var sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'subtract_within_20_family',
+    keyIdea: 'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.',
+    prompt: sum + ' − ' + a + ' = __',
+    visual: null,
+    answer: String(b),
+    choices: _l35Opts(b, [b + 1, b > 1 ? b - 1 : b + 2, a, sum], 'err_fact_family_link'),
+    hint: 'Think: ' + a + ' + ? = ' + sum + '.',
+    intervention: _l35IntFactFamilyLink(a, b)
+  });
+}
+
+// E6: Easy joining word problem
+function _l35MkJoinStoryEasyQ(story, qNum) {
+  var a = story.a, b = story.b, sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'easy',
+    subSkill: 'join_word_problem',
+    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+    prompt: story.text,
+    visual: _l35VisTwoGroups(a, b, story.emoji || '⭐', 'add'),
+    answer: String(sum),
+    choices: _l35Opts(sum, [sum + 1, sum - 1, sum - 2, Math.abs(a - b)], 'err_operation_swap'),
+    hint: 'The groups are joining together. Add ' + a + ' + ' + b + '.',
+    intervention: _l35IntOperationSwap(a, b, true)
+  });
+}
+
+// ── Medium factories ───────────────────────────────────────────────────────────
+
+// M1: "a + ? = sum" or "sum − ? = b" — alternates by question number
+function _l35MkUnknownMidQ(a, b, qNum) {
+  var sum = a + b;
+  var useSubtForm = (qNum % 2 === 0);
+  var ans = useSubtForm ? a : b;
+  return _l35Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'unknown_in_any_position',
+    keyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.',
+    prompt: useSubtForm
+      ? sum + ' − ? = ' + b + '. What is the missing number?'
+      : a + ' + ? = ' + sum + '. What is the missing number?',
+    visual: _l35VisTwoGroups(a, b, '●', 'add'),
+    answer: String(ans),
+    choices: _l35Opts(ans, [ans + 1, ans > 1 ? ans - 1 : ans + 2, useSubtForm ? b : a, sum], 'err_unknown_position'),
+    hint: useSubtForm
+      ? 'Use the fact family. If ' + sum + ' − ? = ' + b + ', then ? + ' + b + ' = ' + sum + '.'
+      : 'Count up from ' + a + ' to ' + sum + ' to find the missing number.',
+    intervention: useSubtForm ? _l35IntUnknownPosition(a, b) : _l35IntUnknownPosition(b, a)
+  });
+}
+
+// M2: "Which equation does NOT belong in this fact family?"
+function _l35MkNotFamilyQ(a, b, qNum) {
+  var sum = a + b;
+  var imposter = (a + 1) + ' + ' + b + ' = ' + (sum + 1);
+  var f1 = a + ' + ' + b + ' = ' + sum;
+  var f2 = b + ' + ' + a + ' = ' + sum;
+  var f3 = sum + ' − ' + a + ' = ' + b;
+  return _l35Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'fact_family_link',
+    keyIdea: 'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.',
+    prompt: 'Which equation does NOT belong in the fact family of ' + a + ', ' + b + ', and ' + sum + '?',
+    visual: null,
+    answer: imposter,
+    choices: [
+      { value: imposter, correct: true },
+      { value: f1,       correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This equation uses the correct three numbers.' },
+      { value: f2,       correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This is the commutative partner — it belongs.' },
+      { value: f3,       correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This subtraction fact uses the same three numbers.' }
+    ],
+    hint: 'All fact-family equations use exactly these three numbers: ' + a + ', ' + b + ', and ' + sum + '. Find the one that does not.',
+    intervention: _l35IntFactFamilyLink(a, b)
+  });
+}
+
+// M3: Joining word problem (medium numbers, no visual)
+function _l35MkJoinStoryMedQ(story, qNum) {
+  var a = story.a, b = story.b, sum = a + b;
+  return _l35Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'join_word_problem',
+    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+    prompt: story.text,
+    visual: null,
+    answer: String(sum),
+    choices: _l35Opts(sum, [sum + 1, sum - 1, sum + 2, Math.abs(a - b)], 'err_operation_swap'),
+    hint: 'The groups are joining together. Add ' + a + ' + ' + b + '.',
+    intervention: _l35IntOperationSwap(a, b, true)
+  });
+}
+
+// M4: Separating word problem
+function _l35MkSeparateStoryQ(story, qNum) {
+  var total = story.total, removed = story.removed, remaining = total - removed;
+  return _l35Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'separate_word_problem',
+    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+    prompt: story.text,
+    visual: null,
+    answer: String(remaining),
+    choices: _l35Opts(remaining, [remaining + 1, remaining > 1 ? remaining - 1 : remaining + 2, removed, total], 'err_operation_swap'),
+    hint: 'Something is being taken away. Start with ' + total + ' and subtract ' + removed + '.',
+    intervention: _l35IntWordProblemSetup(total, removed)
+  });
+}
+
+// M5: Comparison word problem ("how many more")
+function _l35MkCompareStoryQ(story, qNum) {
+  var small = story.small, large = story.large, diff = large - small;
+  return _l35Q(qNum, {
+    difficulty: 'medium',
+    subSkill: 'compare_word_problem',
+    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+    prompt: story.text,
+    visual: null,
+    answer: String(diff),
+    choices: _l35Opts(diff, [diff + 1, diff > 1 ? diff - 1 : diff + 2, small, large], 'err_operation_swap'),
+    hint: '"How many more" means subtract the smaller from the larger: ' + large + ' − ' + small + '.',
+    intervention: _l35IntWordProblemSetup(large, small)
+  });
+}
+
+// ── Hard factories ─────────────────────────────────────────────────────────────
+
+// H1: Balance equation: "a + b = __ + c" — find the blank
+function _l35MkBalanceEqQ(a, b, c, qNum) {
+  var sum = a + b;
+  var unknown = sum - c;
+  return _l35Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'balance_equation',
+    keyIdea: 'The equal sign (=) means "is the same as," not "write the answer here."',
+    prompt: a + ' + ' + b + ' = __ + ' + c + '. What number goes in the blank?',
+    visual: null,
+    answer: String(unknown),
+    choices: _l35Opts(unknown, [unknown + 1, unknown > 1 ? unknown - 1 : unknown + 2, sum, c], 'err_equal_sign_meaning'),
+    hint: a + ' + ' + b + ' = ' + sum + '. So __ + ' + c + ' must also equal ' + sum + '.',
+    intervention: _l35IntEqualSign(a, b, c)
+  });
+}
+
+// H2: Start-unknown word problem ("? + b = sum")
+function _l35MkStartUnknownQ(story, qNum) {
+  var a = story.start, b = story.change, sum = story.end;
+  return _l35Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'start_unknown_word_problem',
+    keyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.',
+    prompt: story.text,
+    visual: null,
+    answer: String(a),
+    choices: _l35Opts(a, [a + 1, a > 1 ? a - 1 : a + 2, b, sum], 'err_unknown_position'),
+    hint: 'Work backwards: ' + sum + ' − ' + b + ' = __.',
+    intervention: _l35IntUnknownPosition(a, b)
+  });
+}
+
+// H3: "Given a subtraction, find the related addition fact"
+function _l35MkRelatedAddQ(a, b, qNum) {
+  var sum = a + b;
+  var correct = a + ' + ' + b + ' = ' + sum;
+  var w1 = sum + ' + ' + a + ' = ' + (sum + a);
+  var w2 = (a + 2) + ' + ' + b + ' = ' + (sum + 2);
+  var w3 = sum + ' − ' + b + ' = ' + a;
+  return _l35Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'fact_family_link',
+    keyIdea: 'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.',
+    prompt: sum + ' − ' + a + ' = ' + b + '. Which addition fact is in the same fact family?',
+    visual: null,
+    answer: correct,
+    choices: [
+      { value: correct, correct: true },
+      { value: w1, correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This uses wrong numbers — not from the same family.' },
+      { value: w2, correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This uses wrong numbers — not from the same family.' },
+      { value: w3, correct: false, errorTag: 'err_fact_family_link', misconceptionExplanation: 'This is a related subtraction fact, not an addition fact.' }
+    ],
+    hint: 'A fact family has ' + a + ', ' + b + ', and ' + sum + '. Look for an addition that uses all three.',
+    intervention: _l35IntFactFamilyLink(a, b)
+  });
+}
+
+// H4: Two-step word problem ("a + b objects, need total total, how many more?")
+function _l35MkTwoStepQ(a, b, total, qNum) {
+  var have = a + b;
+  var need = total - have;
+  return _l35Q(qNum, {
+    difficulty: 'hard',
+    subSkill: 'two_step_word_problem',
+    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+    prompt: 'There are ' + a + ' red buttons and ' + b + ' blue buttons. To have ' + total + ' buttons in all, how many more are needed?',
+    visual: null,
+    answer: String(need),
+    choices: _l35Opts(need, [need + 1, need > 1 ? need - 1 : need + 2, have, total], 'err_word_problem_setup'),
+    hint: 'First add: ' + a + ' + ' + b + ' = ' + have + '. Then subtract: ' + total + ' − ' + have + ' = ' + need + '.',
+    intervention: _l35IntWordProblemSetup(total, have)
+  });
+}
+
+// ── Data arrays ───────────────────────────────────────────────────────────────
+
+// Easy 1-10: "a + b = sum, so sum − b = __" (a, b, sum)
+var _l35_E1 = [[3,4,7],[5,6,11],[4,8,12],[6,7,13],[5,7,12],[3,8,11],[4,6,10],[5,5,10],[3,6,9],[2,8,10]];
+// Easy 11-20: which belongs to same family (a, b)
+var _l35_E2 = [[3,4],[4,5],[5,6],[2,7],[3,7],[4,7],[3,8],[6,4],[2,9],[4,8]];
+// Easy 21-30: missing second addend (a, b) → "a + __ = sum"
+var _l35_E3 = [[4,3],[5,4],[6,5],[7,2],[8,3],[9,3],[6,4],[7,4],[8,4],[9,4]];
+// Easy 31-40: missing first addend (a, b) → "__ + b = sum"
+var _l35_E4 = [[3,4],[4,5],[5,6],[2,7],[3,7],[4,7],[3,8],[4,8],[2,9],[3,9]];
+// Easy 41-50: simple subtraction (a, b) → "sum − a = __"
+var _l35_E5 = [[3,4],[5,6],[4,8],[6,7],[5,7],[3,8],[4,6],[5,5],[3,6],[2,8]];
+// Easy 51-55: joining word problems
+var _l35_E6 = [
+  { a:3, b:4, emoji:'🍎', text:'There are 3 apples in a basket. 4 more apples are added. How many apples are there in all?' },
+  { a:4, b:5, emoji:'🦆', text:'4 ducks are in the pond. 5 more ducks swim over. How many ducks are there in all?' },
+  { a:5, b:6, emoji:'👦', text:'5 children are on the playground. 6 more children join them. How many children are there in all?' },
+  { a:6, b:7, emoji:'✏️', text:'6 crayons are on the table. 7 more crayons are added to the box. How many crayons are there in all?' },
+  { a:7, b:8, emoji:'🦋', text:'7 butterflies are in the garden. 8 more butterflies fly in. How many butterflies are there in all?' }
+];
+
+// Medium 56-70: unknown in any position (a, b) pairs
+var _l35_M1 = [[9,2],[8,3],[7,4],[9,3],[8,4],[7,5],[9,4],[8,5],[7,6],[6,7],[9,5],[8,6],[7,7],[9,6],[8,7]];
+// Medium 71-85: which equation does NOT belong (a, b) pairs
+var _l35_M2 = [[3,4],[4,5],[5,6],[4,7],[5,7],[6,7],[5,8],[6,8],[7,7],[4,9],[5,9],[6,9],[7,8],[7,9],[8,8]];
+// Medium 86-100: joining word problems
+var _l35_M3 = [
+  { a:3,  b:5,  text:'There are 3 frogs on a log. 5 more frogs hop on. How many frogs are on the log in all?' },
+  { a:4,  b:6,  text:'4 books are on the shelf. 6 more books are added. How many books are on the shelf in all?' },
+  { a:5,  b:7,  text:'5 birds are in a tree. 7 more birds land in the tree. How many birds are in the tree in all?' },
+  { a:6,  b:8,  text:'6 fish are in a pond. 8 more fish swim in. How many fish are in the pond in all?' },
+  { a:7,  b:9,  text:'7 bees are in a hive. 9 more bees fly in. How many bees are in the hive in all?' },
+  { a:4,  b:7,  text:'4 red marbles and 7 blue marbles are in a jar. How many marbles are in the jar in all?' },
+  { a:5,  b:8,  text:'5 students are in the art room. 8 more students walk in. How many students are in the art room in all?' },
+  { a:6,  b:9,  text:'6 ladybugs are on a leaf. 9 more ladybugs land. How many ladybugs are on the leaf in all?' },
+  { a:7,  b:8,  text:'7 yellow flowers and 8 purple flowers are in a vase. How many flowers are in the vase in all?' },
+  { a:8,  b:7,  text:'8 boys and 7 girls are in the class. How many children are in the class in all?' },
+  { a:6,  b:6,  text:'6 sandwiches are on the left tray and 6 sandwiches are on the right tray. How many sandwiches are there in all?' },
+  { a:5,  b:9,  text:'5 kites are in the sky. 9 more kites go up. How many kites are in the sky in all?' },
+  { a:4,  b:8,  text:'4 dogs and 8 cats are at the pet store. How many animals are at the pet store in all?' },
+  { a:3,  b:9,  text:'3 children are already at the park. 9 more children arrive. How many children are at the park in all?' },
+  { a:9,  b:5,  text:'9 strawberries and 5 blueberries are in a bowl. How many berries are in the bowl in all?' }
+];
+// Medium 101-115: separating word problems (total, removed)
+var _l35_M4 = [
+  { total:12, removed:5, text:'There were 12 cookies on the plate. Sam ate 5. How many cookies are left?' },
+  { total:11, removed:4, text:'11 birds were in a tree. 4 flew away. How many birds are still in the tree?' },
+  { total:13, removed:6, text:'13 fish were in the tank. 6 were moved to a new tank. How many fish are left?' },
+  { total:14, removed:7, text:'14 stickers were on the sheet. Maya peeled off 7. How many stickers are left on the sheet?' },
+  { total:12, removed:8, text:'12 flowers were in the garden. 8 were picked. How many flowers are still in the garden?' },
+  { total:13, removed:9, text:'13 crackers were in the box. Alex ate 9. How many crackers are left?' },
+  { total:15, removed:6, text:'15 balls are in the bin. 6 are taken out to play. How many balls are still in the bin?' },
+  { total:14, removed:5, text:'14 pages are in a book. Lily read 5 pages. How many pages has she not read yet?' },
+  { total:16, removed:7, text:'16 grapes were in the bowl. 7 were eaten. How many grapes are left in the bowl?' },
+  { total:11, removed:3, text:'11 ducks were in the pond. 3 ducks flew away. How many ducks are still in the pond?' },
+  { total:12, removed:4, text:'12 crayons were in the box. 4 crayons broke. How many unbroken crayons are in the box?' },
+  { total:13, removed:5, text:'13 apples were in the basket. 5 apples were used for a pie. How many apples are left?' },
+  { total:14, removed:6, text:'14 students were on the bus. 6 students got off at the first stop. How many students are still on the bus?' },
+  { total:15, removed:7, text:'15 marbles were in a bag. 7 marbles fell out. How many marbles are still in the bag?' },
+  { total:16, removed:8, text:'16 candles were on the table. 8 candles burned out. How many candles are still lit?' }
+];
+// Medium 116-125: comparison word problems (small, large)
+var _l35_M5 = [
+  { small:4, large:9,  text:'Luis has 4 stickers. Mia has 9 stickers. How many more stickers does Mia have than Luis?' },
+  { small:5, large:11, text:'A red ribbon is 5 inches long. A blue ribbon is 11 inches long. How much longer is the blue ribbon?' },
+  { small:6, large:12, text:'Tom scored 6 points. Sue scored 12 points. How many more points did Sue score than Tom?' },
+  { small:3, large:10, text:'There are 3 yellow crayons and 10 green crayons. How many more green crayons are there?' },
+  { small:7, large:13, text:'Mom baked 7 muffins on Monday and 13 muffins on Tuesday. How many more muffins were baked on Tuesday?' },
+  { small:8, large:14, text:'A kitten weighs 8 ounces. A puppy weighs 14 ounces. How much more does the puppy weigh?' },
+  { small:5, large:12, text:'Jake has 5 baseball cards. Ella has 12. How many more cards does Ella have than Jake?' },
+  { small:6, large:13, text:'There are 6 red fish and 13 blue fish in the tank. How many more blue fish are there?' },
+  { small:4, large:11, text:'Ali picked 4 tomatoes. Ben picked 11 tomatoes. How many more tomatoes did Ben pick than Ali?' },
+  { small:7, large:14, text:'A pine tree is 7 feet tall. An oak tree is 14 feet tall. How much taller is the oak tree?' }
+];
+
+// Hard 126-140: balance equations (a, b, c) → "a + b = __ + c"
+var _l35_H1 = [
+  [5,6,4],[7,4,5],[8,3,6],[6,7,5],[4,8,3],
+  [9,2,7],[6,5,8],[7,6,9],[8,5,6],[4,9,5],
+  [5,8,4],[6,6,8],[7,5,9],[8,4,7],[9,3,6]
+];
+// Hard 141-155: start-unknown word problems
+var _l35_H2 = [
+  { start:6, change:9, end:15, text:'Ava had some crayons. She got 9 more. Now she has 15. How many crayons did Ava start with?' },
+  { start:7, change:8, end:15, text:'Ben had some marbles. He won 8 more. Now he has 15. How many marbles did Ben start with?' },
+  { start:8, change:7, end:15, text:'Cara had some stickers. She received 7 more. Now she has 15. How many stickers did Cara start with?' },
+  { start:5, change:9, end:14, text:'Dan had some books. He got 9 more books from the library. Now he has 14. How many books did Dan start with?' },
+  { start:7, change:9, end:16, text:'Fran had some pennies. She found 9 more. Now she has 16. How many pennies did Fran start with?' },
+  { start:6, change:8, end:14, text:'Greg had some apples. He picked 8 more. Now he has 14. How many apples did Greg start with?' },
+  { start:8, change:8, end:16, text:'Hana had some grapes. She got 8 more bunches. Now she has 16. How many bunches did Hana start with?' },
+  { start:5, change:8, end:13, text:'Ivan had some toy cars. He got 8 more. Now he has 13. How many toy cars did Ivan start with?' },
+  { start:6, change:7, end:13, text:'Jade had some beads. She was given 7 more beads. Now she has 13. How many beads did Jade start with?' },
+  { start:7, change:6, end:13, text:'Kai had some grapes. He collected 6 more. Now he has 13. How many grapes did Kai start with?' },
+  { start:9, change:7, end:16, text:'Lena had some coins. She was given 7 more. Now she has 16. How many coins did Lena start with?' },
+  { start:8, change:6, end:14, text:'Matt had some rocks. He found 6 more at the beach. Now he has 14. How many rocks did Matt start with?' },
+  { start:9, change:5, end:14, text:'Nora had some crayons. She found 5 more in her desk. Now she has 14. How many crayons did Nora start with?' },
+  { start:7, change:7, end:14, text:'Omar had some trading cards. He got 7 more. Now he has 14. How many cards did Omar start with?' },
+  { start:9, change:8, end:17, text:'Pam had some buttons. She got 8 more from her mom. Now she has 17. How many buttons did Pam start with?' }
+];
+// Hard 156-165: related addition from a subtraction (a, b) pairs
+var _l35_H3 = [[3,4],[4,5],[5,6],[4,7],[5,8],[6,7],[6,8],[7,7],[7,8],[8,8]];
+// Hard 166-175: two-step word problems (a, b, total)
+var _l35_H4 = [
+  [3,4,10],[2,5,9],[4,5,11],[3,6,12],[4,6,13],
+  [5,5,13],[3,7,12],[4,7,14],[5,6,14],[3,8,13]
+];
+
+// ── Build quiz bank ───────────────────────────────────────────────────────────
+
+var _l35QuizBank = [];
+var _l35N = 0;
+
+// Easy 1-10
+_l35_E1.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkRelatedSubtQ(t[0], t[1], _l35N)); });
+// Easy 11-20
+_l35_E2.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkFamilyMemberQ(t[0], t[1], _l35N)); });
+// Easy 21-30
+_l35_E3.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkMissingAddendQ(t[0], t[1], _l35N)); });
+// Easy 31-40
+_l35_E4.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkMissingFirstQ(t[0], t[1], _l35N)); });
+// Easy 41-50
+_l35_E5.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkSimpleSubtQ(t[0], t[1], _l35N)); });
+// Easy 51-55
+_l35_E6.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkJoinStoryEasyQ(s, _l35N)); });
+
+// Medium 56-70
+_l35_M1.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkUnknownMidQ(t[0], t[1], _l35N)); });
+// Medium 71-85
+_l35_M2.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkNotFamilyQ(t[0], t[1], _l35N)); });
+// Medium 86-100
+_l35_M3.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkJoinStoryMedQ(s, _l35N)); });
+// Medium 101-115
+_l35_M4.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkSeparateStoryQ(s, _l35N)); });
+// Medium 116-125
+_l35_M5.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkCompareStoryQ(s, _l35N)); });
+
+// Hard 126-140
+_l35_H1.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkBalanceEqQ(t[0], t[1], t[2], _l35N)); });
+// Hard 141-155
+_l35_H2.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkStartUnknownQ(s, _l35N)); });
+// Hard 156-165
+_l35_H3.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkRelatedAddQ(t[0], t[1], _l35N)); });
+// Hard 166-175
+_l35_H4.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkTwoStepQ(t[0], t[1], t[2], _l35N)); });
+
+// ── Worked examples ───────────────────────────────────────────────────────────
+
+const _l35Examples = [
+  {
+    id: 'g1-u3-l5-ex-001',
+    title: 'Example 1: All Four Facts in a Family',
+    prompt: 'What are all four equations in the fact family for 4, 7, and 11?',
+    visual: { type: 'twoGroups', config: { leftCount: 4, leftObj: '★', rightCount: 7, rightObj: '★', op: 'add' } },
+    steps: [
+      'The three numbers are 4, 7, and 11.',
+      'Addition fact 1: 4 + 7 = 11.',
+      'Addition fact 2: 7 + 4 = 11. (Same numbers, different order.)',
+      'Subtraction fact 1: 11 − 4 = 7.',
+      'Subtraction fact 2: 11 − 7 = 4.',
+      'All four equations use only the numbers 4, 7, and 11.'
+    ],
+    finalAnswer: '4 + 7 = 11  |  7 + 4 = 11  |  11 − 4 = 7  |  11 − 7 = 4',
+    teachingNote: 'Point out that the whole (11) always goes first in subtraction, and the result is always a part.',
+    relatedKeyIdea: 'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.'
+  },
+  {
+    id: 'g1-u3-l5-ex-002',
+    title: 'Example 2: Finding an Unknown',
+    prompt: '13 − 5 = ?',
+    visual: { type: 'twoGroups', config: { leftCount: 8, leftObj: '●', rightCount: 5, rightObj: '●', op: 'add' } },
+    steps: [
+      'Think: what number plus 5 equals 13?',
+      '? + 5 = 13.',
+      'Count up from 5: 6, 7, 8, 9, 10, 11, 12, 13 — that is 8 counts.',
+      '8 + 5 = 13, so 13 − 5 = 8.'
+    ],
+    finalAnswer: '8',
+    teachingNote: 'Using the related addition fact makes the subtraction much easier to solve.',
+    relatedKeyIdea: 'Addition and subtraction are opposite operations — if you know one fact, you know three more.'
+  },
+  {
+    id: 'g1-u3-l5-ex-003',
+    title: 'Example 3: Missing Addend Story',
+    prompt: 'Maya had 7 pencils. She got some more. Now she has 12. How many did she get?',
+    visual: null,
+    steps: [
+      'Start with what you know: 7 pencils at first, 12 at the end.',
+      'Set up: 7 + ? = 12.',
+      'Think: 12 − 7 = ?',
+      '12 − 7 = 5.',
+      'Maya got 5 more pencils.'
+    ],
+    finalAnswer: '5',
+    teachingNote: 'Model rewriting the unknown-addend equation as a subtraction — this is the core of fact-family reasoning.',
+    relatedKeyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.'
+  },
+  {
+    id: 'g1-u3-l5-ex-004',
+    title: 'Example 4: Equal Sign Means "Is the Same As"',
+    prompt: '6 + 4 = __ + 5. What number goes in the blank?',
+    visual: null,
+    steps: [
+      '= means both sides have the same value.',
+      'Left side: 6 + 4 = 10.',
+      'Right side must also equal 10.',
+      '__ + 5 = 10.',
+      'Think: 10 − 5 = 5.',
+      '6 + 4 = 5 + 5 ✓ Both sides equal 10.'
+    ],
+    finalAnswer: '5',
+    teachingNote: 'Many students read = as "put the answer here." Stress: = is a balance — both sides must weigh the same.',
+    relatedKeyIdea: 'The equal sign (=) means "is the same as," not "write the answer here."'
+  },
+  {
+    id: 'g1-u3-l5-ex-005',
+    title: 'Example 5: Start-Unknown Story',
+    prompt: 'Some birds were in a tree. 3 flew away. Now 9 birds are left. How many were there at the start?',
+    visual: null,
+    steps: [
+      'Something flew away (subtraction). The end amount is 9.',
+      'Set up: ? − 3 = 9.',
+      'To undo subtraction, add back: 9 + 3 = 12.',
+      '12 − 3 = 9 ✓ There were 12 birds at the start.'
+    ],
+    finalAnswer: '12',
+    teachingNote: 'Emphasize: we add back the number that "flew away" to find the starting amount.',
+    relatedKeyIdea: 'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -2021,7 +3260,8 @@ export const G1_U3_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 3.4 — Make 10  ← stub (Phase 5)
+    //  Lesson 3.4 — Make 10 (170 questions)
+    //  TEKS 1.3C, 1.3D, 1.3E
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u3-l4',
@@ -2029,13 +3269,36 @@ export const G1_U3_SPEC = {
       teks: ['1.3C', '1.3D', '1.3E'],
       skill: 'make_ten_strategy',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: []
+      keyIdeas: [
+        '10 is a special number — it fills one ten frame exactly.',
+        "Every number from 1 to 9 has a partner that makes 10. (7's partner is 3, because 7 + 3 = 10)",
+        'When you add 10 to any number, just put a 1 in the tens place: 10 + 6 = 16.',
+        'Make 10 helps you add bigger numbers. For 8 + 5: give 2 to the 8 to make 10, then add 3 more = 13.',
+        'To use Make 10, break one addend into two parts: the part that fills to 10, and the rest.',
+        'After you make 10, add the leftover. 10 + 3 = 13 is easier to compute than 8 + 5 directly.'
+      ],
+      workedExamples: _l34Examples,
+      quizBank: _l34QuizBank,
+      diagnostics: {
+        commonDistractors: [
+          { value: 'wrong_ten_partner', meaning: 'Got the wrong partner for 10 (e.g., said 4 goes with 7).', errorTag: 'err_wrong_ten_partner' },
+          { value: 'ten_plus_n',        meaning: '10 + N wrong (e.g., said 10 + 4 = 13).',                   errorTag: 'err_ten_plus_n' },
+          { value: 'forgot_remainder',  meaning: 'Stopped at 10 — forgot to add the leftover.',               errorTag: 'err_forgot_remainder' },
+          { value: 'wrong_decompose',   meaning: 'Split the second addend incorrectly (e.g., for 8+5 used 3+2 instead of 2+3).', errorTag: 'err_wrong_decompose' }
+        ],
+        errorTags: ['err_wrong_ten_partner', 'err_ten_plus_n', 'err_forgot_remainder', 'err_wrong_decompose'],
+        interventionRules: [
+          { errorTag: 'err_wrong_ten_partner', style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_ten_plus_n',        style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_forgot_remainder',  style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_wrong_decompose',   style: 'reteach',      followUpRule: 'same_skill_new_numbers' }
+        ]
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 3.5 — Fact Families and Word Problems  ← stub (Phase 6)
+    //  Lesson 3.5 — Fact Families and Word Problems (175 questions)
+    //  TEKS 1.3B, 1.3E, 1.3F (supporting 1.5D, 1.5E, 1.5F)
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u3-l5',
@@ -2043,9 +3306,33 @@ export const G1_U3_SPEC = {
       teks: ['1.3B', '1.3E', '1.3F', '1.5D', '1.5E', '1.5F'],
       skill: 'fact_families_and_word_problems',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: []
+      keyIdeas: [
+        'A fact family uses 3 numbers and 4 equations: add, add, subtract, subtract.',
+        'Addition and subtraction are opposite operations — if you know one fact, you know three more.',
+        'The equal sign (=) means "is the same as," not "write the answer here."',
+        'An unknown can be anywhere: ? + 4 = 9 is just as solvable as 4 + ? = 9 or 9 − ? = 4.',
+        'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
+        'A bar diagram (part-part-whole) helps organize the three numbers in a fact family.'
+      ],
+      workedExamples: _l35Examples,
+      quizBank: _l35QuizBank,
+      diagnostics: {
+        commonDistractors: [
+          { value: 'fact_family_link',     meaning: 'Did not see that 3+8=11 means 11−3=8 (failed to connect related facts).', errorTag: 'err_fact_family_link' },
+          { value: 'operation_swap',       meaning: 'Used + when − was needed or vice versa in a word problem.',                 errorTag: 'err_operation_swap' },
+          { value: 'unknown_position',     meaning: 'Could not find the unknown when it was not in the last position.',          errorTag: 'err_unknown_position' },
+          { value: 'equal_sign_meaning',   meaning: 'Treated = as "write the answer here" rather than "is the same as."',       errorTag: 'err_equal_sign_meaning' },
+          { value: 'word_problem_setup',   meaning: 'Set up the wrong equation for a word problem (e.g., added instead of subtracting).', errorTag: 'err_word_problem_setup' }
+        ],
+        errorTags: ['err_fact_family_link', 'err_operation_swap', 'err_unknown_position', 'err_equal_sign_meaning', 'err_word_problem_setup'],
+        interventionRules: [
+          { errorTag: 'err_fact_family_link',   style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_operation_swap',     style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_unknown_position',   style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_equal_sign_meaning', style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_word_problem_setup', style: 'visual_model', followUpRule: 'same_skill_new_numbers' }
+        ]
+      }
     }
 
   ]
