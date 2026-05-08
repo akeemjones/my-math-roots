@@ -99,6 +99,51 @@ function _l31TeachingNumberLine(start, count) {
 var _l31_EMOJI_POOL = ['⭐', '🍎', '🎈', '🐶', '🍪', '🌸'];
 function _l31Emoji(seed) { return _l31_EMOJI_POOL[seed % _l31_EMOJI_POOL.length]; }
 
+// ── Teaching ten-frame builders (intervention "Try it this way" only) ──────
+//
+// All produce renderer-ready {type, config:{...}} form. Intervention objects
+// are not run through _g1VisToV during merge, so the wrapped form is required
+// here. None of these visuals are attached to questions — only to interventions.
+
+// "+0" teaching: same N filled, count labels show 1..N, caption reinforces
+// that adding 0 doesn't change the count.
+function _l31TeachingTenFrameAddZero(n) {
+  return {
+    type: 'tenFrame',
+    config: {
+      count: n,
+      countLabels: true,
+      caption: 'Adding 0 changes nothing — still ' + n + '.'
+    }
+  };
+}
+
+// "+1" teaching: renders count = sum with the new (sum-th) cell highlighted
+// green, plus a caption "n + 1 = sum". Only valid when sum <= 10.
+function _l31TeachingTenFrameAddOne(n, sum) {
+  return {
+    type: 'tenFrame',
+    config: {
+      count: sum,
+      highlightFromIdx: n,
+      caption: n + ' + 1 = ' + sum
+    }
+  };
+}
+
+// "Fill more" teaching: renders count = a+b with the b new cells highlighted
+// green, plus a caption "a + b = sum". Only valid when sum <= 10.
+function _l31TeachingTenFrameFill(a, b) {
+  return {
+    type: 'tenFrame',
+    config: {
+      count: a + b,
+      highlightFromIdx: a,
+      caption: a + ' + ' + b + ' = ' + (a + b)
+    }
+  };
+}
+
 // ── Intervention templates (one per error tag, parameterised) ───────────────
 
 function _l31IntCountAll(a, b, sum) {
@@ -224,6 +269,10 @@ function _l31MkAbstractQ(n, opts) {
 function _l31MkAddZeroQ(n, opts) {
   var a = opts.a, b = opts.b, sum = a + b;
   var nonZero = a === 0 ? b : a;
+  var intervention = _l31IntAddZero(nonZero);
+  // Attach a guided ten-frame for the "Try it this way" panel when the count
+  // fits in a single ten-frame.
+  if (nonZero <= 10) intervention.teachingVisual = _l31TeachingTenFrameAddZero(nonZero);
   return _l31Q(n, {
     difficulty: 'easy',
     subSkill: 'add_zero',
@@ -237,13 +286,16 @@ function _l31MkAddZeroQ(n, opts) {
       { value: '0',             correct: false, errorTag: 'err_count_all_wrong',  misconceptionExplanation: 'Student saw the 0 and ignored the other number.' }
     ],
     hint: 'Adding 0 keeps the number the same.',
-    intervention: _l31IntAddZero(nonZero)
+    intervention: intervention
   });
 }
 
 function _l31MkAddOneQ(n, opts) {
   var a = opts.a, b = opts.b, sum = a + b;
   var nonOne = a === 1 ? b : a;
+  var intervention = _l31IntAddOne(nonOne, sum);
+  // Teaching frame fits only when the result is at most 10 cells.
+  if (sum <= 10) intervention.teachingVisual = _l31TeachingTenFrameAddOne(nonOne, sum);
   return _l31Q(n, {
     difficulty: 'easy',
     subSkill: 'add_one',
@@ -257,7 +309,7 @@ function _l31MkAddOneQ(n, opts) {
       { value: String(sum + 1), correct: false, errorTag: 'err_off_by_one',       misconceptionExplanation: 'Student added 2 instead of 1.' }
     ],
     hint: 'Adding 1 means the next number after ' + nonOne + '.',
-    intervention: _l31IntAddOne(nonOne, sum)
+    intervention: intervention
   });
 }
 
@@ -318,6 +370,9 @@ function _l31MkCountOnQ(n, opts) {
 
 function _l31MkTenFrameQ(n, opts) {
   var a = opts.a, b = opts.b, sum = a + b;
+  var intervention = _l31IntCountAll(a, b, sum);
+  // Teaching frame fits only when the result is at most 10 cells.
+  if (sum <= 10) intervention.teachingVisual = _l31TeachingTenFrameFill(a, b);
   return _l31Q(n, {
     difficulty: 'medium',
     subSkill: 'count_all_objects',
@@ -332,7 +387,7 @@ function _l31MkTenFrameQ(n, opts) {
       { value: String(a),       correct: false, errorTag: 'err_count_all_wrong', misconceptionExplanation: 'Student forgot to add the new dots.' }
     ],
     hint: 'Count the dots in the frame, then count ' + b + ' more.',
-    intervention: _l31IntCountAll(a, b, sum)
+    intervention: intervention
   });
 }
 

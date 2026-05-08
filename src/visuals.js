@@ -154,15 +154,43 @@ function _g1DiceDots(face, ox, oy, r) {
 
 // Ten-frame: 2 rows × 5 columns, N filled cells (N = 0–10).
 // Reuses the .ten-frame / .tf-cell / .tf-fill CSS already defined in styles.css.
+//
+// Optional config fields (used by L3.1 intervention "Try it this way" visuals;
+// all default to off so existing question visuals are unaffected):
+//   highlightFromIdx — cells from this index forward render with a green dot
+//                      instead of blue, marking "newly added" cells (e.g., +1
+//                      shows the 10th cell green when starting from 9).
+//   countLabels      — when true, fill cells render the count number 1, 2, …
+//                      instead of a dot. Useful for "+0" interventions where
+//                      the kid needs to count to confirm the total is unchanged.
+//   caption          — small explanatory text rendered below the frame in the
+//                      success-accent color (e.g., "9 + 1 = 10").
 function _drawTenFrame(cfg) {
   var n = Math.max(0, Math.min(10, +(cfg && cfg.count) || 0));
+  var hi      = (cfg && cfg.highlightFromIdx != null) ? Math.max(0, +cfg.highlightFromIdx) : null;
+  var labels  = !!(cfg && cfg.countLabels);
+  var caption = (cfg && cfg.caption) ? String(cfg.caption) : null;
   var cells = '';
   for (var i = 0; i < 10; i++) {
     var f = i < n;
-    cells += '<div class="tf-cell' + (f ? ' tf-fill' : '') + '">' + (f ? '🔵' : '') + '</div>';
+    var isNew = (hi != null) && i >= hi && i < n;
+    var content = '';
+    if (f) {
+      if (labels) {
+        content = '<span style="font-size:0.95rem;font-weight:700;color:#1e3a5f;font-family:var(--ff2,\'Nunito\',sans-serif)">' + (i + 1) + '</span>';
+      } else {
+        content = isNew ? '🟢' : '🔵';
+      }
+    }
+    cells += '<div class="tf-cell' + (f ? ' tf-fill' : '') + '">' + content + '</div>';
   }
-  return '<div class="q-visual" style="text-align:center;padding:6px 0">' +
-         '<div class="ten-frame">' + cells + '</div></div>';
+  var html = '<div class="q-visual" style="text-align:center;padding:6px 0">' +
+             '<div class="ten-frame">' + cells + '</div>';
+  if (caption) {
+    html += '<div style="margin-top:10px;font-size:0.95rem;color:#2d7d46;font-weight:700;font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(caption) + '</div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 // Five-frame: 1 row × 5 columns, N filled cells (N = 0–5).
