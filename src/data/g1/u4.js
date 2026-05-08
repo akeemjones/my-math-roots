@@ -878,7 +878,7 @@ function _l42IntBoundary(N, dir) {
   var word = dir === '+' ? 'more' : 'less';
   var h = Math.floor(correct / 100), t = Math.floor((correct % 100) / 10), oo = correct % 10;
   return {
-    errorTag: 'err_boundary_100',
+    errorTag: 'err_boundary_100_confusion',
     title: 'Count by 10 past 100',
     teachingSteps: [
       'The count-by-10 pattern keeps going past 100.',
@@ -1065,7 +1065,7 @@ function _l42MkC9(N, dir, qNum) {
     prompt: 'What is 10 ' + word + ' than ' + N + '?',
     visual: _l42VisN(N),
     answer: c,
-    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Wrong direction.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_boundary_100', 'Off by 1 near 100.')],
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Wrong direction.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_boundary_100_confusion', 'Off by 1 near 100.')],
     hint: N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ' + c + '. Count by 10.',
     intervention: _l42IntBoundary(N, dir)
   });
@@ -1083,7 +1083,7 @@ function _l42MkC10(R, dir, qNum) {
     prompt: 'If 10 ' + word + ' than a number is ' + R + ', what is the number?',
     visual: null,
     answer: N,
-    choices: [_l42C(N), _l42C(d1, 'err_wrong_direction', 'Used the result, not the starting number.'), _l42C(d2, 'err_wrong_direction', 'Wrong direction.'), _l42C(d3, 'err_off_by_one', 'Off by one.')],
+    choices: [_l42C(N), _l42C(d1, 'err_wrong_direction', 'Used the result, not the starting number.'), _l42C(d2, 'err_wrong_direction', 'Wrong direction.'), _l42C(d3, 'err_place_value_confusion', 'Off by one from the starting number.')],
     hint: 'Go backwards: ' + (dir === '+' ? R + ' − 10 = ' + N : R + ' + 10 = ' + N) + '.',
     intervention: _l42IntWrongDir(N, dir === '+' ? '-' : '+')
   });
@@ -1303,22 +1303,20 @@ export const G1_U4_SPEC = {
           { value: 'err_tens_not_changed',   meaning: 'Did not change the tens digit at all.',            errorTag: 'err_tens_not_changed' },
           { value: 'err_ones_changed',       meaning: 'Changed the ones digit instead of (or as well as) the tens.', errorTag: 'err_ones_changed' },
           { value: 'err_off_by_ten',         meaning: 'Changed by 20 instead of 10.',                    errorTag: 'err_off_by_ten' },
-          { value: 'err_place_val_confusion',meaning: 'Generic place-value error.',                       errorTag: 'err_place_val_confusion' },
-          { value: 'err_boundary_100',       meaning: 'Error specifically at the 90↔100↔120 boundary.',  errorTag: 'err_boundary_100' },
-          { value: 'err_off_by_one',         meaning: 'Off by one from the correct answer.',              errorTag: 'err_off_by_one' }
+          { value: 'err_place_value_confusion',  meaning: 'Generic place-value error, including off-by-one on starting number.', errorTag: 'err_place_value_confusion' },
+          { value: 'err_boundary_100_confusion', meaning: 'Error specifically at the 90↔100↔120 boundary.',                       errorTag: 'err_boundary_100_confusion' }
         ],
         errorTags: [
           'err_wrong_direction', 'err_tens_not_changed', 'err_ones_changed',
-          'err_off_by_ten', 'err_place_val_confusion', 'err_boundary_100', 'err_off_by_one'
+          'err_off_by_ten', 'err_place_value_confusion', 'err_boundary_100_confusion'
         ],
         interventionRules: [
-          { errorTag: 'err_wrong_direction',    style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_tens_not_changed',   style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_ones_changed',       style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_off_by_ten',         style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_place_val_confusion',style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_boundary_100',       style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
-          { errorTag: 'err_off_by_one',         style: 'visual_model', followUpRule: 'same_skill_new_numbers' }
+          { errorTag: 'err_wrong_direction',       style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_tens_not_changed',      style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_ones_changed',          style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_off_by_ten',            style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_place_value_confusion', style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_boundary_100_confusion',style: 'reteach',      followUpRule: 'same_skill_new_numbers' }
         ]
       }
     },
