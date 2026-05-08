@@ -313,6 +313,9 @@ const MINI_LESSONS = {
 function startLessonQuiz(unitIdx, lessonIdx){
   CUR.lessonIdx = lessonIdx;
   _loadUnit(unitIdx).then(function(){
+    // Re-assert inside async: prevents a concurrent navigation from leaving
+    // CUR.lessonIdx pointing at the wrong lesson before _runQuiz fires.
+    CUR.lessonIdx = lessonIdx;
     const l = UNITS_DATA[unitIdx].lessons[lessonIdx];
     try {
       var _g = localStorage.getItem('mmr_grade');
@@ -366,8 +369,10 @@ function resumeQuiz(qid){
   _clearPausedQuiz(qid);
   CUR.unitIdx = p.unitIdx;
   CUR.lessonIdx = p.lessonIdx;
-  // Recover unitIdx+lessonIdx if missing — scan all units for matching quiz ID
-  if((CUR.lessonIdx == null || CUR.unitIdx == null) && p.type === 'lesson') {
+  // Always re-derive unitIdx+lessonIdx from the quiz ID for lesson quizzes.
+  // Saved values may be stale (e.g. 0) if CUR was mutated between startLessonQuiz
+  // setting it and the async _runQuiz firing. The quiz ID is always authoritative.
+  if(p.type === 'lesson') {
     UNITS_DATA.forEach(function(u, ui){
       (u.lessons || []).forEach(function(l, li){
         if(p.id === 'lq_'+l.id){ CUR.unitIdx = ui; CUR.lessonIdx = li; }
