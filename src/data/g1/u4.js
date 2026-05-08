@@ -8,7 +8,7 @@
  *
  *  Lessons:
  *    L4.1  Add Tens and Ones                    ← COMPLETE (170 questions)
- *    L4.2  10 More and 10 Less                  ← SCAFFOLD (0 questions)
+ *    L4.2  10 More and 10 Less                  ← COMPLETE (165 questions)
  *    L4.3  Add Multiples of 10                  ← SCAFFOLD (0 questions)
  *    L4.4  Add Tens to Two-Digit Numbers        ← SCAFFOLD (0 questions)
  *    L4.5  Tens and Ones Word Problems          ← SCAFFOLD (0 questions)
@@ -743,6 +743,473 @@ var _l41Examples = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 4.2 — 10 More and 10 Less
+//  Skill: ten_more_ten_less · TEKS 1.5C
+//  Target: 165 questions (55E / 65M / 45H)
+//
+//  C1  10 more, find answer         20E   q001–q020
+//  C2  10 less, find answer         20E   q021–q040
+//  C3  Equation form +10            15E   q041–q055
+//  C4  Equation form −10            15M   q056–q070
+//  C5  Direction identification     15M   q071–q085
+//  C6  Ones digit stays             20M   q086–q105
+//  C7  Tens digit changes           15M   q106–q120
+//  C8  Error repair                 15H   q121–q135
+//  C9  Boundary (90↔100↔120)        15H   q136–q150
+//  C10 Reverse (find N given R)     15H   q151–q165
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l42Q(n, o) {
+  return {
+    id: 'g1-u4-l2-q-' + String(n).padStart(3, '0'),
+    teks: ['1.5C'],
+    lessonId: 'g1-u4-l2',
+    skill: 'ten_more_ten_less',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: String(o.answer),
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({ followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true }, o.intervention)
+  };
+}
+
+// Question-time visual — goes through _g1VisToV adapter
+function _l42VisN(n) {
+  if (n >= 100) {
+    var h = Math.floor(n / 100), t = Math.floor((n % 100) / 10), oo = n % 10;
+    return { type: 'base10', hundreds: h, tens: t, ones: oo };
+  }
+  return { type: 'base10', tens: Math.floor(n / 10), ones: n % 10 };
+}
+
+// Teaching visual (intervention panels only) — canonical config form, NOT run through adapter
+function _l42TV(n, label) {
+  var h = n >= 100 ? Math.floor(n / 100) : 0;
+  return { type: 'base10', config: { hundreds: h, tens: Math.floor((n % 100) / 10), ones: n % 10, label: label || null } };
+}
+
+function _l42C(val, tag, msg) {
+  return tag == null
+    ? { value: String(val), correct: true }
+    : { value: String(val), correct: false, errorTag: tag, misconceptionExplanation: msg || null };
+}
+
+// ── Intervention templates ────────────────────────────────────────────────
+
+function _l42IntWrongDir(N, dir) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var wrong = dir === '+' ? N - 10 : N + 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var op = dir === '+' ? 'add' : 'subtract';
+  return {
+    errorTag: 'err_wrong_direction',
+    title: '10 ' + word + ' means ' + op + ' 10',
+    teachingSteps: [
+      '10 MORE means add 10. 10 LESS means subtract 10.',
+      'You need 10 ' + word + ' than ' + N + ', so ' + op + ' 10.',
+      N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ' + correct + '.',
+      wrong + ' is what you get going the wrong way.'
+    ],
+    correctAnswerExplanation: '10 ' + word + ' than ' + N + ' is ' + correct + ', not ' + wrong + '.',
+    teachingVisual: _l42TV(N, '10 ' + word + ' than ' + N + ' = ' + correct)
+  };
+}
+
+function _l42IntTensNotChanged(N, dir) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var tN = Math.floor(N / 10), oN = N % 10, tC = Math.floor(correct / 10);
+  var word = dir === '+' ? 'more' : 'less';
+  return {
+    errorTag: 'err_tens_not_changed',
+    title: 'Adding 10 changes the tens digit',
+    teachingSteps: [
+      N + ' has ' + tN + ' in the tens place.',
+      'Adding or subtracting 10 changes the tens digit by 1.',
+      'New tens digit: ' + tC + '. Ones digit stays: ' + oN + '.',
+      '10 ' + word + ' than ' + N + ' is ' + correct + '.'
+    ],
+    correctAnswerExplanation: N + ' → tens ' + tN + ' → ' + tC + ' → answer ' + correct + '.',
+    teachingVisual: _l42TV(N, N + ': tens=' + tN + ', ones=' + oN)
+  };
+}
+
+function _l42IntOnesChanged(N, dir) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var oN = N % 10;
+  var word = dir === '+' ? 'more' : 'less';
+  return {
+    errorTag: 'err_ones_changed',
+    title: 'Only the tens digit changes',
+    teachingSteps: [
+      'Adding or subtracting 10 never changes the ones digit.',
+      N + ' has ' + oN + ' ones. The answer also has ' + oN + ' ones.',
+      'Count by 10 from ' + N + ': ' + N + ', ' + correct + '.',
+      'Ones stay at ' + oN + ' — always.'
+    ],
+    correctAnswerExplanation: '10 ' + word + ' than ' + N + ' is ' + correct + '. Ones (' + oN + ') do not change.',
+    teachingVisual: _l42TV(N, 'ones stay at ' + oN)
+  };
+}
+
+function _l42IntOffByTen(N, dir) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var op = dir === '+' ? 'add' : 'subtract';
+  return {
+    errorTag: 'err_off_by_ten',
+    title: 'Move the tens digit by exactly 1',
+    teachingSteps: [
+      '10 ' + word + ' means ' + op + ' exactly one ten.',
+      'Count by 10: ' + N + ' → ' + correct + '.',
+      'The tens digit moves by exactly 1, not 2.'
+    ],
+    correctAnswerExplanation: '10 ' + word + ' than ' + N + ' is ' + correct + ' (one ten, not two).',
+    teachingVisual: _l42TV(correct, '10 ' + word + ' than ' + N)
+  };
+}
+
+function _l42IntBoundary(N, dir) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var h = Math.floor(correct / 100), t = Math.floor((correct % 100) / 10), oo = correct % 10;
+  return {
+    errorTag: 'err_boundary_100',
+    title: 'Count by 10 past 100',
+    teachingSteps: [
+      'The count-by-10 pattern keeps going past 100.',
+      N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ' + correct + '.',
+      correct >= 100
+        ? 'Write: ' + h + ' hundred, ' + t + ' tens, ' + oo + ' ones = ' + correct + '.'
+        : 'After crossing 100, subtracting 10 gives ' + correct + '.'
+    ],
+    correctAnswerExplanation: '10 ' + word + ' than ' + N + ' is ' + correct + '.',
+    teachingVisual: _l42TV(correct, '10 ' + word + ' than ' + N + ' = ' + correct)
+  };
+}
+
+function _l42IntErrRepair(N, dir, wrongVal) {
+  var correct = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  return {
+    errorTag: 'err_wrong_direction',
+    title: 'Identify the correct direction',
+    teachingSteps: [
+      '10 ' + word + ' means ' + (dir === '+' ? 'add' : 'subtract') + ' 10.',
+      wrongVal + ' is wrong — check the direction.',
+      N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ' + correct + '.'
+    ],
+    correctAnswerExplanation: '10 ' + word + ' than ' + N + ' is ' + correct + ', not ' + wrongVal + '.',
+    teachingVisual: _l42TV(N, '10 ' + word + ' than ' + N + ' = ' + correct)
+  };
+}
+
+// ── Factory functions ─────────────────────────────────────────────────────
+
+function _l42MkC1(N, qNum) {
+  var c = N + 10, d1 = N - 10, d2 = N, d3 = N + 20;
+  return _l42Q(qNum, {
+    subSkill: 'find_ten_more',
+    keyIdea: '10 more means add 1 ten. Only the tens digit changes.',
+    difficulty: 'easy',
+    prompt: 'What is 10 more than ' + N + '?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Subtracted 10.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_off_by_ten', 'Added 20.')],
+    hint: 'Count on by 10 from ' + N + '.',
+    intervention: _l42IntWrongDir(N, '+')
+  });
+}
+
+function _l42MkC2(N, qNum) {
+  var c = N - 10, d1 = N + 10, d2 = N, d3 = N - 20;
+  return _l42Q(qNum, {
+    subSkill: 'find_ten_less',
+    keyIdea: '10 less means subtract 1 ten. Only the tens digit changes.',
+    difficulty: 'easy',
+    prompt: 'What is 10 less than ' + N + '?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Added 10.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_off_by_ten', 'Subtracted 20.')],
+    hint: 'Count back by 10 from ' + N + '.',
+    intervention: _l42IntWrongDir(N, '-')
+  });
+}
+
+function _l42MkC3(N, qNum) {
+  var c = N + 10, d1 = N - 10, d2 = N + 1, d3 = N + 20;
+  return _l42Q(qNum, {
+    subSkill: 'equation_ten_more',
+    keyIdea: 'Adding 10 moves the tens digit up by 1.',
+    difficulty: 'easy',
+    prompt: N + ' + 10 = ?',
+    visual: null,
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Subtracted.'), _l42C(d2, 'err_ones_changed', 'Added 1 to ones.'), _l42C(d3, 'err_off_by_ten', 'Added 20.')],
+    hint: 'Add 10: count forward by 10.',
+    intervention: _l42IntTensNotChanged(N, '+')
+  });
+}
+
+function _l42MkC4(N, qNum) {
+  var c = N - 10, d1 = N + 10, d2 = N - 1, d3 = N - 20;
+  return _l42Q(qNum, {
+    subSkill: 'equation_ten_less',
+    keyIdea: 'Subtracting 10 moves the tens digit down by 1.',
+    difficulty: 'medium',
+    prompt: N + ' − 10 = ?',
+    visual: null,
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Added 10.'), _l42C(d2, 'err_ones_changed', 'Subtracted 1 from ones.'), _l42C(d3, 'err_off_by_ten', 'Subtracted 20.')],
+    hint: 'Subtract 10: count back by 10.',
+    intervention: _l42IntWrongDir(N, '-')
+  });
+}
+
+function _l42MkC5(N, dir, qNum) {
+  var c = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var d1 = dir === '+' ? N - 10 : N + 10, d2 = N, d3 = dir === '+' ? N + 20 : N - 20;
+  return _l42Q(qNum, {
+    subSkill: 'direction_identification',
+    keyIdea: '10 more = add 10. 10 less = subtract 10.',
+    difficulty: 'medium',
+    prompt: 'What is 10 ' + word + ' than ' + N + '?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Wrong direction.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_off_by_ten', 'Changed by 20.')],
+    hint: '10 ' + word + ' means ' + (dir === '+' ? 'add' : 'subtract') + ' 10.',
+    intervention: _l42IntWrongDir(N, dir)
+  });
+}
+
+function _l42MkC6(N, dir, qNum) {
+  var c = dir === '+' ? N + 10 : N - 10;
+  var oN = N % 10, tC = Math.floor(c / 10);
+  var word = dir === '+' ? 'more' : 'less';
+  var wrongDir = dir === '+' ? N - 10 : N + 10;
+  var op1 = tC * 10 + (oN < 9 ? oN + 1 : oN - 1);
+  var op2 = tC * 10 + (oN > 0 ? oN - 1 : oN + 1);
+  if (op1 === op2) op2 = tC * 10 + (oN > 1 ? oN - 2 : oN + 2);
+  if (op1 === c) op1 = tC * 10 + (oN > 1 ? oN - 2 : oN + 2);
+  if (op2 === c) op2 = c + (oN < 8 ? 1 : -1);
+  return _l42Q(qNum, {
+    subSkill: 'ones_digit_stays',
+    keyIdea: 'Only the tens digit changes when you add or subtract 10.',
+    difficulty: 'medium',
+    prompt: 'What is 10 ' + word + ' than ' + N + '?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(wrongDir, 'err_wrong_direction', 'Wrong direction.'), _l42C(op1, 'err_ones_changed', 'Changed the ones.'), _l42C(op2, 'err_ones_changed', 'Changed the ones.')],
+    hint: 'The ones digit of ' + N + ' is ' + oN + '. It stays the same.',
+    intervention: _l42IntOnesChanged(N, dir)
+  });
+}
+
+function _l42MkC7(N, dir, qNum) {
+  var c = dir === '+' ? N + 10 : N - 10;
+  var tN = Math.floor(N / 10), oN = N % 10, tC = Math.floor(c / 10);
+  var wrongDir = dir === '+' ? N - 10 : N + 10;
+  var onesOnly = tN * 10 + (oN < 9 ? oN + 1 : oN - 1);
+  var offByTen = dir === '+' ? c + 10 : c - 10;
+  return _l42Q(qNum, {
+    subSkill: 'tens_digit_changes',
+    keyIdea: 'When you add or subtract 10, only the tens digit changes.',
+    difficulty: 'medium',
+    prompt: N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(wrongDir, 'err_wrong_direction', 'Wrong direction.'), _l42C(onesOnly, 'err_ones_changed', 'Changed ones instead of tens.'), _l42C(offByTen, 'err_off_by_ten', 'Changed by 20.')],
+    hint: 'Tens digit of ' + N + ' is ' + tN + '. It becomes ' + tC + '.',
+    intervention: _l42IntTensNotChanged(N, dir)
+  });
+}
+
+function _l42MkC8(N, dir, wrongVal, qNum) {
+  var c = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var d2 = dir === '+' ? N - 10 : N + 10;
+  if (d2 === wrongVal || d2 === c) d2 = dir === '+' ? N + 20 : N - 20;
+  var d3 = N;
+  if (d3 === wrongVal || d3 === d2 || d3 === c) d3 = c + 1;
+  return _l42Q(qNum, {
+    subSkill: 'error_repair',
+    keyIdea: 'Check the direction and the size of the change.',
+    difficulty: 'hard',
+    prompt: 'A student says 10 ' + word + ' than ' + N + ' is ' + wrongVal + '. What is the correct answer?',
+    visual: null,
+    answer: c,
+    choices: [_l42C(c), _l42C(wrongVal, 'err_wrong_direction', 'The wrong answer from the prompt.'), _l42C(d2, 'err_wrong_direction', 'Wrong direction.'), _l42C(d3, 'err_tens_not_changed', 'No change.')],
+    hint: '10 ' + word + ' means ' + (dir === '+' ? 'add' : 'subtract') + ' 10 from ' + N + '.',
+    intervention: _l42IntErrRepair(N, dir, wrongVal)
+  });
+}
+
+function _l42MkC9(N, dir, qNum) {
+  var c = dir === '+' ? N + 10 : N - 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var d1 = dir === '+' ? N - 10 : N + 10;
+  if (d1 > 120) d1 = c - 1;
+  var d2 = N, d3 = c + 1;
+  if (d3 > 120) d3 = c - 1;
+  if (d3 === d1) d3 = c - 2;
+  if (d3 === d2) d3 = c + 2;
+  return _l42Q(qNum, {
+    subSkill: 'boundary_100',
+    keyIdea: 'The count-by-10 pattern continues past 100.',
+    difficulty: 'hard',
+    prompt: 'What is 10 ' + word + ' than ' + N + '?',
+    visual: _l42VisN(N),
+    answer: c,
+    choices: [_l42C(c), _l42C(d1, 'err_wrong_direction', 'Wrong direction.'), _l42C(d2, 'err_tens_not_changed', 'No change.'), _l42C(d3, 'err_boundary_100', 'Off by 1 near 100.')],
+    hint: N + ' ' + (dir === '+' ? '+' : '−') + ' 10 = ' + c + '. Count by 10.',
+    intervention: _l42IntBoundary(N, dir)
+  });
+}
+
+function _l42MkC10(R, dir, qNum) {
+  var N = dir === '+' ? R - 10 : R + 10;
+  var word = dir === '+' ? 'more' : 'less';
+  var d1 = R, d2 = dir === '+' ? R + 10 : R - 10, d3 = N + 1;
+  if (d3 === d1 || d3 === d2) d3 = N - 1;
+  return _l42Q(qNum, {
+    subSkill: 'find_start_number',
+    keyIdea: 'To undo "10 more," subtract 10. To undo "10 less," add 10.',
+    difficulty: 'hard',
+    prompt: 'If 10 ' + word + ' than a number is ' + R + ', what is the number?',
+    visual: null,
+    answer: N,
+    choices: [_l42C(N), _l42C(d1, 'err_wrong_direction', 'Used the result, not the starting number.'), _l42C(d2, 'err_wrong_direction', 'Wrong direction.'), _l42C(d3, 'err_off_by_one', 'Off by one.')],
+    hint: 'Go backwards: ' + (dir === '+' ? R + ' − 10 = ' + N : R + ' + 10 = ' + N) + '.',
+    intervention: _l42IntWrongDir(N, dir === '+' ? '-' : '+')
+  });
+}
+
+// ── Data arrays ───────────────────────────────────────────────────────────
+
+var _l42_E_C1  = [11,13,15,17,22,24,26,28,31,34,36,38,43,45,47,52,54,61,63,72];
+var _l42_E_C2  = [21,23,25,27,32,35,37,39,41,44,46,48,53,56,58,62,64,67,71,74];
+var _l42_E_C3  = [16,18,23,29,33,37,41,49,55,58,61,64,19,27,43];
+var _l42_M_C4  = [29,33,38,42,47,51,54,59,63,68,72,75,77,24,57];
+var _l42_M_C5  = [[47,'+'],[85,'-'],[32,'+'],[63,'-'],[16,'+'],[78,'-'],[55,'+'],[44,'-'],[67,'+'],[52,'-'],[23,'+'],[76,'-'],[38,'+'],[61,'-'],[49,'+']];
+var _l42_M_C6  = [
+  [36,'+'],[25,'+'],[58,'+'],[41,'+'],[64,'+'],[17,'+'],[52,'+'],[85,'+'],[74,'+'],[38,'+'],
+  [74,'-'],[27,'-'],[39,'-'],[46,'-'],[58,'-'],[71,'-'],[83,'-'],[64,'-'],[37,'-'],[75,'-']
+];
+var _l42_M_C7  = [[52,'+'],[31,'+'],[47,'+'],[28,'+'],[61,'+'],[14,'+'],[59,'+'],[74,'-'],[46,'-'],[83,'-'],[62,'-'],[59,'-'],[37,'-'],[78,'-'],[91,'-']];
+var _l42_H_C8  = [
+  [34,'+',35],[47,'-',46],[23,'+',13],[56,'-',66],[65,'+',55],
+  [38,'-',48],[72,'+',73],[49,'+',39],[84,'-',83],[27,'+',47],
+  [61,'-',41],[53,'+',54],[78,'-',77],[45,'+',35],[36,'-',46]
+];
+var _l42_H_C9  = [[90,'+'],[100,'-'],[100,'+'],[110,'-'],[110,'+'],[120,'-'],[91,'+'],[101,'-'],[95,'+'],[105,'-'],[98,'+'],[108,'-'],[102,'+'],[112,'-'],[109,'+']];
+var _l42_H_C10 = [[58,'+'],[62,'+'],[35,'+'],[74,'+'],[47,'+'],[83,'+'],[91,'+'],[66,'+'],[43,'-'],[27,'-'],[54,'-'],[31,'-'],[68,'-'],[45,'-'],[57,'-']];
+
+// ── Quiz bank assembly ────────────────────────────────────────────────────
+
+var _l42QuizBank = [];
+var _l42N = 0;
+
+_l42_E_C1.forEach(function(N)    { _l42N++; _l42QuizBank.push(_l42MkC1(N, _l42N)); });
+_l42_E_C2.forEach(function(N)    { _l42N++; _l42QuizBank.push(_l42MkC2(N, _l42N)); });
+_l42_E_C3.forEach(function(N)    { _l42N++; _l42QuizBank.push(_l42MkC3(N, _l42N)); });
+_l42_M_C4.forEach(function(N)    { _l42N++; _l42QuizBank.push(_l42MkC4(N, _l42N)); });
+_l42_M_C5.forEach(function(p)    { _l42N++; _l42QuizBank.push(_l42MkC5(p[0], p[1], _l42N)); });
+_l42_M_C6.forEach(function(p)    { _l42N++; _l42QuizBank.push(_l42MkC6(p[0], p[1], _l42N)); });
+_l42_M_C7.forEach(function(p)    { _l42N++; _l42QuizBank.push(_l42MkC7(p[0], p[1], _l42N)); });
+_l42_H_C8.forEach(function(p)    { _l42N++; _l42QuizBank.push(_l42MkC8(p[0], p[1], p[2], _l42N)); });
+_l42_H_C9.forEach(function(p)    { _l42N++; _l42QuizBank.push(_l42MkC9(p[0], p[1], _l42N)); });
+_l42_H_C10.forEach(function(p)   { _l42N++; _l42QuizBank.push(_l42MkC10(p[0], p[1], _l42N)); });
+
+// ── Worked examples ───────────────────────────────────────────────────────
+
+var _l42Examples = [
+  {
+    id: 'g1-u4-l2-ex-1',
+    title: 'Example 1: Find 10 more',
+    prompt: 'What is 10 more than 34?',
+    visual: { type: 'base10', tens: 3, ones: 4 },
+    steps: [
+      '34 has 3 tens and 4 ones.',
+      'Adding 10 means adding 1 more ten.',
+      '3 tens + 1 ten = 4 tens.',
+      'The ones digit stays the same: 4.',
+      '4 tens and 4 ones = 44.'
+    ],
+    finalAnswer: '10 more than 34 is 44.'
+  },
+  {
+    id: 'g1-u4-l2-ex-2',
+    title: 'Example 2: Find 10 less',
+    prompt: 'What is 10 less than 78?',
+    visual: { type: 'base10', tens: 7, ones: 8 },
+    steps: [
+      '78 has 7 tens and 8 ones.',
+      'Subtracting 10 means removing 1 ten.',
+      '7 tens − 1 ten = 6 tens.',
+      'The ones digit stays the same: 8.',
+      '6 tens and 8 ones = 68.'
+    ],
+    finalAnswer: '10 less than 78 is 68.'
+  },
+  {
+    id: 'g1-u4-l2-ex-3',
+    title: 'Example 3: Equation form',
+    prompt: '52 + 10 = ?',
+    visual: { type: 'base10', tens: 5, ones: 2 },
+    steps: [
+      '52 = 5 tens + 2 ones.',
+      'Add 10 → 1 more ten.',
+      '5 + 1 = 6 tens. Ones stay at 2.',
+      '6 tens + 2 ones = 62.'
+    ],
+    finalAnswer: '52 + 10 = 62.'
+  },
+  {
+    id: 'g1-u4-l2-ex-4',
+    title: 'Example 4: Subtract 10',
+    prompt: '68 − 10 = ?',
+    visual: { type: 'base10', tens: 6, ones: 8 },
+    steps: [
+      '68 = 6 tens + 8 ones.',
+      'Subtract 10 → remove 1 ten.',
+      '6 − 1 = 5 tens. Ones stay at 8.',
+      '5 tens + 8 ones = 58.'
+    ],
+    finalAnswer: '68 − 10 = 58.'
+  },
+  {
+    id: 'g1-u4-l2-ex-5',
+    title: 'Example 5: Cross 100',
+    prompt: '90 + 10 = ?',
+    visual: { type: 'base10', tens: 9, ones: 0 },
+    steps: [
+      '90 = 9 tens.',
+      '9 tens + 1 ten = 10 tens.',
+      '10 tens = 1 hundred = 100.',
+      'Write 1 in the hundreds place: 100.'
+    ],
+    finalAnswer: '90 + 10 = 100.'
+  },
+  {
+    id: 'g1-u4-l2-ex-6',
+    title: 'Example 6: Find the starting number',
+    prompt: 'If 10 more than a number is 54, what is the number?',
+    visual: null,
+    steps: [
+      '"10 more" means 10 was added to get 54.',
+      'To go back, subtract 10 from 54.',
+      '54 − 10 = 44.'
+    ],
+    finalAnswer: 'The number is 44.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -811,8 +1278,8 @@ export const G1_U4_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 4.2 — 10 More and 10 Less (0 questions — scaffold)
-    //  Scope: 34 + 10 = 44, 78 - 10 = 68, up to 120
+    //  Lesson 4.2 — 10 More and 10 Less (165 questions)
+    //  Scope: 34 + 10 = 44, 78 − 10 = 68, up to 120
     //  TEKS 1.5C
     // ═══════════════════════════════════════════════════════════════════════
     {
@@ -821,13 +1288,38 @@ export const G1_U4_SPEC = {
       teks: ['1.5C'],
       skill: 'ten_more_ten_less',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: [
+        '10 more than a number means add 10 — count forward one group of ten.',
+        '10 less than a number means subtract 10 — count back one group of ten.',
+        'When you add or subtract 10, only the tens digit changes. The ones digit stays the same.',
+        'The count-by-10 pattern continues past 100: 90 → 100 → 110 → 120.',
+        'To find the starting number when you know the result, reverse the operation: subtract 10 if "10 more," add 10 if "10 less."'
+      ],
+      workedExamples: _l42Examples,
+      quizBank: _l42QuizBank,
       diagnostics: {
-        commonDistractors: [],
-        errorTags: [],
-        interventionRules: []
+        commonDistractors: [
+          { value: 'err_wrong_direction',    meaning: 'Subtracted when should add, or vice versa.',      errorTag: 'err_wrong_direction' },
+          { value: 'err_tens_not_changed',   meaning: 'Did not change the tens digit at all.',            errorTag: 'err_tens_not_changed' },
+          { value: 'err_ones_changed',       meaning: 'Changed the ones digit instead of (or as well as) the tens.', errorTag: 'err_ones_changed' },
+          { value: 'err_off_by_ten',         meaning: 'Changed by 20 instead of 10.',                    errorTag: 'err_off_by_ten' },
+          { value: 'err_place_val_confusion',meaning: 'Generic place-value error.',                       errorTag: 'err_place_val_confusion' },
+          { value: 'err_boundary_100',       meaning: 'Error specifically at the 90↔100↔120 boundary.',  errorTag: 'err_boundary_100' },
+          { value: 'err_off_by_one',         meaning: 'Off by one from the correct answer.',              errorTag: 'err_off_by_one' }
+        ],
+        errorTags: [
+          'err_wrong_direction', 'err_tens_not_changed', 'err_ones_changed',
+          'err_off_by_ten', 'err_place_val_confusion', 'err_boundary_100', 'err_off_by_one'
+        ],
+        interventionRules: [
+          { errorTag: 'err_wrong_direction',    style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_tens_not_changed',   style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_ones_changed',       style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_off_by_ten',         style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_place_val_confusion',style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_boundary_100',       style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_off_by_one',         style: 'visual_model', followUpRule: 'same_skill_new_numbers' }
+        ]
       }
     },
 
