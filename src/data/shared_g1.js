@@ -41,6 +41,18 @@ const _G1_U3_LESSONS = [
   { id:'g1-u3-l5', title:'Fact Families and Word Problems',icon:'📖', desc:'Relate addition and subtraction; solve word problems within 20',      teks:'TEKS 1.3B, 1.3E, 1.3F' }
 ];
 
+// ── Unit 4 lesson shells ─────────────────────────────────────────────────────
+//  Scope: Tens and Ones Operations — multiples of 10, multiple-of-10 + one-digit,
+//  and adding tens to a two-digit number. NO regrouping, carrying, borrowing,
+//  or vertical algorithm. NO three-digit operations. NO 27 + 18, NO 53 - 27.
+const _G1_U4_LESSONS = [
+  { id:'g1-u4-l1', title:'Add Tens and Ones',             icon:'🔢', desc:'Add a multiple of 10 and a one-digit number',                          teks:'TEKS 1.3A' },
+  { id:'g1-u4-l2', title:'10 More and 10 Less',           icon:'↕️', desc:'Find numbers that are 10 more or 10 less to 120',                       teks:'TEKS 1.5C' },
+  { id:'g1-u4-l3', title:'Add Multiples of 10',           icon:'📦', desc:'Add multiples of 10 using base-10 models — no regrouping',             teks:'TEKS 1.3A' },
+  { id:'g1-u4-l4', title:'Add Tens to Two-Digit Numbers', icon:'➕', desc:'Add tens to a two-digit number — no regrouping or carrying',           teks:'TEKS 1.3A' },
+  { id:'g1-u4-l5', title:'Tens and Ones Word Problems',   icon:'📖', desc:'Solve single-step word problems with tens and ones',                   teks:'TEKS 1.3A, 1.5D' }
+];
+
 // ── Grade 1 unit shells ───────────────────────────────────────────────────────
 const _UNITS_DATA_G1 = [
   {
@@ -71,14 +83,12 @@ const _UNITS_DATA_G1 = [
     _loaded: false
   },
   {
-    id: 'g1u4', name: 'Two-Digit Addition and Subtraction',
+    id: 'g1u4', name: 'Tens and Ones Operations',
     icon: '🔢',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FF8C00" opacity="0.1"/><rect x="8" y="27" width="18" height="7" rx="3.5" fill="#FF8C00"/><rect x="34" y="27" width="18" height="7" rx="3.5" fill="#FF8C00" opacity="0.75"/></svg>',
-    color: '#FF8C00', gp: 1, teks: 'TEKS 1.3A-C',
-    lessons: [
-      { id:'g1u4l1', title:'Add Two-Digit Numbers', icon:'➕', desc:'Add two-digit numbers using models' }
-    ],
-    _loaded: true
+    color: '#FF8C00', gp: 1, teks: 'TEKS 1.3A, 1.5C, 1.5D, 1.5G',
+    lessons: _G1_U4_LESSONS.map(function(l){ return Object.assign({}, l); }),
+    _loaded: false
   },
   {
     id: 'g1u5', name: 'Geometry',
@@ -141,15 +151,15 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js.
-  // Units 4-8 (idx 3-7) are still shell-only — short-circuit so the loader
+  // Units with data files: idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js, idx 3 → u4.js.
+  // Units 5-8 (idx 4-7) are still shell-only — short-circuit so the loader
   // does not try to fetch a file that doesn't exist yet.
-  if(idx > 2){
+  if(idx > 3){
     u._loaded = true;
     return Promise.resolve();
   }
 
-  var fileNum = idx + 1; // idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js
+  var fileNum = idx + 1; // idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js, idx 3 → u4.js
   _g1UnitLoadPromises[idx] = _loadG1SourceFile(fileNum).then(function(){
     if(!u._loaded) u._loaded = true;  // fallback if script didn't call _mergeG1UnitData
   });
