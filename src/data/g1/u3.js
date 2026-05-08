@@ -2870,22 +2870,6 @@ function _l35MkRelatedAddQ(a, b, qNum) {
   });
 }
 
-// H4: Two-step word problem ("a + b objects, need total total, how many more?")
-function _l35MkTwoStepQ(a, b, total, qNum) {
-  var have = a + b;
-  var need = total - have;
-  return _l35Q(qNum, {
-    difficulty: 'hard',
-    subSkill: 'two_step_word_problem',
-    keyIdea: 'Word problems tell a math story — look for joining (add) or separating/comparing (subtract) clues.',
-    prompt: 'There are ' + a + ' red buttons and ' + b + ' blue buttons. To have ' + total + ' buttons in all, how many more are needed?',
-    visual: null,
-    answer: String(need),
-    choices: _l35Opts(need, [need + 1, need > 1 ? need - 1 : need + 2, have, total], 'err_word_problem_setup'),
-    hint: 'First add: ' + a + ' + ' + b + ' = ' + have + '. Then subtract: ' + total + ' − ' + have + ' = ' + need + '.',
-    intervention: _l35IntWordProblemSetup(total, have)
-  });
-}
 
 // ── Data arrays ───────────────────────────────────────────────────────────────
 
@@ -2986,12 +2970,10 @@ var _l35_H2 = [
   { start:7, change:7, end:14, text:'Omar had some trading cards. He got 7 more. Now he has 14. How many cards did Omar start with?' },
   { start:9, change:8, end:17, text:'Pam had some buttons. She got 8 more from her mom. Now she has 17. How many buttons did Pam start with?' }
 ];
-// Hard 156-165: related addition from a subtraction (a, b) pairs
-var _l35_H3 = [[3,4],[4,5],[5,6],[4,7],[5,8],[6,7],[6,8],[7,7],[7,8],[8,8]];
-// Hard 166-175: two-step word problems (a, b, total)
-var _l35_H4 = [
-  [3,4,10],[2,5,9],[4,5,11],[3,6,12],[4,6,13],
-  [5,5,13],[3,7,12],[4,7,14],[5,6,14],[3,8,13]
+// Hard 156-175: related addition from a subtraction (a, b) pairs
+var _l35_H3 = [
+  [3,4],[4,5],[5,6],[4,7],[5,8],[6,7],[6,8],[7,7],[7,8],[8,8],
+  [3,5],[3,6],[3,7],[3,8],[3,9],[4,6],[4,8],[4,9],[5,7],[5,9]
 ];
 
 // ── Build quiz bank ───────────────────────────────────────────────────────────
@@ -3027,10 +3009,8 @@ _l35_M5.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkCompareStoryQ(s, 
 _l35_H1.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkBalanceEqQ(t[0], t[1], t[2], _l35N)); });
 // Hard 141-155
 _l35_H2.forEach(function(s) { _l35N++; _l35QuizBank.push(_l35MkStartUnknownQ(s, _l35N)); });
-// Hard 156-165
+// Hard 156-175
 _l35_H3.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkRelatedAddQ(t[0], t[1], _l35N)); });
-// Hard 166-175
-_l35_H4.forEach(function(t) { _l35N++; _l35QuizBank.push(_l35MkTwoStepQ(t[0], t[1], t[2], _l35N)); });
 
 // ── Worked examples ───────────────────────────────────────────────────────────
 
