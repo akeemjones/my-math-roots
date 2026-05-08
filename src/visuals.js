@@ -656,14 +656,38 @@ function drawObjectSet(config, argIdx) {
     return '<div class="q-visual obj-set-visual">'+gridHTML+'</div>';
   }
 
-  // Flat rendering (original behavior)
+  // Flat rendering (original behavior + optional teaching annotations)
+  //
+  // Optional config fields (used by L3.2 intervention "Try it this way" visuals;
+  // both default to off so existing question objectSet visuals are unaffected):
+  //   crossedFromIdx — emojis from this index forward render with a
+  //                    red strikethrough overlay, marking "removed" items.
+  //   caption        — small accent-colored explanatory line below the grid.
   var count   = +config.count || 0;
+  var crossFrom = (config.crossedFromIdx != null) ? Math.max(0, +config.crossedFromIdx) : null;
+  var caption = config.caption ? String(config.caption) : null;
   var MAX_ROW = isBtn ? 5 : (config.layout === 'line' ? 20 : 5);
-  var rows = [], rem = count;
+  var rows = [], rem = count, idxSeen = 0;
   while (rem > 0) {
     var n = Math.min(rem, MAX_ROW);
-    rows.push(Array(n).fill(emoji).join('​'));
+    var rowHTML;
+    if (crossFrom != null) {
+      var pieces = [];
+      for (var k = 0; k < n; k++) {
+        var crossed = (idxSeen + k) >= crossFrom;
+        if (crossed) {
+          pieces.push('<span style="text-decoration:line-through;text-decoration-color:#dc2626;text-decoration-thickness:3px;opacity:0.55">' + emoji + '</span>');
+        } else {
+          pieces.push(emoji);
+        }
+      }
+      rowHTML = pieces.join('​');
+    } else {
+      rowHTML = Array(n).fill(emoji).join('​');
+    }
+    rows.push(rowHTML);
     rem -= n;
+    idxSeen += n;
   }
   var gridHTML = '<div class="obj-set-grid">' +
     rows.map(function(r){ return '<div class="obj-row">' + r + '</div>'; }).join('') +
@@ -676,7 +700,12 @@ function drawObjectSet(config, argIdx) {
       '<span class="vchoice-label">'+count+'</span>'+
     '</button>';
   }
-  return '<div class="q-visual obj-set-visual">'+gridHTML+'</div>';
+  var html = '<div class="q-visual obj-set-visual">' + gridHTML;
+  if (caption) {
+    html += '<div style="margin-top:10px;font-size:0.95rem;color:#2d7d46;font-weight:700;font-family:var(--ff2,\'Nunito\',sans-serif)">' + _escHtml(caption) + '</div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 
