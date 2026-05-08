@@ -766,6 +766,9 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
   var lEmoji = (config.leftObj  || '●').repeat(lCount);
   var rEmoji = (config.rightObj || '●').repeat(rCount);
   var opStr  = config.op === 'subtract' ? '−' : config.op === 'compare' ? 'vs' : '+';
+  // Optional caption (used by L3.3 intervention "Try it this way" visuals;
+  // defaults to off so existing question/twoGroups visuals are unaffected).
+  var caption = config.caption ? String(config.caption) : null;
 
   function _groupBtn(emoji, count, argIdx) {
     return '<button class="vchoice" id="abtn-'+argIdx+'" type="button"'+
@@ -779,11 +782,15 @@ function drawTwoGroups(config, leftArgIdx, rightArgIdx) {
   var rightHTML = rightArgIdx != null ? _groupBtn(rEmoji, rCount, rightArgIdx) : '<div class="tg-group">'+rEmoji+'</div>';
 
   var wrapClass = 'q-visual two-groups-visual' + (leftArgIdx != null && rightArgIdx != null ? ' two-groups-compare' : '');
-  return '<div class="'+wrapClass+'">'+
+  var html = '<div class="'+wrapClass+'">'+
     leftHTML+
     '<div class="tg-op">'+opStr+'</div>'+
     rightHTML+
   '</div>';
+  if (caption) {
+    html += '<div style="margin-top:10px;font-size:0.95rem;color:#2d7d46;font-weight:700;font-family:var(--ff2,\'Nunito\',sans-serif);text-align:center">' + _escHtml(caption) + '</div>';
+  }
+  return html;
 }
 
 // ── numberCards: shows 2–4 numbers as place-value cards for ordering examples ─

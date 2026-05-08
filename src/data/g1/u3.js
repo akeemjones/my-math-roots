@@ -1205,6 +1205,680 @@ _l32_H4.forEach(function(t) {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 3.3 — Doubles and Near Doubles — helpers, intervention templates, quizBank
+//  Skill: doubles_and_near_doubles · TEKS 1.3D, 1.3E (supporting 1.5G)
+//  Target: 165 questions (50 easy / 70 medium / 45 hard)
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l33Q(n, o) {
+  return {
+    id: 'g1-u3-l3-q-' + String(n).padStart(3, '0'),
+    teks: ['1.3D', '1.3E', '1.5G'],
+    lessonId: 'g1-u3-l3',
+    skill: 'doubles_and_near_doubles',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: o.answer,
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({
+      followUpRule: 'same_skill_new_numbers',
+      doNotRepeatOriginalQuestion: true
+    }, o.intervention)
+  };
+}
+
+// ── Visual builders (question side — clean, no solution annotations) ────────
+
+function _l33VisTwoGroups(a, b, emoji) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount: a, leftObj: emoji || '⭐',
+      rightCount: b, rightObj: emoji || '⭐',
+      op: 'add'
+    }
+  };
+}
+
+var _l33_EMOJI_POOL = ['🍎', '🍪', '🐶', '⭐', '🎈', '🌸'];
+function _l33Emoji(seed) { return _l33_EMOJI_POOL[seed % _l33_EMOJI_POOL.length]; }
+
+// ── Teaching visuals (intervention "Try it this way" only) ─────────────────
+//
+// Renderer-ready {type, config:{...}} form. Used in q.i.teachingVisual.
+
+function _l33TeachingDouble(a, sum, emoji) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount: a, leftObj: emoji || '⭐',
+      rightCount: a, rightObj: emoji || '⭐',
+      op: 'add',
+      caption: 'Both groups have ' + a + '. ' + a + ' + ' + a + ' = ' + sum + '.'
+    }
+  };
+}
+
+function _l33TeachingNearDouble(a, b, sum, emoji) {
+  // a + b is a near double where |a - b| = 1. The teaching visual shows the
+  // UNDERLYING DOUBLE (smaller + smaller) — that's the "anchor" the kid uses
+  // to derive the near-double answer. Caption then explains "+1 more = sum",
+  // matching the user-specified rule: top = original question, bottom = the
+  // double, then one more.
+  var smaller = a < b ? a : b;
+  var doubleSum = smaller * 2;
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount: smaller, leftObj: emoji || '⭐',
+      rightCount: smaller, rightObj: emoji || '⭐',
+      op: 'add',
+      caption: smaller + ' + ' + smaller + ' = ' + doubleSum + '. Add 1 more for ' + a + ' + ' + b + ' = ' + sum + '.'
+    }
+  };
+}
+
+function _l33TeachingMissingDouble(a, sum, emoji) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount: a, leftObj: emoji || '⭐',
+      rightCount: a, rightObj: emoji || '⭐',
+      op: 'add',
+      caption: 'A double has two equal addends. ' + a + ' + ' + a + ' = ' + sum + '.'
+    }
+  };
+}
+
+function _l33TeachingMissingNearDouble(a, missing, sum, emoji) {
+  return {
+    type: 'twoGroups',
+    config: {
+      leftCount: a, leftObj: emoji || '⭐',
+      rightCount: missing, rightObj: emoji || '⭐',
+      op: 'add',
+      caption: a + ' + ' + missing + ' = ' + sum + ' (' + (missing > a ? 'one more' : 'one less') + ' than ' + a + ' + ' + a + ' = ' + (a*2) + ').'
+    }
+  };
+}
+
+// ── Intervention templates (one per error tag, parameterised) ──────────────
+
+function _l33IntDouble(a, sum) {
+  return {
+    errorTag: 'err_double_fact_recall',
+    title: 'A double has two equal addends',
+    teachingSteps: [
+      'A double adds the same number twice.',
+      a + ' + ' + a + ' means two groups of ' + a + '.',
+      a + ' + ' + a + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: 'Both groups have ' + a + ', so ' + a + ' + ' + a + ' = ' + sum + '.'
+  };
+}
+
+function _l33IntNearDouble(a, b, sum) {
+  var smaller = a < b ? a : b;
+  var doubleSum = smaller * 2;
+  return {
+    errorTag: 'err_near_double_off_by_one',
+    title: 'A near double is one more than a double',
+    teachingSteps: [
+      a + ' and ' + b + ' are one apart, so this is a near double.',
+      'Start with the smaller double: ' + smaller + ' + ' + smaller + ' = ' + doubleSum + '.',
+      'Add 1 more: ' + doubleSum + ' + 1 = ' + sum + '. So ' + a + ' + ' + b + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + b + ' is one more than ' + smaller + ' + ' + smaller + ', so ' + a + ' + ' + b + ' = ' + sum + '.'
+  };
+}
+
+function _l33IntUseKnownDouble(knownAddend, knownSum, targetA, targetB, targetSum) {
+  // targetA + targetB where one of them = knownAddend, and the other = knownAddend +/- 1
+  var smaller = targetA < targetB ? targetA : targetB;
+  var diffFromKnown = targetSum - knownSum;
+  var direction = diffFromKnown > 0 ? 'one more' : 'one less';
+  return {
+    errorTag: 'err_used_wrong_double',
+    title: 'Use the known double, then add or subtract 1',
+    teachingSteps: [
+      'You know ' + knownAddend + ' + ' + knownAddend + ' = ' + knownSum + '.',
+      targetA + ' + ' + targetB + ' is ' + direction + ' than that double.',
+      knownSum + ' ' + (diffFromKnown > 0 ? '+' : '−') + ' 1 = ' + targetSum + '. So ' + targetA + ' + ' + targetB + ' = ' + targetSum + '.'
+    ],
+    correctAnswerExplanation: targetA + ' + ' + targetB + ' is ' + direction + ' than ' + knownAddend + ' + ' + knownAddend + ' = ' + knownSum + ', so ' + targetA + ' + ' + targetB + ' = ' + targetSum + '.'
+  };
+}
+
+function _l33IntMissingAddendDouble(a, sum) {
+  return {
+    errorTag: 'err_missing_addend_confusion',
+    title: 'For a double, both addends are the same',
+    teachingSteps: [
+      'A double has two equal addends.',
+      'The first addend is ' + a + ', so the missing addend must also be ' + a + '.',
+      a + ' + ' + a + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: 'For ' + a + ' + ? = ' + sum + ', the missing number is ' + a + ' (because ' + a + ' + ' + a + ' = ' + sum + ').'
+  };
+}
+
+function _l33IntMissingAddendNearDouble(a, missing, sum) {
+  var direction = missing > a ? 'one more' : 'one less';
+  return {
+    errorTag: 'err_missing_addend_confusion',
+    title: 'For a near double, the addends are one apart',
+    teachingSteps: [
+      'The first addend is ' + a + '.',
+      a + ' + ' + a + ' = ' + (a*2) + ' (the double).',
+      'The sum is ' + sum + ', which is ' + direction + ' than ' + (a*2) + '.',
+      'So the missing addend is ' + missing + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + missing + ' = ' + sum + ' (' + direction + ' than ' + a + ' + ' + a + ').'
+  };
+}
+
+function _l33IntStrategyChoiceDouble(a, b) {
+  // b = a + 1 (a is the smaller). The "one less" double is a+a.
+  var sum = a + b;
+  var doubleSum = a * 2;
+  return {
+    errorTag: 'err_used_wrong_double',
+    title: 'The double of the smaller addend is one less',
+    teachingSteps: [
+      'For ' + a + ' + ' + b + ', the smaller addend is ' + a + '.',
+      a + ' + ' + a + ' = ' + doubleSum + '.',
+      doubleSum + ' is one less than ' + sum + '. So the double that is one less is ' + a + ' + ' + a + '.'
+    ],
+    correctAnswerExplanation: a + ' + ' + a + ' = ' + doubleSum + ', which is one less than ' + a + ' + ' + b + ' = ' + sum + '.'
+  };
+}
+
+function _l33IntIdentifyDouble() {
+  return {
+    errorTag: 'err_double_fact_recall',
+    title: 'A double has two equal addends',
+    teachingSteps: [
+      'In a double, both numbers are the same.',
+      'Look for an addition fact like 3 + 3, 5 + 5, or 7 + 7.',
+      'If the two addends are different, it is not a double.'
+    ],
+    correctAnswerExplanation: 'A double is an addition fact where both addends match.'
+  };
+}
+
+function _l33IntIdentifyNearDouble() {
+  return {
+    errorTag: 'err_double_fact_recall',
+    title: 'A near double has addends one apart',
+    teachingSteps: [
+      'A near double is almost a double — the addends differ by 1.',
+      'Look for facts like 3 + 4, 5 + 6, or 8 + 9.',
+      'If the addends are equal, it is a double, not a near double.'
+    ],
+    correctAnswerExplanation: 'A near double has two addends that differ by exactly 1.'
+  };
+}
+
+// ── Question builders per category ─────────────────────────────────────────
+
+// E1, E3, E4, M1: basic doubles (a + a = ?)
+function _l33MkDoubleQ(n, opts) {
+  var a = opts.a, sum = a * 2;
+  var emoji = _l33Emoji(n);
+  var intervention = _l33IntDouble(a, sum);
+  if (opts.visual !== false) intervention.teachingVisual = _l33TeachingDouble(a, sum, emoji);
+  return _l33Q(n, {
+    difficulty: opts.difficulty || 'easy',
+    subSkill: 'recall_double_fact',
+    keyIdea: 'A double adds the same number twice.',
+    prompt: a + ' + ' + a + ' = ?',
+    visual: opts.visual === false ? null : _l33VisTwoGroups(a, a, emoji),
+    answer: String(sum),
+    choices: [
+      { value: String(sum),     correct: true },
+      { value: String(sum - 1), correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'Off by one — recheck the count.' },
+      { value: String(sum + 1), correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'Off by one — recheck the count.' },
+      { value: String(a),       correct: false, errorTag: 'err_count_all_wrong',    misconceptionExplanation: 'Student counted only one group.' }
+    ],
+    hint: 'Add ' + a + ' twice.',
+    intervention: intervention
+  });
+}
+
+// E2: identify a double from a set
+function _l33MkRecognizeDoubleQ(n, opts) {
+  // opts: { doubleAddend, distractor1: [a,b], distractor2: [a,b] }
+  var d = opts.doubleAddend;
+  var correct = d + ' + ' + d;
+  var dist1 = opts.distractor1[0] + ' + ' + opts.distractor1[1];
+  var dist2 = opts.distractor2[0] + ' + ' + opts.distractor2[1];
+  return _l33Q(n, {
+    difficulty: 'easy',
+    subSkill: 'identify_double',
+    keyIdea: 'A double has two equal addends.',
+    prompt: 'Which one is a double?',
+    visual: null,
+    answer: correct,
+    choices: [
+      { value: correct, correct: true },
+      { value: dist1,   correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'The addends are different — not a double.' },
+      { value: dist2,   correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'The addends are different — not a double.' }
+    ],
+    hint: 'Look for two matching addends.',
+    intervention: _l33IntIdentifyDouble()
+  });
+}
+
+// E5, M2, M3: near double abstract or with twoGroups visual (a + b where |a-b|=1)
+function _l33MkNearDoubleQ(n, opts) {
+  var a = opts.a, b = opts.b, sum = a + b;
+  var emoji = _l33Emoji(n);
+  var intervention = _l33IntNearDouble(a, b, sum);
+  if (opts.visual !== false) intervention.teachingVisual = _l33TeachingNearDouble(a, b, sum, emoji);
+  var smaller = a < b ? a : b;
+  return _l33Q(n, {
+    difficulty: opts.difficulty || 'medium',
+    subSkill: a < b ? 'near_double_one_more' : 'near_double_one_less',
+    keyIdea: 'A near double is one more than a double.',
+    prompt: a + ' + ' + b + ' = ?',
+    visual: opts.visual === false ? null : _l33VisTwoGroups(a, b, emoji),
+    answer: String(sum),
+    choices: [
+      { value: String(sum),         correct: true },
+      { value: String(smaller * 2), correct: false, errorTag: 'err_near_double_off_by_one', misconceptionExplanation: 'Student gave the smaller double — forgot to add 1.' },
+      { value: String(sum + 1),     correct: false, errorTag: 'err_off_by_one',             misconceptionExplanation: 'Off by one — too high.' },
+      { value: String(sum - 2),     correct: false, errorTag: 'err_near_double_off_by_one', misconceptionExplanation: 'Subtracted instead of adding 1.' }
+    ],
+    hint: 'Use ' + smaller + ' + ' + smaller + ' = ' + (smaller*2) + ', then add 1.',
+    intervention: intervention
+  });
+}
+
+// M4: use known double to solve near double
+function _l33MkUseKnownDoubleQ(n, opts) {
+  // opts: { knownAddend, targetA, targetB }  where targetA or targetB = knownAddend
+  var ka = opts.knownAddend, ta = opts.targetA, tb = opts.targetB;
+  var ks = ka * 2;
+  var ts = ta + tb;
+  var diff = ts - ks;  // typically +1 or -1
+  return _l33Q(n, {
+    difficulty: 'medium',
+    subSkill: 'use_double_to_solve',
+    keyIdea: 'Use a known double, then add 1 or subtract 1.',
+    prompt: ka + ' + ' + ka + ' = ' + ks + '. So ' + ta + ' + ' + tb + ' = ?',
+    visual: null,
+    answer: String(ts),
+    choices: [
+      { value: String(ts),     correct: true },
+      { value: String(ks),     correct: false, errorTag: 'err_used_wrong_double',     misconceptionExplanation: 'Student gave the known double, not the near double.' },
+      { value: String(ts + 1), correct: false, errorTag: 'err_off_by_one',            misconceptionExplanation: 'Added too much.' },
+      { value: String(ts - 2), correct: false, errorTag: 'err_near_double_off_by_one', misconceptionExplanation: 'Went the wrong direction from the known double.' }
+    ],
+    hint: 'You know ' + ka + ' + ' + ka + ' = ' + ks + '. Now ' + (diff > 0 ? 'add' : 'subtract') + ' 1.',
+    intervention: _l33IntUseKnownDouble(ka, ks, ta, tb, ts)
+  });
+}
+
+// M5: identify a near double from a set
+function _l33MkRecognizeNearDoubleQ(n, opts) {
+  // opts: { nearDoublePair: [a,b], distractor1: [a,b], distractor2: [a,b] }
+  var nd = opts.nearDoublePair;
+  var correct = nd[0] + ' + ' + nd[1];
+  var dist1 = opts.distractor1[0] + ' + ' + opts.distractor1[1];
+  var dist2 = opts.distractor2[0] + ' + ' + opts.distractor2[1];
+  return _l33Q(n, {
+    difficulty: 'medium',
+    subSkill: 'identify_near_double',
+    keyIdea: 'A near double has addends that are one apart.',
+    prompt: 'Which one is a near double?',
+    visual: null,
+    answer: correct,
+    choices: [
+      { value: correct, correct: true },
+      { value: dist1,   correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'Not a near double — addends are not one apart.' },
+      { value: dist2,   correct: false, errorTag: 'err_double_fact_recall', misconceptionExplanation: 'Not a near double — addends are not one apart.' }
+    ],
+    hint: 'Look for two addends that differ by exactly 1.',
+    intervention: _l33IntIdentifyNearDouble()
+  });
+}
+
+// M6: missing addend in a double (a + ? = sum where sum = 2a)
+function _l33MkMissingDoubleQ(n, opts) {
+  var a = opts.a, sum = a * 2;
+  var emoji = _l33Emoji(n);
+  var intervention = _l33IntMissingAddendDouble(a, sum);
+  intervention.teachingVisual = _l33TeachingMissingDouble(a, sum, emoji);
+  return _l33Q(n, {
+    difficulty: 'medium',
+    subSkill: 'missing_addend_double',
+    keyIdea: 'A double has two equal addends.',
+    prompt: a + ' + ? = ' + sum,
+    visual: null,
+    answer: String(a),
+    choices: [
+      { value: String(a),     correct: true },
+      { value: String(a + 1), correct: false, errorTag: 'err_near_double_off_by_one', misconceptionExplanation: 'That would make a near double, not a double.' },
+      { value: String(a - 1), correct: false, errorTag: 'err_near_double_off_by_one', misconceptionExplanation: 'That would make a near double, not a double.' },
+      { value: String(sum),   correct: false, errorTag: 'err_missing_addend_confusion', misconceptionExplanation: 'Student picked the sum instead of the missing addend.' }
+    ],
+    hint: 'For a double, both addends are the same.',
+    intervention: intervention
+  });
+}
+
+// H2: strategy-choice "Which double is one less than a + b?"
+function _l33MkStrategyChoiceQ(n, opts) {
+  // opts: { a, b }  where b = a + 1 (a is the smaller). Answer = "a + a"
+  var a = opts.a, b = opts.b, sum = a + b;
+  var doubleSum = a * 2;
+  var correct = a + ' + ' + a;
+  var dist1 = b + ' + ' + b;            // one MORE than a+b — wrong direction
+  var dist2 = (a-1) + ' + ' + (a-1);    // too far below
+  var dist3 = String(sum);              // the sum itself
+  return _l33Q(n, {
+    difficulty: 'hard',
+    subSkill: 'strategy_choice_double',
+    keyIdea: 'The double of the smaller addend is one less than the near double.',
+    prompt: 'Which double is one less than ' + a + ' + ' + b + '?',
+    visual: null,
+    answer: correct,
+    choices: [
+      { value: correct, correct: true },
+      { value: dist1,   correct: false, errorTag: 'err_used_wrong_double',     misconceptionExplanation: b + ' + ' + b + ' is one MORE than ' + a + ' + ' + b + ', not one less.' },
+      { value: dist2,   correct: false, errorTag: 'err_used_wrong_double',     misconceptionExplanation: 'That double is too far below.' },
+      { value: dist3,   correct: false, errorTag: 'err_missing_addend_confusion', misconceptionExplanation: 'That is the sum, not a double.' }
+    ],
+    hint: 'Pick the smaller addend (' + a + ') and double it.',
+    intervention: _l33IntStrategyChoiceDouble(a, b)
+  });
+}
+
+// H3: missing addend in near double (a + ? = sum where ? = a+1 or a-1)
+function _l33MkMissingNearDoubleQ(n, opts) {
+  var a = opts.a, sum = opts.sum;
+  var missing = sum - a;
+  var emoji = _l33Emoji(n);
+  var intervention = _l33IntMissingAddendNearDouble(a, missing, sum);
+  intervention.teachingVisual = _l33TeachingMissingNearDouble(a, missing, sum, emoji);
+  return _l33Q(n, {
+    difficulty: 'hard',
+    subSkill: 'missing_addend_near_double',
+    keyIdea: 'For a near double, the addends are one apart.',
+    prompt: a + ' + ? = ' + sum,
+    visual: null,
+    answer: String(missing),
+    choices: [
+      { value: String(missing),     correct: true },
+      { value: String(a),           correct: false, errorTag: 'err_double_fact_recall',    misconceptionExplanation: 'That would make a double; the sum would be ' + (a*2) + ', not ' + sum + '.' },
+      { value: String(missing + 1), correct: false, errorTag: 'err_off_by_one',            misconceptionExplanation: 'Off by one — too high.' },
+      { value: String(missing - 1), correct: false, errorTag: 'err_off_by_one',            misconceptionExplanation: 'Off by one — too low.' }
+    ],
+    hint: 'Try adding 1 or subtracting 1 from ' + a + '.',
+    intervention: intervention
+  });
+}
+
+// H1, H4: abstract mixed (auto-detects double vs near-double from a, b)
+function _l33MkAbstractMixedQ(n, opts) {
+  var a = opts.a, b = opts.b, sum = a + b;
+  var isDouble = (a === b);
+  var emoji = _l33Emoji(n);
+  var intervention;
+  if (isDouble) {
+    intervention = _l33IntDouble(a, sum);
+  } else {
+    intervention = _l33IntNearDouble(a, b, sum);
+  }
+  // No teachingVisual for abstract hard questions — text-only intervention.
+  var seen = {}; seen[sum] = true;
+  var distractors = [];
+  function add(val, tag, me) {
+    if (val < 0) return;
+    if (seen[val]) return;
+    seen[val] = true;
+    distractors.push({ value: String(val), correct: false, errorTag: tag, misconceptionExplanation: me });
+  }
+  add(sum - 1, 'err_off_by_one',                  'Off by one — too low.');
+  add(sum + 1, 'err_off_by_one',                  'Off by one — too high.');
+  if (isDouble) {
+    add(a + 1 + a + 1, 'err_double_fact_recall',  'Wrong double — used a different number.');
+  } else {
+    var smaller = a < b ? a : b;
+    add(smaller * 2, 'err_near_double_off_by_one', 'Used the double instead of the near double.');
+  }
+  if (distractors.length < 3) add(sum + 2, 'err_off_by_one', 'Off by two.');
+  return _l33Q(n, {
+    difficulty: opts.difficulty || 'hard',
+    subSkill: isDouble ? 'recall_double_fact' : 'near_double_one_more',
+    keyIdea: opts.keyIdea || (isDouble ? 'A double has two equal addends.' : 'A near double is one more than a double.'),
+    prompt: opts.prompt || (a + ' + ' + b + ' = ?'),
+    visual: null,
+    answer: String(sum),
+    choices: [{ value: String(sum), correct: true }].concat(distractors.slice(0, 3)),
+    hint: opts.hint || (isDouble ? ('Think: ' + a + ' + ' + a + '.') : ('Use a known double of ' + (a < b ? a : b) + '.')),
+    intervention: intervention
+  });
+}
+
+// ── Worked examples ────────────────────────────────────────────────────────
+
+const _l33Examples = [
+  {
+    id: 'g1-u3-l3-ex-001',
+    title: 'Example 1: Basic Double',
+    prompt: 'What is 4 + 4?',
+    visual: _l33VisTwoGroups(4, 4, '🍪'),
+    steps: [
+      'A double adds the same number twice.',
+      '4 + 4 means two groups of 4 cookies.',
+      '4 + 4 = 8.'
+    ],
+    finalAnswer: '8',
+    teachingNote: 'Doubles within 10 are foundational facts to memorize.',
+    relatedKeyIdea: 'A double adds the same number twice.'
+  },
+  {
+    id: 'g1-u3-l3-ex-002',
+    title: 'Example 2: Recognize a Double',
+    prompt: 'Which one is a double: 3 + 3, 3 + 4, or 5 + 6?',
+    visual: null,
+    steps: [
+      'A double has two equal addends.',
+      '3 + 3 has two 3s — that is a double.',
+      '3 + 4 and 5 + 6 are not doubles (the addends are different).'
+    ],
+    finalAnswer: '3 + 3',
+    teachingNote: 'Train pattern recognition: if both addends match, it is a double.',
+    relatedKeyIdea: 'A double has two equal addends.'
+  },
+  {
+    id: 'g1-u3-l3-ex-003',
+    title: 'Example 3: Near Double',
+    prompt: 'What is 6 + 7?',
+    visual: _l33VisTwoGroups(6, 7, '🍎'),
+    steps: [
+      '6 and 7 are one apart — this is a near double.',
+      'Start with the smaller double: 6 + 6 = 12.',
+      'Add 1 more: 12 + 1 = 13. So 6 + 7 = 13.'
+    ],
+    finalAnswer: '13',
+    teachingNote: 'Anchor near-doubles to the smaller addend\'s double, then add 1.',
+    relatedKeyIdea: 'A near double is one more than a double.'
+  },
+  {
+    id: 'g1-u3-l3-ex-004',
+    title: 'Example 4: Use a Known Double',
+    prompt: '8 + 8 = 16. So 8 + 9 = ?',
+    visual: null,
+    steps: [
+      'You know 8 + 8 = 16.',
+      '8 + 9 is one more than 8 + 8.',
+      '16 + 1 = 17. So 8 + 9 = 17.'
+    ],
+    finalAnswer: '17',
+    teachingNote: 'Bridge from a known double to the adjacent near double.',
+    relatedKeyIdea: 'Use a known double, then add 1 or subtract 1.'
+  },
+  {
+    id: 'g1-u3-l3-ex-005',
+    title: 'Example 5: Either Order',
+    prompt: 'Compare 5 + 6 and 6 + 5.',
+    visual: _l33VisTwoGroups(5, 6, '🐶'),
+    steps: [
+      '5 + 6: count 5 then 6 more — total 11.',
+      '6 + 5: count 6 then 5 more — total 11.',
+      'Both equal 11. Order doesn\'t change the sum.'
+    ],
+    finalAnswer: '11',
+    teachingNote: 'Reinforce commutativity in the context of near doubles.',
+    relatedKeyIdea: 'Numbers can be added in any order.'
+  },
+  {
+    id: 'g1-u3-l3-ex-006',
+    title: 'Example 6: Missing Addend in a Double',
+    prompt: '7 + ? = 14',
+    visual: null,
+    steps: [
+      'For a double, both addends are the same.',
+      'The first addend is 7.',
+      'The missing number is also 7. (7 + 7 = 14.)'
+    ],
+    finalAnswer: '7',
+    teachingNote: 'Missing-addend in doubles is a key bridge to L3.5 fact families.',
+    relatedKeyIdea: 'A double has two equal addends.'
+  }
+];
+
+// ── Question data (165 tuples) ─────────────────────────────────────────────
+
+// EASY 50: E1 doubles 1-5 (15), E2 recognize (12), E3 doubles 6-8 (8), E4 doubles 9-10 (5), E5 near-double sum<=11 (10)
+var _l33_E1 = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5];
+var _l33_E2 = [
+  // [doubleAddend, distractor1, distractor2]
+  { d: 2, d1: [1,3], d2: [2,3] },
+  { d: 3, d1: [2,4], d2: [3,4] },
+  { d: 4, d1: [3,5], d2: [4,5] },
+  { d: 5, d1: [4,6], d2: [5,6] },
+  { d: 6, d1: [5,7], d2: [6,7] },
+  { d: 7, d1: [6,8], d2: [7,8] },
+  { d: 8, d1: [7,9], d2: [8,9] },
+  { d: 9, d1: [8,10], d2: [9,10] },
+  { d: 10, d1: [9,8], d2: [10,9] },
+  { d: 3, d1: [1,4], d2: [3,2] },
+  { d: 5, d1: [3,7], d2: [4,5] },
+  { d: 7, d1: [5,9], d2: [6,8] }
+];
+var _l33_E3 = [6, 6, 6, 7, 7, 7, 8, 8];
+var _l33_E4 = [9, 9, 9, 10, 10];
+var _l33_E5 = [
+  [1,2], [2,3], [3,4], [4,5], [5,6], [2,1], [3,2], [4,3], [5,4], [6,5]
+];
+
+// MEDIUM 70: M1 doubles abstract (10), M2 near-doubles +1more (15), M3 near-doubles -1less commutative (15),
+//            M4 use known double (15), M5 identify near double (5), M6 missing addend in double (10)
+var _l33_M1 = [5, 5, 6, 6, 7, 7, 8, 8, 9, 10];
+var _l33_M2 = [
+  [1,2], [2,3], [3,4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10],
+  [2,3], [4,5], [5,6], [6,7], [7,8], [8,9]
+];
+var _l33_M3 = [
+  [2,1], [3,2], [4,3], [5,4], [6,5], [7,6], [8,7], [9,8], [10,9],
+  [3,2], [5,4], [6,5], [7,6], [8,7], [9,8]
+];
+var _l33_M4 = [
+  // [knownAddend, targetA, targetB]
+  { ka: 3, ta: 3, tb: 4 },
+  { ka: 4, ta: 4, tb: 5 },
+  { ka: 5, ta: 5, tb: 6 },
+  { ka: 6, ta: 6, tb: 7 },
+  { ka: 7, ta: 7, tb: 8 },
+  { ka: 8, ta: 8, tb: 9 },
+  { ka: 9, ta: 9, tb: 10 },
+  { ka: 4, ta: 3, tb: 4 },
+  { ka: 5, ta: 4, tb: 5 },
+  { ka: 6, ta: 5, tb: 6 },
+  { ka: 7, ta: 6, tb: 7 },
+  { ka: 8, ta: 7, tb: 8 },
+  { ka: 9, ta: 8, tb: 9 },
+  { ka: 10, ta: 9, tb: 10 },
+  { ka: 5, ta: 5, tb: 6 }
+];
+var _l33_M5 = [
+  // [nearDoublePair, distractor1, distractor2]
+  { nd: [3,4],  d1: [1,1], d2: [5,5] },
+  { nd: [6,7],  d1: [3,5], d2: [4,9] },
+  { nd: [8,9],  d1: [2,5], d2: [10,10] },
+  { nd: [4,5],  d1: [6,8], d2: [1,3] },
+  { nd: [7,8],  d1: [3,6], d2: [5,5] }
+];
+var _l33_M6 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// HARD 45: H1 mixed abstract (15), H2 strategy-choice (5), H3 missing addend in near double (10), H4 largest (15)
+var _l33_H1 = [
+  [5,5], [6,6], [7,7], [8,8], [9,9], [10,10],
+  [5,6], [6,7], [7,8], [8,9], [9,10],
+  [6,5], [7,6], [8,7], [9,8]
+];
+var _l33_H2 = [
+  // [a, b] with b = a+1 (a is smaller). Question: "Which double is one less than a + b?" Answer: "a + a"
+  { a: 5, b: 6 },
+  { a: 6, b: 7 },
+  { a: 7, b: 8 },
+  { a: 8, b: 9 },
+  { a: 9, b: 10 }
+];
+var _l33_H3 = [
+  // [a, sum] where missing = sum - a, and missing = a±1
+  { a: 3, sum: 7 },   // missing = 4 (a+1)
+  { a: 4, sum: 9 },   // missing = 5 (a+1)
+  { a: 5, sum: 11 },  // missing = 6 (a+1)
+  { a: 6, sum: 13 },  // missing = 7 (a+1)
+  { a: 7, sum: 15 },  // missing = 8 (a+1)
+  { a: 8, sum: 17 },  // missing = 9 (a+1)
+  { a: 9, sum: 19 },  // missing = 10 (a+1)
+  { a: 4, sum: 7 },   // missing = 3 (a-1)
+  { a: 5, sum: 9 },   // missing = 4 (a-1)
+  { a: 6, sum: 11 }   // missing = 5 (a-1)
+];
+var _l33_H4 = [
+  [8,9], [9,8], [9,9], [9,10], [10,9], [10,10],
+  [8,9], [9,8], [9,9], [9,10], [10,9],
+  [8,8], [9,9], [10,10], [8,9]
+];
+
+// ── Bank assembly ──────────────────────────────────────────────────────────
+
+var _l33QuizBank = [];
+var _l33N = 0;
+
+// Easy
+_l33_E1.forEach(function(a) { _l33N++; _l33QuizBank.push(_l33MkDoubleQ(_l33N, { a: a, difficulty: 'easy' })); });
+_l33_E2.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkRecognizeDoubleQ(_l33N, { doubleAddend: o.d, distractor1: o.d1, distractor2: o.d2 })); });
+_l33_E3.forEach(function(a) { _l33N++; _l33QuizBank.push(_l33MkDoubleQ(_l33N, { a: a, difficulty: 'easy' })); });
+_l33_E4.forEach(function(a) { _l33N++; _l33QuizBank.push(_l33MkDoubleQ(_l33N, { a: a, difficulty: 'easy', visual: false })); });
+_l33_E5.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkNearDoubleQ(_l33N, { a: t[0], b: t[1], difficulty: 'easy' })); });
+
+// Medium
+_l33_M1.forEach(function(a) { _l33N++; _l33QuizBank.push(_l33MkDoubleQ(_l33N, { a: a, difficulty: 'medium', visual: false })); });
+_l33_M2.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkNearDoubleQ(_l33N, { a: t[0], b: t[1], difficulty: 'medium' })); });
+_l33_M3.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkNearDoubleQ(_l33N, { a: t[0], b: t[1], difficulty: 'medium' })); });
+_l33_M4.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkUseKnownDoubleQ(_l33N, { knownAddend: o.ka, targetA: o.ta, targetB: o.tb })); });
+_l33_M5.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkRecognizeNearDoubleQ(_l33N, { nearDoublePair: o.nd, distractor1: o.d1, distractor2: o.d2 })); });
+_l33_M6.forEach(function(a) { _l33N++; _l33QuizBank.push(_l33MkMissingDoubleQ(_l33N, { a: a })); });
+
+// Hard
+_l33_H1.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkAbstractMixedQ(_l33N, { a: t[0], b: t[1], difficulty: 'hard' })); });
+_l33_H2.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkStrategyChoiceQ(_l33N, { a: o.a, b: o.b })); });
+_l33_H3.forEach(function(o) { _l33N++; _l33QuizBank.push(_l33MkMissingNearDoubleQ(_l33N, { a: o.a, sum: o.sum })); });
+_l33_H4.forEach(function(t) { _l33N++; _l33QuizBank.push(_l33MkAbstractMixedQ(_l33N, { a: t[0], b: t[1], difficulty: 'hard' })); });
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -1306,7 +1980,8 @@ export const G1_U3_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 3.3 — Doubles and Near Doubles  ← stub (Phase 4)
+    //  Lesson 3.3 — Doubles and Near Doubles (165 questions)
+    //  TEKS 1.3D, 1.3E (supporting 1.5G)
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u3-l3',
@@ -1314,9 +1989,35 @@ export const G1_U3_SPEC = {
       teks: ['1.3D', '1.3E', '1.5G'],
       skill: 'doubles_and_near_doubles',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: []
+      keyIdeas: [
+        'A double adds the same number twice. (4 + 4, 6 + 6)',
+        'Doubles are easy to remember — once you know one, you know it forever.',
+        'A near double is almost a double — the two numbers are exactly one apart. (6 + 7, 4 + 5)',
+        'To solve a near double, start with a known double, then add 1 or subtract 1.',
+        'Numbers can be added in any order, so 6 + 7 and 7 + 6 are both near doubles of 6 + 6.',
+        'Doubles and near doubles within 20 cover most addition facts students need to memorize.'
+      ],
+      workedExamples: _l33Examples,
+      quizBank: _l33QuizBank,
+      diagnostics: {
+        commonDistractors: [
+          { value: 'double_fact_recall',     meaning: 'Got a basic double wrong (e.g., picked 11 for 6+6).',                                       errorTag: 'err_double_fact_recall' },
+          { value: 'near_double_off_by_one', meaning: 'Got a near double off by 1 (e.g., picked 12 for 6+7).',                                     errorTag: 'err_near_double_off_by_one' },
+          { value: 'used_wrong_double',      meaning: 'Used the wrong base double for a near-double calculation.',                                 errorTag: 'err_used_wrong_double' },
+          { value: 'count_all_wrong',        meaning: 'Lost track miscounting both groups.',                                                       errorTag: 'err_count_all_wrong' },
+          { value: 'missing_addend_confusion', meaning: 'Couldn\'t recognize the missing addend pattern in a double or near double.',              errorTag: 'err_missing_addend_confusion' },
+          { value: 'commutative_confusion',  meaning: 'Didn\'t recognize that a+b and b+a give the same answer.',                                  errorTag: 'err_commutative_confusion' }
+        ],
+        errorTags: ['err_double_fact_recall', 'err_near_double_off_by_one', 'err_used_wrong_double', 'err_count_all_wrong', 'err_missing_addend_confusion', 'err_commutative_confusion'],
+        interventionRules: [
+          { errorTag: 'err_double_fact_recall',      style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_near_double_off_by_one',  style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_used_wrong_double',       style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_count_all_wrong',         style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_missing_addend_confusion', style: 'reteach',     followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_commutative_confusion',   style: 'reteach',      followUpRule: 'same_skill_new_numbers' }
+        ]
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
