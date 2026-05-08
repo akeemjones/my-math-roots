@@ -57,22 +57,41 @@ function _l31VisTwoGroups(a, b, emoji) {
   };
 }
 
+// Plain number-line used for the QUESTION visual. Just ticks + a bold mark at
+// the bigger addend (the count-on starting point). No solution annotations —
+// the question itself should not visually reveal the answer.
 function _l31VisNumberLine(start, count) {
   var min = Math.max(0, start - 1);
   var max = Math.min(20, start + count + 1);
   var ticks = [];
   for (var i = min; i <= max; i++) ticks.push(i);
-  // drawNumberLine expects jumps as {from, to, label} objects so each hop
-  // renders as an SVG arc above the line. Plain integers produce no arcs.
+  return { type: 'numberLine', min: min, max: max, ticks: ticks, mark: start };
+}
+
+// Teaching number-line used inside the intervention overlay's "Try it this way"
+// panel. Adds the count-on hops as labeled +1 arcs and emphasizes the answer
+// tick (endMark). This visual is attached to the intervention via
+// teachingVisual; it never appears on the question screen.
+//
+// Produced directly in renderer-ready {type, config:{...}} form because the
+// intervention object is not run through _g1VisToV during merge — it is
+// consumed as-is by _buildInterventionContent → _buildVisualHTML.
+function _l31TeachingNumberLine(start, count) {
+  var min = Math.max(0, start - 1);
+  var max = Math.min(20, start + count + 1);
+  var ticks = [];
+  for (var i = min; i <= max; i++) ticks.push(i);
   var jumps = [];
   for (var j = 0; j < count; j++) {
     jumps.push({ from: start + j, to: start + j + 1, label: '+1' });
   }
   return {
     type: 'numberLine',
-    min: min, max: max, ticks: ticks, jumps: jumps,
-    mark: start,                  // bolds the starting tick
-    endMark: start + count        // bolds the final-answer tick (renderer extension)
+    config: {
+      min: min, max: max, ticks: ticks, jumps: jumps,
+      mark: start,
+      endMark: start + count
+    }
   };
 }
 
@@ -109,7 +128,10 @@ function _l31IntCountOn(a, b, sum) {
       'Count on ' + smaller + ' more: ' + steps.join(', ') + '.',
       a + ' + ' + b + ' = ' + sum + '.'
     ],
-    correctAnswerExplanation: 'Counting on from ' + bigger + ' gives ' + sum + '.'
+    correctAnswerExplanation: 'Counting on from ' + bigger + ' gives ' + sum + '.',
+    // Instructional visual rendered only inside the intervention's
+    // "Try it this way" panel — never on the question screen.
+    teachingVisual: _l31TeachingNumberLine(bigger, smaller)
   };
 }
 

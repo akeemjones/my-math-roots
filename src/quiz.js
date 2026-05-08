@@ -1420,10 +1420,17 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
       + '</div>';
   }
 
-  // v0.2.0 rich intervention — use question-specific teaching content when available
+  // v0.2.0 rich intervention — use question-specific teaching content when available.
+  //
+  // visualHTML drives the "Try it this way" panel at the BOTTOM of the overlay.
+  // If the intervention provides a dedicated teachingVisual, prefer it — that
+  // way the bottom panel can show solution-annotated visuals (e.g., count-on
+  // hops with an answer mark) without those annotations leaking into the top
+  // "The question" panel, which renders q.v directly.
   if (q && q.i && Array.isArray(q.i.teachingSteps) && q.i.teachingSteps.length) {
     var _iVis = '';
-    if (q.v) try { _iVis = _buildVisualHTML(q.v); } catch(e) {}
+    if (q.i.teachingVisual)  try { _iVis = _buildVisualHTML(q.i.teachingVisual); } catch(e) {}
+    else if (q.v)            try { _iVis = _buildVisualHTML(q.v); }              catch(e) {}
     return {
       title:                    q.i.title || 'Let\'s Review',
       text:                     q.i.teachingSteps.join('\n'),
