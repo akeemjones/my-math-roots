@@ -384,6 +384,10 @@ function drawNumberLine(cfg) {
   const ticks = (cfg.ticks && cfg.ticks.length) ? cfg.ticks : [min, max];
   const jumps = cfg.jumps || [];
   const mark  = cfg.mark != null ? +cfg.mark : null;
+  // Optional second emphasized tick — used by intervention/worked-example visuals
+  // to highlight the answer tick (the count-on destination). Renders in the
+  // theme's success/accent color with bold weight, distinct from the start mark.
+  const endMark = cfg.endMark != null ? +cfg.endMark : null;
 
   // ── Assessment-mode: build set of tick labels to suppress ──
   // hideLabels config + any jump destination marked hideToLabel:true
@@ -426,20 +430,29 @@ function drawNumberLine(cfg) {
   const tickFont = n <= 6 ? 13 : n <= 12 ? 11 : 9;
   ticks.forEach(v => {
     const x      = valToX(v);
-    const isMark = v === mark;
+    const isMark    = v === mark;
+    const isEndMark = endMark != null && v === endMark;
     const key    = String(v);
 
     const showLabel = assessMode
-      ? isMark || (key in explicitLabels)
-      : isMark || !hideSet.has(v);
+      ? isMark || isEndMark || (key in explicitLabels)
+      : isMark || isEndMark || !hideSet.has(v);
 
     const labelText = (assessMode && key in explicitLabels)
       ? explicitLabels[key]
       : String(v);
 
-    parts.push(`<line x1="${x}" y1="${LINE_Y - 8}" x2="${x}" y2="${LINE_Y + 8}" stroke="currentColor" stroke-width="${isMark ? 3 : 1.5}" opacity="${isMark ? 1 : 0.65}"/>`);
+    // Stroke weight: bold for both start (mark) and end (endMark)
+    const strokeW   = (isMark || isEndMark) ? 3 : 1.5;
+    // Color: endMark uses a success-style accent so the answer pops vs the start
+    const strokeCol = isEndMark ? '#2d7d46' : 'currentColor';
+    const tickOp    = (isMark || isEndMark) ? 1 : 0.65;
+    parts.push(`<line x1="${x}" y1="${LINE_Y - 8}" x2="${x}" y2="${LINE_Y + 8}" stroke="${strokeCol}" stroke-width="${strokeW}" opacity="${tickOp}"/>`);
     if (showLabel) {
-      parts.push(`<text x="${x}" y="${LINE_Y + 22}" text-anchor="middle" font-size="${tickFont}" fill="currentColor" opacity="${isMark ? 1 : 0.8}" font-family="sans-serif"${isMark ? ' font-weight="bold"' : ''}>${_escHtml(labelText)}</text>`);
+      const labelCol = isEndMark ? '#2d7d46' : 'currentColor';
+      const labelOp  = (isMark || isEndMark) ? 1 : 0.8;
+      const labelWt  = (isMark || isEndMark) ? ' font-weight="bold"' : '';
+      parts.push(`<text x="${x}" y="${LINE_Y + 22}" text-anchor="middle" font-size="${tickFont}" fill="${labelCol}" opacity="${labelOp}" font-family="sans-serif"${labelWt}>${_escHtml(labelText)}</text>`);
     }
   });
 

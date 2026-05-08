@@ -185,6 +185,7 @@ function _g1VisToV(vis) {
       if (vis.mode       != null) nlCfg.mode       = vis.mode;
       if (vis.labels     != null) nlCfg.labels     = vis.labels;
       if (vis.hideLabels != null) nlCfg.hideLabels = vis.hideLabels;
+      if (vis.endMark    != null) nlCfg.endMark    = vis.endMark;
       return { type: 'numberLine', config: nlCfg };
     }
     case 'numberCards': {

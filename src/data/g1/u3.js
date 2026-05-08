@@ -62,9 +62,18 @@ function _l31VisNumberLine(start, count) {
   var max = Math.min(20, start + count + 1);
   var ticks = [];
   for (var i = min; i <= max; i++) ticks.push(i);
+  // drawNumberLine expects jumps as {from, to, label} objects so each hop
+  // renders as an SVG arc above the line. Plain integers produce no arcs.
   var jumps = [];
-  for (var j = 1; j <= count; j++) jumps.push(start + j);
-  return { type: 'numberLine', min: min, max: max, ticks: ticks, jumps: jumps, mark: start };
+  for (var j = 0; j < count; j++) {
+    jumps.push({ from: start + j, to: start + j + 1, label: '+1' });
+  }
+  return {
+    type: 'numberLine',
+    min: min, max: max, ticks: ticks, jumps: jumps,
+    mark: start,                  // bolds the starting tick
+    endMark: start + count        // bolds the final-answer tick (renderer extension)
+  };
 }
 
 // Rotating emoji pool for visual variety in twoGroups questions
