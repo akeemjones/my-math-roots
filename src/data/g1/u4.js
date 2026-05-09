@@ -9,8 +9,8 @@
  *  Lessons:
  *    L4.1  Add Tens and Ones                    ← COMPLETE (170 questions)
  *    L4.2  10 More and 10 Less                  ← COMPLETE (165 questions)
- *    L4.3  Add Multiples of 10                  ← SCAFFOLD (0 questions)
- *    L4.4  Add Tens to Two-Digit Numbers        ← SCAFFOLD (0 questions)
+ *    L4.3  Add Multiples of 10                  ← COMPLETE (170 questions)
+ *    L4.4  Add Tens to Two-Digit Numbers        ← COMPLETE (170 questions)
  *    L4.5  Tens and Ones Word Problems          ← SCAFFOLD (0 questions)
  *
  *  Hard scope guardrails (apply to every future question added to this unit):
@@ -1834,6 +1834,663 @@ var _l43Examples = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 4.4 — Add Tens to Two-Digit Numbers
+//  Skill: add_tens_to_two_digit · TEKS 1.3A, 1.5C
+//  Target: 170 questions (55 easy / 70 medium / 45 hard)
+//
+//  C1  Add exactly 10 to two-digit N            15E + 10M        = 25   q001–q025
+//  C2  Add 20, 30, or 40 to two-digit N         12E +  8M        = 20   q026–q045
+//  C3  Mixed equation to answer (text only)       8E + 12M +  5H  = 25   q046–q070
+//  C4  Base-10 model → result                     8E +  7M        = 15   q071–q085
+//  C5  Missing tens addend: N + __ = sum               10M + 10H  = 20   q086–q105
+//  C6  Missing starting number: __ + M = sum            5M + 10H  = 15   q106–q120
+//  C7  Ones-stay-same identification              5E +  5M        = 10   q121–q130
+//  C8  Tens-change identification                 5E +  5M        = 10   q131–q140
+//  C9  Error repair                                          15H  = 15   q141–q155
+//  C10 Boundary high-sum (sums 90–99)             2E +  8M +  5H = 15   q156–q170
+//  ────────────────────────────────────────────────────────────────────────────
+//  TOTAL                                          55E + 70M + 45H = 170
+//
+//  Scope guardrails:
+//    - N is always two-digit with ones digit ≠ 0
+//    - M ∈ {10, 20, 30, 40} only
+//    - All sums ≤ 99 (100 appears only as a distractor in C10 hard)
+//    - No adding ones to ones (that is L4.1); no mult-of-10+mult-of-10 (L4.3)
+//
+//  Error tags (8):
+//    err_ten_as_one          — treated M as ones (47+20=49)
+//    err_ones_changed        — changed ones digit instead of tens
+//    err_tens_not_changed    — left tens digit unchanged
+//    err_off_by_ten          — answer off by exactly one ten
+//    err_missing_tens_value  — found digit not value (3 not 30)
+//    err_start_number_confusion — used wrong starting number
+//    err_place_value_confusion  — generic place value error
+//    err_boundary_100_confusion — went to 100 when answer is ≤99
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Core factory ─────────────────────────────────────────────────────────────
+
+function _l44Q(n, o) {
+  return {
+    id: 'g1-u4-l4-q-' + String(n).padStart(3, '0'),
+    teks: o.teks || ['1.3A', '1.5C'],
+    lessonId: 'g1-u4-l4',
+    skill: 'add_tens_to_two_digit',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: String(o.answer),
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({ followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true }, o.intervention)
+  };
+}
+
+function _l44VisBase10(t, o) { return { type: 'base10', tens: t, ones: o }; }
+
+function _l44TV(t, o, label) {
+  return { type: 'base10', config: { tens: t, ones: o, label: label || null } };
+}
+
+function _l44C(val, tag, msg) {
+  return tag == null
+    ? { value: String(val), correct: true }
+    : { value: String(val), correct: false, errorTag: tag, misconceptionExplanation: msg || null };
+}
+
+// ── Intervention factories ────────────────────────────────────────────────────
+
+function _l44IntTenAsOne(N, M, sum, wrong) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_ten_as_one',
+    title: M + ' is ' + addT + ' tens — not ' + addT + ' ones',
+    teachingSteps: [
+      N + ' has ' + nT + ' tens and ' + nO + ' ones.',
+      'We are adding ' + M + '. That is ' + addT + ' tens — not ' + addT + ' ones.',
+      'Add the tens: ' + nT + ' tens + ' + addT + ' tens = ' + newT + ' tens.',
+      'The ones stay the same: ' + nO + '.',
+      N + ' + ' + M + ' = ' + sum + ', not ' + wrong + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + ' because ' + M + ' means ' + addT + ' tens, so the tens go from ' + nT + ' to ' + newT + '.',
+    teachingVisual: _l44TV(newT, nO, N + ' + ' + M + ' = ' + sum)
+  };
+}
+
+function _l44IntOnesChanged(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_ones_changed',
+    title: 'The ones digit never changes when you add tens',
+    teachingSteps: [
+      N + ' has ' + nO + ' ones. Adding ' + M + ' does not change the ones.',
+      M + ' is tens only — it has no ones.',
+      'Tens change: ' + nT + ' → ' + newT + '. Ones stay: ' + nO + '.',
+      N + ' + ' + M + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + '. The ones digit stays ' + nO + ' because adding tens never touches the ones place.',
+    teachingVisual: _l44TV(newT, nO, 'Ones stay ' + nO)
+  };
+}
+
+function _l44IntTensNotChanged(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_tens_not_changed',
+    title: 'Adding tens must change the tens digit',
+    teachingSteps: [
+      'We are adding ' + M + ' to ' + N + '.',
+      M + ' means ' + addT + ' tens. The tens digit must go up by ' + addT + '.',
+      N + ' has ' + nT + ' tens. After adding: ' + nT + ' + ' + addT + ' = ' + newT + ' tens.',
+      'The answer is ' + newT + ' tens and ' + nO + ' ones = ' + sum + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + '. The tens digit changes from ' + nT + ' to ' + newT + '.',
+    teachingVisual: _l44TV(newT, nO, nT + ' tens → ' + newT + ' tens')
+  };
+}
+
+function _l44IntOffByTen(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_off_by_ten',
+    title: 'Count the tens carefully — you were off by one ten',
+    teachingSteps: [
+      N + ' has ' + nT + ' tens and ' + nO + ' ones.',
+      'We are adding ' + M + '. That is exactly ' + addT + ' tens.',
+      'Count up: ' + nT + ' + ' + addT + ' = ' + newT + ' tens.',
+      'The ones stay ' + nO + '. So the answer is ' + sum + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + '. Count the added tens carefully: ' + nT + ' + ' + addT + ' = ' + newT + '.',
+    teachingVisual: _l44TV(newT, nO, 'Count ' + addT + ' new tens')
+  };
+}
+
+function _l44IntMissingTensValue(N, missing, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, sumT = Math.floor(sum / 10);
+  return {
+    errorTag: 'err_missing_tens_value',
+    title: 'Find the missing tens by comparing the tens digits',
+    teachingSteps: [
+      sum + ' has ' + sumT + ' tens. ' + N + ' has ' + nT + ' tens.',
+      'The ones are the same (' + nO + ' = ' + nO + ') — only the tens differ.',
+      'How many tens were added? ' + sumT + ' − ' + nT + ' = ' + (sumT - nT) + ' tens.',
+      (sumT - nT) + ' tens = ' + missing + '. The missing number is ' + missing + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + missing + ' = ' + sum + '. The tens went from ' + nT + ' to ' + sumT + ', a difference of ' + (sumT - nT) + ' tens = ' + missing + '.',
+    teachingVisual: _l44TV(sumT, nO, N + ' + ' + missing + ' = ' + sum)
+  };
+}
+
+function _l44IntStartNumConfusion(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10;
+  return {
+    errorTag: 'err_start_number_confusion',
+    title: 'The starting number is the answer minus the tens added',
+    teachingSteps: [
+      'The answer is ' + sum + '. We added ' + M + '.',
+      'To find where we started: ' + sum + ' − ' + M + ' = ' + N + '.',
+      N + ' has ' + nT + ' tens and ' + nO + ' ones.',
+      'Check: ' + N + ' + ' + M + ' = ' + sum + '. Correct!'
+    ],
+    correctAnswerExplanation: 'The missing starting number is ' + N + '. ' + N + ' + ' + M + ' = ' + sum + '.',
+    teachingVisual: _l44TV(nT, nO, 'Start: ' + N)
+  };
+}
+
+function _l44IntPlaceValueConfusion(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_place_value_confusion',
+    title: 'Tens and ones live in different places — keep them separate',
+    teachingSteps: [
+      N + ': the ' + nT + ' is in the tens place (worth ' + (nT * 10) + '). The ' + nO + ' is in the ones place.',
+      'We are adding ' + M + '. That goes in the tens place.',
+      'Tens: ' + nT + ' + ' + addT + ' = ' + newT + '. Ones: ' + nO + ' + 0 = ' + nO + '.',
+      newT + ' tens and ' + nO + ' ones = ' + sum + '.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + '. Add only the tens; the ones digit stays ' + nO + '.',
+    teachingVisual: _l44TV(newT, nO, N + ' + ' + M + ' = ' + sum)
+  };
+}
+
+function _l44IntBoundary100(N, M, sum) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  return {
+    errorTag: 'err_boundary_100_confusion',
+    title: sum + ' is the answer — it is less than 100',
+    teachingSteps: [
+      N + ' has ' + nT + ' tens and ' + nO + ' ones.',
+      'Adding ' + M + ': ' + nT + ' + ' + addT + ' = ' + newT + ' tens.',
+      newT + ' tens and ' + nO + ' ones = ' + sum + '.',
+      sum + ' is less than 100 — we do not reach 100 here.'
+    ],
+    correctAnswerExplanation: N + ' + ' + M + ' = ' + sum + '. ' + newT + ' tens and ' + nO + ' ones = ' + sum + ', which is still less than 100.',
+    teachingVisual: _l44TV(newT, nO, sum + ' — still less than 100')
+  };
+}
+
+// ── Category builders ─────────────────────────────────────────────────────────
+
+function _l44MkC1(N, n, diff, useVisual) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + 10;
+  var w1 = N + 1;
+  var w2 = N + 20 <= 99 ? N + 20 : N;
+  if (w2 === sum) w2 = sum - 20 > 0 ? sum - 20 : sum + 11;
+  var w3 = sum + 10 <= 99 ? sum + 10 : sum - 20;
+  if (w3 === w2 || w3 === w1 || w3 === sum) w3 = sum - 11 > 0 ? sum - 11 : sum + 21;
+  return _l44Q(n, {
+    subSkill: 'add_ten_direct',
+    keyIdea: 'Adding 10 increases the tens digit by 1. The ones digit stays the same.',
+    difficulty: diff,
+    prompt: 'What is ' + N + ' + 10?',
+    visual: useVisual ? _l44VisBase10(nT, nO) : null,
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(w1, 'err_ten_as_one', 'Added 10 as 1 one instead of 1 ten.'),
+      _l44C(w2, 'err_off_by_ten', 'Added 2 tens instead of 1.'),
+      _l44C(w3, 'err_place_value_confusion', 'Place value error.')
+    ],
+    hint: N + ' has ' + nT + ' tens. Add 1 ten: ' + (nT + 1) + ' tens and ' + nO + ' ones = ' + sum + '.',
+    intervention: _l44IntTenAsOne(N, 10, sum, w1)
+  });
+}
+
+function _l44MkC2(N, M, n, diff, useVisual) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M, addT = M / 10;
+  var w1 = (nO + addT < 10) ? nT * 10 + (nO + addT) : N + addT;
+  var w2 = sum + 10 <= 99 ? sum + 10 : sum - 10;
+  if (w2 === w1 || w2 === sum || w2 <= 0) w2 = sum - 10 > 0 ? sum - 10 : sum + 20;
+  var w3 = sum - 20 > 0 && sum - 20 !== w1 && sum - 20 !== w2 ? sum - 20 : sum + 20;
+  if (w3 > 99 || w3 === sum || w3 === w1 || w3 === w2) w3 = nT * 10 + nO + addT * 2;
+  if (w3 > 99 || w3 === sum || w3 === w1 || w3 === w2) w3 = sum - 30 > 0 ? sum - 30 : 10;
+  return _l44Q(n, {
+    subSkill: 'add_tens_direct',
+    keyIdea: 'Adding ' + M + ' increases the tens digit by ' + addT + '. The ones digit stays the same.',
+    difficulty: diff,
+    prompt: 'What is ' + N + ' + ' + M + '?',
+    visual: useVisual ? _l44VisBase10(nT, nO) : null,
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(w1, 'err_ten_as_one', 'Added ' + addT + ' ones instead of ' + addT + ' tens.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(w3, 'err_place_value_confusion', 'Place value error.')
+    ],
+    hint: N + ' has ' + nT + ' tens. Add ' + addT + ' tens: ' + (nT + addT) + ' tens and ' + nO + ' ones = ' + sum + '.',
+    intervention: _l44IntTenAsOne(N, M, sum, w1)
+  });
+}
+
+function _l44MkC3(N, M, n, diff) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M, addT = M / 10;
+  var w1 = (nO + addT < 10) ? nT * 10 + (nO + addT) : N + addT;
+  var w2 = sum - 10 > 0 ? sum - 10 : sum + 10;
+  if (w2 === w1 || w2 === sum) w2 = sum + 10 <= 99 ? sum + 10 : sum - 20;
+  var w3 = sum + 10 <= 99 && sum + 10 !== w2 ? sum + 10 : sum - 20;
+  if (w3 <= 0 || w3 === sum || w3 === w1 || w3 === w2) w3 = N + (M / 5);
+  if (w3 === sum || w3 === w1 || w3 === w2) w3 = sum + 11 <= 99 ? sum + 11 : sum - 11;
+  return _l44Q(n, {
+    subSkill: 'equation_to_answer',
+    keyIdea: 'Adding tens only changes the tens digit. The ones digit stays the same.',
+    difficulty: diff,
+    prompt: 'What is ' + N + ' + ' + M + '?',
+    visual: null,
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(w1, 'err_ten_as_one', 'Added ' + addT + ' ones instead of ' + addT + ' tens.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(w3, 'err_place_value_confusion', 'Place value error.')
+    ],
+    hint: 'The ones digit of ' + N + ' stays ' + nO + '. Only the tens digit changes.',
+    intervention: _l44IntTenAsOne(N, M, sum, w1)
+  });
+}
+
+function _l44MkC4(N, M, n, diff) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M, addT = M / 10;
+  var w1 = (nO + addT < 10) ? nT * 10 + (nO + addT) : N + addT;
+  var w2 = sum - 10 > 0 ? sum - 10 : sum + 10;
+  if (w2 === w1 || w2 === sum) w2 = sum + 10 <= 99 ? sum + 10 : sum - 20;
+  var w3 = sum + 10 <= 99 && sum + 10 !== w2 ? sum + 10 : sum - 20;
+  if (w3 <= 0 || w3 === sum || w3 === w1 || w3 === w2) w3 = nT * 10 + nO + M;
+  if (w3 > 99 || w3 === sum || w3 === w1 || w3 === w2) w3 = sum - 21 > 0 ? sum - 21 : sum + 21;
+  return _l44Q(n, {
+    subSkill: 'model_to_result',
+    keyIdea: 'Adding tens rods increases the tens digit. The ones cubes stay the same.',
+    difficulty: diff,
+    prompt: 'The model shows ' + N + '. You add ' + addT + ' tens rod' + (addT > 1 ? 's' : '') + '. What is the total?',
+    visual: _l44VisBase10(nT, nO),
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(w1, 'err_ten_as_one', 'Added the rod count as ones instead of tens.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(w3, 'err_place_value_confusion', 'Miscounted the rods.')
+    ],
+    hint: 'Count new total tens: ' + nT + ' + ' + addT + ' = ' + (nT + addT) + ' tens. Keep the ' + nO + ' ones cubes.',
+    intervention: _l44IntTenAsOne(N, M, sum, w1)
+  });
+}
+
+function _l44MkC5(N, sum, n, diff, useVisual) {
+  var nT = Math.floor(N / 10), nO = N % 10, missing = sum - N, sumT = Math.floor(sum / 10);
+  var w1 = missing / 10;
+  var w2 = missing + 10 <= 40 ? missing + 10 : missing - 10;
+  if (w2 <= 0 || w2 === missing) w2 = missing + 10;
+  var w3 = N !== missing ? N : sum;
+  return _l44Q(n, {
+    subSkill: 'missing_tens_addend',
+    keyIdea: 'Find the missing tens by comparing the tens digits of the two numbers.',
+    difficulty: diff,
+    prompt: N + ' + ___ = ' + sum + '. What is the missing number?',
+    visual: useVisual ? _l44VisBase10(sumT, nO) : null,
+    answer: missing,
+    choices: [
+      _l44C(missing),
+      _l44C(w1, 'err_missing_tens_value', 'Found the digit (' + w1 + ') but forgot the zero.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten from the missing number.'),
+      _l44C(w3, 'err_start_number_confusion', 'Used the starting number instead of the missing addend.')
+    ],
+    hint: sum + ' has ' + sumT + ' tens, ' + N + ' has ' + nT + ' tens. Missing tens: ' + sumT + ' − ' + nT + ' = ' + (sumT - nT) + ' = ' + missing + '.',
+    intervention: _l44IntMissingTensValue(N, missing, sum)
+  });
+}
+
+function _l44MkC6(startN, M, sum, n, diff) {
+  var sT = Math.floor(startN / 10), sO = startN % 10;
+  var w1 = sum;
+  var w2 = startN + 10 <= 99 ? startN + 10 : startN - 10;
+  if (w2 === startN || w2 === w1) w2 = startN - 10 > 0 ? startN - 10 : startN + 20;
+  var w3 = M !== startN && M !== w2 ? M : Math.floor(sum / 10) * 10;
+  if (w3 === startN || w3 === w1 || w3 === w2) w3 = sum - startN;
+  return _l44Q(n, {
+    subSkill: 'missing_start_number',
+    keyIdea: 'To find the starting number, subtract the added tens from the answer.',
+    difficulty: diff,
+    prompt: '___ + ' + M + ' = ' + sum + '. What is the missing number?',
+    visual: null,
+    answer: startN,
+    choices: [
+      _l44C(startN),
+      _l44C(w1, 'err_start_number_confusion', 'Used the answer instead of working backwards.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(w3, 'err_start_number_confusion', 'Used the added amount or digit instead of the start.')
+    ],
+    hint: sum + ' − ' + M + ' = ' + startN + '.',
+    intervention: _l44IntStartNumConfusion(startN, M, sum)
+  });
+}
+
+function _l44MkC7(N, M, n, diff) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M, addT = M / 10;
+  var wrongOnes = nO + addT < 10 ? nO + addT : nO + 1;
+  return _l44Q(n, {
+    subSkill: 'ones_stay_same',
+    keyIdea: 'The ones digit stays the same when you add tens to a number.',
+    difficulty: diff,
+    prompt: 'In ' + N + ' + ' + M + ', what happens to the ones digit?',
+    visual: null,
+    answer: 'It stays ' + nO,
+    choices: [
+      _l44C('It stays ' + nO),
+      _l44C('It becomes ' + wrongOnes, 'err_ten_as_one', 'Added the tens count to the ones digit.'),
+      _l44C('It becomes 0', 'err_ones_changed', 'Cleared the ones digit when adding tens.'),
+      _l44C('It changes to match the tens', 'err_place_value_confusion', 'Confused tens and ones behavior.')
+    ],
+    hint: 'Adding ' + M + ' only changes the tens digit. The ones digit (' + nO + ') stays the same.',
+    intervention: _l44IntOnesChanged(N, M, sum)
+  });
+}
+
+function _l44MkC8(N, M, n, diff) {
+  var nT = Math.floor(N / 10), nO = N % 10, addT = M / 10, newT = nT + addT;
+  var w1 = nT;
+  var w2 = addT;
+  if (w2 === newT || w2 === w1) w2 = addT + 1 <= 9 ? addT + 1 : addT - 1;
+  var w3 = nT + M > 9 ? nT + 1 : nT + M;
+  if (w3 === newT || w3 === w1 || w3 === w2) w3 = newT + 1 <= 9 ? newT + 1 : newT - 1;
+  if (w3 === newT || w3 === w1 || w3 === w2 || w3 < 1) w3 = 1;
+  return _l44Q(n, {
+    subSkill: 'tens_change',
+    keyIdea: 'Adding tens increases the tens digit by the number of tens added.',
+    difficulty: diff,
+    prompt: N + ' + ' + M + ' = ?. How many tens does the answer have?',
+    visual: null,
+    answer: String(newT),
+    choices: [
+      _l44C(String(newT)),
+      _l44C(String(w1), 'err_tens_not_changed', 'Kept the same number of tens — did not add ' + addT + '.'),
+      _l44C(String(w2), 'err_start_number_confusion', 'Only counted the added tens, not the starting tens.'),
+      _l44C(String(w3), 'err_ten_as_one', 'Miscounted the total tens.')
+    ],
+    hint: N + ' has ' + nT + ' tens. Add ' + addT + ' more: ' + nT + ' + ' + addT + ' = ' + newT + ' tens.',
+    intervention: _l44IntTensNotChanged(N, M, N + M)
+  });
+}
+
+function _l44MkC9(N, M, wrong, n) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M;
+  var off = sum - 10 > 0 && sum - 10 !== wrong ? sum - 10 : sum + 10;
+  if (off > 99 || off === sum || off === wrong) off = sum - 20 > 0 ? sum - 20 : sum + 20;
+  var alt = sum + 10 <= 99 && sum + 10 !== off ? sum + 10 : nT * 10;
+  if (alt === sum || alt === wrong || alt === off) alt = wrong + 10 <= 99 ? wrong + 10 : wrong - 10;
+  return _l44Q(n, {
+    subSkill: 'error_repair',
+    keyIdea: 'Adding ' + M + ' means adding ' + (M / 10) + ' tens — not ' + (M / 10) + ' ones.',
+    difficulty: 'hard',
+    prompt: 'A student says ' + N + ' + ' + M + ' = ' + wrong + '. What is the correct answer?',
+    visual: null,
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(wrong, 'err_ten_as_one', 'The student added ' + (M / 10) + ' ones instead of ' + (M / 10) + ' tens.'),
+      _l44C(off, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(alt, 'err_place_value_confusion', 'Another place value error.')
+    ],
+    hint: M + ' means ' + (M / 10) + ' tens. ' + nT + ' tens + ' + (M / 10) + ' tens = ' + (nT + M / 10) + ' tens. Ones stay ' + nO + '.',
+    intervention: _l44IntTenAsOne(N, M, sum, wrong)
+  });
+}
+
+function _l44MkC10(N, M, n, diff) {
+  var nT = Math.floor(N / 10), nO = N % 10, sum = N + M, addT = M / 10, newT = nT + addT;
+  var w1 = (nO + addT < 10) ? nT * 10 + (nO + addT) : N + addT;
+  var w2 = sum - 10 > 0 ? sum - 10 : sum - 11;
+  if (w2 === w1 || w2 === sum || w2 <= 0) w2 = sum - 11 > 0 ? sum - 11 : sum + 10;
+  var w3 = (sum === 99) ? 100 : (sum + 1 <= 99 ? sum + 1 : sum - 1);
+  var tag3 = (sum === 99) ? 'err_boundary_100_confusion' : 'err_off_by_ten';
+  var msg3 = (sum === 99) ? 'Went to 100 — the answer is still 99.' : 'Off by one.';
+  if (w3 === w1 || w3 === w2 || w3 === sum) w3 = sum - 12 > 0 ? sum - 12 : 100;
+  return _l44Q(n, {
+    subSkill: 'boundary_high_sum',
+    keyIdea: 'Adding tens can bring you close to 99. Count the tens carefully.',
+    difficulty: diff,
+    prompt: 'What is ' + N + ' + ' + M + '?',
+    visual: _l44VisBase10(nT, nO),
+    answer: sum,
+    choices: [
+      _l44C(sum),
+      _l44C(w1, 'err_ten_as_one', 'Added ' + addT + ' ones instead of ' + addT + ' tens.'),
+      _l44C(w2, 'err_off_by_ten', 'Off by one ten.'),
+      _l44C(w3, tag3, msg3)
+    ],
+    hint: nT + ' tens + ' + addT + ' tens = ' + newT + ' tens. Keep the ' + nO + ' ones. Answer: ' + sum + '.',
+    intervention: (sum === 99) ? _l44IntBoundary100(N, M, sum) : _l44IntOffByTen(N, M, sum)
+  });
+}
+
+// ── Data arrays ───────────────────────────────────────────────────────────────
+
+// C1: [N, useVisual] — add exactly 10
+var _l44_E_C1 = [
+  [24,true],[31,true],[45,true],[53,false],[14,false],
+  [23,false],[41,false],[35,false],[52,false],[16,false],
+  [33,false],[42,true],[21,false],[13,false],[25,true]
+];
+var _l44_M_C1 = [
+  [51,false],[63,false],[74,false],[57,true],[65,false],
+  [71,false],[76,true],[58,false],[72,false],[67,false]
+];
+
+// C2: [N, M, useVisual]
+var _l44_E_C2 = [
+  [36,20,true],[47,30,false],[23,20,false],[15,30,false],[42,20,false],
+  [34,30,true],[21,20,false],[26,30,false],[13,20,false],[44,30,false],
+  [52,20,true],[16,30,false]
+];
+var _l44_M_C2 = [
+  [46,20,false],[37,30,false],[54,20,false],[28,40,false],
+  [43,30,true],[62,20,false],[53,30,false],[44,40,false]
+];
+
+// C3: [N, M] — text only
+var _l44_E_C3 = [[24,10],[36,20],[45,10],[13,30],[52,20],[31,10],[25,30],[42,20]];
+var _l44_M_C3 = [[47,30],[62,20],[35,40],[53,30],[24,40],[43,20],[56,30],[16,40],[64,20],[38,30],[21,40],[57,20]];
+var _l44_H_C3 = [[74,20],[63,30],[55,40],[76,20],[48,40]];
+
+// C4: [N, M]
+var _l44_E_C4 = [[24,10],[31,20],[15,30],[42,10],[23,20],[32,30],[14,10],[41,20]];
+var _l44_M_C4 = [[46,20],[37,30],[53,20],[44,30],[52,30],[35,40],[63,20]];
+
+// C5: [N, sum, useVisual]
+var _l44_M_C5 = [
+  [35,65,true],[24,44,true],[42,72,false],[53,83,true],[16,36,false],
+  [27,57,false],[48,78,false],[31,61,false],[22,52,true],[44,64,false]
+];
+var _l44_H_C5 = [
+  [59,89,false],[49,79,false],[39,69,false],[58,88,false],[47,77,false],
+  [36,76,false],[19,59,false],[28,68,false],[67,97,false],[18,58,false]
+];
+
+// C6: [startN, M, sum]
+var _l44_M_C6 = [[54,20,74],[53,10,63],[52,30,82],[37,20,57],[46,30,76]];
+var _l44_H_C6 = [
+  [67,30,97],[69,20,89],[54,40,94],[53,30,83],[58,20,78],
+  [46,40,86],[41,30,71],[73,20,93],[59,40,99],[62,30,92]
+];
+
+// C7: [N, M]
+var _l44_E_C7 = [[24,10],[36,20],[47,30],[53,20],[62,10]];
+var _l44_M_C7 = [[45,30],[67,20],[58,40],[71,20],[34,40]];
+
+// C8: [N, M]
+var _l44_E_C8 = [[24,10],[36,20],[53,30],[42,20],[31,10]];
+var _l44_M_C8 = [[47,30],[62,20],[55,40],[73,20],[64,30]];
+
+// C9: [N, M, wrong] — wrong = ten-as-one error (add M/10 to ones digit)
+var _l44_H_C9 = [
+  [47,20,49],[36,30,39],[53,20,55],[62,30,65],[24,20,26],
+  [41,30,44],[73,20,75],[34,40,38],[56,30,59],[22,40,26],
+  [45,20,47],[63,30,66],[71,20,73],[38,40,42],[27,30,30]
+];
+
+// C10: [N, M, diff] — boundary high-sum (sums 90–99)
+var _l44_C10 = [
+  [81,10,'easy'],[73,20,'easy'],
+  [61,30,'medium'],[72,20,'medium'],[63,30,'medium'],[54,40,'medium'],
+  [75,20,'medium'],[66,30,'medium'],[57,40,'medium'],[78,20,'medium'],
+  [89,10,'hard'],[79,20,'hard'],[69,30,'hard'],[59,40,'hard'],[58,40,'hard']
+];
+
+// ── QuizBank assembly ─────────────────────────────────────────────────────────
+
+var _l44QuizBank = [];
+var _l44N = 0;
+
+// C1 q001–q025
+_l44_E_C1.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC1(p[0], _l44N, 'easy',   p[1])); });
+_l44_M_C1.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC1(p[0], _l44N, 'medium', p[1])); });
+
+// C2 q026–q045
+_l44_E_C2.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC2(p[0], p[1], _l44N, 'easy',   p[2])); });
+_l44_M_C2.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC2(p[0], p[1], _l44N, 'medium', p[2])); });
+
+// C3 q046–q070
+_l44_E_C3.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC3(p[0], p[1], _l44N, 'easy'  )); });
+_l44_M_C3.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC3(p[0], p[1], _l44N, 'medium')); });
+_l44_H_C3.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC3(p[0], p[1], _l44N, 'hard'  )); });
+
+// C4 q071–q085
+_l44_E_C4.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC4(p[0], p[1], _l44N, 'easy'  )); });
+_l44_M_C4.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC4(p[0], p[1], _l44N, 'medium')); });
+
+// C5 q086–q105
+_l44_M_C5.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC5(p[0], p[1], _l44N, 'medium', p[2])); });
+_l44_H_C5.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC5(p[0], p[1], _l44N, 'hard',   false)); });
+
+// C6 q106–q120
+_l44_M_C6.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC6(p[0], p[1], p[2], _l44N, 'medium')); });
+_l44_H_C6.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC6(p[0], p[1], p[2], _l44N, 'hard'  )); });
+
+// C7 q121–q130
+_l44_E_C7.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC7(p[0], p[1], _l44N, 'easy'  )); });
+_l44_M_C7.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC7(p[0], p[1], _l44N, 'medium')); });
+
+// C8 q131–q140
+_l44_E_C8.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC8(p[0], p[1], _l44N, 'easy'  )); });
+_l44_M_C8.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC8(p[0], p[1], _l44N, 'medium')); });
+
+// C9 q141–q155
+_l44_H_C9.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC9(p[0], p[1], p[2], _l44N)); });
+
+// C10 q156–q170
+_l44_C10.forEach(function(p) { _l44N++; _l44QuizBank.push(_l44MkC10(p[0], p[1], _l44N, p[2])); });
+
+// ── Worked examples ───────────────────────────────────────────────────────────
+
+var _l44Examples = [
+  {
+    id: 'g1-u4-l4-ex-1',
+    title: 'Example 1: Add 10 to a two-digit number',
+    prompt: 'What is 24 + 10?',
+    visual: { type: 'base10', tens: 2, ones: 4 },
+    steps: [
+      '24 has 2 tens and 4 ones.',
+      'We are adding 10 — that is 1 ten.',
+      '2 tens + 1 ten = 3 tens. The ones stay: 4 ones.',
+      '3 tens and 4 ones = 34.',
+      '24 + 10 = 34.'
+    ],
+    finalAnswer: '24 + 10 = 34.'
+  },
+  {
+    id: 'g1-u4-l4-ex-2',
+    title: 'Example 2: Add 20 to a two-digit number',
+    prompt: 'What is 36 + 20?',
+    visual: { type: 'base10', tens: 3, ones: 6 },
+    steps: [
+      '36 has 3 tens and 6 ones.',
+      'We are adding 20 — that is 2 tens.',
+      '3 tens + 2 tens = 5 tens. The ones stay: 6 ones.',
+      '5 tens and 6 ones = 56.',
+      '36 + 20 = 56.'
+    ],
+    finalAnswer: '36 + 20 = 56.'
+  },
+  {
+    id: 'g1-u4-l4-ex-3',
+    title: 'Example 3: Add 30 to a two-digit number',
+    prompt: 'What is 47 + 30?',
+    visual: { type: 'base10', tens: 4, ones: 7 },
+    steps: [
+      '47 has 4 tens and 7 ones.',
+      'We are adding 30 — that is 3 tens.',
+      '4 tens + 3 tens = 7 tens. The ones stay: 7 ones.',
+      '7 tens and 7 ones = 77.',
+      '47 + 30 = 77.'
+    ],
+    finalAnswer: '47 + 30 = 77.'
+  },
+  {
+    id: 'g1-u4-l4-ex-4',
+    title: 'Example 4: Finding the missing tens addend',
+    prompt: '35 + ___ = 65. What is the missing number?',
+    visual: null,
+    steps: [
+      '65 has 6 tens and 5 ones.',
+      'We started with 35 — that is 3 tens and 5 ones.',
+      'The ones are the same (5 = 5), so only the tens changed.',
+      '6 tens − 3 tens = 3 tens.',
+      '3 tens = 30. The missing number is 30.'
+    ],
+    finalAnswer: 'The missing number is 30.'
+  },
+  {
+    id: 'g1-u4-l4-ex-5',
+    title: 'Example 5: Fixing a common mistake',
+    prompt: 'A student says 47 + 20 = 49. What is the correct answer?',
+    visual: null,
+    steps: [
+      'The student added 20 as if it were 2 ones: 7 + 2 = 9.',
+      '20 is not 2 ones — it is 2 tens.',
+      '47 has 4 tens. Add 2 more tens: 4 + 2 = 6 tens.',
+      '6 tens and 7 ones = 67.',
+      'The correct answer is 67, not 49.'
+    ],
+    finalAnswer: '47 + 20 = 67.'
+  },
+  {
+    id: 'g1-u4-l4-ex-6',
+    title: 'Example 6: Ones stay, tens change',
+    prompt: '62 + 20: what digit stays the same? What digit changes?',
+    visual: null,
+    steps: [
+      '62 + 20: look at the ones digit. It is 2.',
+      'Adding 20 (2 tens) never touches the ones place.',
+      'The ones digit stays 2.',
+      '62 has 6 tens. Adding 20 gives 6 + 2 = 8 tens.',
+      'The tens digit changes from 6 to 8. Answer: 82.'
+    ],
+    finalAnswer: '62 + 20 = 82. Ones digit (2) stays. Tens digit changes (6 → 8).'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -2001,16 +2658,36 @@ export const G1_U4_SPEC = {
     {
       lessonId: 'g1-u4-l4',
       title: 'Add Tens to Two-Digit Numbers',
-      teks: ['1.3A'],
+      teks: ['1.3A', '1.5C'],
       skill: 'add_tens_to_two_digit',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: [
+        'Adding tens only changes the tens digit — the ones digit stays the same.',
+        'In 47 + 20, the 7 stays. Only the tens change: 4 tens + 2 tens = 6 tens.',
+        '47 + 20 = 67, not 49. Adding 20 means adding 2 tens, not 2 ones.',
+        'Adding 10 moves the tens digit up by 1. Adding 20 moves it up by 2. Adding 30 moves it up by 3.',
+        'To add tens to a two-digit number, count up the tens rods and keep the ones cubes exactly as they were.',
+        'The ones digit in the answer always matches the ones digit in the starting number.'
+      ],
+      workedExamples: _l44Examples,
+      quizBank: _l44QuizBank,
       diagnostics: {
         commonDistractors: [],
-        errorTags: [],
-        interventionRules: []
+        errorTags: [
+          'err_ten_as_one', 'err_ones_changed', 'err_tens_not_changed',
+          'err_off_by_ten', 'err_missing_tens_value', 'err_start_num_confusion',
+          'err_place_value_confusion', 'err_boundary_100_confusion'
+        ],
+        interventionRules: [
+          { tag: 'err_ten_as_one',             followUp: 'same_skill_new_numbers' },
+          { tag: 'err_ones_changed',            followUp: 'same_skill_new_numbers' },
+          { tag: 'err_tens_not_changed',        followUp: 'same_skill_new_numbers' },
+          { tag: 'err_off_by_ten',              followUp: 'same_skill_new_numbers' },
+          { tag: 'err_missing_tens_value',      followUp: 'same_skill_new_numbers' },
+          { tag: 'err_start_num_confusion',     followUp: 'same_skill_new_numbers' },
+          { tag: 'err_place_value_confusion',   followUp: 'same_skill_new_numbers' },
+          { tag: 'err_boundary_100_confusion',  followUp: 'same_skill_new_numbers' }
+        ]
       }
     },
 
