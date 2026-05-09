@@ -2675,7 +2675,7 @@ export const G1_U4_SPEC = {
         commonDistractors: [],
         errorTags: [
           'err_ten_as_one', 'err_ones_changed', 'err_tens_not_changed',
-          'err_off_by_ten', 'err_missing_tens_value', 'err_start_num_confusion',
+          'err_off_by_ten', 'err_missing_tens_value', 'err_start_number_confusion',
           'err_place_value_confusion', 'err_boundary_100_confusion'
         ],
         interventionRules: [
@@ -2684,7 +2684,7 @@ export const G1_U4_SPEC = {
           { tag: 'err_tens_not_changed',        followUp: 'same_skill_new_numbers' },
           { tag: 'err_off_by_ten',              followUp: 'same_skill_new_numbers' },
           { tag: 'err_missing_tens_value',      followUp: 'same_skill_new_numbers' },
-          { tag: 'err_start_num_confusion',     followUp: 'same_skill_new_numbers' },
+          { tag: 'err_start_number_confusion',   followUp: 'same_skill_new_numbers' },
           { tag: 'err_place_value_confusion',   followUp: 'same_skill_new_numbers' },
           { tag: 'err_boundary_100_confusion',  followUp: 'same_skill_new_numbers' }
         ]
