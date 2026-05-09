@@ -1210,6 +1210,630 @@ var _l42Examples = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 4.3 — Add Multiples of 10
+//  Skill: add_multiples_of_ten · TEKS 1.3A
+//  Target: 170 questions (55 easy / 70 medium / 45 hard)
+//
+//  C1  Direct equation A + B = ?           25E + 15M        = 40   q001–q040
+//  C2  Commutative recognition              5E +  5M +  5H  = 15   q041–q055
+//  C3  Model → equation                    10E +  5M        = 15   q056–q070
+//  C4  Model → answer                      15E + 10M        = 25   q071–q095
+//  C5  Missing addend A + __ = sum               15M + 10H  = 25   q096–q120
+//  C6  Missing first addend __ + B = sum         10M +  5H  = 15   q121–q135
+//  C7  Tens-language                             10M +  5H  = 15   q136–q150
+//  C8  Error repair                                    10H  = 10   q151–q160
+//  C9  Boundary: sum = 100                             10H  = 10   q161–q170
+//  ────────────────────────────────────────────────────────────────────────────
+//  TOTAL                                   55E + 70M + 45H  = 170
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l43Q(n, o) {
+  return {
+    id: 'g1-u4-l3-q-' + String(n).padStart(3, '0'),
+    teks: o.teks || ['1.3A'],
+    lessonId: 'g1-u4-l3',
+    skill: 'add_multiples_of_ten',
+    subSkill: o.subSkill,
+    keyIdea: o.keyIdea,
+    difficulty: o.difficulty,
+    interactionType: 'multipleChoice',
+    prompt: o.prompt,
+    visual: o.visual || null,
+    answer: String(o.answer),
+    choices: o.choices,
+    hint: o.hint,
+    intervention: Object.assign({ followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true }, o.intervention)
+  };
+}
+
+function _l43VisT(t) {
+  if (t >= 10) return { type: 'base10', hundreds: Math.floor(t / 10), tens: t % 10, ones: 0 };
+  return { type: 'base10', tens: t, ones: 0 };
+}
+
+function _l43TV(t, label) {
+  var h = t >= 10 ? Math.floor(t / 10) : 0;
+  return { type: 'base10', config: { hundreds: h, tens: t % 10, ones: 0, label: label || null } };
+}
+
+function _l43C(val, tag, msg) {
+  return tag == null
+    ? { value: String(val), correct: true }
+    : { value: String(val), correct: false, errorTag: tag, misconceptionExplanation: msg || null };
+}
+
+// ── Intervention factories ────────────────────────────────────────────────
+
+function _l43IntAddedDigitsOnly(A, B, sum) {
+  var a = A / 10, b = B / 10, digitSum = a + b;
+  return {
+    errorTag: 'err_added_digits_only',
+    title: "Don't forget the zeros — " + A + " is not " + a,
+    teachingSteps: [
+      A + ' is not ' + a + '. It means ' + a + ' tens, which is ' + A + '.',
+      B + ' is not ' + b + '. It means ' + b + ' tens, which is ' + B + '.',
+      a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens.',
+      (a + b) + ' tens = ' + sum + ', not ' + digitSum + '.'
+    ],
+    correctAnswerExplanation: A + ' + ' + B + ' = ' + sum + ' because ' + a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum + '.',
+    teachingVisual: _l43TV(a + b, a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum)
+  };
+}
+
+function _l43IntDroppedZero(missing, other, sum) {
+  var mTens = missing / 10;
+  return {
+    errorTag: 'err_dropped_zero',
+    title: 'The missing number is a tens number — keep the zero',
+    teachingSteps: [
+      'The blank stands for a TENS number, not a single digit.',
+      sum + ' has ' + (sum / 10) + ' tens. We already have ' + other + ' (' + (other / 10) + ' tens).',
+      'Missing tens: ' + (sum / 10) + ' − ' + (other / 10) + ' = ' + mTens + ' tens.',
+      mTens + ' tens = ' + missing + ', not ' + mTens + '.',
+      other + ' + ' + missing + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: 'The missing number is ' + missing + ' (not ' + mTens + ') because ' + mTens + ' tens = ' + missing + '.',
+    teachingVisual: _l43TV(sum / 10, mTens + ' tens = ' + missing + ' (not ' + mTens + ')')
+  };
+}
+
+function _l43IntOffByTen(A, B, sum) {
+  var a = A / 10, b = B / 10;
+  return {
+    errorTag: 'err_off_by_ten',
+    title: 'Count the tens carefully',
+    teachingSteps: [
+      A + ' has ' + a + ' tens. ' + B + ' has ' + b + ' tens.',
+      'Count all tens together: ' + a + ' + ' + b + ' = ' + (a + b) + ' tens.',
+      (a + b) + ' tens = ' + sum + '.',
+      'Not ' + (sum - 10) + ' and not ' + (sum + 10) + '.'
+    ],
+    correctAnswerExplanation: A + ' + ' + B + ' = ' + sum + ' because ' + a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum + '.',
+    teachingVisual: _l43TV(a + b, a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum)
+  };
+}
+
+function _l43IntMissingTensValue(missing, other, sum) {
+  var mTens = missing / 10, oTens = other / 10, sTens = sum / 10;
+  return {
+    errorTag: 'err_missing_tens_value',
+    title: 'The blank is a tens number, not a count of rods',
+    teachingSteps: [
+      sum + ' = ' + sTens + ' tens. We know ' + other + ' = ' + oTens + ' tens.',
+      'Missing tens: ' + sTens + ' − ' + oTens + ' = ' + mTens + ' tens.',
+      mTens + ' tens = ' + missing + '.',
+      'Write ' + missing + ' in the blank — not just the digit ' + mTens + '.',
+      other + ' + ' + missing + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: 'The missing number is ' + missing + ' (' + mTens + ' tens), not the digit ' + mTens + '.',
+    teachingVisual: _l43TV(sTens, 'Missing piece = ' + mTens + ' tens = ' + missing)
+  };
+}
+
+function _l43IntPlaceValueConfusion(A, B, sum) {
+  var a = A / 10, b = B / 10;
+  return {
+    errorTag: 'err_place_value_confusion',
+    title: 'Each number tells you how many tens',
+    teachingSteps: [
+      A + ' means ' + a + ' tens rods.',
+      B + ' means ' + b + ' tens rods.',
+      'Count all rods together: ' + a + ' + ' + b + ' = ' + (a + b) + ' rods.',
+      (a + b) + ' rods = ' + sum + '.'
+    ],
+    correctAnswerExplanation: A + ' + ' + B + ' = ' + sum + ' (' + a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens).',
+    teachingVisual: _l43TV(a + b, a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum)
+  };
+}
+
+function _l43IntBoundary100(A, B) {
+  var a = A / 10, b = B / 10;
+  return {
+    errorTag: 'err_boundary_100_confusion',
+    title: '10 tens = 100 — crossing into the hundreds is okay',
+    teachingSteps: [
+      A + ' = ' + a + ' tens. ' + B + ' = ' + b + ' tens.',
+      a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens.',
+      (a + b) + ' tens = 100 — that is 1 hundred, 0 tens, 0 ones.',
+      '100 is not 10. It is a whole new group: one hundred.'
+    ],
+    correctAnswerExplanation: A + ' + ' + B + ' = 100 because ' + a + ' tens + ' + b + ' tens = 10 tens = 1 hundred.',
+    teachingVisual: _l43TV(10, a + ' tens + ' + b + ' tens = 10 tens = 100')
+  };
+}
+
+function _l43IntCommutativeConfusion(A, B, sum) {
+  var a = A / 10, b = B / 10;
+  return {
+    errorTag: 'err_commutative_confusion',
+    title: 'You can add in either order — the answer stays the same',
+    teachingSteps: [
+      A + ' + ' + B + ': ' + a + ' tens + ' + b + ' tens = ' + (a + b) + ' tens = ' + sum + '.',
+      B + ' + ' + A + ': ' + b + ' tens + ' + a + ' tens = ' + (a + b) + ' tens = ' + sum + '.',
+      'Addition does not care which number comes first.',
+      A + ' + ' + B + ' = ' + B + ' + ' + A + ' = ' + sum + '.'
+    ],
+    correctAnswerExplanation: A + ' + ' + B + ' and ' + B + ' + ' + A + ' both equal ' + sum + '. Order does not change the sum.',
+    teachingVisual: _l43TV(a + b, A + ' + ' + B + ' = ' + B + ' + ' + A + ' = ' + sum)
+  };
+}
+
+function _l43IntModelToAnswer(T) {
+  var answer = T * 10;
+  return {
+    errorTag: 'err_added_digits_only',
+    title: T + ' tens rods = ' + answer + ', not ' + T,
+    teachingSteps: [
+      'Each tens rod is worth 10, not 1.',
+      'You see ' + T + ' rods — that means ' + T + ' tens.',
+      T + ' tens = ' + answer + '.',
+      'Always keep the zero when you count tens rods.'
+    ],
+    correctAnswerExplanation: T + ' tens rods = ' + answer + '. Each rod is 10, so ' + T + ' × 10 = ' + answer + '.',
+    teachingVisual: _l43TV(T, T + ' tens rods = ' + answer)
+  };
+}
+
+// ── Category maker functions ──────────────────────────────────────────────
+
+function _l43MkC1(A, B, n, diff, hasVis) {
+  var a = A / 10, b = B / 10, sum = A + B, digitSum = a + b;
+  var off = (sum + 10 <= 100) ? sum + 10 : sum - 10;
+  var used = [sum, digitSum, off], pvc;
+  var cands = [sum - 20, sum + 20, sum - 30, A, B];
+  for (var ci = 0; ci < cands.length; ci++) {
+    var cv = cands[ci];
+    if (cv > 0 && cv <= 100 && used.indexOf(cv) === -1) { pvc = cv; break; }
+  }
+  if (pvc === undefined) pvc = (sum > 50) ? 10 : 90;
+  return _l43Q(n, {
+    subSkill: 'basic_tens_addition',
+    keyIdea: 'To add ' + A + ' + ' + B + ', count the tens: ' + a + ' + ' + b + ' = ' + (a + b) + ' tens = ' + sum + '.',
+    difficulty: diff,
+    prompt: 'What is ' + A + ' + ' + B + '?',
+    visual: hasVis ? _l43VisT(a) : null,
+    answer: sum,
+    choices: [
+      _l43C(sum),
+      _l43C(digitSum, 'err_added_digits_only', 'Added ' + a + ' + ' + b + ' and forgot the zeros.'),
+      _l43C(off, 'err_off_by_ten', 'Off by one ten.'),
+      _l43C(pvc, 'err_place_value_confusion', 'Mixed up the place values.')
+    ],
+    hint: A + ' = ' + a + ' tens. ' + B + ' = ' + b + ' tens. ' + a + ' + ' + b + ' = ' + (a + b) + ' tens = ' + sum + '.',
+    intervention: _l43IntAddedDigitsOnly(A, B, sum)
+  });
+}
+
+function _l43MkC2(A, B, n, diff) {
+  var a = A / 10, b = B / 10, sum = A + B, digitSum = a + b;
+  var off = (sum + 10 <= 100) ? sum + 10 : sum - 10;
+  var d4 = (A !== sum && A !== digitSum && A !== off) ? A : B;
+  return _l43Q(n, {
+    subSkill: 'commutative_tens',
+    keyIdea: 'You can add in either order: ' + A + ' + ' + B + ' = ' + B + ' + ' + A + ' = ' + sum + '.',
+    difficulty: diff,
+    prompt: A + ' + ' + B + ' = ' + B + ' + ' + A + '. What is the answer?',
+    visual: null,
+    answer: sum,
+    choices: [
+      _l43C(sum),
+      _l43C(digitSum, 'err_added_digits_only', 'Added ' + a + ' + ' + b + ' — forgot the zeros.'),
+      _l43C(off, 'err_off_by_ten', 'Off by ten.'),
+      _l43C(d4, 'err_commutative_confusion', 'Stopped at one addend instead of finding the sum.')
+    ],
+    hint: A + ' + ' + B + ' is the same as ' + B + ' + ' + A + '. Find the total.',
+    intervention: _l43IntCommutativeConfusion(A, B, sum)
+  });
+}
+
+function _l43MkC3(A, B, n, diff) {
+  var a = A / 10, b = B / 10, sum = A + B;
+  var correctExpr = A + ' + ' + B + ' = ' + sum;
+  var droppedZeros = a + ' + ' + b + ' = ' + (a + b);
+  var missingB = A + ' + ' + b + ' = ' + (A + b);
+  var wrongSum = A + ' + ' + B + ' = ' + (sum - 10);
+  return _l43Q(n, {
+    subSkill: 'model_to_equation',
+    keyIdea: 'Each rod in a base-10 model stands for 10.',
+    difficulty: diff,
+    prompt: 'This model shows ' + A + '. A student adds ' + B + ' more. Which equation shows this?',
+    visual: _l43VisT(a),
+    answer: correctExpr,
+    choices: [
+      _l43C(correctExpr),
+      _l43C(droppedZeros, 'err_added_digits_only', 'Used the digits ' + a + ' and ' + b + ' instead of the tens numbers.'),
+      _l43C(missingB, 'err_missing_tens_value', 'Used the digit ' + b + ' for ' + B + ' — dropped its zero.'),
+      _l43C(wrongSum, 'err_off_by_ten', 'Right addends but sum is off by 10.')
+    ],
+    hint: 'The model shows ' + a + ' rods = ' + A + '. Add ' + B + ' more rods.',
+    intervention: _l43IntAddedDigitsOnly(A, B, sum)
+  });
+}
+
+function _l43MkC4(T, n, diff, pStyle) {
+  var answer = T * 10, digitOnly = T;
+  var offLow = (T - 1) * 10, offHigh = (T + 1) * 10;
+  var prompts = [
+    'This model shows ' + T + ' tens rods. What number is this?',
+    'Count the tens rods. What number do they show?',
+    'A base-10 model has ' + T + ' tens rods. What number does it represent?',
+    'How many is ' + T + ' tens?'
+  ];
+  return _l43Q(n, {
+    subSkill: 'model_to_answer',
+    keyIdea: 'Each tens rod is worth 10. Count the rods to find the number.',
+    difficulty: diff,
+    prompt: prompts[pStyle] || prompts[0],
+    visual: _l43VisT(T),
+    answer: answer,
+    choices: [
+      _l43C(answer),
+      _l43C(digitOnly, 'err_added_digits_only', 'Counted ' + T + ' rods and wrote ' + T + ' — forgot the zero.'),
+      _l43C(offLow, 'err_off_by_ten', 'Off by one ten (one rod too few).'),
+      _l43C(offHigh, 'err_off_by_ten', 'Off by one ten (one rod too many).')
+    ],
+    hint: 'Each rod = 10. ' + T + ' rods = ' + T + ' × 10 = ' + answer + '.',
+    intervention: _l43IntModelToAnswer(T)
+  });
+}
+
+function _l43MkC5(A, sum, n, diff, hasVis) {
+  var missing = sum - A, mTens = missing / 10, droppedZero = mTens;
+  var off = (missing + 10 < sum && missing + 10 <= 90) ? missing + 10 : missing - 10;
+  if (off <= 0) off = missing + 10;
+  var d4val = (A !== missing) ? A : sum;
+  var d4tag = (A !== missing) ? 'err_missing_tens_value' : 'err_place_value_confusion';
+  var d4msg = (A !== missing) ? 'Wrote the known addend (' + A + ') instead of the missing one.' : 'Wrote the total instead of the missing addend.';
+  return _l43Q(n, {
+    subSkill: 'missing_addend',
+    keyIdea: 'Count how many more tens are needed to reach the total.',
+    difficulty: diff,
+    prompt: A + ' + ___ = ' + sum + '. What is the missing number?',
+    visual: hasVis ? _l43VisT(sum / 10) : null,
+    answer: missing,
+    choices: [
+      _l43C(missing),
+      _l43C(droppedZero, 'err_dropped_zero', 'Found ' + mTens + ' tens but dropped the zero — should be ' + missing + '.'),
+      _l43C(off, 'err_off_by_ten', 'Off by one ten.'),
+      _l43C(d4val, d4tag, d4msg)
+    ],
+    hint: sum + ' has ' + (sum / 10) + ' tens. ' + A + ' has ' + (A / 10) + ' tens. ' + (sum / 10) + ' − ' + (A / 10) + ' = ' + mTens + ' tens = ' + missing + '.',
+    intervention: _l43IntDroppedZero(missing, A, sum)
+  });
+}
+
+function _l43MkC6(B, sum, n, diff, hasVis) {
+  var missing = sum - B, mTens = missing / 10, droppedZero = mTens;
+  var off = (missing + 10 < sum && missing + 10 <= 90) ? missing + 10 : missing - 10;
+  if (off <= 0) off = missing + 10;
+  var d4val = (B !== missing) ? B : sum;
+  var d4tag = (B !== missing) ? 'err_missing_tens_value' : 'err_place_value_confusion';
+  var d4msg = (B !== missing) ? 'Wrote the known addend (' + B + ') instead of the missing one.' : 'Wrote the total instead of the missing addend.';
+  return _l43Q(n, {
+    subSkill: 'missing_first_addend',
+    keyIdea: 'The blank comes first — subtract the known addend from the total to find it.',
+    difficulty: diff,
+    prompt: '___ + ' + B + ' = ' + sum + '. What is the missing number?',
+    visual: hasVis ? _l43VisT(sum / 10) : null,
+    answer: missing,
+    choices: [
+      _l43C(missing),
+      _l43C(droppedZero, 'err_dropped_zero', 'Found ' + mTens + ' tens but dropped the zero — should be ' + missing + '.'),
+      _l43C(off, 'err_off_by_ten', 'Off by one ten.'),
+      _l43C(d4val, d4tag, d4msg)
+    ],
+    hint: sum + ' has ' + (sum / 10) + ' tens. ' + B + ' has ' + (B / 10) + ' tens. ' + (sum / 10) + ' − ' + (B / 10) + ' = ' + mTens + ' tens = ' + missing + '.',
+    intervention: _l43IntDroppedZero(missing, B, sum)
+  });
+}
+
+function _l43MkC7(X, Y, n) {
+  var tensSum = X + Y, answer = tensSum * 10, digitOnly = tensSum, oneAddend = X * 10;
+  var off = (answer + 10 <= 100) ? answer + 10 : answer - 10;
+  return _l43Q(n, {
+    subSkill: 'tens_language',
+    keyIdea: X + ' tens + ' + Y + ' tens = ' + tensSum + ' tens = ' + answer + '.',
+    difficulty: 'medium',
+    prompt: X + ' tens + ' + Y + ' tens = ___ tens. What number is that?',
+    visual: null,
+    answer: answer,
+    choices: [
+      _l43C(answer),
+      _l43C(digitOnly, 'err_added_digits_only', 'Counted ' + tensSum + ' tens but wrote ' + tensSum + ' — not ' + answer + '.'),
+      _l43C(oneAddend, 'err_missing_tens_value', 'Stopped at the first group — used ' + X + ' tens = ' + oneAddend + '.'),
+      _l43C(off, 'err_off_by_ten', 'Off by one ten.')
+    ],
+    hint: X + ' + ' + Y + ' = ' + tensSum + ' tens. ' + tensSum + ' tens = ' + answer + '.',
+    intervention: _l43IntAddedDigitsOnly(X * 10, Y * 10, answer)
+  });
+}
+
+function _l43MkC7Hard(X, Y, n) {
+  var tensSum = X + Y, answer = X * 10, digitOnly = X;
+  var off = (answer + 10 <= 90) ? answer + 10 : answer - 10;
+  var other = Y * 10;
+  if (other === answer || other === off || other <= 0) {
+    other = (answer + 20 <= 90) ? answer + 20 : answer - 20;
+  }
+  if (other === answer || other === off || other <= 0 || other > 100) other = 10;
+  return _l43Q(n, {
+    subSkill: 'tens_language',
+    keyIdea: 'Find the missing tens: total minus the known tens gives the blank.',
+    difficulty: 'hard',
+    prompt: '___ tens + ' + Y + ' tens = ' + tensSum + ' tens. What number fills the blank?',
+    visual: null,
+    answer: answer,
+    choices: [
+      _l43C(answer),
+      _l43C(digitOnly, 'err_added_digits_only', 'Wrote the digit ' + X + ' instead of ' + X + ' tens (' + answer + ').'),
+      _l43C(off, 'err_off_by_ten', 'Off by one ten.'),
+      _l43C(other, 'err_place_value_confusion', 'Used the other addend\'s value instead.')
+    ],
+    hint: tensSum + ' tens total minus ' + Y + ' tens = ' + X + ' tens = ' + answer + '.',
+    intervention: _l43IntAddedDigitsOnly(answer, Y * 10, tensSum * 10)
+  });
+}
+
+function _l43MkC8(A, B, n) {
+  var a = A / 10, b = B / 10, sum = A + B, digitSum = a + b;
+  var off = sum - 10;
+  var alt = (sum - 20 > 0 && sum - 20 !== off && sum - 20 !== digitSum) ? sum - 20 : sum + 20;
+  if (alt > 100 || alt === sum || alt === off || alt === digitSum) alt = (sum > 50) ? 20 : 80;
+  return _l43Q(n, {
+    subSkill: 'error_repair',
+    keyIdea: 'Adding only the digits gives the wrong answer. Keep the zeros.',
+    difficulty: 'hard',
+    prompt: 'A student says ' + A + ' + ' + B + ' = ' + digitSum + ' because ' + a + ' + ' + b + ' = ' + digitSum + '. What is the correct answer?',
+    visual: null,
+    answer: sum,
+    choices: [
+      _l43C(sum),
+      _l43C(digitSum, 'err_added_digits_only', 'This is the student\'s wrong answer — they dropped the zeros.'),
+      _l43C(off, 'err_off_by_ten', 'Off by ten.'),
+      _l43C(alt, 'err_place_value_confusion', 'Another incorrect answer.')
+    ],
+    hint: A + ' = ' + a + ' tens. ' + B + ' = ' + b + ' tens. The answer must end in zero.',
+    intervention: _l43IntAddedDigitsOnly(A, B, sum)
+  });
+}
+
+function _l43MkC9(A, B, n, showSumVis) {
+  var a = A / 10, b = B / 10;
+  var d4val = A;
+  if (d4val === 10 || d4val === 90 || d4val === 100) {
+    d4val = (A > 50) ? A - 20 : A + 20;
+  }
+  if (d4val === 10 || d4val === 90 || d4val === 100 || d4val <= 0) d4val = 20;
+  return _l43Q(n, {
+    subSkill: 'boundary_sum_100',
+    keyIdea: '10 tens = 100. Crossing into the hundreds is okay.',
+    difficulty: 'hard',
+    prompt: 'What is ' + A + ' + ' + B + '?',
+    visual: showSumVis ? _l43VisT(10) : _l43VisT(a),
+    answer: 100,
+    choices: [
+      _l43C(100),
+      _l43C(10, 'err_boundary_100_confusion', 'Confused 1 hundred with 1 ten — 100 is not 10.'),
+      _l43C(90, 'err_off_by_ten', 'Off by one ten — 9 tens, not 10.'),
+      _l43C(d4val, 'err_missing_tens_value', 'Stopped after the first group instead of adding both.')
+    ],
+    hint: A + ' = ' + a + ' tens. ' + B + ' = ' + b + ' tens. ' + a + ' + ' + b + ' = 10 tens = 100.',
+    intervention: _l43IntBoundary100(A, B)
+  });
+}
+
+// ── Data arrays ───────────────────────────────────────────────────────────
+
+// C1 easy: [A, B, hasVis] — both A,B ∈ {10..50}, sum ≤ 80
+var _l43_E_C1 = [
+  [10,10,false],[10,20,false],[10,30,false],[10,40,false],[10,50,false],
+  [20,10,false],[20,20,false],[20,30,false],[20,40,false],[20,50,false],
+  [30,10,false],[30,20,false],[30,30,false],[30,40,false],[30,50,false],
+  [40,10,false],[40,20,false],[40,30,false],[40,40,false],
+  [50,10,false],[50,20,false],[50,30,false],
+  [10,20,true],[20,30,true],[30,20,true]
+];
+
+// C1 medium: [A, B, hasVis] — at least one ≥ 50, sum 60–90
+var _l43_M_C1 = [
+  [50,10,false],[50,20,false],[50,30,false],[50,40,false],
+  [60,10,false],[60,20,false],[60,30,false],
+  [70,10,false],[70,20,false],[80,10,false],
+  [10,60,false],[20,60,false],[30,60,false],
+  [20,70,false],[10,80,false]
+];
+
+// C2: [A, B]
+var _l43_E_C2 = [[10,20],[20,30],[10,40],[30,20],[20,40]];
+var _l43_M_C2 = [[30,60],[50,20],[40,50],[20,70],[60,20]];
+var _l43_H_C2 = [[50,30],[40,40],[60,30],[70,20],[80,10]];
+
+// C3: [A, B]
+var _l43_E_C3 = [
+  [10,20],[10,30],[20,10],[20,20],[20,30],
+  [20,40],[30,10],[30,20],[30,40],[40,20]
+];
+var _l43_M_C3 = [[30,40],[40,30],[50,20],[60,20],[40,40]];
+
+// C4: [T, pStyle]
+var _l43_E_C4 = [
+  [2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],
+  [2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],[9,0]
+];
+var _l43_M_C4 = [
+  [3,2],[4,2],[5,2],[6,2],[7,2],[8,2],[9,2],
+  [9,1],[5,3],[7,3]
+];
+
+// C5: [A, sum, hasVis]
+var _l43_M_C5 = [
+  [20,50,false],[30,60,false],[40,70,false],[10,40,false],
+  [20,60,false],[30,70,false],[40,80,false],
+  [20,70,false],[30,80,false],[40,90,false],[10,60,false],
+  [20,80,true],[30,90,false],[10,70,true],[10,80,false]
+];
+var _l43_H_C5 = [
+  [20,90,false],[50,90,false],[60,90,false],[70,90,false],
+  [10,90,false],[40,90,false],[30,90,false],
+  [40,80,false],[50,80,false],[60,80,false]
+];
+
+// C6: [B, sum, hasVis]
+var _l43_M_C6 = [
+  [20,50,false],[30,60,false],[40,70,false],[10,50,false],
+  [20,60,false],[30,70,false],[40,80,false],
+  [20,70,false],[30,80,false],[10,60,false]
+];
+var _l43_H_C6 = [
+  [30,90,false],[40,90,false],[20,80,false],[10,80,false],[20,90,false]
+];
+
+// C7 medium: [X, Y]
+var _l43_M_C7 = [
+  [2,3],[3,4],[1,4],[2,4],[1,5],[2,5],[3,5],[1,6],[2,6],[4,4]
+];
+// C7 hard: [X, Y] — "___ tens + Y tens = (X+Y) tens. What number fills the blank?"
+var _l43_H_C7 = [[5,4],[6,3],[5,3],[7,2],[6,2]];
+
+// C8 hard: [A, B]
+var _l43_H_C8 = [
+  [10,20],[10,30],[20,30],[20,40],[30,40],
+  [30,50],[40,50],[10,60],[20,60],[30,60]
+];
+
+// C9 hard: [A, B, showSumVis]
+var _l43_H_C9 = [
+  [50,50,false],[40,60,false],[60,40,false],[30,70,false],[70,30,false],
+  [20,80,false],[80,20,false],[10,90,false],[90,10,false],[40,60,true]
+];
+
+// ── Build quiz bank ───────────────────────────────────────────────────────
+
+var _l43QuizBank = [];
+var _l43N = 0;
+
+_l43_E_C1.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC1(p[0], p[1], _l43N, 'easy',   p[2])); });
+_l43_M_C1.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC1(p[0], p[1], _l43N, 'medium', p[2])); });
+_l43_E_C2.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC2(p[0], p[1], _l43N, 'easy')); });
+_l43_M_C2.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC2(p[0], p[1], _l43N, 'medium')); });
+_l43_H_C2.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC2(p[0], p[1], _l43N, 'hard')); });
+_l43_E_C3.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC3(p[0], p[1], _l43N, 'easy')); });
+_l43_M_C3.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC3(p[0], p[1], _l43N, 'medium')); });
+_l43_E_C4.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC4(p[0], _l43N, 'easy',   p[1])); });
+_l43_M_C4.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC4(p[0], _l43N, 'medium', p[1])); });
+_l43_M_C5.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC5(p[0], p[1], _l43N, 'medium', p[2])); });
+_l43_H_C5.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC5(p[0], p[1], _l43N, 'hard',   false)); });
+_l43_M_C6.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC6(p[0], p[1], _l43N, 'medium', p[2])); });
+_l43_H_C6.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC6(p[0], p[1], _l43N, 'hard',   false)); });
+_l43_M_C7.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC7(p[0], p[1], _l43N)); });
+_l43_H_C7.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC7Hard(p[0], p[1], _l43N)); });
+_l43_H_C8.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC8(p[0], p[1], _l43N)); });
+_l43_H_C9.forEach(function(p) { _l43N++; _l43QuizBank.push(_l43MkC9(p[0], p[1], _l43N, p[2])); });
+
+// ── Worked examples ───────────────────────────────────────────────────────
+
+var _l43Examples = [
+  {
+    id: 'g1-u4-l3-ex-1',
+    title: 'Example 1: Add two tens numbers',
+    prompt: 'What is 30 + 40?',
+    visual: { type: 'base10', tens: 7, ones: 0 },
+    steps: [
+      '30 means 3 tens.',
+      '40 means 4 tens.',
+      'Count all tens together: 3 tens + 4 tens = 7 tens.',
+      '7 tens = 70.',
+      '30 + 40 = 70.'
+    ],
+    finalAnswer: '30 + 40 = 70.'
+  },
+  {
+    id: 'g1-u4-l3-ex-2',
+    title: 'Example 2: Order does not matter',
+    prompt: 'What is 40 + 30?',
+    visual: { type: 'base10', tens: 7, ones: 0 },
+    steps: [
+      '40 + 30 has the same numbers as 30 + 40, just in a different order.',
+      '4 tens + 3 tens = 7 tens, no matter which comes first.',
+      '40 + 30 = 70.'
+    ],
+    finalAnswer: '40 + 30 = 70.'
+  },
+  {
+    id: 'g1-u4-l3-ex-3',
+    title: 'Example 3: Reading a base-10 model',
+    prompt: 'A model shows 5 tens rods. A student adds 2 more. How many tens rods are there? What number is that?',
+    visual: { type: 'base10', tens: 5, ones: 0 },
+    steps: [
+      'Count the first group: 5 tens rods = 50.',
+      'Add 2 more tens rods: 5 + 2 = 7 tens rods.',
+      '7 tens rods = 70.',
+      '50 + 20 = 70.'
+    ],
+    finalAnswer: '50 + 20 = 70.'
+  },
+  {
+    id: 'g1-u4-l3-ex-4',
+    title: 'Example 4: Missing addend',
+    prompt: '30 + ___ = 80. What is the missing number?',
+    visual: null,
+    steps: [
+      '80 has 8 tens.',
+      'We already have 30 — that is 3 tens.',
+      'How many more tens do we need? 8 − 3 = 5 tens.',
+      '5 tens = 50.',
+      '30 + 50 = 80.'
+    ],
+    finalAnswer: 'The missing number is 50.'
+  },
+  {
+    id: 'g1-u4-l3-ex-5',
+    title: 'Example 5: Tens language',
+    prompt: '4 tens + 3 tens = ___ tens. What number is that?',
+    visual: null,
+    steps: [
+      '4 tens is 40. 3 tens is 30.',
+      '4 tens + 3 tens = 7 tens.',
+      '7 tens = 70.'
+    ],
+    finalAnswer: '4 tens + 3 tens = 7 tens = 70.'
+  },
+  {
+    id: 'g1-u4-l3-ex-6',
+    title: 'Example 6: Error repair',
+    prompt: 'A student says 20 + 50 = 7. What is the mistake?',
+    visual: null,
+    steps: [
+      'The student did 2 + 5 = 7 — they forgot the zeros!',
+      '20 means 2 tens. 50 means 5 tens.',
+      '2 tens + 5 tens = 7 tens = 70.',
+      'The correct answer is 70, not 7.'
+    ],
+    finalAnswer: '20 + 50 = 70.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -1322,8 +1946,8 @@ export const G1_U4_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 4.3 — Add Multiples of 10 (0 questions — scaffold)
-    //  Scope: 20 + 30 = 50, 40 + 20 = 60, no regrouping (max sum 90)
+    //  Lesson 4.3 — Add Multiples of 10 (170 questions)
+    //  Scope: 20 + 30 = 50, 40 + 60 = 100, no ones digits, no regrouping
     //  TEKS 1.3A
     // ═══════════════════════════════════════════════════════════════════════
     {
@@ -1332,13 +1956,40 @@ export const G1_U4_SPEC = {
       teks: ['1.3A'],
       skill: 'add_multiples_of_ten',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: [
+        '30 means 3 tens — not 3. 40 means 4 tens — not 4.',
+        'To add 30 + 40, add the tens: 3 tens + 4 tens = 7 tens.',
+        '7 tens = 70. Always keep the zero — it shows this is a tens number.',
+        'You can add in any order: 30 + 40 = 40 + 30 = 70.',
+        'A base-10 model for 30 + 40 shows 7 tens rods — count them to find 70.',
+        '50 + 50 = 100 because 5 tens + 5 tens = 10 tens, and 10 tens make 1 hundred.'
+      ],
+      workedExamples: _l43Examples,
+      quizBank: _l43QuizBank,
       diagnostics: {
-        commonDistractors: [],
-        errorTags: [],
-        interventionRules: []
+        commonDistractors: [
+          { value: 'err_added_digits_only',      meaning: 'Treated tens as singles — dropped both zeros (30+40=7).', errorTag: 'err_added_digits_only' },
+          { value: 'err_dropped_zero',            meaning: 'Missing addend: found the digit count but dropped the zero (chose 4 not 40).', errorTag: 'err_dropped_zero' },
+          { value: 'err_off_by_ten',              meaning: 'Answer is ±10 from correct — miscounted tens.', errorTag: 'err_off_by_ten' },
+          { value: 'err_missing_tens_value',      meaning: 'Gave the digit count instead of the tens value (3 instead of 30).', errorTag: 'err_missing_tens_value' },
+          { value: 'err_place_value_confusion',   meaning: 'Generic place-value error — wrong tens range or digits scrambled.', errorTag: 'err_place_value_confusion' },
+          { value: 'err_boundary_100_confusion',  meaning: 'Error at the 90→100 crossing (50+50=10).', errorTag: 'err_boundary_100_confusion' },
+          { value: 'err_commutative_confusion',   meaning: 'Thinks order matters; chose wrong equation as the commutative pair.', errorTag: 'err_commutative_confusion' }
+        ],
+        errorTags: [
+          'err_added_digits_only', 'err_dropped_zero', 'err_off_by_ten',
+          'err_missing_tens_value', 'err_place_value_confusion',
+          'err_boundary_100_confusion', 'err_commutative_confusion'
+        ],
+        interventionRules: [
+          { errorTag: 'err_added_digits_only',     style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_dropped_zero',          style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_off_by_ten',            style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_missing_tens_value',    style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_place_value_confusion', style: 'visual_model', followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_boundary_100_confusion',style: 'reteach',      followUpRule: 'same_skill_new_numbers' },
+          { errorTag: 'err_commutative_confusion', style: 'reteach',      followUpRule: 'same_skill_new_numbers' }
+        ]
       }
     },
 
