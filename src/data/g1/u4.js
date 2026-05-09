@@ -2875,21 +2875,27 @@ function _l45MkC6(startN, change, sumVal, n, diff, op) {
     intervention: _l45IntWordProblemSetup(startN, change, sumVal, op)
   });
 }
+// Constraint: for 'add' entries, startN must be > change so wrongOp (startN−change) stays non-negative.
 var _l45_M_C6 = [
-  [50,7,57,'add'],[37,10,47,'add'],[30,40,70,'add'],
+  [50,7,57,'add'],[37,10,47,'add'],[42,20,62,'add'],
   [24,20,44,'add'],[68,10,58,'sub'],[45,30,75,'add'],
   [56,10,46,'sub'],[20,6,26,'add'],[80,10,70,'sub'],[63,20,83,'add']
 ];
 var _l45_H_C6 = [
   [75,20,95,'add'],[43,30,73,'add'],[52,10,42,'sub'],
-  [40,8,48,'add'],[66,10,56,'sub'],[31,40,71,'add'],
+  [40,8,48,'add'],[66,10,56,'sub'],[53,30,83,'add'],
   [84,10,74,'sub'],[57,30,87,'add'],[72,20,92,'add'],[49,10,39,'sub']
 ];
 
 // C7: Base-10 model story — 15q: 10M + 5H
 function _l45MkC7(startN, change, n, diff, op) {
   var answer = op === 'sub' ? startN - change : startN + change;
-  var w1 = op === 'sub' ? startN + change : startN - change;
+  var rawSwap = op === 'sub' ? startN + change : startN - change;
+  // Guard: operation-swap distractor can go negative when startN < change on 'add'.
+  // Replace with err_ones_changed (answer+1) — a valid G1 misconception that stays in scope.
+  var w1 = rawSwap >= 0 ? rawSwap : answer + 1;
+  var w1tag = rawSwap >= 0 ? 'err_operation_swap' : 'err_ones_changed';
+  var w1me  = rawSwap >= 0 ? 'Used the wrong operation.' : 'Changed the ones digit instead of keeping it.';
   var w2 = answer + 10;
   var w3 = answer - 10;
   var contexts = [
@@ -2905,7 +2911,7 @@ function _l45MkC7(startN, change, n, diff, op) {
     answer: answer,
     choices: [
       { value: String(answer), correct: true },
-      _l45C(w1, 'err_operation_swap', 'Used the wrong operation.'),
+      _l45C(w1, w1tag, w1me),
       _l45C(w2, 'err_place_value_confusion', 'Off by one ten too many.'),
       _l45C(w3, 'err_place_value_confusion', 'Off by one ten too few.')
     ],
