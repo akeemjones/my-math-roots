@@ -88,6 +88,190 @@ var _SNC = 'err_sides_not_counted';
 var _CNC = 'err_corner_not_considered';
 var _NSC = 'err_non_shape_confusion';
 
+// ── Teaching visual SVG helpers ───────────────────────────────────────────────
+// Called at parse time; annotated SVG strings baked into intervention objects.
+
+var _TVP = '#9C27B0';
+
+function _tvWrap(svg, cap) {
+  return '<div style="text-align:center;padding:2px 0">' + svg +
+    (cap ? '<div style="font-size:0.78rem;color:#5a7080;font-family:\'Nunito\',sans-serif;margin-top:5px;line-height:1.3">' + cap + '</div>' : '') +
+    '</div>';
+}
+
+function _tvDot(x, y, n) {
+  return '<circle cx="' + x + '" cy="' + y + '" r="11" fill="' + _TVP + '"/>' +
+    '<text x="' + x + '" y="' + (y + 4) + '" font-size="13" font-weight="bold" fill="white" text-anchor="middle" font-family="Nunito,sans-serif">' + n + '</text>';
+}
+
+function _tvTriangleSides() {
+  // Triangle points (80,12)(142,112)(18,112); side-number circles near each side midpoint
+  return _tvWrap(
+    '<svg width="160" height="145" viewBox="0 0 160 145" style="display:inline-block">' +
+    '<polygon points="80,12 142,112 18,112" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    _tvDot(120, 57, 1) + _tvDot(80, 131, 2) + _tvDot(40, 57, 3) +
+    '</svg>',
+    '3 sides = triangle'
+  );
+}
+
+function _tvTriangleCorners() {
+  // Triangle with numbered dots at each corner vertex
+  return _tvWrap(
+    '<svg width="160" height="125" viewBox="0 0 160 125" style="display:inline-block">' +
+    '<polygon points="80,12 142,112 18,112" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    _tvDot(80, 12, 1) + _tvDot(142, 112, 2) + _tvDot(18, 112, 3) +
+    '</svg>',
+    '3 corners = triangle'
+  );
+}
+
+function _tvCircle0() {
+  // Circle with "0 sides / 0 corners" callout lines
+  return _tvWrap(
+    '<svg width="210" height="90" viewBox="0 0 210 90" style="display:inline-block">' +
+    '<circle cx="48" cy="45" r="38" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="86" y1="25" x2="100" y2="25" stroke="' + _TVP + '" stroke-width="1.5"/>' +
+    '<line x1="86" y1="65" x2="100" y2="65" stroke="' + _TVP + '" stroke-width="1.5"/>' +
+    '<text x="103" y="30" font-size="14" font-weight="bold" fill="' + _TVP + '" font-family="Nunito,sans-serif">0 sides</text>' +
+    '<text x="103" y="70" font-size="14" font-weight="bold" fill="' + _TVP + '" font-family="Nunito,sans-serif">0 corners</text>' +
+    '</svg>',
+    'Perfectly round — no sides, no corners'
+  );
+}
+
+function _tvCircleVsOval() {
+  // Side-by-side: purple circle (correct) vs gray oval (wrong)
+  return _tvWrap(
+    '<svg width="230" height="102" viewBox="0 0 230 102" style="display:inline-block">' +
+    '<text x="55" y="14" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Circle</text>' +
+    '<circle cx="55" cy="57" r="38" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="115" y1="18" x2="115" y2="96" stroke="#ccc" stroke-width="1"/>' +
+    '<text x="175" y="14" font-size="12" font-weight="700" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">Oval</text>' +
+    '<ellipse cx="175" cy="57" rx="50" ry="32" fill="#888" opacity="0.13" stroke="#999" stroke-width="3"/>' +
+    '</svg>',
+    'Circle = perfectly round     Oval = stretched'
+  );
+}
+
+function _tvRectAnnotated() {
+  // Rectangle with longer/shorter side labels
+  return _tvWrap(
+    '<svg width="195" height="108" viewBox="0 0 195 108" style="display:inline-block">' +
+    '<rect x="12" y="28" width="150" height="58" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="87" y="20" font-size="11" font-weight="bold" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">← longer →</text>' +
+    '<text x="170" y="54" font-size="11" font-weight="bold" fill="' + _TVP + '" text-anchor="start" font-family="Nunito,sans-serif">↑</text>' +
+    '<text x="170" y="68" font-size="11" font-weight="bold" fill="' + _TVP + '" text-anchor="start" font-family="Nunito,sans-serif">short</text>' +
+    '<text x="170" y="82" font-size="11" font-weight="bold" fill="' + _TVP + '" text-anchor="start" font-family="Nunito,sans-serif">↓</text>' +
+    '</svg>',
+    'Rectangle: 2 longer sides + 2 shorter sides'
+  );
+}
+
+function _tvSquareAnnotated() {
+  // Square with perpendicular tick marks on all 4 sides (equal length indicator)
+  return _tvWrap(
+    '<svg width="120" height="120" viewBox="0 0 120 120" style="display:inline-block">' +
+    '<rect x="18" y="18" width="84" height="84" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="60" y1="10" x2="60" y2="26" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="94" y1="60" x2="110" y2="60" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="60" y1="94" x2="60" y2="110" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="10" y1="60" x2="26" y2="60" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '</svg>',
+    'Square: all 4 sides are equal length'
+  );
+}
+
+function _tvRectVsSquare() {
+  // Side-by-side rectangle (unequal sides) vs square (tick marks = equal sides)
+  return _tvWrap(
+    '<svg width="240" height="112" viewBox="0 0 240 112" style="display:inline-block">' +
+    '<text x="55" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Rectangle</text>' +
+    '<rect x="5" y="22" width="100" height="58" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="55" y="98" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">unequal sides</text>' +
+    '<line x1="120" y1="8" x2="120" y2="104" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="185" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Square</text>' +
+    '<rect x="152" y="22" width="66" height="66" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="185" y1="14" x2="185" y2="30" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="144" y1="55" x2="160" y2="55" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="185" y1="80" x2="185" y2="96" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="210" y1="55" x2="226" y2="55" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<text x="185" y="102" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">all sides equal</text>' +
+    '</svg>',
+    'Check side lengths: unequal = rectangle     equal = square'
+  );
+}
+
+function _tvSquareVsRhombus() {
+  // Side-by-side: square (square corner mark) vs rhombus (leaning corners)
+  return _tvWrap(
+    '<svg width="250" height="115" viewBox="0 0 250 115" style="display:inline-block">' +
+    '<text x="43" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Square</text>' +
+    '<rect x="5" y="24" width="76" height="76" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<polyline points="5,44 25,44 25,24" fill="none" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="43" y="112" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">square corners</text>' +
+    '<line x1="127" y1="8" x2="127" y2="107" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="188" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Rhombus</text>' +
+    '<polygon points="188,18 233,62 188,106 143,62" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="188" y="112" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">leaning corners</text>' +
+    '</svg>',
+    'Both have 4 equal sides — the corners are different!'
+  );
+}
+
+function _tvHexVsPenta() {
+  // Side-by-side hexagon (6 sides) vs pentagon (5 sides) — points computed at parse time
+  var i, a, hPts = [], pPts = [];
+  for (i = 0; i < 6; i++) {
+    a = (i * 60 - 90) * Math.PI / 180;
+    hPts.push((68 + 44 * Math.cos(a)).toFixed(1) + ',' + (59 + 44 * Math.sin(a)).toFixed(1));
+  }
+  for (i = 0; i < 5; i++) {
+    a = (i * 72 - 90) * Math.PI / 180;
+    pPts.push((182 + 38 * Math.cos(a)).toFixed(1) + ',' + (59 + 38 * Math.sin(a)).toFixed(1));
+  }
+  return _tvWrap(
+    '<svg width="250" height="112" viewBox="0 0 250 112" style="display:inline-block">' +
+    '<text x="68" y="10" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Hexagon</text>' +
+    '<polygon points="' + hPts.join(' ') + '" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="68" y="108" font-size="11" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">6 sides</text>' +
+    '<line x1="125" y1="8" x2="125" y2="104" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="182" y="10" font-size="11" font-weight="700" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">Pentagon</text>' +
+    '<polygon points="' + pPts.join(' ') + '" fill="#888" opacity="0.13" stroke="#999" stroke-width="3"/>' +
+    '<text x="182" y="108" font-size="11" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">5 sides</text>' +
+    '</svg>',
+    'Count carefully: 6 sides = hexagon     5 sides = pentagon'
+  );
+}
+
+function _tvHexSides() {
+  // Hexagon with numbered circles on each side midpoint
+  var cx = 80, cy = 66, r = 50, i, a, verts = [];
+  for (i = 0; i < 6; i++) {
+    a = (i * 60 - 90) * Math.PI / 180;
+    verts.push({x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)});
+  }
+  var pts = verts.map(function(v){ return v.x.toFixed(1) + ',' + v.y.toFixed(1); }).join(' ');
+  var dots = '';
+  for (i = 0; i < 6; i++) {
+    var v1 = verts[i], v2 = verts[(i + 1) % 6];
+    var mx = (v1.x + v2.x) / 2, my = (v1.y + v2.y) / 2;
+    var dx = mx - cx, dy = my - cy;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var lx = (mx + dx / len * 15).toFixed(1);
+    var ly = (my + dy / len * 15).toFixed(1);
+    dots += '<circle cx="' + lx + '" cy="' + ly + '" r="10" fill="' + _TVP + '"/>' +
+      '<text x="' + lx + '" y="' + (parseFloat(ly) + 4).toFixed(1) + '" font-size="11" font-weight="bold" fill="white" text-anchor="middle" font-family="Nunito,sans-serif">' + (i + 1) + '</text>';
+  }
+  return _tvWrap(
+    '<svg width="160" height="132" viewBox="0 0 160 132" style="display:inline-block">' +
+    '<polygon points="' + pts + '" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    dots +
+    '</svg>',
+    '6 sides = hexagon'
+  );
+}
+
 // ── Intervention factories ───────────────────────────────────────────────────
 
 function _iWS(shape) {
@@ -100,21 +284,22 @@ function _iWS(shape) {
     hexagon:   ['A hexagon has 6 straight sides.', 'Count: 1, 2, 3, 4, 5, 6.', '6 sides = hexagon.']
   };
   var tvMap = {
-    circle:    {type: 'shapes', config: {items: ['circle']}},
-    triangle:  {type: 'shapes', config: {items: ['triangle']}},
-    rectangle: {type: 'shapes', config: {items: ['rectangle']}},
-    square:    {type: 'shapes', config: {items: ['square']}}
+    circle:    _tvCircle0(),
+    triangle:  _tvTriangleSides(),
+    rectangle: _tvRectAnnotated(),
+    square:    _tvSquareAnnotated(),
+    rhombus:   _tvSquareVsRhombus(),
+    hexagon:   _tvHexSides()
   };
-  var r = {
+  return {
     errorTag: _WS,
-    title: 'Let’s identify this shape',
+    title: 'Let\'s identify this shape',
     teachingSteps: steps[shape],
+    teachingVisualRaw: tvMap[shape],
     correctAnswerExplanation: 'This shape is a ' + shape + '.',
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
-  if (tvMap[shape]) r.teachingVisual = tvMap[shape];
-  return r;
 }
 
 function _iCO() {
@@ -128,7 +313,7 @@ function _iCO() {
       'A circle has no sides and no corners.'
     ],
     correctAnswerExplanation: 'This is a circle. It is perfectly round — not stretched like an oval.',
-    teachingVisual: {type: 'shapes', config: {items: ['circle']}},
+    teachingVisualRaw: _tvCircleVsOval(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
@@ -145,7 +330,7 @@ function _iSR() {
       'Check the side lengths to tell them apart.'
     ],
     correctAnswerExplanation: 'Check the side lengths: equal sides = square; unequal sides = rectangle.',
-    teachingVisual: {type: 'shapes', config: {items: ['rectangle', 'square']}},
+    teachingVisualRaw: _tvRectVsSquare(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
@@ -162,6 +347,7 @@ function _iSRh() {
       'A rhombus has leaning corners — they tilt to the side.'
     ],
     correctAnswerExplanation: 'Both have 4 equal sides, but the corners are different. Square corners = square. Leaning corners = rhombus.',
+    teachingVisualRaw: _tvSquareVsRhombus(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
@@ -178,6 +364,7 @@ function _iHP() {
       'Count again: 1, 2, 3, 4, 5, 6. Six sides = hexagon.'
     ],
     correctAnswerExplanation: 'Count the sides: 5 = pentagon, 6 = hexagon.',
+    teachingVisualRaw: _tvHexVsPenta(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
@@ -194,6 +381,7 @@ function _iSNC() {
       'The number of sides is your answer.'
     ],
     correctAnswerExplanation: 'Touch each straight side and count: that is the number of sides.',
+    teachingVisualRaw: _tvTriangleSides(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };
@@ -210,6 +398,7 @@ function _iCNC() {
       'The number of corners equals the number of sides.'
     ],
     correctAnswerExplanation: 'Touch each corner and count: that is the number of corners.',
+    teachingVisualRaw: _tvTriangleCorners(),
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
   };

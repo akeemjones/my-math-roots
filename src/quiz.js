@@ -1434,8 +1434,9 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
   // "The question" panel, which renders q.v directly.
   if (q && q.i && Array.isArray(q.i.teachingSteps) && q.i.teachingSteps.length) {
     var _iVis = '';
-    if (q.i.teachingVisual)  try { _iVis = _buildVisualHTML(q.i.teachingVisual); } catch(e) {}
-    else if (q.v)            try { _iVis = _buildVisualHTML(q.v); }              catch(e) {}
+    if (q.i.teachingVisualRaw)   { _iVis = q.i.teachingVisualRaw; }
+    else if (q.i.teachingVisual) try { _iVis = _buildVisualHTML(q.i.teachingVisual); } catch(e) {}
+    else if (q.v)                try { _iVis = _buildVisualHTML(q.v); }              catch(e) {}
     return {
       title:                    q.i.title || 'Let\'s Review',
       text:                     q.i.teachingSteps.join('\n'),
@@ -1855,6 +1856,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
   // § 2 — THE QUESTION
   var qVisualHTML = '';
   if(q && q.v){ try{ qVisualHTML = _buildVisualHTML(q.v); }catch(e){} }
+  else if(q && q.s){ qVisualHTML = '<div class="q-visual">'+q.s+'</div>'; }
   var qSection = q ?
     '<div style="background:var(--bg2,#f4f7fa);border-radius:var(--rad-sm,12px);padding:12px 14px;text-align:left;">'+
       '<div style="'+LABEL_STYLE+'">The question</div>'+
