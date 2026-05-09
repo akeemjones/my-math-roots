@@ -53,6 +53,19 @@ const _G1_U4_LESSONS = [
   { id:'g1-u4-l5', title:'Tens and Ones Word Problems',   icon:'📖', desc:'Solve single-step word problems with tens and ones',                   teks:'TEKS 1.3A, 1.5D' }
 ];
 
+// ── Unit 5 lesson shells ─────────────────────────────────────────────────────
+//  Scope guardrails:
+//    2D: circle, triangle, rectangle, square, rhombus, hexagon (pentagon/octagon = distractors only)
+//    3D: sphere, cone, cylinder, cube, rectangular prism, triangular prism (no square pyramid)
+//    No symmetry. No face/edge/vertex counting in L5.2. No polygon/quadrilateral vocabulary.
+const _G1_U5_LESSONS = [
+  { id:'g1-u5-l1', title:'2D Shapes — Identify and Describe',  icon:'🔷', desc:'Identify and describe 2D shapes: circle, triangle, rectangle, square, rhombus, hexagon',                    teks:'TEKS 1.6C, 1.6D' },
+  { id:'g1-u5-l2', title:'3D Shapes — Identify and Describe',  icon:'📦', desc:'Identify and describe 3D solids: sphere, cone, cylinder, cube, rectangular prism, triangular prism',       teks:'TEKS 1.6E' },
+  { id:'g1-u5-l3', title:'Shape Attributes and Sorting',       icon:'🔲', desc:'Classify and sort shapes by attributes using informal geometric language',                                   teks:'TEKS 1.6A, 1.6B' },
+  { id:'g1-u5-l4', title:'Compose and Recognize 2D Shapes',    icon:'🧩', desc:'Join two or more 2D shapes to produce a new shape',                                                         teks:'TEKS 1.6F' },
+  { id:'g1-u5-l5', title:'Equal Parts — Halves and Fourths',   icon:'🍕', desc:'Partition shapes into two or four equal parts; identify halves and fourths',                                teks:'TEKS 1.6G, 1.6H' }
+];
+
 // ── Grade 1 unit shells ───────────────────────────────────────────────────────
 const _UNITS_DATA_G1 = [
   {
@@ -94,11 +107,9 @@ const _UNITS_DATA_G1 = [
     id: 'g1u5', name: 'Geometry',
     icon: '🔷',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#9C27B0" opacity="0.1"/><polygon points="30,10 54,48 6,48" fill="none" stroke="#9C27B0" stroke-width="2.5"/></svg>',
-    color: '#9C27B0', gp: 1, teks: 'TEKS 1.6',
-    lessons: [
-      { id:'g1u5l1', title:'2D and 3D Shapes', icon:'🔷', desc:'Identify and sort 2D and 3D shapes' }
-    ],
-    _loaded: true
+    color: '#9C27B0', gp: 1, teks: 'TEKS 1.6A–H',
+    lessons: _G1_U5_LESSONS.map(function(l){ return Object.assign({}, l); }),
+    _loaded: false
   },
   {
     id: 'g1u6', name: 'Measurement',
@@ -151,10 +162,10 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js, idx 1 → u2.js, idx 2 → u3.js, idx 3 → u4.js.
-  // Units 5-8 (idx 4-7) are still shell-only — short-circuit so the loader
+  // Units with data files: idx 0 → u1.js … idx 4 → u5.js.
+  // Units 6-8 (idx 5-7) are still shell-only — short-circuit so the loader
   // does not try to fetch a file that doesn't exist yet.
-  if(idx > 3){
+  if(idx > 4){
     u._loaded = true;
     return Promise.resolve();
   }
