@@ -11,7 +11,7 @@
  *    L4.2  10 More and 10 Less                  ← COMPLETE (165 questions)
  *    L4.3  Add Multiples of 10                  ← COMPLETE (170 questions)
  *    L4.4  Add Tens to Two-Digit Numbers        ← COMPLETE (170 questions)
- *    L4.5  Tens and Ones Word Problems          ← SCAFFOLD (0 questions)
+ *    L4.5  Tens and Ones Word Problems          ← COMPLETE (170 questions)
  *
  *  Hard scope guardrails (apply to every future question added to this unit):
  *    - No regrouping. No carrying. No borrowing.
@@ -2491,6 +2491,626 @@ var _l44Examples = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+//  Lesson 4.5 — Tens and Ones Word Problems
+//  Skill: tens_and_ones_word_problems · TEKS 1.3A, 1.5C
+//  170q: 55E/65M/50H across 10 categories
+// ════════════════════════════════════════════════════════════════════════════
+
+function _l45Q(n, o) {
+  return {
+    id: 'g1-u4-l5-q-' + String(n).padStart(3, '0'),
+    teks: o.teks || ['1.3A', '1.5C'],
+    lessonId: 'g1-u4-l5',
+    skill: 'tens_and_ones_word_problems',
+    subSkill: o.subSkill, keyIdea: o.keyIdea, difficulty: o.difficulty,
+    interactionType: 'multipleChoice', prompt: o.prompt,
+    visual: o.visual || null, answer: String(o.answer),
+    choices: o.choices, hint: o.hint,
+    intervention: Object.assign({ followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true }, o.intervention)
+  };
+}
+
+function _l45VisBase10(tens, ones) { return { type: 'base10', tens: tens, ones: ones }; }
+
+function _l45TV(tens, ones, label) {
+  return { type: 'base10', config: { tens: tens, ones: ones, label: label || '' } };
+}
+
+function _l45TVH(hundreds, tens, ones, label) {
+  return { type: 'base10', config: { hundreds: hundreds, tens: tens, ones: ones, label: label || '' } };
+}
+
+function _l45C(val, errorTag, misconception) {
+  return { value: String(val), correct: false, errorTag: errorTag, misconceptionExplanation: misconception };
+}
+
+// ── Intervention factories ────────────────────────────────────────────────
+
+function _l45IntWordProblemSetup(startN, change, answer, op) {
+  var opStr = op === 'sub' ? ' − ' : ' + ';
+  return {
+    errorTag: 'err_word_problem_setup',
+    title: 'Read the story again — find the start and the change',
+    teachingSteps: [
+      'Read the story from the beginning.',
+      'Find the starting number — the number you begin with: ' + startN + '.',
+      'Find what changes — ' + (op === 'sub' ? 'some are taken away: ' : 'more are added: ') + change + '.',
+      'Write the equation: ' + startN + opStr + change + ' = ?',
+      'Solve: ' + startN + opStr + change + ' = ' + answer + '.'
+    ],
+    correctAnswerExplanation: 'Starting number: ' + startN + '. Change: ' + (op === 'sub' ? '−' : '+') + change + '. Answer: ' + answer + '.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(startN / 10), ones: startN % 10, label: 'Start: ' + startN } }
+  };
+}
+
+function _l45IntOperationSwap(startN, change, answer, op) {
+  var keyword = op === 'sub' ? '"taken away" or "less"' : '"gets more," "adds," or "joins"';
+  var opStr = op === 'sub' ? ' − ' : ' + ';
+  return {
+    errorTag: 'err_operation_swap',
+    title: 'Check the story — did you add or subtract?',
+    teachingSteps: [
+      'Read the action in the story.',
+      'Words like "gets more," "adds," or "joins" mean addition (+).',
+      'Words like "takes away," "lost," or "removed" mean subtraction (−).',
+      'This story uses ' + keyword + '.',
+      'So: ' + startN + opStr + change + ' = ' + answer + '.'
+    ],
+    correctAnswerExplanation: startN + opStr + change + ' = ' + answer + '. The story tells you to ' + (op === 'sub' ? 'subtract' : 'add') + '.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(answer / 10), ones: answer % 10, label: 'Answer: ' + answer } }
+  };
+}
+
+function _l45IntTenAsOne(startN, mTens, answer) {
+  return {
+    errorTag: 'err_ten_as_one',
+    title: mTens + ' means ' + (mTens / 10) + ' tens — not ' + (mTens / 10) + ' ones',
+    teachingSteps: [
+      'The number you added is ' + mTens + '.',
+      mTens + ' is not ' + (mTens / 10) + ' — it is ' + (mTens / 10) + ' tens.',
+      'Add the tens: count up the tens rods.',
+      'The ones digit stays the same.',
+      startN + ' + ' + mTens + ' = ' + answer + '.'
+    ],
+    correctAnswerExplanation: mTens + ' = ' + (mTens / 10) + ' tens. ' + startN + ' + ' + mTens + ' = ' + answer + '.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(answer / 10), ones: answer % 10, label: 'Answer: ' + answer } }
+  };
+}
+
+function _l45IntOnesChanged(startN, mTens, answer) {
+  var ones = startN % 10;
+  return {
+    errorTag: 'err_ones_changed',
+    title: 'When you add tens, the ones stay the same',
+    teachingSteps: [
+      'Look at the ones digit in ' + startN + ': it is ' + ones + '.',
+      'Adding ' + mTens + ' only changes the tens digit.',
+      'The ones digit stays ' + ones + ' — it never changes.',
+      'Count up the tens: ' + Math.floor(startN / 10) + ' + ' + (mTens / 10) + ' = ' + Math.floor(answer / 10) + ' tens.',
+      'Answer: ' + Math.floor(answer / 10) + ' tens and ' + ones + ' ones = ' + answer + '.'
+    ],
+    correctAnswerExplanation: 'Ones stay ' + ones + '. Tens: ' + Math.floor(startN / 10) + ' + ' + (mTens / 10) + ' = ' + Math.floor(answer / 10) + '. Answer: ' + answer + '.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(answer / 10), ones: ones, label: 'Ones stay ' + ones } }
+  };
+}
+
+function _l45IntMissingTensValue(startN, mTens, endN) {
+  return {
+    errorTag: 'err_missing_tens_value',
+    title: 'Use the full number — ' + mTens + ', not ' + (mTens / 10),
+    teachingSteps: [
+      'The amount added is ' + mTens + '.',
+      'Do not use just the digit ' + (mTens / 10) + ' — use the full value ' + mTens + '.',
+      'Add the full amount: ' + startN + ' + ' + mTens + '.',
+      'Count up the tens rods: ' + Math.floor(startN / 10) + ' + ' + (mTens / 10) + ' = ' + Math.floor(endN / 10) + ' tens.',
+      'Answer: ' + endN + '.'
+    ],
+    correctAnswerExplanation: startN + ' + ' + mTens + ' = ' + endN + '. Always add the full tens value.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(endN / 10), ones: endN % 10, label: 'Add full ' + mTens } }
+  };
+}
+
+function _l45IntPlaceValueConfusion(startN, mTens, answer) {
+  var startTens = Math.floor(startN / 10), startOnes = startN % 10;
+  var addTens = mTens / 10;
+  return {
+    errorTag: 'err_place_value_confusion',
+    title: 'Break it into tens and ones, then add',
+    teachingSteps: [
+      'Break ' + startN + ' into tens and ones: ' + startTens + ' tens and ' + startOnes + ' ones.',
+      'We are adding ' + mTens + ' — that is ' + addTens + ' tens.',
+      'Add the tens: ' + startTens + ' + ' + addTens + ' = ' + (startTens + addTens) + ' tens.',
+      'Keep the ones: ' + startOnes + ' ones.',
+      'Put them together: ' + (startTens + addTens) + ' tens and ' + startOnes + ' ones = ' + answer + '.'
+    ],
+    correctAnswerExplanation: startN + ' + ' + mTens + ' = ' + answer + '. Add tens to tens, keep the ones.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(answer / 10), ones: startOnes, label: startTens + '+' + addTens + ' tens' } }
+  };
+}
+
+function _l45IntBoundary100(startN, mTens, answer) {
+  var ansH = Math.floor(answer / 100), ansT = Math.floor((answer % 100) / 10), ansO = answer % 10;
+  return {
+    errorTag: 'err_boundary_100_confusion',
+    title: 'At 100, 10 tens become 1 hundred',
+    teachingSteps: [
+      'We start with ' + startN + ' — that is ' + Math.floor(startN / 10) + ' tens.',
+      'We add ' + mTens + ' — that is ' + (mTens / 10) + ' more ten' + (mTens > 10 ? 's' : '') + '.',
+      Math.floor(startN / 10) + ' + ' + (mTens / 10) + ' = ' + (Math.floor(startN / 10) + mTens / 10) + ' tens.',
+      '10 tens = 1 hundred = 100.',
+      'Answer: ' + answer + ' — that is ' + ansH + ' hundred' + (ansT ? ', ' + ansT + ' ten' + (ansT > 1 ? 's' : '') : '') + (ansO ? ', ' + ansO + ' ones' : '') + '.'
+    ],
+    correctAnswerExplanation: startN + ' + ' + mTens + ' = ' + answer + '. 10 tens trade for 1 hundred.',
+    teachingVisual: { type: 'base10', config: { hundreds: ansH, tens: ansT, ones: ansO, label: 'Answer: ' + answer } }
+  };
+}
+
+function _l45IntTwoStepConfusion(startN, change, answer, op) {
+  var opStr = op === 'sub' ? ' − ' : ' + ';
+  return {
+    errorTag: 'err_two_step_confusion',
+    title: 'This is one step — find the start and the change',
+    teachingSteps: [
+      'Read the story one more time.',
+      'This problem only asks you to do one thing.',
+      'Starting number: ' + startN + '.',
+      'Change: ' + (op === 'sub' ? '−' : '+') + change + '.',
+      startN + opStr + change + ' = ' + answer + '. Done.'
+    ],
+    correctAnswerExplanation: 'One step only: ' + startN + opStr + change + ' = ' + answer + '.',
+    teachingVisual: { type: 'base10', config: { tens: Math.floor(answer / 10), ones: answer % 10, label: 'Answer: ' + answer } }
+  };
+}
+
+// ── Category builders and data ───────────────────────────────────────────
+
+// C1: Add tens and ones story (L4.1 review) — 25q: 20E + 5M
+function _l45MkC1(tens0, ones, n, diff) {
+  var start = tens0 * 10, answer = start + ones;
+  var w1 = start + (ones === 9 ? ones - 1 : ones + 1);
+  var w2 = (tens0 + 1) * 10 + ones;
+  var w3 = tens0 * 10 + (ones === 0 ? 1 : 0);
+  var contexts = [
+    ['Maya', 'stickers', 'She gets', 'does she have now'],
+    ['Liam', 'marbles', 'He collects', 'does he have now'],
+    ['Sofia', 'crayons', 'She finds', 'does she have now'],
+    ['The class', 'books', 'The teacher adds', 'are there now']
+  ];
+  var ctx = contexts[n % contexts.length];
+  return _l45Q(n, {
+    subSkill: 'add_tens_and_ones_story', keyIdea: 0, difficulty: diff,
+    prompt: ctx[0] + ' has ' + start + ' ' + ctx[1] + '. ' + ctx[2] + ' ' + ones + ' more ' + ctx[1] + '. How many ' + ctx[1] + ' ' + ctx[3] + '?',
+    visual: diff === 'easy' ? _l45VisBase10(tens0, 0) : null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_ones_changed', 'Off by one in the ones digit.'),
+      _l45C(w2, 'err_place_value_confusion', 'Added an extra ten instead of ones.'),
+      _l45C(w3, 'err_ten_as_one', 'Added tens instead of ones.')
+    ],
+    hint: start + ' + ' + ones + ' = ? Only the ones change.',
+    intervention: _l45IntWordProblemSetup(start, ones, answer, 'add')
+  });
+}
+var _l45_E_C1 = [
+  [1,3],[1,5],[1,7],[1,9],[2,1],[2,4],[2,6],[2,8],
+  [3,2],[3,5],[3,7],[4,1],[4,3],[4,6],[4,9],
+  [5,2],[5,4],[6,1],[6,3],[7,2]
+];
+var _l45_M_C1 = [[3,9],[5,7],[6,6],[7,4],[8,3]];
+
+// C2: 10 more story (L4.2 review) — 20q: 15E + 5M
+function _l45MkC2(start, n, diff) {
+  var answer = start + 10;
+  var w1 = start + 1;
+  var w2 = start - 10;
+  var w3 = start + 20;
+  var contexts = [
+    ['books on a shelf', 'the teacher adds 10 more books', 'books are there'],
+    ['crayons in a box', '10 more crayons are put in', 'crayons are in the box'],
+    ['stickers on a page', '10 more stickers are added', 'stickers are there'],
+    ['pencils in a cup', '10 more pencils are placed in', 'pencils are in the cup']
+  ];
+  var ctx = contexts[n % contexts.length];
+  return _l45Q(n, {
+    subSkill: 'ten_more_story', keyIdea: 1, difficulty: diff,
+    prompt: 'There are ' + start + ' ' + ctx[0] + '. ' + ctx[1].charAt(0).toUpperCase() + ctx[1].slice(1) + '. How many ' + ctx[2] + ' now?',
+    visual: diff === 'easy' ? _l45VisBase10(Math.floor(start / 10), start % 10) : null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_ten_as_one', 'Added 1 instead of 10.'),
+      _l45C(w2, 'err_operation_swap', 'Subtracted 10 instead of adding.'),
+      _l45C(w3, 'err_place_value_confusion', 'Added 20 instead of 10.')
+    ],
+    hint: start + ' + 10: add 1 ten to the tens digit.',
+    intervention: _l45IntTenAsOne(start, 10, answer)
+  });
+}
+var _l45_E_C2 = [12, 23, 34, 15, 26, 37, 48, 19, 41, 52, 63, 27, 38, 45, 56];
+var _l45_M_C2 = [72, 64, 55, 47, 33];
+
+// C3: 10 less story (L4.2 review) — 15q: 10E + 5M
+function _l45MkC3(start, n, diff) {
+  var answer = start - 10;
+  var w1 = start - 1;
+  var w2 = start + 10;
+  var w3 = start - 20;
+  var contexts = [
+    ['pencils', '10 pencils are taken away', 'pencils are left'],
+    ['apples', '10 apples are eaten', 'apples are left'],
+    ['cards', '10 cards are removed', 'cards are left'],
+    ['beads', '10 beads fall off', 'beads are left']
+  ];
+  var ctx = contexts[n % contexts.length];
+  return _l45Q(n, {
+    subSkill: 'ten_less_story', keyIdea: 2, difficulty: diff,
+    prompt: 'There are ' + start + ' ' + ctx[0] + '. ' + ctx[1].charAt(0).toUpperCase() + ctx[1].slice(1) + '. How many ' + ctx[2] + '?',
+    visual: diff === 'easy' ? _l45VisBase10(Math.floor(start / 10), start % 10) : null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_ten_as_one', 'Subtracted 1 instead of 10.'),
+      _l45C(w2, 'err_operation_swap', 'Added 10 instead of subtracting.'),
+      _l45C(w3, 'err_place_value_confusion', 'Subtracted 20 instead of 10.')
+    ],
+    hint: start + ' − 10: subtract 1 ten from the tens digit.',
+    intervention: _l45IntOperationSwap(start, 10, answer, 'sub')
+  });
+}
+var _l45_E_C3 = [28, 35, 46, 57, 63, 74, 85, 92, 41, 68];
+var _l45_M_C3 = [53, 77, 89, 62, 44];
+
+// C4: Add multiples of 10 story (L4.3 review) — 15q: 10E + 5M
+function _l45MkC4(t1, t2, n, diff) {
+  var a1 = t1 * 10, a2 = t2 * 10, answer = a1 + a2;
+  var w1 = t1 + t2;
+  var w2 = answer + 10;
+  var w3 = answer - 10;
+  var pairs = [
+    ['red blocks', 'blue blocks', 'blocks'],
+    ['apples', 'oranges', 'pieces of fruit'],
+    ['crayons', 'markers', 'art supplies'],
+    ['pennies', 'nickels', 'coins']
+  ];
+  var p = pairs[n % pairs.length];
+  return _l45Q(n, {
+    subSkill: 'add_multiples_of_10_story', keyIdea: 3, difficulty: diff,
+    prompt: 'There are ' + a1 + ' ' + p[0] + ' and ' + a2 + ' ' + p[1] + '. How many ' + p[2] + ' are there in all?',
+    visual: diff === 'easy' ? _l45VisBase10(t1, 0) : null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_ten_as_one', 'Added the tens digits only, not the full values.'),
+      _l45C(w2, 'err_place_value_confusion', 'Off by one ten too many.'),
+      _l45C(w3, 'err_place_value_confusion', 'Off by one ten too few.')
+    ],
+    hint: a1 + ' + ' + a2 + ': count the tens — ' + t1 + ' + ' + t2 + ' = ' + (t1 + t2) + ' tens.',
+    intervention: _l45IntTenAsOne(a1, a2, answer)
+  });
+}
+var _l45_E_C4 = [[1,2],[1,3],[2,3],[1,4],[2,4],[3,4],[1,5],[2,5],[1,6],[3,3]];
+var _l45_M_C4 = [[4,4],[2,6],[3,5],[4,5],[3,6]];
+
+// ── Assembly ─────────────────────────────────────────────────────────────
+var _l45QuizBank = [];
+var _l45N = 0;
+
+_l45_E_C1.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC1(p[0], p[1], _l45N, 'easy')); });
+_l45_M_C1.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC1(p[0], p[1], _l45N, 'medium')); });
+_l45_E_C2.forEach(function(s) { _l45N++; _l45QuizBank.push(_l45MkC2(s, _l45N, 'easy')); });
+_l45_M_C2.forEach(function(s) { _l45N++; _l45QuizBank.push(_l45MkC2(s, _l45N, 'medium')); });
+_l45_E_C3.forEach(function(s) { _l45N++; _l45QuizBank.push(_l45MkC3(s, _l45N, 'easy')); });
+_l45_M_C3.forEach(function(s) { _l45N++; _l45QuizBank.push(_l45MkC3(s, _l45N, 'medium')); });
+_l45_E_C4.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC4(p[0], p[1], _l45N, 'easy')); });
+_l45_M_C4.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC4(p[0], p[1], _l45N, 'medium')); });
+// Running total after C1–C4: 75
+
+// C5: Add tens to two-digit story (L4.4 review) — 20q: 15M + 5H
+function _l45MkC5(startN, mTens, n, diff) {
+  var answer = startN + mTens;
+  var startOnes = startN % 10;
+  var w1 = startN + (mTens / 10);
+  var w2 = answer + 10;
+  var w3 = (Math.floor(startN / 10) + mTens / 10) * 10;
+  var contexts = [
+    ['A class has', 'crayons', 'the teacher gives them', 'more crayons', 'crayons do they have'],
+    ['A shelf has', 'books', 'a librarian adds', 'more books', 'books are on the shelf'],
+    ['A jar has', 'marbles', 'more marbles are poured in', '', 'marbles are in the jar'],
+    ['A box holds', 'stickers', 'someone puts in', 'more stickers', 'stickers are in the box']
+  ];
+  var ctx = contexts[n % contexts.length];
+  var promptAdded = ctx[3] ? mTens + ' ' + ctx[3] : mTens + ' more ' + ctx[1];
+  return _l45Q(n, {
+    subSkill: 'add_tens_to_two_digit_story', keyIdea: 1, difficulty: diff,
+    prompt: ctx[0] + ' ' + startN + ' ' + ctx[1] + '. ' + ctx[2].charAt(0).toUpperCase() + ctx[2].slice(1) + ' ' + promptAdded + '. How many ' + ctx[4] + ' now?',
+    visual: _l45VisBase10(Math.floor(startN / 10), startOnes),
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_ten_as_one', 'Added the tens digit as ones.'),
+      _l45C(w2, 'err_off_by_ten', 'Added one extra ten.'),
+      _l45C(w3, 'err_ones_changed', 'Changed the ones digit instead of keeping it.')
+    ],
+    hint: startN + ' + ' + mTens + ': add ' + (mTens / 10) + ' ten' + (mTens > 10 ? 's' : '') + '. Ones stay ' + startOnes + '.',
+    intervention: _l45IntOnesChanged(startN, mTens, answer)
+  });
+}
+var _l45_M_C5 = [
+  [13,20],[24,10],[35,30],[46,20],[57,10],
+  [23,40],[34,30],[45,20],[61,10],[72,20],
+  [16,50],[27,40],[38,30],[51,20],[43,10]
+];
+var _l45_H_C5 = [[64,30],[75,20],[53,40],[82,10],[67,20]];
+
+// C6: Match story to equation — 20q: 10M + 10H
+function _l45MkC6(startN, change, sumVal, n, diff, op) {
+  var opSym = op === 'sub' ? '−' : '+';
+  var correctEq = startN + ' ' + opSym + ' ' + change + ' = ' + sumVal;
+  var wrongOp = op === 'sub'
+    ? startN + ' + ' + change + ' = ' + (startN + change)
+    : startN + ' − ' + change + ' = ' + (startN - change);
+  var wrongNum1 = startN + ' ' + opSym + ' ' + (change * 2) + ' = ' + (op === 'sub' ? startN - change * 2 : startN + change * 2);
+  var wrongNum2 = (startN + 10) + ' ' + opSym + ' ' + change + ' = ' + (op === 'sub' ? startN + 10 - change : startN + 10 + change);
+  var contexts = [
+    ['Liam has {S} cards. He gets {C} more.', 'add'],
+    ['There are {S} books. The teacher removes {C}.', 'sub'],
+    ['A box has {S} pencils. {C} more are added.', 'add'],
+    ['There are {S} apples. {C} are eaten.', 'sub']
+  ];
+  var ctx = contexts[n % contexts.length];
+  var story = ctx[0].replace('{S}', startN).replace('{C}', change);
+  return _l45Q(n, {
+    subSkill: 'match_story_to_equation', keyIdea: 5, difficulty: diff,
+    prompt: 'Which equation matches this story? "' + story + '"',
+    visual: null,
+    answer: correctEq,
+    choices: [
+      { value: correctEq, correct: true },
+      _l45C(wrongOp, 'err_operation_swap', 'Wrong operation — check if the story adds or subtracts.'),
+      _l45C(wrongNum1, 'err_missing_tens_value', 'Wrong number — check the amount that changed.'),
+      _l45C(wrongNum2, 'err_word_problem_setup', 'Wrong starting number — re-read the story.')
+    ],
+    hint: 'Find the starting number. Find what changed. Choose + or −.',
+    intervention: _l45IntWordProblemSetup(startN, change, sumVal, op)
+  });
+}
+var _l45_M_C6 = [
+  [50,7,57,'add'],[37,10,47,'add'],[30,40,70,'add'],
+  [24,20,44,'add'],[68,10,58,'sub'],[45,30,75,'add'],
+  [56,10,46,'sub'],[20,6,26,'add'],[80,10,70,'sub'],[63,20,83,'add']
+];
+var _l45_H_C6 = [
+  [75,20,95,'add'],[43,30,73,'add'],[52,10,42,'sub'],
+  [40,8,48,'add'],[66,10,56,'sub'],[31,40,71,'add'],
+  [84,10,74,'sub'],[57,30,87,'add'],[72,20,92,'add'],[49,10,39,'sub']
+];
+
+// C7: Base-10 model story — 15q: 10M + 5H
+function _l45MkC7(startN, change, n, diff, op) {
+  var answer = op === 'sub' ? startN - change : startN + change;
+  var w1 = op === 'sub' ? startN + change : startN - change;
+  var w2 = answer + 10;
+  var w3 = answer - 10;
+  var contexts = [
+    ['The model shows {S} students in a class.', '{C} more students join.', '{C} students leave.'],
+    ['The model shows {S} stickers on a sheet.', '{C} more stickers are added.', '{C} stickers are removed.']
+  ];
+  var ctx = contexts[n % contexts.length];
+  var action = op === 'sub' ? ctx[2] : ctx[1];
+  return _l45Q(n, {
+    subSkill: 'base10_model_story', keyIdea: 0, difficulty: diff,
+    prompt: ctx[0].replace('{S}', startN) + ' ' + action.replace('{C}', change) + ' How many are there now?',
+    visual: _l45VisBase10(Math.floor(startN / 10), startN % 10),
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_operation_swap', 'Used the wrong operation.'),
+      _l45C(w2, 'err_place_value_confusion', 'Off by one ten too many.'),
+      _l45C(w3, 'err_place_value_confusion', 'Off by one ten too few.')
+    ],
+    hint: 'Count the tens and ones in the model. ' + (op === 'sub' ? 'Subtract.' : 'Add.'),
+    intervention: op === 'sub'
+      ? _l45IntOperationSwap(startN, change, answer, 'sub')
+      : _l45IntPlaceValueConfusion(startN, change, answer)
+  });
+}
+var _l45_M_C7 = [
+  [23,10,'add'],[45,20,'add'],[37,10,'sub'],[56,30,'add'],
+  [64,10,'sub'],[31,40,'add'],[78,10,'sub'],[22,50,'add'],[83,10,'sub'],[44,20,'add']
+];
+var _l45_H_C7 = [[47,30,'add'],[66,20,'add'],[72,10,'sub'],[55,30,'add'],[83,20,'add']];
+
+// C8: Missing number story — 20q: 10M + 10H
+// Constraint: startN % 10 === endN % 10 (ones unchanged)
+function _l45MkC8(startN, mTens, n, diff) {
+  var endN = startN + mTens;
+  var answer = mTens;
+  var w1 = endN;
+  var w2 = startN;
+  var w3 = mTens + 10;
+  var obj = ['marbles', 'stickers', 'crayons', 'books'][n % 4];
+  return _l45Q(n, {
+    subSkill: 'missing_number_story', keyIdea: 5, difficulty: diff,
+    prompt: 'There are ' + startN + ' ' + obj + '. Some more ' + obj + ' are added. Now there are ' + endN + '. How many ' + obj + ' were added?',
+    visual: null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_word_problem_setup', 'Gave the ending total instead of the change.'),
+      _l45C(w2, 'err_word_problem_setup', 'Gave the starting number instead of the change.'),
+      _l45C(w3, 'err_off_by_ten', 'Off by one ten in the answer.')
+    ],
+    hint: endN + ' − ' + startN + ' = ? The ones match, so only tens changed.',
+    intervention: _l45IntMissingTensValue(startN, mTens, endN)
+  });
+}
+var _l45_M_C8 = [
+  [15,20],[23,30],[34,10],[42,40],[51,30],
+  [16,20],[27,40],[35,30],[43,20],[62,10]
+];
+var _l45_H_C8 = [
+  [38,40],[47,30],[56,20],[64,10],[73,20],
+  [25,50],[33,40],[44,30],[52,40],[61,30]
+];
+
+_l45_M_C5.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC5(p[0], p[1], _l45N, 'medium')); });
+_l45_H_C5.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC5(p[0], p[1], _l45N, 'hard')); });
+_l45_M_C6.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC6(p[0], p[1], p[2], _l45N, 'medium', p[3])); });
+_l45_H_C6.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC6(p[0], p[1], p[2], _l45N, 'hard', p[3])); });
+_l45_M_C7.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC7(p[0], p[1], _l45N, 'medium', p[2])); });
+_l45_H_C7.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC7(p[0], p[1], _l45N, 'hard', p[2])); });
+_l45_M_C8.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC8(p[0], p[1], _l45N, 'medium')); });
+_l45_H_C8.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC8(p[0], p[1], _l45N, 'hard')); });
+// Running total after C5–C8: 150
+
+// C9: Error repair story — 10q: all hard
+function _l45MkC9(startN, mTens, studentWrong, errorTag, n) {
+  var answer = startN + mTens;
+  var w2 = answer + 10;
+  var w3 = answer - 10;
+  return _l45Q(n, {
+    subSkill: 'error_repair_story', keyIdea: 5, difficulty: 'hard',
+    prompt: 'A student says ' + startN + ' + ' + mTens + ' = ' + studentWrong + ' because they added wrong. What is the correct answer?',
+    visual: null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(studentWrong, errorTag, 'This is the mistake the student made.'),
+      _l45C(w2, 'err_off_by_ten', 'Off by one extra ten.'),
+      _l45C(w3, 'err_off_by_ten', 'Off by one ten too few.')
+    ],
+    hint: startN + ' + ' + mTens + ': add ' + (mTens / 10) + ' ten' + (mTens > 10 ? 's' : '') + '. Ones stay ' + (startN % 10) + '.',
+    intervention: _l45IntTenAsOne(startN, mTens, answer)
+  });
+}
+var _l45_H_C9 = [
+  [43, 30, 46, 'err_ten_as_one'],
+  [52, 20, 54, 'err_ten_as_one'],
+  [27, 40, 60, 'err_ones_changed'],
+  [34, 20, 50, 'err_ones_changed'],
+  [61, 30, 64, 'err_missing_tens_value'],
+  [45, 20, 47, 'err_missing_tens_value'],
+  [56, 30, 26, 'err_operation_swap'],
+  [73, 20, 53, 'err_operation_swap'],
+  [38, 40, 42, 'err_place_value_confusion'],
+  [65, 30, 68, 'err_place_value_confusion']
+];
+
+// C10: Boundary story (sum 100–120) — 10q: all hard
+function _l45MkC10(startN, mTens, n) {
+  var answer = startN + mTens;
+  var ansH = Math.floor(answer / 100);
+  var ansT = Math.floor((answer % 100) / 10);
+  var ansO = answer % 10;
+  var w1 = answer - 10;
+  var w2 = answer - 1;
+  var w3 = mTens;
+  var obj = ['tickets', 'stickers', 'blocks', 'cards'][n % 4];
+  return _l45Q(n, {
+    subSkill: 'boundary_story', keyIdea: 1, difficulty: 'hard',
+    prompt: 'There are ' + startN + ' ' + obj + '. ' + mTens + ' more ' + obj + ' are added. How many ' + obj + ' are there now?',
+    visual: null,
+    answer: answer,
+    choices: [
+      { value: String(answer), correct: true },
+      _l45C(w1, 'err_off_by_ten', 'Off by one ten — counted the added tens wrong.'),
+      _l45C(w2, 'err_boundary_100_confusion', 'Off by one — did not trade 10 tens for 1 hundred.'),
+      _l45C(w3, 'err_ten_as_one', 'Only wrote the added amount, not the total.')
+    ],
+    hint: startN + ' + ' + mTens + ' = ' + answer + '. 10 tens = 1 hundred.',
+    intervention: _l45IntBoundary100(startN, mTens, answer)
+  });
+}
+var _l45_H_C10 = [
+  [90,10],[80,20],[70,30],[60,40],[50,50],
+  [100,10],[90,20],[80,30],[100,20],[90,30]
+];
+
+_l45_H_C9.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC9(p[0], p[1], p[2], p[3], _l45N)); });
+_l45_H_C10.forEach(function(p) { _l45N++; _l45QuizBank.push(_l45MkC10(p[0], p[1], _l45N)); });
+// Final total: 170
+
+// ── Worked examples ───────────────────────────────────────────────────────
+var _l45Examples = [
+  {
+    title: 'ADD TENS AND ONES: STICKERS',
+    prompt: 'Maya has 30 stickers. She gets 8 more stickers. How many stickers does she have now?',
+    visual: { type: 'base10', tens: 3, ones: 0 },
+    steps: [
+      '30 stickers is 3 tens and 0 ones.',
+      'She gets 8 more — that is 8 ones.',
+      '3 tens + 8 ones = 38.',
+      '30 + 8 = 38.'
+    ],
+    answer: '38'
+  },
+  {
+    title: '10 MORE: BOOKS ON A SHELF',
+    prompt: 'There are 37 books on a shelf. The teacher adds 10 more books. How many books are there now?',
+    visual: { type: 'base10', tens: 3, ones: 7 },
+    steps: [
+      '37 books is 3 tens and 7 ones.',
+      'The teacher adds 10 more — that is 1 more ten.',
+      '3 tens + 1 ten = 4 tens. The ones stay 7.',
+      '37 + 10 = 47.'
+    ],
+    answer: '47'
+  },
+  {
+    title: '10 LESS: PENCILS TAKEN AWAY',
+    prompt: 'There are 68 pencils. 10 pencils are taken away. How many pencils are left?',
+    visual: { type: 'base10', tens: 6, ones: 8 },
+    steps: [
+      '68 pencils is 6 tens and 8 ones.',
+      '10 pencils are taken away — that is 1 ten less.',
+      '6 tens − 1 ten = 5 tens. The ones stay 8.',
+      '68 − 10 = 58.'
+    ],
+    answer: '58'
+  },
+  {
+    title: 'ADD TENS: BLOCKS IN TWO GROUPS',
+    prompt: 'There are 30 red blocks and 40 blue blocks. How many blocks are there in all?',
+    visual: { type: 'base10', tens: 3, ones: 0 },
+    steps: [
+      '30 red blocks is 3 tens.',
+      '40 blue blocks is 4 tens.',
+      '3 tens + 4 tens = 7 tens.',
+      '7 tens = 70.',
+      '30 + 40 = 70.'
+    ],
+    answer: '70'
+  },
+  {
+    title: 'ADD TENS TO TWO-DIGIT: CRAYONS',
+    prompt: 'A class has 24 crayons. The teacher gives them 20 more crayons. How many crayons do they have now?',
+    visual: { type: 'base10', tens: 2, ones: 4 },
+    steps: [
+      '24 crayons is 2 tens and 4 ones.',
+      '20 more is 2 more tens.',
+      '2 tens + 2 tens = 4 tens. The ones stay 4.',
+      '24 + 20 = 44.'
+    ],
+    answer: '44'
+  },
+  {
+    title: 'MISSING NUMBER: MARBLES ADDED',
+    prompt: 'There are 35 marbles in a box. Some more marbles are added. Now there are 65. How many marbles were added?',
+    visual: null,
+    steps: [
+      'We start with 35 marbles.',
+      'We end with 65 marbles.',
+      'Both numbers end in 5 — the ones did not change.',
+      'The tens changed: 3 tens → 6 tens. That is 3 more tens.',
+      '3 tens = 30. So 30 marbles were added.',
+      '35 + 30 = 65. ✓'
+    ],
+    answer: '30'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
 //  Spec
 // ════════════════════════════════════════════════════════════════════════════
 
@@ -2692,23 +3312,42 @@ export const G1_U4_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 4.5 — Tens and Ones Word Problems (0 questions — scaffold)
+    //  Lesson 4.5 — Tens and Ones Word Problems (170 questions)
     //  Scope: SINGLE-STEP word problems only — no two-step, no regrouping
-    //  TEKS 1.3A, 1.5D
+    //  TEKS 1.3A, 1.5C
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u4-l5',
       title: 'Tens and Ones Word Problems',
-      teks: ['1.3A', '1.5D'],
+      teks: ['1.3A', '1.5C'],
       skill: 'tens_and_ones_word_problems',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: [
+        'A word problem tells a math story — find the starting number and what changed.',
+        'When you add tens to a number, only the tens digit changes — the ones digit stays the same.',
+        '"10 more" means add 1 ten. "10 less" means take away 1 ten.',
+        'Adding tens to tens gives more tens — 30 + 40 = 70, not 7.',
+        'The ones digit in the answer always matches the ones digit in the starting number when you add or subtract whole tens.',
+        'Before solving, ask: What do I start with? What changes? Do I add or subtract?'
+      ],
+      workedExamples: _l45Examples,
+      quizBank: _l45QuizBank,
       diagnostics: {
         commonDistractors: [],
-        errorTags: [],
-        interventionRules: []
+        errorTags: [
+          'err_word_problem_setup', 'err_operation_swap', 'err_ten_as_one',
+          'err_ones_changed', 'err_missing_tens_value', 'err_place_value_confusion',
+          'err_boundary_100_confusion'
+        ],
+        interventionRules: [
+          { tag: 'err_word_problem_setup',      followUp: 'same_skill_new_numbers' },
+          { tag: 'err_operation_swap',           followUp: 'same_skill_new_numbers' },
+          { tag: 'err_ten_as_one',               followUp: 'same_skill_new_numbers' },
+          { tag: 'err_ones_changed',             followUp: 'same_skill_new_numbers' },
+          { tag: 'err_missing_tens_value',       followUp: 'same_skill_new_numbers' },
+          { tag: 'err_place_value_confusion',    followUp: 'same_skill_new_numbers' },
+          { tag: 'err_boundary_100_confusion',   followUp: 'same_skill_new_numbers' }
+        ]
       }
     }
 
