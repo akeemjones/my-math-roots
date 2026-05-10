@@ -109,6 +109,37 @@ var _NSC = 'err_non_shape_confusion';
 
 var _TVP = '#9C27B0';
 
+// ── Shape color palette ───────────────────────────────────────────────────────
+// 6 kid-friendly colors; sequentially assigned across the question pool.
+// _rclr() replaces the three purple tokens used in question SVGs and teaching visuals.
+// _colorizeQ() walks a question array and applies one palette entry per question.
+// Color choice is deterministic (index % 6) so a question always gets the same color.
+
+var _SC = [
+  {f:'#64B5F6', s:'#1565C0'},  // blue
+  {f:'#81C784', s:'#2E7D32'},  // green
+  {f:'#FFB74D', s:'#E65100'},  // orange
+  {f:'#CE93D8', s:'#7B1FA2'},  // purple (existing default)
+  {f:'#EF9A9A', s:'#C62828'},  // coral
+  {f:'#4DB6AC', s:'#00695C'},  // teal
+];
+
+function _rclr(str, c) {
+  return str
+    .replace(/#CE93D8/g, c.f)
+    .replace(/#7B1FA2/g, c.s)
+    .replace(/#9C27B0/g, c.s);
+}
+
+function _colorizeQ(qs) {
+  qs.forEach(function(q, idx) {
+    var c = _SC[idx % _SC.length];
+    if (q.s) q.s = _rclr(q.s, c);
+    if (q.i && q.i.teachingVisualRaw) q.i.teachingVisualRaw = _rclr(q.i.teachingVisualRaw, c);
+  });
+  return qs;
+}
+
 function _tvWrap(svg, cap) {
   return '<div style="text-align:center;padding:2px 0">' + svg +
     (cap ? '<div style="font-size:0.78rem;color:#5a7080;font-family:\'Nunito\',sans-serif;margin-top:5px;line-height:1.3">' + cap + '</div>' : '') +
@@ -691,7 +722,7 @@ var _l51C9 = [
 
 // ── L5.1 bank assembly ───────────────────────────────────────────────────────
 
-var _l51Bank = [].concat(_l51C1, _l51C2, _l51C3, _l51C4, _l51C5, _l51C6, _l51C7, _l51C8, _l51C9);
+var _l51Bank = _colorizeQ([].concat(_l51C1, _l51C2, _l51C3, _l51C4, _l51C5, _l51C6, _l51C7, _l51C8, _l51C9));
 
 // ── L5.1 worked examples ─────────────────────────────────────────────────────
 
