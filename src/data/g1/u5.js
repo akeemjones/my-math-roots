@@ -32,50 +32,66 @@
  * ════════════════════════════════════════════════════════════════════════════ */
 
 // ── SVG helpers ──────────────────────────────────────────────────────────────
-// All shapes: 70×70 viewBox, purple fill at 0.18 opacity, solid purple stroke.
+// Each shape has its own canvas sized for its geometry.
+// Fill: #CE93D8 (purple-200, opaque pastel). Stroke: #7B1FA2 (purple-800, bold).
 // Helpers are called at parse time; values are baked into the question objects.
-
-function _svgW(body) {
-  return '<svg width="70" height="70" viewBox="0 0 70 70" style="display:inline-block;vertical-align:middle;margin:0 6px">' + body + '</svg>';
-}
+// .q-visual svg CSS applies display:block + max-width:100% + height:auto.
 
 function _svgCircle() {
-  return _svgW('<circle cx="35" cy="35" r="28" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5"/>');
+  // 120x120 canvas, radius 52 — fills the space with 8px margin on each side
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/>' +
+    '</svg>';
 }
 
 function _svgTriangle(deg) {
-  var d = deg || 0, r = 30, cx = 35, cy = 35;
+  // 120x120 canvas, circumradius 50, center at (60,60)
+  var d = deg || 0, r = 50, cx = 60, cy = 60;
   var a0 = (d - 90) * Math.PI / 180, p = [];
   for (var i = 0; i < 3; i++) {
     var a = a0 + i * 2 * Math.PI / 3;
     p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
   }
-  return _svgW('<polygon points="' + p.join(' ') + '" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5"/>');
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<polygon points="' + p.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 function _svgRect() {
-  return _svgW('<rect x="7" y="16" width="56" height="38" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5" rx="1"/>');
+  // 160x100 canvas — clearly wide rectangle, ratio 140:68 ≈ 2:1
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 function _svgSquare() {
-  return _svgW('<rect x="12" y="12" width="46" height="46" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5" rx="1"/>');
+  // 110x110 canvas — 96x96 square, clearly equal sides
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 function _svgRhombus(deg) {
-  var pts = '35,13 63,35 35,57 7,35';
-  if (!deg || deg === 0) {
-    return _svgW('<polygon points="' + pts + '" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5"/>');
-  }
-  return _svgW('<g transform="rotate(' + deg + ',35,35)"><polygon points="' + pts + '" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5"/></g>');
+  // 140x140 canvas, center (70,70). Points: top(70,8), right(122,70), bottom(70,132), left(18,70)
+  // Clearly diamond-shaped with leaning corners — visually distinct from square
+  var pts = '70,8 122,70 70,132 18,70';
+  var poly = '<polygon points="' + pts + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>';
+  var body = (deg && deg !== 0)
+    ? '<g transform="rotate(' + deg + ',70,70)">' + poly + '</g>'
+    : poly;
+  return '<svg width="140" height="140" viewBox="0 0 140 140">' + body + '</svg>';
 }
 
 function _svgHex(deg) {
-  var d = deg || 0, r = 30, cx = 35, cy = 35, p = [];
+  // 130x130 canvas, center (65,65), circumradius 55 — 10px margin for stroke
+  var d = deg || 0, r = 55, cx = 65, cy = 65, p = [];
   for (var i = 0; i < 6; i++) {
     var a = (d + i * 60) * Math.PI / 180;
     p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
   }
-  return _svgW('<polygon points="' + p.join(' ') + '" fill="#9C27B0" opacity="0.18" stroke="#9C27B0" stroke-width="3.5"/>');
+  return '<svg width="130" height="130" viewBox="0 0 130 130">' +
+    '<polygon points="' + p.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 // ── Error tag shorthands ─────────────────────────────────────────────────────
