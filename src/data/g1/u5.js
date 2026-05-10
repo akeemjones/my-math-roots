@@ -72,14 +72,19 @@ function _svgSquare() {
 }
 
 function _svgRhombus(deg) {
-  // 140x140 canvas, center (70,70). Points: top(70,8), right(122,70), bottom(70,132), left(18,70)
-  // Clearly diamond-shaped with leaning corners — visually distinct from square
-  var pts = '70,8 122,70 70,132 18,70';
-  var poly = '<polygon points="' + pts + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>';
-  var body = (deg && deg !== 0)
-    ? '<g transform="rotate(' + deg + ',70,70)">' + poly + '</g>'
-    : poly;
-  return '<svg width="140" height="140" viewBox="0 0 140 140">' + body + '</svg>';
+  // 140x140 canvas, center (70,70). Diagonal ratio 2:1 (ry=60, rx=30) — clearly diamond-shaped
+  // with obviously acute top/bottom corners (~53°) and obtuse left/right corners (~127°),
+  // visually distinct from square at ALL rotation angles including 45°.
+  var d = deg || 0, rad = d * Math.PI / 180, cx = 70, cy = 70, rx = 30, ry = 60;
+  var base = [[0, -ry], [rx, 0], [0, ry], [-rx, 0]];
+  var pts = base.map(function(p) {
+    var x = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
+    var y = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
+    return (cx + x).toFixed(1) + ',' + (cy + y).toFixed(1);
+  });
+  return '<svg width="140" height="140" viewBox="0 0 140 140">' +
+    '<polygon points="' + pts.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 function _svgHex(deg) {
@@ -259,7 +264,7 @@ function _tvSquareVsRhombus() {
     '<text x="43" y="112" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">square corners</text>' +
     '<line x1="127" y1="8" x2="127" y2="107" stroke="#ddd" stroke-width="1"/>' +
     '<text x="188" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Rhombus</text>' +
-    '<polygon points="188,18 233,62 188,106 143,62" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<polygon points="188,22 216,62 188,102 160,62" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
     '<text x="188" y="112" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">leaning corners</text>' +
     '</svg>',
     'Both have 4 equal sides — the corners are different!'
