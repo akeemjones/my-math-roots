@@ -15,7 +15,7 @@
  *  Lessons:
  *    L5.1  2D Shapes — Identify and Describe     ← 170 questions (55E/65M/50H)
  *    L5.2  3D Shapes — Identify and Describe     ← 132 questions (30E/66M/36H)
- *    L5.3  Shape Attributes and Sorting          ← SCAFFOLD (0 questions)
+ *    L5.3  Shape Attributes and Sorting          ← 160 questions (50E/65M/45H)
  *    L5.4  Compose and Recognize 2D Shapes       ← SCAFFOLD (0 questions)
  *    L5.5  Equal Parts — Halves and Fourths      ← SCAFFOLD (0 questions)
  *
@@ -1494,6 +1494,663 @@ var _l52KeyIdeas = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  Lesson 5.3 — Shape Attributes and Sorting
+//  TEKS 1.6A, 1.6B | 160 questions (50E / 65M / 45H)
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── L5.3 error tag shorthands ─────────────────────────────────────────────────
+var _53DA = 'err_defining_attribute_confusion';
+var _53ND = 'err_non_defining_attribute';
+var _53WS = 'err_wrong_sort_category';
+var _53SC = 'err_sides_count';
+var _53VC = 'err_vertex_count';
+var _53OR = 'err_orientation_confusion';
+var _53CS = 'err_color_size_confusion';
+var _53TD = 'err_2d_3d_confusion';
+
+// ── L5.3 mini SVG helpers (80×80 via viewBox scaling) ────────────────────────
+function _svgCircSm() {
+  return '<svg width="80" height="80" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/></svg>';
+}
+function _svgTriSm(deg) {
+  var d = deg || 0, r = 50, cx = 60, cy = 60;
+  var a0 = (d - 90) * Math.PI / 180, p = [];
+  for (var i = 0; i < 3; i++) {
+    var a = a0 + i * 2 * Math.PI / 3;
+    p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
+  }
+  return '<svg width="80" height="80" viewBox="0 0 120 120"><polygon points="' + p.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/></svg>';
+}
+function _svgSquSm() {
+  return '<svg width="80" height="80" viewBox="0 0 110 110"><rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/></svg>';
+}
+function _svgRectSm() {
+  return '<svg width="90" height="58" viewBox="0 0 160 100"><rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/></svg>';
+}
+function _svgRhSm(deg) {
+  var d = deg || 0, rad = d * Math.PI / 180, cx = 70, cy = 70, rx = 30, ry = 60;
+  var base = [[0,-ry],[rx,0],[0,ry],[-rx,0]];
+  var pts = base.map(function(p) {
+    var x = p[0]*Math.cos(rad) - p[1]*Math.sin(rad);
+    var y = p[0]*Math.sin(rad) + p[1]*Math.cos(rad);
+    return (cx+x).toFixed(1)+','+(cy+y).toFixed(1);
+  });
+  return '<svg width="80" height="80" viewBox="0 0 140 140"><polygon points="' + pts.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/></svg>';
+}
+function _svgHexSm(deg) {
+  var d = deg || 0, r = 55, cx = 65, cy = 65, p = [];
+  for (var i = 0; i < 6; i++) {
+    var a = (d + i * 60) * Math.PI / 180;
+    p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
+  }
+  return '<svg width="80" height="80" viewBox="0 0 130 130"><polygon points="' + p.join(' ') + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/></svg>';
+}
+
+// ── L5.3 row layout helpers ───────────────────────────────────────────────────
+function _svgRow3(s1, s2, s3) {
+  return '<div style="display:flex;justify-content:space-around;align-items:center;width:100%;padding:4px 0">' +
+    '<div style="width:96px;text-align:center">' + s1 + '</div>' +
+    '<div style="width:96px;text-align:center">' + s2 + '</div>' +
+    '<div style="width:96px;text-align:center">' + s3 + '</div>' +
+    '</div>';
+}
+function _svgRow2(s1, s2) {
+  return '<div style="display:flex;justify-content:space-around;align-items:center;width:100%;padding:4px 0">' +
+    '<div style="width:120px;text-align:center">' + s1 + '</div>' +
+    '<div style="width:120px;text-align:center">' + s2 + '</div>' +
+    '</div>';
+}
+
+// ── L5.3 teaching visual functions ───────────────────────────────────────────
+
+function _tv53DefVsNon() {
+  return _tvWrap(
+    '<svg width="260" height="115" viewBox="0 0 260 115" style="display:inline-block">' +
+    '<text x="65" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Defining</text>' +
+    '<polygon points="65,22 110,95 20,95" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="65" y="110" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">3 sides — ALWAYS</text>' +
+    '<line x1="130" y1="10" x2="130" y2="105" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="195" y="14" font-size="11" font-weight="700" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">Non-defining</text>' +
+    '<polygon points="195,22 240,95 150,95" fill="#bbb" opacity="0.25" stroke="#999" stroke-width="3"/>' +
+    '<text x="195" y="110" font-size="10" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">color — can change</text>' +
+    '</svg>',
+    'Sides/corners define a shape.  Color does not.'
+  );
+}
+
+function _tv53NonDefining() {
+  return _tvWrap(
+    '<svg width="260" height="110" viewBox="0 0 260 110" style="display:inline-block">' +
+    '<text x="130" y="14" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">All three are triangles!</text>' +
+    '<polygon points="45,28 80,95 10,95" fill="#EF9A9A" opacity="0.7" stroke="#C62828" stroke-width="3"/>' +
+    '<polygon points="130,28 165,95 95,95" fill="#81C784" opacity="0.7" stroke="#1B5E20" stroke-width="3"/>' +
+    '<polygon points="215,28 250,95 180,95" fill="#64B5F6" opacity="0.7" stroke="#0D47A1" stroke-width="3"/>' +
+    '<text x="45" y="108" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">red</text>' +
+    '<text x="130" y="108" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">green</text>' +
+    '<text x="215" y="108" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">blue</text>' +
+    '</svg>',
+    'Color changes — shape name stays the same'
+  );
+}
+
+function _tv53SortBySides() {
+  return _tvWrap(
+    '<svg width="260" height="115" viewBox="0 0 260 115" style="display:inline-block">' +
+    '<rect x="2" y="20" width="116" height="90" rx="6" fill="none" stroke="' + _TVP + '" stroke-width="2" stroke-dasharray="5,3"/>' +
+    '<text x="60" y="15" font-size="10" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">3 sides</text>' +
+    '<polygon points="60,30 90,85 30,85" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<rect x="142" y="20" width="116" height="90" rx="6" fill="none" stroke="#F57F17" stroke-width="2" stroke-dasharray="5,3"/>' +
+    '<text x="200" y="15" font-size="10" font-weight="700" fill="#F57F17" text-anchor="middle" font-family="Nunito,sans-serif">4 sides</text>' +
+    '<rect x="162" y="35" width="55" height="55" fill="#FFD54F" opacity="0.5" stroke="#F57F17" stroke-width="2.5"/>' +
+    '<rect x="222" y="45" width="28" height="48" fill="#FFD54F" opacity="0.5" stroke="#F57F17" stroke-width="2.5"/>' +
+    '</svg>',
+    'Sort by sides: triangles with 3, squares/rectangles with 4'
+  );
+}
+
+function _tv53SideCount() {
+  return _tvWrap(
+    '<svg width="170" height="125" viewBox="0 0 170 125" style="display:inline-block">' +
+    '<polygon points="85,10 152,110 18,110" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    _tvDot(122, 55, 1) + _tvDot(85, 122, 2) + _tvDot(48, 55, 3) +
+    '</svg>',
+    'Count the sides: 1 … 2 … 3'
+  );
+}
+
+function _tv53CornerCount() {
+  return _tvWrap(
+    '<svg width="170" height="125" viewBox="0 0 170 125" style="display:inline-block">' +
+    '<polygon points="85,10 152,110 18,110" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    _tvDot(85, 10, 1) + _tvDot(152, 110, 2) + _tvDot(18, 110, 3) +
+    '</svg>',
+    'Count the corners: 1 … 2 … 3'
+  );
+}
+
+function _tv53Orientation() {
+  return _tvWrap(
+    '<svg width="260" height="105" viewBox="0 0 260 105" style="display:inline-block">' +
+    '<text x="130" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Same shape — different direction</text>' +
+    '<polygon points="43,20 76,90 10,90" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<polygon points="130,90 163,20 97,20" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<polygon points="173,20 217,65 173,90 173,90" fill="none" stroke="none"/>' +
+    '<polygon points="200,20 233,90 167,90" transform="rotate(30,200,55)" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="43" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">up</text>' +
+    '<text x="130" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">down</text>' +
+    '<text x="200" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">tilted</text>' +
+    '</svg>',
+    'A triangle turned or flipped is still a triangle'
+  );
+}
+
+function _tv53ColorSize() {
+  return _tvWrap(
+    '<svg width="260" height="115" viewBox="0 0 260 115" style="display:inline-block">' +
+    '<text x="65" y="13" font-size="10" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Size changes</text>' +
+    '<rect x="10" y="20" width="60" height="60" fill="#CE93D8" opacity="0.5" stroke="#7B1FA2" stroke-width="3"/>' +
+    '<rect x="82" y="42" width="36" height="36" fill="#CE93D8" opacity="0.5" stroke="#7B1FA2" stroke-width="3"/>' +
+    '<text x="65" y="100" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">big square  small square</text>' +
+    '<line x1="130" y1="10" x2="130" y2="105" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="195" y="13" font-size="10" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Color changes</text>' +
+    '<polygon points="165,20 198,90 132,90" fill="#EF9A9A" opacity="0.7" stroke="#C62828" stroke-width="3"/>' +
+    '<polygon points="228,20 261,90 195,90" fill="#64B5F6" opacity="0.7" stroke="#0D47A1" stroke-width="3"/>' +
+    '<text x="195" y="100" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">red triangle  blue triangle</text>' +
+    '</svg>',
+    'Both are still squares. Both are still triangles.'
+  );
+}
+
+function _tv53FlatVsSolid() {
+  return _tvWrap(
+    '<svg width="260" height="115" viewBox="0 0 260 115" style="display:inline-block">' +
+    '<text x="65" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">2D — Flat</text>' +
+    '<circle cx="65" cy="65" r="40" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<text x="65" y="110" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">circle (flat)</text>' +
+    '<line x1="130" y1="8" x2="130" y2="108" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="195" y="14" font-size="11" font-weight="700" fill="#F57F17" text-anchor="middle" font-family="Nunito,sans-serif">3D — Solid</text>' +
+    '<circle cx="195" cy="62" r="38" fill="#FFD54F" opacity="0.35" stroke="#F57F17" stroke-width="3"/>' +
+    '<ellipse cx="183" cy="48" rx="12" ry="8" fill="white" opacity="0.35"/>' +
+    '<text x="195" y="110" font-size="10" fill="#F57F17" text-anchor="middle" font-family="Nunito,sans-serif">sphere (solid)</text>' +
+    '</svg>',
+    'Flat drawing = 2D shape     Solid object = 3D solid'
+  );
+}
+
+// ── L5.3 intervention factories ───────────────────────────────────────────────
+
+function _i53DA() {
+  return {
+    errorTag: _53DA,
+    title: 'What defines a shape?',
+    teachingSteps: [
+      'A defining attribute is something that is ALWAYS true — no matter what.',
+      'Number of sides and number of corners are defining attributes.',
+      'A triangle ALWAYS has 3 sides. A square ALWAYS has 4 equal sides.',
+      'Color, size, and direction are NOT defining attributes — they can change.'
+    ],
+    teachingVisualRaw: _tv53DefVsNon(),
+    correctAnswerExplanation: 'Number of sides and corners define the shape.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53ND() {
+  return {
+    errorTag: _53ND,
+    title: 'Color and size do not change the shape',
+    teachingSteps: [
+      'Non-defining attributes are things that can change WITHOUT changing the shape name.',
+      'Color, size, and direction are non-defining.',
+      'A red triangle and a blue triangle are BOTH triangles.',
+      'A tiny square and a giant square are BOTH squares.'
+    ],
+    teachingVisualRaw: _tv53NonDefining(),
+    correctAnswerExplanation: 'Color and size are non-defining — they do not change the shape name.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53WS() {
+  return {
+    errorTag: _53WS,
+    title: 'Sorting shapes into groups',
+    teachingSteps: [
+      'When sorting by sides, count the straight sides of the shape.',
+      'Triangle: 3 sides → goes in the 3-sides group.',
+      'Square and rectangle: 4 sides → go in the 4-sides group.',
+      'Hexagon: 6 sides → goes in the 6-sides group.',
+      'Circle: 0 straight sides → goes in the curved group.'
+    ],
+    teachingVisualRaw: _tv53SortBySides(),
+    correctAnswerExplanation: 'Count the sides to find the right sorting group.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53SC() {
+  return {
+    errorTag: _53SC,
+    title: 'Count the sides carefully',
+    teachingSteps: [
+      'A side is one straight line on the outside of a shape.',
+      'Touch each side as you count: 1, 2, 3 …',
+      'A triangle has exactly 3 sides.',
+      'A square and rectangle each have exactly 4 sides.',
+      'A hexagon has exactly 6 sides.'
+    ],
+    teachingVisualRaw: _tv53SideCount(),
+    correctAnswerExplanation: 'Count each straight side one at a time.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53VC() {
+  return {
+    errorTag: _53VC,
+    title: 'Count the corners carefully',
+    teachingSteps: [
+      'A corner is a pointy spot where two sides meet.',
+      'Touch each corner as you count: 1, 2, 3 …',
+      'A triangle has 3 corners.',
+      'A square and rectangle each have 4 corners.',
+      'A hexagon has 6 corners.'
+    ],
+    teachingVisualRaw: _tv53CornerCount(),
+    correctAnswerExplanation: 'Count each corner (pointy spot) one at a time.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53OR() {
+  return {
+    errorTag: _53OR,
+    title: 'Direction does not change the shape name',
+    teachingSteps: [
+      'A triangle pointing up is still a triangle.',
+      'A triangle pointing down is still a triangle.',
+      'Turning, flipping, or tilting a shape does NOT give it a new name.',
+      'Check the NUMBER OF SIDES — not which way it points.'
+    ],
+    teachingVisualRaw: _tv53Orientation(),
+    correctAnswerExplanation: 'Orientation is non-defining — the shape name stays the same.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53CS() {
+  return {
+    errorTag: _53CS,
+    title: 'Color and size are non-defining',
+    teachingSteps: [
+      'A big square and a tiny square are both called squares.',
+      'A red hexagon and a blue hexagon are both called hexagons.',
+      'Color and size can change — the shape name does NOT change.',
+      'Count the sides to find the shape name.'
+    ],
+    teachingVisualRaw: _tv53ColorSize(),
+    correctAnswerExplanation: 'Color and size do not define the shape.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i53TD() {
+  return {
+    errorTag: _53TD,
+    title: '2D shapes are flat; 3D solids are solid',
+    teachingSteps: [
+      'A 2D shape is flat — like a drawing on paper.',
+      'A 3D solid has depth — you can pick it up and hold it.',
+      'A circle is a flat 2D shape. A sphere is a round 3D solid.',
+      'A square is flat. A cube is a 3D solid with square faces.'
+    ],
+    teachingVisualRaw: _tv53FlatVsSolid(),
+    correctAnswerExplanation: 'Flat = 2D shape. Solid object = 3D solid.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+// ── C1: Defining vs non-defining attributes (8E/8M/4H = 20) ──────────────────
+
+var _l53C1 = [
+  // Easy (8)
+  {t:'A triangle ALWAYS has ___.', s:_svgTriangle(0), o:[{val:'3 sides'},{val:'blue color',tag:_53CS},{val:'big size',tag:_53CS},{val:'a pointy top',tag:_53OR}], a:0, e:'A triangle always has 3 sides — that is a defining attribute.', d:'e', h:'Count the sides. That number never changes.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Which tells you what kind of shape something is?', s:_svgSquare(), o:[{val:'number of sides'},{val:'the color',tag:_53CS},{val:'the size',tag:_53CS},{val:'which way it points',tag:_53OR}], a:0, e:'Number of sides is a defining attribute — it tells you the shape name.', d:'e', h:'Sides and corners define shapes. Color and size do not.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Does color tell you the name of a shape?', s:_svgHex(0), o:[{val:'No — color is not a defining attribute'},{val:'Yes — blue shapes are circles',tag:_53CS},{val:'Yes — red shapes are triangles',tag:_53CS}], a:0, e:'Color is non-defining. A blue hexagon and a red hexagon are both hexagons.', d:'e', h:'Color can change without changing the shape name.', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'ALL hexagons have ___.', s:_svgHex(0), o:[{val:'6 sides'},{val:'6 colors',tag:_53CS},{val:'6 sizes',tag:_53CS},{val:'6 dots',tag:_53CS}], a:0, e:'Every hexagon has exactly 6 sides — that is its defining attribute.', d:'e', h:'The number of sides is always the same for hexagons.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Which is a defining attribute of a circle?', s:_svgCircle(), o:[{val:'It has 0 straight sides'},{val:'It is always big',tag:_53CS},{val:'It is always blue',tag:_53CS},{val:'It always points up',tag:_53OR}], a:0, e:'A circle has no straight sides — that is always true no matter the color or size.', d:'e', h:'What is always true about a circle?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A square ALWAYS has ___.', s:_svgSquare(), o:[{val:'4 equal sides'},{val:'a red color',tag:_53CS},{val:'a big size',tag:_53CS},{val:'a right-side-up position',tag:_53OR}], a:0, e:'4 equal sides is the defining attribute of a square.', d:'e', h:'The sides of a square are all the same length — always.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Does the size of a shape change what kind of shape it is?', s:_svgRect(), o:[{val:'No — size is not a defining attribute'},{val:'Yes — big shapes are hexagons',tag:_53CS},{val:'Yes — tiny shapes are circles',tag:_53CS}], a:0, e:'Size is non-defining. A big rectangle and a tiny rectangle are both rectangles.', d:'e', h:'Can a square stay a square if you make it bigger?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'What tells you the name of a shape — its sides or its color?', s:_svgTriangle(0), o:[{val:'Its sides — that is the defining attribute'},{val:'Its color — red shapes are triangles',tag:_53CS},{val:'Its color — blue shapes are hexagons',tag:_53CS}], a:0, e:'Sides define the shape name. Color is non-defining and can change.', d:'e', h:'The number of sides is always the key clue.', sk:'sort_shape_attributes', i:_i53DA()},
+  // Medium (8)
+  {t:'Both a square and a rectangle have ___.', s:_svgRow2(_svgSquSm(),_svgRectSm()), o:[{val:'4 straight sides'},{val:'the same size',tag:_53CS},{val:'the same color',tag:_53CS},{val:'3 sides',tag:_53SC}], a:0, e:'Both a square and a rectangle have 4 straight sides — that is their shared defining attribute.', d:'m', h:'Count the sides on each shape.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Alex says: "This triangle is special because it is yellow." Is color a defining attribute?', s:_svgTriangle(0), o:[{val:'No — color is non-defining; all triangles have 3 sides regardless of color'},{val:'Yes — yellow triangles are a special group',tag:_53CS},{val:'Yes — yellow is a defining attribute',tag:_53CS},{val:'It depends on the shape',tag:_53DA}], a:0, e:'Color is non-defining. All triangles have 3 sides no matter what color they are.', d:'m', h:'Would a green triangle still be a triangle?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'Mia sorts shapes by their SIZE — big or small. Size is a ___ attribute.', s:_svgCircle(), o:[{val:'non-defining — size can change without changing the shape name'},{val:'defining — size tells you the shape',tag:_53CS},{val:'defining — big and small shapes have different names',tag:_53CS}], a:0, e:'Size is non-defining. A big circle and a tiny circle are both circles.', d:'m', h:'Does making a square bigger turn it into a different shape?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A rhombus has 4 sides. A square has 4 sides. Which defining attribute do they share?', s:_svgRow2(_svgRhSm(0),_svgSquSm()), o:[{val:'number of sides — both have 4'},{val:'color — both are the same color',tag:_53CS},{val:'size — both are the same size',tag:_53CS},{val:'direction — both face the same way',tag:_53OR}], a:0, e:'Both a rhombus and a square have 4 sides — that is their shared defining attribute.', d:'m', h:'Focus on the attribute that is always the same for both shapes.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Which attribute is DEFINING for ALL triangles?', s:_svgTriangle(0), o:[{val:'3 sides and 3 corners'},{val:'always green color',tag:_53CS},{val:'always small size',tag:_53CS},{val:'always pointing up',tag:_53OR}], a:0, e:'Every triangle has exactly 3 sides and 3 corners — those are defining attributes.', d:'m', h:'What is true of every single triangle, no matter what?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Shape A has 3 corners. Shape B has 3 corners. What do you know for sure about both?', s:_svgRow2(_svgTriSm(0),_svgTriSm(60)), o:[{val:'Both have 3 corners — that is a defining attribute they share'},{val:'Both are the same color',tag:_53CS},{val:'Both are the same size',tag:_53CS},{val:'Both point the same way',tag:_53OR}], a:0, e:'Having 3 corners is a defining attribute. Color, size, and direction can differ.', d:'m', h:'Focus on what is definitely true about both.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A big hexagon and a tiny hexagon both have ___.', s:_svgHex(0), o:[{val:'6 sides — always true of every hexagon'},{val:'the same color',tag:_53CS},{val:'the same height',tag:_53CS},{val:'4 sides',tag:_53SC}], a:0, e:'Every hexagon has 6 sides, no matter the size.', d:'m', h:'Does making a hexagon smaller change how many sides it has?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Which attribute can CHANGE without changing a triangle\'s name?', s:_svgTriangle(0), o:[{val:'color'},{val:'number of sides',tag:_53DA},{val:'number of corners',tag:_53DA},{val:'whether sides are straight',tag:_53DA}], a:0, e:'Color can change without changing the shape name. Sides and corners define the shape.', d:'m', h:'What is non-defining for a triangle?', sk:'sort_shape_attributes', i:_i53ND()},
+  // Hard (4)
+  {t:'A student says: "I can tell a square from a circle because of color." Is color a defining attribute?', s:_svgRow2(_svgSquSm(),_svgCircSm()), o:[{val:'No — sides and curves define shapes, not color'},{val:'Yes — squares are always one color',tag:_53CS},{val:'Yes — color is the most important attribute',tag:_53CS},{val:'It depends on the size',tag:_53CS}], a:0, e:'A square has 4 straight sides; a circle has none. Color is non-defining.', d:'h', h:'What really makes a square different from a circle?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Which two shapes share the defining attribute of having 4 sides?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgRhSm(0)), o:[{val:'Square and rhombus'},{val:'Triangle and circle',tag:_53SC},{val:'Circle and hexagon',tag:_53SC},{val:'Triangle and square',tag:_53SC}], a:0, e:'Both a square and a rhombus have 4 sides — that is their shared defining attribute.', d:'h', h:'Count the sides on each shape to find the pair.', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Emma has a red square. Tom has a blue square. Tom says they are different shapes because of color. What is wrong with his thinking?', s:_svgSquare(), o:[{val:'Color is non-defining — both are squares because of their 4 equal sides'},{val:'Tom is right — color defines shapes',tag:_53CS},{val:'Tom is right — red and blue shapes are different',tag:_53CS},{val:'It depends on their sizes',tag:_53CS}], a:0, e:'Both are squares. Color is non-defining — only the number and type of sides matter.', d:'h', h:'What actually defines a square?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A shape has 4 equal sides AND 4 right-angle corners. It is painted purple. A student writes "purple shape" as its name. What is the correct name?', s:_svgSquare(), o:[{val:'Square — 4 equal sides and 4 right-angle corners define a square, not its color'},{val:'Purple square — you must include the color',tag:_53CS},{val:'Diamond — purple shapes are diamonds',tag:_53CS},{val:'Rectangle — any 4-sided shape',tag:_53SC}], a:0, e:'The color is non-defining. 4 equal sides + 4 right-angle corners = square.', d:'h', h:'What are the defining attributes that make a square a square?', sk:'sort_shape_attributes', i:_i53DA()}
+];
+
+// ── C2: Non-defining attributes don't change shape name (5E/6M/4H = 15) ──────
+
+var _l53C2 = [
+  // Easy (5)
+  {t:'A triangle is turned upside down. What is it now?', s:_svgTriangle(180), o:[{val:'Still a triangle'},{val:'An upside-down shape',tag:_53OR},{val:'A different shape',tag:_53OR},{val:'A rectangle',tag:_53OR}], a:0, e:'Turning a shape does not change its name. It still has 3 sides — it is still a triangle.', d:'e', h:'Count the sides. Does turning change that number?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A red square and a blue square are ___ shapes.', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'the same'},{val:'different',tag:_53CS},{val:'opposite',tag:_53CS}], a:0, e:'Color is non-defining. Both have 4 equal sides — both are squares.', d:'e', h:'Does color change the number of sides?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A tiny circle and a huge circle are both called ___.', s:_svgCircle(), o:[{val:'circles'},{val:'dots',tag:_53CS},{val:'rounds',tag:_53CS},{val:'different shapes',tag:_53CS}], a:0, e:'Size is non-defining. Both are perfectly round with 0 straight sides — both are circles.', d:'e', h:'Does making a circle bigger change what it is?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'Does rotating a hexagon change its name?', s:_svgHex(30), o:[{val:'No — it is still a hexagon with 6 sides'},{val:'Yes — rotated shapes have new names',tag:_53OR},{val:'Yes — the number of sides changes when you rotate',tag:_53OR}], a:0, e:'Rotating a hexagon does not change its name. It still has 6 sides.', d:'e', h:'Count the sides after rotating. Does that number change?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A big rhombus and a small rhombus both have 4 sides. True or false?', s:_svgRhombus(0), o:[{val:'True — size is non-defining; both have 4 sides'},{val:'False — different sizes have different sides',tag:_53CS}], a:0, e:'True. Size is non-defining. Every rhombus has 4 sides no matter how big or small.', d:'e', h:'Does shrinking a rhombus remove any sides?', sk:'sort_shape_attributes', i:_i53ND()},
+  // Medium (6)
+  {t:'Luis draws a triangle pointing right. Ana draws a triangle pointing left. Are they the same shape?', s:_svgRow2(_svgTriSm(90),_svgTriSm(270)), o:[{val:'Yes — both are triangles; direction does not change the name'},{val:'No — they point differently',tag:_53OR},{val:'No — direction changes the shape name',tag:_53OR},{val:'Maybe — it depends on the color',tag:_53CS}], a:0, e:'Both have 3 sides. Direction is non-defining — they are both triangles.', d:'m', h:'How many sides does each triangle have?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'You make a square bigger. Does it become a rectangle?', s:_svgSquare(), o:[{val:'No — it is still a square with 4 equal sides'},{val:'Yes — big squares are rectangles',tag:_53CS},{val:'Yes — size changes the shape',tag:_53CS},{val:'It depends on how big you make it',tag:_53CS}], a:0, e:'A square stays a square. Size is non-defining. A square still has 4 equal sides after growing.', d:'m', h:'Does making a square bigger change the lengths of its sides relative to each other?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A green hexagon is painted red. Does the number of sides change?', s:_svgHex(0), o:[{val:'No — color is non-defining; it still has 6 sides'},{val:'Yes — red shapes have 4 sides',tag:_53CS},{val:'Yes — the color changes the sides',tag:_53CS},{val:'It now has 5 sides',tag:_53SC}], a:0, e:'Color is non-defining. Painting a hexagon red does not change its 6 sides.', d:'m', h:'Can paint add or remove sides?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A square is tipped at an angle. What do we call it?', s:_svgRhombus(45), o:[{val:'A square — its 4 equal sides do not change when tilted'},{val:'A diamond — tipped squares become diamonds',tag:_53OR},{val:'A rhombus — any tipped square is a rhombus',tag:_53OR},{val:'A rectangle — tilted shapes become rectangles',tag:_53OR}], a:0, e:'Tipping a square does not change its 4 equal sides. It is still a square.', d:'m', h:'Does tilting change the number or length of the sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Which of these would change a triangle into a different shape?', s:_svgTriangle(0), o:[{val:'Giving it a 4th side'},{val:'Painting it blue',tag:_53CS},{val:'Making it bigger',tag:_53CS},{val:'Flipping it upside down',tag:_53OR}], a:0, e:'Adding a side changes the shape. Painting, resizing, or flipping are non-defining.', d:'m', h:'What defines a triangle — a change to what would make it NOT a triangle?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A tiny red triangle and a big blue triangle are the same shape. They differ in their ___.', s:_svgRow2(_svgTriSm(0),_svgTriSm(0)), o:[{val:'color and size'},{val:'number of sides',tag:_53DA},{val:'number of corners',tag:_53DA},{val:'shape name',tag:_53DA}], a:0, e:'Color and size are non-defining. Both are triangles — same shape name, same number of sides.', d:'m', h:'What is the same? What is different?', sk:'sort_shape_attributes', i:_i53ND()},
+  // Hard (4)
+  {t:'A student sees a hexagon tilted at an angle and says: "That is NOT a hexagon because it looks different." What is wrong?', s:_svgHex(15), o:[{val:'Orientation is non-defining — a tilted hexagon is still a hexagon with 6 sides'},{val:'The student is correct — tilted shapes have new names',tag:_53OR},{val:'The shape changed when it tilted',tag:_53OR},{val:'Hexagons cannot be tilted',tag:_53OR}], a:0, e:'Orientation is non-defining. The hexagon still has 6 sides when tilted.', d:'h', h:'Does tilting change the number of sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Pedro says: "If I paint a square yellow, it becomes a different shape." Is he right?', s:_svgSquare(), o:[{val:'No — color is non-defining; it stays a square'},{val:'Yes — yellow shapes are circles',tag:_53CS},{val:'Yes — color is a defining attribute',tag:_53CS},{val:'It depends on the shade of yellow',tag:_53CS}], a:0, e:'Color is non-defining. A yellow square is still a square with 4 equal sides.', d:'h', h:'What makes a square a square?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'Nia makes a big triangle. Kai makes a tiny triangle. Jade makes a medium triangle. How many triangles are there in all?', s:_svgRow3(_svgTriSm(0),_svgTriSm(0),_svgTriSm(0)), o:[{val:'3 — each shape has 3 sides; size is non-defining'},{val:'1 — only the big one counts',tag:_53CS},{val:'0 — they are all different sizes so different shapes',tag:_53CS},{val:'2 — only big and medium count',tag:_53CS}], a:0, e:'All three are triangles. Size is non-defining.', d:'h', h:'Does size change the name of a triangle?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A shape has 3 sides. It is flipped, painted orange, and shrunk. How many sides does it have now?', s:_svgTriangle(180), o:[{val:'3 — flipping, painting, and shrinking are non-defining'},{val:'0 — flipping removes the sides',tag:_53OR},{val:'4 — painting adds a side',tag:_53CS},{val:'6 — shrinking changes the sides',tag:_53CS}], a:0, e:'Flipping, painting, and changing size are all non-defining. The shape still has 3 sides.', d:'h', h:'Which of those changes is a defining attribute?', sk:'sort_shape_attributes', i:_i53ND()}
+];
+
+// ── C3: Sort by sides (7E/8M/5H = 20) ────────────────────────────────────────
+
+var _l53C3 = [
+  // Easy (7)
+  {t:'Sam is sorting shapes into a 3-sides group. Which shape belongs?', s:_svgRow3(_svgTriSm(0),_svgSquSm(),_svgCircSm()), o:[{val:'Triangle'},{val:'Square',tag:_53SC},{val:'Circle',tag:_53SC},{val:'Hexagon',tag:_53SC}], a:0, e:'A triangle has 3 sides — it belongs in the 3-sides group.', d:'e', h:'Count the sides on each shape.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape goes in the 4-sides group?', s:_svgRow3(_svgTriSm(0),_svgRectSm(),_svgCircSm()), o:[{val:'Rectangle'},{val:'Triangle',tag:_53SC},{val:'Circle',tag:_53SC},{val:'Hexagon',tag:_53SC}], a:0, e:'A rectangle has 4 sides — it belongs in the 4-sides group.', d:'e', h:'Count the sides of each shape.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape does NOT belong in the all-straight-sides group?', s:_svgRow3(_svgSquSm(),_svgCircSm(),_svgTriSm(0)), o:[{val:'Circle — it has no straight sides'},{val:'Square — it has 4 straight sides',tag:_53WS},{val:'Triangle — it has 3 straight sides',tag:_53WS}], a:0, e:'A circle has no straight sides — it does not belong in the all-straight-sides group.', d:'e', h:'Which shape has a curved side instead of straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Max is sorting: shapes with 6 sides in one pile. Where does a hexagon go?', s:_svgHex(0), o:[{val:'6-sides pile — a hexagon has 6 sides'},{val:'All-others pile — hexagons have 4 sides',tag:_53SC},{val:'All-others pile — hexagons have 3 sides',tag:_53SC}], a:0, e:'A hexagon has 6 sides — it goes in the 6-sides pile.', d:'e', h:'Count the sides of a hexagon.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape goes in the 0-straight-sides group?', s:_svgRow3(_svgCircSm(),_svgSquSm(),_svgTriSm(0)), o:[{val:'Circle'},{val:'Square',tag:_53SC},{val:'Triangle',tag:_53SC},{val:'Hexagon',tag:_53SC}], a:0, e:'A circle has no straight sides — it belongs in the 0-straight-sides group.', d:'e', h:'Which shape is perfectly round with no straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Emma sorts shapes into 3-sides and 4-sides groups. Where does a triangle go?', s:_svgTriangle(0), o:[{val:'3-sides group — a triangle has 3 sides'},{val:'4-sides group — triangles have 4 sides',tag:_53SC},{val:'Neither group — triangles have 6 sides',tag:_53SC}], a:0, e:'A triangle has 3 sides — it goes in the 3-sides group.', d:'e', h:'How many sides does a triangle have?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A square has ___ sides. It belongs in the 4-sides group.', s:_svgSquare(), o:[{val:'4'},{val:'3',tag:_53SC},{val:'6',tag:_53SC},{val:'0',tag:_53SC}], a:0, e:'A square has 4 sides — so it belongs in the 4-sides group.', d:'e', h:'Count the sides of a square.', sk:'sort_shape_attributes', i:_i53SC()},
+  // Medium (8)
+  {t:'Kate has 3 groups: 3-sides, 4-sides, 6-sides. She looks at a rhombus. Where does it go?', s:_svgRhombus(0), o:[{val:'4-sides group — a rhombus has 4 sides'},{val:'3-sides group — rhombuses have 3 sides',tag:_53SC},{val:'6-sides group — rhombuses have 6 sides',tag:_53SC},{val:'It does not belong in any group',tag:_53WS}], a:0, e:'A rhombus has 4 sides — it goes in the 4-sides group.', d:'m', h:'Count the sides of a rhombus carefully.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort into "more than 4 sides" and "4 or fewer sides." Where does a hexagon go?', s:_svgHex(0), o:[{val:'More than 4 sides — a hexagon has 6 sides'},{val:'4 or fewer sides — hexagons have 4 sides',tag:_53SC},{val:'Neither group',tag:_53WS}], a:0, e:'A hexagon has 6 sides, which is more than 4.', d:'m', h:'Does a hexagon have more than 4 sides or 4 or fewer?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Ali has two groups: shapes with any curved sides, and shapes with all straight sides. Where does a triangle go?', s:_svgTriangle(0), o:[{val:'All-straight-sides group — a triangle has 3 straight sides'},{val:'Curved-sides group — triangles are curved',tag:_53WS},{val:'Both groups',tag:_53WS}], a:0, e:'A triangle has 3 straight sides — it goes in the all-straight-sides group.', d:'m', h:'Does a triangle have any curved sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which two shapes belong in the SAME sides group?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgRectSm()), o:[{val:'Square and rectangle — both have 4 sides'},{val:'Circle and hexagon — both are curved',tag:_53WS},{val:'Triangle and square — both have equal sides',tag:_53SC},{val:'Hexagon and triangle — both point up',tag:_53OR}], a:0, e:'Square and rectangle both have 4 sides — they go in the same group.', d:'m', h:'Which two shapes have the same number of sides?', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'Which shape does NOT belong in the 4-sides group: square, rectangle, hexagon, or rhombus?', s:_svgRow3(_svgSquSm(),_svgHexSm(0),_svgRhSm(0)), o:[{val:'Hexagon — it has 6 sides'},{val:'Square — it has 4 equal sides',tag:_53SC},{val:'Rectangle — it has 4 sides',tag:_53SC},{val:'Rhombus — it has 4 sides',tag:_53SC}], a:0, e:'A hexagon has 6 sides — it does not belong in the 4-sides group.', d:'m', h:'Which shape has a DIFFERENT number of sides from the others?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student says a circle belongs in the 0-straight-sides group. Is the student right?', s:_svgCircle(), o:[{val:'Yes — a circle has no straight sides'},{val:'No — circles have 4 sides',tag:_53SC},{val:'No — circles belong in the 3-sides group',tag:_53SC}], a:0, e:'A circle has no straight sides — the student is correct.', d:'m', h:'Does a circle have any straight sides at all?', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'Lucas sorts shapes with the same number of sides together. He puts a square with a rectangle. Is that correct?', s:_svgRow2(_svgSquSm(),_svgRectSm()), o:[{val:'Yes — both have 4 sides'},{val:'No — squares have 4 sides but rectangles have 6',tag:_53SC},{val:'No — squares and rectangles cannot be in the same group',tag:_53WS}], a:0, e:'Yes — both a square and a rectangle have 4 sides. They belong in the same group.', d:'m', h:'Count the sides of each shape.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape does NOT belong in the all-straight-sides group?', s:_svgRow3(_svgHexSm(0),_svgCircSm(),_svgRhSm(0)), o:[{val:'Circle — it has a curved side, no straight sides'},{val:'Hexagon — it has 6 straight sides',tag:_53WS},{val:'Rhombus — it has 4 straight sides',tag:_53WS}], a:0, e:'A circle has no straight sides — it does not belong in the all-straight-sides group.', d:'m', h:'Which shape has NO straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  // Hard (5)
+  {t:'A 4-sides group has: square, rectangle, rhombus. She wants to add one more shape. Which can she add?', s:_svgRow3(_svgSquSm(),_svgRectSm(),_svgRhSm(0)), o:[{val:'Another rhombus — it also has 4 sides'},{val:'Triangle — it has fewer sides',tag:_53SC},{val:'Hexagon — it has more sides',tag:_53SC},{val:'Circle — it has no sides',tag:_53SC}], a:0, e:'Any shape with 4 sides fits the group. A rhombus has 4 sides.', d:'h', h:'What is the rule for the group?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student removes one shape from the all-straight-sides group: circle, triangle, rectangle, hexagon. Which should she remove?', s:_svgRow3(_svgCircSm(),_svgTriSm(0),_svgRectSm()), o:[{val:'Circle — it has no straight sides'},{val:'Triangle — it has 3 straight sides',tag:_53WS},{val:'Rectangle — it has 4 straight sides',tag:_53WS},{val:'Hexagon — it has 6 straight sides',tag:_53WS}], a:0, e:'A circle has no straight sides — it does not belong in the all-straight-sides group.', d:'h', h:'Which shape breaks the all-straight-sides rule?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sorting rule: shapes with 4 or more sides. Which shapes fit the rule?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgHexSm(0)), o:[{val:'Square (4), rhombus (4), hexagon (6)'},{val:'Only hexagon (6)',tag:_53SC},{val:'Triangle (3) and circle (0)',tag:_53SC},{val:'All shapes',tag:_53SC}], a:0, e:'Shapes with 4 or more sides: square, rectangle, rhombus (4 each) and hexagon (6).', d:'h', h:'Which shapes have 4 or more sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A sort has two groups: 3-sides and 4-sides. A hexagon is left out. Is the hexagon sorted correctly?', s:_svgHex(0), o:[{val:'Yes — hexagon has 6 sides so it does not belong in either group'},{val:'No — hexagon should go in the 4-sides group',tag:_53SC},{val:'No — hexagon should go in the 3-sides group',tag:_53SC}], a:0, e:'A hexagon has 6 sides — it does not belong in the 3-sides OR 4-sides group.', d:'h', h:'How many sides does a hexagon have?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Mia puts a triangle and a hexagon in the same group, but not a square. What could be her sorting rule?', s:_svgRow3(_svgTriSm(0),_svgHexSm(0),_svgSquSm()), o:[{val:'Not a 4-sided shape — triangle has 3 sides, hexagon has 6, square has 4'},{val:'Shapes with even sides — but 3 is odd',tag:_53SC},{val:'Shapes with more than 6 sides — triangle has only 3',tag:_53SC},{val:'Shapes with curved sides — neither has curved sides',tag:_53WS}], a:0, e:'Triangle (3 sides) and hexagon (6 sides) both are NOT 4-sided shapes, but a square (4 sides) is.', d:'h', h:'What do triangle and hexagon have in common that a square does not?', sk:'sort_shape_attributes', i:_i53WS()}
+];
+
+// ── C4: Sort by corners/vertices (5E/6M/4H = 15) ─────────────────────────────
+
+var _l53C4 = [
+  // Easy (5)
+  {t:'A student sorts shapes into a 3-corners group. Which shape belongs?', s:_svgRow3(_svgTriSm(0),_svgSquSm(),_svgCircSm()), o:[{val:'Triangle — it has 3 corners'},{val:'Square — it has 4 corners',tag:_53VC},{val:'Circle — it has 0 corners',tag:_53VC}], a:0, e:'A triangle has 3 corners — it belongs in the 3-corners group.', d:'e', h:'Count the corners (pointy spots) on each shape.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Which shape goes in the 0-corners group?', s:_svgRow3(_svgCircSm(),_svgTriSm(0),_svgSquSm()), o:[{val:'Circle — it has no corners'},{val:'Triangle — it has 3 corners',tag:_53VC},{val:'Square — it has 4 corners',tag:_53VC},{val:'Hexagon — it has 6 corners',tag:_53VC}], a:0, e:'A circle has no corners — it belongs in the 0-corners group.', d:'e', h:'Which shape has no pointy spots?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Tom sorts shapes into a 4-corners group. Where does a rectangle go?', s:_svgRect(), o:[{val:'4-corners group — a rectangle has 4 corners'},{val:'3-corners group — rectangles have 3 corners',tag:_53VC},{val:'6-corners group — rectangles have 6 corners',tag:_53VC}], a:0, e:'A rectangle has 4 corners — it belongs in the 4-corners group.', d:'e', h:'Count the corners of a rectangle.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'A hexagon has ___ corners. It belongs in the 6-corners group.', s:_svgHex(0), o:[{val:'6'},{val:'4',tag:_53VC},{val:'3',tag:_53VC},{val:'0',tag:_53VC}], a:0, e:'A hexagon has 6 corners — it belongs in the 6-corners group.', d:'e', h:'Count the pointy spots on a hexagon.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Sara sorts shapes: shapes with corners and shapes without corners. Where does a circle go?', s:_svgCircle(), o:[{val:'Shapes without corners — a circle has 0 corners'},{val:'Shapes with corners — circles have 4 corners',tag:_53VC},{val:'Both groups',tag:_53WS}], a:0, e:'A circle has no corners — it belongs in the shapes-without-corners group.', d:'e', h:'Does a circle have any pointy spots?', sk:'sort_shape_attributes', i:_i53VC()},
+  // Medium (6)
+  {t:'A 4-corners group has: square, rectangle, rhombus. A student adds a triangle. Is the triangle in the right group?', s:_svgTriangle(0), o:[{val:'No — a triangle has 3 corners, not 4'},{val:'Yes — triangles also have 4 corners',tag:_53VC},{val:'Yes — all shapes with points have 4 corners',tag:_53VC}], a:0, e:'A triangle has 3 corners — it does not belong in the 4-corners group.', d:'m', h:'How many corners does a triangle have?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Which two shapes belong in the same corners group?', s:_svgRow3(_svgSquSm(),_svgHexSm(0),_svgRhSm(0)), o:[{val:'Square and rhombus — both have 4 corners'},{val:'Square and hexagon — both are colorful',tag:_53CS},{val:'Hexagon and triangle — both point up',tag:_53OR},{val:'Circle and square — both have no corners',tag:_53VC}], a:0, e:'Square and rhombus both have 4 corners — they go in the same group.', d:'m', h:'Count the corners on each shape. Which two match?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Jake sorts by corners. He puts square, rectangle, and rhombus in one group. What is his sorting rule?', s:_svgRow3(_svgSquSm(),_svgRectSm(),_svgRhSm(0)), o:[{val:'Shapes with 4 corners'},{val:'Shapes with 6 corners',tag:_53VC},{val:'Shapes with 3 corners',tag:_53VC},{val:'Shapes with 0 corners',tag:_53VC}], a:0, e:'Square, rectangle, and rhombus each have 4 corners — the rule is shapes with 4 corners.', d:'m', h:'Count the corners of each shape in the group.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'A student says a rhombus has MORE corners than a triangle. Is that right?', s:_svgRow2(_svgRhSm(0),_svgTriSm(0)), o:[{val:'Yes — a rhombus has 4 corners and a triangle has 3'},{val:'No — a rhombus has 3 corners and a triangle has 4',tag:_53VC},{val:'No — both have the same number of corners',tag:_53VC}], a:0, e:'A rhombus has 4 corners; a triangle has 3. So yes, a rhombus has more corners.', d:'m', h:'Count the corners on each shape.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Sort into "3 corners" and "not 3 corners." Where do a rhombus and a triangle go?', s:_svgRow2(_svgRhSm(0),_svgTriSm(0)), o:[{val:'Rhombus → not 3 corners (has 4); triangle → 3 corners'},{val:'Both in 3 corners',tag:_53VC},{val:'Both in not 3 corners',tag:_53VC},{val:'Rhombus → 3 corners; triangle → not 3 corners',tag:_53VC}], a:0, e:'A triangle has 3 corners; a rhombus has 4 corners (not 3).', d:'m', h:'Count the corners on each shape.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Which shape does NOT belong in the 4-corners group?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgRectSm()), o:[{val:'Triangle — it has 3 corners, not 4'},{val:'Square — it has 4 corners',tag:_53VC},{val:'Rectangle — it has 4 corners',tag:_53VC}], a:0, e:'A triangle has 3 corners — it does not belong in the 4-corners group.', d:'m', h:'Which shape has a different number of corners?', sk:'sort_shape_attributes', i:_i53VC()},
+  // Hard (4)
+  {t:'A corners group has: triangle (3), hexagon (6), circle (0). A student says they all share the same corner count. Is she right?', s:_svgRow3(_svgTriSm(0),_svgHexSm(0),_svgCircSm()), o:[{val:'No — triangle has 3, hexagon has 6, and circle has 0; they all differ'},{val:'Yes — all have 3 corners',tag:_53VC},{val:'Yes — all have 6 corners',tag:_53VC}], a:0, e:'Triangle=3, hexagon=6, circle=0 — they are all different.', d:'h', h:'Count the corners on each shape separately.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Sorting rule: shapes with MORE than 3 corners. Which shapes fit the rule?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgHexSm(0)), o:[{val:'Square (4), rhombus (4), hexagon (6)'},{val:'Only hexagon (6)',tag:_53VC},{val:'Triangle (3)',tag:_53VC},{val:'Circle (0)',tag:_53VC}], a:0, e:'Square and rhombus have 4 corners; hexagon has 6 — all more than 3.', d:'h', h:'Which shapes have more than 3 corners?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'A student sorts all 6 shapes (circle, triangle, rectangle, square, rhombus, hexagon) by corners. She makes 4 groups: 0, 3, 4, and 6. Which group has the MOST shapes?', s:_svgRow3(_svgSquSm(),_svgRectSm(),_svgRhSm(0)), o:[{val:'4 corners — square, rectangle, and rhombus all have 4 corners'},{val:'6 corners — hexagon, rhombus, and square all have 6',tag:_53VC},{val:'3 corners — triangle, circle, and hexagon all have 3',tag:_53VC}], a:0, e:'Square, rectangle, and rhombus each have 4 corners — the 4-corners group has 3 shapes.', d:'h', h:'Count how many shapes go in each group.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Gina says: "Square and hexagon cannot go in the same corners group because one has 4 corners and the other has 6." Is Gina right?', s:_svgRow2(_svgSquSm(),_svgHexSm(0)), o:[{val:'Yes — they have different corner counts so they go in different groups'},{val:'No — both have 4 corners',tag:_53VC},{val:'No — both have 6 corners',tag:_53VC}], a:0, e:'A square has 4 corners; a hexagon has 6. Different counts → different groups.', d:'h', h:'Count the corners on each shape.', sk:'sort_shape_attributes', i:_i53VC()}
+];
+
+// ── C5: Straight vs curved sides (6E/5M/4H = 15) ─────────────────────────────
+
+var _l53C5 = [
+  // Easy (6)
+  {t:'Which shape has NO straight sides?', s:_svgRow3(_svgCircSm(),_svgTriSm(0),_svgSquSm()), o:[{val:'Circle — it has only a curved side'},{val:'Triangle — it has 3 straight sides',tag:_53WS},{val:'Square — it has 4 straight sides',tag:_53WS}], a:0, e:'A circle has no straight sides — it is all curved.', d:'e', h:'Which shape is perfectly round?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape has ALL straight sides?', s:_svgRow3(_svgTriSm(0),_svgCircSm(),_svgRectSm()), o:[{val:'Triangle — all 3 sides are straight'},{val:'Circle — it has no straight sides',tag:_53WS},{val:'Triangle and circle — both have straight sides',tag:_53WS}], a:0, e:'A triangle has 3 straight sides. A circle has no straight sides at all.', d:'e', h:'Which shape has straight lines for all its sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A circle goes in the "curved sides" group. True or false?', s:_svgCircle(), o:[{val:'True — a circle has a curved side, no straight sides'},{val:'False — a circle has 4 straight sides',tag:_53SC}], a:0, e:'True. A circle has no straight sides — only a curved side.', d:'e', h:'Is any part of a circle straight?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A hexagon goes in the "all straight sides" group. True or false?', s:_svgHex(0), o:[{val:'True — a hexagon has 6 straight sides'},{val:'False — hexagons have curved sides',tag:_53WS}], a:0, e:'True. A hexagon has 6 straight sides — no curved sides.', d:'e', h:'Are the sides of a hexagon straight or curved?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which group does a square belong in: all-straight-sides or curved-sides?', s:_svgSquare(), o:[{val:'All-straight-sides — a square has 4 straight sides'},{val:'Curved-sides — squares have curved corners',tag:_53WS},{val:'Both groups — squares have mixed sides',tag:_53WS}], a:0, e:'A square has 4 straight sides — it belongs in the all-straight-sides group.', d:'e', h:'Trace the sides of a square with your finger. Are they straight?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which shape has BOTH a straight side AND a curved side?', s:_svgRow3(_svgCircSm(),_svgTriSm(0),_svgSquSm()), o:[{val:'None of these — circle has only curved, triangle and square have only straight'},{val:'Circle — it has one straight side and one curved side',tag:_53WS},{val:'Triangle — it has one curved side',tag:_53WS}], a:0, e:'None of these: circles have only curved sides; triangles and squares have only straight sides.', d:'e', h:'A circle has only curved. Triangles and squares have only straight.', sk:'sort_shape_attributes', i:_i53WS()},
+  // Medium (5)
+  {t:'A student sorts: "shapes with at least one straight side." Does a circle belong?', s:_svgCircle(), o:[{val:'No — a circle has no straight sides'},{val:'Yes — circles have 4 straight sides',tag:_53SC},{val:'Yes — circles have 1 straight side',tag:_53WS}], a:0, e:'A circle has no straight sides — it does not belong in the at-least-one-straight-side group.', d:'m', h:'Does a circle have even ONE straight side?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Which two shapes belong in the SAME straight-vs-curved group?', s:_svgRow3(_svgTriSm(0),_svgCircSm(),_svgHexSm(0)), o:[{val:'Triangle and hexagon — both have all straight sides'},{val:'Circle and triangle — both are round',tag:_53WS},{val:'Hexagon and circle — both are colorful',tag:_53CS}], a:0, e:'Triangle and hexagon both have all straight sides — they go in the same group.', d:'m', h:'Which shapes have only straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort rule: all straight sides. Which shapes fit: circle, triangle, hexagon, square?', s:_svgRow3(_svgTriSm(0),_svgCircSm(),_svgSquSm()), o:[{val:'Triangle, hexagon, and square — all have only straight sides'},{val:'Circle only — circles have straight sides',tag:_53WS},{val:'All of them',tag:_53WS}], a:0, e:'Circle has no straight sides. Triangle, hexagon, and square all have straight sides only.', d:'m', h:'Which shape is the odd one out?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A shape has 6 straight sides. Does it belong in the "curved sides" group?', s:_svgHex(0), o:[{val:'No — it has straight sides, not curved'},{val:'Yes — 6 is an even number so it belongs',tag:_53WS},{val:'Yes — all shapes with 6 sides are curved',tag:_53WS}], a:0, e:'A hexagon has 6 straight sides — it does not belong in the curved-sides group.', d:'m', h:'Are the sides of a hexagon straight or curved?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Two groups: "all straight" and "any curved." How many of these fit in "all straight": circle, square, rhombus, hexagon?', s:_svgRow3(_svgSquSm(),_svgCircSm(),_svgHexSm(0)), o:[{val:'3 — square, rhombus, and hexagon (circle does not fit)'},{val:'4 — all of them',tag:_53WS},{val:'1 — only hexagon',tag:_53WS}], a:0, e:'Square, rhombus, and hexagon all have straight sides. Circle has only a curved side.', d:'m', h:'Which one has a curved side?', sk:'sort_shape_attributes', i:_i53WS()},
+  // Hard (4)
+  {t:'A student says: "Triangle and rhombus go in the same straight-sides group, but circle does not." Is she right?', s:_svgRow3(_svgTriSm(0),_svgRhSm(0),_svgCircSm()), o:[{val:'Yes — triangle and rhombus have all straight sides; circle does not'},{val:'No — a rhombus has curved sides',tag:_53WS},{val:'No — a triangle has one curved side',tag:_53WS}], a:0, e:'Triangle has 3 straight sides; rhombus has 4 straight sides. Circle has only a curved side.', d:'h', h:'Do triangle and rhombus have any curved sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort these into "curved" and "straight" groups: circle, square, hexagon, triangle. Which shape is in the "curved" group?', s:_svgRow3(_svgCircSm(),_svgSquSm(),_svgHexSm(0)), o:[{val:'Circle only'},{val:'Circle and hexagon',tag:_53WS},{val:'All four shapes',tag:_53WS},{val:'Square only',tag:_53WS}], a:0, e:'Only the circle has a curved side. Square, hexagon, and triangle all have straight sides.', d:'h', h:'Which shapes have only straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student says: "All shapes with more than 4 sides have curved sides." Is this true?', s:_svgHex(0), o:[{val:'No — a hexagon has 6 sides and they are all straight'},{val:'Yes — hexagons have curved sides',tag:_53WS},{val:'Yes — more sides means more curves',tag:_53WS}], a:0, e:'A hexagon has 6 straight sides — no curved sides. The student is wrong.', d:'h', h:'Look at a hexagon. Are its sides straight or curved?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Zoe sorts shapes: circle in the curved group, square in the straight group, rhombus in the straight group. She is unsure about a hexagon. Where should it go?', s:_svgHex(0), o:[{val:'Straight group — a hexagon has 6 straight sides'},{val:'Curved group — hexagons are round',tag:_53WS},{val:'Both groups — it is a mix',tag:_53WS}], a:0, e:'A hexagon has 6 straight sides — it goes in the all-straight-sides group.', d:'h', h:'Are the sides of a hexagon straight or curved?', sk:'sort_shape_attributes', i:_i53WS()}
+];
+
+// ── C6: Orientation doesn't change shape name (5E/6M/4H = 15) ────────────────
+
+var _l53C6 = [
+  // Easy (5)
+  {t:'A triangle pointing left is still called a ___.', s:_svgTriangle(270), o:[{val:'triangle'},{val:'left-triangle',tag:_53OR},{val:'arrow shape',tag:_53OR},{val:'different shape',tag:_53OR}], a:0, e:'Orientation is non-defining. A triangle pointing left has 3 sides — it is still a triangle.', d:'e', h:'Count the sides. Does direction change that count?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Does flipping a square upside down change what it is?', s:_svgSquare(), o:[{val:'No — it is still a square with 4 equal sides'},{val:'Yes — a flipped square is a diamond',tag:_53OR},{val:'Yes — it becomes a rhombus',tag:_53OR}], a:0, e:'Flipping is non-defining. A square flipped upside down still has 4 equal sides — it is still a square.', d:'e', h:'Does flipping change the lengths of the sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A hexagon is rotated. What is it now?', s:_svgHex(20), o:[{val:'Still a hexagon — rotating does not change the shape name'},{val:'A different shape — rotating changes the name',tag:_53OR},{val:'An octagon — rotated hexagons become octagons',tag:_53OR}], a:0, e:'Rotating a hexagon does not add or remove sides. It is still a hexagon.', d:'e', h:'Does rotating change the number of sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A rectangle is turned on its side. How many sides does it now have?', s:_svgRect(), o:[{val:'4 — turning does not change the number of sides'},{val:'2 — it only shows 2 sides now',tag:_53OR},{val:'6 — turning adds sides',tag:_53OR}], a:0, e:'Turning a rectangle does not add or remove sides. It still has 4 sides.', d:'e', h:'Can you add sides by turning a shape?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A rhombus is tipped at an angle. What do we call it?', s:_svgRhombus(30), o:[{val:'A rhombus — tipping does not change its 4 sides'},{val:'A square — tipped rhombuses become squares',tag:_53OR},{val:'A diamond — tipped shapes are called diamonds',tag:_53OR}], a:0, e:'Tipping a rhombus does not change its 4 sides. It is still a rhombus.', d:'e', h:'Does tipping change what a rhombus is?', sk:'sort_shape_attributes', i:_i53OR()},
+  // Medium (6)
+  {t:'A student sorts triangles by which way they point: up, down, or sideways. Is direction a valid sorting attribute?', s:_svgRow3(_svgTriSm(0),_svgTriSm(180),_svgTriSm(90)), o:[{val:'Yes — direction can be used for sorting, but it is non-defining for the shape name'},{val:'No — you cannot sort by direction at all',tag:_53WS},{val:'Yes — and direction changes the shape name',tag:_53OR}], a:0, e:'Direction can be used as a sorting attribute, but it does NOT change the shape name.', d:'m', h:'Can you sort by direction? Does sorting by direction change the shape name?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Lily sees a hexagon turned 30 degrees and says it is a different shape. What is wrong?', s:_svgHex(30), o:[{val:'Orientation is non-defining — a turned hexagon is still a hexagon with 6 sides'},{val:'She is right — turned shapes have new names',tag:_53OR},{val:'She is right — turning changes the number of sides',tag:_53OR}], a:0, e:'Turning a hexagon does not change its 6 sides. Orientation is non-defining.', d:'m', h:'Count the sides of the turned hexagon.', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Two triangles face opposite directions. A student puts them in different groups. What attribute is she sorting by?', s:_svgRow2(_svgTriSm(0),_svgTriSm(180)), o:[{val:'Orientation — she is sorting by which way they point'},{val:'Number of sides — she is sorting by sides',tag:_53DA},{val:'Color — she is sorting by color',tag:_53CS}], a:0, e:'She is sorting by orientation (which way they point). Both are still triangles.', d:'m', h:'What is different about the two triangles?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A square turned 45 degrees looks like a diamond. Is it still a square?', s:_svgSquare(), o:[{val:'Yes — turning does not change its 4 equal sides'},{val:'No — it becomes a diamond when turned 45 degrees',tag:_53OR},{val:'No — it becomes a rhombus when turned',tag:_53OR}], a:0, e:'Turning a square 45 degrees does not change its 4 equal sides. It is still a square.', d:'m', h:'Does rotating change the number or equality of the sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A teacher shows a triangle and says: "The pointy end goes to the left now. What is its new name?" What should students answer?', s:_svgTriangle(270), o:[{val:'It has no new name — it is still a triangle'},{val:'Left-triangle',tag:_53OR},{val:'Arrow',tag:_53OR},{val:'Rectangle',tag:_53OR}], a:0, e:'Orientation is non-defining. The shape still has 3 sides — it is still a triangle.', d:'m', h:'Does pointing left give a shape a new name?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A student sorts shapes into groups based on which direction they point. She puts all upward-pointing triangles in one group. All shapes in her groups are ___.', s:_svgRow3(_svgTriSm(0),_svgTriSm(0),_svgTriSm(0)), o:[{val:'still triangles — direction is non-defining'},{val:'different shapes because they point the same way',tag:_53OR},{val:'not triangles — grouped by direction',tag:_53OR}], a:0, e:'All are still triangles. She is sorting by direction (non-defining), not changing the shape name.', d:'m', h:'Does sorting by direction change what the shapes are called?', sk:'sort_shape_attributes', i:_i53OR()},
+  // Hard (4)
+  {t:'A student says: "A triangle pointing down is NOT a triangle. Triangles always point up." What defining attribute proves the student wrong?', s:_svgTriangle(180), o:[{val:'Number of sides — a downward triangle still has 3 sides'},{val:'Color — the color did not change',tag:_53CS},{val:'Size — the size did not change',tag:_53CS}], a:0, e:'A triangle is defined by its 3 sides, not its direction. Pointing down does not change the side count.', d:'h', h:'What defines a triangle?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Sorting rule: "shapes with the same number of sides go together." Triangles in three different orientations (up, down, left) — do they go in the same group?', s:_svgRow3(_svgTriSm(0),_svgTriSm(180),_svgTriSm(90)), o:[{val:'Yes — all three have 3 sides; direction is non-defining'},{val:'No — each direction is a different group',tag:_53OR},{val:'No — only upward triangles go together',tag:_53OR}], a:0, e:'All three triangles have 3 sides. When sorting by sides, they all go in the same group.', d:'h', h:'How many sides does each triangle have?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'Marco says: "A square tilted at 45 degrees belongs in the rhombus group." Bea says: "It belongs in the square group." Who is right?', s:_svgSquare(), o:[{val:'Bea — a tilted square still has 4 equal sides; tilting does not change the shape'},{val:'Marco — tilting 45 degrees turns a square into a rhombus',tag:_53OR},{val:'Both are right — tilted squares are squares AND rhombuses',tag:_53OR}], a:0, e:'Tilting is non-defining. A square tilted at 45 degrees still has 4 equal sides — it is still a square.', d:'h', h:'Does tilting change the lengths of a square\'s sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A student sees a hexagon at 0 degrees, 30 degrees, and 60 degrees and says each one is a different shape. What is wrong?', s:_svgRow3(_svgHexSm(0),_svgHexSm(30),_svgHexSm(60)), o:[{val:'Orientation is non-defining — all three are hexagons with 6 sides'},{val:'The student is right — each rotation creates a new shape',tag:_53OR},{val:'The student is right — each shape has a different name',tag:_53OR}], a:0, e:'All three are hexagons. Rotation does not change the number of sides.', d:'h', h:'Count the sides of each rotated shape.', sk:'sort_shape_attributes', i:_i53OR()}
+];
+
+// ── C7: Size doesn't change shape name (4E/3M/3H = 10) ───────────────────────
+
+var _l53C7 = [
+  // Easy (4)
+  {t:'A tiny square and a giant square are both called ___.', s:_svgSquare(), o:[{val:'squares'},{val:'different shapes',tag:_53CS},{val:'rectangles',tag:_53CS}], a:0, e:'Size is non-defining. Both have 4 equal sides — both are squares.', d:'e', h:'Does size change the number of sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'Does making a triangle bigger change its shape name?', s:_svgTriangle(0), o:[{val:'No — it is still a triangle'},{val:'Yes — big triangles have a different name',tag:_53CS},{val:'Yes — it becomes a rectangle',tag:_53CS}], a:0, e:'Size is non-defining. A big triangle still has 3 sides — it is still a triangle.', d:'e', h:'Does size change the number of sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'A small circle and a big circle are ___.', s:_svgCircle(), o:[{val:'the same shape — both are circles'},{val:'different shapes — different sizes',tag:_53CS},{val:'one is a circle, one is an oval',tag:_53CS}], a:0, e:'Both are circles. Size is non-defining — it does not change the shape name.', d:'e', h:'Does growing a circle give it sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'Which is true: "A large hexagon and a tiny hexagon are both hexagons" or "Big hexagons have more sides than small hexagons"?', s:_svgHex(0), o:[{val:'A large hexagon and a tiny hexagon are both hexagons'},{val:'Big hexagons have more sides than small hexagons',tag:_53CS}], a:0, e:'Size is non-defining. Every hexagon has 6 sides no matter the size.', d:'e', h:'Does making a hexagon bigger add sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  // Medium (3)
+  {t:'Ben draws a rhombus. Then he makes it 10 times bigger. He now has a ___.', s:_svgRhombus(0), o:[{val:'rhombus — size is non-defining'},{val:'square — big rhombuses become squares',tag:_53CS},{val:'rectangle — bigger shapes become rectangles',tag:_53CS}], a:0, e:'Making a rhombus bigger does not change its 4 sides. It is still a rhombus.', d:'m', h:'Does making a rhombus bigger change its 4 sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'A student sorts shapes by size: big and small. She puts a big circle and a small circle in different groups. Is she right to say they are different shapes?', s:_svgCircle(), o:[{val:'No — both are circles; size is non-defining for the shape name'},{val:'Yes — different sizes mean different shapes',tag:_53CS},{val:'Yes — the big one is a sphere',tag:_53TD}], a:0, e:'Both are circles. She can sort by size, but they are still the same type of shape.', d:'m', h:'Does size change the shape name?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'Which attribute is NON-DEFINING for a square?', s:_svgSquare(), o:[{val:'size — you can change the size without changing its name'},{val:'number of sides — 4 sides is defining',tag:_53DA},{val:'equal sides — the sides being equal is defining',tag:_53DA}], a:0, e:'Size is non-defining. The number of sides and equal-length sides define a square.', d:'m', h:'What can change about a square without changing its name?', sk:'sort_shape_attributes', i:_i53ND()},
+  // Hard (3)
+  {t:'A student says: "I have two shapes. One is a big triangle and one is a small triangle. They are DIFFERENT shapes because they are different sizes." What is wrong?', s:_svgRow2(_svgTriSm(0),_svgTriSm(0)), o:[{val:'Size is non-defining — both are triangles with 3 sides'},{val:'The student is right — size defines shapes',tag:_53CS},{val:'The student is right — big triangles are trapezoids',tag:_53CS}], a:0, e:'Size is non-defining. Both are triangles with 3 sides.', d:'h', h:'What defines a triangle?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'Which defining attribute stays the same when you change the SIZE of a hexagon?', s:_svgHex(0), o:[{val:'6 sides and 6 corners — those are defining attributes that do not change'},{val:'The direction it faces — direction is a defining attribute',tag:_53OR},{val:'The color — color stays the same',tag:_53CS}], a:0, e:'No matter the size, a hexagon always has 6 sides and 6 corners.', d:'h', h:'What is always true about a hexagon, big or small?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A class makes a tiny square from cardboard and a giant square on the floor. A student says: "They cannot be in the same shape group." Is the student right?', s:_svgSquare(), o:[{val:'No — both are squares; size is non-defining'},{val:'Yes — different sizes are always different shapes',tag:_53CS},{val:'Yes — the giant one is really a rectangle',tag:_53CS}], a:0, e:'Size is non-defining. Both have 4 equal sides — both are squares.', d:'h', h:'Does size change what makes a square a square?', sk:'sort_shape_attributes', i:_i53CS()}
+];
+
+// ── C8: 2D vs 3D sorting (3E/4M/3H = 10) ─────────────────────────────────────
+
+var _l53C8 = [
+  // Easy (3)
+  {t:'A circle is a flat shape drawn on paper. What kind of shape is it?', s:_svgCircle(), o:[{val:'2D — flat shape'},{val:'3D — solid shape',tag:_53TD},{val:'4D — special shape',tag:_53TD}], a:0, e:'A circle is flat. Flat shapes drawn on paper are 2D shapes.', d:'e', h:'Can you pick up a circle drawn on paper?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'A sphere is a solid round ball you can hold. What kind of shape is it?', s:_svgCircle(), o:[{val:'3D — a solid you can hold'},{val:'2D — flat shape',tag:_53TD},{val:'A circle because it is round',tag:_53TD}], a:0, e:'A sphere is a 3D solid. You can pick it up and hold it.', d:'e', h:'Can you pick up a sphere?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'Which of these is a FLAT 2D shape?', s:_svgRow3(_svgCircSm(),_svgTriSm(0),_svgSquSm()), o:[{val:'Circle, triangle, and square — all are flat 2D shapes'},{val:'Only circle — the others are 3D',tag:_53TD},{val:'None — all shapes are 3D',tag:_53TD}], a:0, e:'Circle, triangle, and square are all flat 2D shapes.', d:'e', h:'Which ones are flat drawings?', sk:'sort_shape_attributes', i:_i53TD()},
+  // Medium (4)
+  {t:'A student sorts: circle in the 2D group, cube in the 3D group. She looks at a square. Where does it go?', s:_svgSquare(), o:[{val:'2D group — a square is a flat shape'},{val:'3D group — a square is a solid',tag:_53TD},{val:'Neither group',tag:_53TD}], a:0, e:'A square is a flat 2D shape — it goes in the 2D group.', d:'m', h:'Is a square flat or solid?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'A circle is 2D and a sphere is 3D. What is the key difference?', s:_svgCircle(), o:[{val:'A circle is flat (2D); a sphere is solid and round in every direction (3D)'},{val:'A circle is bigger than a sphere',tag:_53CS},{val:'They are the same shape, just different sizes',tag:_53CS}], a:0, e:'A circle is a flat 2D shape. A sphere is a solid 3D object you can hold.', d:'m', h:'Can you pick up a circle drawn on paper?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'Which two belong in the 2D-shapes group?', s:_svgRow3(_svgCircSm(),_svgSquSm(),_svgTriSm(0)), o:[{val:'All three — circle, square, and triangle are all flat 2D shapes'},{val:'Only circle — triangles and squares are 3D',tag:_53TD},{val:'None — all shapes are 3D if they are colorful',tag:_53TD}], a:0, e:'Circle, square, and triangle are all flat 2D shapes.', d:'m', h:'Which shapes are flat drawings?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'A cube has 6 square faces. Is a cube a 2D shape or a 3D solid?', s:_svgSquare(), o:[{val:'3D solid — a cube has depth and you can hold it'},{val:'2D shape — it is made of squares',tag:_53TD},{val:'2D shape — it has flat faces',tag:_53TD}], a:0, e:'A cube is a 3D solid. Even though its faces are squares (2D), the cube itself is 3D.', d:'m', h:'Can you pick up a cube?', sk:'sort_shape_attributes', i:_i53TD()},
+  // Hard (3)
+  {t:'A student says: "A rectangle and a rectangular prism are the same shape because they both have rectangles." What is wrong?', s:_svgRect(), o:[{val:'A rectangle is a flat 2D shape; a rectangular prism is a 3D solid — they are different'},{val:'The student is right — both have rectangles so they are the same',tag:_53TD},{val:'The student is right — 2D and 3D shapes have the same name',tag:_53TD}], a:0, e:'A rectangle is flat (2D). A rectangular prism is a 3D solid. They are related but not the same shape.', d:'h', h:'Is a rectangle flat or solid?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'Sort: flat 2D group vs solid 3D group. Where does a hexagon go?', s:_svgHex(0), o:[{val:'2D group — a hexagon is a flat shape'},{val:'3D group — hexagons are solid',tag:_53TD},{val:'Neither group — hexagons are special',tag:_53TD}], a:0, e:'A hexagon is a flat 2D shape — it goes in the 2D group.', d:'h', h:'Is a hexagon flat or solid?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'A teacher draws a circle on the board. A student holds a ball. They both have a round shape. Are they the same type of shape?', s:_svgCircle(), o:[{val:'No — the circle on the board is 2D (flat); the ball is a sphere, which is 3D (solid)'},{val:'Yes — both are round so they are the same type',tag:_53TD},{val:'Yes — circles and spheres are the same',tag:_53TD}], a:0, e:'The drawn circle is a 2D flat shape. The ball is a 3D sphere. Round but different types.', d:'h', h:'Is a drawing flat or solid?', sk:'sort_shape_attributes', i:_i53TD()}
+];
+
+// ── C9: Mixed sort — two attributes (6E/8M/6H = 20) ──────────────────────────
+
+var _l53C9 = [
+  // Easy (6)
+  {t:'Sort by sides AND by straight vs curved. A triangle goes in which group?', s:_svgTriangle(0), o:[{val:'3-straight-sides group'},{val:'0-curved-sides group',tag:_53WS},{val:'4-straight-sides group',tag:_53SC}], a:0, e:'A triangle has 3 sides and they are all straight — it goes in the 3-straight-sides group.', d:'e', h:'How many sides? Are they straight or curved?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by size and by sides. A big triangle and a small triangle go in the ___ group when sorting by sides.', s:_svgRow2(_svgTriSm(0),_svgTriSm(0)), o:[{val:'same group — both have 3 sides'},{val:'different groups — big goes in one, small in another',tag:_53CS},{val:'different groups — bigger triangle has more sides',tag:_53SC}], a:0, e:'When sorting by sides, both go in the same group — both have 3 sides. Size is non-defining for this attribute.', d:'e', h:'When sorting by sides, does size matter?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by corners. A circle and a square go in ___ groups.', s:_svgRow2(_svgCircSm(),_svgSquSm()), o:[{val:'different groups — circle has 0 corners, square has 4'},{val:'the same group — both have 4 corners',tag:_53VC},{val:'the same group — both are shapes',tag:_53WS}], a:0, e:'A circle has 0 corners. A square has 4 corners. They go in different groups.', d:'e', h:'Count the corners of each shape.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Sort by straight vs curved, and by 2D vs 3D. A square is ___.', s:_svgSquare(), o:[{val:'flat 2D with all straight sides'},{val:'solid 3D with curved sides',tag:_53TD},{val:'flat 2D with curved sides',tag:_53WS}], a:0, e:'A square is a flat 2D shape with 4 straight sides.', d:'e', h:'Is a square flat or solid? Are its sides straight or curved?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by color AND by sides. A blue triangle and a red triangle go in the ___ sides group.', s:_svgRow2(_svgTriSm(0),_svgTriSm(0)), o:[{val:'same — both have 3 sides (color is non-defining)'},{val:'different — blue and red means different sides',tag:_53CS},{val:'different — different colors make different groups',tag:_53CS}], a:0, e:'Color is non-defining. When sorting by sides, both go in the 3-sides group.', d:'e', h:'Does color change the number of sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by corners and by orientation. A triangle pointing up and a triangle pointing down — do they share a corners group?', s:_svgRow2(_svgTriSm(0),_svgTriSm(180)), o:[{val:'Yes — both have 3 corners; orientation is non-defining for corners'},{val:'No — they point different ways so different corners group',tag:_53OR},{val:'No — pointing down gives extra corners',tag:_53OR}], a:0, e:'Orientation is non-defining. Both triangles have 3 corners — they share the 3-corners group.', d:'e', h:'Does orientation change the number of corners?', sk:'sort_shape_attributes', i:_i53OR()},
+  // Medium (8)
+  {t:'Two sort rules: by sides and by 2D vs 3D. A hexagon goes in which two groups?', s:_svgHex(0), o:[{val:'6-sides group and 2D group'},{val:'6-sides group and 3D group',tag:_53TD},{val:'4-sides group and 2D group',tag:_53SC}], a:0, e:'A hexagon has 6 sides (6-sides group) and is a flat shape (2D group).', d:'m', h:'How many sides does a hexagon have? Is it flat or solid?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student sorts by sides AND by straight vs curved. She puts square and rectangle together. What is her rule?', s:_svgRow2(_svgSquSm(),_svgRectSm()), o:[{val:'4 straight sides — both have 4 straight sides'},{val:'0 curved sides and 3 straight sides',tag:_53SC},{val:'6 straight sides — both have 6 sides',tag:_53SC}], a:0, e:'Square and rectangle both have 4 straight sides — that is the rule.', d:'m', h:'How many straight sides do both have?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by corners and by straight vs curved. A circle goes in ___.', s:_svgCircle(), o:[{val:'0-corners group and curved-sides group'},{val:'0-corners group and straight-sides group',tag:_53WS},{val:'4-corners group and curved-sides group',tag:_53VC}], a:0, e:'A circle has 0 corners and only a curved side — it goes in both the 0-corners group and curved-sides group.', d:'m', h:'How many corners? Straight or curved sides?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'Sort by size and by 2D vs 3D. A tiny hexagon and a giant hexagon go in ___ groups.', s:_svgHex(0), o:[{val:'the same 2D group — size is non-defining for flat vs solid'},{val:'different groups — tiny is 2D and giant is 3D',tag:_53TD},{val:'different groups — giants are always 3D',tag:_53TD}], a:0, e:'Both are flat 2D shapes. Size does not determine 2D vs 3D.', d:'m', h:'Is size what makes a shape 2D or 3D?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'Three sort attributes: color, sides, and corners. Which two attributes are DEFINING for a triangle?', s:_svgTriangle(0), o:[{val:'sides (3) and corners (3)'},{val:'color and sides',tag:_53CS},{val:'color and corners',tag:_53CS}], a:0, e:'Sides and corners are defining. Color is non-defining.', d:'m', h:'Which attributes can NEVER change without changing the triangle into a different shape?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'Sort by orientation and by sides. A triangle pointing right has ___ sides and goes in the ___ group when sorting by sides.', s:_svgTriangle(90), o:[{val:'3 sides — goes in the 3-sides group (orientation is non-defining)'},{val:'2 sides — pointing right removes a side',tag:_53OR},{val:'4 sides — pointing sideways adds a side',tag:_53OR}], a:0, e:'A triangle pointing right still has 3 sides. Orientation does not change side count.', d:'m', h:'Does pointing right change the number of sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A student makes two groups: "4-sided shapes" and "not 4-sided shapes." She puts square, rectangle, and rhombus in the 4-sided group and triangle and hexagon in the not-4-sided group. Is she right?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgHexSm(0)), o:[{val:'Yes — square/rectangle/rhombus have 4 sides; triangle (3) and hexagon (6) do not'},{val:'No — hexagon belongs in the 4-sided group',tag:_53SC},{val:'No — rhombus belongs in the not-4-sided group',tag:_53SC}], a:0, e:'Square, rectangle, rhombus: 4 sides each. Triangle: 3 sides. Hexagon: 6 sides. The student is correct.', d:'m', h:'Count the sides of each shape.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by two attributes: number of sides AND orientation. Which two triangles go in the SAME sides group?', s:_svgRow3(_svgTriSm(0),_svgSquSm(),_svgTriSm(180)), o:[{val:'First triangle (pointing up) and third triangle (pointing down) — both have 3 sides'},{val:'First triangle and square — both point up',tag:_53OR},{val:'Square and third triangle — both are shapes',tag:_53WS}], a:0, e:'When sorting by sides, both triangles (pointing up and pointing down) go in the 3-sides group.', d:'m', h:'Which shapes have the same number of sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  // Hard (6)
+  {t:'Sort by ALL THREE: sides, corners, and whether sides are straight or curved. A rhombus belongs in: ___.', s:_svgRhombus(0), o:[{val:'4-sides, 4-corners, all-straight-sides groups'},{val:'4-sides, 0-corners, curved-sides groups',tag:_53VC},{val:'3-sides, 3-corners, all-straight-sides groups',tag:_53SC}], a:0, e:'A rhombus has 4 straight sides and 4 corners.', d:'h', h:'Count sides, count corners, check if sides are straight.', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Two shapes share the 4-sides group AND the all-straight-sides group. Which pair is it?', s:_svgRow3(_svgSquSm(),_svgCircSm(),_svgRectSm()), o:[{val:'Square and rectangle — both have 4 straight sides'},{val:'Circle and square — both are shapes',tag:_53WS},{val:'Circle and rectangle — both have sides',tag:_53WS}], a:0, e:'Square and rectangle both have 4 straight sides — they share both groups.', d:'h', h:'Which shapes have 4 straight sides?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A sort rule is: "shapes with straight sides only AND more than 3 sides." Which shapes fit?', s:_svgRow3(_svgSquSm(),_svgTriSm(0),_svgHexSm(0)), o:[{val:'Square (4 straight), rhombus (4 straight), hexagon (6 straight)'},{val:'Triangle (3 straight)',tag:_53SC},{val:'Circle (no straight sides)',tag:_53WS}], a:0, e:'Square, rhombus, and hexagon have all straight sides and more than 3 sides. Triangle has only 3 sides.', d:'h', h:'Which shapes have straight sides AND more than 3 of them?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student sorts by sides and by 2D vs 3D and says: "circle (2D, 0 sides) and square (2D, 4 sides) go in the same group because both are 2D." Is her reasoning correct?', s:_svgRow2(_svgCircSm(),_svgSquSm()), o:[{val:'Yes for the 2D group — both are flat 2D shapes; they would be separate for the sides group'},{val:'No — 2D shapes cannot be sorted together',tag:_53TD},{val:'No — circles and squares can never be in the same group',tag:_53WS}], a:0, e:'Both are 2D shapes — they share the 2D group. But for sides, circle (0) and square (4) go in different groups.', d:'h', h:'What attribute does "both are flat" apply to?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Three students each sort the same 6 shapes differently: by sides, by corners, and by straight vs curved. Which student\'s groups will circle and square NEVER share?', s:_svgRow2(_svgCircSm(),_svgSquSm()), o:[{val:'Both sides groups AND corners groups — circle has 0, square has 4'},{val:'Only the corners group',tag:_53VC},{val:'Only the sides group',tag:_53SC}], a:0, e:'Circle has 0 sides and 0 corners. Square has 4 sides and 4 corners. They share no sides or corners group. They also differ on curved vs straight.', d:'h', h:'Count sides and corners for each. Do they ever match?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'Sort by: 2D vs 3D, number of sides, and orientation. A tilted hexagon (30°) compared to an upright hexagon — which groups do they share?', s:_svgRow2(_svgHexSm(0),_svgHexSm(30)), o:[{val:'Both share 2D and 6-sides groups; they differ only in orientation group'},{val:'They share no groups — orientation changes everything',tag:_53OR},{val:'They share only the orientation group',tag:_53OR}], a:0, e:'Both hexagons are 2D and both have 6 sides. They only differ in the orientation group.', d:'h', h:'What is the same between the two hexagons? What differs?', sk:'sort_shape_attributes', i:_i53OR()}
+];
+
+// ── C10: Error repair (1E/11M/8H = 20) ───────────────────────────────────────
+
+var _l53C10 = [
+  // Easy (1)
+  {t:'A student says: "This is NOT a triangle because it is pointing down." What is wrong?', s:_svgTriangle(180), o:[{val:'Orientation is non-defining — a downward triangle is still a triangle'},{val:'The student is right — triangles always point up',tag:_53OR},{val:'The student is right — pointing down makes it a different shape',tag:_53OR}], a:0, e:'Orientation is non-defining. A triangle pointing down still has 3 sides.', d:'e', h:'Does pointing down change the number of sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  // Medium (11)
+  {t:'A student says: "This shape has 3 corners so it goes in the 4-corners group." What error did the student make?', s:_svgTriangle(0), o:[{val:'Wrong sort category — 3 corners belongs in the 3-corners group, not the 4-corners group'},{val:'No error — 3 corners is close enough to 4',tag:_53VC},{val:'The shape should be in the 6-corners group',tag:_53VC}], a:0, e:'3 corners belongs in the 3-corners group — the student put it in the wrong group.', d:'m', h:'Does 3 corners match the 4-corners group?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student says: "Color is a defining attribute — all blue shapes are circles." What is wrong?', s:_svgCircle(), o:[{val:'Color is non-defining — the shape name comes from sides and corners, not color'},{val:'The student is right — color defines shapes',tag:_53CS},{val:'The student is right — blue shapes are always circles',tag:_53CS}], a:0, e:'Color is non-defining. A circle is defined by having 0 straight sides, not by being blue.', d:'m', h:'What defines a shape — sides or color?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A student puts a circle in the 4-sides group. What error did the student make?', s:_svgCircle(), o:[{val:'A circle has 0 straight sides — it belongs in the 0-sides or curved group, not the 4-sides group'},{val:'No error — circles have 4 curved sides',tag:_53SC},{val:'No error — circles are the same as squares',tag:_53WS}], a:0, e:'A circle has no straight sides. Putting it in the 4-sides group is a sorting error.', d:'m', h:'How many straight sides does a circle have?', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'A student says: "I turned a triangle upside down and now it is an arrow." What error was made?', s:_svgTriangle(180), o:[{val:'Orientation error — turning a triangle upside down does not change its name; it is still a triangle'},{val:'No error — upside-down triangles are arrows',tag:_53OR},{val:'No error — arrows have 3 sides like triangles',tag:_53OR}], a:0, e:'Turning a triangle does not change its name. Orientation is non-defining.', d:'m', h:'What do we call a shape based on — orientation or number of sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  {t:'A student says a hexagon has 4 sides and puts it in the 4-sides group. What error did the student make?', s:_svgHex(0), o:[{val:'Counting error — a hexagon has 6 sides, not 4; it belongs in the 6-sides group'},{val:'No error — hexagons have 4 sides',tag:_53SC},{val:'No error — hexagons and squares are the same',tag:_53WS}], a:0, e:'A hexagon has 6 sides — not 4. It goes in the 6-sides group.', d:'m', h:'Count the sides of a hexagon carefully.', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'A student puts a square and a circle in the same group and says: "both are 2D shapes." Is this correct?', s:_svgRow2(_svgSquSm(),_svgCircSm()), o:[{val:'Yes — both are flat 2D shapes; the sorting is correct'},{val:'No — circles are 3D shapes',tag:_53TD},{val:'No — squares and circles cannot share any group',tag:_53WS}], a:0, e:'Both a square and a circle are flat 2D shapes — they correctly share the 2D group.', d:'m', h:'Is a square flat or solid? Is a circle flat or solid?', sk:'sort_shape_attributes', i:_i53TD()},
+  {t:'A student says: "A big hexagon and a small hexagon are different shapes because they are different sizes." What is wrong?', s:_svgHex(0), o:[{val:'Size is non-defining — both are hexagons with 6 sides'},{val:'The student is right — size defines shapes',tag:_53CS},{val:'The student is right — big hexagons are heptagons',tag:_53CS}], a:0, e:'Size is non-defining. Both have 6 sides — both are hexagons.', d:'m', h:'Does size change the number of sides?', sk:'sort_shape_attributes', i:_i53CS()},
+  {t:'A student sorts by corners and puts a triangle in the 4-corners group. What error was made?', s:_svgTriangle(0), o:[{val:'Counting error — a triangle has 3 corners, not 4; it belongs in the 3-corners group'},{val:'No error — triangles have 4 corners',tag:_53VC},{val:'No error — 3 and 4 are close enough',tag:_53VC}], a:0, e:'A triangle has 3 corners — it belongs in the 3-corners group, not the 4-corners group.', d:'m', h:'Count the corners (pointy spots) of a triangle.', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'A student says: "This shape is special because it is the biggest in the group." Size is a ___ attribute.', s:_svgHex(0), o:[{val:'non-defining — size does not determine the shape name'},{val:'defining — the biggest shape is always a hexagon',tag:_53CS},{val:'defining — size tells you the shape',tag:_53CS}], a:0, e:'Size is non-defining. A shape\'s name comes from its sides and corners, not its size.', d:'m', h:'Does being the biggest change what a shape is called?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A student puts a rhombus in the 3-sides group because "it looks like it could be 3-sided." What error was made?', s:_svgRhombus(0), o:[{val:'Counting error — a rhombus has 4 sides, not 3; it belongs in the 4-sides group'},{val:'No error — rhombuses can have 3 sides',tag:_53SC},{val:'No error — "looks like" is good enough for sorting',tag:_53WS}], a:0, e:'A rhombus has 4 sides — it belongs in the 4-sides group, not the 3-sides group.', d:'m', h:'Count the sides of a rhombus carefully.', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'A student says: "A square turned 45 degrees is a diamond — a different shape." What error was made?', s:_svgSquare(), o:[{val:'Orientation error — a tilted square is still a square; orientation is non-defining'},{val:'No error — tilted squares are called diamonds',tag:_53OR},{val:'No error — 45 degrees creates a new shape',tag:_53OR}], a:0, e:'Orientation is non-defining. A tilted square still has 4 equal sides — it is still a square.', d:'m', h:'Does tilting change the length of a square\'s sides?', sk:'sort_shape_attributes', i:_i53OR()},
+  // Hard (8)
+  {t:'A student says: "Rectangle and rhombus belong in the same group because they are both colorful." What is wrong with this reasoning?', s:_svgRow2(_svgRectSm(),_svgRhSm(0)), o:[{val:'Color is non-defining — while both do have 4 sides, "colorful" is not a valid sorting attribute'},{val:'No error — colorful is a valid attribute',tag:_53CS},{val:'No error — both are the same shape',tag:_53WS}], a:0, e:'Color is non-defining. "Colorful" is not a sorting attribute for shape groups. Though both have 4 sides, that would be the valid reason.', d:'h', h:'Is color a defining attribute?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A student puts hexagon in the 4-sides group and triangle in the 6-sides group. What two errors were made?', s:_svgRow2(_svgHexSm(0),_svgTriSm(0)), o:[{val:'Both are counting errors — hexagon has 6 sides (not 4); triangle has 3 sides (not 6)'},{val:'Only the hexagon is wrong',tag:_53SC},{val:'Only the triangle is wrong',tag:_53SC}], a:0, e:'Hexagon has 6 sides — wrong group. Triangle has 3 sides — wrong group. Both are in the wrong place.', d:'h', h:'Count the sides of each shape carefully.', sk:'sort_shape_attributes', i:_i53SC()},
+  {t:'A student sorts shapes into defining and non-defining groups. She puts "3 sides" in the non-defining group. What is wrong?', s:_svgTriangle(0), o:[{val:'3 sides is a defining attribute — it always tells you a shape is a triangle'},{val:'No error — sides are non-defining',tag:_53DA},{val:'No error — defining and non-defining are the same thing',tag:_53DA}], a:0, e:'Number of sides is a defining attribute. It ALWAYS tells you the shape name.', d:'h', h:'Does the number of sides ever change for a triangle?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A student says: "I sorted correctly because I put all the blue shapes in the same group." A teacher asks: "But are the blue shapes all the same TYPE of shape?" The student says yes. Who is right?', s:_svgRow3(_svgTriSm(0),_svgSquSm(),_svgCircSm()), o:[{val:'The teacher is asking the right question — sorting by color does not mean shapes are the same type'},{val:'The student is right — all blue shapes are the same type',tag:_53CS},{val:'Both are wrong — color and type are both wrong',tag:_53CS}], a:0, e:'Sorting by color does not mean shapes are the same type. A blue triangle and a blue square are different types of shapes.', d:'h', h:'Does sharing a color mean shapes have the same name?', sk:'sort_shape_attributes', i:_i53ND()},
+  {t:'A student puts a circle in the "3 corners" group because "it looks round and 3 is round." What errors were made?', s:_svgCircle(), o:[{val:'Counting error and wrong sort category — a circle has 0 corners, not 3; it belongs in the 0-corners group'},{val:'No error — 0 and 3 are both small numbers',tag:_53VC},{val:'No error — round shapes go in the 3-corners group',tag:_53VC}], a:0, e:'A circle has 0 corners — it must go in the 0-corners group. "Looks round" is not a valid counting reason.', d:'h', h:'How many corners does a circle actually have?', sk:'sort_shape_attributes', i:_i53VC()},
+  {t:'A student claims: "Defining attributes include color, size, and direction." What is wrong?', s:_svgSquare(), o:[{val:'Color, size, and direction are NON-defining — only sides and corners are defining attributes'},{val:'The student is right — all three are defining',tag:_53DA},{val:'The student is partly right — only color is defining',tag:_53CS}], a:0, e:'Color, size, and direction are all non-defining. Sides and corners define shapes.', d:'h', h:'What actually defines a shape?', sk:'sort_shape_attributes', i:_i53DA()},
+  {t:'A student sorts hexagons and rhombuses into the same group saying: "Both have more than 3 sides." A second student says they should be in different groups because hexagon has 6 sides and rhombus has 4. Who is right?', s:_svgRow2(_svgHexSm(0),_svgRhSm(0)), o:[{val:'Both students are right — it depends on the sorting rule: "more than 3 sides" makes them share a group; "exact side count" separates them'},{val:'Only first student is right',tag:_53SC},{val:'Only second student is right',tag:_53SC}], a:0, e:'With rule "more than 3 sides," both share a group. With rule "exact count," they separate. Both students are correct given their rules.', d:'h', h:'What is the exact sorting rule being used?', sk:'sort_shape_attributes', i:_i53WS()},
+  {t:'A student makes a "same corners" group with circle (0), square (4), and hexagon (6). What error was made?', s:_svgRow3(_svgCircSm(),_svgSquSm(),_svgHexSm(0)), o:[{val:'Counting error — circle has 0, square has 4, and hexagon has 6; they all have different corner counts'},{val:'No error — all are the same',tag:_53VC},{val:'No error — they are all 2D shapes',tag:_53TD}], a:0, e:'Circle=0, square=4, hexagon=6 corners. Different counts — they do not belong in the same "same corners" group.', d:'h', h:'Count corners on each shape. Are they the same?', sk:'sort_shape_attributes', i:_i53VC()}
+];
+
+// ── L5.3 bank assembly ─────────────────────────────────────────────────────────
+
+var _l53Bank = _colorizeQ([].concat(_l53C1, _l53C2, _l53C3, _l53C4, _l53C5, _l53C6, _l53C7, _l53C8, _l53C9, _l53C10));
+
+// ── L5.3 worked examples ───────────────────────────────────────────────────────
+
+var _l53Examples = [
+  {
+    id: 'g1-u5-l3-ex-1',
+    title: 'Example 1: Defining vs non-defining',
+    prompt: 'A student sees a red triangle and a blue triangle. Are they the same shape?',
+    steps: [
+      'Ask: what defines a shape? → the number of sides and corners.',
+      'The red triangle has 3 sides. The blue triangle has 3 sides.',
+      'Color is non-defining — it does not change the shape name.',
+      'Both have 3 sides → both are triangles.'
+    ],
+    finalAnswer: 'Yes — both are triangles. Color is non-defining.'
+  },
+  {
+    id: 'g1-u5-l3-ex-2',
+    title: 'Example 2: Sort by sides',
+    prompt: 'A student is sorting shapes into a 4-sides group. Does a rhombus belong?',
+    steps: [
+      'Count the sides of a rhombus: 1, 2, 3, 4.',
+      'A rhombus has 4 sides.',
+      'The sorting group is "4 sides."',
+      '4 = 4 → yes, it belongs.'
+    ],
+    finalAnswer: 'Yes — a rhombus has 4 sides, so it belongs in the 4-sides group.'
+  },
+  {
+    id: 'g1-u5-l3-ex-3',
+    title: 'Example 3: Orientation error',
+    prompt: 'A student says a triangle pointing down is a new shape. Is the student right?',
+    steps: [
+      'Count the sides of the pointing-down triangle: 3 sides.',
+      'Orientation (which way it points) is non-defining.',
+      'Turning, flipping, or rotating does not change the shape name.',
+      'Still 3 sides → still a triangle.'
+    ],
+    finalAnswer: 'No — the student is wrong. A triangle pointing down is still a triangle.'
+  },
+  {
+    id: 'g1-u5-l3-ex-4',
+    title: 'Example 4: Sort by corners',
+    prompt: 'A student sorts into a 0-corners group and a corners group. Where does a circle go?',
+    steps: [
+      'Check: does a circle have any corners (pointy spots)?',
+      'A circle is perfectly round — no pointy spots anywhere.',
+      'A circle has 0 corners.',
+      '0 corners → it goes in the 0-corners group.'
+    ],
+    finalAnswer: 'A circle goes in the 0-corners group.'
+  },
+  {
+    id: 'g1-u5-l3-ex-5',
+    title: 'Example 5: Straight vs curved',
+    prompt: 'A student sorts: "all straight sides" and "any curved sides." Where do a hexagon and a circle go?',
+    steps: [
+      'Hexagon: check each side. All 6 sides are straight lines.',
+      'Hexagon → all-straight-sides group.',
+      'Circle: its side is a curve — no straight lines anywhere.',
+      'Circle → any-curved-sides group.'
+    ],
+    finalAnswer: 'Hexagon goes in all-straight-sides. Circle goes in any-curved-sides.'
+  },
+  {
+    id: 'g1-u5-l3-ex-6',
+    title: 'Example 6: 2D vs 3D',
+    prompt: 'A square and a cube both have square shapes. How are they different types?',
+    steps: [
+      'A square is a flat 2D shape — like a drawing on paper.',
+      'A cube is a 3D solid — it has depth and you can pick it up.',
+      'The square\'s faces look like squares, but the cube itself is a 3D solid.',
+      'Flat drawing = 2D. Solid object = 3D.'
+    ],
+    finalAnswer: 'A square is a flat 2D shape. A cube is a 3D solid.'
+  }
+];
+
+// ── L5.3 key ideas ─────────────────────────────────────────────────────────────
+
+var _l53KeyIdeas = [
+  'A defining attribute is something that is ALWAYS true about a shape — like number of sides or number of corners.',
+  'Non-defining attributes — like color, size, and orientation — can change without changing the shape name.',
+  'A triangle is still a triangle when turned, flipped, painted, or resized — it always has 3 sides and 3 corners.',
+  'Sort shapes by counting sides: triangle = 3, square/rectangle/rhombus = 4, hexagon = 6, circle = 0 straight sides.',
+  'A circle has no corners and no straight sides — it is always in the "0 corners" and "curved" group.',
+  'Flat shapes drawn on paper are 2D shapes. Solid objects you can pick up and hold are 3D solids.'
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
 //  Unit 5 Spec
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -1557,21 +2214,24 @@ export const G1_U5_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 5.3 — Shape Attributes and Sorting (scaffold, 0 questions)
-    //  TEKS 1.6A, 1.6B
+    //  Lesson 5.3 — Shape Attributes and Sorting
+    //  TEKS 1.6A, 1.6B | 160 questions (50E / 65M / 45H)
+    //  10 categories: C1 defining, C2 non-defining, C3 sides, C4 corners,
+    //    C5 straight/curved, C6 orientation, C7 size, C8 2D/3D,
+    //    C9 mixed sort, C10 error repair
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u5-l3',
       title: 'Shape Attributes and Sorting',
       teks: ['1.6A', '1.6B'],
-      skill: 'shape_attributes_and_sorting',
+      skill: 'sort_shape_attributes',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: _l53KeyIdeas,
+      workedExamples: _l53Examples,
+      quizBank: _l53Bank,
       diagnostics: {
-        commonDistractors: [],
-        errorTags: [],
+        commonDistractors: [_53DA, _53ND, _53WS, _53SC, _53VC, _53OR, _53CS, _53TD],
+        errorTags: [_53DA, _53ND, _53WS, _53SC, _53VC, _53OR, _53CS, _53TD],
         interventionRules: []
       }
     },
