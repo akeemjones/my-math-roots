@@ -979,6 +979,26 @@ function _tv3dTriPrismVsCone() {
   );
 }
 
+function _tv3dSphereVsCylinder() {
+  return _tvWrap(
+    '<svg width="248" height="110" viewBox="0 0 248 110" style="display:inline-block">' +
+    '<text x="52" y="12" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Sphere</text>' +
+    '<circle cx="52" cy="62" r="42" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<ellipse cx="40" cy="46" rx="12" ry="8" fill="white" opacity="0.4"/>' +
+    '<text x="52" y="108" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">round everywhere</text>' +
+    '<line x1="122" y1="8" x2="122" y2="104" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="186" y="12" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Cylinder</text>' +
+    '<rect x="162" y="28" width="48" height="58" fill="' + _TVP + '" opacity="0.2" stroke="none"/>' +
+    '<ellipse cx="186" cy="86" rx="24" ry="8" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="162" y1="28" x2="162" y2="86" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="210" y1="28" x2="210" y2="86" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<ellipse cx="186" cy="28" rx="24" ry="8" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="186" y="108" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">flat ends you can feel</text>' +
+    '</svg>',
+    'Sphere = round like a ball     Cylinder = flat ends you can feel'
+  );
+}
+
 // ── L5.2 intervention factories ───────────────────────────────────────────────
 
 function _i3WS(solid) {
@@ -1088,7 +1108,7 @@ function _i3SR() {
       'Pick up a ball: round everywhere = sphere.',
       'Pick up a can: flat ends you can feel = cylinder.'
     ],
-    teachingVisualRaw: _tv3dConeVsCylinder(),
+    teachingVisualRaw: _tv3dSphereVsCylinder(),
     correctAnswerExplanation: 'A sphere has no flat faces. A cylinder has flat round ends.',
     followUpRule: 'same_skill_new_numbers',
     doNotRepeatOriginalQuestion: true
@@ -1303,20 +1323,8 @@ var _l52C5 = [
 
 var _l52C6 = [
 
-  // Sphere mixed
-  {t:'Which solid can roll in ANY direction?', s:_svg3dSphere(), o:[{val:'Cylinder',tag:_3SR},{val:'Sphere'},{val:'Cube',tag:_3WS},{val:'Cone',tag:_3WS}], a:1, e:'A sphere is round everywhere — it rolls in any direction.', d:'h', h:'Only a perfectly round solid rolls in any direction.', sk:'identify_3d_solids', i:_i3WS('sphere')},
-  {t:'A globe shows the Earth. The Earth is shaped like which solid?', s:_svg3dSphere(), o:[{val:'Sphere'},{val:'Cylinder',tag:_3SR},{val:'Rectangular prism',tag:_3WS},{val:'Cube',tag:_3WS}], a:0, e:'The Earth is round in every direction — it is a sphere.', d:'h', h:'The Earth is perfectly round like a ball.', sk:'identify_3d_solids', i:_i3WS('sphere')},
-  {t:'Which solid has NO flat faces AND no edges?', s:_svg3dSphere(), o:[{val:'Cube',tag:_3WS},{val:'Cylinder',tag:_3SR},{val:'Sphere'},{val:'Cone',tag:_3WS}], a:2, e:'Only a sphere has no flat faces and no edges — it is smooth all the way around.', d:'h', h:'No flat parts, no edges anywhere.', sk:'identify_3d_solids', i:_i3DC()},
-
   // Cone mixed
-  {t:'Which solid would you use to make an ice cream cone shape?', s:_svg3dCone(), o:[{val:'Cylinder',tag:_3CC},{val:'Cube',tag:_3WS},{val:'Sphere',tag:_3WS},{val:'Cone'}], a:3, e:'An ice cream cone shape has a point at the top — it is a cone.', d:'h', h:'Which solid has a pointed top?', sk:'identify_3d_solids', i:_i3WS('cone')},
-  {t:'Which solid has one curved face and one flat face?', s:_svg3dCone(), o:[{val:'Cone'},{val:'Rectangular prism',tag:_3WS},{val:'Cube',tag:_3WS},{val:'Triangular prism',tag:_3WS}], a:0, e:'A cone has one curved surface (the side) and one flat circular base.', d:'h', h:'One curved part, one flat part.', sk:'identify_3d_solids', i:_i3CC()},
   {t:'A traffic cone keeps cars away. Which solid matches its shape?', s:_svg3dCone(), o:[{val:'Cylinder',tag:_3CC},{val:'Cone'},{val:'Sphere',tag:_3WS},{val:'Cube',tag:_3WS}], a:1, e:'A traffic cone has a point at the top — it is a cone.', d:'h', h:'A traffic cone has a pointed top and a wide round base.', sk:'identify_3d_solids', i:_i3WS('cone')},
-
-  // Cylinder mixed
-  {t:'Which solid can roll but only in one direction?', s:_svg3dCylinder(), o:[{val:'Cube',tag:_3WS},{val:'Rectangular prism',tag:_3WS},{val:'Cylinder'},{val:'Sphere',tag:_3SR}], a:2, e:'A cylinder rolls on its curved side but only forward and backward — not sideways like a sphere.', d:'h', h:'It rolls, but not in every direction like a sphere.', sk:'identify_3d_solids', i:_i3SR()},
-  {t:'Which solid has the same circular cross-section all the way from top to bottom?', s:_svg3dCylinder(), o:[{val:'Cone',tag:_3CC},{val:'Sphere',tag:_3SR},{val:'Cylinder'},{val:'Triangular prism',tag:_3WS}], a:2, e:'A cylinder is the same circle shape all the way through.', d:'h', h:'The same shape all the way through — top matches bottom exactly.', sk:'identify_3d_solids', i:_i3WS('cylinder')},
-  {t:'A battery powers a flashlight. Which solid matches the shape of a battery?', s:_svg3dCylinder(), o:[{val:'Cube',tag:_3WS},{val:'Sphere',tag:_3SR},{val:'Cone',tag:_3CC},{val:'Cylinder'}], a:3, e:'A battery is round at both ends — it is a cylinder.', d:'h', h:'A battery has two round flat ends.', sk:'identify_3d_solids', i:_i3WS('cylinder')},
 
   // Cube mixed
   {t:'A Rubik\'s cube is a famous puzzle toy. Which solid matches its shape?', s:_svg3dCube(), o:[{val:'Rectangular prism',tag:_3KP},{val:'Sphere',tag:_3WS},{val:'Cube'},{val:'Triangular prism',tag:_3WS}], a:2, e:'A Rubik\'s cube has equal square faces on all sides — it is a cube.', d:'h', h:'All six faces are equal squares.', sk:'identify_3d_solids', i:_i3KP()},
@@ -1329,15 +1337,73 @@ var _l52C6 = [
   {t:'A cereal box is a rectangular prism. How is it different from a cube?', s:_svg3dRectPrism(), o:[{val:'It is taller than it is wide — faces are rectangles, not all equal squares'},{val:'It has fewer faces than a cube',tag:_3KP},{val:'It has curved faces',tag:_3WS},{val:'They are the same solid',tag:_3KP}], a:0, e:'A rectangular prism has rectangle faces — a cube has equal square faces. Both have 6 faces.', d:'h', h:'The faces are the key difference.', sk:'identify_3d_solids', i:_i3KP()},
 
   // Triangular prism mixed
-  {t:'Which solid would you get if you cut a rectangular prism diagonally from top to bottom?', s:_svg3dTriPrism(), o:[{val:'Sphere',tag:_3WS},{val:'Cone',tag:_3TS},{val:'Triangular prism'},{val:'Cube',tag:_3WS}], a:2, e:'Cutting a box diagonally gives you a triangular prism with triangle ends.', d:'h', h:'Cutting a box diagonally creates a solid with triangle ends.', sk:'identify_3d_solids', i:_i3WS('tri-prism')},
   {t:'A tent is set up in the backyard. The front and back are triangles. Which solid matches the tent shape?', s:_svg3dTriPrism(), o:[{val:'Cone',tag:_3TS},{val:'Triangular prism'},{val:'Rectangular prism',tag:_3WS},{val:'Sphere',tag:_3WS}], a:1, e:'Triangle front and back + rectangle sides = triangular prism.', d:'h', h:'Triangle at the front AND back = triangular prism.', sk:'identify_3d_solids', i:_i3WS('tri-prism')},
   {t:'A wedge of cheese has triangle sides and flat rectangle faces. Which solid matches?', s:_svg3dTriPrism(), o:[{val:'Cone',tag:_3TS},{val:'Rectangular prism',tag:_3WS},{val:'Triangular prism'},{val:'Cube',tag:_3WS}], a:2, e:'A wedge of cheese has triangle ends and flat rectangle sides — it is a triangular prism.', d:'h', h:'Triangle ends and rectangle sides — triangular prism.', sk:'identify_3d_solids', i:_i3TS()}
 
 ];
 
+// ── C7: Backfill — extra easy/medium + 2D-vs-3D awareness (15E + 12M) ─────────
+
+var _l52C7 = [
+
+  // Sphere easy (2E)
+  {t:'A marble is shaped like which solid?', s:_svg3dSphere(), o:[{val:'Sphere'},{val:'Cone',tag:_3WS},{val:'Cylinder',tag:_3SR},{val:'Cube',tag:_3WS}], a:0, e:'A marble is perfectly round — it is a sphere.', d:'e', h:'A marble is round like a ball.', sk:'identify_3d_solids', i:_i3WS('sphere')},
+  {t:'I am round like a ball and roll in every direction. What solid am I?', s:_svg3dSphere(), o:[{val:'Cylinder',tag:_3SR},{val:'Cone',tag:_3WS},{val:'Sphere'},{val:'Cube',tag:_3WS}], a:2, e:'Round in every direction = sphere.', d:'e', h:'A ball is a sphere.', sk:'identify_3d_solids', i:_i3WS('sphere')},
+
+  // Cone easy (2E)
+  {t:'An ice cream cone has this shape. What is it called?', s:_svg3dCone(), o:[{val:'Cylinder',tag:_3CC},{val:'Sphere',tag:_3WS},{val:'Cone'},{val:'Rectangular prism',tag:_3WS}], a:2, e:'An ice cream cone has a point at the top — it is a cone.', d:'e', h:'An ice cream cone has a pointed top.', sk:'identify_3d_solids', i:_i3WS('cone')},
+  {t:'I have a point at the top and a round flat base. What solid am I?', s:_svg3dCone(), o:[{val:'Sphere',tag:_3WS},{val:'Cylinder',tag:_3CC},{val:'Cube',tag:_3WS},{val:'Cone'}], a:3, e:'A point at the top + round flat base = cone.', d:'e', h:'Which solid has one point and one round base?', sk:'identify_3d_solids', i:_i3WS('cone')},
+
+  // Cylinder easy (2E)
+  {t:'A soup can has this shape. What is it called?', s:_svg3dCylinder(), o:[{val:'Sphere',tag:_3WS},{val:'Cone',tag:_3CC},{val:'Cylinder'},{val:'Cube',tag:_3WS}], a:2, e:'A soup can has two round flat ends and a curved side — it is a cylinder.', d:'e', h:'A soup can is a cylinder.', sk:'identify_3d_solids', i:_i3WS('cylinder')},
+  {t:'I look like a soup can. I have two round flat ends. What solid am I?', s:_svg3dCylinder(), o:[{val:'Cone',tag:_3CC},{val:'Sphere',tag:_3SR},{val:'Rectangular prism',tag:_3WS},{val:'Cylinder'}], a:3, e:'Two round flat ends + curved side = cylinder.', d:'e', h:'Two round flat ends, like a can.', sk:'identify_3d_solids', i:_i3WS('cylinder')},
+
+  // Cube easy (2E)
+  {t:'A wooden block with all equal square faces — what solid is this?', s:_svg3dCube(), o:[{val:'Rectangular prism',tag:_3KP},{val:'Cube'},{val:'Sphere',tag:_3WS},{val:'Cylinder',tag:_3WS}], a:1, e:'Equal square faces on all sides = cube.', d:'e', h:'All faces are equal squares.', sk:'identify_3d_solids', i:_i3WS('cube')},
+  {t:'I look the same from every side. All my faces are squares. What solid am I?', s:_svg3dCube(), o:[{val:'Sphere',tag:_3WS},{val:'Cube'},{val:'Cone',tag:_3WS},{val:'Rectangular prism',tag:_3KP}], a:1, e:'Same from every side, all square faces = cube.', d:'e', h:'Think of a dice — all faces are equal.', sk:'identify_3d_solids', i:_i3WS('cube')},
+
+  // Rectangular prism easy (2E)
+  {t:'A brick is shaped like which solid?', s:_svg3dRectPrism(), o:[{val:'Cube',tag:_3KP},{val:'Rectangular prism'},{val:'Sphere',tag:_3WS},{val:'Cone',tag:_3WS}], a:1, e:'A brick has rectangle faces — it is a rectangular prism.', d:'e', h:'A brick is box-shaped but the faces are not all equal.', sk:'identify_3d_solids', i:_i3WS('rect-prism')},
+  {t:'I am box-shaped. My faces are rectangles and are not all the same size. What solid am I?', s:_svg3dRectPrism(), o:[{val:'Rectangular prism'},{val:'Cube',tag:_3KP},{val:'Cone',tag:_3WS},{val:'Cylinder',tag:_3WS}], a:0, e:'Box shape with rectangle faces that are not all equal = rectangular prism.', d:'e', h:'Rectangle faces, not all the same size.', sk:'identify_3d_solids', i:_i3WS('rect-prism')},
+
+  // Triangular prism easy (2E)
+  {t:'A tent has triangle ends and rectangle sides. What solid is this?', s:_svg3dTriPrism(), o:[{val:'Cone',tag:_3TS},{val:'Cube',tag:_3WS},{val:'Triangular prism'},{val:'Rectangular prism',tag:_3WS}], a:2, e:'Triangle ends + rectangle sides = triangular prism.', d:'e', h:'Triangle at both ends.', sk:'identify_3d_solids', i:_i3WS('tri-prism')},
+  {t:'I have triangle ends and flat rectangle sides. What solid am I?', s:_svg3dTriPrism(), o:[{val:'Cone',tag:_3TS},{val:'Rectangular prism',tag:_3WS},{val:'Sphere',tag:_3WS},{val:'Triangular prism'}], a:3, e:'Triangle ends + rectangle sides = triangular prism.', d:'e', h:'Triangle at both ends.', sk:'identify_3d_solids', i:_i3WS('tri-prism')},
+
+  // 2D vs 3D easy (3E — gives _3DC natural distractor usage)
+  {t:'Which one is a 3D solid, not a flat shape?', s:_svg3dSphere(), o:[{val:'Circle',tag:_3DC},{val:'Sphere'},{val:'Square',tag:_3DC},{val:'Triangle',tag:_3DC}], a:1, e:'A sphere is a 3D solid you can hold. A circle, square, and triangle are flat shapes.', d:'e', h:'3D solids are objects you can hold — flat shapes are drawn on paper.', sk:'identify_3d_solids', i:_i3DC()},
+  {t:'A circle is flat. Which solid is round like a circle but 3D?', s:_svg3dSphere(), o:[{val:'Square',tag:_3DC},{val:'Sphere'},{val:'Triangle',tag:_3DC},{val:'Rectangle',tag:_3DC}], a:1, e:'A sphere is 3D and round — it looks like a circle from any angle, but you can hold it.', d:'e', h:'Round like a circle, but solid.', sk:'identify_3d_solids', i:_i3DC()},
+  {t:'A square is flat. Which 3D solid has square faces?', s:_svg3dCube(), o:[{val:'Sphere',tag:_3WS},{val:'Cube'},{val:'Circle',tag:_3DC},{val:'Cylinder',tag:_3WS}], a:1, e:'A cube is a 3D solid — its faces are squares, but the cube itself is solid.', d:'e', h:'3D solid with square faces.', sk:'identify_3d_solids', i:_i3DC()},
+
+  // Sphere medium (2M)
+  {t:'Which solid would you use to model a planet?', s:_svg3dSphere(), o:[{val:'Sphere'},{val:'Cylinder',tag:_3SR},{val:'Rectangular prism',tag:_3WS},{val:'Cone',tag:_3WS}], a:0, e:'Planets are round in every direction — they are spheres.', d:'m', h:'Planets are perfectly round.', sk:'identify_3d_solids', i:_i3WS('sphere')},
+  {t:'Both a sphere and a cylinder can roll. How can you tell them apart?', s:_svg3dSphere(), o:[{val:'A sphere rolls in any direction — a cylinder only rolls on its curved side'},{val:'They are the same solid',tag:_3SR},{val:'A sphere has flat ends — a cylinder does not',tag:_3SR},{val:'A cylinder rolls in every direction',tag:_3SR}], a:0, e:'A sphere rolls in any direction. A cylinder rolls only on its curved side.', d:'m', h:'Which one rolls in every direction?', sk:'identify_3d_solids', i:_i3SR()},
+
+  // Cone medium (2M)
+  {t:'A party hat has a pointed top and a round base. Which solid matches?', s:_svg3dCone(), o:[{val:'Cylinder',tag:_3CC},{val:'Cone'},{val:'Cube',tag:_3WS},{val:'Sphere',tag:_3WS}], a:1, e:'A party hat has a point at the top and a round base — it is a cone.', d:'m', h:'Pointed top and round base.', sk:'identify_3d_solids', i:_i3WS('cone')},
+  {t:'Which solid does NOT have any flat faces?', s:_svg3dSphere(), o:[{val:'Sphere'},{val:'Cylinder',tag:_3WS},{val:'Cube',tag:_3WS},{val:'Cone',tag:_3WS}], a:0, e:'A sphere is round everywhere — it has no flat faces at all.', d:'m', h:'Which solid is round everywhere with no flat parts?', sk:'identify_3d_solids', i:_i3DC()},
+
+  // Cylinder medium (2M)
+  {t:'A paint roller has a curved side and two round flat ends. Which solid is this?', s:_svg3dCylinder(), o:[{val:'Cone',tag:_3CC},{val:'Sphere',tag:_3SR},{val:'Cylinder'},{val:'Triangular prism',tag:_3WS}], a:2, e:'Curved side + two round flat ends = cylinder.', d:'m', h:'A paint roller is this shape.', sk:'identify_3d_solids', i:_i3WS('cylinder')},
+  {t:'Which solid can both roll AND slide?', s:_svg3dCylinder(), o:[{val:'Sphere',tag:_3SR},{val:'Cube',tag:_3WS},{val:'Cylinder'},{val:'Triangular prism',tag:_3WS}], a:2, e:'A cylinder rolls on its curved side and slides on its flat ends.', d:'m', h:'Flat ends for sliding, curved side for rolling.', sk:'identify_3d_solids', i:_i3SR()},
+
+  // Cube medium (2M)
+  {t:'Which solid has all flat faces and is used as a game die?', s:_svg3dCube(), o:[{val:'Sphere',tag:_3WS},{val:'Cube'},{val:'Cylinder',tag:_3WS},{val:'Cone',tag:_3WS}], a:1, e:'A die is a cube — it has flat faces that are all equal squares.', d:'m', h:'A game die is a cube.', sk:'identify_3d_solids', i:_i3WS('cube')},
+  {t:'Which solid looks the same when you look at it from any direction?', s:_svg3dCube(), o:[{val:'Rectangular prism',tag:_3KP},{val:'Triangular prism',tag:_3WS},{val:'Cube'},{val:'Cone',tag:_3WS}], a:2, e:'A cube looks the same from the front, back, top, and sides — all faces are equal.', d:'m', h:'Same shape from every direction.', sk:'identify_3d_solids', i:_i3WS('cube')},
+
+  // Rectangular prism medium (2M)
+  {t:'Which solid is shaped like a mattress?', s:_svg3dRectPrism(), o:[{val:'Cube',tag:_3KP},{val:'Sphere',tag:_3WS},{val:'Rectangular prism'},{val:'Triangular prism',tag:_3WS}], a:2, e:'A mattress is wider than it is tall and has rectangle faces — it is a rectangular prism.', d:'m', h:'A mattress is flat and wide — rectangle faces.', sk:'identify_3d_solids', i:_i3WS('rect-prism')},
+  {t:'A suitcase is box-shaped with rectangle faces. Which solid matches?', s:_svg3dRectPrism(), o:[{val:'Rectangular prism'},{val:'Cube',tag:_3KP},{val:'Cylinder',tag:_3WS},{val:'Sphere',tag:_3WS}], a:0, e:'A suitcase has rectangle faces — it is a rectangular prism, not a cube.', d:'m', h:'Box-shaped with rectangle faces — not all equal.', sk:'identify_3d_solids', i:_i3WS('rect-prism')},
+
+  // Triangular prism medium (2M)
+  {t:'A triangular prism and a cone both look pointed. What is the key difference?', s:_svg3dTriPrism(), o:[{val:'A triangular prism has flat triangle ends — a cone comes to one single point'},{val:'They are the same solid',tag:_3TS},{val:'A triangular prism is always bigger',tag:_3WS},{val:'A cone has flat triangle ends',tag:_3TS}], a:0, e:'A triangular prism has flat triangle ends at both ends. A cone comes to one single point.', d:'m', h:'Does the shape have a flat triangle end, or does it come to a single point?', sk:'identify_3d_solids', i:_i3TS()},
+  {t:'Which solid has all flat faces and no curved surfaces at all?', s:_svg3dTriPrism(), o:[{val:'Cone',tag:_3TS},{val:'Cylinder',tag:_3WS},{val:'Sphere',tag:_3WS},{val:'Triangular prism'}], a:3, e:'A triangular prism has only flat faces — no curved surfaces anywhere.', d:'m', h:'All flat faces, no curves at all.', sk:'identify_3d_solids', i:_i3WS('tri-prism')}
+
+];
+
 // ── L5.2 bank assembly ────────────────────────────────────────────────────────
 
-var _l52Bank = _colorizeQ([].concat(_l52C1, _l52C2, _l52C3, _l52C4, _l52C5, _l52C6));
+var _l52Bank = _colorizeQ([].concat(_l52C1, _l52C2, _l52C3, _l52C4, _l52C5, _l52C6, _l52C7));
 
 // ── L5.2 worked examples ──────────────────────────────────────────────────────
 
