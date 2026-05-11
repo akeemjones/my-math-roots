@@ -2151,6 +2151,670 @@ var _l53KeyIdeas = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  Lesson 5.4 — Compose and Recognize 2D Shapes — Helpers
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── L5.4 error tag shorthands ─────────────────────────────────────────────────
+var _54CS = 'err_wrong_composite_shape';
+var _54CP = 'err_wrong_component_shape';
+var _54MP = 'err_missing_piece_confusion';
+var _54CN = 'err_count_pieces_confusion';
+var _54OR = 'err_orientation_confusion';
+var _54SZ = 'err_size_match_confusion';
+var _54SA = 'err_shape_attribute_confusion';
+
+// ── L5.4 piece SVG helpers ────────────────────────────────────────────────────
+// Right isoceles triangle that is half of a square (80×80 viewBox).
+// flip=false: ◣ shape (right angle at bottom-left), hypotenuse from top-left to bottom-right
+// flip=true:  ◥ shape (right angle at top-right),    hypotenuse from top-left to bottom-right
+// _svgRtTriSm(false) + _svgRtTriSm(true) together fit to form a square.
+function _svgRtTriSm(flip) {
+  var pts = flip ? '5,5 75,5 75,75' : '5,5 5,75 75,75';
+  return '<svg width="80" height="80" viewBox="0 0 80 80">' +
+    '<polygon points="' + pts + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
+}
+
+// Right triangle that is half of a 2:1 rectangle (matches _svgRectSm dimensions).
+// flip=false: ◤ shape (right angle at top-left)
+// flip=true:  ◢ shape (right angle at bottom-right)
+function _svgRtTriRectSm(flip) {
+  var pts = flip ? '150,16 150,84 10,84' : '10,16 150,16 10,84';
+  return '<svg width="90" height="58" viewBox="0 0 160 100">' +
+    '<polygon points="' + pts + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '</svg>';
+}
+
+// ── L5.4 composite SVG helpers (shape with interior dividing line) ───────────
+// White interior line stroke-width=2.5 shows the join.
+// _colorizeQ() preserves the white line (only replaces purple tokens #CE93D8/#7B1FA2).
+
+function _svgComp2TriSq() {
+  return '<svg width="96" height="96" viewBox="0 0 96 96">' +
+    '<rect x="5" y="5" width="86" height="86" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="5" y1="5" x2="91" y2="91" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp2TriRect() {
+  return '<svg width="140" height="80" viewBox="0 0 140 80">' +
+    '<rect x="5" y="5" width="130" height="70" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="5" y1="5" x2="135" y2="75" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp2SqRect() {
+  return '<svg width="170" height="90" viewBox="0 0 170 90">' +
+    '<rect x="5" y="5" width="160" height="80" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="85" y1="5" x2="85" y2="85" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp2RectRect() {
+  return '<svg width="140" height="90" viewBox="0 0 140 90">' +
+    '<rect x="5" y="5" width="130" height="80" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="5" y1="45" x2="135" y2="45" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp3SqRect() {
+  return '<svg width="250" height="90" viewBox="0 0 250 90">' +
+    '<rect x="5" y="5" width="240" height="80" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="85" y1="5" x2="85" y2="85" stroke="white" stroke-width="2.5"/>' +
+    '<line x1="165" y1="5" x2="165" y2="85" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp4SqSq() {
+  return '<svg width="100" height="100" viewBox="0 0 100 100">' +
+    '<rect x="5" y="5" width="90" height="90" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="50" y1="5" x2="50" y2="95" stroke="white" stroke-width="2.5"/>' +
+    '<line x1="5" y1="50" x2="95" y2="50" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgComp2TriRh() {
+  // Rhombus from 2 equilateral triangles (top apex + bottom apex), horizontal midline.
+  return '<svg width="70" height="115" viewBox="0 0 70 115">' +
+    '<polygon points="35,5 65,57 35,110 5,57" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="5" y1="57" x2="65" y2="57" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+function _svgCompSqTri() {
+  // House: 80×80 square on bottom + triangle on top. Component-ID use only.
+  return '<svg width="100" height="140" viewBox="0 0 100 140">' +
+    '<polygon points="50,5 90,55 90,135 10,135 10,55" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="10" y1="55" x2="90" y2="55" stroke="white" stroke-width="2.5"/>' +
+    '</svg>';
+}
+
+// ── L5.4 missing-piece variant helpers ───────────────────────────────────────
+// One piece filled in normal color; missing slot outlined with neutral gray dashed border.
+// Gray (#999999) is NOT colorized — kids see "this part is empty."
+
+function _svgCompMiss2TriSq(side) {
+  var leftPts = '5,5 5,91 91,91';
+  var rightPts = '5,5 91,5 91,91';
+  var filled = (side === 'left') ? leftPts : rightPts;
+  var missing = (side === 'left') ? rightPts : leftPts;
+  return '<svg width="96" height="96" viewBox="0 0 96 96">' +
+    '<polygon points="' + filled + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<polygon points="' + missing + '" fill="none" stroke="#999999" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6,4"/>' +
+    '</svg>';
+}
+
+function _svgCompMiss2SqRect(side) {
+  var leftPts = '5,5 85,5 85,85 5,85';
+  var rightPts = '85,5 165,5 165,85 85,85';
+  var filled = (side === 'left') ? leftPts : rightPts;
+  var missing = (side === 'left') ? rightPts : leftPts;
+  return '<svg width="170" height="90" viewBox="0 0 170 90">' +
+    '<polygon points="' + filled + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<polygon points="' + missing + '" fill="none" stroke="#999999" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6,4"/>' +
+    '</svg>';
+}
+
+function _svgCompMiss2TriRect(side) {
+  var upperPts = '5,5 135,5 5,75';
+  var lowerPts = '135,5 135,75 5,75';
+  var filled = (side === 'upper') ? upperPts : lowerPts;
+  var missing = (side === 'upper') ? lowerPts : upperPts;
+  return '<svg width="140" height="80" viewBox="0 0 140 80">' +
+    '<polygon points="' + filled + '" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<polygon points="' + missing + '" fill="none" stroke="#999999" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6,4"/>' +
+    '</svg>';
+}
+
+// ── L5.4 teaching visual helpers ─────────────────────────────────────────────
+// All use _TVP (#9C27B0) for light-fill teaching style. _colorizeQ replaces #9C27B0 with stroke color.
+
+function _tv54Outline() {
+  // Two triangles → square; emphasizes the outer outline
+  return _tvWrap(
+    '<svg width="240" height="100" viewBox="0 0 240 100" style="display:inline-block">' +
+    '<polygon points="10,15 10,85 80,85" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<polygon points="10,15 80,15 80,85" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="105" y="60" font-size="22" font-weight="bold" fill="' + _TVP + '" font-family="Nunito,sans-serif">→</text>' +
+    '<rect x="140" y="15" width="70" height="70" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="4"/>' +
+    '<line x1="140" y1="15" x2="210" y2="85" stroke="' + _TVP + '" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>' +
+    '</svg>',
+    'Look at the OUTSIDE outline of the joined shape'
+  );
+}
+
+function _tv54Pieces() {
+  // Composite square with numbered pieces (1, 2)
+  return _tvWrap(
+    '<svg width="120" height="120" viewBox="0 0 120 120" style="display:inline-block">' +
+    '<rect x="15" y="15" width="90" height="90" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="15" y1="15" x2="105" y2="105" stroke="' + _TVP + '" stroke-width="2" stroke-dasharray="5,3"/>' +
+    _tvDot(38, 78, 1) +
+    _tvDot(82, 42, 2) +
+    '</svg>',
+    'Look at each piece separately — count sides on each'
+  );
+}
+
+function _tv54Missing() {
+  // Missing piece with arrow to matching piece
+  return _tvWrap(
+    '<svg width="240" height="110" viewBox="0 0 240 110" style="display:inline-block">' +
+    '<polygon points="15,15 15,95 95,95" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<polygon points="15,15 95,15 95,95" fill="none" stroke="#999" stroke-width="2.5" stroke-dasharray="6,4"/>' +
+    '<text x="125" y="58" font-size="20" font-weight="bold" fill="' + _TVP + '" font-family="Nunito,sans-serif">→</text>' +
+    '<polygon points="155,15 225,15 225,85" fill="' + _TVP + '" opacity="0.4" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '</svg>',
+    'Trace the empty outline — find a piece that matches'
+  );
+}
+
+function _tv54Count() {
+  // Composite with arrow pointing to dividing line + "2 pieces" caption
+  return _tvWrap(
+    '<svg width="200" height="115" viewBox="0 0 200 115" style="display:inline-block">' +
+    '<rect x="20" y="15" width="160" height="80" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="100" y1="15" x2="100" y2="95" stroke="' + _TVP + '" stroke-width="2.5" stroke-dasharray="5,3"/>' +
+    _tvDot(60, 55, 1) +
+    _tvDot(140, 55, 2) +
+    '</svg>',
+    '1 dividing line = 2 pieces'
+  );
+}
+
+function _tv54Rotate() {
+  // Triangle in two orientations with rotation arrow
+  return _tvWrap(
+    '<svg width="230" height="100" viewBox="0 0 230 100" style="display:inline-block">' +
+    '<polygon points="40,15 75,85 5,85" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<path d="M 95,40 Q 115,30 135,40" fill="none" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<polygon points="135,40 128,35 130,46" fill="' + _TVP + '"/>' +
+    '<polygon points="155,85 190,15 225,85" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '</svg>',
+    'Turning a shape does not change its name'
+  );
+}
+
+function _tv54Fit() {
+  // Two square pieces fit edge-to-edge → larger rectangle that holds both
+  return _tvWrap(
+    '<svg width="280" height="90" viewBox="0 0 280 90" style="display:inline-block">' +
+    '<rect x="10" y="15" width="55" height="60" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<rect x="65" y="15" width="55" height="60" fill="' + _TVP + '" opacity="0.25" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="138" y="52" font-size="20" font-weight="bold" fill="' + _TVP + '" font-family="Nunito,sans-serif">→</text>' +
+    '<rect x="165" y="15" width="110" height="60" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="4"/>' +
+    '<line x1="220" y1="15" x2="220" y2="75" stroke="' + _TVP + '" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>' +
+    '</svg>',
+    'Pieces fit edge-to-edge to fill the target'
+  );
+}
+
+function _tv54Attr() {
+  // Outer rectangle with side counts marked
+  return _tvWrap(
+    '<svg width="220" height="110" viewBox="0 0 220 110" style="display:inline-block">' +
+    '<rect x="20" y="25" width="180" height="70" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="110" y1="25" x2="110" y2="95" stroke="' + _TVP + '" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>' +
+    '<text x="110" y="18" font-size="11" font-weight="bold" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">4 sides outside</text>' +
+    _tvDot(20, 25, 1) + _tvDot(200, 25, 2) + _tvDot(200, 95, 3) + _tvDot(20, 95, 4) +
+    '</svg>',
+    'Count sides and corners of the OUTSIDE shape only'
+  );
+}
+
+// ── L5.4 intervention factories ───────────────────────────────────────────────
+
+function _i54CS() {
+  return {
+    errorTag: _54CS,
+    title: 'Look at the outside outline',
+    teachingSteps: [
+      'When pieces are joined, look only at the OUTSIDE edge.',
+      'Count the sides of the outside shape.',
+      'Count the corners of the outside shape.',
+      'Use those counts to name the joined shape.',
+      'The interior dividing line does not add sides or corners.'
+    ],
+    teachingVisualRaw: _tv54Outline(),
+    correctAnswerExplanation: 'Read the outer outline to name the joined shape.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54CP() {
+  return {
+    errorTag: _54CP,
+    title: 'Look at each piece, not the whole shape',
+    teachingSteps: [
+      'Find the dividing line inside the joined shape.',
+      'Look at each piece separately — not the whole shape.',
+      'Count the sides on each piece.',
+      'Use the side count to name each piece.',
+      '3 sides = triangle. 4 equal sides = square. 4 sides, 2 long + 2 short = rectangle.'
+    ],
+    teachingVisualRaw: _tv54Pieces(),
+    correctAnswerExplanation: 'Name the pieces by counting sides on each piece, not the whole shape.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54MP() {
+  return {
+    errorTag: _54MP,
+    title: 'Trace the empty space',
+    teachingSteps: [
+      'Look at the shape of the empty space (the dashed outline).',
+      'Trace its outline with your finger.',
+      'Count the sides and corners of that empty outline.',
+      'The missing piece must be that same shape — and the same size.',
+      'Look at the choices and pick the one that matches the empty outline.'
+    ],
+    teachingVisualRaw: _tv54Missing(),
+    correctAnswerExplanation: 'The missing piece matches the empty outline in shape and size.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54CN() {
+  return {
+    errorTag: _54CN,
+    title: 'Count the dividing lines',
+    teachingSteps: [
+      'Look at the interior lines inside the joined shape.',
+      'Count those lines: each line splits the shape one more time.',
+      'Number of pieces = number of dividing lines + 1.',
+      '1 line inside = 2 pieces. 2 lines = 3 pieces. 3 lines = 4 pieces.'
+    ],
+    teachingVisualRaw: _tv54Count(),
+    correctAnswerExplanation: 'Count the dividing lines, then add 1 for the number of pieces.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54OR() {
+  return {
+    errorTag: _54OR,
+    title: 'Turning a shape does not change its name',
+    teachingSteps: [
+      'A triangle with 3 sides is still a triangle when you flip or turn it.',
+      'The NAME comes from sides and corners — not from direction.',
+      'If the piece has 3 sides, it is a triangle, no matter how it points.',
+      'A flipped triangle still fits to make the same composite shape.'
+    ],
+    teachingVisualRaw: _tv54Rotate(),
+    correctAnswerExplanation: 'Orientation is non-defining — flipping or turning a piece does not change its name.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54SZ() {
+  return {
+    errorTag: _54SZ,
+    title: 'Pieces must fill the whole target',
+    teachingSteps: [
+      'The pieces must fit together perfectly — no gaps, no overlaps.',
+      'Check that the pieces together match the outline of the target.',
+      'If a piece is too big or too small, it is the wrong piece.',
+      'Compare the size of each piece to the empty space it should fill.'
+    ],
+    teachingVisualRaw: _tv54Fit(),
+    correctAnswerExplanation: 'The pieces must fit edge-to-edge and fill the whole target.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i54SA() {
+  return {
+    errorTag: _54SA,
+    title: 'Count sides and corners of the result',
+    teachingSteps: [
+      'After joining the pieces, look at the OUTSIDE shape only.',
+      'Count its sides and its corners.',
+      '4 equal sides + 4 corners = square.',
+      '4 sides (2 long + 2 short) + 4 corners = rectangle.',
+      '4 equal sides + a leaning shape = rhombus.',
+      'Use those rules to name the joined shape.'
+    ],
+    teachingVisualRaw: _tv54Attr(),
+    correctAnswerExplanation: 'Count sides and corners of the outside shape to name it.',
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+// ── C1: Two pieces → target name (18E + 12M = 30) ────────────────────────────
+
+var _l54C1 = [
+  // Easy (18) — prototypical pairs ─────────────────────────────────────────────
+  // 8 × right triangles → square
+  {t:'These two triangles fit together. What shape do they make?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA},{val:'Circle',tag:_54CS}], a:0, e:'Two right triangles join along their long edges to make a square with 4 equal sides and 4 corners.', d:'e', h:'Trace the OUTSIDE outline once the pieces are joined.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Put these two triangles together. What shape forms?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Triangle',tag:_54CP},{val:'Rhombus',tag:_54SA},{val:'Hexagon',tag:_54CS}], a:0, e:'The joined pieces make a square — 4 equal sides and 4 corners.', d:'e', h:'How many sides will the joined outline have?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Join these two triangles edge-to-edge. What shape is made?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Rectangle',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Circle',tag:_54CS}], a:0, e:'The triangles fit together to make a square — all 4 outside sides are the same length.', d:'e', h:'Are the 4 outside sides all the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'These two pieces snap together. What shape do they form?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Pentagon',tag:_54CS},{val:'Triangle',tag:_54CP},{val:'Rhombus',tag:_54SA}], a:0, e:'Two matching triangles form a square with 4 equal sides.', d:'e', h:'Look at the OUTSIDE outline only — not the interior line.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Slide these triangles together. What shape appears?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Rectangle',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Triangle',tag:_54CP}], a:0, e:'The two right triangles slide together to make a square.', d:'e', h:'Will the four outside sides be the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'What shape do two right triangles make when joined like this?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Rhombus',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Triangle',tag:_54CP}], a:0, e:'Two right triangles join to form a square — 4 sides, all equal.', d:'e', h:'Count the corners of the joined outline.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'These two pieces fit together perfectly. What shape forms?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Circle',tag:_54CS},{val:'Rectangle',tag:_54SA},{val:'Triangle',tag:_54CP}], a:0, e:'The result is a square — 4 equal sides and 4 corners.', d:'e', h:'A circle has no corners — could the result be a circle?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Look at the two triangles. What larger shape can they build?', s:_svgRow2(_svgRtTriSm(false),_svgRtTriSm(true)), o:[{val:'Square'},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA},{val:'Triangle',tag:_54CP}], a:0, e:'Two right triangles build a square when joined along their long edges.', d:'e', h:'How many corners will the new shape have?', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // 6 × squares → rectangle
+  {t:'Place these two squares side by side. What shape do they make?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Circle',tag:_54CS}], a:0, e:'Two squares side by side make a rectangle — 2 long sides + 2 short sides.', d:'e', h:'Are the 4 outside sides all the same length now?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Two squares fit together. What is the new shape?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'A square plus a square makes a rectangle — 2 long sides, 2 short sides.', d:'e', h:'Are all sides equal, or are two longer than the others?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'What shape do two equal squares make when joined?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Pentagon',tag:_54CS}], a:0, e:'The joined shape has 4 sides — 2 longer, 2 shorter — that is a rectangle.', d:'e', h:'A square has all equal sides; a rectangle has 2 long + 2 short.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Slide two squares together. What larger shape do they form?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Bigger square',tag:_54SA},{val:'Rhombus',tag:_54SA},{val:'Circle',tag:_54CS}], a:0, e:'Two squares side-by-side make a longer shape — 2 long + 2 short sides = rectangle.', d:'e', h:'Are the sides all the same length, or are some longer?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Join two squares edge-to-edge. What shape results?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Triangle',tag:_54CS}], a:0, e:'Two squares stuck together always make a rectangle.', d:'e', h:'Look at how long the top is compared to the side.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'These two squares meet edge-to-edge. What shape did they make?', s:_svgRow2(_svgSquSm(),_svgSquSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Oval',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'A rectangle has 4 sides with 2 long + 2 short — that is what two squares form together.', d:'e', h:'Are the corners pointy or curved?', sk:'compose_2d_shapes', i:_i54SA()},
+
+  // 4 × rectangles → larger rectangle
+  {t:'Two rectangles are placed side by side. What shape do they make?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'A larger rectangle'},{val:'A square',tag:_54SA},{val:'A triangle',tag:_54CS},{val:'A hexagon',tag:_54CS}], a:0, e:'Two rectangles next to each other still form a rectangle — 4 sides, 4 corners.', d:'e', h:'Count the sides of the new outline.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'What shape forms when you join two equal rectangles?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Rhombus',tag:_54SA},{val:'Circle',tag:_54CS}], a:0, e:'Two rectangles join to form a larger rectangle — 4 sides, 4 corners, no curves.', d:'e', h:'Will the result have curved sides?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Two rectangles snap together. What is the result?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'A bigger rectangle'},{val:'A square',tag:_54SA},{val:'A pentagon',tag:_54CS},{val:'A triangle',tag:_54CS}], a:0, e:'Joining two rectangles forms a longer rectangle. The outside still has 4 sides and 4 corners.', d:'e', h:'How many corners are on the new outline?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Slide two rectangles together. What larger shape do they form?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'Two rectangles end-to-end form a longer rectangle. Still 4 sides, 4 corners.', d:'e', h:'Look at the outside outline only.', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // Medium (12) ─────────────────────────────────────────────────────────────
+  // 5 × right triangles → rectangle
+  {t:'These wider right triangles fit together. What shape do they make?', s:_svgRow2(_svgRtTriRectSm(false),_svgRtTriRectSm(true)), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rhombus',tag:_54SA}], a:0, e:'Two wider right triangles match up to form a rectangle — 2 long + 2 short sides.', d:'m', h:'Are the four outside sides all the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Two long right triangles fit together. What larger shape do they make?', s:_svgRow2(_svgRtTriRectSm(false),_svgRtTriRectSm(true)), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Triangle',tag:_54CP}], a:0, e:'Two long right triangles meet at their long edges to form a rectangle.', d:'m', h:'The result has 2 long sides and 2 short sides.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'These two triangles meet at their long edges. What shape results?', s:_svgRow2(_svgRtTriRectSm(false),_svgRtTriRectSm(true)), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'The two long edges meet — the outside is a rectangle with 2 long and 2 short sides.', d:'m', h:'The four outside sides are not all the same length.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Join these wider triangles. The result has 4 sides — 2 long, 2 short. What is it?', s:_svgRow2(_svgRtTriRectSm(false),_svgRtTriRectSm(true)), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rhombus',tag:_54SA}], a:0, e:'A 4-sided shape with 2 long + 2 short sides is a rectangle.', d:'m', h:'2 long + 2 short sides = which shape?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Two right triangles snap together along their long edges. What shape forms?', s:_svgRow2(_svgRtTriRectSm(false),_svgRtTriRectSm(true)), o:[{val:'Rectangle'},{val:'Pentagon',tag:_54CS},{val:'Hexagon',tag:_54CS},{val:'Square',tag:_54SA}], a:0, e:'Joining the two right triangles along their long edges forms a rectangle.', d:'m', h:'Trace the joined outline — count the sides.', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // 4 × rectangles → larger rectangle (medium phrasing)
+  {t:'Two same-size rectangles are joined together. What is the new shape?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'Joining two equal rectangles end-to-end always forms a longer rectangle.', d:'m', h:'The outside still has 4 sides and 4 corners.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Place two equal rectangles next to each other. What shape do they form?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Circle',tag:_54CS}], a:0, e:'Two equal rectangles end-to-end form a larger rectangle.', d:'m', h:'Will the joined shape have curves?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Two rectangles join end-to-end. What shape is it called?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Rhombus',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Triangle',tag:_54CS}], a:0, e:'End-to-end rectangles form a longer rectangle — still 4 sides, 4 corners.', d:'m', h:'Count the corners of the outside outline.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'What shape forms when two rectangles are joined edge to edge?', s:_svgRow2(_svgRectSm(),_svgRectSm()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'The joined shape is a longer rectangle with 4 sides and 4 corners.', d:'m', h:'Is the shape still 4-sided?', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // 3 × equilateral triangles → rhombus
+  {t:'These two triangles point in opposite directions. Join them base-to-base. What shape forms?', s:_svgRow2(_svgTriSm(0),_svgTriSm(180)), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA}], a:0, e:'Two triangles meeting base-to-base form a rhombus — 4 equal sides leaning like a diamond.', d:'m', h:'The result has 4 equal sides and looks like a diamond.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Put these two triangles together so they share a long edge. What shape do they make?', s:_svgRow2(_svgTriSm(0),_svgTriSm(180)), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Rectangle',tag:_54SA},{val:'Pentagon',tag:_54CS}], a:0, e:'Two triangles sharing a side form a rhombus — 4 equal sides, looks like a diamond.', d:'m', h:'4 equal sides with corners that lean = ?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'When these two triangles meet at their long edges, what 4-sided shape forms?', s:_svgRow2(_svgTriSm(0),_svgTriSm(180)), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA}], a:0, e:'Joining the triangles at their shared edge makes a rhombus with 4 equal sides.', d:'m', h:'A 4-sided diamond shape with equal sides is called what?', sk:'compose_2d_shapes', i:_i54SA()}
+];
+
+// ── C2: Composite → name (8E + 10M = 18) ─────────────────────────────────────
+
+var _l54C2 = [
+  // Easy (8)
+  {t:'This shape was made from two pieces. What is the joined shape called?', s:_svgComp2TriSq(), o:[{val:'Square'},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA},{val:'Circle',tag:_54CS}], a:0, e:'The outside has 4 equal sides and 4 corners — that is a square.', d:'e', h:'Count the sides on the OUTSIDE only.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Look at the outside outline. What shape is this?', s:_svgComp2TriSq(), o:[{val:'Square'},{val:'Rhombus',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Triangle',tag:_54CP}], a:0, e:'4 equal sides + square corners = square.', d:'e', h:'Ignore the diagonal line inside.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Trace the outside of this shape. What is it?', s:_svgComp2TriSq(), o:[{val:'Square'},{val:'Triangle',tag:_54CP},{val:'Pentagon',tag:_54CS},{val:'Rectangle',tag:_54SA}], a:0, e:'4 equal sides + 4 corners = square. The interior diagonal does not add sides.', d:'e', h:'The interior line is not a side of the shape.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'What shape did these two pieces make?', s:_svgComp2SqRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Hexagon',tag:_54CS}], a:0, e:'The outside has 2 long sides + 2 short sides — that is a rectangle.', d:'e', h:'Look only at the outside outline.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Look at the outside of this shape. What is its name?', s:_svgComp2SqRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Rhombus',tag:_54SA},{val:'Circle',tag:_54CS}], a:0, e:'4 sides, 2 long + 2 short = rectangle.', d:'e', h:'Are all 4 sides the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'What shape is the outside outline?', s:_svgComp2SqRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Pentagon',tag:_54CS}], a:0, e:'2 long + 2 short sides + 4 corners = rectangle.', d:'e', h:'Count the sides on the outside.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'This shape is made from two pieces. What is the outside shape called?', s:_svgComp2RectRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'The outside still has 2 long + 2 short sides — it is a rectangle.', d:'e', h:'The interior line does not change the outside shape.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Look at this shape. What is the outside outline?', s:_svgComp2RectRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CS},{val:'Pentagon',tag:_54CS}], a:0, e:'4 sides with 2 long + 2 short = rectangle. The dividing line does not add corners.', d:'e', h:'How many corners are on the outside?', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // Medium (10)
+  {t:'These two pieces fit together. What shape is the outside?', s:_svgComp2TriRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rhombus',tag:_54SA}], a:0, e:'The diagonal interior shows two triangle pieces — the outside is a rectangle.', d:'m', h:'Look only at the outside outline.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'What shape did the two triangles make?', s:_svgComp2TriRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Triangle',tag:_54CP}], a:0, e:'The diagonal line shows the two triangle pieces — but the outside is a rectangle.', d:'m', h:'Count the sides of the outside outline.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Two triangles joined along their long edges. What is the outside shape?', s:_svgComp2TriRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Hexagon',tag:_54CS},{val:'Rhombus',tag:_54SA}], a:0, e:'Two triangles meeting at their long edges produce a rectangle — 4 sides, 4 corners.', d:'m', h:'Trace the outside edges, not the diagonal.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A diagonal divides this shape into two pieces. What is the outside shape called?', s:_svgComp2TriSq(), o:[{val:'Square'},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA},{val:'Rhombus',tag:_54SA}], a:0, e:'The 4 outside sides are all equal — that is a square, not a triangle.', d:'m', h:'Count only the outside sides.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Look at the OUTSIDE only. What shape is this?', s:_svgComp2TriSq(), o:[{val:'Square'},{val:'Two triangles',tag:_54CP},{val:'Rectangle',tag:_54SA},{val:'Hexagon',tag:_54CS}], a:0, e:'Outside view: 4 equal sides and 4 corners — a square. "Two triangles" describes the pieces, not the outside shape.', d:'m', h:'The question asks for the OUTSIDE shape, not the pieces.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Two pieces share a center line. What is the outside shape called?', s:_svgComp2SqRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Two squares',tag:_54CP},{val:'Rhombus',tag:_54SA}], a:0, e:'The pieces are two squares, but the OUTSIDE shape is a rectangle (2 long + 2 short sides).', d:'m', h:'The question asks for the outside, not the pieces.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Two equal pieces are joined. What is the outside shape?', s:_svgComp2RectRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Two rectangles',tag:_54CP},{val:'Hexagon',tag:_54CS}], a:0, e:'The outside is a rectangle — even though the pieces inside are rectangles too.', d:'m', h:'Outside = the outer edge only.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Two triangles join base-to-base. What is the outside shape called?', s:_svgComp2TriRh(), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Rectangle',tag:_54SA}], a:0, e:'The outside has 4 equal sides that lean — that is a rhombus.', d:'m', h:'Does the outside look like a diamond?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Look at this shape. The outside has 4 equal sides that lean. What is it?', s:_svgComp2TriRh(), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Rectangle',tag:_54SA},{val:'Pentagon',tag:_54CS}], a:0, e:'4 equal sides + leaning corners = rhombus.', d:'m', h:'A square has square corners; this one leans.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Two triangles meet at their long edges. What is the outside outline?', s:_svgComp2TriRh(), o:[{val:'Rhombus'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Hexagon',tag:_54CS}], a:0, e:'The 4 outside sides are equal but lean — that is a rhombus (diamond shape).', d:'m', h:'How many sides does the outside have?', sk:'compose_2d_shapes', i:_i54SA()}
+];
+
+// ── C3: Identify components (5E + 10M + 5H = 20) ─────────────────────────────
+
+var _l54C3 = [
+  // Easy (5)
+  {t:'This square is made from two pieces. What are the pieces?', s:_svgComp2TriSq(), o:[{val:'Two triangles'},{val:'Two squares',tag:_54CP},{val:'A triangle and a square',tag:_54CP},{val:'Two rectangles',tag:_54CP}], a:0, e:'The diagonal line shows the square was made from two triangles.', d:'e', h:'Look at each piece on either side of the diagonal.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'This rectangle is made from two pieces. What are the pieces?', s:_svgComp2SqRect(), o:[{val:'Two squares'},{val:'Two triangles',tag:_54CP},{val:'A circle and a square',tag:_54CP},{val:'Two rectangles',tag:_54CP}], a:0, e:'The vertical line divides the rectangle into two equal squares.', d:'e', h:'Look at each half — what shape is each piece?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'This larger rectangle is made from two pieces. What are the pieces?', s:_svgComp2RectRect(), o:[{val:'Two rectangles'},{val:'Two squares',tag:_54CP},{val:'Two triangles',tag:_54CP},{val:'A rectangle and a triangle',tag:_54CP}], a:0, e:'The horizontal line shows two equal rectangles stacked.', d:'e', h:'Each piece has 2 long sides + 2 short sides.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Look at the diagonal line inside. What two shapes were used to make this?', s:_svgComp2TriSq(), o:[{val:'Two triangles'},{val:'A triangle and a square',tag:_54CP},{val:'Two squares',tag:_54CP},{val:'A triangle and a circle',tag:_54CP}], a:0, e:'A diagonal line through a square creates two triangles.', d:'e', h:'Each side of the diagonal is a piece — how many sides does each piece have?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'What two pieces make up this rectangle?', s:_svgComp2SqRect(), o:[{val:'Two equal squares'},{val:'Two rectangles',tag:_54CP},{val:'Two triangles',tag:_54CP},{val:'A square and a triangle',tag:_54CP}], a:0, e:'The midline divides the rectangle into two equal squares.', d:'e', h:'Are both halves equal? Are their sides all the same length?', sk:'compose_2d_shapes', i:_i54CP()},
+
+  // Medium (10)
+  {t:'This rhombus is made from two pieces. What are the pieces?', s:_svgComp2TriRh(), o:[{val:'Two triangles'},{val:'Two squares',tag:_54CP},{val:'A square and a triangle',tag:_54CP},{val:'Two rectangles',tag:_54CP}], a:0, e:'The horizontal line splits the rhombus into two triangles.', d:'m', h:'Each piece has 3 corners.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'What two shapes were used to build this rhombus?', s:_svgComp2TriRh(), o:[{val:'Two triangles'},{val:'Two rhombuses',tag:_54CP},{val:'A triangle and a square',tag:_54CP},{val:'Two pentagons',tag:_54CP}], a:0, e:'Two triangles meet base-to-base to form the rhombus.', d:'m', h:'Look at each piece — how many sides does each have?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'This rectangle is split by a diagonal. What pieces was it built from?', s:_svgComp2TriRect(), o:[{val:'Two triangles'},{val:'Two rectangles',tag:_54CP},{val:'A triangle and a rectangle',tag:_54CP},{val:'Two squares',tag:_54CP}], a:0, e:'A diagonal across a rectangle creates two triangles.', d:'m', h:'Each piece has 3 corners.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'What two pieces were used to make this rectangle?', s:_svgComp2TriRect(), o:[{val:'Two right triangles'},{val:'Two squares',tag:_54CP},{val:'A square and a triangle',tag:_54CP},{val:'A rectangle and a triangle',tag:_54CP}], a:0, e:'The diagonal cuts the rectangle into two matching right triangles.', d:'m', h:'How many sides does each piece have? 3 sides = triangle.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'This "house" shape was built from two pieces. What are they?', s:_svgCompSqTri(), o:[{val:'A square and a triangle'},{val:'Two squares',tag:_54CP},{val:'Two triangles',tag:_54CP},{val:'A rectangle and a triangle',tag:_54CP}], a:0, e:'The bottom of the house is a square (4 equal sides) and the roof is a triangle (3 sides).', d:'m', h:'Look at the bottom and the top separately.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Look at the pieces inside this house picture. What are they called?', s:_svgCompSqTri(), o:[{val:'A square and a triangle'},{val:'A rectangle and a triangle',tag:_54CP},{val:'Two triangles',tag:_54CP},{val:'A square and a rectangle',tag:_54CP}], a:0, e:'A square (the body) plus a triangle (the roof) makes the house shape.', d:'m', h:'How many sides does each piece have?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A diagonal divides this shape. The two pieces are matching. What are they?', s:_svgComp2TriSq(), o:[{val:'Two right triangles'},{val:'Two rectangles',tag:_54CP},{val:'Two squares',tag:_54CP},{val:'A triangle and a square',tag:_54CP}], a:0, e:'A diagonal through a square produces two matching right triangles.', d:'m', h:'Each piece has 3 sides.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'What two pieces make up this square?', s:_svgComp2TriSq(), o:[{val:'Two equal triangles'},{val:'Two equal squares',tag:_54CP},{val:'A triangle and a circle',tag:_54CP},{val:'Two rectangles',tag:_54CP}], a:0, e:'A diagonal divides the square into two equal triangles.', d:'m', h:'Each piece has 3 corners and 3 sides.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A vertical line divides this rectangle. What two pieces were used?', s:_svgComp2SqRect(), o:[{val:'Two equal squares'},{val:'Two rectangles',tag:_54CP},{val:'Two triangles',tag:_54CP},{val:'A square and a rectangle',tag:_54CP}], a:0, e:'A vertical midline creates two equal squares with all sides matching.', d:'m', h:'Are the pieces equal in all directions?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Look closely. What are the two pieces inside this rectangle?', s:_svgComp2SqRect(), o:[{val:'Two squares'},{val:'Two long rectangles',tag:_54CP},{val:'A square and a rectangle',tag:_54CP},{val:'Two triangles',tag:_54CP}], a:0, e:'The midline divides the shape into two equal squares.', d:'m', h:'Each piece has 4 equal sides.', sk:'compose_2d_shapes', i:_i54CP()},
+
+  // Hard (5)
+  {t:'How many pieces are inside this composite shape?', s:_svgComp3SqRect(), o:[{val:'3'},{val:'2',tag:_54CN},{val:'4',tag:_54CN},{val:'1',tag:_54CN}], a:0, e:'There are 2 dividing lines, so there are 3 pieces.', d:'h', h:'Count the dividing lines, then add 1.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'Which is NOT one of the pieces in this house shape?', s:_svgCompSqTri(), o:[{val:'Circle'},{val:'Square',tag:_54CP},{val:'Triangle',tag:_54CP},{val:'A 4-sided piece',tag:_54CP}], a:0, e:'The house is built from a square and a triangle — no circle is used.', d:'h', h:'Name each piece — is a circle one of them?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'This wider rectangle is built from 3 equal pieces. What are they?', s:_svgComp3SqRect(), o:[{val:'Three squares'},{val:'Three rectangles',tag:_54CP},{val:'Three triangles',tag:_54CP},{val:'A square and two rectangles',tag:_54CP}], a:0, e:'The two vertical lines split the shape into three equal squares.', d:'h', h:'Each piece has all 4 sides the same length.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A student says this rhombus is made of two squares. Is that right?', s:_svgComp2TriRh(), o:[{val:'No — it is made of two triangles'},{val:'Yes — it is made of two squares',tag:_54CP},{val:'Yes — two rectangles',tag:_54CP},{val:'It is made of a square and a triangle',tag:_54CP}], a:0, e:'Each piece has 3 corners — that is a triangle, not a square.', d:'h', h:'Count the sides of each piece.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'In this house shape, what shape forms the bottom AND what shape forms the top?', s:_svgCompSqTri(), o:[{val:'Bottom: square. Top: triangle.'},{val:'Bottom: rectangle. Top: triangle.',tag:_54CP},{val:'Bottom: square. Top: rhombus.',tag:_54CP},{val:'Bottom: triangle. Top: square.',tag:_54CP}], a:0, e:'The bottom is a square (4 equal sides) and the top is a triangle (3 sides).', d:'h', h:'Look at each part separately — count its sides.', sk:'compose_2d_shapes', i:_i54CP()}
+];
+
+// ── C4: Missing piece (10M + 8H = 18) ────────────────────────────────────────
+
+var _l54C4 = [
+  // Medium (10)
+  {t:'One piece is missing from this square. Which piece completes it?', s:_svgCompMiss2TriSq('left'), o:[{val:'A matching triangle'},{val:'A square',tag:_54MP},{val:'A rectangle',tag:_54MP},{val:'A circle',tag:_54MP}], a:0, e:'The empty outline is a triangle — only a matching triangle fills the space.', d:'m', h:'Trace the dashed outline — what shape is the empty space?', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'Which piece fits in the empty space to complete the square?', s:_svgCompMiss2TriSq('right'), o:[{val:'A triangle'},{val:'A square',tag:_54MP},{val:'A rhombus',tag:_54MP},{val:'A pentagon',tag:_54MP}], a:0, e:'The dashed empty outline shows a triangle — only a triangle fits.', d:'m', h:'Look at the dashed outline — how many sides does it have?', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'Which piece is missing from this rectangle?', s:_svgCompMiss2SqRect('left'), o:[{val:'A square'},{val:'A triangle',tag:_54MP},{val:'A rectangle',tag:_54MP},{val:'A circle',tag:_54MP}], a:0, e:'The empty outline has 4 equal sides — a square fits.', d:'m', h:'Trace the dashed outline. Are all sides equal?', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'A piece is missing on the right. Which piece completes the rectangle?', s:_svgCompMiss2SqRect('left'), o:[{val:'A square the same size as the left piece'},{val:'A triangle',tag:_54MP},{val:'A long rectangle',tag:_54SZ},{val:'A bigger square',tag:_54SZ}], a:0, e:'The empty space is the same shape and size as the left piece — a matching square.', d:'m', h:'The missing piece must MATCH the empty space.', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'Which piece fills the empty space here?', s:_svgCompMiss2SqRect('right'), o:[{val:'A square'},{val:'A triangle',tag:_54MP},{val:'A circle',tag:_54MP},{val:'A bigger square',tag:_54SZ}], a:0, e:'The dashed outline has 4 equal sides — a square of the same size fits.', d:'m', h:'How many sides does the empty space have?', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'A right triangle is missing from this rectangle. Which piece completes it?', s:_svgCompMiss2TriRect('upper'), o:[{val:'A matching right triangle'},{val:'A rectangle',tag:_54MP},{val:'A square',tag:_54MP},{val:'A different triangle',tag:_54SZ}], a:0, e:'The empty outline is a right triangle — a matching right triangle fits.', d:'m', h:'Count the sides of the empty space.', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'Which piece fits in the empty diagonal space?', s:_svgCompMiss2TriRect('lower'), o:[{val:'A triangle'},{val:'A square',tag:_54MP},{val:'A rectangle',tag:_54MP},{val:'A hexagon',tag:_54MP}], a:0, e:'The empty space has 3 sides — a triangle fills it.', d:'m', h:'Look at how many corners the empty outline has.', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'Which piece is missing to complete this rectangle?', s:_svgCompMiss2TriRect('upper'), o:[{val:'A triangle'},{val:'A rectangle',tag:_54MP},{val:'A square',tag:_54MP},{val:'A circle',tag:_54MP}], a:0, e:'The dashed outline has 3 corners and 3 sides — that is a triangle.', d:'m', h:'Trace the empty outline. How many corners?', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'A piece is missing on the left. Which piece completes the rectangle?', s:_svgCompMiss2SqRect('right'), o:[{val:'A matching square'},{val:'A triangle',tag:_54MP},{val:'A small rectangle',tag:_54SZ},{val:'A rhombus',tag:_54MP}], a:0, e:'The missing piece is a square the same size as the right piece.', d:'m', h:'The missing piece must fit exactly — same size, same shape.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'Which piece fits the empty triangular space?', s:_svgCompMiss2TriSq('left'), o:[{val:'A right triangle the same size'},{val:'A square the same size',tag:_54MP},{val:'A bigger triangle',tag:_54SZ},{val:'A circle',tag:_54MP}], a:0, e:'The empty outline is a right triangle of a specific size. A matching right triangle fits.', d:'m', h:'The missing piece must match BOTH the shape and the size.', sk:'compose_2d_shapes', i:_i54SZ()},
+
+  // Hard (8)
+  {t:'A student picks a square to fill the empty space here. Is that correct?', s:_svgCompMiss2TriSq('right'), o:[{val:'No — the empty space is a triangle, not a square'},{val:'Yes — a square fills any empty space',tag:_54MP},{val:'Yes — the space has 4 corners',tag:_54MP},{val:'No — the space needs a circle',tag:_54MP}], a:0, e:'The dashed outline has 3 corners. A triangle fits, not a square.', d:'h', h:'Count the corners of the empty outline.', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'What goes in the empty space to make a complete shape?', s:_svgCompMiss2SqRect('left'), o:[{val:'A square the same size as the left piece'},{val:'Any square — bigger or smaller is fine',tag:_54SZ},{val:'A triangle',tag:_54MP},{val:'A long rectangle',tag:_54MP}], a:0, e:'Only a square of the SAME SIZE fits — a bigger or smaller piece leaves gaps or overlaps.', d:'h', h:'The piece must fit exactly — no gaps, no overlaps.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'Look at the dashed outline. Which piece could complete the rectangle?', s:_svgCompMiss2TriRect('upper'), o:[{val:'A right triangle that mirrors the filled piece'},{val:'Any triangle of any size',tag:_54SZ},{val:'A square',tag:_54MP},{val:'A rectangle of the same size',tag:_54MP}], a:0, e:'The missing piece is a right triangle that mirrors the filled piece — same size, mirrored shape.', d:'h', h:'The piece must be the same size and the matching mirror of the filled half.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'What is wrong with putting a bigger triangle in the empty space?', s:_svgCompMiss2TriSq('left'), o:[{val:'It would not fit — too big, it would overlap or stick out'},{val:'Triangle is the wrong shape',tag:_54MP},{val:'Nothing is wrong',tag:_54SZ},{val:'It is the right shape but the wrong color',tag:_54SZ}], a:0, e:'The piece must be the SAME size as the empty space. A bigger triangle would not fit.', d:'h', h:'Pieces must fit exactly — same shape AND same size.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'Which piece would complete this rectangle EXACTLY?', s:_svgCompMiss2SqRect('right'), o:[{val:'A square the same size as the right piece'},{val:'A triangle',tag:_54MP},{val:'Any square',tag:_54SZ},{val:'A rectangle',tag:_54MP}], a:0, e:'Only a square of the same size fills the empty outline exactly.', d:'h', h:'Trace the dashed outline — match its size and shape exactly.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'A student says "any triangle will fit the empty diagonal space." Is that correct?', s:_svgCompMiss2TriRect('lower'), o:[{val:'No — only a triangle the same size and shape as the empty space fits'},{val:'Yes — any triangle works',tag:_54SZ},{val:'No — a square would fit better',tag:_54MP},{val:'Yes — triangles all match',tag:_54SZ}], a:0, e:'The piece must match the exact shape and size of the empty space.', d:'h', h:'Pieces must fit exactly.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'What is missing to complete this rectangle?', s:_svgCompMiss2TriRect('lower'), o:[{val:'A right triangle that mirrors the filled piece'},{val:'Any triangle',tag:_54SZ},{val:'A square',tag:_54MP},{val:'A small rectangle',tag:_54MP}], a:0, e:'The missing piece is a right triangle mirroring the filled one.', d:'h', h:'A right triangle has one square corner (90 degrees).', sk:'compose_2d_shapes', i:_i54MP()},
+  {t:'If you put the wrong-shaped piece in the empty space, what happens?', s:_svgCompMiss2TriSq('right'), o:[{val:'The pieces will not fit — there will be gaps or overlaps'},{val:'The shape just looks bigger',tag:_54SZ},{val:'Nothing — any piece works',tag:_54SZ},{val:'The shape becomes a circle',tag:_54MP}], a:0, e:'Pieces must match the empty outline exactly. Wrong shape = gaps or overlaps.', d:'h', h:'Pieces must fit edge-to-edge.', sk:'compose_2d_shapes', i:_i54SZ()}
+];
+
+// ── C5: Same target, different pieces (5E + 8M + 5H = 18) ────────────────────
+
+var _l54C5 = [
+  // Easy (5)
+  {t:'A rectangle can be made from two squares. Can it ALSO be made from two triangles?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'Yes — both make a rectangle'},{val:'No — only squares work',tag:_54CS},{val:'No — only triangles work',tag:_54CS},{val:'No — rectangles are not made from pieces',tag:_54CS}], a:0, e:'A rectangle can be made multiple ways — from squares, or from right triangles.', d:'e', h:'Look at both pictures — what is the OUTSIDE shape of each?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Both pictures show what shape on the outside?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Two different shapes',tag:_54CS}], a:0, e:'Both shapes are rectangles — even though their pieces are different.', d:'e', h:'Look at the outside outline of each picture.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Two squares make a rectangle. Two rectangles ALSO make a rectangle. True or false?', s:_svgRow2(_svgComp2SqRect(),_svgComp2RectRect()), o:[{val:'True'},{val:'False',tag:_54CS}], a:0, e:'True — both piece sets make a larger rectangle.', d:'e', h:'Look at both outside outlines.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A square can be made from two triangles. Can it also be made from four small squares?', s:_svgRow2(_svgComp2TriSq(),_svgComp4SqSq()), o:[{val:'Yes — both can build a square'},{val:'No — only triangles work',tag:_54CS},{val:'No — small squares are too small',tag:_54SZ},{val:'No — you need a circle',tag:_54CS}], a:0, e:'Yes — a square can be built from 2 triangles OR from 4 small squares. Different pieces, same target.', d:'e', h:'Both pictures end up as a square on the outside.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'The same shape can be built different ways. What shape do BOTH pictures show?', s:_svgRow2(_svgComp2TriSq(),_svgComp4SqSq()), o:[{val:'Square'},{val:'Rectangle',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'They are different shapes',tag:_54CS}], a:0, e:'Both pictures show squares on the outside — they just used different pieces.', d:'e', h:'Look at the outside outline of each.', sk:'compose_2d_shapes', i:_i54CS()},
+
+  // Medium (8)
+  {t:'Two squares make a rectangle. Two triangles ALSO make a rectangle. Why is this possible?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'Different pieces can join to make the same outside shape'},{val:'The pieces must always be the same',tag:_54CP},{val:'Only squares can make rectangles',tag:_54CS},{val:'Only triangles can make rectangles',tag:_54CS}], a:0, e:'The same target shape can be built from different pieces, as long as the outside outline matches.', d:'m', h:'Look at what the OUTSIDE shape is for each picture.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Which target shape can be made BOTH from 2 squares AND from 2 right triangles?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Triangle',tag:_54CP},{val:'Hexagon',tag:_54CS}], a:0, e:'Both piece sets build a rectangle.', d:'m', h:'Trace each outside outline.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A square can be built from two triangles. Which OTHER pieces can build a square?', s:_svgComp4SqSq(), o:[{val:'Four small equal squares'},{val:'Three triangles',tag:_54CP},{val:'Two rectangles',tag:_54CP},{val:'A circle and a square',tag:_54CP}], a:0, e:'Four equal squares in a 2×2 grid build a larger square.', d:'m', h:'Look at the picture — how many small pieces? What shape do they form?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Both pictures form rectangles. What is different between them?', s:_svgRow2(_svgComp2SqRect(),_svgComp2RectRect()), o:[{val:'The pieces inside are different shapes'},{val:'They are the same picture',tag:_54CS},{val:'The outside shape is different',tag:_54CS},{val:'One is a square, the other is a rectangle',tag:_54SA}], a:0, e:'Both outside outlines are rectangles, but the pieces inside differ (squares vs. rectangles).', d:'m', h:'Look at the OUTSIDE first, then the inside pieces.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Can a rectangle be built from two squares?', s:_svgComp2SqRect(), o:[{val:'Yes — two equal squares side by side form a rectangle'},{val:'No — squares cannot make rectangles',tag:_54CS},{val:'No — rectangles are always one piece',tag:_54CS},{val:'Yes — but only one square is needed',tag:_54CN}], a:0, e:'Yes — placing two equal squares side by side creates a rectangle.', d:'m', h:'The picture shows the answer.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Can a rectangle ALSO be built from two right triangles?', s:_svgComp2TriRect(), o:[{val:'Yes — two right triangles meet at a diagonal to form a rectangle'},{val:'No — triangles cannot make rectangles',tag:_54CS},{val:'No — you need 4 triangles',tag:_54CN},{val:'Only with circles',tag:_54CP}], a:0, e:'Yes — two right triangles meeting at the diagonal form a rectangle.', d:'m', h:'The picture shows the answer.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Which is TRUE about building a rectangle?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'A rectangle can be built different ways (from squares, or from triangles)'},{val:'A rectangle can ONLY be built from squares',tag:_54CS},{val:'A rectangle can ONLY be built from triangles',tag:_54CS},{val:'Rectangles cannot be built from pieces',tag:_54CS}], a:0, e:'A rectangle can be built from squares, from triangles, or from smaller rectangles. Many ways.', d:'m', h:'Look at both pictures — both make a rectangle.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Both shapes have a square on the outside. What is different about them?', s:_svgRow2(_svgComp2TriSq(),_svgComp4SqSq()), o:[{val:'One uses 2 triangles, the other uses 4 small squares'},{val:'They are the same',tag:_54CS},{val:'One is bigger than the other',tag:_54SZ},{val:'One is a rhombus',tag:_54SA}], a:0, e:'Both outside shapes are squares — the pieces inside differ (2 triangles vs 4 small squares).', d:'m', h:'Count the pieces inside each picture.', sk:'compose_2d_shapes', i:_i54CN()},
+
+  // Hard (5)
+  {t:'A student says "you can only build a rectangle one way." Why is this wrong?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'A rectangle can be built from many piece sets — different pieces, same outside shape'},{val:'A rectangle cannot be built at all',tag:_54CS},{val:'A rectangle always needs 3 pieces',tag:_54CN},{val:'A rectangle is the same as a square',tag:_54SA}], a:0, e:'A target shape can be built different ways — the outline matters, not the specific pieces.', d:'h', h:'Look at the pictures — how many ways?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'Which statement is TRUE?', s:_svgRow2(_svgComp2TriSq(),_svgComp4SqSq()), o:[{val:'The same shape (square) can be made from different pieces'},{val:'The two pictures show different shapes',tag:_54CS},{val:'A square always needs exactly 2 pieces',tag:_54CN},{val:'A square cannot be made from squares',tag:_54CS}], a:0, e:'Both pictures show squares — but the first uses 2 triangles and the second uses 4 small squares.', d:'h', h:'Trace the outside of each picture.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A rectangle can be built from 2 squares. It can also be built from 3 squares. Which is true?', s:_svgRow2(_svgComp2SqRect(),_svgComp3SqRect()), o:[{val:'Both make rectangles — the pieces are different but the outside is the same'},{val:'Only 2 squares make a rectangle',tag:_54CN},{val:'Only 3 squares make a rectangle',tag:_54CN},{val:'3 squares make a different shape',tag:_54CS}], a:0, e:'Both 2 squares in a row and 3 squares in a row form rectangles — the longer the row, the longer the rectangle.', d:'h', h:'Look at the outside outline of each.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'Two ways to build a square: from 2 triangles or from 4 small squares. What stays the same in both?', s:_svgRow2(_svgComp2TriSq(),_svgComp4SqSq()), o:[{val:'The outside shape — both are squares'},{val:'The number of pieces',tag:_54CN},{val:'The shape of the pieces',tag:_54CP},{val:'Nothing stays the same',tag:_54CS}], a:0, e:'Outside = square in both cases. The pieces and their count differ.', d:'h', h:'What is the same in both pictures?', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A rectangle can be made from 2 squares OR from 2 triangles OR from 2 smaller rectangles. What does this teach us?', s:_svgRow2(_svgComp2SqRect(),_svgComp2RectRect()), o:[{val:'The same shape can be built from many different sets of pieces'},{val:'Only one piece set works',tag:_54CS},{val:'Pieces must always be the same shape as the target',tag:_54CP},{val:'A rectangle always needs 4 pieces',tag:_54CN}], a:0, e:'The same target shape can be built many ways. The pieces can vary; the outline does not.', d:'h', h:'Think about the outside vs. the pieces.', sk:'compose_2d_shapes', i:_i54CS()}
+];
+
+// ── C6: 3-piece composition (4E + 5M + 6H = 15) ──────────────────────────────
+
+var _l54C6 = [
+  // Easy (4)
+  {t:'Three squares are placed in a row. What shape do they make?', s:_svgComp3SqRect(), o:[{val:'A long rectangle'},{val:'A bigger square',tag:_54SA},{val:'A triangle',tag:_54CS},{val:'A hexagon',tag:_54CS}], a:0, e:'Three equal squares in a row form a long rectangle.', d:'e', h:'Are the four outside sides all the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'What shape do 3 squares in a row form?', s:_svgComp3SqRect(), o:[{val:'Rectangle'},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS},{val:'Hexagon',tag:_54CS}], a:0, e:'3 squares in a row form a longer rectangle.', d:'e', h:'Trace the outside outline.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'Three equal squares are joined in a row. How many pieces are inside?', s:_svgComp3SqRect(), o:[{val:'3'},{val:'2',tag:_54CN},{val:'4',tag:_54CN},{val:'1',tag:_54CN}], a:0, e:'Three squares = 3 pieces. Two dividing lines mean 3 pieces.', d:'e', h:'Count the dividing lines, then add 1.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'A rectangle is built from 3 equal pieces. What are the pieces?', s:_svgComp3SqRect(), o:[{val:'Three squares'},{val:'Three triangles',tag:_54CP},{val:'Three rectangles',tag:_54CP},{val:'A square and 2 triangles',tag:_54CP}], a:0, e:'The three pieces each have 4 equal sides — they are squares.', d:'e', h:'Look at each piece — how many sides each?', sk:'compose_2d_shapes', i:_i54CP()},
+
+  // Medium (5)
+  {t:'Three identical squares form what kind of shape on the outside?', s:_svgComp3SqRect(), o:[{val:'A long rectangle'},{val:'A square',tag:_54SA},{val:'Three separate shapes',tag:_54CN},{val:'A hexagon',tag:_54CS}], a:0, e:'The 3 squares form a long rectangle when placed in a row.', d:'m', h:'The 3 pieces together form ONE outside shape.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'How many corners are on the OUTSIDE of this 3-piece composite?', s:_svgComp3SqRect(), o:[{val:'4'},{val:'8',tag:_54SA},{val:'12',tag:_54SA},{val:'3',tag:_54CN}], a:0, e:'The outside outline is a rectangle — 4 corners only.', d:'m', h:'Count the outside corners, not the dividing lines.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A rectangle is made from 3 pieces. All pieces have 4 equal sides. What pieces are they?', s:_svgComp3SqRect(), o:[{val:'Three squares'},{val:'Three triangles',tag:_54CP},{val:'A square and two rectangles',tag:_54CP},{val:'Three circles',tag:_54CP}], a:0, e:'Each piece has 4 equal sides — that is a square. So three squares.', d:'m', h:'4 equal sides on each piece = which shape?', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'Look at this 3-piece shape. What is the outside shape?', s:_svgComp3SqRect(), o:[{val:'Rectangle'},{val:'Three squares',tag:_54CP},{val:'Square',tag:_54SA},{val:'Pentagon',tag:_54CS}], a:0, e:'The OUTSIDE is a single rectangle, even though there are 3 pieces inside.', d:'m', h:'The outside is one shape, not three.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'How many dividing lines are inside this shape, and how many pieces?', s:_svgComp3SqRect(), o:[{val:'2 lines, 3 pieces'},{val:'3 lines, 2 pieces',tag:_54CN},{val:'1 line, 2 pieces',tag:_54CN},{val:'4 lines, 4 pieces',tag:_54CN}], a:0, e:'2 dividing lines = 3 pieces (each line splits the shape once more).', d:'m', h:'Number of pieces = number of dividing lines + 1.', sk:'compose_2d_shapes', i:_i54CN()},
+
+  // Hard (6)
+  {t:'A rectangle is made from 3 squares. Can it ALSO be made from 2 squares?', s:_svgRow2(_svgComp3SqRect(),_svgComp2SqRect()), o:[{val:'Yes — both work; a rectangle can be made from different numbers of pieces'},{val:'No — only 3 squares work',tag:_54CN},{val:'No — only 2 squares work',tag:_54CN},{val:'No — 2 squares make a square',tag:_54SA}], a:0, e:'Both 2-square and 3-square arrangements build rectangles (different sized rectangles).', d:'h', h:'Look at both pictures.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'A student counts 3 squares but sees the outside shape and says "it must be a triangle." Why is this wrong?', s:_svgComp3SqRect(), o:[{val:'The outside has 4 sides — that is a rectangle, not a triangle'},{val:'It is a triangle because there are 3 pieces',tag:_54CN},{val:'You need to count the pieces, not the sides',tag:_54CP},{val:'It is actually a hexagon',tag:_54CS}], a:0, e:'Number of pieces is NOT the number of sides. The outside outline has 4 sides — a rectangle.', d:'h', h:'How many SIDES are on the OUTSIDE?', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'The 3-piece shape has how many sides on its outside outline?', s:_svgComp3SqRect(), o:[{val:'4 sides'},{val:'8 sides',tag:_54SA},{val:'12 sides',tag:_54SA},{val:'3 sides',tag:_54CN}], a:0, e:'The outside outline has only 4 sides — a rectangle.', d:'h', h:'Trace the outside only.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A rectangle is built with 3 squares. All squares are the SAME size. What does this tell us?', s:_svgComp3SqRect(), o:[{val:'Each piece is the same shape AND the same size'},{val:'The pieces can be different sizes',tag:_54SZ},{val:'There are 4 pieces',tag:_54CN},{val:'The pieces are triangles',tag:_54CP}], a:0, e:'All three squares are identical: same shape (square) and same size.', d:'h', h:'Same shape AND same size.', sk:'compose_2d_shapes', i:_i54SZ()},
+  {t:'Three squares in a row make a long rectangle. Could three triangles in a row make the same shape?', s:_svgComp3SqRect(), o:[{val:'Not exactly — different pieces would change the outline'},{val:'Yes — pieces never matter',tag:_54CS},{val:'No — you need exactly 2 pieces for a rectangle',tag:_54CN},{val:'Yes — if the triangles are big enough',tag:_54SZ}], a:0, e:'Three triangles in a row form a different shape — usually not a clean rectangle. The pieces matter.', d:'h', h:'Think about what 3 triangles in a row would look like.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A 3-piece shape has 3 squares. Which 4-piece shape ALSO makes a square?', s:_svgRow2(_svgComp3SqRect(),_svgComp4SqSq()), o:[{val:'The 2-by-2 arrangement of 4 squares'},{val:'A row of 4 squares would also work',tag:_54SA},{val:'A row of 4 triangles',tag:_54CP},{val:'None — only 3 squares work',tag:_54CN}], a:0, e:'4 squares arranged in 2-by-2 (a grid) form a square. A row of 4 squares forms a longer rectangle.', d:'h', h:'How are the 4 squares arranged in the second picture?', sk:'compose_2d_shapes', i:_i54SA()}
+];
+
+// ── C7: 4-piece composition (8H = 8) ──────────────────────────────────────────
+
+var _l54C7 = [
+  {t:'Four equal squares are arranged in a 2-by-2 grid. What shape do they make?', s:_svgComp4SqSq(), o:[{val:'A larger square'},{val:'A rectangle',tag:_54SA},{val:'A hexagon',tag:_54CS},{val:'A rhombus',tag:_54SA}], a:0, e:'Four equal squares in a 2-by-2 arrangement form a larger square — all 4 outside sides equal.', d:'h', h:'Are the four outside sides equal?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'How many pieces are inside this composite shape?', s:_svgComp4SqSq(), o:[{val:'4'},{val:'2',tag:_54CN},{val:'3',tag:_54CN},{val:'8',tag:_54CN}], a:0, e:'Two dividing lines (one horizontal, one vertical) cross to form 4 pieces.', d:'h', h:'Count the cells.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'A 2-by-2 arrangement of 4 squares makes which shape on the outside?', s:_svgComp4SqSq(), o:[{val:'A bigger square'},{val:'A rectangle',tag:_54SA},{val:'Four separate squares',tag:_54CN},{val:'A hexagon',tag:_54CS}], a:0, e:'Outside has 4 equal sides → a bigger square.', d:'h', h:'Are top and bottom the same length as the sides?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A student says four squares always make a rectangle. Is that correct?', s:_svgComp4SqSq(), o:[{val:'Not always — four equal squares in a 2-by-2 grid make a SQUARE, not a rectangle'},{val:'Yes — four squares always make a rectangle',tag:_54SA},{val:'No — four squares make a triangle',tag:_54CS},{val:'No — four squares make a hexagon',tag:_54CS}], a:0, e:'4 squares in a 2-by-2 grid make a square. 4 squares in a row make a rectangle. The arrangement matters.', d:'h', h:'Are the outside sides all the same length?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A larger square is built from how many smaller squares?', s:_svgComp4SqSq(), o:[{val:'4'},{val:'2',tag:_54CN},{val:'8',tag:_54CN},{val:'6',tag:_54CN}], a:0, e:'4 small squares in a 2-by-2 grid build a larger square.', d:'h', h:'Count the cells.', sk:'compose_2d_shapes', i:_i54CN()},
+  {t:'Which is TRUE about this 4-piece shape?', s:_svgComp4SqSq(), o:[{val:'The outside is a square because all 4 sides are equal'},{val:'The outside is a rectangle',tag:_54SA},{val:'There are 8 corners on the outside',tag:_54SA},{val:'The pieces are triangles',tag:_54CP}], a:0, e:'4 squares in a 2-by-2 grid form a larger SQUARE. Outside: 4 equal sides + 4 corners.', d:'h', h:'Read each statement carefully.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A bigger square is made from 4 small squares. How many corners does the BIG square have on its outside?', s:_svgComp4SqSq(), o:[{val:'4'},{val:'8',tag:_54SA},{val:'16',tag:_54SA},{val:'12',tag:_54SA}], a:0, e:'The big square has 4 outside corners — the inside cross of lines does not add outside corners.', d:'h', h:'Count only the OUTSIDE corners.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'In this 4-piece shape, what shape is EACH piece?', s:_svgComp4SqSq(), o:[{val:'Each piece is a small square'},{val:'Each piece is a triangle',tag:_54CP},{val:'Each piece is a rectangle',tag:_54CP},{val:'Each piece is a circle',tag:_54CP}], a:0, e:'Each of the 4 pieces is a small square (4 equal sides).', d:'h', h:'Look at one cell — how many sides does it have?', sk:'compose_2d_shapes', i:_i54CP()}
+];
+
+// ── C8: Error repair (8H = 8) ─────────────────────────────────────────────────
+
+var _l54C8 = [
+  {t:'A student says: "Two triangles CANNOT make a square." What is wrong with that idea?', s:_svgComp2TriSq(), o:[{val:'Two right triangles CAN make a square when joined along their long edges'},{val:'The student is correct',tag:_54CS},{val:'Two triangles make a circle, not a square',tag:_54CS},{val:'Triangles cannot fit together',tag:_54SZ}], a:0, e:'Two matching right triangles join to make a square — the picture shows exactly this.', d:'h', h:'The picture proves the student wrong.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A student says: "If I rotate a triangle, it becomes a different shape." Is that right?', s:_svgRow2(_svgTriSm(0),_svgTriSm(120)), o:[{val:'No — turning a shape does not change its name'},{val:'Yes — direction changes the shape',tag:_54OR},{val:'Yes — a turned triangle is a square',tag:_54OR},{val:'Only if the triangle is small',tag:_54SZ}], a:0, e:'A turned, flipped, or tilted triangle is still a triangle.', d:'h', h:'Orientation is non-defining.', sk:'compose_2d_shapes', i:_i54OR()},
+  {t:'A student looks at a square made from 2 triangles and says: "The composite has 5 sides because the diagonal counts." What is wrong?', s:_svgComp2TriSq(), o:[{val:'The diagonal is INSIDE — it is not part of the outside outline'},{val:'The composite really does have 5 sides',tag:_54SA},{val:'The composite is actually a pentagon',tag:_54CS},{val:'The diagonal is the only side that matters',tag:_54SA}], a:0, e:'Only OUTSIDE edges count. The interior line is just a piece divider.', d:'h', h:'Trace the outside only.', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A student says: "Pieces must always be the same shape as the target." Is this true?', s:_svgComp2TriSq(), o:[{val:'No — pieces can be different shapes from the target (triangles can make a square)'},{val:'Yes — pieces always match the target',tag:_54CP},{val:'Only if the target is small',tag:_54SZ},{val:'Yes — but only for circles',tag:_54CP}], a:0, e:'Pieces and target can have different shapes. Triangles can make squares.', d:'h', h:'Look at the picture.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A student says: "Two squares are needed to make a rectangle." Is that the ONLY way?', s:_svgRow2(_svgComp2SqRect(),_svgComp2TriRect()), o:[{val:'No — you can also make a rectangle from 2 triangles, or from 2 smaller rectangles'},{val:'Yes — squares are the only way',tag:_54CS},{val:'Yes — but only the smallest squares',tag:_54SZ},{val:'No — you need exactly 4 pieces',tag:_54CN}], a:0, e:'A rectangle can be built many ways — from squares, triangles, or smaller rectangles.', d:'h', h:'There are many paths to the same shape.', sk:'compose_2d_shapes', i:_i54CS()},
+  {t:'A student looks at a house picture and says: "It is a hexagon." Is that right?', s:_svgCompSqTri(), o:[{val:'The house has 5 outside corners — but it is not a Grade 1 named shape. We name the pieces (a square and a triangle).'},{val:'Yes — it is a hexagon',tag:_54SA},{val:'Yes — it has 6 sides',tag:_54SA},{val:'No — it is a pentagon (5 sides)',tag:_54SA}], a:0, e:'The house composite is not a Grade 1 named shape. We name the PIECES (square + triangle), not the whole.', d:'h', h:'Some composite shapes are not named single shapes.', sk:'compose_2d_shapes', i:_i54CP()},
+  {t:'A student says: "Four squares always make a square." Is that right?', s:_svgComp4SqSq(), o:[{val:'Only if they are arranged in a 2-by-2 grid. In a row they make a long rectangle.'},{val:'Yes — always',tag:_54SA},{val:'No — four squares always make a rectangle',tag:_54SA},{val:'Yes — but only big squares',tag:_54SZ}], a:0, e:'The ARRANGEMENT matters. 4 squares in a 2-by-2 grid → square. In a 1-by-4 row → rectangle.', d:'h', h:'How are the 4 squares arranged here?', sk:'compose_2d_shapes', i:_i54SA()},
+  {t:'A student says: "A small triangle can fit in a big triangle\'s spot." Why is this wrong for completing a shape?', s:_svgCompMiss2TriSq('left'), o:[{val:'The piece must match the SIZE of the empty space, not just the shape'},{val:'Triangles never fit',tag:_54MP},{val:'Small triangles never exist',tag:_54SZ},{val:'A square would work better',tag:_54MP}], a:0, e:'Same shape AND same size are both required for a piece to fit.', d:'h', h:'Pieces must fit edge-to-edge — exactly.', sk:'compose_2d_shapes', i:_i54SZ()}
+];
+
+// ── L5.4 bank assembly ────────────────────────────────────────────────────────
+
+var _l54Bank = _colorizeQ([].concat(_l54C1, _l54C2, _l54C3, _l54C4, _l54C5, _l54C6, _l54C7, _l54C8));
+
+// ── L5.4 worked examples ──────────────────────────────────────────────────────
+
+var _l54Examples = [
+  {
+    id: 'g1-u5-l4-ex-1',
+    title: 'Example 1: Two triangles → square',
+    prompt: 'You have two matching right triangles. What shape do they make when joined along their long edges?',
+    steps: [
+      'Each piece is a triangle — 3 sides, 3 corners.',
+      'Slide one triangle next to the other so the long edges (hypotenuses) match up.',
+      'Look at the outside outline of the joined shape.',
+      'The outside has 4 equal sides and 4 corners.',
+      '4 equal sides + 4 corners = a square.'
+    ],
+    finalAnswer: 'Two matching right triangles make a square.'
+  },
+  {
+    id: 'g1-u5-l4-ex-2',
+    title: 'Example 2: Two squares → rectangle',
+    prompt: 'Two equal squares are placed side by side. What shape do they form?',
+    steps: [
+      'Each piece is a square — 4 equal sides, 4 corners.',
+      'Place one square right next to the other.',
+      'Look at the outside outline — 4 sides, 4 corners.',
+      'Two sides are now LONGER (top and bottom). Two are shorter (left and right).',
+      'A 4-sided shape with 2 long + 2 short sides is a rectangle.'
+    ],
+    finalAnswer: 'Two equal squares side by side make a rectangle.'
+  },
+  {
+    id: 'g1-u5-l4-ex-3',
+    title: 'Example 3: Identify pieces inside a composite',
+    prompt: 'A rectangle has a single vertical line down the middle. What pieces is it made from?',
+    steps: [
+      'A dividing line inside means the shape is made from pieces.',
+      'Look at each half separately.',
+      'Each half has 4 equal sides — that is a square.',
+      'The rectangle is made from two equal squares.'
+    ],
+    finalAnswer: 'The two pieces are squares.'
+  },
+  {
+    id: 'g1-u5-l4-ex-4',
+    title: 'Example 4: Missing piece',
+    prompt: 'A square has a triangle on the left, and an empty dashed outline on the right. Which piece completes the square?',
+    steps: [
+      'Trace the empty outline — it has 3 sides and 3 corners.',
+      'That is a triangle shape.',
+      'It must be the same SIZE as the empty space — not bigger or smaller.',
+      'A matching right triangle (mirror of the left piece) fills the space.',
+      'Slide it in: together the two triangles form a square.'
+    ],
+    finalAnswer: 'A matching right triangle (the mirror of the filled piece) completes the square.'
+  },
+  {
+    id: 'g1-u5-l4-ex-5',
+    title: 'Example 5: Same target, different pieces',
+    prompt: 'A rectangle can be made from two squares. Can it ALSO be made from two right triangles?',
+    steps: [
+      'Look at the outside outline: a rectangle has 4 sides (2 long + 2 short) and 4 corners.',
+      'Two squares side by side: the outside has 4 sides (2 long + 2 short) — that is a rectangle.',
+      'Two right triangles meeting at a diagonal: the outside ALSO has 4 sides (2 long + 2 short) — also a rectangle.',
+      'Same outside shape, different pieces.',
+      'The same target can be built different ways.'
+    ],
+    finalAnswer: 'Yes — a rectangle can be made from two squares OR from two right triangles.'
+  },
+  {
+    id: 'g1-u5-l4-ex-6',
+    title: 'Example 6: Three squares in a row',
+    prompt: 'Three equal squares are placed in a row. What shape do they form, and how many pieces?',
+    steps: [
+      'There are 3 pieces. Each is a square (4 equal sides).',
+      'Place them in a row, touching edge-to-edge.',
+      'Look at the outside outline: 4 sides — the top and bottom are LONG (3 squares wide), the left and right are SHORT (1 square tall).',
+      '4 sides with 2 long + 2 short = a rectangle.',
+      'So three squares in a row make a long rectangle.'
+    ],
+    finalAnswer: 'Three squares in a row make a long rectangle. There are 3 pieces.'
+  }
+];
+
+// ── L5.4 key ideas ────────────────────────────────────────────────────────────
+
+var _l54KeyIdeas = [
+  'Small shapes can be joined together to make a larger shape.',
+  'Two right triangles can fit together to make a square or a rectangle.',
+  'Two squares placed side by side make a rectangle. Two rectangles side by side make a bigger rectangle.',
+  'Turning or flipping a piece does not change its name — a flipped triangle is still a triangle.',
+  'To name the joined shape, look at the OUTSIDE outline only — the interior dividing line does not add sides.',
+  'The same target shape can be built in many ways — from different sets of pieces.'
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
 //  Unit 5 Spec
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -2237,21 +2901,24 @@ export const G1_U5_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 5.4 — Compose and Recognize 2D Shapes (scaffold, 0 questions)
-    //  TEKS 1.6F
+    //  Lesson 5.4 — Compose and Recognize 2D Shapes
+    //  TEKS 1.6C, 1.6F | 135 questions (40E / 55M / 40H)
+    //  8 categories: C1 pieces→target, C2 composite→name, C3 components,
+    //    C4 missing piece, C5 same target/diff pieces, C6 3-piece,
+    //    C7 4-piece, C8 error repair
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u5-l4',
       title: 'Compose and Recognize 2D Shapes',
-      teks: ['1.6F'],
+      teks: ['1.6C', '1.6F'],
       skill: 'compose_2d_shapes',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: _l54KeyIdeas,
+      workedExamples: _l54Examples,
+      quizBank: _l54Bank,
       diagnostics: {
-        commonDistractors: [],
-        errorTags: [],
+        commonDistractors: [_54CS, _54CP, _54MP, _54CN, _54OR, _54SZ, _54SA],
+        errorTags: [_54CS, _54CP, _54MP, _54CN, _54OR, _54SZ, _54SA],
         interventionRules: []
       }
     },
