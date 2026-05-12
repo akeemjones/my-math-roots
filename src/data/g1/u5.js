@@ -2815,8 +2815,696 @@ var _l54KeyIdeas = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  Lesson 5.5 — Equal Parts — Halves and Fourths — Helpers
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── L5.5 error tag shorthands ─────────────────────────────────────────────────
+var _55WN = 'err_wrong_fraction_name';       // Named halves when fourths (or vice versa)
+var _55PC = 'err_wrong_part_count';          // Counted parts wrong
+var _55UP = 'err_unequal_parts';             // Accepted unequal parts as halves/fourths
+var _55EQ = 'err_equal_parts_confusion';     // Rejected equal parts as not equal
+var _55HF = 'err_halves_fourths_confusion';  // Confused halves with fourths specifically
+var _55SP = 'err_shape_partition_confusion'; // Named the shape rather than the parts
+var _55NE = 'err_nonexample_confusion';      // Accepted a non-example as halves/fourths
+
+// ── L5.5 equal-partition question visual helpers ───────────────────────────────
+function _svgHalfCircleV() {
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/>' +
+    '<line x1="60" y1="8" x2="60" y2="112" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgHalfCircleH() {
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/>' +
+    '<line x1="8" y1="60" x2="112" y2="60" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgHalfSquareV() {
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="55" y1="7" x2="55" y2="103" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgHalfSquareH() {
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="7" y1="55" x2="103" y2="55" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgHalfRectH() {
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="10" y1="50" x2="150" y2="50" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgHalfRectV() {
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="80" y1="16" x2="80" y2="84" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgFourthCircle() {
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/>' +
+    '<line x1="60" y1="8" x2="60" y2="112" stroke="white" stroke-width="3"/>' +
+    '<line x1="8" y1="60" x2="112" y2="60" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgFourthSquare() {
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="55" y1="7" x2="55" y2="103" stroke="white" stroke-width="3"/>' +
+    '<line x1="7" y1="55" x2="103" y2="55" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgFourthRectV() {
+  // Landscape rectangle (140×68) divided into 4 equal columns (35px each)
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="45" y1="16" x2="45" y2="84" stroke="white" stroke-width="3"/>' +
+    '<line x1="80" y1="16" x2="80" y2="84" stroke="white" stroke-width="3"/>' +
+    '<line x1="115" y1="16" x2="115" y2="84" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgFourthRectH() {
+  // Portrait rectangle (68×140) divided into 4 equal rows (35px each)
+  return '<svg width="100" height="160" viewBox="0 0 100 160">' +
+    '<rect x="16" y="10" width="68" height="140" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="16" y1="45" x2="84" y2="45" stroke="white" stroke-width="3"/>' +
+    '<line x1="16" y1="80" x2="84" y2="80" stroke="white" stroke-width="3"/>' +
+    '<line x1="16" y1="115" x2="84" y2="115" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+// ── L5.5 unequal-partition question visual helpers ─────────────────────────────
+function _svgUneqHalfCircle() {
+  // Chord at x=42 (not center 60). Left slice ~33% width, right ~67%.
+  // y bounds: 60 ± sqrt(52^2 - 18^2) ≈ 60 ± 48.8 → y1=11, y2=109
+  return '<svg width="120" height="120" viewBox="0 0 120 120">' +
+    '<circle cx="60" cy="60" r="52" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5"/>' +
+    '<line x1="42" y1="11" x2="42" y2="109" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgUneqHalfSquare() {
+  // Line at x=36: left piece is 29px wide, right is 67px wide (≈30/70 split)
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="36" y1="7" x2="36" y2="103" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgUneqHalfRect() {
+  // Line at x=38: left piece 28px wide, right 112px wide (≈20/80 split)
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="38" y1="16" x2="38" y2="84" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgUneqFourthSquare() {
+  // Cross at x=40, y=70 — clearly off-center in both axes
+  return '<svg width="110" height="110" viewBox="0 0 110 110">' +
+    '<rect x="7" y="7" width="96" height="96" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="40" y1="7" x2="40" y2="103" stroke="white" stroke-width="3"/>' +
+    '<line x1="7" y1="70" x2="103" y2="70" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+function _svgUneqFourthRect() {
+  // 3 lines at x=35, x=75, x=120 → column widths: 25, 40, 45, 30 (clearly unequal)
+  return '<svg width="160" height="100" viewBox="0 0 160 100">' +
+    '<rect x="10" y="16" width="140" height="68" rx="2" fill="#CE93D8" stroke="#7B1FA2" stroke-width="5" stroke-linejoin="round"/>' +
+    '<line x1="35" y1="16" x2="35" y2="84" stroke="white" stroke-width="3"/>' +
+    '<line x1="75" y1="16" x2="75" y2="84" stroke="white" stroke-width="3"/>' +
+    '<line x1="120" y1="16" x2="120" y2="84" stroke="white" stroke-width="3"/>' +
+    '</svg>';
+}
+
+// ── L5.5 teaching visual helpers ─────────────────────────────────────────────
+function _tv55Equal() {
+  return _tvWrap(
+    '<svg width="260" height="120" viewBox="0 0 260 120" style="display:inline-block">' +
+    '<text x="58" y="14" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Equal parts ✓</text>' +
+    '<rect x="10" y="22" width="96" height="88" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="3"/>' +
+    '<line x1="58" y1="22" x2="58" y2="110" stroke="' + _TVP + '" stroke-width="2.5" stroke-dasharray="5,3"/>' +
+    '<line x1="130" y1="14" x2="130" y2="115" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="196" y="14" font-size="11" font-weight="700" fill="#E53935" text-anchor="middle" font-family="Nunito,sans-serif">Unequal parts ✗</text>' +
+    '<rect x="142" y="22" width="96" height="88" fill="#EF9A9A" opacity="0.2" stroke="#E53935" stroke-width="3"/>' +
+    '<line x1="172" y1="22" x2="172" y2="110" stroke="#E53935" stroke-width="2.5" stroke-dasharray="5,3"/>' +
+    '</svg>',
+    'Equal parts: every piece is the same size'
+  );
+}
+
+function _tv55Halves() {
+  return _tvWrap(
+    '<svg width="260" height="105" viewBox="0 0 260 105" style="display:inline-block">' +
+    '<text x="130" y="13" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">2 equal parts = halves</text>' +
+    '<circle cx="50" cy="60" r="36" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="50" y1="24" x2="50" y2="96" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="50" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">circle</text>' +
+    '<rect x="104" y="28" width="60" height="60" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="134" y1="28" x2="134" y2="88" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="134" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">square</text>' +
+    '<rect x="178" y="36" width="72" height="44" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="214" y1="36" x2="214" y2="80" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="214" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">rectangle</text>' +
+    '</svg>',
+    '2 equal parts = halves'
+  );
+}
+
+function _tv55Fourths() {
+  return _tvWrap(
+    '<svg width="260" height="105" viewBox="0 0 260 105" style="display:inline-block">' +
+    '<text x="130" y="13" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">4 equal parts = fourths</text>' +
+    '<circle cx="50" cy="60" r="36" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="50" y1="24" x2="50" y2="96" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="14" y1="60" x2="86" y2="60" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="50" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">circle</text>' +
+    '<rect x="104" y="28" width="60" height="60" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="134" y1="28" x2="134" y2="88" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="104" y1="58" x2="164" y2="58" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="134" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">square</text>' +
+    '<rect x="176" y="36" width="72" height="44" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="194" y1="36" x2="194" y2="80" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="212" y1="36" x2="212" y2="80" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="230" y1="36" x2="230" y2="80" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="212" y="102" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">rectangle</text>' +
+    '</svg>',
+    '4 equal parts = fourths'
+  );
+}
+
+function _tv55Count() {
+  return _tvWrap(
+    '<svg width="260" height="110" viewBox="0 0 260 110" style="display:inline-block">' +
+    '<text x="64" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">2 parts = halves</text>' +
+    '<rect x="10" y="20" width="88" height="80" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="54" y1="20" x2="54" y2="100" stroke="' + _TVP + '" stroke-width="2"/>' +
+    _tvDot(32, 60, 1) + _tvDot(76, 60, 2) +
+    '<text x="194" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">4 parts = fourths</text>' +
+    '<rect x="142" y="20" width="76" height="76" fill="' + _TVP + '" opacity="0.18" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="180" y1="20" x2="180" y2="96" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="142" y1="58" x2="218" y2="58" stroke="' + _TVP + '" stroke-width="2"/>' +
+    _tvDot(161, 39, 1) + _tvDot(199, 39, 2) + _tvDot(161, 77, 3) + _tvDot(199, 77, 4) +
+    '</svg>',
+    'Touch and count each piece: 1…2 (halves)   or   1…2…3…4 (fourths)'
+  );
+}
+
+function _tv55HalvesFourths() {
+  return _tvWrap(
+    '<svg width="260" height="110" viewBox="0 0 260 110" style="display:inline-block">' +
+    '<text x="65" y="13" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Halves</text>' +
+    '<text x="65" y="26" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">2 equal parts</text>' +
+    '<circle cx="65" cy="70" r="36" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="65" y1="34" x2="65" y2="106" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="128" y1="15" x2="128" y2="108" stroke="#ddd" stroke-width="1"/>' +
+    '<text x="195" y="13" font-size="12" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Fourths</text>' +
+    '<text x="195" y="26" font-size="10" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">4 equal parts</text>' +
+    '<circle cx="195" cy="70" r="36" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="195" y1="34" x2="195" y2="106" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<line x1="159" y1="70" x2="231" y2="70" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '</svg>',
+    '2 equal parts = halves     4 equal parts = fourths'
+  );
+}
+
+function _tv55MultiWay() {
+  return _tvWrap(
+    '<svg width="260" height="115" viewBox="0 0 260 115" style="display:inline-block">' +
+    '<text x="130" y="13" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Different cuts — still halves!</text>' +
+    '<rect x="10" y="22" width="82" height="82" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="51" y1="22" x2="51" y2="104" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="51" y="113" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">vertical cut</text>' +
+    '<line x1="103" y1="18" x2="103" y2="108" stroke="#ddd" stroke-width="1"/>' +
+    '<rect x="115" y="22" width="82" height="82" fill="' + _TVP + '" opacity="0.2" stroke="' + _TVP + '" stroke-width="2.5"/>' +
+    '<line x1="115" y1="63" x2="197" y2="63" stroke="' + _TVP + '" stroke-width="2"/>' +
+    '<text x="156" y="113" font-size="9" fill="#888" text-anchor="middle" font-family="Nunito,sans-serif">horizontal cut</text>' +
+    '<text x="230" y="55" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">Both</text>' +
+    '<text x="230" y="71" font-size="11" font-weight="700" fill="' + _TVP + '" text-anchor="middle" font-family="Nunito,sans-serif">= halves</text>' +
+    '</svg>',
+    'Equal parts — same size — in different directions'
+  );
+}
+
+// ── L5.5 intervention factories ───────────────────────────────────────────────
+function _i55WN(exp) {
+  return {
+    errorTag: _55WN,
+    title: 'Count the equal parts to choose the name',
+    teachingSteps: [
+      'Count the equal parts: touch each one.',
+      '2 equal parts → the parts are called halves.',
+      '4 equal parts → the parts are called fourths.',
+      'The name tells you HOW MANY equal parts there are.',
+      'Always count before you name.'
+    ],
+    teachingVisualRaw: _tv55HalvesFourths(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55PC(exp) {
+  return {
+    errorTag: _55PC,
+    title: 'Count each piece carefully',
+    teachingSteps: [
+      'Touch each piece one by one.',
+      'Count: 1 … 2 … (or 1 … 2 … 3 … 4 …)',
+      'Each separated region inside the shape is one part.',
+      'Number of dividing lines + 1 = number of parts. (1 line = 2 parts. 3 lines = 4 parts.)',
+      'Only count the pieces INSIDE the shape, not outside.'
+    ],
+    teachingVisualRaw: _tv55Count(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55UP(exp) {
+  return {
+    errorTag: _55UP,
+    title: 'Equal parts must be the SAME size',
+    teachingSteps: [
+      'Look at each piece — are they the same size?',
+      'For halves: BOTH parts must be the same size.',
+      'For fourths: ALL FOUR parts must be the same size.',
+      'If any piece is bigger or smaller, the parts are NOT equal.',
+      'Look at the dividing line — is it exactly in the middle?'
+    ],
+    teachingVisualRaw: _tv55Equal(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55EQ(exp) {
+  return {
+    errorTag: _55EQ,
+    title: 'If all parts look the same size, they are equal',
+    teachingSteps: [
+      'Equal means every piece is the same size.',
+      'Check: do all pieces look the same?',
+      'If yes → the parts are equal.',
+      '2 equal parts = halves. 4 equal parts = fourths.',
+      'Equal parts do not have to be the same shape — just the same size.'
+    ],
+    teachingVisualRaw: _tv55Equal(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55HF(exp) {
+  return {
+    errorTag: _55HF,
+    title: '2 equal parts = halves. 4 equal parts = fourths.',
+    teachingSteps: [
+      'Count the parts: 1 … 2 … (stop here → 2 parts → halves)',
+      'Count the parts: 1 … 2 … 3 … 4 (4 parts → fourths)',
+      '“Halves” and “fourths” sound alike — always COUNT first.',
+      '2 parts = halves. 4 parts = fourths. They are different.'
+    ],
+    teachingVisualRaw: _tv55HalvesFourths(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55SP(exp) {
+  return {
+    errorTag: _55SP,
+    title: 'Name the PARTS, not the shape',
+    teachingSteps: [
+      'The question asks what the PARTS are called, not what shape it is.',
+      'A circle split into 2 equal parts is still a circle.',
+      'The name of the PARTS is “halves” — because there are 2 equal parts.',
+      'A square split into 4 equal parts is still a square.',
+      'The name of the PARTS is “fourths” — because there are 4 equal parts.'
+    ],
+    teachingVisualRaw: _tv55MultiWay(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+function _i55NE(exp) {
+  return {
+    errorTag: _55NE,
+    title: 'Check: are the parts equal?',
+    teachingSteps: [
+      'Look at the dividing line — is it exactly in the center?',
+      'If one part is bigger than the other, it is NOT halves.',
+      'Halves = 2 parts, BOTH the same size.',
+      'Fourths = 4 parts, ALL the same size.',
+      'The number of parts alone is not enough — they MUST be equal.'
+    ],
+    teachingVisualRaw: _tv55Equal(),
+    correctAnswerExplanation: exp,
+    followUpRule: 'same_skill_new_numbers',
+    doNotRepeatOriginalQuestion: true
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 //  Unit 5 Spec
 // ══════════════════════════════════════════════════════════════════════════════
+
+
+// ── L5.5 C1: Name the halves (18E + 8M = 26) ─────────────────────────────────
+var _l55C1 = [
+  // Easy 1-6 (circles and squares)
+  {t:'What are the 2 equal parts of this circle called?', s:_svgHalfCircleV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Two equal parts are called halves — half means one of 2 equal pieces.', d:'e', h:'How many equal parts are shown?', sk:'equal_parts_halves_fourths', i:_i55HF('There are 2 equal parts, so the parts are called halves, not fourths.')},
+  {t:'A circle is split into 2 equal parts. The parts are called ___.', s:_svgHalfCircleH(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'When a shape is split into 2 equal parts, the parts are called halves.', d:'e', h:'Count the equal pieces. Are there 2 or 4?', sk:'equal_parts_halves_fourths', i:_i55HF('Count the parts: 1, 2. Two equal parts = halves.')},
+  {t:'What are the 2 equal parts of this square called?', s:_svgHalfSquareV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'Two equal parts = halves. The word "halves" means 2 equal pieces.', d:'e', h:'The line goes right through the middle — how many pieces?', sk:'equal_parts_halves_fourths', i:_i55HF('There are 2 equal parts here. Two equal parts are called halves.')},
+  {t:'A square is cut into 2 equal pieces. What are the pieces called?', s:_svgHalfSquareH(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'A shape split into 2 equal pieces shows halves — each piece is one half.', d:'e', h:'Are there 2 equal pieces or 4 equal pieces?', sk:'equal_parts_halves_fourths', i:_i55HF('This square is cut into 2 equal pieces. Two equal parts = halves.')},
+  {t:'What are the 2 equal parts of this rectangle called?', s:_svgHalfRectV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Halves means 2 equal parts. Each part is one half of the whole shape.', d:'e', h:'How many equal parts do you see?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal parts are called halves.')},
+  {t:'This rectangle shows 2 equal parts. The parts are called ___.', s:_svgHalfRectH(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'The 2 equal parts are halves. Two equal parts always make halves.', d:'e', h:'Touch each piece. How many are there?', sk:'equal_parts_halves_fourths', i:_i55HF('There are 2 equal parts. Two equal parts are called halves.')},
+  // Easy 7-12 (varying shapes + wordings)
+  {t:'The circle is split into 2 equal parts. What are they called?', s:_svgHalfCircleV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'Two equal parts are called halves. The line goes right through the middle.', d:'e', h:'Is the line in the middle? How many parts does it make?', sk:'equal_parts_halves_fourths', i:_i55HF('The line goes through the center making 2 equal parts. Two equal parts = halves.')},
+  {t:'The square is cut into 2 equal pieces. What do you call these pieces?', s:_svgHalfSquareV(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'These 2 equal pieces are halves — "halves" means 2 parts of equal size.', d:'e', h:'How many pieces are there?', sk:'equal_parts_halves_fourths', i:_i55WN('There are 2 equal pieces. Two equal pieces are called halves.')},
+  {t:'A line cuts this rectangle into 2 equal parts. What are the parts called?', s:_svgHalfRectV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'2 equal parts = halves. One cut makes 2 equal parts.', d:'e', h:'One line makes how many pieces?', sk:'equal_parts_halves_fourths', i:_i55HF('One line makes 2 equal parts. Two equal parts = halves.')},
+  {t:'Two equal parts of a circle are called ___.', s:_svgHalfCircleH(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Two equal parts of any shape are called halves.', d:'e', h:'Two equal parts are always called ___?', sk:'equal_parts_halves_fourths', i:_i55HF('Two equal parts are called halves. Fourths would need 4 equal parts.')},
+  {t:'When a shape has 2 equal parts, the parts are called ___.', s:_svgHalfSquareH(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'Two equal parts = halves. Count: 2 equal pieces → halves.', d:'e', h:'Count the pieces. Are they equal? How many?', sk:'equal_parts_halves_fourths', i:_i55HF('Two equal parts are called halves. Fourths would need 4 parts.')},
+  {t:'Look at the 2 equal parts of this rectangle. What are they called?', s:_svgHalfRectH(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'These are halves: 2 equal parts, both the same size.', d:'e', h:'Both pieces look the same size. How many pieces are there?', sk:'equal_parts_halves_fourths', i:_i55SP('The question asks what the PARTS are called. Two equal parts are halves.')},
+  // Easy 13-18 (varied prompts)
+  {t:'The dividing line makes 2 equal parts. The parts are called ___.', s:_svgHalfCircleV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'The line goes through the center making 2 equal parts: halves.', d:'e', h:'The line is right in the middle — how many equal pieces does it make?', sk:'equal_parts_halves_fourths', i:_i55HF('The center line makes 2 equal parts. Two equal parts = halves.')},
+  {t:'This shape is split into 2 equal pieces. What are the pieces called?', s:_svgHalfSquareV(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'2 equal pieces are called halves — each piece is one half.', d:'e', h:'How many pieces are there? Are they equal?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal parts are called halves, not fourths.')},
+  {t:'2 equal parts of a shape are called ___.', s:_svgHalfRectV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'Two equal parts of a shape are called halves.', d:'e', h:'Two equal parts are always called what?', sk:'equal_parts_halves_fourths', i:_i55WN('Two equal parts = halves. Fourths means 4 equal parts.')},
+  {t:'This circle shows 2 equal pieces. What are they called?', s:_svgHalfCircleH(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'2 equal pieces = halves. Both pieces are the same size.', d:'e', h:'Are both pieces the same size? How many are there?', sk:'equal_parts_halves_fourths', i:_i55HF('Both pieces are equal and there are 2 of them. Two equal parts = halves.')},
+  {t:'The square is cut into 2 equal parts. The parts are called ___.', s:_svgHalfSquareH(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'The two equal parts are called halves — two parts of equal size.', d:'e', h:'Count the equal parts.', sk:'equal_parts_halves_fourths', i:_i55HF('The square shows 2 equal parts. Two equal parts are called halves.')},
+  {t:'What do you call the 2 equal pieces of this rectangle?', s:_svgHalfRectH(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Two equal pieces are halves — both have the same size.', d:'e', h:'How many equal pieces do you see?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal pieces are called halves.')},
+  // Medium 19-26
+  {t:'A circle is cut into 2 parts. Both parts are the same size. Which word names these parts?', s:_svgHalfCircleV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'The 2 parts are the same size, so they are halves — not fourths (fourths means 4 parts).', d:'m', h:'Same size AND 2 parts. What is that called?', sk:'equal_parts_halves_fourths', i:_i55HF('2 parts, same size = halves. Fourths needs 4 equal parts.')},
+  {t:'A friend says these 2 equal pieces are called "fourths." What is the correct name?', s:_svgHalfRectV(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'Two equal pieces are halves, not fourths. Fourths means 4 equal parts.', d:'m', h:'Count the parts. Is it 2 or 4?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. There are only 2 parts. Two equal parts = halves, not fourths.')},
+  {t:'A square is divided into 2 equal parts. Which word names what the equal parts are called?', s:_svgHalfSquareV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Two equal parts = halves. Fourths would mean 4 equal parts.', d:'m', h:'Are there 2 equal parts or 4 equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('Two equal parts = halves. Fourths means 4 equal parts — count to check.')},
+  {t:'Which word correctly names the equal parts shown?', s:_svgHalfCircleH(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Two equal, same-size parts are halves.', d:'m', h:'How many parts? Are they equal?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal parts. Two equal parts are called halves.')},
+  {t:'These two pieces make the whole rectangle. What are the equal parts called?', s:_svgHalfRectH(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Halves'},{val:'Fourths',tag:_55HF}], a:2, e:'Two equal parts are halves — the two pieces are the same size.', d:'m', h:'There are 2 equal pieces. 2 equal parts are called what?', sk:'equal_parts_halves_fourths', i:_i55HF('Two equal pieces make the whole. Two equal parts = halves.')},
+  {t:'The line splits the square into 2 equal parts. What is the correct name for 2 equal parts of a shape?', s:_svgHalfSquareH(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Fourths',tag:_55HF},{val:'Halves'}], a:3, e:'Halves = 2 equal parts. Check: the line is in the middle, so the parts are equal.', d:'m', h:'Is the line in the middle? How many parts?', sk:'equal_parts_halves_fourths', i:_i55HF('The midline makes 2 equal parts. The name for 2 equal parts is halves.')},
+  {t:'Which word best names the 2 equal parts of this circle?', s:_svgHalfCircleV(), o:[{val:'Halves'},{val:'Fourths',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'These 2 equal parts are halves. Always count the parts first.', d:'m', h:'Count the equal parts. Then choose the name.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. That is 2 equal parts — the name is halves.')},
+  {t:'A rectangle is split into 2 equal parts by one line. What are the parts called?', s:_svgHalfRectV(), o:[{val:'Fourths',tag:_55HF},{val:'Halves'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'One dividing line makes 2 equal parts: those are halves.', d:'m', h:'One line makes how many pieces?', sk:'equal_parts_halves_fourths', i:_i55PC('One line makes 2 parts. Two equal parts = halves. Three lines would make 4 parts = fourths.')}
+];
+
+// ── L5.5 C2: Name the fourths (14E + 8M = 22) ────────────────────────────────
+var _l55C2 = [
+  // Easy 1-6
+  {t:'What are the 4 equal parts of this circle called?', s:_svgFourthCircle(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Four equal parts are called fourths — each piece is one fourth.', d:'e', h:'How many equal parts are shown?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths.')},
+  {t:'A square is split into 4 equal parts. The parts are called ___.', s:_svgFourthSquare(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'When a shape is split into 4 equal parts, the parts are called fourths.', d:'e', h:'Count the equal pieces. Is it 2 or 4?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths, not halves.')},
+  {t:'What are the 4 equal parts of this rectangle called?', s:_svgFourthRectV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Fourths'},{val:'Halves',tag:_55HF}], a:2, e:'4 equal parts = fourths. Three lines make 4 equal columns.', d:'e', h:'Count the parts in this rectangle.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts are called fourths.')},
+  {t:'A rectangle is divided into 4 equal parts. What are the parts called?', s:_svgFourthRectH(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Halves',tag:_55HF},{val:'Fourths'}], a:3, e:'The 4 equal parts are called fourths (also called quarters).', d:'e', h:'Are there 2 equal parts or 4 equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths, not halves.')},
+  {t:'What are the 4 equal pieces of this circle called?', s:_svgFourthCircle(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Fourths means 4 equal parts. All 4 pieces are the same size.', d:'e', h:'Count each piece. How many are there?', sk:'equal_parts_halves_fourths', i:_i55HF('Count each piece: 1, 2, 3, 4. Four equal pieces = fourths.')},
+  {t:'This square shows 4 equal parts. The parts are called ___.', s:_svgFourthSquare(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'4 equal parts are called fourths. Each piece is one fourth.', d:'e', h:'Touch each piece and count. How many?', sk:'equal_parts_halves_fourths', i:_i55HF('There are 4 equal parts. Four equal parts = fourths.')},
+  // Easy 7-14
+  {t:'The circle is split into 4 equal parts. What are they called?', s:_svgFourthCircle(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Fourths'},{val:'Halves',tag:_55HF}], a:2, e:'Four equal parts are called fourths — the 2 lines cross in the center.', d:'e', h:'Count the sections in the circle.', sk:'equal_parts_halves_fourths', i:_i55HF('Four equal parts = fourths. Halves would only have 2 equal parts.')},
+  {t:'4 equal parts of a shape are called ___.', s:_svgFourthSquare(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Halves',tag:_55HF},{val:'Fourths'}], a:3, e:'Four equal parts of any shape are called fourths.', d:'e', h:'Four equal parts are always called what?', sk:'equal_parts_halves_fourths', i:_i55HF('Four equal parts = fourths. Two equal parts = halves. Count first.')},
+  {t:'A line splits this rectangle into 4 equal parts. What are the parts called?', s:_svgFourthRectV(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'The rectangle has 3 lines making 4 equal columns — those are fourths.', d:'e', h:'Count the equal columns.', sk:'equal_parts_halves_fourths', i:_i55PC('Count each column: 1, 2, 3, 4. Three lines make 4 parts = fourths.')},
+  {t:'When a shape has 4 equal parts, the parts are called ___.', s:_svgFourthRectH(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Four equal parts = fourths. Count: 1, 2, 3, 4.', d:'e', h:'Count the pieces. Are there 2 or 4?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts are called fourths, not halves.')},
+  {t:'What are the 4 equal pieces of this rectangle called?', s:_svgFourthRectV(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Fourths'},{val:'Halves',tag:_55HF}], a:2, e:'Four equal pieces in a row are fourths.', d:'e', h:'How many equal columns are in this rectangle?', sk:'equal_parts_halves_fourths', i:_i55HF('Count the columns: 1, 2, 3, 4. Four equal pieces = fourths.')},
+  {t:'Look at the 4 equal parts of this square. What are they called?', s:_svgFourthSquare(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Halves',tag:_55HF},{val:'Fourths'}], a:3, e:'These are fourths: 4 equal parts, all the same size.', d:'e', h:'How many equal pieces are in this square?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths.')},
+  {t:'The circle has 2 lines crossing it. What are the 4 equal parts called?', s:_svgFourthCircle(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Two crossing lines make 4 equal parts — those are fourths.', d:'e', h:'Two lines cross to make how many parts?', sk:'equal_parts_halves_fourths', i:_i55PC('Two crossing lines make 4 equal parts. Four equal parts = fourths.')},
+  {t:'The 4 equal pieces of this rectangle are called ___.', s:_svgFourthRectH(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'The 4 equal pieces are fourths — all four are the same size.', d:'e', h:'Count: how many equal pieces does this rectangle have?', sk:'equal_parts_halves_fourths', i:_i55HF('Four equal pieces = fourths. Halves would only have 2 equal pieces.')},
+  // Medium 15-22
+  {t:'A circle is cut into 4 parts. All parts are the same size. Which word names these parts?', s:_svgFourthCircle(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Fourths'},{val:'Halves',tag:_55HF}], a:2, e:'The 4 parts are the same size — they are fourths, not halves (halves only has 2 parts).', d:'m', h:'Same size AND 4 parts. What is that called?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths. Halves only has 2 parts.')},
+  {t:'A friend says these 4 equal pieces are called "halves." What is the correct name?', s:_svgFourthSquare(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Halves',tag:_55HF},{val:'Fourths'}], a:3, e:'Four equal pieces are fourths, not halves. Halves means only 2 equal parts.', d:'m', h:'Count the parts. Is it 2 or 4?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. There are 4 parts. Four equal parts = fourths, not halves.')},
+  {t:'A rectangle is divided into 4 equal parts. Which word names the parts?', s:_svgFourthRectV(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'Four equal parts = fourths. Halves would mean only 2 equal parts.', d:'m', h:'Are there 2 or 4 equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('Count the sections: 1, 2, 3, 4. Four equal parts = fourths.')},
+  {t:'Which word correctly names the 4 equal parts shown?', s:_svgFourthRectH(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Four equal, same-size parts are fourths.', d:'m', h:'How many equal parts are shown? Count them.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths, not halves.')},
+  {t:'These four pieces make the whole circle. What are the equal parts called?', s:_svgFourthCircle(), o:[{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP},{val:'Fourths'},{val:'Halves',tag:_55HF}], a:2, e:'Four equal parts are fourths — all four pieces are the same size.', d:'m', h:'There are 4 equal pieces. 4 equal parts are called what?', sk:'equal_parts_halves_fourths', i:_i55HF('Four equal pieces make the whole. Four equal parts = fourths.')},
+  {t:'The lines split the square into 4 equal parts. What is the correct name for 4 equal parts of a shape?', s:_svgFourthSquare(), o:[{val:'Ones',tag:_55SP},{val:'Thirds',tag:_55WN},{val:'Halves',tag:_55HF},{val:'Fourths'}], a:3, e:'Fourths = 4 equal parts. Both midlines cross to make 4 equal sections.', d:'m', h:'Count the sections made by the two crossing lines.', sk:'equal_parts_halves_fourths', i:_i55PC('Two crossing lines make 4 equal parts. Four equal parts = fourths.')},
+  {t:'Which word best names the 4 equal parts of this rectangle?', s:_svgFourthRectV(), o:[{val:'Fourths'},{val:'Halves',tag:_55HF},{val:'Thirds',tag:_55WN},{val:'Ones',tag:_55SP}], a:0, e:'These 4 equal parts are fourths. Always count the parts first.', d:'m', h:'Count the equal parts. Then choose the name.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. That is 4 equal parts — the name is fourths.')},
+  {t:'A square is split into 4 equal parts by two lines. What are the parts called?', s:_svgFourthSquare(), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'Sixths',tag:_55PC}], a:1, e:'Two crossing lines make 4 equal parts: those are fourths.', d:'m', h:'Two lines make how many pieces?', sk:'equal_parts_halves_fourths', i:_i55PC('Two lines make 4 parts. Four equal parts = fourths. One line would make 2 parts = halves.')}
+];
+
+// ── L5.5 C3: Equal vs. unequal (10E + 8M + 4H = 22) ─────────────────────────
+var _l55C3 = [
+  // Easy 1-6: halves comparisons (same shape, equal vs unequal)
+  {t:'Which circle shows 2 equal parts?', s:_svgRow2(_svgHalfCircleV(),_svgUneqHalfCircle()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Both show equal parts',tag:_55NE},{val:'Neither shows equal parts',tag:_55EQ}], a:0, e:'Picture A: the line goes through the center — both parts are equal. Picture B: the line is off-center, so one part is bigger.', d:'e', h:'Look at where the line is in each circle.', sk:'equal_parts_halves_fourths', i:_i55UP('In Picture A the line goes through the center, making 2 equal parts. Those are halves.')},
+  {t:'Which square shows halves?', s:_svgRow2(_svgUneqHalfSquare(),_svgHalfSquareV()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:1, e:'Picture B: the line is in the middle — both parts are equal. Picture A: the line is off to one side.', d:'e', h:'Is the line in the middle or off to the side?', sk:'equal_parts_halves_fourths', i:_i55UP('The line must be in the middle for halves. Picture B has the line in the middle.')},
+  {t:'Which rectangle shows 2 equal parts?', s:_svgRow2(_svgHalfRectV(),_svgUneqHalfRect()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Both show equal parts',tag:_55NE},{val:'Neither shows equal parts',tag:_55EQ}], a:0, e:'Picture A: the line is in the center making 2 equal parts. Picture B: the line is near one end.', d:'e', h:'Which rectangle has its line exactly in the middle?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A has the line in the center. Both parts are the same size — those are halves.')},
+  {t:'Which circle shows halves?', s:_svgRow2(_svgUneqHalfCircle(),_svgHalfCircleH()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:1, e:'Picture B: a horizontal diameter makes 2 equal parts. Picture A: the line is off-center.', d:'e', h:'Look at where the line crosses the center.', sk:'equal_parts_halves_fourths', i:_i55UP('Picture B has the line through the center — 2 equal parts. That is halves.')},
+  {t:'Which square shows equal parts?', s:_svgRow2(_svgHalfSquareH(),_svgUneqHalfSquare()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Both',tag:_55NE},{val:'Neither',tag:_55EQ}], a:0, e:'Picture A: the horizontal midline makes 2 equal parts. Picture B: the line is off-center.', d:'e', h:'Is the dividing line exactly in the middle?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A: the line is in the middle. Both pieces are the same size — halves.')},
+  {t:'Which rectangle shows halves?', s:_svgRow2(_svgUneqHalfRect(),_svgHalfRectH()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:1, e:'Picture B: the midline makes 2 equal rows. Picture A: the line is near one end.', d:'e', h:'Which one has the line in the middle?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture B: the midline divides the rectangle into 2 equal parts — halves.')},
+  // Easy 7-10: fourths comparisons
+  {t:'Which square shows 4 equal parts?', s:_svgRow2(_svgFourthSquare(),_svgUneqFourthSquare()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Both show 4 equal parts',tag:_55NE},{val:'Neither shows 4 equal parts',tag:_55EQ}], a:0, e:'Picture A: both lines cross in the center making 4 equal parts. Picture B: the lines are off-center.', d:'e', h:'Are all 4 parts the same size in each picture?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A: the lines cross in the middle making 4 equal parts — those are fourths.')},
+  {t:'Which rectangle shows fourths?', s:_svgRow2(_svgUneqFourthRect(),_svgFourthRectV()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both show fourths',tag:_55NE},{val:'Neither shows fourths',tag:_55EQ}], a:1, e:'Picture B: 3 evenly spaced lines make 4 equal columns. Picture A: the lines are unevenly spaced.', d:'e', h:'Are all 4 columns the same width?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture B: the 3 evenly spaced lines make 4 equal parts — fourths.')},
+  {t:'Which picture shows 4 equal parts?', s:_svgRow2(_svgFourthCircle(),_svgUneqFourthSquare()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Both',tag:_55NE},{val:'Neither',tag:_55EQ}], a:0, e:'Picture A: the 2 crossing diameters make 4 equal parts in the circle. Picture B: the lines are off-center.', d:'e', h:'Look at each picture — are all the pieces the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A has 4 equal parts — fourths. Picture B has unequal parts.')},
+  {t:'Which square shows fourths?', s:_svgRow2(_svgUneqFourthSquare(),_svgFourthSquare()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both show fourths',tag:_55NE},{val:'Neither shows fourths',tag:_55EQ}], a:1, e:'Picture B: the cross lines are centered, making 4 equal parts. Picture A: the lines are off-center.', d:'e', h:'Which square has its lines through the exact middle?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture B has the lines in the middle making 4 equal parts — fourths.')},
+  // Medium 11-18
+  {t:'Both squares show a dividing line. Which one shows halves?', s:_svgRow2(_svgHalfSquareV(),_svgHalfSquareH()), o:[{val:'Picture A only',tag:_55EQ},{val:'Picture B only',tag:_55EQ},{val:'Both show halves'},{val:'Neither shows halves',tag:_55EQ}], a:2, e:'Both squares have a midline making 2 equal parts — both show halves. Direction does not matter.', d:'m', h:'Are the parts equal in Picture A? In Picture B?', sk:'equal_parts_halves_fourths', i:_i55SP('Both cuts make 2 equal parts, so both show halves. The direction of the cut does not matter.')},
+  {t:'One of these pictures does NOT show halves. Which one?', s:_svgRow2(_svgUneqHalfSquare(),_svgHalfSquareV()), o:[{val:'Picture A'},{val:'Picture B',tag:_55EQ},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55UP}], a:0, e:'Picture A: the line is off-center — one part is bigger. Picture B: the line is in the middle — equal parts.', d:'m', h:'Which picture has a line that is NOT in the middle?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A has an off-center line — the parts are not equal. That is NOT halves.')},
+  {t:'Both rectangles are split in different ways. Which shows halves?', s:_svgRow2(_svgHalfRectH(),_svgHalfRectV()), o:[{val:'Picture A only',tag:_55EQ},{val:'Picture B only',tag:_55EQ},{val:'Both show halves'},{val:'Neither shows halves',tag:_55EQ}], a:2, e:'Both rectangles have their midlines (horizontal or vertical), making 2 equal parts — both show halves.', d:'m', h:'Check both: is the dividing line in the middle of each?', sk:'equal_parts_halves_fourths', i:_i55SP('Both have a line through the middle. Both show 2 equal parts = halves. Direction does not matter.')},
+  {t:'Look at both pictures. Which one shows halves?', s:_svgRow2(_svgUneqHalfCircle(),_svgUneqHalfSquare()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B',tag:_55UP},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves'},{val:'Neither shows halves',tag:_55EQ}], a:3, e:'Neither picture shows halves — both have off-center lines, so one part is bigger in each.', d:'m', h:'Look at the line in each shape. Is it in the middle?', sk:'equal_parts_halves_fourths', i:_i55NE('Both pictures have off-center lines — the parts are NOT equal. Neither shows halves.')},
+  {t:'Which picture shows 4 equal parts?', s:_svgRow2(_svgFourthSquare(),_svgHalfSquareH()), o:[{val:'Picture A'},{val:'Picture B',tag:_55HF},{val:'Both show 4 equal parts',tag:_55NE},{val:'Neither',tag:_55EQ}], a:0, e:'Picture A has 4 equal parts (fourths). Picture B has only 2 equal parts (halves), not 4.', d:'m', h:'Count the equal parts in each picture.', sk:'equal_parts_halves_fourths', i:_i55PC('Count Picture A: 1, 2, 3, 4 equal parts. Count Picture B: 1, 2 equal parts. Only A has 4.')},
+  {t:'Both circles show parts. Which circles show fourths?', s:_svgRow2(_svgFourthCircle(),_svgFourthCircle()), o:[{val:'Picture A only',tag:_55EQ},{val:'Picture B only',tag:_55EQ},{val:'Both show fourths'},{val:'Neither shows fourths',tag:_55EQ}], a:2, e:'Both circles have 2 perpendicular diameters making 4 equal parts — both show fourths.', d:'m', h:'Count the parts in each circle. Are they equal?', sk:'equal_parts_halves_fourths', i:_i55SP('Both circles have 4 equal parts — both show fourths. They look the same here.')},
+  {t:'Which picture shows fourths but NOT halves?', s:_svgRow2(_svgUneqFourthSquare(),_svgFourthCircle()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Both',tag:_55NE},{val:'Neither',tag:_55EQ}], a:1, e:'Picture B has 4 equal parts = fourths. Picture A has 4 parts but they are not equal — not fourths.', d:'m', h:'Are the parts in Picture A all the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A has unequal parts — NOT fourths. Picture B has 4 equal parts — those are fourths.')},
+  {t:'Which picture shows 2 equal parts?', s:_svgRow2(_svgHalfRectV(),_svgFourthRectV()), o:[{val:'Picture A'},{val:'Picture B',tag:_55HF},{val:'Both',tag:_55NE},{val:'Neither',tag:_55EQ}], a:0, e:'Picture A has 2 equal parts (halves). Picture B has 4 equal parts (fourths) — not 2.', d:'m', h:'Count the parts in each rectangle.', sk:'equal_parts_halves_fourths', i:_i55PC('Count Picture A: 1, 2 parts. Count Picture B: 1, 2, 3, 4 parts. Only A shows 2 equal parts.')},
+  // Hard 19-22
+  {t:'Both squares are cut differently. A student says only the horizontal cut shows halves. Is the student right?', s:_svgRow2(_svgHalfSquareH(),_svgHalfSquareV()), o:[{val:'Yes — only the horizontal cut is correct',tag:_55SP},{val:'No — both cuts show halves because both are equal'},{val:'No — neither shows halves',tag:_55EQ},{val:'Yes — only vertical cuts show halves',tag:_55SP}], a:1, e:'Both cuts make 2 equal parts. The direction does not matter — only equal size matters.', d:'h', h:'Are the parts equal in BOTH pictures?', sk:'equal_parts_halves_fourths', i:_i55SP('Both cuts go through the middle — both make 2 equal parts. Both show halves. Direction does not change equality.')},
+  {t:'Neither picture shows equal parts. What is wrong?', s:_svgRow2(_svgUneqFourthSquare(),_svgUneqFourthRect()), o:[{val:'The lines need to be in the center of each shape'},{val:'Both pictures actually show fourths',tag:_55NE},{val:'The shapes need to be circles',tag:_55SP},{val:'The parts look equal to me',tag:_55UP}], a:0, e:'In both pictures the dividing lines are off-center — the parts are not equal, so neither shows fourths.', d:'h', h:'What would make the parts equal?', sk:'equal_parts_halves_fourths', i:_i55UP('The lines must go through the exact center for the parts to be equal. Off-center lines make unequal parts.')},
+  {t:'Which picture shows halves?', s:_svgRow2(_svgFourthRectV(),_svgHalfRectV()), o:[{val:'Picture A',tag:_55HF},{val:'Picture B'},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:1, e:'Picture B has 1 line making 2 equal parts = halves. Picture A has 3 lines making 4 equal parts = fourths.', d:'h', h:'Count the equal parts in each picture.', sk:'equal_parts_halves_fourths', i:_i55PC('Count Picture A: 1, 2, 3, 4 parts = fourths. Count Picture B: 1, 2 parts = halves. Only B shows halves.')},
+  {t:'Which picture shows halves? (Be careful — one circle has more lines.)', s:_svgRow2(_svgHalfCircleV(),_svgFourthCircle()), o:[{val:'Picture A'},{val:'Picture B',tag:_55HF},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:0, e:'Picture A has 1 line making 2 equal parts = halves. Picture B has 2 lines making 4 equal parts = fourths.', d:'h', h:'Count the dividing lines in each circle.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: Picture A has 1 line → 2 equal parts → halves. Picture B has 2 lines → 4 equal parts → fourths.')}
+];
+
+// ── L5.5 C4: Non-examples of halves (4E + 8M + 4H = 16) ──────────────────────
+var _l55C4 = [
+  // Easy 1-4 (2-choice Yes/No)
+  {t:'Is this halves?', s:_svgUneqHalfCircle(), o:[{val:'Yes — it shows 2 parts',tag:_55NE},{val:'No — the parts are not equal'}], a:1, e:'Halves means 2 EQUAL parts. The line is off-center here — one part is bigger.', d:'e', h:'Is the line in the middle of the circle?', sk:'equal_parts_halves_fourths', i:_i55NE('The line is not through the center. One part is bigger — these are NOT equal parts, so this is not halves.')},
+  {t:'Does this square show halves?', s:_svgUneqHalfSquare(), o:[{val:'Yes — it has 2 pieces',tag:_55UP},{val:'No — one piece is bigger'}], a:1, e:'Halves needs 2 pieces of EQUAL size. One piece is bigger here — not halves.', d:'e', h:'Are both pieces the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('For halves, both pieces must be the same size. One piece here is bigger — NOT halves.')},
+  {t:'Is this rectangle divided into halves?', s:_svgUneqHalfRect(), o:[{val:'Yes — it has a line dividing it',tag:_55NE},{val:'No — the line is not in the middle'}], a:1, e:'The line is near one end — one part is much bigger. Halves needs the line in the exact middle.', d:'e', h:'Where is the dividing line compared to the middle?', sk:'equal_parts_halves_fourths', i:_i55NE('The line is near one end. For halves, the line must be in the exact middle so both parts are equal.')},
+  {t:'Does this circle show halves?', s:_svgUneqHalfCircle(), o:[{val:'Yes',tag:_55UP},{val:'No — both pieces must be the same size'}], a:1, e:'Halves = 2 equal parts. One part here is much larger than the other — not halves.', d:'e', h:'Are both pieces the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('Halves means EQUAL size. Look: one piece is much bigger. This is NOT halves.')},
+  // Medium 5-12 (4-choice)
+  {t:'This square is cut into 2 parts. Does it show halves? Why?', s:_svgUneqHalfSquare(), o:[{val:'Yes — it shows 2 parts and 2 parts = halves',tag:_55NE},{val:'No — the parts are not equal'},{val:'Yes — any 2 pieces from a cut are halves',tag:_55UP},{val:'No — a square cannot show halves',tag:_55SP}], a:1, e:'Two parts alone is not enough — both parts must be EQUAL. One part here is bigger.', d:'m', h:'Are the 2 parts the same size?', sk:'equal_parts_halves_fourths', i:_i55NE('Two parts is not enough. Both parts must be equal for halves. Here one part is bigger — NOT halves.')},
+  {t:'A line splits this rectangle into 2 pieces. Is this halves?', s:_svgUneqHalfRect(), o:[{val:'Yes — because there are 2 pieces',tag:_55NE},{val:'No — the pieces are different sizes'},{val:'Yes — because rectangles always show halves',tag:_55SP},{val:'No — there are too many pieces',tag:_55PC}], a:1, e:'Two pieces of DIFFERENT sizes is not halves. The line must be centered to make equal pieces.', d:'m', h:'Are the 2 pieces the same size?', sk:'equal_parts_halves_fourths', i:_i55NE('The line is not in the middle. The pieces are different sizes — NOT halves.')},
+  {t:'Does this circle show halves?', s:_svgUneqHalfCircle(), o:[{val:'Yes — it has 2 parts',tag:_55UP},{val:'No — the parts are different sizes'},{val:'Yes — the chord goes all the way across',tag:_55NE},{val:'No — circles cannot show halves',tag:_55SP}], a:1, e:'The chord does not go through the center — the pieces are different sizes. Halves = 2 EQUAL parts.', d:'m', h:'Does the line go through the center of the circle?', sk:'equal_parts_halves_fourths', i:_i55UP('For halves, the line must go through the CENTER. This line does not — so the parts are unequal.')},
+  {t:'Is this halves? A student says yes because it has 2 parts. What is wrong with the student\'s thinking?', s:_svgUneqHalfSquare(), o:[{val:'Nothing — the student is right',tag:_55NE},{val:'Having 2 parts is not enough — the parts must also be equal'},{val:'The square needs more lines',tag:_55PC},{val:'Halves only works for circles',tag:_55SP}], a:1, e:'The student counted correctly (2 parts) but forgot to check size. Halves = 2 EQUAL parts.', d:'m', h:'What does "halves" require besides 2 parts?', sk:'equal_parts_halves_fourths', i:_i55NE('Two parts is not enough. The parts must also be EQUAL in size. Count + equal = halves.')},
+  {t:'This rectangle has a line near one end. Does it show halves?', s:_svgUneqHalfRect(), o:[{val:'Yes — it shows 2 separate pieces',tag:_55UP},{val:'No — the bigger piece is not equal to the smaller piece'},{val:'Yes — close enough to halves',tag:_55NE},{val:'No — rectangles need 2 lines for halves',tag:_55PC}], a:1, e:'"Close enough" is not halves. The parts must be exactly equal — the line must be in the center.', d:'m', h:'Is "close enough to equal" the same as "equal"?', sk:'equal_parts_halves_fourths', i:_i55NE('Halves requires parts to be exactly equal. The line here is off-center — NOT halves.')},
+  {t:'Is this circle showing halves? Explain why.', s:_svgUneqHalfCircle(), o:[{val:'Yes — any line across a circle makes halves',tag:_55NE},{val:'No — only a diameter (line through center) makes halves'},{val:'Yes — there are 2 parts',tag:_55UP},{val:'No — circles need 2 lines for halves',tag:_55PC}], a:1, e:'Only a diameter (through the center) makes 2 equal parts. This line is a chord, not a diameter.', d:'m', h:'Does this line go through the exact center?', sk:'equal_parts_halves_fourths', i:_i55NE('Only a line through the center makes 2 equal parts. This line is off-center — NOT halves.')},
+  {t:'Does this shape show halves?', s:_svgUneqHalfSquare(), o:[{val:'Yes — 2 parts means halves',tag:_55NE},{val:'No — the 2 parts are different sizes'},{val:'Yes — any cut makes halves',tag:_55UP},{val:'No — this is a square not a circle',tag:_55SP}], a:1, e:'The line is off-center: one part is smaller and one is bigger. Both must be EQUAL for halves.', d:'m', h:'Check both pieces: are they the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('Both parts must be equal. Look: one part is much bigger. This is NOT halves.')},
+  {t:'A student draws a line to make halves of this rectangle but places it near one end. Is it halves?', s:_svgUneqHalfRect(), o:[{val:'Yes — the student tried, so it counts',tag:_55NE},{val:'No — the line needs to be in the exact middle'},{val:'Yes — rectangles are flexible',tag:_55SP},{val:'No — rectangles cannot be cut into halves',tag:_55SP}], a:1, e:'The placement of the line determines whether parts are equal. Near one end makes unequal parts.', d:'m', h:'Where must the line be to make equal parts?', sk:'equal_parts_halves_fourths', i:_i55NE('The line must be in the exact middle. Off-center means unequal parts — NOT halves.')},
+  // Hard 13-16 (error repair / deeper reasoning)
+  {t:'This circle has 2 parts. Which statement explains why it does NOT show halves?', s:_svgUneqHalfCircle(), o:[{val:'The parts must be equal, and one part here is bigger'},{val:'It shows halves because it has 2 parts',tag:_55NE},{val:'Halves needs 4 parts, not 2',tag:_55PC},{val:'The shape is wrong — halves only works on squares',tag:_55SP}], a:0, e:'Halves = 2 equal parts. This circle has 2 parts but they are NOT equal — one is bigger.', d:'h', h:'What two things does halves require?', sk:'equal_parts_halves_fourths', i:_i55NE('Halves requires: (1) 2 parts AND (2) both parts are equal. The off-center line makes unequal parts.')},
+  {t:'A student says: "The line makes 2 pieces, so it must be halves." What is missing from the student\'s reasoning?', s:_svgUneqHalfSquare(), o:[{val:'The student forgot to check that both pieces are the SAME size'},{val:'Nothing — the student is correct',tag:_55NE},{val:'The student needs to count to 4, not 2',tag:_55PC},{val:'The student used the wrong shape',tag:_55SP}], a:0, e:'Counting 2 parts is step 1. Step 2: checking that the parts are EQUAL. The student skipped step 2.', d:'h', h:'What must you check AFTER counting the parts?', sk:'equal_parts_halves_fourths', i:_i55NE('Two steps: count the parts AND check they are equal. Missing the equal check leads to wrong answers.')},
+  {t:'Why does this rectangle NOT show halves?', s:_svgUneqHalfRect(), o:[{val:'Because the line is not in the center, so the parts are unequal'},{val:'Because rectangles cannot show halves',tag:_55SP},{val:'Because halves requires a circle',tag:_55SP},{val:'Because it only has 1 line',tag:_55PC}], a:0, e:'The line must be in the exact center. Off-center line = unequal parts = not halves.', d:'h', h:'What determines whether the parts are equal?', sk:'equal_parts_halves_fourths', i:_i55NE('Where the line is placed determines equal or unequal parts. Off-center = unequal = NOT halves.')},
+  {t:'This looks "almost like halves." Why is it still NOT halves?', s:_svgUneqHalfCircle(), o:[{val:'"Almost equal" is not equal — for halves, both parts must be exactly the same size'},{val:'It is close enough — this counts as halves',tag:_55NE},{val:'Only squares can show exact halves',tag:_55SP},{val:'The line is the wrong color',tag:_55SP}], a:0, e:'Halves requires exactly equal parts — "almost equal" is still unequal. The line must go through the center.', d:'h', h:'Does "almost equal" count as "equal" for halves?', sk:'equal_parts_halves_fourths', i:_i55UP('"Almost equal" is still NOT equal. For halves, the parts must be exactly the same size. The line must go through the center.')}
+];
+
+// ── L5.5 C5: Non-examples of fourths (8M + 4H = 12) ─────────────────────────
+var _l55C5 = [
+  // Medium 1-8 (4-choice)
+  {t:'This square is cut into 4 parts. Does it show fourths?', s:_svgUneqFourthSquare(), o:[{val:'Yes — it shows 4 parts',tag:_55NE},{val:'No — the parts are not all equal'},{val:'Yes — any 4 pieces are fourths',tag:_55UP},{val:'No — a square cannot show fourths',tag:_55SP}], a:1, e:'Four parts alone is not enough — all 4 must be EQUAL. The off-center lines make unequal parts here.', d:'m', h:'Are all 4 pieces exactly the same size?', sk:'equal_parts_halves_fourths', i:_i55NE('Four parts is not enough — all 4 must be equal. The lines are off-center here, so the parts are NOT equal.')},
+  {t:'Does this rectangle show fourths?', s:_svgUneqFourthRect(), o:[{val:'Yes — there are 4 parts',tag:_55UP},{val:'No — the 4 parts are different sizes'},{val:'Yes — close enough to fourths',tag:_55NE},{val:'No — rectangles need 4 equal rows for fourths',tag:_55PC}], a:1, e:'The 3 lines are unevenly spaced — the 4 columns have different widths. Fourths = 4 EQUAL parts.', d:'m', h:'Are all 4 columns the same width?', sk:'equal_parts_halves_fourths', i:_i55UP('For fourths, all 4 parts must be equal. The uneven lines make unequal parts — NOT fourths.')},
+  {t:'Is this fourths?', s:_svgUneqFourthSquare(), o:[{val:'Yes — 4 parts means fourths',tag:_55NE},{val:'No — not all 4 parts are the same size'},{val:'Yes — four is the right number',tag:_55UP},{val:'No — this is a square not a rectangle',tag:_55SP}], a:1, e:'The cross lines are off-center — the 4 regions are different sizes. All 4 must be equal for fourths.', d:'m', h:'Look at all 4 regions. Are they all the same size?', sk:'equal_parts_halves_fourths', i:_i55NE('Fourths = 4 EQUAL parts. The off-center lines make 4 UNEQUAL parts — NOT fourths.')},
+  {t:'A student says this shows fourths because it has 4 parts. What is wrong?', s:_svgUneqFourthRect(), o:[{val:'Nothing — the student is right',tag:_55NE},{val:'Having 4 parts is not enough — all 4 must be equal'},{val:'Fourths needs more than 4 parts',tag:_55PC},{val:'Fourths is only for circles',tag:_55SP}], a:1, e:'Same mistake as halves: counting alone is not enough. All 4 parts must be EQUAL SIZE.', d:'m', h:'What is step 2 after counting 4 parts?', sk:'equal_parts_halves_fourths', i:_i55NE('Count 4 parts (step 1) AND check all are equal (step 2). Skipping step 2 leads to this error.')},
+  {t:'Does this square show fourths?', s:_svgUneqFourthSquare(), o:[{val:'Yes — four lines make fourths',tag:_55PC},{val:'No — the parts are not all the same size'},{val:'Yes — it looks close enough',tag:_55NE},{val:'No — squares only show halves',tag:_55SP}], a:1, e:'The lines are off-center: the 4 regions are not the same size. Fourths requires ALL parts to be equal.', d:'m', h:'Are all 4 pieces the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('All 4 pieces must be equal. Compare them — they are clearly different sizes. NOT fourths.')},
+  {t:'Is this rectangle divided into fourths?', s:_svgUneqFourthRect(), o:[{val:'Yes — 3 lines make 4 parts',tag:_55NE},{val:'No — the 3 lines are not evenly spaced'},{val:'Yes — there are 4 sections',tag:_55UP},{val:'No — a rectangle cannot show fourths',tag:_55SP}], a:1, e:'Three lines make 4 parts, but the lines must be EVENLY SPACED for equal parts. These are not evenly spaced.', d:'m', h:'Are the 3 dividing lines evenly spaced?', sk:'equal_parts_halves_fourths', i:_i55NE('For fourths, the 3 lines must be evenly spaced so all 4 parts are equal. Uneven spacing = unequal parts.')},
+  {t:'Why does this NOT show fourths?', s:_svgUneqFourthSquare(), o:[{val:'Because the 4 parts are not all equal'},{val:'Because it has too many parts',tag:_55PC},{val:'Because fourths is only for circles',tag:_55SP},{val:'Actually it does show fourths',tag:_55NE}], a:0, e:'The crossing lines are off-center — some regions are bigger, some smaller. Fourths needs ALL 4 equal.', d:'m', h:'Look at all 4 regions. Are they equal?', sk:'equal_parts_halves_fourths', i:_i55UP('The off-center lines make 4 unequal regions. For fourths, all 4 must be the SAME SIZE.')},
+  {t:'Which is the correct reason this does NOT show fourths?', s:_svgUneqFourthRect(), o:[{val:'Fourths needs a circle shape',tag:_55SP},{val:'The parts are different sizes, so this is NOT equal fourths'},{val:'There are too many dividing lines',tag:_55PC},{val:'This actually does show fourths',tag:_55NE}], a:1, e:'Shape does not matter — equal size does. The uneven columns make this NOT fourths.', d:'m', h:'What is the key requirement for fourths?', sk:'equal_parts_halves_fourths', i:_i55NE('Shape does not matter. What matters is equal size. Uneven parts = NOT fourths.')},
+  // Hard 9-12 (deeper error repair)
+  {t:'This square has 4 parts. A student says it shows fourths. What should you tell the student?', s:_svgUneqFourthSquare(), o:[{val:'The student is right — 4 parts is fourths',tag:_55NE},{val:'Fourths also requires all 4 parts to be equal — these parts are not equal'},{val:'Fourths requires exactly 2 lines, and this has them',tag:_55PC},{val:'The student is almost right — this is close to fourths',tag:_55UP}], a:1, e:'The student counted correctly but forgot the equal-size requirement. Both steps matter.', d:'h', h:'What two things are required for fourths?', sk:'equal_parts_halves_fourths', i:_i55NE('Fourths = 4 parts + all equal. The student only checked the count. The parts here are unequal — NOT fourths.')},
+  {t:'What is the key difference between this picture and a correct picture of fourths?', s:_svgUneqFourthRect(), o:[{val:'This picture has 4 parts but they are not equal; correct fourths has 4 EQUAL parts'},{val:'This picture has too many parts',tag:_55PC},{val:'There is no difference — this picture shows fourths',tag:_55NE},{val:'The shape needs to be a circle for fourths',tag:_55SP}], a:0, e:'4 parts is right. Equal size is what is missing. That is the only difference from correct fourths.', d:'h', h:'What is the same and what is different compared to correct fourths?', sk:'equal_parts_halves_fourths', i:_i55UP('Correct fourths: 4 parts + all equal. This picture: 4 parts + NOT all equal. The missing piece is equal size.')},
+  {t:'A student says this square "almost" shows fourths. Explain why "almost" is not good enough.', s:_svgUneqFourthSquare(), o:[{val:'"Almost equal" parts are still UNEQUAL — fourths requires exactly equal parts'},{val:'"Almost" is fine — fourths is flexible',tag:_55NE},{val:'The student should count again',tag:_55PC},{val:'Fourths does not apply to squares',tag:_55SP}], a:0, e:'Math requires exactness. "Almost equal" means some parts are bigger — that breaks the fourths rule.', d:'h', h:'Is "almost equal" the same as "equal"?', sk:'equal_parts_halves_fourths', i:_i55UP('"Almost equal" still means UNEQUAL. For fourths, all 4 parts must be exactly the same size — no exceptions.')},
+  {t:'Both the count (4 parts) and the size matter for fourths. Which statement is correct?', s:_svgUneqFourthRect(), o:[{val:'Count: 4 parts ✓  Size: parts are not all equal ✗  — so this is NOT fourths'},{val:'Count: 4 parts ✓  Size: good enough ✓  — so this IS fourths',tag:_55NE},{val:'Count: 3 parts ✗  — not enough parts for fourths',tag:_55PC},{val:'This shows fourths — shape and count both look right',tag:_55UP}], a:0, e:'Count is 4 ✓ but the parts are not equal ✗ — both conditions must be met for fourths.', d:'h', h:'Which part of the two-step check fails here?', sk:'equal_parts_halves_fourths', i:_i55NE('Step 1 (4 parts) ✓. Step 2 (all equal) ✗. Both steps must pass. This fails step 2 — NOT fourths.')}
+];
+
+// ── L5.5 C6: Count the parts (2E + 6M + 4H = 12) ────────────────────────────
+var _l55C6 = [
+  // Easy 1-2
+  {t:'How many equal parts does this circle show?', s:_svgHalfCircleV(), o:[{val:'2'},{val:'4',tag:_55PC},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'One line makes 2 equal parts.', d:'e', h:'Touch each piece and count.', sk:'equal_parts_halves_fourths', i:_i55PC('One line makes 2 equal parts. Count: 1, 2. The answer is 2.')},
+  {t:'How many equal parts does this square show?', s:_svgFourthSquare(), o:[{val:'4'},{val:'2',tag:_55PC},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'Two crossing lines make 4 equal parts.', d:'e', h:'Touch each section and count them.', sk:'equal_parts_halves_fourths', i:_i55PC('Two lines cross to make 4 equal sections. Count: 1, 2, 3, 4. The answer is 4.')},
+  // Medium 3-8
+  {t:'Count the equal parts. How many equal parts does this rectangle show?', s:_svgHalfRectV(), o:[{val:'2'},{val:'4',tag:_55PC},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'One line splits the rectangle into 2 equal parts.', d:'m', h:'How many pieces does the single line make?', sk:'equal_parts_halves_fourths', i:_i55PC('One line makes 2 parts. Count: 1, 2. One dividing line always makes 2 parts.')},
+  {t:'Count the equal parts in this circle. How many are there?', s:_svgFourthCircle(), o:[{val:'4'},{val:'2',tag:_55HF},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'Two crossing lines divide the circle into 4 equal parts.', d:'m', h:'Touch each section and count carefully.', sk:'equal_parts_halves_fourths', i:_i55PC('Two lines make 4 parts. Count each section: 1, 2, 3, 4. Not 2 — count again.')},
+  {t:'How many equal parts does this rectangle show?', s:_svgFourthRectV(), o:[{val:'4'},{val:'2',tag:_55HF},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'Three evenly spaced lines make 4 equal columns.', d:'m', h:'Count each column from left to right.', sk:'equal_parts_halves_fourths', i:_i55PC('Count the columns: 1, 2, 3, 4. Three lines make 4 parts.')},
+  {t:'How many equal parts does this square show?', s:_svgHalfSquareH(), o:[{val:'2'},{val:'4',tag:_55PC},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'One horizontal line makes 2 equal parts.', d:'m', h:'How many pieces does the line make?', sk:'equal_parts_halves_fourths', i:_i55PC('One line = 2 parts. Count: 1, 2. The square shows 2 equal parts.')},
+  {t:'This rectangle is split into equal rows. How many equal rows are shown?', s:_svgFourthRectH(), o:[{val:'4'},{val:'2',tag:_55HF},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'Three horizontal lines make 4 equal rows.', d:'m', h:'Count the rows from top to bottom.', sk:'equal_parts_halves_fourths', i:_i55PC('Count the rows from top to bottom: 1, 2, 3, 4. Three lines make 4 rows.')},
+  {t:'How many equal parts does this circle show?', s:_svgHalfCircleH(), o:[{val:'2'},{val:'4',tag:_55PC},{val:'3',tag:_55PC},{val:'1',tag:_55PC}], a:0, e:'The horizontal line goes through the center making 2 equal parts.', d:'m', h:'Count the pieces carefully.', sk:'equal_parts_halves_fourths', i:_i55PC('The diameter makes 2 equal parts. Count: top piece (1), bottom piece (2). That is 2.')},
+  // Hard 9-12
+  {t:'Picture A has ___ equal parts. Picture B has ___ equal parts.', s:_svgRow2(_svgHalfCircleV(),_svgFourthCircle()), o:[{val:'A: 2,  B: 4'},{val:'A: 4,  B: 2',tag:_55PC},{val:'A: 2,  B: 2',tag:_55HF},{val:'A: 4,  B: 4',tag:_55HF}], a:0, e:'Picture A has 1 line → 2 equal parts. Picture B has 2 crossing lines → 4 equal parts.', d:'h', h:'Count each picture separately.', sk:'equal_parts_halves_fourths', i:_i55PC('Count A: 1 line → 2 parts. Count B: 2 lines → 4 parts. More lines = more parts.')},
+  {t:'This rectangle has ___ dividing lines and ___ equal parts.', s:_svgFourthRectV(), o:[{val:'3 lines and 4 parts'},{val:'4 lines and 4 parts',tag:_55PC},{val:'3 lines and 3 parts',tag:_55PC},{val:'2 lines and 2 parts',tag:_55HF}], a:0, e:'Three vertical lines divide the rectangle into 4 equal columns. Lines + 1 = parts.', d:'h', h:'Count the lines, then count the columns.', sk:'equal_parts_halves_fourths', i:_i55PC('Count the lines: 1, 2, 3 lines. Then count the parts: 1, 2, 3, 4 parts. Number of lines + 1 = number of parts.')},
+  {t:'Picture A has ___ equal parts. Picture B has ___ equal parts.', s:_svgRow2(_svgHalfRectV(),_svgFourthRectV()), o:[{val:'A: 2,  B: 4'},{val:'A: 4,  B: 2',tag:_55PC},{val:'A: 2,  B: 2',tag:_55HF},{val:'A: 4,  B: 4',tag:_55PC}], a:0, e:'A has 1 line → 2 equal parts. B has 3 lines → 4 equal parts.', d:'h', h:'Count the dividing lines in each rectangle, then count the parts.', sk:'equal_parts_halves_fourths', i:_i55PC('Rectangle A: 1 line = 2 parts. Rectangle B: 3 lines = 4 parts. Count lines then add 1.')},
+  {t:'True or false: a square with 2 lines crossing shows halves because it has 2 lines.', s:_svgFourthSquare(), o:[{val:'False — 2 crossing lines make 4 parts, which is fourths not halves'},{val:'True — 2 lines = halves',tag:_55PC},{val:'True — a square always shows halves',tag:_55SP},{val:'False — squares cannot be divided at all',tag:_55SP}], a:0, e:'Count the parts made by the lines, not the lines themselves. 2 crossing lines make 4 parts = fourths.', d:'h', h:'Count the PARTS, not the lines.', sk:'equal_parts_halves_fourths', i:_i55PC('2 lines cross to make 4 parts. Name comes from the number of PARTS (4 = fourths), not the number of lines.')}
+];
+
+// ── L5.5 C7: Match description to picture (8M + 5H = 13) ─────────────────────
+var _l55C7 = [
+  // Medium 1-8 (Row3 visual, pick the matching picture)
+  {t:'Which picture shows halves?', s:_svgRow3(_svgHalfCircleV(),_svgFourthSquare(),_svgUneqHalfRect()), o:[{val:'Picture A'},{val:'Picture B',tag:_55HF},{val:'Picture C',tag:_55NE},{val:'None of them',tag:_55EQ}], a:0, e:'Picture A has 1 line through the center making 2 equal parts — halves. B has 4 parts (fourths). C has unequal parts.', d:'m', h:'Which picture has exactly 2 equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('Look for 2 equal parts. Picture A: 1 center line → 2 equal parts → halves.')},
+  {t:'Which picture shows fourths?', s:_svgRow3(_svgFourthRectV(),_svgHalfSquareH(),_svgUneqFourthRect()), o:[{val:'Picture A'},{val:'Picture B',tag:_55HF},{val:'Picture C',tag:_55NE},{val:'None of them',tag:_55EQ}], a:0, e:'Picture A has 3 evenly spaced lines making 4 equal columns — fourths. B has 2 parts (halves). C has unequal parts.', d:'m', h:'Which picture has exactly 4 equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('Look for 4 equal parts. Picture A: 3 even lines → 4 equal parts → fourths.')},
+  {t:'Which picture shows 2 equal parts?', s:_svgRow3(_svgUneqHalfCircle(),_svgHalfRectV(),_svgFourthCircle()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Picture C',tag:_55HF},{val:'None of them',tag:_55EQ}], a:1, e:'Picture B has 1 center line making 2 equal parts. A has unequal parts. C has 4 parts.', d:'m', h:'Which picture has exactly 2 equal parts?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture A has unequal parts. Picture C has 4 parts. Picture B has 1 center line → 2 equal parts.')},
+  {t:'Which picture shows halves?', s:_svgRow3(_svgHalfSquareV(),_svgUneqHalfSquare(),_svgFourthRectH()), o:[{val:'Picture A'},{val:'Picture B',tag:_55UP},{val:'Picture C',tag:_55HF},{val:'None of them',tag:_55EQ}], a:0, e:'Picture A has the midline making 2 equal parts. B has an off-center line. C has 4 parts.', d:'m', h:'Which picture has a line exactly in the middle making 2 equal parts?', sk:'equal_parts_halves_fourths', i:_i55UP('Picture B: off-center line → unequal parts. Picture C: 4 parts. Picture A: midline → 2 equal parts → halves.')},
+  {t:'Which picture shows fourths?', s:_svgRow3(_svgUneqFourthSquare(),_svgFourthSquare(),_svgHalfCircleH()), o:[{val:'Picture A',tag:_55NE},{val:'Picture B'},{val:'Picture C',tag:_55HF},{val:'None of them',tag:_55EQ}], a:1, e:'Picture B has 2 center lines making 4 equal parts — fourths. A has unequal parts. C has 2 parts.', d:'m', h:'Which picture has 4 equal parts?', sk:'equal_parts_halves_fourths', i:_i55NE('Picture A has unequal parts — not fourths. Picture C has 2 parts — halves. Picture B has 4 equal parts → fourths.')},
+  {t:'Which picture shows 4 equal parts?', s:_svgRow3(_svgHalfRectH(),_svgFourthCircle(),_svgUneqHalfCircle()), o:[{val:'Picture A',tag:_55HF},{val:'Picture B'},{val:'Picture C',tag:_55NE},{val:'None of them',tag:_55EQ}], a:1, e:'Picture B has 2 crossing diameters making 4 equal parts. A has 2 parts. C has unequal parts.', d:'m', h:'Count the equal parts in each picture.', sk:'equal_parts_halves_fourths', i:_i55PC('Count each picture: A has 2 equal parts, B has 4 equal parts, C has unequal parts. 4 equal parts = fourths.')},
+  {t:'Which picture shows equal parts? Pick the BEST answer.', s:_svgRow3(_svgUneqFourthRect(),_svgUneqHalfSquare(),_svgFourthRectV()), o:[{val:'Picture A',tag:_55NE},{val:'Picture B',tag:_55UP},{val:'Picture C'},{val:'None of them',tag:_55EQ}], a:2, e:'Picture C has 3 evenly spaced lines making 4 equal parts. A and B both have unequal parts.', d:'m', h:'Check each picture: are the parts in each one equal?', sk:'equal_parts_halves_fourths', i:_i55UP('Check each: A has unequal parts. B has unequal parts. C has 3 even lines → 4 equal parts — that one shows equal parts.')},
+  {t:'A shape is described as showing halves. Which picture matches?', s:_svgRow3(_svgHalfCircleH(),_svgUneqFourthRect(),_svgFourthRectH()), o:[{val:'Picture A'},{val:'Picture B',tag:_55NE},{val:'Picture C',tag:_55HF},{val:'None of them',tag:_55EQ}], a:0, e:'Halves = 2 equal parts. Picture A has 1 center line → 2 equal parts → matches "halves." B has unequal parts. C has 4 parts.', d:'m', h:'Halves means 2 equal parts. Which picture has exactly that?', sk:'equal_parts_halves_fourths', i:_i55HF('Find 2 equal parts. Picture A: 1 center line → 2 equal parts → halves. That matches the description.')},
+  // Hard 9-13
+  {t:'Which pictures show halves? (More than one may be correct.)', s:_svgRow3(_svgHalfRectV(),_svgFourthSquare(),_svgHalfSquareH()), o:[{val:'Picture A and Picture C'},{val:'Picture A only',tag:_55EQ},{val:'Picture B only',tag:_55HF},{val:'None show halves',tag:_55EQ}], a:0, e:'A has 2 equal parts (halves). C has 2 equal parts (halves). B has 4 equal parts (fourths).', d:'h', h:'Check each picture. Which ones have exactly 2 equal parts?', sk:'equal_parts_halves_fourths', i:_i55EQ('Check each: A has 2 equal parts ✓, B has 4 equal parts ✗, C has 2 equal parts ✓. Both A and C show halves.')},
+  {t:'Which picture shows halves?', s:_svgRow3(_svgUneqHalfCircle(),_svgHalfRectH(),_svgUneqFourthSquare()), o:[{val:'Picture A',tag:_55UP},{val:'Picture B'},{val:'Picture C',tag:_55NE},{val:'None of them',tag:_55EQ}], a:1, e:'Picture B has 2 equal parts (halves). A has unequal parts. C has unequal parts.', d:'h', h:'Which picture has exactly 2 EQUAL parts?', sk:'equal_parts_halves_fourths', i:_i55UP('A: off-center line → unequal. C: off-center cross → unequal. B: center line → 2 equal parts → halves.')},
+  {t:'All three pictures show equal parts. Which word names ALL the equal parts shown?', s:_svgRow3(_svgFourthCircle(),_svgFourthRectV(),_svgFourthSquare()), o:[{val:'Halves',tag:_55HF},{val:'Fourths'},{val:'Thirds',tag:_55WN},{val:'They show different things',tag:_55WN}], a:1, e:'All three pictures show 4 equal parts — all three show fourths.', d:'h', h:'Count the equal parts in each picture. Are they all the same?', sk:'equal_parts_halves_fourths', i:_i55HF('Count each: circle = 4 parts, rectangle = 4 parts, square = 4 parts. All show fourths, not halves.')},
+  {t:'A student needs a picture showing 4 equal parts. Which picture should they pick?', s:_svgRow3(_svgHalfCircleV(),_svgUneqHalfRect(),_svgFourthRectH()), o:[{val:'Picture A',tag:_55HF},{val:'Picture B',tag:_55NE},{val:'Picture C'},{val:'Any of them',tag:_55NE}], a:2, e:'Picture C has 3 horizontal lines making 4 equal rows. A has 2 parts. B has unequal parts.', d:'h', h:'Which picture has exactly 4 EQUAL parts?', sk:'equal_parts_halves_fourths', i:_i55PC('Count: A has 2 parts, B has unequal parts, C has 4 equal parts. 4 equal parts = C.')},
+  {t:'Which pictures have ALL parts equal? (More than one may be correct.)', s:_svgRow3(_svgHalfSquareH(),_svgUneqFourthSquare(),_svgFourthRectV()), o:[{val:'Picture A and Picture C'},{val:'Picture A only',tag:_55EQ},{val:'Picture B only',tag:_55UP},{val:'None have equal parts',tag:_55EQ}], a:0, e:'A has 2 equal parts (halves ✓). C has 4 equal parts (fourths ✓). B has unequal parts ✗.', d:'h', h:'Check each picture: are the parts all the same size?', sk:'equal_parts_halves_fourths', i:_i55EQ('A: midline → 2 equal parts ✓. B: off-center cross → unequal ✗. C: 3 even lines → 4 equal parts ✓. A and C are correct.')}
+];
+
+// ── L5.5 C8: Same shape, different partitions (6M + 6H = 12) ─────────────────
+var _l55C8 = [
+  // Medium 1-6
+  {t:'Do both of these squares show halves?', s:_svgRow2(_svgHalfSquareV(),_svgHalfSquareH()), o:[{val:'Yes — both have 2 equal parts'},{val:'No — only the vertical cut is halves',tag:_55SP},{val:'No — only the horizontal cut is halves',tag:_55SP},{val:'No — neither shows halves',tag:_55EQ}], a:0, e:'Both squares have a midline making 2 equal parts. Direction (vertical or horizontal) does not matter.', d:'m', h:'Are the parts equal in Picture A? In Picture B?', sk:'equal_parts_halves_fourths', i:_i55SP('Both cuts go through the middle. Both make 2 equal parts. Both show halves — direction does not matter.')},
+  {t:'Both circles are cut differently. Do both show halves?', s:_svgRow2(_svgHalfCircleV(),_svgHalfCircleH()), o:[{val:'Yes — both have 2 equal parts'},{val:'No — only vertical cuts make halves',tag:_55SP},{val:'No — only horizontal cuts make halves',tag:_55SP},{val:'No — circles cannot show halves two ways',tag:_55SP}], a:0, e:'A vertical diameter and a horizontal diameter both make 2 equal parts — both show halves.', d:'m', h:'Are the parts equal in both circles?', sk:'equal_parts_halves_fourths', i:_i55SP('A diameter can go any direction. Any diameter through the center makes 2 equal parts = halves.')},
+  {t:'This rectangle is cut two different ways. Which statement is correct?', s:_svgRow2(_svgHalfRectV(),_svgHalfRectH()), o:[{val:'Both pictures show halves'},{val:'Only Picture A shows halves',tag:_55EQ},{val:'Only Picture B shows halves',tag:_55EQ},{val:'Neither shows halves',tag:_55EQ}], a:0, e:'Both rectangles have their midline (vertical or horizontal) making 2 equal parts — both are halves.', d:'m', h:'Check both: is each dividing line in the exact middle?', sk:'equal_parts_halves_fourths', i:_i55SP('The midline can be vertical OR horizontal. Both make 2 equal parts. Both show halves.')},
+  {t:'Do both of these shapes show fourths?', s:_svgRow2(_svgFourthSquare(),_svgFourthCircle()), o:[{val:'Yes — both have 4 equal parts'},{val:'No — fourths only works for squares',tag:_55SP},{val:'No — fourths only works for circles',tag:_55SP},{val:'No — they are different shapes',tag:_55SP}], a:0, e:'Both show 4 equal parts — shape does not determine the name, equal parts count does.', d:'m', h:'Count the equal parts in each shape.', sk:'equal_parts_halves_fourths', i:_i55SP('The shape does not matter — what matters is equal parts. Both have 4 equal parts → both show fourths.')},
+  {t:'A student says changing the cut direction changes the name from halves to something else. Is the student right?', s:_svgRow2(_svgHalfSquareH(),_svgHalfSquareV()), o:[{val:'No — both show halves because both have 2 equal parts'},{val:'Yes — the direction changes the name',tag:_55SP},{val:'Yes — horizontal is halves and vertical is fourths',tag:_55SP},{val:'No — but neither picture shows halves',tag:_55EQ}], a:0, e:'Direction does not change the name. Both cuts make 2 equal parts = halves.', d:'m', h:'What matters for the name — direction or equal parts?', sk:'equal_parts_halves_fourths', i:_i55SP('Equal parts — not direction — determines the name. Both cuts make 2 equal parts. Both = halves.')},
+  {t:'Which pictures show halves? (There may be more than one.)', s:_svgRow2(_svgHalfRectH(),_svgHalfRectV()), o:[{val:'Both show halves'},{val:'Only Picture A',tag:_55EQ},{val:'Only Picture B',tag:_55EQ},{val:'Neither shows halves',tag:_55EQ}], a:0, e:'Both have a midline making 2 equal parts — horizontal or vertical, both are halves.', d:'m', h:'Check both rectangles: do both have equal parts?', sk:'equal_parts_halves_fourths', i:_i55SP('Both have a line in the exact middle. Both make 2 equal parts. Both show halves.')},
+  // Hard 7-12
+  {t:'What is the SAME about both circles?', s:_svgRow2(_svgHalfCircleV(),_svgHalfCircleH()), o:[{val:'Both show halves — 2 equal parts each'},{val:'Both show fourths',tag:_55HF},{val:'Picture A shows halves, Picture B shows fourths',tag:_55WN},{val:'Neither shows halves',tag:_55EQ}], a:0, e:'Both have a diameter (line through center) making 2 equal parts — both show halves. The direction differs but the name is the same.', d:'h', h:'Count the equal parts in each. Are they both the same?', sk:'equal_parts_halves_fourths', i:_i55SP('Both have 2 equal parts. The direction is different but the name is the same: both = halves.')},
+  {t:'Do both rectangles show fourths? Explain.', s:_svgRow2(_svgFourthRectV(),_svgFourthRectH()), o:[{val:'Yes — both have 4 equal parts in different directions'},{val:'No — only vertical fourths is correct',tag:_55SP},{val:'No — only horizontal fourths is correct',tag:_55SP},{val:'No — they look too different',tag:_55SP}], a:0, e:'One is cut into vertical columns, one into horizontal rows — both make 4 equal parts = fourths.', d:'h', h:'Count the equal parts in both rectangles.', sk:'equal_parts_halves_fourths', i:_i55SP('Equal parts = fourths. Vertical columns or horizontal rows — both make 4 equal parts. Both = fourths.')},
+  {t:'Both shapes are different, but do both show halves?', s:_svgRow2(_svgHalfSquareH(),_svgHalfRectH()), o:[{val:'Yes — both have 2 equal parts'},{val:'No — different shapes cannot both show halves',tag:_55SP},{val:'No — only the square shows halves',tag:_55EQ},{val:'No — only the rectangle shows halves',tag:_55EQ}], a:0, e:'Shape does not determine the name. Both have a midline making 2 equal parts — both show halves.', d:'h', h:'What matters for the name: the shape or the number of equal parts?', sk:'equal_parts_halves_fourths', i:_i55SP('Shape does not matter. Both have 2 equal parts. Both show halves.')},
+  {t:'Which picture shows halves? (Be careful — one shows fourths.)', s:_svgRow2(_svgHalfSquareV(),_svgFourthSquare()), o:[{val:'Picture A only'},{val:'Picture B only',tag:_55HF},{val:'Both show halves',tag:_55NE},{val:'Neither shows halves',tag:_55EQ}], a:0, e:'Picture A has 1 line → 2 equal parts → halves. Picture B has 2 crossing lines → 4 equal parts → fourths.', d:'h', h:'Count the equal parts in each picture.', sk:'equal_parts_halves_fourths', i:_i55PC('Count A: 1 line → 2 parts → halves. Count B: 2 lines → 4 parts → fourths. Only A shows halves.')},
+  {t:'Does adding more lines to a halves shape always change it to fourths?', s:_svgRow2(_svgHalfCircleV(),_svgFourthCircle()), o:[{val:'Yes — adding a 2nd line changes 2 parts to 4 parts, changing halves to fourths'},{val:'No — it is still halves with more lines',tag:_55PC},{val:'No — more lines just make more equal shapes',tag:_55SP},{val:'Yes — but only for circles',tag:_55SP}], a:0, e:'Adding a 2nd perpendicular line doubles the number of parts: 2 → 4. Halves becomes fourths.', d:'h', h:'How many parts does each circle have?', sk:'equal_parts_halves_fourths', i:_i55PC('Picture A: 1 line → 2 parts = halves. Picture B: 2 lines → 4 parts = fourths. More lines = more parts = new name.')},
+  {t:'A teacher asks: "Can a square show halves in more than one way?" What is the answer?', s:_svgRow2(_svgHalfSquareH(),_svgHalfSquareV()), o:[{val:'Yes — vertical and horizontal cuts both make halves'},{val:'No — only one correct way exists',tag:_55SP},{val:'No — squares can only show fourths',tag:_55WN},{val:'Yes — but only one of these pictures shows halves',tag:_55EQ}], a:0, e:'Both cuts go through the center making 2 equal parts. Both show halves — direction does not matter.', d:'h', h:'Are both squares cut in the middle?', sk:'equal_parts_halves_fourths', i:_i55SP('Both cuts are through the center. Both make 2 equal parts. A square CAN show halves in more than one way.')}
+];
+
+// ── L5.5 C9: Error repair (8H = 8) ──────────────────────────────────────────
+var _l55C9 = [
+  {t:'A student sees this circle and says "It has 2 parts, so it must be halves." What is wrong?', s:_svgUneqHalfCircle(), o:[{val:'The student forgot to check that both parts are equal'},{val:'The student is right — 2 parts is all you need for halves',tag:_55NE},{val:'Halves needs more than 2 parts',tag:_55PC},{val:'Circles cannot show halves',tag:_55SP}], a:0, e:'Halves = 2 parts AND both equal. The student only checked the count, not the size.', d:'h', h:'What are the two requirements for halves?', sk:'equal_parts_halves_fourths', i:_i55NE('Two requirements for halves: (1) 2 parts, AND (2) both parts equal. The student missed requirement 2.')},
+  {t:'A student says "The parts look almost equal, so this is halves." What is wrong?', s:_svgUneqHalfSquare(), o:[{val:'"Almost equal" is not the same as "equal" — the parts must be exactly the same size'},{val:'The student is right — almost equal is close enough',tag:_55NE},{val:'The student used the wrong shape',tag:_55SP},{val:'The student should count to 4, not 2',tag:_55PC}], a:0, e:'Halves requires parts to be exactly equal. "Almost" still means unequal.', d:'h', h:'Is "almost equal" the same as "equal"?', sk:'equal_parts_halves_fourths', i:_i55UP('"Almost equal" still means UNEQUAL. The line is off-center. For halves, both parts must be exactly the same size.')},
+  {t:'A student says "A square can only show halves one way — the horizontal cut." What should you tell the student?', s:_svgRow2(_svgHalfSquareH(),_svgHalfSquareV()), o:[{val:'Both cuts show halves — equal parts matter, not direction'},{val:'The student is right — only horizontal cuts are halves',tag:_55SP},{val:'The student is right — only vertical cuts are halves',tag:_55SP},{val:'Neither cut shows halves',tag:_55EQ}], a:0, e:'Any cut through the center makes 2 equal parts. Direction does not change the name.', d:'h', h:'What determines the name — direction or equal parts?', sk:'equal_parts_halves_fourths', i:_i55SP('Direction does NOT matter. Any midline cut makes 2 equal parts = halves. Both pictures show halves.')},
+  {t:'A student counts 4 parts in this square and says "These are fourths!" What might be wrong?', s:_svgUneqFourthSquare(), o:[{val:'The student needs to check that all 4 parts are equal — these parts are not equal'},{val:'Nothing — the student is correct',tag:_55NE},{val:'The student needs to count again — there are only 2 parts',tag:_55PC},{val:'Fourths is only for circles',tag:_55SP}], a:0, e:'The student counted correctly (4 parts) but forgot step 2: check that all 4 are equal. They are not.', d:'h', h:'What is step 2 after counting 4 parts?', sk:'equal_parts_halves_fourths', i:_i55NE('Count 4 parts (step 1) ✓. Check all are equal (step 2) ✗. The off-center lines make unequal parts — NOT fourths.')},
+  {t:'A student says "To show fourths I need exactly 4 lines." Is the student right?', s:_svgFourthRectV(), o:[{val:'No — 3 lines make 4 equal parts; you need one fewer line than parts'},{val:'Yes — 4 lines make 4 parts',tag:_55PC},{val:'Yes — lines and parts are always the same number',tag:_55PC},{val:'No — you need 2 lines for fourths',tag:_55PC}], a:0, e:'Lines + 1 = parts. For 4 parts you need 3 lines. This rectangle shows 3 lines → 4 equal parts = fourths.', d:'h', h:'Count the lines in this rectangle. How many parts do they make?', sk:'equal_parts_halves_fourths', i:_i55PC('Count: 3 lines make 4 parts. Number of lines + 1 = number of parts. For fourths (4 parts), you need 3 lines.')},
+  {t:'A student says "Halves and fourths are the same because both have equal parts." What is wrong?', s:_svgRow2(_svgHalfCircleV(),_svgFourthCircle()), o:[{val:'Both have equal parts, but halves has 2 equal parts and fourths has 4 — they are different'},{val:'The student is right — both are equal, so they are the same',tag:_55HF},{val:'Halves does not have equal parts',tag:_55EQ},{val:'Fourths does not have equal parts',tag:_55EQ}], a:0, e:'Both require equal parts — but the NUMBER of parts is different. 2 equal parts = halves. 4 equal parts = fourths.', d:'h', h:'What is different between halves and fourths?', sk:'equal_parts_halves_fourths', i:_i55HF('Both require equal parts — but count differs: halves = 2 equal parts, fourths = 4 equal parts. Count first.')},
+  {t:'A student sees this rectangle and says "I cut it 4 times, so it shows fourths." What is the error?', s:_svgFourthRectV(), o:[{val:'The number of cuts (lines) is not the same as the number of parts — 3 lines make 4 parts'},{val:'The student is right — 4 cuts make fourths',tag:_55PC},{val:'Rectangles cannot show fourths',tag:_55SP},{val:'The student cut it too many times',tag:_55PC}], a:0, e:'The student confused lines with parts. Count the lines: 3. Count the parts: 4. Lines + 1 = parts.', d:'h', h:'Count the lines. How many parts do the lines make?', sk:'equal_parts_halves_fourths', i:_i55PC('The student counted lines but should count parts. 3 lines make 4 parts. Parts + not lines = the name.')},
+  {t:'A student asks: "If I cut a rectangle into halves and then cut the halves again, do I still have halves?" What is the answer?', s:_svgRow2(_svgHalfRectV(),_svgFourthRectV()), o:[{val:'No — cutting the halves again makes fourths (4 equal parts)'},{val:'Yes — any cut makes halves',tag:_55NE},{val:'Yes — you doubled the halves so it is still halves',tag:_55PC},{val:'No — cutting again makes thirds',tag:_55WN}], a:0, e:'Picture A shows halves (2 equal parts). Cutting each half again makes Picture B: 4 equal parts = fourths.', d:'h', h:'Count the parts in Picture B. Is that still 2 equal parts?', sk:'equal_parts_halves_fourths', i:_i55PC('Cutting halves again doubles the parts: 2 → 4. Four equal parts is fourths, not halves.')}
+];
+
+// ── L5.5 C10: Mixed review (2E + 10H = 12) ───────────────────────────────────
+var _l55C10 = [
+  // Easy 1-2
+  {t:'What does this circle show?', s:_svgHalfCircleV(), o:[{val:'Halves — 2 equal parts'},{val:'Fourths — 4 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'One line through the center makes 2 equal parts — halves.', d:'e', h:'Count the equal parts.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal parts = halves. Fourths would need 4 equal parts.')},
+  {t:'What does this square show?', s:_svgFourthSquare(), o:[{val:'Fourths — 4 equal parts'},{val:'Halves — 2 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'Two crossing lines make 4 equal parts — fourths.', d:'e', h:'Count all the equal sections.', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2, 3, 4. Four equal parts = fourths. Halves would only have 2 equal parts.')},
+  // Hard 3-12
+  {t:'What does this circle show?', s:_svgUneqHalfCircle(), o:[{val:'Unequal parts — not halves or fourths'},{val:'Halves — 2 equal parts',tag:_55UP},{val:'Fourths — 4 equal parts',tag:_55PC},{val:'Halves and fourths',tag:_55NE}], a:0, e:'The line is off-center — one part is bigger. The parts are NOT equal, so this is not halves.', d:'h', h:'Is the line in the center? Are both parts the same size?', sk:'equal_parts_halves_fourths', i:_i55UP('The line is not through the center. One part is bigger. Unequal parts = NOT halves or fourths.')},
+  {t:'What does this circle show?', s:_svgFourthCircle(), o:[{val:'Fourths — 4 equal parts'},{val:'Halves — 2 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'Two crossing diameters make 4 equal parts — fourths.', d:'h', h:'Count the equal sections.', sk:'equal_parts_halves_fourths', i:_i55HF('Two lines cross to make 4 equal parts. That is fourths, not halves.')},
+  {t:'What does this square show?', s:_svgHalfSquareV(), o:[{val:'Halves — 2 equal parts'},{val:'Fourths — 4 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'One vertical midline makes 2 equal parts — halves.', d:'h', h:'Count the equal parts. Are they equal?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2. Two equal parts = halves. The midline goes through the center.')},
+  {t:'What does this square show?', s:_svgUneqFourthSquare(), o:[{val:'Unequal parts — not halves or fourths'},{val:'Fourths — 4 equal parts',tag:_55NE},{val:'Halves — 2 equal parts',tag:_55PC},{val:'Halves and fourths',tag:_55NE}], a:0, e:'There are 4 parts but the lines are off-center — the parts are not all equal. Not fourths.', d:'h', h:'Are all 4 parts exactly the same size?', sk:'equal_parts_halves_fourths', i:_i55NE('Four parts but NOT all equal. Fourths needs 4 EQUAL parts. Off-center lines make unequal parts.')},
+  {t:'What does this rectangle show?', s:_svgHalfRectH(), o:[{val:'Halves — 2 equal parts'},{val:'Fourths — 4 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'The midline divides the rectangle into 2 equal rows — halves.', d:'h', h:'How many equal parts are shown?', sk:'equal_parts_halves_fourths', i:_i55HF('Count: 1, 2 equal rows. Two equal parts = halves.')},
+  {t:'What does this rectangle show?', s:_svgFourthRectV(), o:[{val:'Fourths — 4 equal parts'},{val:'Halves — 2 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'Three evenly spaced lines make 4 equal columns — fourths.', d:'h', h:'Count the equal columns.', sk:'equal_parts_halves_fourths', i:_i55HF('Count the columns: 1, 2, 3, 4. Three evenly spaced lines make 4 equal parts = fourths.')},
+  {t:'What does this shape show?', s:_svgUneqHalfSquare(), o:[{val:'Unequal parts — not halves or fourths'},{val:'Halves — 2 equal parts',tag:_55UP},{val:'Fourths — 4 equal parts',tag:_55PC},{val:'Halves and fourths',tag:_55NE}], a:0, e:'The line is off to one side — one piece is bigger than the other. Unequal parts.', d:'h', h:'Is the dividing line in the middle?', sk:'equal_parts_halves_fourths', i:_i55UP('The line is NOT in the middle. One piece is bigger. Unequal parts = NOT halves or fourths.')},
+  {t:'What does this shape show?', s:_svgUneqFourthRect(), o:[{val:'Unequal parts — not halves or fourths'},{val:'Fourths — 4 equal parts',tag:_55NE},{val:'Halves — 2 equal parts',tag:_55PC},{val:'Halves and fourths',tag:_55NE}], a:0, e:'Three lines make 4 parts, but the lines are unevenly spaced — the parts are different widths.', d:'h', h:'Are all 4 columns the same width?', sk:'equal_parts_halves_fourths', i:_i55NE('Four parts but the widths are different. Fourths needs 4 EQUAL parts. These are unequal parts.')},
+  {t:'What does this square show?', s:_svgHalfSquareH(), o:[{val:'Halves — 2 equal parts'},{val:'Fourths — 4 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'A horizontal midline makes 2 equal parts — halves. Direction does not change the name.', d:'h', h:'Is the line in the middle? How many equal parts?', sk:'equal_parts_halves_fourths', i:_i55HF('The horizontal midline makes 2 equal parts = halves. The cut direction does not change the name.')},
+  {t:'What does this rectangle show?', s:_svgFourthRectH(), o:[{val:'Fourths — 4 equal parts'},{val:'Halves — 2 equal parts',tag:_55HF},{val:'Unequal parts',tag:_55EQ},{val:'Halves and fourths',tag:_55NE}], a:0, e:'Three evenly spaced horizontal lines make 4 equal rows — fourths.', d:'h', h:'Count the equal rows.', sk:'equal_parts_halves_fourths', i:_i55HF('Count the rows: 1, 2, 3, 4. Three evenly spaced lines make 4 equal parts = fourths.')}
+];
+
+// ── L5.5 key ideas ────────────────────────────────────────────────────────────
+var _l55KeyIdeas = [
+  'Equal parts means every piece is the same size — no piece is bigger or smaller than any other piece.',
+  'When a shape is split into 2 equal parts, the two parts are called halves. Each part is one half.',
+  'When a shape is split into 4 equal parts, the four parts are called fourths (also called quarters). Each part is one fourth.',
+  'To check if parts are equal, look at the dividing line — it must split the shape so that all pieces are the same size.',
+  'A shape can be split into halves or fourths in more than one way. As long as all parts are equal, it shows halves or fourths.',
+  'If a shape is split into 2 or 4 parts but the parts are NOT the same size, it does NOT show halves or fourths — those are unequal parts.'
+];
+
+// ── L5.5 worked examples ───────────────────────────────────────────────────────
+var _l55Examples = [
+  {
+    id: 'g1-u5-l5-ex-1',
+    title: 'Example 1: Name the halves',
+    prompt: 'A circle is cut into 2 equal parts. What are the two parts called?',
+    steps: [
+      'Count the parts: touch each piece — 1 … 2.',
+      'Are both parts the same size? Yes — the line goes through the center.',
+      'When you have 2 equal parts of a shape, the parts are called halves.',
+      'Two equal parts = halves.'
+    ],
+    finalAnswer: 'The two equal parts are called halves.'
+  },
+  {
+    id: 'g1-u5-l5-ex-2',
+    title: 'Example 2: Name the fourths',
+    prompt: 'A rectangle is split into 4 equal parts. What are the parts called?',
+    steps: [
+      'Count the parts: touch each column — 1, 2, 3, 4.',
+      'Are all parts the same size? Yes — the 3 lines are evenly spaced.',
+      'When you have 4 equal parts of a shape, the parts are called fourths.',
+      'Four equal parts = fourths.'
+    ],
+    finalAnswer: 'The four equal parts are called fourths.'
+  },
+  {
+    id: 'g1-u5-l5-ex-3',
+    title: 'Example 3: Which square shows halves?',
+    prompt: 'One square has a line in the middle. Another has a line off to the side. Which one shows halves?',
+    steps: [
+      'Look at the first square: the line is in the MIDDLE.',
+      'Both parts look the same size — those are equal parts.',
+      'Look at the second square: the line is NOT in the middle. One part is bigger.',
+      'Those are NOT equal parts.',
+      'The first square shows halves; the second does not.'
+    ],
+    finalAnswer: 'The square with the line in the middle shows halves — both parts are equal in size.'
+  },
+  {
+    id: 'g1-u5-l5-ex-4',
+    title: 'Example 4: Two parts but not halves',
+    prompt: 'A circle is cut into 2 parts, but one part is bigger. Is this halves?',
+    steps: [
+      'Count the parts: 2 parts.',
+      'Are the parts the same size? No — one is bigger than the other.',
+      'Halves means the 2 parts MUST be the same size.',
+      'These parts are not equal — this is NOT halves.'
+    ],
+    finalAnswer: 'No — the parts are not equal, so this is not halves.'
+  },
+  {
+    id: 'g1-u5-l5-ex-5',
+    title: 'Example 5: Count the parts on a square',
+    prompt: 'A square has 2 lines crossing it. How many equal parts does it show?',
+    steps: [
+      'Count each piece: 1, 2, 3, 4.',
+      'There are 4 parts.',
+      'Are all parts the same size? Yes — both lines cross in the center.',
+      '4 equal parts = fourths.'
+    ],
+    finalAnswer: 'The square shows 4 equal parts — those are fourths.'
+  },
+  {
+    id: 'g1-u5-l5-ex-6',
+    title: 'Example 6: Two ways to make halves',
+    prompt: 'A square can be split into halves with a vertical cut OR a horizontal cut. What matters most?',
+    steps: [
+      'Picture A: line goes across (horizontal). 2 equal parts.',
+      'Picture B: line goes up-down (vertical). 2 equal parts.',
+      'Both show halves — because BOTH have 2 parts that are the same size.',
+      'The direction of the cut does not matter.',
+      'What matters is that the parts are equal in size.'
+    ],
+    finalAnswer: 'Both show halves. Direction of the cut does not matter — equal size does.'
+  }
+];
+
+// ── L5.5 bank assembly ────────────────────────────────────────────────────────
+var _l55Bank = _colorizeQ([].concat(
+  _l55C1, _l55C2, _l55C3, _l55C4, _l55C5,
+  _l55C6, _l55C7, _l55C8, _l55C9, _l55C10
+));
+
 
 export const G1_U5_SPEC = {
   unitId: 'g1u5',
@@ -2922,10 +3610,13 @@ export const G1_U5_SPEC = {
         interventionRules: []
       }
     },
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 5.5 — Equal Parts — Halves and Fourths (scaffold, 0 questions)
-    //  TEKS 1.6G, 1.6H
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Lesson 5.5 — Equal Parts — Halves and Fourths
+    //  TEKS 1.6G, 1.6H | 155 questions (50E / 60M / 45H)
+    //  10 categories: C1 name halves, C2 name fourths, C3 equal vs unequal,
+    //    C4 non-examples halves, C5 non-examples fourths, C6 count parts,
+    //    C7 match description, C8 same shape diff partition,
+    //    C9 error repair, C10 mixed review
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u5-l5',
@@ -2933,12 +3624,12 @@ export const G1_U5_SPEC = {
       teks: ['1.6G', '1.6H'],
       skill: 'equal_parts_halves_fourths',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
+      keyIdeas: _l55KeyIdeas,
+      workedExamples: _l55Examples,
+      quizBank: _l55Bank,
       diagnostics: {
-        commonDistractors: [],
-        errorTags: [],
+        commonDistractors: [_55WN, _55PC, _55UP, _55EQ, _55HF, _55SP, _55NE],
+        errorTags: [_55WN, _55PC, _55UP, _55EQ, _55HF, _55SP, _55NE],
         interventionRules: []
       }
     }
