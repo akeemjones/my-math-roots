@@ -221,6 +221,7 @@ function _g1VisToV(vis) {
                           rightObj:   vis.rightObj || '●',
                           op:         vis.op       || 'add'
                         }};
+    case 'rawHtml':     return { type: 'rawHtml',  config: { html: vis.html || '' } };
     default:            return null;
   }
 }

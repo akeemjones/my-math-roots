@@ -248,6 +248,7 @@ function _buildVisualHTML(v) {
   if (v.type === 'objectSet')    return drawObjectSet(v.config, null);
   if (v.type === 'twoGroups')    return drawTwoGroups(v.config);
   if (v.type === 'shapes')       return drawShapes(v.config);
+  if (v.type === 'rawHtml')      return '<div class="vis-box">' + (v.config.html || '') + '</div>';
   if (v.type === 'numberCards')  return drawNumberCards(v.config);
   let svg = '';
   if      (v.type === 'base10')     svg = drawBase10(v.config);
