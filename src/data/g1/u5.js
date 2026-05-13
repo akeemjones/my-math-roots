@@ -3443,6 +3443,7 @@ var _l55Examples = [
     id: 'g1-u5-l5-ex-1',
     title: 'Example 1: Name the halves',
     prompt: 'A circle is cut into 2 equal parts. What are the two parts called?',
+    visual: {type: 'rawHtml', html: _svgHalfCircleV()},
     steps: [
       'Count the parts: touch each piece — 1 … 2.',
       'Are both parts the same size? Yes — the line goes through the center.',
@@ -3455,6 +3456,7 @@ var _l55Examples = [
     id: 'g1-u5-l5-ex-2',
     title: 'Example 2: Name the fourths',
     prompt: 'A rectangle is split into 4 equal parts. What are the parts called?',
+    visual: {type: 'rawHtml', html: _svgFourthRectV()},
     steps: [
       'Count the parts: touch each column — 1, 2, 3, 4.',
       'Are all parts the same size? Yes — the 3 lines are evenly spaced.',
@@ -3467,22 +3469,23 @@ var _l55Examples = [
     id: 'g1-u5-l5-ex-3',
     title: 'Example 3: Which square shows halves?',
     prompt: 'One square has a line in the middle. Another has a line off to the side. Which one shows halves?',
+    visual: {type: 'rawHtml', html: _svgRow2L(_svgHalfSquareV(), _svgUneqHalfSquare())},
     steps: [
-      'Look at the first square: the line is in the MIDDLE.',
-      'Both parts look the same size — those are equal parts.',
-      'Look at the second square: the line is NOT in the middle. One part is bigger.',
-      'Those are NOT equal parts.',
-      'The first square shows halves; the second does not.'
+      'Look at Picture A: the line is in the MIDDLE — both parts are the same size. ✓',
+      'Look at Picture B: the line is NOT in the middle — one part is bigger. ✗',
+      'Equal parts = halves. Unequal parts ≠ halves.',
+      'Picture A shows halves; Picture B does not.'
     ],
-    finalAnswer: 'The square with the line in the middle shows halves — both parts are equal in size.'
+    finalAnswer: 'Picture A shows halves — the line is in the middle, so both parts are equal in size.'
   },
   {
     id: 'g1-u5-l5-ex-4',
     title: 'Example 4: Two parts but not halves',
     prompt: 'A circle is cut into 2 parts, but one part is bigger. Is this halves?',
+    visual: {type: 'rawHtml', html: _svgUneqHalfCircle()},
     steps: [
       'Count the parts: 2 parts.',
-      'Are the parts the same size? No — one is bigger than the other.',
+      'Are the parts the same size? No — the line is off to one side. One part is bigger.',
       'Halves means the 2 parts MUST be the same size.',
       'These parts are not equal — this is NOT halves.'
     ],
@@ -3492,6 +3495,7 @@ var _l55Examples = [
     id: 'g1-u5-l5-ex-5',
     title: 'Example 5: Count the parts on a square',
     prompt: 'A square has 2 lines crossing it. How many equal parts does it show?',
+    visual: {type: 'rawHtml', html: _svgFourthSquare()},
     steps: [
       'Count each piece: 1, 2, 3, 4.',
       'There are 4 parts.',
@@ -3504,6 +3508,7 @@ var _l55Examples = [
     id: 'g1-u5-l5-ex-6',
     title: 'Example 6: Two ways to make halves',
     prompt: 'A square can be split into halves with a vertical cut OR a horizontal cut. What matters most?',
+    visual: {type: 'rawHtml', html: _svgRow2L(_svgHalfSquareH(), _svgHalfSquareV())},
     steps: [
       'Picture A: line goes across (horizontal). 2 equal parts.',
       'Picture B: line goes up-down (vertical). 2 equal parts.',
