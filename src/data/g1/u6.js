@@ -1461,6 +1461,726 @@ var _l62C8 = [
 var _l62Bank = [].concat(_l62C1, _l62C2, _l62C3, _l62C4, _l62C5, _l62C6, _l62C7, _l62C8);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.3 — Comparing Measurements
+//  TEKS 1.7C | 135 questions (45E / 55M / 35H)
+//  Scope: same object measured with two different-size units; both fair.
+//  No fraction/ratio language in student-facing strings (no "half", "twice",
+//  "1:2") — use only "bigger", "smaller", "more", "fewer".
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L6.3 error tags ──────────────────────────────────────────────────────────
+var _63BF = 'err_bigger_unit_fewer_count';
+var _63SM = 'err_smaller_unit_more_count';
+var _63TW = 'err_thinks_different_counts_wrong';
+var _63CN = 'err_compares_numbers_only';
+var _63US = 'err_unit_size_confusion';
+var _63SO = 'err_same_object_confusion';
+var _63PD = 'err_prediction_direction_confusion';
+var _63EX = 'err_explanation_confusion';
+
+// ── L6.3 SVG helpers: small (half-width) unit drawers ────────────────────────
+// Each small unit is 14px wide (half of standard 28px). Bottom-aligned with
+// the standard train baseline so big and small units rest on the same floor.
+function _u6SmallCube(x, y) {
+  return '<rect x="' + (x + 1) + '" y="' + (y + 15) + '" width="12" height="12" rx="2" ' +
+    'fill="#BBDEFB" stroke="#1976D2" stroke-width="2"/>';
+}
+function _u6SmallClip(x, y) {
+  return '<g stroke="#37474F" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="' + (x + 2)  + '" y="' + (y + 14) + '" width="10" height="14" rx="4" ry="4"/>' +
+    '<rect x="' + (x + 4)  + '" y="' + (y + 10) + '" width="6"  height="14" rx="2" ry="2"/>' +
+    '</g>';
+}
+function _u6SmallTile(x, y) {
+  return '<rect x="' + (x + 1) + '" y="' + (y + 14) + '" width="12" height="10" rx="2" ' +
+    'fill="#D7CCC8" stroke="#6D4C41" stroke-width="2"/>';
+}
+function _u6SmallBlock(x, y) {
+  return '<rect x="' + (x + 1) + '" y="' + (y - 2) + '" width="12" height="32" rx="3" ' +
+    'fill="#FFCCBC" stroke="#E64A19" stroke-width="2"/>';
+}
+var _u6SmallUnitDrawers = {
+  cube: _u6SmallCube, clip: _u6SmallClip, tile: _u6SmallTile, block: _u6SmallBlock
+};
+
+// _u6SmallTrain(unit, n) — row of n small units, 14px wide each, starting x=8.
+function _u6SmallTrain(unit, n) {
+  var draw = _u6SmallUnitDrawers[unit];
+  var s = '';
+  for (var i = 0; i < n; i++) s += draw(8 + i * 14, 38);
+  return s;
+}
+
+// _u6SmallPic(obj, unit, smallN) — object + small-unit train; canvas matches
+// what _u6Pic would produce for bigN = smallN/2 (so widths align).
+function _u6SmallPic(obj, unit, smallN) {
+  var objW = smallN * 14;
+  var canvasW = objW + 16;
+  return '<svg viewBox="0 0 ' + canvasW + ' 72" width="100%" style="max-width:' + canvasW +
+    'px;display:block;margin:0 auto">' + _u6ObjAtW(obj, objW) + _u6SmallTrain(unit, smallN) + '</svg>';
+}
+
+// ── L6.3 SVG helpers: composite "same object, two unit sizes" ────────────────
+// _u6TwoSizeMeasure shows the SAME object measured two ways: top row uses big
+// units (28px); bottom row uses small units (14px). bigN big units = 2*bigN
+// small units; both rows span the identical object length.
+function _u6TwoSizeMeasure(obj, unit, bigN) {
+  var smallN = bigN * 2;
+  var um = _u6UnitMeta[unit];
+  var topSvg = _u6Pic(obj, unit, bigN);
+  var bottomSvg = _u6SmallPic(obj, unit, smallN);
+  return '<div style="display:flex;flex-direction:column;gap:8px;padding:4px">' +
+    '<div style="text-align:center;padding:6px;border:2px solid #B0BEC5;border-radius:6px;background:#fff">' +
+    '<div style="font-size:13px;color:#5a7080;margin-bottom:4px;font-weight:700">Big ' + um.plur + ': ' + bigN + '</div>' +
+    topSvg + '</div>' +
+    '<div style="text-align:center;padding:6px;border:2px solid #B0BEC5;border-radius:6px;background:#fff">' +
+    '<div style="font-size:13px;color:#5a7080;margin-bottom:4px;font-weight:700">Small ' + um.plur + ': ' + smallN + '</div>' +
+    bottomSvg + '</div>' +
+    '</div>';
+}
+
+// _u6TwoSizeMeasureAB — same visual but with A/B labels (for C6 questions
+// where the student must DEDUCE which has bigger units from the counts).
+function _u6TwoSizeMeasureAB(obj, unit, bigN, swap) {
+  var smallN = bigN * 2;
+  var topSvg = _u6Pic(obj, unit, bigN);
+  var bottomSvg = _u6SmallPic(obj, unit, smallN);
+  // If swap is true, put the small train on top (Picture A = small, B = big)
+  var aSvg = swap ? bottomSvg : topSvg;
+  var bSvg = swap ? topSvg : bottomSvg;
+  var aCount = swap ? smallN : bigN;
+  var bCount = swap ? bigN : smallN;
+  return '<div style="display:flex;flex-direction:column;gap:8px;padding:4px">' +
+    '<div style="text-align:center;padding:6px;border:2px solid #B0BEC5;border-radius:6px;background:#fff">' +
+    '<div style="font-size:15px;color:#333;margin-bottom:4px;font-weight:800">A — ' + aCount + ' units</div>' +
+    aSvg + '</div>' +
+    '<div style="text-align:center;padding:6px;border:2px solid #B0BEC5;border-radius:6px;background:#fff">' +
+    '<div style="font-size:15px;color:#333;margin-bottom:4px;font-weight:800">B — ' + bCount + ' units</div>' +
+    bSvg + '</div>' +
+    '</div>';
+}
+
+// _u6UnitSizePair — inset showing one big unit and one small unit side-by-side
+// with "Big" / "Small" labels. Used by C2/C3 (unit-only choice questions).
+function _u6UnitSizePair(unit) {
+  var bigSvg = _u6UnitDrawers[unit](8, 38);
+  var smallSvg = _u6SmallUnitDrawers[unit](56, 38);
+  return '<svg viewBox="0 0 84 78" width="100%" style="max-width:240px;display:block;margin:0 auto">' +
+    bigSvg + smallSvg +
+    '<text x="22" y="74" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Big</text>' +
+    '<text x="63" y="74" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Small</text>' +
+    '</svg>';
+}
+
+// _u6PredictPic — original measurement on top + instruction strip about which
+// kind of unit to switch to. Used by C8 (predict count direction).
+function _u6PredictPic(obj, unit, bigN, switchTo) {
+  var um = _u6UnitMeta[unit];
+  var origLabel = switchTo === 'smaller'
+    ? 'Now switch to <b>SMALLER</b> ' + um.plur + '. Will the count go UP or DOWN?'
+    : 'Now switch to <b>BIGGER</b> ' + um.plur + '. Will the count go UP or DOWN?';
+  return '<div style="padding:4px">' +
+    '<div style="text-align:center;padding:6px;border:2px solid #B0BEC5;border-radius:6px;background:#fff">' +
+    '<div style="font-size:13px;color:#5a7080;margin-bottom:4px;font-weight:700">' + bigN + ' ' + um.plur + ' long</div>' +
+    _u6Pic(obj, unit, bigN) + '</div>' +
+    '<div style="text-align:center;font-size:13px;color:#37474F;margin-top:8px;padding:6px;background:#FFF8E1;border-radius:6px;line-height:1.4">' +
+    origLabel + '</div>' +
+    '</div>';
+}
+
+// ── L6.3 teaching visuals (for intervention overlays) ────────────────────────
+function _u6TvBiggerFewer() {
+  return _u6TvWrap(_u6TwoSizeMeasure('pencil', 'cube', 3),
+    'Top: 3 big cubes. Bottom: 6 small cubes. Bigger units, fewer needed.');
+}
+function _u6TvSmallerMore() {
+  return _u6TvWrap(_u6TwoSizeMeasure('ribbon', 'cube', 4),
+    'Top: 4 big cubes. Bottom: 8 small cubes. Smaller units, more needed.');
+}
+function _u6TvBothCorrect() {
+  return _u6TvWrap(_u6TwoSizeMeasure('marker', 'tile', 3),
+    'Same marker, different units. Both counts are correct.');
+}
+function _u6TvLookAtUnits() {
+  return _u6TvWrap(_u6TwoSizeMeasure('stick', 'block', 4),
+    'A bigger count means the units are smaller — not that the object is bigger.');
+}
+function _u6TvSameObj() {
+  return _u6TvWrap(_u6TwoSizeMeasure('book', 'tile', 3),
+    'The book is the same in both rows. Only the units changed.');
+}
+function _u6TvInverse() {
+  return _u6TvWrap(_u6TwoSizeMeasure('crayon', 'cube', 3),
+    'Bigger units → fewer count. Smaller units → more count.');
+}
+function _u6TvPredict() {
+  return _u6TvWrap(_u6UnitSizePair('cube'),
+    'If the new unit is bigger, count goes DOWN. If smaller, count goes UP.');
+}
+
+// ── L6.3 intervention factories ──────────────────────────────────────────────
+function _i63BF() { return {
+  errorTag: _63BF, title: 'Bigger units, fewer of them',
+  teachingSteps: [
+    'A bigger unit covers more space.',
+    'So you only need a few of them to cover the object.',
+    'With bigger units, the count goes DOWN.',
+    'Look at the unit size first, then look at the count.'
+  ],
+  teachingVisualRaw: _u6TvBiggerFewer(),
+  correctAnswerExplanation: 'Bigger units cover more space, so fewer are needed to measure the same object.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63SM() { return {
+  errorTag: _63SM, title: 'Smaller units, more of them',
+  teachingSteps: [
+    'A smaller unit covers less space.',
+    'So you need more of them to cover the object.',
+    'With smaller units, the count goes UP.',
+    'Look at the unit size first, then look at the count.'
+  ],
+  teachingVisualRaw: _u6TvSmallerMore(),
+  correctAnswerExplanation: 'Smaller units cover less space, so more are needed to measure the same object.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63Both() { return {
+  errorTag: _63TW, title: 'Both can be correct',
+  teachingSteps: [
+    'Look at the object — it is the same in both rows.',
+    'Both measurements are fair: same-size units in each row, no gaps, no overlaps.',
+    'The unit sizes are different, so the counts are different.',
+    'Both numbers are correct for what they measure.'
+  ],
+  teachingVisualRaw: _u6TvBothCorrect(),
+  correctAnswerExplanation: 'Different counts can both be correct when the units are different sizes.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63Units() { return {
+  errorTag: _63CN, title: 'Compare the units, not just the numbers',
+  teachingSteps: [
+    'A bigger count does NOT mean the object is bigger.',
+    'It means the units are smaller.',
+    'A smaller count does NOT mean the object is smaller.',
+    'It means the units are bigger.'
+  ],
+  teachingVisualRaw: _u6TvLookAtUnits(),
+  correctAnswerExplanation: 'Compare the unit sizes too — not just the numbers.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63SameObj() { return {
+  errorTag: _63SO, title: 'Same object — different units',
+  teachingSteps: [
+    'Look closely: the object is the same in both pictures.',
+    'Only the units changed — bigger in one row, smaller in the other.',
+    'The object did not grow or shrink.',
+    'Different units give different counts for the same object.'
+  ],
+  teachingVisualRaw: _u6TvSameObj(),
+  correctAnswerExplanation: 'The object stays the same. Different units cause different counts.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63Inverse() { return {
+  errorTag: _63US, title: 'Bigger count means smaller units',
+  teachingSteps: [
+    'Two measurements of the same object.',
+    'The picture with MORE units is using SMALLER units.',
+    'The picture with FEWER units is using BIGGER units.',
+    'You can tell the unit size from the count.'
+  ],
+  teachingVisualRaw: _u6TvInverse(),
+  correctAnswerExplanation: 'For the same object, a bigger count means smaller units; a smaller count means bigger units.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+function _i63Predict() { return {
+  errorTag: _63PD, title: 'Predict the count direction',
+  teachingSteps: [
+    'Decide if the new unit is BIGGER or SMALLER than the old one.',
+    'Bigger unit → count goes DOWN (fewer needed).',
+    'Smaller unit → count goes UP (more needed).',
+    'Match the unit size change to the count direction.'
+  ],
+  teachingVisualRaw: _u6TvPredict(),
+  correctAnswerExplanation: 'Bigger new units make the count smaller. Smaller new units make the count bigger.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// Maps L6.3 error type to intervention factory.
+function _i63For(errorType) {
+  if (errorType === 'BF')       return _i63BF();
+  if (errorType === 'SM')       return _i63SM();
+  if (errorType === 'TW')       return _i63Both();
+  if (errorType === 'CN')       return _i63Units();
+  if (errorType === 'SO')       return _i63SameObj();
+  if (errorType === 'US')       return _i63Inverse();
+  if (errorType === 'PD')       return _i63Predict();
+  return _i63Both();
+}
+
+// ── L6.3 question factory functions ──────────────────────────────────────────
+
+// _q63WhyDiffer — C1: show 2-row picture; ask why the counts differ.
+function _q63WhyDiffer(obj, unit, bigN, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var smallN = bigN * 2;
+  var opts = [
+    {val: 'The bottom row uses smaller ' + um.plur + ', so more of them are needed.'},
+    {val: 'The bottom measurement is wrong.', tag: _63TW},
+    {val: 'The objects are different lengths.', tag: _63SO},
+    {val: 'The bottom row counted some ' + um.plur + ' two times.', tag: _63EX}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'The same ' + oname + ' was measured two ways. Why are the counts different?',
+    s: _u6TwoSizeMeasure(obj, unit, bigN),
+    o: opts, a: aIdx,
+    e: 'The bottom ' + um.plur + ' are smaller, so more are needed to cover the same ' + oname + '. Both counts are correct.',
+    d: diff,
+    h: 'The ' + oname + ' is the same in both rows. Look at the unit sizes.',
+    sk: 'compare_measurements',
+    i: _i63SM()
+  };
+}
+
+// _q63BiggerFewer — C2: pick which unit needs FEWER to measure.
+function _q63BiggerFewer(unit, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var opts = [
+    {val: 'The bigger ' + um.sing },
+    {val: 'The smaller ' + um.sing,        tag: _63BF},
+    {val: 'They need the same number',     tag: _63US},
+    {val: 'It depends on the object',      tag: _63CN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the two ' + um.plur + '. Which one would need FEWER to measure the same object?',
+    s: _u6UnitSizePair(unit),
+    o: opts, a: aIdx,
+    e: 'A bigger ' + um.sing + ' covers more space, so fewer are needed.',
+    d: diff,
+    h: 'A bigger unit covers more space.',
+    sk: 'compare_measurements',
+    i: _i63BF()
+  };
+}
+
+// _q63SmallerMore — C3: pick which unit needs MORE to measure.
+function _q63SmallerMore(unit, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var opts = [
+    {val: 'The smaller ' + um.sing },
+    {val: 'The bigger ' + um.sing,         tag: _63SM},
+    {val: 'They need the same number',     tag: _63US},
+    {val: 'It depends on the object',      tag: _63CN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the two ' + um.plur + '. Which one would need MORE to measure the same object?',
+    s: _u6UnitSizePair(unit),
+    o: opts, a: aIdx,
+    e: 'A smaller ' + um.sing + ' covers less space, so more are needed.',
+    d: diff,
+    h: 'A smaller unit covers less space.',
+    sk: 'compare_measurements',
+    i: _i63SM()
+  };
+}
+
+// _q63MatchExpl — C4: match the explanation sentence to the 2-row picture.
+function _q63MatchExpl(obj, unit, bigN, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var smallN = bigN * 2;
+  var opts = [
+    {val: 'The bigger ' + um.plur + ' cover more space, so fewer are needed.'},
+    {val: 'The smaller ' + um.plur + ' are wrong because there are more of them.', tag: _63TW},
+    {val: 'The bigger ' + um.plur + ' should always be used to measure.',          tag: _63CN},
+    {val: 'The ' + oname + ' must be different lengths in the two pictures.',      tag: _63SO}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'The same ' + oname + ' is measured with big ' + um.plur + ' and small ' + um.plur + '. Which sentence explains the picture?',
+    s: _u6TwoSizeMeasure(obj, unit, bigN),
+    o: opts, a: aIdx,
+    e: 'Bigger ' + um.plur + ' cover more space, so the top row needs fewer of them. Both counts are correct.',
+    d: diff,
+    h: 'Think about how big each unit is.',
+    sk: 'compare_measurements',
+    i: _i63BF()
+  };
+}
+
+// _q63TrueStatement — C5: choose the TRUE sentence about two measurements.
+function _q63TrueStatement(obj, unit, bigN, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var opts = [
+    {val: 'Both measurements can be correct because the units are different sizes.'},
+    {val: 'The first measurement is wrong because there are fewer ' + um.plur + '.', tag: _63TW},
+    {val: 'The bigger count is always more accurate.',                                tag: _63CN},
+    {val: 'One of them must be wrong.',                                               tag: _63TW}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Which sentence about the two measurements is true?',
+    s: _u6TwoSizeMeasure(obj, unit, bigN),
+    o: opts, a: aIdx,
+    e: 'Both measurements are correct. Each row uses same-size units, and the two unit sizes are different.',
+    d: diff,
+    h: 'Both rows are fair on their own.',
+    sk: 'compare_measurements',
+    i: _i63Both()
+  };
+}
+
+// _q63DeduceSize — C6: given two counts of the same object, deduce which has
+// bigger units.
+function _q63DeduceSize(obj, unit, bigN, swap, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var smallN = bigN * 2;
+  var aCount = swap ? smallN : bigN;
+  var bCount = swap ? bigN : smallN;
+  // The picture with FEWER units has BIGGER units
+  var correctLetter = (aCount < bCount) ? 'A' : 'B';
+  var wrongLetter = (aCount < bCount) ? 'B' : 'A';
+  var opts = [
+    {val: 'Picture ' + correctLetter + ' — fewer ' + um.plur + ' means bigger ' + um.plur + '.'},
+    {val: 'Picture ' + wrongLetter + ' — more ' + um.plur + ' means bigger ' + um.plur + '.', tag: _63US},
+    {val: 'They use the same ' + um.plur + '.',                                                tag: _63US},
+    {val: 'We cannot tell from this picture.',                                                 tag: _63CN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Both pictures show the same object measured with different ' + um.plur + '. Which picture uses BIGGER ' + um.plur + '?',
+    s: _u6TwoSizeMeasureAB(obj, unit, bigN, swap),
+    o: opts, a: aIdx,
+    e: 'The picture with FEWER ' + um.plur + ' uses BIGGER ' + um.plur + ' (fewer needed to cover the object).',
+    d: diff,
+    h: 'Fewer units = bigger units.',
+    sk: 'compare_measurements',
+    i: _i63Inverse()
+  };
+}
+
+// _q63ErrorRepair — C7: someone says one measurement must be wrong.
+function _q63ErrorRepair(obj, unit, bigN, person, otherPerson, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var smallN = bigN * 2;
+  var opts = [
+    {val: 'Both can be right when the units are different sizes.'},
+    {val: 'The bigger number is always wrong.',  tag: _63CN},
+    {val: 'The smaller number is always wrong.', tag: _63CN},
+    {val: 'They should count again.',            tag: _63TW}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
+       otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
+       person + ' says ' + otherPerson + ' must be wrong. What should we tell ' + person + '?',
+    s: _u6TwoSizeMeasure(obj, unit, bigN),
+    o: opts, a: aIdx,
+    e: 'Both can be right. ' + otherPerson + ' used smaller ' + um.plur + ', so more were needed. The ' + oname + ' is the same in both.',
+    d: diff,
+    h: 'Look at the unit sizes, not just the counts.',
+    sk: 'compare_measurements',
+    i: _i63Both()
+  };
+}
+
+// _q63Predict — C8: predict whether count goes UP or DOWN with new unit size.
+function _q63Predict(obj, unit, bigN, switchTo, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  // switchTo: 'smaller' → count goes UP; 'bigger' → count goes DOWN
+  var correctText, wrongText;
+  if (switchTo === 'smaller') {
+    correctText = 'UP — you need more ' + um.plur + ' because they are smaller.';
+    wrongText   = 'DOWN — you need fewer ' + um.plur + ' because they are smaller.';
+  } else {
+    correctText = 'DOWN — you need fewer ' + um.plur + ' because they are bigger.';
+    wrongText   = 'UP — you need more ' + um.plur + ' because they are bigger.';
+  }
+  var opts = [
+    {val: correctText},
+    {val: wrongText,                                                           tag: _63PD},
+    {val: 'The count stays the same.',                                         tag: _63US},
+    {val: 'It depends on the object.',                                         tag: _63CN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'A ' + _u6ObjName[obj] + ' is ' + bigN + ' big ' + um.plur + ' long. If you measure it with ' +
+       (switchTo === 'smaller' ? 'SMALLER' : 'BIGGER') + ' ' + um.plur + ', will the count go UP or DOWN?',
+    s: _u6PredictPic(obj, unit, bigN, switchTo),
+    o: opts, a: aIdx,
+    e: switchTo === 'smaller'
+       ? 'Smaller ' + um.plur + ' cover less space, so you need more of them — the count goes UP.'
+       : 'Bigger ' + um.plur + ' cover more space, so you need fewer of them — the count goes DOWN.',
+    d: diff,
+    h: 'Smaller units → more needed. Bigger units → fewer needed.',
+    sk: 'compare_measurements',
+    i: _i63Predict()
+  };
+}
+
+// ── L6.3 key ideas ────────────────────────────────────────────────────────────
+var _l63KeyIdeas = [
+  'The same object can be measured two ways — each row uses its own same-size units.',
+  'Bigger units cover more space, so fewer of them are needed.',
+  'Smaller units cover less space, so more of them are needed.',
+  'Both counts are correct when each measurement is fair on its own.',
+  'To compare two measurements, look at the units — not just the numbers.',
+  'If the count is bigger, the units are smaller. If the count is smaller, the units are bigger.'
+];
+
+// ── L6.3 worked examples ──────────────────────────────────────────────────────
+var _l63Examples = [
+  {
+    id: 'g1-u6-l3-ex-1',
+    title: 'Example 1: Same ribbon, big blocks vs small blocks',
+    prompt: 'A ribbon is measured with big blocks AND with small blocks. Why are the counts different?',
+    visual: {type: 'rawHtml', html: _u6TwoSizeMeasure('ribbon', 'block', 4)},
+    steps: [
+      'The ribbon is the same in both pictures — same length.',
+      'Top row: 4 big blocks fit along the ribbon.',
+      'Bottom row: 8 small blocks fit along the same ribbon.',
+      'The small blocks are smaller, so more of them are needed.'
+    ],
+    finalAnswer: 'Both counts are correct. Smaller units cover less space, so more are needed.'
+  },
+  {
+    id: 'g1-u6-l3-ex-2',
+    title: 'Example 2: Bigger unit, fewer needed',
+    prompt: 'How does the unit size change the count?',
+    visual: {type: 'rawHtml', html: _u6TwoSizeMeasure('pencil', 'cube', 3)},
+    steps: [
+      'Look at the pencil — it is the same in both rows.',
+      'Top row uses big cubes: 3 of them fit.',
+      'Bottom row uses small cubes: 6 of them fit.',
+      'Bigger cubes cover more space, so fewer are needed.'
+    ],
+    finalAnswer: 'Bigger units, fewer needed. The pencil did not change — only the unit size did.'
+  },
+  {
+    id: 'g1-u6-l3-ex-3',
+    title: 'Example 3: Smaller unit, more needed',
+    prompt: 'Why does the count go up when the units get smaller?',
+    visual: {type: 'rawHtml', html: _u6TwoSizeMeasure('book', 'tile', 3)},
+    steps: [
+      'The book is the same in both rows.',
+      'Top row: 3 big tiles fit along the book.',
+      'Bottom row: 6 small tiles fit along the same book.',
+      'Smaller tiles cover less space — more are needed.'
+    ],
+    finalAnswer: 'Smaller units, more needed. Both measurements of the book are correct.'
+  },
+  {
+    id: 'g1-u6-l3-ex-4',
+    title: 'Example 4: Both measurements can be correct',
+    prompt: 'A marker was measured by Maya and by Sam. They got different counts. Who is right?',
+    visual: {type: 'rawHtml', html: _u6TwoSizeMeasure('marker', 'cube', 4)},
+    steps: [
+      'Maya used big cubes and counted 4.',
+      'Sam used small cubes and counted 8.',
+      'Each measurement is fair on its own — same-size units in each row.',
+      'The unit sizes are different, so the counts are different.'
+    ],
+    finalAnswer: 'Both Maya and Sam are correct. Different unit sizes give different counts for the same object.'
+  },
+  {
+    id: 'g1-u6-l3-ex-5',
+    title: 'Example 5: Use the count to find the unit size',
+    prompt: 'Two measurements of the same stick — A has fewer units, B has more. Which uses bigger units?',
+    visual: {type: 'rawHtml', html: _u6TwoSizeMeasureAB('stick', 'block', 4, false)},
+    steps: [
+      'Both pictures show the same stick.',
+      'Picture A has fewer units; Picture B has more.',
+      'For the same object, fewer units means each unit is bigger.',
+      'So Picture A uses bigger units, and Picture B uses smaller units.'
+    ],
+    finalAnswer: 'Picture A uses bigger units (fewer needed). Picture B uses smaller units (more needed).'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.3 question banks (8 categories, 135 total)
+//  Target: 45E / 55M / 35H
+//  Per-category: 18 + 16 + 16 + 16 + 16 + 16 + 18 + 19 = 135
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Same object, large vs small — why differ? (18 = 6E / 8M / 4H) ────────
+var _l63C1 = [
+  // Easy (6)
+  _q63WhyDiffer('pencil','cube', 3, 'e', 0),
+  _q63WhyDiffer('crayon','clip', 3, 'e', 1),
+  _q63WhyDiffer('marker','tile', 4, 'e', 2),
+  _q63WhyDiffer('stick', 'block',3, 'e', 3),
+  _q63WhyDiffer('ribbon','cube', 4, 'e', 0),
+  _q63WhyDiffer('book',  'tile', 3, 'e', 1),
+  // Medium (8)
+  _q63WhyDiffer('pencil','cube', 4, 'm', 2),
+  _q63WhyDiffer('marker','clip', 5, 'm', 3),
+  _q63WhyDiffer('ribbon','block',4, 'm', 0),
+  _q63WhyDiffer('book',  'cube', 5, 'm', 1),
+  _q63WhyDiffer('stick', 'tile', 5, 'm', 2),
+  _q63WhyDiffer('crayon','block',4, 'm', 3),
+  _q63WhyDiffer('pen',   'clip', 5, 'm', 0),
+  _q63WhyDiffer('leaf',  'cube', 4, 'm', 1),
+  // Hard (4)
+  _q63WhyDiffer('pencil','tile', 6, 'h', 2),
+  _q63WhyDiffer('book',  'block',5, 'h', 3),
+  _q63WhyDiffer('stick', 'cube', 6, 'h', 0),
+  _q63WhyDiffer('ribbon','clip', 6, 'h', 1)
+];
+
+// ── C2: Bigger unit → fewer count (16 = 6E / 6M / 4H) ────────────────────────
+var _l63C2 = [
+  _q63BiggerFewer('cube',  'e', 0), _q63BiggerFewer('clip',  'e', 1),
+  _q63BiggerFewer('tile',  'e', 2), _q63BiggerFewer('block', 'e', 3),
+  _q63BiggerFewer('cube',  'e', 1), _q63BiggerFewer('clip',  'e', 2),
+  _q63BiggerFewer('tile',  'm', 3), _q63BiggerFewer('block', 'm', 0),
+  _q63BiggerFewer('cube',  'm', 2), _q63BiggerFewer('clip',  'm', 3),
+  _q63BiggerFewer('tile',  'm', 0), _q63BiggerFewer('block', 'm', 1),
+  _q63BiggerFewer('cube',  'h', 3), _q63BiggerFewer('clip',  'h', 0),
+  _q63BiggerFewer('tile',  'h', 1), _q63BiggerFewer('block', 'h', 2)
+];
+
+// ── C3: Smaller unit → more count (16 = 6E / 6M / 4H) ────────────────────────
+var _l63C3 = [
+  _q63SmallerMore('cube',  'e', 0), _q63SmallerMore('clip',  'e', 1),
+  _q63SmallerMore('tile',  'e', 2), _q63SmallerMore('block', 'e', 3),
+  _q63SmallerMore('cube',  'e', 1), _q63SmallerMore('clip',  'e', 2),
+  _q63SmallerMore('tile',  'm', 3), _q63SmallerMore('block', 'm', 0),
+  _q63SmallerMore('cube',  'm', 2), _q63SmallerMore('clip',  'm', 3),
+  _q63SmallerMore('tile',  'm', 0), _q63SmallerMore('block', 'm', 1),
+  _q63SmallerMore('cube',  'h', 3), _q63SmallerMore('clip',  'h', 0),
+  _q63SmallerMore('tile',  'h', 1), _q63SmallerMore('block', 'h', 2)
+];
+
+// ── C4: Match explanation to picture (16 = 5E / 7M / 4H) ─────────────────────
+var _l63C4 = [
+  // Easy (5)
+  _q63MatchExpl('pencil','cube', 3, 'e', 0),
+  _q63MatchExpl('crayon','tile', 3, 'e', 1),
+  _q63MatchExpl('marker','clip', 4, 'e', 2),
+  _q63MatchExpl('stick', 'block',3, 'e', 3),
+  _q63MatchExpl('book',  'cube', 4, 'e', 0),
+  // Medium (7)
+  _q63MatchExpl('ribbon','tile', 4, 'm', 1),
+  _q63MatchExpl('pencil','block',4, 'm', 2),
+  _q63MatchExpl('pen',   'cube', 5, 'm', 3),
+  _q63MatchExpl('crayon','clip', 5, 'm', 0),
+  _q63MatchExpl('marker','tile', 5, 'm', 1),
+  _q63MatchExpl('leaf',  'cube', 4, 'm', 2),
+  _q63MatchExpl('book',  'block',4, 'm', 3),
+  // Hard (4)
+  _q63MatchExpl('stick', 'clip', 6, 'h', 0),
+  _q63MatchExpl('ribbon','cube', 6, 'h', 1),
+  _q63MatchExpl('pencil','tile', 6, 'h', 2),
+  _q63MatchExpl('book',  'block',6, 'h', 3)
+];
+
+// ── C5: Choose the true statement (16 = 6E / 7M / 3H) ────────────────────────
+var _l63C5 = [
+  // Easy (6)
+  _q63TrueStatement('pencil','cube', 3, 'e', 0),
+  _q63TrueStatement('crayon','clip', 3, 'e', 1),
+  _q63TrueStatement('marker','tile', 4, 'e', 2),
+  _q63TrueStatement('stick', 'block',3, 'e', 3),
+  _q63TrueStatement('ribbon','cube', 4, 'e', 0),
+  _q63TrueStatement('book',  'tile', 3, 'e', 1),
+  // Medium (7)
+  _q63TrueStatement('pencil','clip', 4, 'm', 2),
+  _q63TrueStatement('marker','block',5, 'm', 3),
+  _q63TrueStatement('ribbon','tile', 4, 'm', 0),
+  _q63TrueStatement('book',  'cube', 5, 'm', 1),
+  _q63TrueStatement('stick', 'clip', 5, 'm', 2),
+  _q63TrueStatement('crayon','block',4, 'm', 3),
+  _q63TrueStatement('pen',   'tile', 5, 'm', 0),
+  // Hard (3)
+  _q63TrueStatement('pencil','block',6, 'h', 1),
+  _q63TrueStatement('ribbon','cube', 6, 'h', 2),
+  _q63TrueStatement('stick', 'tile', 6, 'h', 3)
+];
+
+// ── C6: Deduce unit size from counts (16 = 5E / 7M / 4H) ─────────────────────
+// `swap` flips whether the smaller-unit picture is on top.
+var _l63C6 = [
+  // Easy (5)
+  _q63DeduceSize('pencil','cube', 3, false, 'e', 0),
+  _q63DeduceSize('ribbon','tile', 3, true,  'e', 1),
+  _q63DeduceSize('marker','block',4, false, 'e', 2),
+  _q63DeduceSize('book',  'clip', 3, true,  'e', 3),
+  _q63DeduceSize('stick', 'cube', 4, false, 'e', 0),
+  // Medium (7)
+  _q63DeduceSize('crayon','tile', 4, true,  'm', 1),
+  _q63DeduceSize('pen',   'block',4, false, 'm', 2),
+  _q63DeduceSize('pencil','clip', 5, true,  'm', 3),
+  _q63DeduceSize('ribbon','cube', 5, false, 'm', 0),
+  _q63DeduceSize('book',  'tile', 5, true,  'm', 1),
+  _q63DeduceSize('leaf',  'block',4, false, 'm', 2),
+  _q63DeduceSize('marker','cube', 5, true,  'm', 3),
+  // Hard (4)
+  _q63DeduceSize('stick', 'tile', 6, false, 'h', 0),
+  _q63DeduceSize('pencil','block',6, true,  'h', 1),
+  _q63DeduceSize('ribbon','clip', 6, false, 'h', 2),
+  _q63DeduceSize('book',  'cube', 6, true,  'h', 3)
+];
+
+// ── C7: Error repair (18 = 4E / 8M / 6H) ─────────────────────────────────────
+var _l63C7 = [
+  // Easy (4)
+  _q63ErrorRepair('pencil','cube', 3, 'Maya', 'Sam',  'e', 0),
+  _q63ErrorRepair('ribbon','tile', 3, 'Leo',  'Mia',  'e', 1),
+  _q63ErrorRepair('marker','clip', 4, 'Aiden','Zoe',  'e', 2),
+  _q63ErrorRepair('book',  'block',3, 'Eli',  'Lily', 'e', 3),
+  // Medium (8)
+  _q63ErrorRepair('stick', 'cube', 4, 'Noah', 'Ava',  'm', 0),
+  _q63ErrorRepair('crayon','tile', 5, 'Mia',  'Leo',  'm', 1),
+  _q63ErrorRepair('pen',   'clip', 4, 'Sam',  'Maya', 'm', 2),
+  _q63ErrorRepair('ribbon','block',4, 'Lily', 'Eli',  'm', 3),
+  _q63ErrorRepair('pencil','tile', 5, 'Zoe',  'Aiden','m', 0),
+  _q63ErrorRepair('book',  'cube', 5, 'Ava',  'Noah', 'm', 1),
+  _q63ErrorRepair('marker','block',5, 'Leo',  'Sam',  'm', 2),
+  _q63ErrorRepair('leaf',  'clip', 4, 'Maya', 'Mia',  'm', 3),
+  // Hard (6)
+  _q63ErrorRepair('stick', 'tile', 6, 'Eli',  'Zoe',  'h', 0),
+  _q63ErrorRepair('pencil','block',6, 'Lily', 'Noah', 'h', 1),
+  _q63ErrorRepair('crayon','cube', 6, 'Aiden','Maya', 'h', 2),
+  _q63ErrorRepair('ribbon','clip', 6, 'Sam',  'Ava',  'h', 3),
+  _q63ErrorRepair('book',  'tile', 6, 'Mia',  'Leo',  'h', 0),
+  _q63ErrorRepair('pen',   'cube', 6, 'Noah', 'Eli',  'h', 1)
+];
+
+// ── C8: Predict count direction (19 = 7E / 6M / 6H) ──────────────────────────
+var _l63C8 = [
+  // Easy (7) — alternate smaller/bigger
+  _q63Predict('pencil','cube', 3, 'smaller','e', 0),
+  _q63Predict('ribbon','tile', 4, 'bigger', 'e', 1),
+  _q63Predict('marker','clip', 4, 'smaller','e', 2),
+  _q63Predict('stick', 'block',3, 'bigger', 'e', 3),
+  _q63Predict('book',  'cube', 4, 'smaller','e', 0),
+  _q63Predict('crayon','tile', 3, 'bigger', 'e', 1),
+  _q63Predict('pen',   'cube', 4, 'smaller','e', 2),
+  // Medium (6)
+  _q63Predict('pencil','tile', 5, 'bigger', 'm', 3),
+  _q63Predict('ribbon','clip', 5, 'smaller','m', 0),
+  _q63Predict('book',  'block',5, 'bigger', 'm', 1),
+  _q63Predict('marker','cube', 5, 'smaller','m', 2),
+  _q63Predict('leaf',  'tile', 4, 'bigger', 'm', 3),
+  _q63Predict('stick', 'clip', 5, 'smaller','m', 0),
+  // Hard (6)
+  _q63Predict('pencil','block',6, 'bigger', 'h', 1),
+  _q63Predict('ribbon','cube', 6, 'smaller','h', 2),
+  _q63Predict('book',  'tile', 6, 'bigger', 'h', 3),
+  _q63Predict('crayon','clip', 6, 'smaller','h', 0),
+  _q63Predict('marker','block',6, 'bigger', 'h', 1),
+  _q63Predict('stick', 'cube', 6, 'smaller','h', 2)
+];
+
+// ── L6.3 combined bank ───────────────────────────────────────────────────────
+var _l63Bank = [].concat(_l63C1, _l63C2, _l63C3, _l63C4, _l63C5, _l63C6, _l63C7, _l63C8);
+
+
 // ── Unit spec ─────────────────────────────────────────────────────────────────
 export const G1_U6_SPEC = {
   unitId: 'g1u6',
@@ -1522,7 +2242,11 @@ export const G1_U6_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 6.3 — Comparing Measurements   (SCAFFOLD)
+    //  Lesson 6.3 — Comparing Measurements
+    //  TEKS 1.7C | 135 questions (45E / 55M / 35H)
+    //  8 categories: C1 why-differ, C2 bigger-fewer, C3 smaller-more,
+    //  C4 match-explanation, C5 true-statement, C6 deduce-size,
+    //  C7 error-repair, C8 predict-direction
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u6-l3',
@@ -1530,10 +2254,14 @@ export const G1_U6_SPEC = {
       teks: ['1.7C'],
       skill: 'compare_measurements',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l63KeyIdeas,
+      workedExamples: _l63Examples,
+      quizBank: _l63Bank,
+      diagnostics: {
+        commonDistractors: [_63BF, _63SM, _63TW, _63CN, _63US, _63SO, _63PD, _63EX],
+        errorTags:         [_63BF, _63SM, _63TW, _63CN, _63US, _63SO, _63PD, _63EX],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
