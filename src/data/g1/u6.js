@@ -44,30 +44,19 @@ function _u6Cube(x, y) {
     'fill="#BBDEFB" stroke="#1976D2" stroke-width="2"/>';
 }
 function _u6Clip(x, y) {
-  // Paper clip: continuous bent-wire path tracing a Gem-clip silhouette.
-  // Vertical orientation. Two open wire ends visible at the top — like a real
-  // bent-wire paper clip. The single path traces:
-  //   start at top of outer-right wire end (#1)
-  //   → down outer-right
-  //   → big U-turn around the outer bottom
-  //   → up outer-left
-  //   → small U-turn at the top (wire bends back inward)
-  //   → down inner-left
-  //   → small U-turn around the inner bottom
-  //   → up inner-right, ending at wire end (#2)
-  // 4 vertical wires visible (outer-left, inner-left, inner-right, outer-right)
-  // give the iconic paper-clip silhouette at small mobile sizes.
-  return '<path stroke="#37474F" stroke-width="2.3" fill="none" ' +
-    'stroke-linecap="round" stroke-linejoin="round" d="' +
-    'M ' + (x + 21) + ' ' + (y + 4)  + ' ' +                  // wire end #1 — top of outer-right
-    'L ' + (x + 21) + ' ' + (y + 21) + ' ' +                  // down outer-right
-    'A 7 7 0 0 1 ' + (x + 7)  + ' ' + (y + 21) + ' ' +        // outer-bottom U-turn (bulges down)
-    'L ' + (x + 7)  + ' ' + (y + 8)  + ' ' +                  // up outer-left
-    'A 2 2 0 0 1 ' + (x + 11) + ' ' + (y + 8)  + ' ' +        // top U-turn (bulges up)
-    'L ' + (x + 11) + ' ' + (y + 19) + ' ' +                  // down inner-left
-    'A 3 3 0 0 0 ' + (x + 17) + ' ' + (y + 19) + ' ' +        // inner-bottom U-turn (bulges down)
-    'L ' + (x + 17) + ' ' + (y + 8) +                          // up inner-right — wire end #2
-    '"/>';
+  // Paper clip: classic Gem-clip silhouette as two stroked rounded rectangles.
+  // The inner rectangle extends ~4 units above the outer rectangle's top to
+  // signal the iconic "wire crosses over at the top" detail — this is the
+  // universally recognized paper-clip icon shape and reads instantly at
+  // mobile sizes.
+  // Outer: 18 wide × 22 tall, rounded corners (rx 7)
+  // Inner: 8 wide × 22 tall, rounded corners (rx 3), shifted up by 4 units
+  // Clip occupies x+5..x+23, y+2..y+28 within a 28-wide unit slot.
+  return '<g stroke="#37474F" stroke-width="2.3" fill="none" ' +
+    'stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="' + (x + 5)  + '" y="' + (y + 6) + '" width="18" height="22" rx="7" ry="7"/>' +
+    '<rect x="' + (x + 10) + '" y="' + (y + 2) + '" width="8"  height="22" rx="3" ry="3"/>' +
+    '</g>';
 }
 function _u6Tile(x, y) {
   return '<rect x="' + (x + 1) + '" y="' + (y + 4) + '" width="26" height="20" rx="2" ' +
