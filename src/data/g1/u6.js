@@ -44,10 +44,30 @@ function _u6Cube(x, y) {
     'fill="#BBDEFB" stroke="#1976D2" stroke-width="2"/>';
 }
 function _u6Clip(x, y) {
-  return '<g stroke="#546E7A" stroke-width="2" fill="none">' +
-    '<rect x="' + (x + 4) + '" y="' + (y + 2) + '" width="20" height="24" rx="9"/>' +
-    '<path d="M' + (x + 8) + ' ' + (y + 6) + ' v14 a3 3 0 0 0 6 0 v-12"/>' +
-    '</g>';
+  // Paper clip: continuous bent-wire path tracing a Gem-clip silhouette.
+  // Vertical orientation. Two open wire ends visible at the top — like a real
+  // bent-wire paper clip. The single path traces:
+  //   start at top of outer-right wire end (#1)
+  //   → down outer-right
+  //   → big U-turn around the outer bottom
+  //   → up outer-left
+  //   → small U-turn at the top (wire bends back inward)
+  //   → down inner-left
+  //   → small U-turn around the inner bottom
+  //   → up inner-right, ending at wire end (#2)
+  // 4 vertical wires visible (outer-left, inner-left, inner-right, outer-right)
+  // give the iconic paper-clip silhouette at small mobile sizes.
+  return '<path stroke="#37474F" stroke-width="2.3" fill="none" ' +
+    'stroke-linecap="round" stroke-linejoin="round" d="' +
+    'M ' + (x + 21) + ' ' + (y + 4)  + ' ' +                  // wire end #1 — top of outer-right
+    'L ' + (x + 21) + ' ' + (y + 21) + ' ' +                  // down outer-right
+    'A 7 7 0 0 1 ' + (x + 7)  + ' ' + (y + 21) + ' ' +        // outer-bottom U-turn (bulges down)
+    'L ' + (x + 7)  + ' ' + (y + 8)  + ' ' +                  // up outer-left
+    'A 2 2 0 0 1 ' + (x + 11) + ' ' + (y + 8)  + ' ' +        // top U-turn (bulges up)
+    'L ' + (x + 11) + ' ' + (y + 19) + ' ' +                  // down inner-left
+    'A 3 3 0 0 0 ' + (x + 17) + ' ' + (y + 19) + ' ' +        // inner-bottom U-turn (bulges down)
+    'L ' + (x + 17) + ' ' + (y + 8) +                          // up inner-right — wire end #2
+    '"/>';
 }
 function _u6Tile(x, y) {
   return '<rect x="' + (x + 1) + '" y="' + (y + 4) + '" width="26" height="20" rx="2" ' +
