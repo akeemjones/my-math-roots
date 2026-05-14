@@ -1563,13 +1563,17 @@ function _u6TwoSizeMeasureAB(obj, unit, bigN, swap) {
 
 // _u6UnitSizePair — inset showing one big unit and one small unit side-by-side
 // with "Big" / "Small" labels. Used by C2/C3 (unit-only choice questions).
+// Canvas is sized tight to content (50 tall, not 78) so there is no wasted
+// vertical space at the top of the SVG. Per-unit y-baseline keeps unit
+// bottoms aligned at y=34 across all four unit types.
 function _u6UnitSizePair(unit) {
-  var bigSvg = _u6UnitDrawers[unit](8, 38);
-  var smallSvg = _u6SmallUnitDrawers[unit](56, 38);
-  return '<svg viewBox="0 0 84 78" width="100%" style="max-width:240px;display:block;margin:0 auto">' +
+  var yBase = { cube: 7, clip: 6, tile: 10, block: 4 }[unit];
+  var bigSvg = _u6UnitDrawers[unit](8, yBase);
+  var smallSvg = _u6SmallUnitDrawers[unit](56, yBase);
+  return '<svg viewBox="0 0 84 50" width="100%" style="max-width:200px;display:block;margin:0 auto">' +
     bigSvg + smallSvg +
-    '<text x="22" y="74" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Big</text>' +
-    '<text x="63" y="74" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Small</text>' +
+    '<text x="22" y="46" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Big</text>' +
+    '<text x="63" y="46" font-size="11" font-weight="700" fill="#37474F" text-anchor="middle" font-family="Nunito,sans-serif">Small</text>' +
     '</svg>';
 }
 
