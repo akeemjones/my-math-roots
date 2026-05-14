@@ -112,14 +112,18 @@ const _UNITS_DATA_G1 = [
     _loaded: false
   },
   {
-    id: 'g1u6', name: 'Measurement',
+    id: 'g1u6', name: 'Measurement & Time',
     icon: '📏',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#009688" opacity="0.1"/><rect x="8" y="22" width="44" height="16" rx="3" fill="none" stroke="#009688" stroke-width="2.5"/><line x1="16" y1="22" x2="16" y2="38" stroke="#009688" stroke-width="1.5"/><line x1="24" y1="22" x2="24" y2="33" stroke="#009688" stroke-width="1.5"/><line x1="32" y1="22" x2="32" y2="38" stroke="#009688" stroke-width="1.5"/><line x1="40" y1="22" x2="40" y2="33" stroke="#009688" stroke-width="1.5"/></svg>',
-    color: '#009688', gp: 1, teks: 'TEKS 1.7',
+    color: '#009688', gp: 1, teks: 'TEKS 1.7A–E',
     lessons: [
-      { id:'g1u6l1', title:'Measure Length', icon:'📏', desc:'Measure using non-standard and standard units' }
+      { id:'g1-u6-l1', title:'Measuring with Non-Standard Units', icon:'📏', desc:'Measure length using paper clips, cubes, and tiles',                          teks:'TEKS 1.7A' },
+      { id:'g1-u6-l2', title:'Understanding Units of Length',     icon:'📐', desc:'Use same-size units end-to-end with no gaps or overlaps',                    teks:'TEKS 1.7B' },
+      { id:'g1-u6-l3', title:'Comparing Measurements',           icon:'🔢', desc:'Measure the same object with different-size units and compare counts',        teks:'TEKS 1.7C' },
+      { id:'g1-u6-l4', title:'Describing Length',                icon:'✏️', desc:'Describe length to the nearest whole unit using a number and a unit name',   teks:'TEKS 1.7D' },
+      { id:'g1-u6-l5', title:'Telling Time',                     icon:'🕐', desc:'Tell time to the hour and half-hour using analog and digital clocks',         teks:'TEKS 1.7E' }
     ],
-    _loaded: true
+    _loaded: false
   },
   {
     id: 'g1u7', name: 'Data Analysis',
@@ -162,10 +166,10 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js … idx 4 → u5.js.
-  // Units 6-8 (idx 5-7) are still shell-only — short-circuit so the loader
+  // Units with data files: idx 0 → u1.js … idx 5 → u6.js.
+  // Units 7-8 (idx 6-7) are still shell-only — short-circuit so the loader
   // does not try to fetch a file that doesn't exist yet.
-  if(idx > 4){
+  if(idx > 5){
     u._loaded = true;
     return Promise.resolve();
   }
