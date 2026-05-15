@@ -14,7 +14,7 @@
  *    L6.2  Understanding Units of Length          ← 135 questions (45E / 55M / 35H)
  *    L6.3  Comparing Measurements                 ← 135 questions (45E / 55M / 35H)
  *    L6.4  Describing Length                      ← 135 questions (45E / 55M / 35H)
- *    L6.5  Telling Time                           ← SCAFFOLD (0 questions)
+ *    L6.5  Telling Time                           ← 155 questions (50E / 60M / 45H)
  *
  *  Hard scope guardrails (apply to every question added to this unit):
  *    - Length: non-standard units ONLY (paper clips, cubes, tiles, blocks).
@@ -2868,6 +2868,893 @@ var _l64C8 = [
 var _l64Bank = [].concat(_l64C1, _l64C2, _l64C3, _l64C4, _l64C5, _l64C6, _l64C7, _l64C8);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.5 — Telling Time
+//  TEKS 1.7E | 155 questions (50E / 60M / 45H)
+//  Scope: tell time to the hour and half-hour ONLY. Analog + digital +
+//  match + identify hands + interactive clock (Ex5).
+//
+//  Hard guardrails: NO minutes other than :00 and :30. NO AM/PM. NO
+//  quarter-hour. NO 5-minute increments. NO elapsed time. NO calendar.
+//
+//  All clocks built by G1-only helpers in this file — Grade 2's ui.js
+//  static renderer and u7.js inline interactive clock are NOT touched.
+//  Hand-color convention (matches Grade 2 interactive): hour hand blue
+//  (#2980b9, short, thick), minute hand black (#333, long, thin), pivot
+//  red (#e74c3c).
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L6.5 error tags ──────────────────────────────────────────────────────────
+var _65HHC = 'err_hour_hand_confusion';
+var _65MHC = 'err_minute_hand_confusion';
+var _65OH  = 'err_oclock_halfhour_confusion';
+var _65WH  = 'err_wrong_hour';
+var _65WHH = 'err_wrong_half_hour';
+var _65AD  = 'err_analog_digital_mismatch';
+var _65RM  = 'err_reads_minute_hand_as_hour';
+var _65TF  = 'err_time_format_confusion';
+
+// ── L6.5 SVG helpers: static clock face ──────────────────────────────────────
+// G1-only static clock. Always uses minutes = 0 or 30 (Grade 1 scope).
+// Hand colors match Grade 2 interactive clock convention:
+//   hour hand   blue   #2980b9 (short, stroke 4.5)
+//   minute hand black  #333    (long,  stroke 2.5)
+//   pivot       red    #e74c3c (r=3)
+//
+// viewBox 0 0 100 100; rendered at `size` px (default 200) for inline use.
+function _u6L5ClockBody(h, m) {
+  var ha = ((h % 12) + m / 60) * 30;
+  var ma = m * 6;
+  var nums = '';
+  for (var k = 1; k <= 12; k++) {
+    var ang = (k / 12) * 360 - 90;
+    var rad = ang * Math.PI / 180;
+    var x = (50 + 36 * Math.cos(rad)).toFixed(1);
+    var y = (50 + 36 * Math.sin(rad)).toFixed(1);
+    nums += '<text x="' + x + '" y="' + y + '" text-anchor="middle" dominant-baseline="central" ' +
+      'font-size="11" font-weight="bold" fill="#1a2535" font-family="Boogaloo,cursive">' + k + '</text>';
+  }
+  var ticks = '';
+  for (var t = 0; t < 60; t++) {
+    var tAng = (t / 60) * 360 - 90;
+    var tRad = tAng * Math.PI / 180;
+    var inner = t % 5 === 0 ? 42 : 44;
+    var outer = 46;
+    var x1 = (50 + inner * Math.cos(tRad)).toFixed(1);
+    var y1 = (50 + inner * Math.sin(tRad)).toFixed(1);
+    var x2 = (50 + outer * Math.cos(tRad)).toFixed(1);
+    var y2 = (50 + outer * Math.sin(tRad)).toFixed(1);
+    var wd = t % 5 === 0 ? 1.2 : 0.6;
+    ticks += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+      '" stroke="#666" stroke-width="' + wd + '"/>';
+  }
+  return '<circle cx="50" cy="50" r="48" fill="#fffef5" stroke="#888" stroke-width="1.5"/>' +
+    ticks + nums +
+    '<line x1="50" y1="50" x2="50" y2="14" stroke="#333" stroke-width="2.5" ' +
+       'stroke-linecap="round" transform="rotate(' + ma.toFixed(1) + ',50,50)"/>' +
+    '<line x1="50" y1="50" x2="50" y2="26" stroke="#2980b9" stroke-width="4.5" ' +
+       'stroke-linecap="round" transform="rotate(' + ha.toFixed(1) + ',50,50)"/>' +
+    '<circle cx="50" cy="50" r="3" fill="#e74c3c"/>';
+}
+
+function _u6L5Clock(h, m, size) {
+  size = size || 200;
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" ' +
+    'style="display:block;margin:0 auto">' + _u6L5ClockBody(h, m) + '</svg>';
+}
+
+// _u6L5ClockForChoice — same SVG content, but no fixed pixel size; scales to
+// fill its parent (used by imgChoice cards in C4). preserveAspectRatio keeps
+// the clock circular regardless of card aspect ratio.
+function _u6L5ClockForChoice(h, m) {
+  return '<svg viewBox="0 0 100 100" width="100%" ' +
+    'style="display:block;margin:0 auto" preserveAspectRatio="xMidYMid meet">' +
+    _u6L5ClockBody(h, m) + '</svg>';
+}
+
+// ── L6.5 SVG helpers: digital display ────────────────────────────────────────
+// Only H:00 or H:30 are valid; values outside Grade 1 scope produce a clean
+// "H:00" fallback so an accidental call cannot leak forbidden time strings.
+function _u6L5DigitalText(h, m) {
+  var hh = (h >= 1 && h <= 12) ? h : 12;
+  var mm = (m === 30) ? '30' : '00';
+  return hh + ':' + mm;
+}
+
+function _u6L5Digital(h, m, opts) {
+  opts = opts || {};
+  var size = opts.size || 28;
+  return '<div style="font-size:' + size + 'px;font-weight:bold;color:#2980b9;' +
+    'text-align:center;margin:8px 0;font-family:\'Boogaloo\',sans-serif;' +
+    'letter-spacing:1px">' + _u6L5DigitalText(h, m) + '</div>';
+}
+
+// ── L6.5 SVG helpers: clock + digital pair ───────────────────────────────────
+// Used by some C3/C9 visuals when both representations should be shown.
+function _u6L5ClockAndDigital(h, m) {
+  return '<div style="text-align:center;padding:4px 0">' +
+    _u6L5Clock(h, m, 180) + _u6L5Digital(h, m, 24) + '</div>';
+}
+
+// ── L6.5 SVG helpers: interactive clock ──────────────────────────────────────
+// Used in Worked Example 5. Self-contained: hour slider (1–12) + two big
+// buttons (O'clock / Half past) update the clock and digital display via
+// inline IIFE handlers, mirroring the Grade 2 inline pattern. All DOM ids
+// are prefixed `g1ic-` so they don't collide with Grade 2's `ic-*` ids if
+// both lessons render on the same page.
+//
+// Active button is highlighted by toggling the `.g1ic-active` class
+// (single rule in styles.css).
+function _u6L5InteractiveClock(initH, initMode) {
+  if (initH < 1 || initH > 12) initH = 3;
+  if (initMode !== 0 && initMode !== 30) initMode = 0;
+  var ha = ((initH % 12) + initMode / 60) * 30;
+  var ma = initMode * 6;
+
+  // Build clock face (same content as _u6L5ClockBody, but with hand ids).
+  var nums = '';
+  for (var k = 1; k <= 12; k++) {
+    var ang = (k / 12) * 360 - 90;
+    var rad = ang * Math.PI / 180;
+    var x = (50 + 36 * Math.cos(rad)).toFixed(1);
+    var y = (50 + 36 * Math.sin(rad)).toFixed(1);
+    nums += '<text x="' + x + '" y="' + y + '" text-anchor="middle" dominant-baseline="central" ' +
+      'font-size="11" font-weight="bold" fill="#1a2535" font-family="Boogaloo,cursive">' + k + '</text>';
+  }
+  var ticks = '';
+  for (var t = 0; t < 60; t++) {
+    var tAng = (t / 60) * 360 - 90;
+    var tRad = tAng * Math.PI / 180;
+    var inner = t % 5 === 0 ? 42 : 44;
+    var outer = 46;
+    var x1 = (50 + inner * Math.cos(tRad)).toFixed(1);
+    var y1 = (50 + inner * Math.sin(tRad)).toFixed(1);
+    var x2 = (50 + outer * Math.cos(tRad)).toFixed(1);
+    var y2 = (50 + outer * Math.sin(tRad)).toFixed(1);
+    var wd = t % 5 === 0 ? 1.2 : 0.6;
+    ticks += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+      '" stroke="#666" stroke-width="' + wd + '"/>';
+  }
+
+  // Inline update IIFE — reads slider + mode, repaints hands + digital.
+  var updJs =
+    "(function(){" +
+      "var h=+document.getElementById('g1ic-hs').value;" +
+      "var c=document.getElementById('g1ic-clock');" +
+      "var m=+c.getAttribute('data-mode');" +
+      "var ha=((h%12)+m/60)*30;" +
+      "var ma=m*6;" +
+      "document.getElementById('g1ic-hh').setAttribute('transform','rotate('+ha+',50,50)');" +
+      "document.getElementById('g1ic-mh').setAttribute('transform','rotate('+ma+',50,50)');" +
+      "var mm=m===30?'30':'00';" +
+      "document.getElementById('g1ic-dt').textContent=h+':'+mm;" +
+    "}).call(this)";
+
+  var oClickJs =
+    "document.getElementById('g1ic-clock').setAttribute('data-mode','0');" +
+    "document.getElementById('g1ic-oclock').classList.add('g1ic-active');" +
+    "document.getElementById('g1ic-half').classList.remove('g1ic-active');" +
+    updJs;
+
+  var hClickJs =
+    "document.getElementById('g1ic-clock').setAttribute('data-mode','30');" +
+    "document.getElementById('g1ic-half').classList.add('g1ic-active');" +
+    "document.getElementById('g1ic-oclock').classList.remove('g1ic-active');" +
+    updJs;
+
+  var btnBase = "padding:10px 18px;font-size:16px;border:2px solid #1976D2;border-radius:10px;" +
+    "background:#fff;color:#1976D2;cursor:pointer;font-weight:bold;" +
+    "font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;margin:4px;min-width:120px";
+
+  return '<div style="text-align:center;padding:6px 0">' +
+    '<svg id="g1ic-clock" data-mode="' + initMode + '" width="220" height="220" ' +
+      'viewBox="0 0 100 100" style="display:block;margin:6px auto">' +
+      '<circle cx="50" cy="50" r="48" fill="#fffef5" stroke="#888" stroke-width="1.5"/>' +
+      ticks + nums +
+      '<line id="g1ic-mh" x1="50" y1="50" x2="50" y2="14" stroke="#333" stroke-width="2.5" ' +
+         'stroke-linecap="round" transform="rotate(' + ma.toFixed(1) + ',50,50)"/>' +
+      '<line id="g1ic-hh" x1="50" y1="50" x2="50" y2="26" stroke="#2980b9" stroke-width="4.5" ' +
+         'stroke-linecap="round" transform="rotate(' + ha.toFixed(1) + ',50,50)"/>' +
+      '<circle cx="50" cy="50" r="3" fill="#e74c3c"/>' +
+    '</svg>' +
+    '<div id="g1ic-dt" style="font-size:28px;font-weight:bold;color:#2980b9;' +
+      'margin:6px 0;font-family:\'Boogaloo\',sans-serif;letter-spacing:1px">' +
+      initH + ':' + (initMode === 30 ? '30' : '00') + '</div>' +
+    '<div style="font-size:12px;color:#37474F;margin:4px 0 10px;line-height:1.4">' +
+      'Hour hand — <span style="color:#2980b9;font-weight:bold">short blue</span>. ' +
+      'Minute hand — <span style="color:#333;font-weight:bold">long black</span>.' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:4px">' +
+      '<label style="font-size:14px;font-weight:bold;color:#333">Hour:' +
+        '<input id="g1ic-hs" type="range" min="1" max="12" value="' + initH + '" step="1" ' +
+          'style="width:180px;margin-left:8px;vertical-align:middle" ' +
+          'oninput="' + updJs + '">' +
+      '</label>' +
+      '<div style="display:flex;gap:8px;justify-content:center;margin-top:6px">' +
+        '<button id="g1ic-oclock" type="button" style="' + btnBase + '"' +
+          (initMode === 0 ? ' class="g1ic-active"' : '') +
+          ' onclick="' + oClickJs + '">O’clock</button>' +
+        '<button id="g1ic-half" type="button" style="' + btnBase + '"' +
+          (initMode === 30 ? ' class="g1ic-active"' : '') +
+          ' onclick="' + hClickJs + '">Half past</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ── L6.5 teaching visuals (for intervention overlays) ────────────────────────
+function _u6TvL5Hour() {
+  return _u6TvWrap(_u6L5Clock(3, 0, 150),
+    'The hour hand is the SHORT, blue one. It points at 3 — so the hour is 3.');
+}
+function _u6TvL5Minute() {
+  return _u6TvWrap(_u6L5Clock(3, 0, 150),
+    'The minute hand is the LONG, black one. On 12 means o’clock (:00).');
+}
+function _u6TvL5OClockVHalf() {
+  return _u6TvWrap(_u6L5ClockAndDigital(4, 0) + _u6L5ClockAndDigital(4, 30),
+    'Long hand on 12 = o’clock (:00). Long hand on 6 = half past (:30).');
+}
+function _u6TvL5WrongHour() {
+  return _u6TvWrap(_u6L5Clock(7, 0, 150),
+    'Look at the SHORT hand. It points at 7 — so the hour is 7. The time is 7:00.');
+}
+function _u6TvL5HalfPastSmaller() {
+  return _u6TvWrap(_u6L5Clock(4, 30, 150),
+    'At half past, the short hand is between 4 and 5. Always say the SMALLER number: 4. The time is 4:30.');
+}
+function _u6TvL5AnalogDigital() {
+  return _u6TvWrap(_u6L5ClockAndDigital(8, 30),
+    'Match the hour AND the long-hand position. 8:30 = short hand between 8 and 9, long hand on 6.');
+}
+function _u6TvL5General() {
+  return _u6TvWrap(_u6L5ClockAndDigital(6, 0),
+    'Read in two parts: long hand (12 = :00, 6 = :30) and short hand (the hour number).');
+}
+
+// ── L6.5 intervention factories ──────────────────────────────────────────────
+function _i65HourHand() { return {
+  errorTag: _65HHC, title: 'The hour hand is the SHORT one',
+  teachingSteps: [
+    'A clock has two hands: a short one and a long one.',
+    'The HOUR hand is the SHORTER hand — the blue one in our clocks.',
+    'It points at the hour number.',
+    'The longer hand is the minute hand — that one tells the minutes.'
+  ],
+  teachingVisualRaw: _u6TvL5Hour(),
+  correctAnswerExplanation: 'Short hand = hour. Long hand = minutes.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65MinuteHand() { return {
+  errorTag: _65MHC, title: 'The minute hand is the LONG one',
+  teachingSteps: [
+    'A clock has two hands: a short one and a long one.',
+    'The MINUTE hand is the LONGER hand — the black one in our clocks.',
+    'It tells the minutes — on 12 means :00, on 6 means :30.',
+    'The shorter hand is the hour hand — that one tells the hour.'
+  ],
+  teachingVisualRaw: _u6TvL5Minute(),
+  correctAnswerExplanation: 'Long hand = minutes. Short hand = hour.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65OClockVHalfPast() { return {
+  errorTag: _65OH, title: 'Long hand on 12 or 6?',
+  teachingSteps: [
+    'Look at the LONG hand (the minute hand).',
+    'If the long hand is on 12, it is o’clock — the digital says :00.',
+    'If the long hand is on 6, it is half past — the digital says :30.',
+    'Always check the long hand first to know if it is :00 or :30.'
+  ],
+  teachingVisualRaw: _u6TvL5OClockVHalf(),
+  correctAnswerExplanation: 'Long hand on 12 = :00 (o’clock). Long hand on 6 = :30 (half past).',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65WrongHour() { return {
+  errorTag: _65WH, title: 'Read the short hand for the hour',
+  teachingSteps: [
+    'The hour is shown by the SHORT hand.',
+    'At o’clock, the short hand points right at an hour number.',
+    'Find the number the short hand points at.',
+    'That number is the hour.'
+  ],
+  teachingVisualRaw: _u6TvL5WrongHour(),
+  correctAnswerExplanation: 'The hour is the number the short hand is pointing at.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65HalfPastSmaller() { return {
+  errorTag: _65WHH, title: 'At half past, use the SMALLER number',
+  teachingSteps: [
+    'At half past, the short hand is BETWEEN two hour numbers.',
+    'Always say the SMALLER number.',
+    'Example: between 4 and 5 → say "half past 4" → 4:30.',
+    'The smaller number is the hour we already finished — the next number has not started yet.'
+  ],
+  teachingVisualRaw: _u6TvL5HalfPastSmaller(),
+  correctAnswerExplanation: 'At half past, the hour is the SMALLER of the two numbers the short hand is between.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65AnalogDigitalMatch() { return {
+  errorTag: _65AD, title: 'Match the analog and the digital',
+  teachingSteps: [
+    'Read the analog clock first: hour (short hand) and :00 or :30 (long hand on 12 or 6).',
+    'Now read the digital: the number before the colon is the hour; after the colon is :00 or :30.',
+    'Both must match — same hour AND same minute part.',
+    'If even one is different, it is not the same time.'
+  ],
+  teachingVisualRaw: _u6TvL5AnalogDigital(),
+  correctAnswerExplanation: 'Analog and digital match when the hour and the minute part (:00 or :30) are both the same.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i65GeneralTime() { return {
+  errorTag: _65RM, title: 'Read in two parts',
+  teachingSteps: [
+    'Part 1: Look at the LONG hand. On 12 = :00. On 6 = :30.',
+    'Part 2: Look at the SHORT hand. Read the hour number it points at — at half past, use the smaller of the two numbers it sits between.',
+    'Put it together: hour + (:00 or :30).',
+    'Always check the long hand first, then the short hand.'
+  ],
+  teachingVisualRaw: _u6TvL5General(),
+  correctAnswerExplanation: 'Read the long hand for :00 or :30, then the short hand for the hour.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L6.5 question factory functions ──────────────────────────────────────────
+
+// _q65ReadOClock — C1: clock at H:00; pick the digital time.
+function _q65ReadOClock(h, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, 0);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var prevH = (h === 1) ? 12 : h - 1;
+  var opts = [
+    {val: actual},
+    {val: _u6L5DigitalText(h, 30),       tag: _65OH},
+    {val: _u6L5DigitalText(nextH, 0),    tag: _65WH},
+    {val: _u6L5DigitalText(prevH, 0),    tag: _65WH}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'What time is shown on the clock?',
+    s: _u6L5Clock(h, 0),
+    o: opts, a: aIdx,
+    e: 'The long hand is on 12, so it is o’clock. The short hand points at ' + h + '. The time is ' + actual + '.',
+    d: diff,
+    h: 'Long hand on 12 means o’clock. Read the short hand for the hour.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65WrongHour()
+  };
+}
+
+// _q65ReadHalfPast — C2: clock at H:30; pick the digital time.
+function _q65ReadHalfPast(h, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, 30);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var opts = [
+    {val: actual},
+    {val: _u6L5DigitalText(nextH, 30), tag: _65WHH},
+    {val: _u6L5DigitalText(h, 0),      tag: _65OH},
+    {val: _u6L5DigitalText(nextH, 0),  tag: _65RM}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'What time is shown on the clock?',
+    s: _u6L5Clock(h, 30),
+    o: opts, a: aIdx,
+    e: 'The long hand is on 6, so it is half past. The short hand is between ' + h + ' and ' + nextH +
+       ' — say the smaller, ' + h + '. The time is ' + actual + '.',
+    d: diff,
+    h: 'Long hand on 6 means half past. Short hand between two numbers — say the smaller one.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65HalfPastSmaller()
+  };
+}
+
+// _q65MatchAnalogToDigital — C3: analog clock; pick the digital (mix of hour + half).
+function _q65MatchAnalogToDigital(h, m, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, m);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var prevH = (h === 1) ? 12 : h - 1;
+  var otherM = (m === 0) ? 30 : 0;
+  var opts;
+  if (m === 0) {
+    opts = [
+      {val: actual},
+      {val: _u6L5DigitalText(h, 30),      tag: _65OH},
+      {val: _u6L5DigitalText(nextH, 0),   tag: _65WH},
+      {val: _u6L5DigitalText(prevH, 0),   tag: _65AD}
+    ];
+  } else {
+    opts = [
+      {val: actual},
+      {val: _u6L5DigitalText(nextH, 30),  tag: _65WHH},
+      {val: _u6L5DigitalText(h, 0),       tag: _65OH},
+      {val: _u6L5DigitalText(prevH, 30),  tag: _65AD}
+    ];
+  }
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Which digital time matches the clock?',
+    s: _u6L5Clock(h, m),
+    o: opts, a: aIdx,
+    e: 'The clock shows ' + actual + '. ' + (m === 0
+        ? 'Long hand on 12 = :00; short hand on ' + h + '.'
+        : 'Long hand on 6 = :30; short hand between ' + h + ' and ' + nextH + ', so the hour is ' + h + '.'),
+    d: diff,
+    h: 'Read the analog: long hand (12 or 6) then short hand. Find the matching digital.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65AnalogDigitalMatch()
+  };
+}
+
+// _q65MatchDigitalToAnalog — C4: digital; pick the clock face from 4 images (imgChoice).
+function _q65MatchDigitalToAnalog(h, m, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, m);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var prevH = (h === 1) ? 12 : h - 1;
+  var otherM = (m === 0) ? 30 : 0;
+  var others = [
+    {h: nextH, m: m},        // wrong hour, right minute
+    {h: h,     m: otherM},   // right hour, wrong minute
+    {h: prevH, m: otherM}    // wrong both
+  ];
+  var slotTimes = others.slice();
+  slotTimes.splice(aIdx, 0, {h: h, m: m});
+  var letters = ['A', 'B', 'C', 'D'];
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var svgs = slotTimes.map(function(tt){ return _u6L5ClockForChoice(tt.h, tt.m); });
+  // Fallback (review-mode / no-imgChoice): inline 4 mini-clocks side-by-side.
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;padding:4px 0">' +
+    slotTimes.map(function(tt, i) {
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;border-radius:6px;' +
+        'padding:4px;margin:3px;background:#fff;min-width:130px;vertical-align:top">' +
+        '<div style="font-size:15px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u6L5Clock(tt.h, tt.m, 110) + '</div>';
+    }).join('') + '</div>';
+  var opts = letters.map(function(L, i) {
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _65AD};
+  });
+  return {
+    t: 'Which clock shows ' + actual + '? Tap a picture.',
+    v: { type: 'imgChoice', config: { items: labels, svgs: svgs } },
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows ' + actual + ': ' + (m === 0
+        ? 'long hand on 12, short hand on ' + h + '.'
+        : 'long hand on 6, short hand between ' + h + ' and ' + nextH + '.'),
+    d: diff,
+    h: 'Digital ' + actual + ': hour ' + h + ', ' + (m === 0 ? 'long hand on 12' : 'long hand on 6') + '.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65AnalogDigitalMatch()
+  };
+}
+
+// _q65IdentifyHand — C5: which hand is the hour/minute hand?
+// askHourHand: true → ask which is the hour hand; false → which is the minute hand.
+function _q65IdentifyHand(h, askHourHand, diff, aIdx) {
+  var correct = askHourHand ? 'The short blue hand' : 'The long black hand';
+  var wrong   = askHourHand ? 'The long black hand' : 'The short blue hand';
+  var wrongTag = askHourHand ? _65HHC : _65MHC;
+  var swap     = askHourHand ? _65HHC : _65MHC;
+  var opts = [
+    {val: correct},
+    {val: wrong,                                tag: wrongTag},
+    {val: 'The red center dot',                 tag: swap},
+    {val: 'The number ' + (askHourHand ? '12' : '6'), tag: _65RM}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: askHourHand ? 'Which hand on the clock is the hour hand?' : 'Which hand on the clock is the minute hand?',
+    s: _u6L5Clock(h, 0),
+    o: opts, a: aIdx,
+    e: askHourHand
+      ? 'The hour hand is the SHORTER hand. In our clocks it is the blue one. It tells which hour.'
+      : 'The minute hand is the LONGER hand. In our clocks it is the black one. It tells the minutes (:00 or :30).',
+    d: diff,
+    h: askHourHand ? 'The hour hand is shorter (and blue in our clocks).'
+                   : 'The minute hand is longer (and black in our clocks).',
+    sk: 'tell_time_hour_half_hour',
+    i: askHourHand ? _i65HourHand() : _i65MinuteHand()
+  };
+}
+
+// _q65LongHandOnTwelve — C6: long hand on 12 means o'clock.
+function _q65LongHandOnTwelve(h, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, 0);
+  var opts = [
+    {val: 'It is ' + h + ' o’clock — ' + actual + '.'},
+    {val: 'It is half past ' + h + ' — ' + _u6L5DigitalText(h, 30) + '.', tag: _65OH},
+    {val: 'It is 12 o’clock.',                                       tag: _65RM},
+    {val: 'It is ' + h + ' minutes past 12.',                              tag: _65TF}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'The long hand is on 12. What time is it?',
+    s: _u6L5Clock(h, 0),
+    o: opts, a: aIdx,
+    e: 'When the long hand is on 12, it is o’clock — the minutes are :00. The short hand points at ' + h +
+       ', so the time is ' + actual + '.',
+    d: diff,
+    h: 'Long hand on 12 = o’clock = :00. Read the short hand for the hour.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65OClockVHalfPast()
+  };
+}
+
+// _q65LongHandOnSix — C7: long hand on 6 means half past.
+function _q65LongHandOnSix(h, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, 30);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var opts = [
+    {val: 'It is half past ' + h + ' — ' + actual + '.'},
+    {val: 'It is ' + h + ' o’clock — ' + _u6L5DigitalText(h, 0) + '.',     tag: _65OH},
+    {val: 'It is half past ' + nextH + ' — ' + _u6L5DigitalText(nextH, 30) + '.', tag: _65WHH},
+    {val: 'It is 6 o’clock.',                                              tag: _65RM}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'The long hand is on 6. What time is it?',
+    s: _u6L5Clock(h, 30),
+    o: opts, a: aIdx,
+    e: 'When the long hand is on 6, it is half past — the minutes are :30. The short hand is between ' + h +
+       ' and ' + nextH + ', so we say the smaller, ' + h + '. The time is ' + actual + '.',
+    d: diff,
+    h: 'Long hand on 6 = half past = :30. Short hand between two numbers — say the smaller.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65HalfPastSmaller()
+  };
+}
+
+// _q65ErrorRepair — C8: a student wrote a wrong time. Find what's wrong.
+// errorType: 'wrongHour' | 'wrongMinute' | 'wrongHand' | 'wrongFormat'
+function _q65ErrorRepair(h, m, errorType, person, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, m);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var prevH = (h === 1) ? 12 : h - 1;
+  var otherM = (m === 0) ? 30 : 0;
+  var minPos = (m === 0) ? 12 : 6;
+  // claim is restricted so even malformed cases stay in H:00/H:30 space.
+  // Each errorType picks a claim that breaks exactly one rule.
+  var claim, fix, fixTag;
+  if (errorType === 'wrongHour') {
+    claim = _u6L5DigitalText(nextH, m);
+    fix   = 'They read the wrong hour.';
+    fixTag = _65WH;
+  } else if (errorType === 'wrongMinute') {
+    claim = _u6L5DigitalText(h, otherM);
+    fix   = 'They got the :00 or :30 part wrong.';
+    fixTag = _65OH;
+  } else if (errorType === 'wrongHand') {
+    // Student read the long hand's number as if it were the hour.
+    claim = _u6L5DigitalText(minPos, m);
+    fix   = 'They read the long hand instead of the short hand.';
+    fixTag = _65RM;
+  } else {  // wrongFormat — at half past, picked the LARGER number.
+    claim = _u6L5DigitalText(nextH, 30);
+    fix   = 'At half past, they used the bigger number instead of the smaller one.';
+    fixTag = _65WHH;
+  }
+  var allFixes = [
+    'They read the wrong hour.',
+    'They got the :00 or :30 part wrong.',
+    'They read the long hand instead of the short hand.',
+    'At half past, they used the bigger number instead of the smaller one.'
+  ];
+  var distractors = allFixes.filter(function(f){ return f !== fix; });
+  var distractorTags = [_65WH, _65OH, _65RM, _65WHH].filter(function(t){ return t !== fixTag; });
+  var opts = [
+    {val: fix},
+    {val: distractors[0], tag: distractorTags[0]},
+    {val: distractors[1], tag: distractorTags[1]},
+    {val: distractors[2], tag: distractorTags[2]}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: person + ' looked at the clock and said: "' + claim + '." But the clock shows ' + actual +
+       '. What did ' + person + ' get wrong?',
+    s: _u6L5Clock(h, m),
+    o: opts, a: aIdx,
+    e: 'The clock shows ' + actual + '. ' + fix,
+    d: diff,
+    h: 'Compare the claim to the clock. Check the hour, check the long hand, check that you used the right hand.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65GeneralTime()
+  };
+}
+
+// _q65MixedReview — C9: "what time?" with hard distractor sets covering multiple
+// error tags. Hardest tier; uses both hour and half-past mixed.
+function _q65MixedReview(h, m, diff, aIdx) {
+  var actual = _u6L5DigitalText(h, m);
+  var nextH = (h === 12) ? 1 : h + 1;
+  var prevH = (h === 1) ? 12 : h - 1;
+  var otherM = (m === 0) ? 30 : 0;
+  // Distractors chosen so each option breaks ONE specific rule.
+  var opts;
+  if (m === 0) {
+    opts = [
+      {val: actual},
+      {val: _u6L5DigitalText(h, 30),     tag: _65OH},
+      {val: _u6L5DigitalText(nextH, 0),  tag: _65WH},
+      {val: _u6L5DigitalText(12, 0),     tag: _65RM}  // read long hand (on 12) as hour
+    ];
+  } else {
+    opts = [
+      {val: actual},
+      {val: _u6L5DigitalText(nextH, 30), tag: _65WHH},  // at half past, picked bigger
+      {val: _u6L5DigitalText(h, 0),      tag: _65OH},
+      {val: _u6L5DigitalText(6, 30),     tag: _65RM}  // read long hand (on 6) as hour
+    ];
+  }
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'What time does the clock show?',
+    s: _u6L5Clock(h, m),
+    o: opts, a: aIdx,
+    e: 'Long hand on ' + (m === 0 ? '12 → o’clock (:00). Short hand on ' + h
+        : '6 → half past (:30). Short hand between ' + h + ' and ' + nextH + ', so the hour is the smaller, ' + h) +
+       '. The time is ' + actual + '.',
+    d: diff,
+    h: 'Long hand first (12 = :00, 6 = :30), then short hand for the hour.',
+    sk: 'tell_time_hour_half_hour',
+    i: _i65GeneralTime()
+  };
+}
+
+// ── L6.5 key ideas ────────────────────────────────────────────────────────────
+var _l65KeyIdeas = [
+  'A clock has two hands. The SHORT hand tells the hour. The LONG hand tells the minutes.',
+  'When the long hand points to 12, it is "o’clock" — the digital says :00.',
+  'When the long hand points to 6, it is "half past" — the digital says :30.',
+  'To read the hour, look at the SHORT hand. At o’clock it points right at the hour number.',
+  'At half past, the short hand is BETWEEN two hour numbers. Always say the SMALLER number — "half past 4" means between 4 and 5.',
+  'A digital time like 7:30 has two parts: 7 is the hour, and :30 is the minutes part. Only :00 (o’clock) and :30 (half past) appear in this lesson.'
+];
+
+// ── L6.5 worked examples ──────────────────────────────────────────────────────
+var _l65Examples = [
+  {
+    id: 'g1-u6-l5-ex-1',
+    title: 'Example 1: Reading "o’clock"',
+    prompt: 'What time does this clock show?',
+    visual: {type: 'rawHtml', html: _u6L5ClockAndDigital(4, 0)},
+    steps: [
+      'Look at the LONG hand first. It is on 12, so it is o’clock.',
+      'That means the digital ends in :00.',
+      'Now look at the SHORT hand. It points right at 4, so the hour is 4.',
+      'Put it together: 4 o’clock — 4:00.'
+    ],
+    finalAnswer: 'The time is 4:00 — "four o’clock."'
+  },
+  {
+    id: 'g1-u6-l5-ex-2',
+    title: 'Example 2: Reading "half past"',
+    prompt: 'What time does this clock show?',
+    visual: {type: 'rawHtml', html: _u6L5ClockAndDigital(7, 30)},
+    steps: [
+      'Look at the LONG hand first. It is on 6, so it is half past.',
+      'That means the digital ends in :30.',
+      'Now look at the SHORT hand. It is between 7 and 8 — always say the SMALLER number, 7.',
+      'Put it together: half past 7 — 7:30.'
+    ],
+    finalAnswer: 'The time is 7:30 — "half past 7."'
+  },
+  {
+    id: 'g1-u6-l5-ex-3',
+    title: 'Example 3: Match the analog to the digital',
+    prompt: 'Which digital time matches this clock?',
+    visual: {type: 'rawHtml', html: _u6L5Clock(9, 0, 180) +
+      '<div style="text-align:center;margin-top:8px;font-size:18px;color:#37474F">' +
+      '<span style="margin:0 8px">3:30</span>' +
+      '<span style="margin:0 8px;background:#E8F5E9;padding:2px 8px;border-radius:6px;font-weight:bold;color:#1B5E20">9:00 ✓</span>' +
+      '<span style="margin:0 8px">9:30</span>' +
+      '<span style="margin:0 8px">12:00</span>' +
+      '</div>'},
+    steps: [
+      'Long hand: on 12 → :00.',
+      'Short hand: on 9 → hour is 9.',
+      'Combine: 9:00.',
+      'Find the digital with the same number AND :00. Match!'
+    ],
+    finalAnswer: 'The matching digital is 9:00.'
+  },
+  {
+    id: 'g1-u6-l5-ex-4',
+    title: 'Example 4: Which hand is which?',
+    prompt: 'The two hands look different. Each one has a job.',
+    visual: {type: 'rawHtml', html: _u6L5Clock(3, 0, 180) +
+      '<div style="text-align:center;margin-top:8px;font-size:14px;line-height:1.6;color:#37474F">' +
+      '<div><span style="display:inline-block;width:14px;height:4px;background:#2980b9;vertical-align:middle"></span>' +
+      ' &nbsp;<b>Short, blue</b> = HOUR hand (tells which hour)</div>' +
+      '<div style="margin-top:4px"><span style="display:inline-block;width:22px;height:2.5px;background:#333;vertical-align:middle"></span>' +
+      ' &nbsp;<b>Long, black</b> = MINUTE hand (tells :00 or :30)</div>' +
+      '</div>'},
+    steps: [
+      'The two hands are different lengths and colors.',
+      'The SHORT blue hand is the hour hand. It tells which hour.',
+      'The LONG black hand is the minute hand. On 12 = :00; on 6 = :30.',
+      'Always check both — one for the hour, one for the :00 or :30 part.'
+    ],
+    finalAnswer: 'Short blue = HOUR. Long black = MINUTE.'
+  },
+  {
+    id: 'g1-u6-l5-ex-5',
+    title: 'Example 5: Try it! Set the clock',
+    prompt: 'Move the hour slider, then tap O’clock or Half past. Watch the clock change.',
+    visual: {type: 'rawHtml', html: _u6L5InteractiveClock(3, 0)},
+    steps: [
+      'Move the Hour slider to pick an hour from 1 to 12. The short hand follows.',
+      'Tap O’clock to set the long hand to 12 — the digital ends in :00.',
+      'Tap Half past to set the long hand to 6 — the digital ends in :30 and the short hand slides between two numbers.',
+      'Try: set the slider to 5, then tap Half past. The clock shows 5:30.'
+    ],
+    finalAnswer: 'Hour slider + O’clock/Half past buttons → make any time on the hour or half-hour.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.5 question banks (9 categories, 155 total)
+//  Target: 50E / 60M / 45H
+//  C1 oclock(22) + C2 halfpast(22) + C3 a→d(18) + C4 d→a(18) +
+//  C5 identify(14) + C6 long12(14) + C7 long6(14) + C8 repair(16) + C9 mixed(17)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Read analog (on the hour) (22 = 12E / 8M / 2H) ───────────────────────
+var _l65C1 = [
+  // Easy (12) — small / familiar hours
+  _q65ReadOClock(1, 'e', 0), _q65ReadOClock(2, 'e', 1),
+  _q65ReadOClock(3, 'e', 2), _q65ReadOClock(4, 'e', 3),
+  _q65ReadOClock(5, 'e', 0), _q65ReadOClock(6, 'e', 1),
+  _q65ReadOClock(7, 'e', 2), _q65ReadOClock(8, 'e', 3),
+  _q65ReadOClock(9, 'e', 0), _q65ReadOClock(10,'e', 1),
+  _q65ReadOClock(11,'e', 2), _q65ReadOClock(12,'e', 3),
+  // Medium (8) — second pass through hours, different correct slots
+  _q65ReadOClock(2, 'm', 3), _q65ReadOClock(4, 'm', 0),
+  _q65ReadOClock(6, 'm', 1), _q65ReadOClock(8, 'm', 2),
+  _q65ReadOClock(10,'m', 3), _q65ReadOClock(12,'m', 0),
+  _q65ReadOClock(3, 'm', 1), _q65ReadOClock(9, 'm', 2),
+  // Hard (2) — tricky / 12 edge case
+  _q65ReadOClock(11,'h', 3), _q65ReadOClock(12,'h', 0)
+];
+
+// ── C2: Read analog (half past) (22 = 10E / 10M / 2H) ────────────────────────
+var _l65C2 = [
+  // Easy (10)
+  _q65ReadHalfPast(1, 'e', 0), _q65ReadHalfPast(2, 'e', 1),
+  _q65ReadHalfPast(3, 'e', 2), _q65ReadHalfPast(4, 'e', 3),
+  _q65ReadHalfPast(5, 'e', 0), _q65ReadHalfPast(6, 'e', 1),
+  _q65ReadHalfPast(7, 'e', 2), _q65ReadHalfPast(8, 'e', 3),
+  _q65ReadHalfPast(9, 'e', 0), _q65ReadHalfPast(10,'e', 1),
+  // Medium (10)
+  _q65ReadHalfPast(11,'m', 2), _q65ReadHalfPast(12,'m', 3),
+  _q65ReadHalfPast(2, 'm', 0), _q65ReadHalfPast(5, 'm', 1),
+  _q65ReadHalfPast(7, 'm', 2), _q65ReadHalfPast(9, 'm', 3),
+  _q65ReadHalfPast(3, 'm', 0), _q65ReadHalfPast(8, 'm', 1),
+  _q65ReadHalfPast(4, 'm', 2), _q65ReadHalfPast(6, 'm', 3),
+  // Hard (2) — 11→12 and 12→1 edge cases
+  _q65ReadHalfPast(11,'h', 0), _q65ReadHalfPast(12,'h', 1)
+];
+
+// ── C3: Match analog → digital (mixed) (18 = 8E / 8M / 2H) ───────────────────
+var _l65C3 = [
+  // Easy (8) — mix of :00 and :30 across varied hours
+  _q65MatchAnalogToDigital(2, 0,  'e', 0), _q65MatchAnalogToDigital(3, 30, 'e', 1),
+  _q65MatchAnalogToDigital(5, 0,  'e', 2), _q65MatchAnalogToDigital(6, 30, 'e', 3),
+  _q65MatchAnalogToDigital(8, 0,  'e', 0), _q65MatchAnalogToDigital(9, 30, 'e', 1),
+  _q65MatchAnalogToDigital(10,0,  'e', 2), _q65MatchAnalogToDigital(4, 30, 'e', 3),
+  // Medium (8)
+  _q65MatchAnalogToDigital(1, 30, 'm', 0), _q65MatchAnalogToDigital(7, 0,  'm', 1),
+  _q65MatchAnalogToDigital(11,30, 'm', 2), _q65MatchAnalogToDigital(12,0,  'm', 3),
+  _q65MatchAnalogToDigital(2, 30, 'm', 0), _q65MatchAnalogToDigital(5, 30, 'm', 1),
+  _q65MatchAnalogToDigital(9, 0,  'm', 2), _q65MatchAnalogToDigital(8, 30, 'm', 3),
+  // Hard (2)
+  _q65MatchAnalogToDigital(12,30, 'h', 1), _q65MatchAnalogToDigital(11,0,  'h', 2)
+];
+
+// ── C4: Match digital → analog (imgChoice) (18 = 6E / 8M / 4H) ───────────────
+var _l65C4 = [
+  // Easy (6)
+  _q65MatchDigitalToAnalog(3, 0,  'e', 0), _q65MatchDigitalToAnalog(4, 30, 'e', 1),
+  _q65MatchDigitalToAnalog(6, 0,  'e', 2), _q65MatchDigitalToAnalog(8, 30, 'e', 3),
+  _q65MatchDigitalToAnalog(2, 0,  'e', 0), _q65MatchDigitalToAnalog(9, 30, 'e', 1),
+  // Medium (8)
+  _q65MatchDigitalToAnalog(1, 0,  'm', 2), _q65MatchDigitalToAnalog(5, 30, 'm', 3),
+  _q65MatchDigitalToAnalog(7, 0,  'm', 0), _q65MatchDigitalToAnalog(10,30, 'm', 1),
+  _q65MatchDigitalToAnalog(11,0,  'm', 2), _q65MatchDigitalToAnalog(12,30, 'm', 3),
+  _q65MatchDigitalToAnalog(4, 0,  'm', 0), _q65MatchDigitalToAnalog(8, 0,  'm', 1),
+  // Hard (4)
+  _q65MatchDigitalToAnalog(11,30, 'h', 2), _q65MatchDigitalToAnalog(12,0,  'h', 3),
+  _q65MatchDigitalToAnalog(1, 30, 'h', 0), _q65MatchDigitalToAnalog(6, 30, 'h', 1)
+];
+
+// ── C5: Identify hour vs. minute hand (14 = 8E / 4M / 2H) ────────────────────
+var _l65C5 = [
+  // Easy (8) — even split between hour-hand and minute-hand at clear hours
+  _q65IdentifyHand(3, true,  'e', 0), _q65IdentifyHand(3, false, 'e', 1),
+  _q65IdentifyHand(6, true,  'e', 2), _q65IdentifyHand(6, false, 'e', 3),
+  _q65IdentifyHand(9, true,  'e', 0), _q65IdentifyHand(9, false, 'e', 1),
+  _q65IdentifyHand(12,true,  'e', 2), _q65IdentifyHand(12,false, 'e', 3),
+  // Medium (4)
+  _q65IdentifyHand(2, true,  'm', 0), _q65IdentifyHand(5, false, 'm', 1),
+  _q65IdentifyHand(8, true,  'm', 2), _q65IdentifyHand(11,false, 'm', 3),
+  // Hard (2)
+  _q65IdentifyHand(7, false, 'h', 0), _q65IdentifyHand(4, true,  'h', 1)
+];
+
+// ── C6: Long hand on 12 = o'clock (14 = 4E / 6M / 4H) ────────────────────────
+var _l65C6 = [
+  // Easy (4)
+  _q65LongHandOnTwelve(2,  'e', 0), _q65LongHandOnTwelve(5,  'e', 1),
+  _q65LongHandOnTwelve(8,  'e', 2), _q65LongHandOnTwelve(11, 'e', 3),
+  // Medium (6)
+  _q65LongHandOnTwelve(1,  'm', 0), _q65LongHandOnTwelve(3,  'm', 1),
+  _q65LongHandOnTwelve(6,  'm', 2), _q65LongHandOnTwelve(9,  'm', 3),
+  _q65LongHandOnTwelve(10, 'm', 0), _q65LongHandOnTwelve(4,  'm', 1),
+  // Hard (4)
+  _q65LongHandOnTwelve(12, 'h', 2), _q65LongHandOnTwelve(7,  'h', 3),
+  _q65LongHandOnTwelve(11, 'h', 0), _q65LongHandOnTwelve(2,  'h', 1)
+];
+
+// ── C7: Long hand on 6 = half past (14 = 2E / 6M / 6H) ───────────────────────
+var _l65C7 = [
+  // Easy (2)
+  _q65LongHandOnSix(2,  'e', 0), _q65LongHandOnSix(7,  'e', 1),
+  // Medium (6)
+  _q65LongHandOnSix(3,  'm', 2), _q65LongHandOnSix(5,  'm', 3),
+  _q65LongHandOnSix(8,  'm', 0), _q65LongHandOnSix(10, 'm', 1),
+  _q65LongHandOnSix(1,  'm', 2), _q65LongHandOnSix(4,  'm', 3),
+  // Hard (6) — including 11 and 12 edge cases
+  _q65LongHandOnSix(11, 'h', 0), _q65LongHandOnSix(12, 'h', 1),
+  _q65LongHandOnSix(6,  'h', 2), _q65LongHandOnSix(9,  'h', 3),
+  _q65LongHandOnSix(11, 'h', 1), _q65LongHandOnSix(12, 'h', 2)
+];
+
+// ── C8: Error repair (16 = 0E / 6M / 10H) ────────────────────────────────────
+var _l65C8 = [
+  // Medium (6)
+  _q65ErrorRepair(3, 0,  'wrongHour',   'Maya', 'm', 0),
+  _q65ErrorRepair(7, 30, 'wrongHour',   'Sam',  'm', 1),
+  _q65ErrorRepair(4, 0,  'wrongMinute', 'Leo',  'm', 2),
+  _q65ErrorRepair(8, 30, 'wrongMinute', 'Mia',  'm', 3),
+  _q65ErrorRepair(5, 0,  'wrongHand',   'Aiden','m', 0),
+  _q65ErrorRepair(2, 30, 'wrongFormat', 'Zoe',  'm', 1),
+  // Hard (10)
+  _q65ErrorRepair(11,0,  'wrongHour',   'Eli',  'h', 2),
+  _q65ErrorRepair(12,30, 'wrongHour',   'Lily', 'h', 3),
+  _q65ErrorRepair(6, 0,  'wrongMinute', 'Noah', 'h', 0),
+  _q65ErrorRepair(10,30, 'wrongMinute', 'Ava',  'h', 1),
+  _q65ErrorRepair(9, 0,  'wrongHand',   'Maya', 'h', 2),
+  _q65ErrorRepair(4, 30, 'wrongHand',   'Sam',  'h', 3),
+  _q65ErrorRepair(5, 30, 'wrongFormat', 'Mia',  'h', 0),
+  _q65ErrorRepair(8, 30, 'wrongFormat', 'Leo',  'h', 1),
+  _q65ErrorRepair(11,30, 'wrongFormat', 'Eli',  'h', 2),
+  _q65ErrorRepair(3, 30, 'wrongHand',   'Lily', 'h', 3)
+];
+
+// ── C9: Mixed review (17 = 0E / 4M / 13H) ────────────────────────────────────
+var _l65C9 = [
+  // Medium (4)
+  _q65MixedReview(2,  0,  'm', 0), _q65MixedReview(5,  30, 'm', 1),
+  _q65MixedReview(9,  0,  'm', 2), _q65MixedReview(11, 30, 'm', 3),
+  // Hard (13)
+  _q65MixedReview(1,  0,  'h', 0), _q65MixedReview(3,  30, 'h', 1),
+  _q65MixedReview(4,  0,  'h', 2), _q65MixedReview(6,  30, 'h', 3),
+  _q65MixedReview(7,  0,  'h', 0), _q65MixedReview(8,  30, 'h', 1),
+  _q65MixedReview(10, 0,  'h', 2), _q65MixedReview(12, 30, 'h', 3),
+  _q65MixedReview(11, 0,  'h', 0), _q65MixedReview(2,  30, 'h', 1),
+  _q65MixedReview(5,  0,  'h', 2), _q65MixedReview(8,  0,  'h', 3),
+  _q65MixedReview(12, 0,  'h', 0)
+];
+
+// ── L6.5 combined bank ───────────────────────────────────────────────────────
+var _l65Bank = [].concat(_l65C1, _l65C2, _l65C3, _l65C4, _l65C5, _l65C6, _l65C7, _l65C8, _l65C9);
+
+
 // ── Unit spec ─────────────────────────────────────────────────────────────────
 export const G1_U6_SPEC = {
   unitId: 'g1u6',
@@ -2974,7 +3861,11 @@ export const G1_U6_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 6.5 — Telling Time   (SCAFFOLD)
+    //  Lesson 6.5 — Telling Time
+    //  TEKS 1.7E | 155 questions (50E / 60M / 45H)
+    //  9 categories: C1 read-oclock, C2 read-half, C3 analog→digital,
+    //  C4 digital→analog (imgChoice), C5 identify hands, C6 long-on-12,
+    //  C7 long-on-6, C8 error repair, C9 mixed review
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u6-l5',
@@ -2982,10 +3873,14 @@ export const G1_U6_SPEC = {
       teks: ['1.7E'],
       skill: 'tell_time_hour_half_hour',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l65KeyIdeas,
+      workedExamples: _l65Examples,
+      quizBank: _l65Bank,
+      diagnostics: {
+        commonDistractors: [_65HHC, _65MHC, _65OH, _65WH, _65WHH, _65AD, _65RM, _65TF],
+        errorTags:         [_65HHC, _65MHC, _65OH, _65WH, _65WHH, _65AD, _65RM, _65TF],
+        interventionRules: []
+      }
     }
 
   ]
