@@ -958,6 +958,44 @@ body.dark .vchoice{ background:rgba(12,22,42,0.82);
 .vchoice-hl-faded{ opacity:0.38; }
 .vchoice-tick{ display:block; font-size:1.1rem; color:#27ae60; font-weight:700; margin-top:2px; }
 
+/* ── Image-choice grid — tappable picture cards (e.g., G1 U6 L6.4 C3) ──
+   Cards are equal-size by design: 2×2 grid with 1fr columns and a fixed
+   min-height. The picture SVG scales to fit; container size never varies
+   based on picture content. */
+.vimg-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px;
+            padding:6px 4px; max-width:420px; width:100%; margin:0 auto 8px;
+            box-sizing:border-box; }
+.vimg-card{ display:flex; flex-direction:column; align-items:center;
+            justify-content:center; gap:6px; padding:10px 8px;
+            min-height:108px; width:100%;
+            background:rgba(255,255,255,0.96);
+            border:2px solid rgba(176,190,197,.85);
+            border-bottom:3px solid var(--border2);
+            border-radius:14px; cursor:pointer; color:var(--txt);
+            font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+            transition:transform .12s, border-color .15s, background .15s;
+            box-shadow:0 4px 14px rgba(0,0,0,.08);
+            touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.vimg-card:hover:not(:disabled){ background:rgba(255,255,255,1);
+  border-color:#009688; box-shadow:0 8px 22px rgba(0,0,0,.12); }
+.vimg-card:active:not(:disabled){ transform:scale(0.97); }
+.vimg-card.selected{ background:rgba(255,140,0,.12);
+  border-color:rgba(255,140,0,.65); transform:scale(0.97); }
+.vimg-card.correct{ background:rgba(39,174,96,.15); border-color:#27ae60; }
+.vimg-card.wrong{   background:rgba(231,76,60,.15);  border-color:#e74c3c; }
+.vimg-card:disabled{ cursor:default; transform:none; }
+body.a11y-colorblind .vimg-card.correct{ border:3px solid #27ae60!important; }
+body.a11y-colorblind .vimg-card.wrong{   border:3px dashed #e74c3c!important; }
+body.dark .vimg-card{ background:rgba(12,22,42,0.82); }
+.vimg-label{ font-size:15px; font-weight:800; color:#37474F;
+             font-family:'Nunito',sans-serif; line-height:1; }
+body.dark .vimg-label{ color:#cdd9e5; }
+.vimg-svg{ display:flex; align-items:center; justify-content:center;
+           width:100%; height:64px; line-height:0; }
+.vimg-svg > svg{ display:block; margin:0 auto;
+                 max-width:100%; max-height:100%;
+                 width:auto; height:auto; }
+
 /* ── ObjectSet visual — emoji grid ──────────────────────────────────── */
 .obj-set-visual{ padding:12px 8px; }
 .obj-set-grid{ display:flex; flex-direction:column; gap:4px; align-items:center; }
