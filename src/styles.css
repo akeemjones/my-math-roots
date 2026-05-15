@@ -991,10 +991,13 @@ body.dark .vimg-card{ background:rgba(12,22,42,0.82); }
              font-family:'Nunito',sans-serif; line-height:1; }
 body.dark .vimg-label{ color:#cdd9e5; }
 .vimg-svg{ display:flex; align-items:center; justify-content:center;
-           width:100%; height:64px; line-height:0; }
+           width:100%; min-height:64px; line-height:0; }
 .vimg-svg > svg{ display:block; margin:0 auto;
                  max-width:100%; max-height:100%;
                  width:auto; height:auto; }
+/* Tables (e.g., L7.1 C6 tally-chart cards) need natural sizing inside the
+   choice card — keep them centered and let the card grow if needed. */
+.vimg-svg > table{ margin:0 auto; max-width:100%; }
 
 /* ── L6.5 interactive-clock active-mode button highlight ─────────────────── */
 .g1ic-active{ background:#FFC107!important; color:#fff!important;
