@@ -1815,23 +1815,46 @@ function _q63MatchExpl(obj, unit, bigN, diff, aIdx) {
   };
 }
 
-// _q63TrueStatement — C5: choose the TRUE sentence about two measurements.
+// _q63TrueStatement — C5: judge a single claim about the two measurements.
+// Binary True/False format (2-option multipleChoice) — kid-friendly and forces
+// students to read each statement rather than picking the longest sentence.
+// Cycles through a small pool of true AND false statements so students can't
+// pattern-match a single correct answer.
 function _q63TrueStatement(obj, unit, bigN, diff, aIdx) {
-  var um = _u6UnitMeta[unit];
-  var opts = [
-    {val: 'Both measurements can be correct because the units are different sizes.'},
-    {val: 'The first measurement is wrong because there are fewer ' + um.plur + '.', tag: _63TW},
-    {val: 'The bigger count is always more accurate.',                                tag: _63CN},
-    {val: 'One of them must be wrong.',                                               tag: _63TW}
+  // Two parallel pools (4 each) so we can force ~50/50 True/False balance
+  // across the 16 C5 questions: even aIdx → True statement, odd → False.
+  var truePool = [
+    'Both measurements can be correct because the units are different sizes.',
+    'Bigger units cover more space, so fewer of them are needed.',
+    'Smaller units cover less space, so more of them are needed.',
+    'The same object can have two correct counts when the units are different sizes.'
   ];
-  opts = _u6Place(opts, aIdx);
+  var falsePool = [
+    'When the counts are different, one of the measurements must be wrong.',
+    'The bigger number is always the correct measurement.',
+    'Two measurements of the same object always give the same count.',
+    'A bigger count always means the object is bigger.'
+  ];
+  var useTrue = (aIdx % 2 === 0);
+  var pool = useTrue ? truePool : falsePool;
+  // Cycle within the chosen pool using a deterministic mix of params
+  var idx = (bigN * 3 + obj.length + unit.length) % pool.length;
+  var stmt = { text: pool[idx], isTrue: useTrue };
+  var correctVal = stmt.isTrue ? 'True' : 'False';
+  var wrongVal   = stmt.isTrue ? 'False' : 'True';
+  var opts = [
+    {val: correctVal},
+    {val: wrongVal, tag: _63TW}
+  ];
   return {
-    t: 'Which sentence about the two measurements is true?',
+    t: 'True or false: ' + stmt.text,
     s: _u6TwoSizeMeasure(obj, unit, bigN),
-    o: opts, a: aIdx,
-    e: 'Both measurements are correct. Each row uses same-size units, and the two unit sizes are different.',
+    o: opts, a: 0,
+    e: stmt.isTrue
+      ? 'True. ' + stmt.text + ' The same object can have different counts when the units are different sizes.'
+      : 'False. Both measurements of the same object can be correct when the units are different sizes — bigger units need fewer, smaller units need more.',
     d: diff,
-    h: 'Both rows are fair on their own.',
+    h: 'The object is the same in both rows. Look at the unit sizes, not just the numbers.',
     sk: 'compare_measurements',
     i: _i63Both()
   };
@@ -1866,27 +1889,42 @@ function _q63DeduceSize(obj, unit, bigN, swap, diff, aIdx) {
   };
 }
 
-// _q63ErrorRepair — C7: someone says one measurement must be wrong.
+// _q63ErrorRepair — C7: judge whether a student's claim is correct.
+// Binary Yes/No format (2-option multipleChoice). To prevent always-No
+// pattern-matching, ~1 in 3 questions presents a CORRECT claim where the
+// student is right (correct answer = Yes); the rest present the standard
+// misconception (correct answer = No). Variety comes from object/unit/name
+// combinations and from the alternating claim type.
 function _q63ErrorRepair(obj, unit, bigN, person, otherPerson, diff, aIdx) {
   var um = _u6UnitMeta[unit];
   var oname = _u6ObjName[obj];
   var smallN = bigN * 2;
+  var isCorrectClaim = (aIdx % 3 === 0);  // ~33% of C7 questions
+  var prompt, explanation;
+  if (isCorrectClaim) {
+    prompt = person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
+             otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
+             person + ' says both measurements can be correct because the units are different sizes. Is ' + person + ' correct?';
+    explanation = 'Yes. Both can be correct when the units are different sizes. ' + person + ' is right — bigger units need fewer, smaller units need more.';
+  } else {
+    prompt = person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
+             otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
+             person + ' says ' + otherPerson + ' must be wrong because the counts are different. Is ' + person + ' correct?';
+    explanation = 'No. Both can be correct when the units are different sizes. ' + otherPerson + ' used smaller ' + um.plur + ', so more were needed.';
+  }
+  var correctVal = isCorrectClaim ? 'Yes' : 'No';
+  var wrongVal   = isCorrectClaim ? 'No' : 'Yes';
   var opts = [
-    {val: 'Both can be right when the units are different sizes.'},
-    {val: 'The bigger number is always wrong.',  tag: _63CN},
-    {val: 'The smaller number is always wrong.', tag: _63CN},
-    {val: 'They should count again.',            tag: _63TW}
+    {val: correctVal},
+    {val: wrongVal, tag: _63TW}
   ];
-  opts = _u6Place(opts, aIdx);
   return {
-    t: person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
-       otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
-       person + ' says ' + otherPerson + ' must be wrong. What should we tell ' + person + '?',
+    t: prompt,
     s: _u6TwoSizeMeasure(obj, unit, bigN),
-    o: opts, a: aIdx,
-    e: 'Both can be right. ' + otherPerson + ' used smaller ' + um.plur + ', so more were needed. The ' + oname + ' is the same in both.',
+    o: opts, a: 0,
+    e: explanation,
     d: diff,
-    h: 'Look at the unit sizes, not just the counts.',
+    h: 'Both measurements of the same object can be correct when the units are different sizes.',
     sk: 'compare_measurements',
     i: _i63Both()
   };
