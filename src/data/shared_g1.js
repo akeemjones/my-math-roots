@@ -129,11 +129,14 @@ const _UNITS_DATA_G1 = [
     id: 'g1u7', name: 'Data Analysis',
     icon: '📊',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#FF9800" opacity="0.1"/><rect x="8" y="38" width="10" height="12" rx="2" fill="#FF9800" opacity="0.6"/><rect x="22" y="28" width="10" height="22" rx="2" fill="#FF9800" opacity="0.8"/><rect x="36" y="18" width="10" height="32" rx="2" fill="#FF9800"/></svg>',
-    color: '#FF9800', gp: 1, teks: 'TEKS 1.8',
+    color: '#FF9800', gp: 1, teks: 'TEKS 1.8A–C',
     lessons: [
-      { id:'g1u7l1', title:'Graphs and Charts', icon:'📊', desc:'Collect and organize data in graphs' }
+      { id:'g1-u7-l1', title:'Sorting and Organizing Data', icon:'🗂️', desc:'Sort objects into categories; record with tally marks and T-charts',                 teks:'TEKS 1.8A' },
+      { id:'g1-u7-l2', title:'Picture Graphs',              icon:'🖼️', desc:'Read and build picture graphs where 1 picture = 1 data point',                      teks:'TEKS 1.8B' },
+      { id:'g1-u7-l3', title:'Bar-Type Graphs',             icon:'📊', desc:'Read and build bar graphs where each cell stands for 1 data point',               teks:'TEKS 1.8B' },
+      { id:'g1-u7-l4', title:'Drawing Conclusions from Data', icon:'🔎', desc:'Answer questions from a graph: most, fewest, how many in all, how many more/fewer', teks:'TEKS 1.8C' }
     ],
-    _loaded: true
+    _loaded: false
   },
   {
     id: 'g1u8', name: 'Financial Literacy',
@@ -166,10 +169,10 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js … idx 5 → u6.js.
-  // Units 7-8 (idx 6-7) are still shell-only — short-circuit so the loader
+  // Units with data files: idx 0 → u1.js … idx 6 → u7.js.
+  // Unit 8 (idx 7) is still shell-only — short-circuit so the loader
   // does not try to fetch a file that doesn't exist yet.
-  if(idx > 5){
+  if(idx > 6){
     u._loaded = true;
     return Promise.resolve();
   }
