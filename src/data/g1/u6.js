@@ -1890,11 +1890,14 @@ function _q63DeduceSize(obj, unit, bigN, swap, diff, aIdx) {
 }
 
 // _q63ErrorRepair — C7: judge whether a student's claim is correct.
-// Binary Yes/No format (2-option multipleChoice). To prevent always-No
-// pattern-matching, ~1 in 3 questions presents a CORRECT claim where the
-// student is right (correct answer = Yes); the rest present the standard
-// misconception (correct answer = No). Variety comes from object/unit/name
-// combinations and from the alternating claim type.
+// Binary Yes/No format (2-option multipleChoice). The wording is intentionally
+// tight: "Is X right?" (rather than "Is X correct?") to make it unambiguous
+// that the student is judging X's STATEMENT, not X's measurement. The visual
+// shows both measurement rows, so the measurement narrative is dropped from
+// the prompt to keep reading load low. To prevent always-No pattern-matching,
+// ~1 in 3 questions presents a CORRECT claim where the student is right
+// (correct answer = Yes); the rest present the standard misconception
+// (correct answer = No).
 function _q63ErrorRepair(obj, unit, bigN, person, otherPerson, diff, aIdx) {
   var um = _u6UnitMeta[unit];
   var oname = _u6ObjName[obj];
@@ -1902,15 +1905,14 @@ function _q63ErrorRepair(obj, unit, bigN, person, otherPerson, diff, aIdx) {
   var isCorrectClaim = (aIdx % 3 === 0);  // ~33% of C7 questions
   var prompt, explanation;
   if (isCorrectClaim) {
-    prompt = person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
-             otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
-             person + ' says both measurements can be correct because the units are different sizes. Is ' + person + ' correct?';
-    explanation = 'Yes. Both can be correct when the units are different sizes. ' + person + ' is right — bigger units need fewer, smaller units need more.';
+    prompt = person + ' says both measurements of the ' + oname +
+             ' can be right because the units are different sizes. Is ' + person + ' right?';
+    explanation = 'Yes. Both can be right. Bigger units need fewer; smaller units need more.';
   } else {
-    prompt = person + ' measured a ' + oname + ' with big ' + um.plur + ' and got ' + bigN + '. ' +
-             otherPerson + ' measured the same ' + oname + ' with small ' + um.plur + ' and got ' + smallN + '. ' +
-             person + ' says ' + otherPerson + ' must be wrong because the counts are different. Is ' + person + ' correct?';
-    explanation = 'No. Both can be correct when the units are different sizes. ' + otherPerson + ' used smaller ' + um.plur + ', so more were needed.';
+    prompt = person + ' says ' + otherPerson + ' must be wrong because the count is different. Is ' +
+             person + ' right?';
+    explanation = 'No. ' + otherPerson + ' can also be right. ' + otherPerson +
+                  ' used smaller ' + um.plur + ', so more ' + um.plur + ' were needed.';
   }
   var correctVal = isCorrectClaim ? 'Yes' : 'No';
   var wrongVal   = isCorrectClaim ? 'No' : 'Yes';
