@@ -802,6 +802,28 @@ function _renderQ(){
       _visualBlock = q.s ? '<div class="q-visual">'+q.s+'</div>' : '';
     }
 
+  } else if (_vt === 'imgChoice') {
+    // Tappable picture grid. Each card IS an answer choice — student taps
+    // the picture, not a separate "Picture A/B/C/D" button. Cards share
+    // identical outer dimensions so size never reveals the answer.
+    // config.items: short labels matching q.o text (e.g., ['Picture A',...])
+    // config.svgs : pre-built SVG/HTML strings, one per item
+    var _icCfg   = q.v.config;
+    var _icItems = _icCfg.items || [];
+    var _icSvgs  = _icCfg.svgs  || [];
+    var _icIdxs  = _icItems.map(function(name){
+      return opts.findIndex(function(o){ return o.text === name; });
+    });
+    if (_icItems.length >= 2 && _icItems.length === _icSvgs.length &&
+        _icIdxs.every(function(i){ return i !== -1; })) {
+      // Strip "Picture " prefix for the badge so the label reads "A/B/C/D".
+      var _icBadges = _icItems.map(function(t){ return String(t).replace(/^Picture\s+/i, ''); });
+      _agridOpts   = [];
+      _visualBlock = drawImgChoice(_icBadges, _icSvgs, _icIdxs);
+    } else {
+      _visualBlock = q.s ? '<div class="q-visual">'+q.s+'</div>' : '';
+    }
+
   } else if (q.type === 'tapGroup' || _vt === 'tapGroup') {
     _agridOpts   = [];
     var _tgCfg   = q.visual ? q.visual.config : (q.v ? q.v.config : null);

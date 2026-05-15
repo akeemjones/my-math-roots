@@ -837,3 +837,33 @@ function drawCoinChoices(config, optIdxs) {
   }).join('');
   return '<div class="q-visual"><div class="vcmp-grid" style="display:grid;grid-template-columns:repeat(2,120px);gap:16px;padding:8px;justify-content:center">'+buttons+'</div></div>';
 }
+
+// ── drawImgChoice — generic 2-or-4 tappable picture grid ────────────────────
+// Renders pre-built SVG/HTML picture strings as equal-size tappable choice
+// cards. Used when the answer choices ARE the pictures themselves (e.g.,
+// "Which picture shows: 'X is N units long'?"), so tapping the picture is
+// the answer — no separate Picture A/B/C/D buttons.
+//
+// All cards share identical outer dimensions so the picture size never
+// reveals the answer. The student decides by reading the picture content,
+// not by spotting which card is wider.
+//
+// items:   array of short labels (e.g., ['A','B','C','D']) — used for a
+//          small badge AND the aria-label fallback.
+// svgs:    array of SVG/HTML strings (one per item), all rendered inside
+//          fixed-size cards. The SVGs scale to fit via CSS.
+// optIdxs: parallel array of shuffled option indices for data-arg routing.
+//          The button id "abtn-<oi>" must match so _pickAnswer's
+//          correct/wrong/selected class toggles still work.
+function drawImgChoice(items, svgs, optIdxs) {
+  var cells = items.map(function(label, i) {
+    var oi = optIdxs[i];
+    var safeLabel = _escHtml(label);
+    return '<button class="vimg-card" type="button" data-action="_pickAnswer" ' +
+      'data-arg="' + oi + '" id="abtn-' + oi + '" aria-label="Picture ' + safeLabel + '">' +
+      '<span class="vimg-label">' + safeLabel + '</span>' +
+      '<span class="vimg-svg">' + (svgs[i] || '') + '</span>' +
+      '</button>';
+  }).join('');
+  return '<div class="q-visual"><div class="vimg-grid" role="group" aria-label="Picture choices">' + cells + '</div></div>';
+}

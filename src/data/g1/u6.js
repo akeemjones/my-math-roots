@@ -2433,7 +2433,24 @@ function _q64NumberUnit(obj, unit, n, diff, aIdx) {
   };
 }
 
+// _u6PicForChoice — same content as _u6Pic, but WITHOUT the inline
+// `max-width:Xpx` constraint so the SVG can scale freely to fill a
+// fixed-size choice card. CSS (.vimg-svg > svg) controls the display
+// size, so different unit counts produce visually equal-size cards.
+// This is the visual key for L6.4 C3: card size never reveals the answer.
+function _u6PicForChoice(obj, unit, n) {
+  var w = n * 28 + 16;
+  return '<svg viewBox="0 0 ' + w + ' 72" width="100%" style="display:block;margin:0 auto" preserveAspectRatio="xMidYMid meet">' +
+    _u6ObjDrawers[obj](n) + _u6Train(unit, n) + '</svg>';
+}
+
 // _q64MatchStatement — C3: given a sentence, pick the picture that matches.
+// Uses the engine's imgChoice visual type so each picture card IS the
+// answer choice (student taps the picture directly). The four cards are
+// rendered at equal outer size via .vimg-card CSS, so the number of
+// units never leaks the answer through card geometry.
+// `o` ("Picture A/B/C/D") is preserved as the data-level label and a
+// fallback for review-mode / a11y; the active flow renders image cards.
 function _q64MatchStatement(obj, unit, n, diff, aIdx) {
   var um = _u6UnitMeta[unit];
   var oname = _u6ObjName[obj];
@@ -2441,13 +2458,16 @@ function _q64MatchStatement(obj, unit, n, diff, aIdx) {
   var slotCounts = wrongs.slice();
   slotCounts.splice(aIdx, 0, n);
   var letters = ['A', 'B', 'C', 'D'];
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var svgs   = slotCounts.map(function(c){ return _u6PicForChoice(obj, unit, c); });
   var opts = letters.map(function(L, i) {
     if (i === aIdx) return {val: 'Picture ' + L};
     return {val: 'Picture ' + L, tag: _64SP};
   });
   return {
-    t: 'Which picture shows: "The ' + oname + ' is ' + n + ' ' + um.plur + ' long"?',
-    s: _u6FourPic(obj, unit, slotCounts),
+    t: 'Which picture shows: "The ' + oname + ' is ' + n + ' ' + um.plur + ' long"? Tap a picture.',
+    v: { type: 'imgChoice', config: { items: labels, svgs: svgs } },
+    s: _u6FourPic(obj, unit, slotCounts),  // legacy fallback if v isn't rendered
     o: opts, a: aIdx,
     e: 'Picture ' + letters[aIdx] + ' has exactly ' + n + ' ' + um.plur + ' under the ' + oname + ', matching the statement.',
     d: diff,
