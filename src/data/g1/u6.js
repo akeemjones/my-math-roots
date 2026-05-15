@@ -11,9 +11,9 @@
  *
  *  Lessons:
  *    L6.1  Measuring with Non-Standard Units      ← 145 questions (50E / 55M / 40H)
- *    L6.2  Understanding Units of Length          ← SCAFFOLD (0 questions)
- *    L6.3  Comparing Measurements                 ← SCAFFOLD (0 questions)
- *    L6.4  Describing Length                      ← SCAFFOLD (0 questions)
+ *    L6.2  Understanding Units of Length          ← 135 questions (45E / 55M / 35H)
+ *    L6.3  Comparing Measurements                 ← 135 questions (45E / 55M / 35H)
+ *    L6.4  Describing Length                      ← 135 questions (45E / 55M / 35H)
  *    L6.5  Telling Time                           ← SCAFFOLD (0 questions)
  *
  *  Hard scope guardrails (apply to every question added to this unit):
@@ -2225,6 +2225,629 @@ var _l63C8 = [
 var _l63Bank = [].concat(_l63C1, _l63C2, _l63C3, _l63C4, _l63C5, _l63C6, _l63C7, _l63C8);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.4 — Describing Length
+//  TEKS 1.7D | 135 questions (45E / 55M / 35H)
+//  Scope: describe length using number + unit name, including "about" for
+//  visually obvious nearest-whole cases. NO half-units, NO fractions, NO
+//  "between N and N+1" language, NO standard units, NO clocks.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L6.4 error tags ──────────────────────────────────────────────────────────
+var _64MN = 'err_missing_unit_name';
+var _64WN = 'err_wrong_unit_name';
+var _64WC = 'err_wrong_length_count';
+var _64AC = 'err_about_length_confusion';
+var _64NW = 'err_nearest_whole_confusion';
+var _64SP = 'err_statement_picture_mismatch';
+var _64CO = 'err_count_without_unit';
+var _64DC = 'err_measurement_description_confusion';
+
+// ── L6.4 SVG helper: "about" measurement picture ─────────────────────────────
+// Object's right edge sits 6px before the train's right edge — i.e., the
+// object visibly ends ~22/28 (~79%) across unit N. Visually unambiguous:
+// the object is well past unit (N-1)'s right edge AND clearly short of
+// unit N's right edge. The closest whole count is always N. Never produces
+// a "between" visual.
+function _u6PicAbout(obj, unit, n) {
+  var trainW = n * 28;
+  var objW = trainW - 6;
+  var canvasW = trainW + 16;
+  return '<svg viewBox="0 0 ' + canvasW + ' 72" width="100%" style="max-width:' + canvasW +
+    'px;display:block;margin:0 auto">' + _u6ObjAtW(obj, objW) + _u6Train(unit, n) + '</svg>';
+}
+
+// ── L6.4 teaching visuals (for intervention overlays) ────────────────────────
+function _u6TvFullStatement() {
+  return _u6TvWrap(_u6Pic('pencil', 'cube', 5),
+    'Number: 5. Unit name: cubes. Together: "5 cubes long."');
+}
+function _u6TvCountUnits64() {
+  return _u6TvWrap(_u6PicLabeled('crayon', 'clip', 4),
+    'Touch each paper clip and count: 1, 2, 3, 4. The crayon is 4 paper clips long.');
+}
+function _u6TvUnitName64() {
+  return _u6TvWrap(_u6Pic('book', 'tile', 4),
+    'The units are tiles. The answer says "tiles" — not cubes, not paper clips, not blocks.');
+}
+function _u6TvAboutChoice() {
+  return _u6TvWrap(_u6PicAbout('pencil', 'cube', 5),
+    'The pencil ends inside the 5th cube — closer to 5 than to 4. So we say "about 5 cubes long."');
+}
+function _u6TvNearestWhole() {
+  return _u6TvWrap(_u6PicAbout('crayon', 'clip', 4),
+    'The crayon ends near the end of clip 4. Closest whole = 4. Say "about 4 paper clips long."');
+}
+function _u6TvStatementMatch() {
+  return _u6TvWrap(_u6Pic('stick', 'block', 5),
+    'Statement: "The stick is 5 blocks long." Picture has 5 blocks. Match!');
+}
+function _u6TvGeneralDescribe() {
+  return _u6TvWrap(_u6Pic('marker', 'cube', 5),
+    'Right number (5). Right unit name (cubes). Exact, so no "about." → "5 cubes long."');
+}
+
+// ── L6.4 intervention factories ──────────────────────────────────────────────
+function _i64FullStatement() { return {
+  errorTag: _64MN, title: 'A length has two parts',
+  teachingSteps: [
+    'A length has TWO parts: a NUMBER and a UNIT NAME.',
+    'The number tells how many.',
+    'The unit name tells what you used (cubes, paper clips, tiles, or blocks).',
+    'Both together: "5 cubes long" or "3 paper clips long."'
+  ],
+  teachingVisualRaw: _u6TvFullStatement(),
+  correctAnswerExplanation: 'Always include both the number and the unit name when describing length.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64CountUnits() { return {
+  errorTag: _64WC, title: 'Count the units carefully',
+  teachingSteps: [
+    'Look at the train under the object.',
+    'Point to each unit and say a number: 1, 2, 3...',
+    'Stop where the object ends.',
+    'That number is the count for your answer.'
+  ],
+  teachingVisualRaw: _u6TvCountUnits64(),
+  correctAnswerExplanation: 'The count is the number of units that fit along the object.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64UnitName() { return {
+  errorTag: _64WN, title: 'Name the unit you see',
+  teachingSteps: [
+    'Look at the picture.',
+    'What shape are the units? Cubes? Paper clips? Tiles? Blocks?',
+    'The unit name in your answer must match the picture.',
+    'Wrong unit name means a wrong description, even if the number is right.'
+  ],
+  teachingVisualRaw: _u6TvUnitName64(),
+  correctAnswerExplanation: 'Match the unit name in your answer to the shapes shown in the picture.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64AboutChoice() { return {
+  errorTag: _64AC, title: 'Use "about" only when not exact',
+  teachingSteps: [
+    'Look at where the object ends.',
+    'If it ends right at a unit\'s edge, use a plain number ("5 cubes long").',
+    'If it ends past a unit\'s edge but not all the way to the next one, use "about" ("about 5 cubes long").',
+    'Pick "about" only when the object is close to a whole count but not exact.'
+  ],
+  teachingVisualRaw: _u6TvAboutChoice(),
+  correctAnswerExplanation: 'Use "about" when the object ends near a whole unit count but not exactly at it.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64NearestWhole() { return {
+  errorTag: _64NW, title: 'Pick the closest whole number',
+  teachingSteps: [
+    'Look at where the object ends.',
+    'Which whole count is it closest to?',
+    'If it ends near the end of unit 5, the closest whole is 5.',
+    'Say "about 5" — not "about 4" or "about 6."'
+  ],
+  teachingVisualRaw: _u6TvNearestWhole(),
+  correctAnswerExplanation: 'Choose the whole count the object is closest to.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64StatementMatch() { return {
+  errorTag: _64SP, title: 'Match the statement to the picture',
+  teachingSteps: [
+    'Read the statement. Find the number and the unit name.',
+    'Look at each picture.',
+    'Find the picture that has the SAME number AND the SAME unit name.',
+    'Both must match.'
+  ],
+  teachingVisualRaw: _u6TvStatementMatch(),
+  correctAnswerExplanation: 'A statement matches its picture when the number and the unit name both match.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i64GeneralDescribe() { return {
+  errorTag: _64DC, title: 'A good description has three things',
+  teachingSteps: [
+    'Right NUMBER — count the units carefully.',
+    'Right UNIT NAME — match what you see in the picture.',
+    'Right WORDS — use "about" only when the object is close to a whole count, not exact.',
+    'Always include BOTH the number AND the unit name.'
+  ],
+  teachingVisualRaw: _u6TvGeneralDescribe(),
+  correctAnswerExplanation: 'A good length description has the right number, the right unit name, and the right word ("about" only when not exact).',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L6.4 question factory functions ──────────────────────────────────────────
+
+// _q64Statement — C1: pick the correct "X is N units long" sentence.
+function _q64Statement(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var unitList = ['cube', 'clip', 'tile', 'block'];
+  var others = unitList.filter(function(u){ return u !== unit; });
+  var wrongUnit = _u6UnitMeta[others[n % others.length]].plur;
+  var opts = [
+    {val: 'The ' + oname + ' is ' + n + ' ' + um.plur + ' long.'},
+    {val: 'The ' + oname + ' is ' + n + ' ' + wrongUnit + ' long.', tag: _64WN},
+    {val: 'The ' + oname + ' is ' + (n + 1) + ' ' + um.plur + ' long.', tag: _64WC},
+    {val: 'The ' + oname + ' is ' + Math.max(1, n - 1) + ' ' + um.plur + ' long.', tag: _64WC}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. Which sentence tells the length of the ' + oname + '?',
+    s: _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'There are ' + n + ' ' + um.plur + ' under the ' + oname + ', so the ' + oname + ' is ' + n + ' ' + um.plur + ' long.',
+    d: diff,
+    h: 'Count the units, then pick the sentence with the right number AND the right unit name.',
+    sk: 'describe_length',
+    i: _i64StatementMatch()
+  };
+}
+
+// _q64NumberUnit — C2: pick the answer that has BOTH a number AND a unit name.
+function _q64NumberUnit(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var unitList = ['cube', 'clip', 'tile', 'block'];
+  var others = unitList.filter(function(u){ return u !== unit; });
+  var wrongUnit = _u6UnitMeta[others[n % others.length]].plur;
+  var opts = [
+    {val: n + ' ' + um.plur + ' long'},
+    {val: String(n), tag: _64CO},
+    {val: 'About ' + n + ' ' + um.plur + ' long', tag: _64AC},
+    {val: n + ' ' + wrongUnit + ' long', tag: _64WN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'How long is the ' + oname + '? Pick the answer with BOTH a number and the right unit name.',
+    s: _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'A length needs a number (' + n + ') AND a unit name (' + um.plur + '). The ' + oname + ' is ' + n + ' ' + um.plur + ' long.',
+    d: diff,
+    h: 'A number alone is not a length. Pick the answer that has both parts and matches the picture.',
+    sk: 'describe_length',
+    i: _i64FullStatement()
+  };
+}
+
+// _q64MatchStatement — C3: given a sentence, pick the picture that matches.
+function _q64MatchStatement(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var wrongs = [Math.max(1, n - 1), n + 1, n + 2];
+  var slotCounts = wrongs.slice();
+  slotCounts.splice(aIdx, 0, n);
+  var letters = ['A', 'B', 'C', 'D'];
+  var opts = letters.map(function(L, i) {
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _64SP};
+  });
+  return {
+    t: 'Which picture shows: "The ' + oname + ' is ' + n + ' ' + um.plur + ' long"?',
+    s: _u6FourPic(obj, unit, slotCounts),
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' has exactly ' + n + ' ' + um.plur + ' under the ' + oname + ', matching the statement.',
+    d: diff,
+    h: 'Read the statement: ' + n + ' ' + um.plur + '. Find the picture with that count.',
+    sk: 'describe_length',
+    i: _i64StatementMatch()
+  };
+}
+
+// _q64About — C4: object ends inside unit N (clearly closer to N than N-1).
+// Pick "About N <unit> long". Distractors: about N+1, about N-1, exactly N.
+function _q64About(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var opts = [
+    {val: 'About ' + n + ' ' + um.plur + ' long'},
+    {val: 'About ' + (n + 1) + ' ' + um.plur + ' long', tag: _64NW},
+    {val: 'About ' + Math.max(1, n - 1) + ' ' + um.plur + ' long', tag: _64NW},
+    {val: 'Exactly ' + n + ' ' + um.plur + ' long', tag: _64AC}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. The ' + oname + ' is close to a whole count. Which is the best description?',
+    s: _u6PicAbout(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'The ' + oname + ' ends inside the ' + n + 'th ' + um.sing + ', much closer to its end than to the start. The closest whole count is ' + n + ', so we say "about ' + n + ' ' + um.plur + ' long."',
+    d: diff,
+    h: 'Look at where the object ends. Which whole count is it closest to? Use "about" plus that number.',
+    sk: 'describe_length',
+    i: _i64AboutChoice()
+  };
+}
+
+// _q64TooShortLong — C5: distractors are wrong-count claims (too short / too long).
+function _q64TooShortLong(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var tooLong = n + 2;
+  var tooShort = Math.max(1, n - 2);
+  var opts = [
+    {val: 'The ' + oname + ' is ' + n + ' ' + um.plur + ' long.'},
+    {val: 'The ' + oname + ' is ' + (n + 1) + ' ' + um.plur + ' long.', tag: _64WC},
+    {val: 'The ' + oname + ' is ' + Math.max(1, n - 1) + ' ' + um.plur + ' long.', tag: _64WC},
+    {val: 'The ' + oname + ' is ' + tooLong + ' ' + um.plur + ' long.', tag: _64WC}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. Which sentence has the RIGHT count?',
+    s: _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'Count the ' + um.plur + ' carefully: there are ' + n + '. The ' + oname + ' is ' + n + ' ' + um.plur + ' long.',
+    d: diff,
+    h: 'One sentence has the right count and three have the wrong count. Check by counting.',
+    sk: 'describe_length',
+    i: _i64CountUnits()
+  };
+}
+
+// _q64UnitMismatch — C6: same count, different unit names. Pick the right one.
+function _q64UnitMismatch(obj, unit, n, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var unitList = ['cube', 'clip', 'tile', 'block'];
+  var others = unitList.filter(function(u){ return u !== unit; });
+  var opts = [
+    {val: 'The ' + oname + ' is ' + n + ' ' + um.plur + ' long.'},
+    {val: 'The ' + oname + ' is ' + n + ' ' + _u6UnitMeta[others[0]].plur + ' long.', tag: _64WN},
+    {val: 'The ' + oname + ' is ' + n + ' ' + _u6UnitMeta[others[1]].plur + ' long.', tag: _64WN},
+    {val: 'The ' + oname + ' is ' + n + ' ' + _u6UnitMeta[others[2]].plur + ' long.', tag: _64WN}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. All four sentences say ' + n + '. Pick the one with the RIGHT unit name.',
+    s: _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'The picture shows ' + um.plur + '. The right answer says "' + um.plur + '" — not other unit names.',
+    d: diff,
+    h: 'Look at the shapes in the picture. Are they cubes, paper clips, tiles, or blocks?',
+    sk: 'describe_length',
+    i: _i64UnitName()
+  };
+}
+
+// _q64ErrorRepair — C7: a student wrote a wrong description. Find the mistake.
+// errorType: 'missing' | 'wrongUnit' | 'wrongCount'
+function _q64ErrorRepair(obj, unit, n, person, errorType, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var unitList = ['cube', 'clip', 'tile', 'block'];
+  var wrongU = unitList.filter(function(u){ return u !== unit; })[0];
+
+  var stmt, correctFix;
+  if (errorType === 'missing') {
+    stmt = '"The ' + oname + ' is ' + n + '."';
+    correctFix = 'The unit name is missing.';
+  } else if (errorType === 'wrongUnit') {
+    stmt = '"The ' + oname + ' is ' + n + ' ' + _u6UnitMeta[wrongU].plur + ' long."';
+    correctFix = 'The unit name is wrong.';
+  } else {
+    stmt = '"The ' + oname + ' is ' + (n + 1) + ' ' + um.plur + ' long."';
+    correctFix = 'The number is wrong.';
+  }
+
+  var allFixes = [
+    'The unit name is missing.',
+    'The unit name is wrong.',
+    'The number is wrong.',
+    'Both the number and the unit are wrong.'
+  ];
+  var distractors = allFixes.filter(function(f){ return f !== correctFix; });
+
+  var opts = [
+    {val: correctFix},
+    {val: distractors[0], tag: _64DC},
+    {val: distractors[1], tag: _64DC},
+    {val: distractors[2], tag: _64DC}
+  ];
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: person + ' looked at the picture and wrote: ' + stmt + ' What is wrong with the answer?',
+    s: _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'The correct answer is "The ' + oname + ' is ' + n + ' ' + um.plur + ' long." ' + correctFix,
+    d: diff,
+    h: 'Compare the answer to the picture: right number? right unit name? both included?',
+    sk: 'describe_length',
+    i: _i64GeneralDescribe()
+  };
+}
+
+// _q64MixedReview — C8: pick the BEST description. Mix of exact and "about".
+// isAbout=true → use the "about" picture; isAbout=false → use the exact picture.
+function _q64MixedReview(obj, unit, n, isAbout, diff, aIdx) {
+  var um = _u6UnitMeta[unit];
+  var oname = _u6ObjName[obj];
+  var unitList = ['cube', 'clip', 'tile', 'block'];
+  var wrongU = unitList.filter(function(u){ return u !== unit; })[0];
+
+  var correct, opts;
+  if (isAbout) {
+    correct = 'The ' + oname + ' is about ' + n + ' ' + um.plur + ' long.';
+    opts = [
+      {val: correct},
+      {val: 'The ' + oname + ' is exactly ' + n + ' ' + um.plur + ' long.', tag: _64AC},
+      {val: 'The ' + oname + ' is about ' + n + ' ' + _u6UnitMeta[wrongU].plur + ' long.', tag: _64WN},
+      {val: 'The ' + oname + ' is about ' + n + '.', tag: _64MN}
+    ];
+  } else {
+    correct = 'The ' + oname + ' is ' + n + ' ' + um.plur + ' long.';
+    opts = [
+      {val: correct},
+      {val: 'The ' + oname + ' is about ' + n + ' ' + um.plur + ' long.', tag: _64AC},
+      {val: 'The ' + oname + ' is ' + n + ' ' + _u6UnitMeta[wrongU].plur + ' long.', tag: _64WN},
+      {val: 'The ' + oname + ' is ' + (n + 1) + ' ' + um.plur + ' long.', tag: _64WC}
+    ];
+  }
+  opts = _u6Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. Pick the BEST description of the ' + oname + '.',
+    s: isAbout ? _u6PicAbout(obj, unit, n) : _u6Pic(obj, unit, n),
+    o: opts, a: aIdx,
+    e: 'A good description has the right number, the right unit name, and the right word ("about" only when not exact). Correct: "' + correct + '"',
+    d: diff,
+    h: 'Check three things: right number, right unit name, "about" only when not exact.',
+    sk: 'describe_length',
+    i: _i64GeneralDescribe()
+  };
+}
+
+// ── L6.4 key ideas ────────────────────────────────────────────────────────────
+var _l64KeyIdeas = [
+  'A length has two parts: a number AND a unit name. "5" is a count. "5 cubes long" is a length.',
+  'The unit name in your answer matches the units in the picture — cubes, paper clips, tiles, or blocks.',
+  'Count the units in the train under the object. That number is how many units long the object is.',
+  'When an object ends very close to a whole unit, you can say "about" — like "about 5 cubes long."',
+  'Always choose the closest whole count. L6.4 never uses partial numbers in the answer.',
+  'A length statement matches its picture when the number AND the unit name both match.'
+];
+
+// ── L6.4 worked examples ──────────────────────────────────────────────────────
+var _l64Examples = [
+  {
+    id: 'g1-u6-l4-ex-1',
+    title: 'Example 1: Describe with a number AND a unit name',
+    prompt: 'How long is the pencil? Give a full length description.',
+    visual: {type: 'rawHtml', html: _u6Pic('pencil', 'cube', 6)},
+    steps: [
+      'Count the cubes under the pencil: 1, 2, 3, 4, 5, 6.',
+      'The number is 6.',
+      'The unit name is cubes (look at the picture — those are cubes).',
+      'Put them together with "long."'
+    ],
+    finalAnswer: 'The pencil is 6 cubes long.'
+  },
+  {
+    id: 'g1-u6-l4-ex-2',
+    title: 'Example 2: Use the unit name you see',
+    prompt: 'How long is the ribbon?',
+    visual: {type: 'rawHtml', html: _u6Pic('ribbon', 'clip', 5)},
+    steps: [
+      'Count the paper clips under the ribbon: 1, 2, 3, 4, 5.',
+      'The number is 5.',
+      'The unit name is paper clips — not cubes, not tiles, not blocks.',
+      'Say it with both parts.'
+    ],
+    finalAnswer: 'The ribbon is 5 paper clips long.'
+  },
+  {
+    id: 'g1-u6-l4-ex-3',
+    title: 'Example 3: Use "about" when the object is close to a whole count',
+    prompt: 'How long is the crayon? It ends just inside the 5th paper clip.',
+    visual: {type: 'rawHtml', html: _u6PicAbout('crayon', 'clip', 5)},
+    steps: [
+      'The crayon ends past the end of clip 4.',
+      'But it does NOT reach all the way to the end of clip 5.',
+      'It is closer to the end of clip 5 than to the end of clip 4.',
+      'Use "about" plus the closest whole count.'
+    ],
+    finalAnswer: 'The crayon is about 5 paper clips long.'
+  },
+  {
+    id: 'g1-u6-l4-ex-4',
+    title: 'Example 4: A number alone is not a length',
+    prompt: 'A student writes "The book is 4." What is wrong?',
+    visual: {type: 'rawHtml', html: _u6Pic('book', 'tile', 4)},
+    steps: [
+      'The student counted the tiles — 4 is correct.',
+      'But they left out the unit name.',
+      'A length needs BOTH a number AND a unit name.',
+      'Add "tiles long" to make it a length.'
+    ],
+    finalAnswer: 'The book is 4 tiles long. The unit name was missing.'
+  },
+  {
+    id: 'g1-u6-l4-ex-5',
+    title: 'Example 5: The unit name must match the picture',
+    prompt: 'A student writes "The stick is 5 cubes long." Look at the picture and fix the answer.',
+    visual: {type: 'rawHtml', html: _u6Pic('stick', 'block', 5)},
+    steps: [
+      'The student got the number right: 5.',
+      'But the picture shows blocks, not cubes.',
+      'The unit name in the answer must match the picture.',
+      'Change "cubes" to "blocks."'
+    ],
+    finalAnswer: 'The stick is 5 blocks long. The unit name was wrong.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L6.4 question banks (8 categories, 135 total)
+//  Target: 45E / 55M / 35H
+//  C1 statement (18) + C2 number+unit (17) + C3 match (18) + C4 about (22) +
+//  C5 too-short/too-long (16) + C6 unit-mismatch (14) + C7 repair (14) +
+//  C8 mixed (16)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Choose the correct length statement (18 = 10E / 6M / 2H) ─────────────
+var _l64C1 = [
+  // Easy (10)
+  _q64Statement('pencil','cube', 3,'e',0), _q64Statement('crayon','clip', 3,'e',1),
+  _q64Statement('marker','tile', 4,'e',2), _q64Statement('pen',   'cube', 2,'e',3),
+  _q64Statement('eraser','cube', 2,'e',0), _q64Statement('stick', 'clip', 5,'e',1),
+  _q64Statement('book',  'tile', 3,'e',2), _q64Statement('ribbon','cube', 4,'e',3),
+  _q64Statement('key',   'cube', 3,'e',0), _q64Statement('leaf',  'clip', 4,'e',1),
+  // Medium (6)
+  _q64Statement('pencil','clip', 5,'m',2), _q64Statement('crayon','tile', 6,'m',3),
+  _q64Statement('marker','block',5,'m',0), _q64Statement('stick', 'cube', 7,'m',1),
+  _q64Statement('book',  'clip', 6,'m',2), _q64Statement('ribbon','block',5,'m',3),
+  // Hard (2)
+  _q64Statement('pencil','block',7,'h',0), _q64Statement('stick', 'tile', 8,'h',1)
+];
+
+// ── C2: Number + unit name (17 = 10E / 5M / 2H) ──────────────────────────────
+var _l64C2 = [
+  // Easy (10)
+  _q64NumberUnit('pencil','cube', 3,'e',0), _q64NumberUnit('crayon','clip', 4,'e',1),
+  _q64NumberUnit('marker','tile', 4,'e',2), _q64NumberUnit('pen',   'cube', 3,'e',3),
+  _q64NumberUnit('eraser','clip', 2,'e',0), _q64NumberUnit('stick', 'block',4,'e',1),
+  _q64NumberUnit('book',  'tile', 3,'e',2), _q64NumberUnit('ribbon','cube', 5,'e',3),
+  _q64NumberUnit('key',   'cube', 2,'e',0), _q64NumberUnit('leaf',  'clip', 3,'e',1),
+  // Medium (5)
+  _q64NumberUnit('pencil','tile', 6,'m',2), _q64NumberUnit('crayon','block',5,'m',3),
+  _q64NumberUnit('marker','clip', 6,'m',0), _q64NumberUnit('stick', 'cube', 6,'m',1),
+  _q64NumberUnit('book',  'block',5,'m',2),
+  // Hard (2)
+  _q64NumberUnit('pencil','cube', 8,'h',3), _q64NumberUnit('ribbon','tile', 7,'h',0)
+];
+
+// ── C3: Match statement to picture (4-pic grid) (18 = 6E / 8M / 4H) ──────────
+var _l64C3 = [
+  // Easy (6)
+  _q64MatchStatement('pencil','cube', 3,'e',0), _q64MatchStatement('crayon','clip', 4,'e',1),
+  _q64MatchStatement('marker','tile', 3,'e',2), _q64MatchStatement('pen',   'cube', 4,'e',3),
+  _q64MatchStatement('eraser','clip', 2,'e',0), _q64MatchStatement('stick', 'block',4,'e',1),
+  // Medium (8)
+  _q64MatchStatement('book',  'tile', 5,'m',2), _q64MatchStatement('ribbon','cube', 5,'m',3),
+  _q64MatchStatement('key',   'clip', 4,'m',0), _q64MatchStatement('leaf',  'cube', 4,'m',1),
+  _q64MatchStatement('pencil','block',5,'m',2), _q64MatchStatement('crayon','cube', 6,'m',3),
+  _q64MatchStatement('marker','clip', 5,'m',0), _q64MatchStatement('stick', 'tile', 5,'m',1),
+  // Hard (4)
+  _q64MatchStatement('pencil','tile', 6,'h',2), _q64MatchStatement('book',  'cube', 7,'h',3),
+  _q64MatchStatement('stick', 'clip', 7,'h',0), _q64MatchStatement('ribbon','block',6,'h',1)
+];
+
+// ── C4: "About" nearest whole (22 = 4E / 12M / 6H) ───────────────────────────
+var _l64C4 = [
+  // Easy (4)
+  _q64About('pencil','cube', 3,'e',0), _q64About('crayon','clip', 4,'e',1),
+  _q64About('marker','tile', 4,'e',2), _q64About('book',  'block',3,'e',3),
+  // Medium (12)
+  _q64About('pen',   'cube', 4,'m',0), _q64About('eraser','clip', 3,'m',1),
+  _q64About('stick', 'tile', 5,'m',2), _q64About('ribbon','block',4,'m',3),
+  _q64About('key',   'cube', 4,'m',0), _q64About('leaf',  'clip', 5,'m',1),
+  _q64About('pencil','tile', 5,'m',2), _q64About('crayon','block',5,'m',3),
+  _q64About('marker','cube', 6,'m',0), _q64About('book',  'clip', 5,'m',1),
+  _q64About('stick', 'cube', 6,'m',2), _q64About('ribbon','tile', 6,'m',3),
+  // Hard (6)
+  _q64About('pencil','clip', 7,'h',0), _q64About('marker','block',6,'h',1),
+  _q64About('stick', 'tile', 7,'h',2), _q64About('book',  'cube', 7,'h',3),
+  _q64About('ribbon','clip', 7,'h',0), _q64About('leaf',  'block',6,'h',1)
+];
+
+// ── C5: Too short / too long descriptions (16 = 4E / 8M / 4H) ────────────────
+var _l64C5 = [
+  // Easy (4)
+  _q64TooShortLong('pencil','cube', 3,'e',0), _q64TooShortLong('crayon','clip', 4,'e',1),
+  _q64TooShortLong('marker','tile', 4,'e',2), _q64TooShortLong('stick', 'block',4,'e',3),
+  // Medium (8)
+  _q64TooShortLong('book',  'cube', 5,'m',0), _q64TooShortLong('ribbon','tile', 5,'m',1),
+  _q64TooShortLong('pen',   'clip', 5,'m',2), _q64TooShortLong('eraser','cube', 4,'m',3),
+  _q64TooShortLong('pencil','block',5,'m',0), _q64TooShortLong('crayon','tile', 6,'m',1),
+  _q64TooShortLong('marker','cube', 6,'m',2), _q64TooShortLong('stick', 'clip', 6,'m',3),
+  // Hard (4)
+  _q64TooShortLong('book',  'block',6,'h',0), _q64TooShortLong('ribbon','cube', 7,'h',1),
+  _q64TooShortLong('stick', 'tile', 7,'h',2), _q64TooShortLong('pencil','clip', 8,'h',3)
+];
+
+// ── C6: Unit-name mismatch (14 = 5E / 6M / 3H) ───────────────────────────────
+var _l64C6 = [
+  // Easy (5)
+  _q64UnitMismatch('pencil','cube', 3,'e',0), _q64UnitMismatch('crayon','clip', 4,'e',1),
+  _q64UnitMismatch('marker','tile', 4,'e',2), _q64UnitMismatch('book',  'block',3,'e',3),
+  _q64UnitMismatch('stick', 'cube', 4,'e',0),
+  // Medium (6)
+  _q64UnitMismatch('ribbon','clip', 5,'m',1), _q64UnitMismatch('pen',   'tile', 5,'m',2),
+  _q64UnitMismatch('eraser','block',3,'m',3), _q64UnitMismatch('key',   'cube', 4,'m',0),
+  _q64UnitMismatch('leaf',  'clip', 5,'m',1), _q64UnitMismatch('pencil','tile', 6,'m',2),
+  // Hard (3)
+  _q64UnitMismatch('crayon','block',6,'h',3), _q64UnitMismatch('book',  'cube', 7,'h',0),
+  _q64UnitMismatch('stick', 'tile', 7,'h',1)
+];
+
+// ── C7: Error repair (14 = 3E / 5M / 6H) ─────────────────────────────────────
+var _l64C7 = [
+  // Easy (3)
+  _q64ErrorRepair('pencil','cube', 4,'Maya','missing',  'e', 0),
+  _q64ErrorRepair('crayon','clip', 3,'Sam', 'missing',  'e', 1),
+  _q64ErrorRepair('marker','tile', 4,'Leo', 'missing',  'e', 2),
+  // Medium (5)
+  _q64ErrorRepair('book',  'cube', 5,'Mia',  'wrongUnit', 'm', 3),
+  _q64ErrorRepair('stick', 'block',5,'Aiden','wrongUnit', 'm', 0),
+  _q64ErrorRepair('ribbon','clip', 5,'Zoe',  'wrongCount','m', 1),
+  _q64ErrorRepair('pen',   'tile', 4,'Eli',  'missing',   'm', 2),
+  _q64ErrorRepair('eraser','cube', 3,'Lily', 'wrongCount','m', 3),
+  // Hard (6)
+  _q64ErrorRepair('pencil','block',6,'Noah', 'wrongUnit', 'h', 0),
+  _q64ErrorRepair('crayon','cube', 6,'Ava',  'wrongCount','h', 1),
+  _q64ErrorRepair('book',  'tile', 6,'Maya', 'missing',   'h', 2),
+  _q64ErrorRepair('marker','clip', 6,'Sam',  'wrongUnit', 'h', 3),
+  _q64ErrorRepair('stick', 'cube', 7,'Mia',  'wrongCount','h', 0),
+  _q64ErrorRepair('ribbon','tile', 7,'Leo',  'missing',   'h', 1)
+];
+
+// ── C8: Mixed review (16 = 3E / 5M / 8H) ─────────────────────────────────────
+var _l64C8 = [
+  // Easy (3)
+  _q64MixedReview('pencil','cube', 3,false,'e',0),
+  _q64MixedReview('crayon','clip', 4,true, 'e',1),
+  _q64MixedReview('marker','tile', 4,false,'e',2),
+  // Medium (5)
+  _q64MixedReview('book',  'block',5,true, 'm',3),
+  _q64MixedReview('stick', 'cube', 5,false,'m',0),
+  _q64MixedReview('ribbon','clip', 5,true, 'm',1),
+  _q64MixedReview('pen',   'tile', 5,false,'m',2),
+  _q64MixedReview('eraser','cube', 4,true, 'm',3),
+  // Hard (8)
+  _q64MixedReview('pencil','block',6,false,'h',0),
+  _q64MixedReview('crayon','cube', 6,true, 'h',1),
+  _q64MixedReview('book',  'tile', 6,false,'h',2),
+  _q64MixedReview('marker','clip', 6,true, 'h',3),
+  _q64MixedReview('stick', 'tile', 7,false,'h',0),
+  _q64MixedReview('ribbon','block',6,true, 'h',1),
+  _q64MixedReview('leaf',  'clip', 6,false,'h',2),
+  _q64MixedReview('key',   'cube', 5,true, 'h',3)
+];
+
+// ── L6.4 combined bank ───────────────────────────────────────────────────────
+var _l64Bank = [].concat(_l64C1, _l64C2, _l64C3, _l64C4, _l64C5, _l64C6, _l64C7, _l64C8);
+
+
 // ── Unit spec ─────────────────────────────────────────────────────────────────
 export const G1_U6_SPEC = {
   unitId: 'g1u6',
@@ -2309,7 +2932,10 @@ export const G1_U6_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 6.4 — Describing Length   (SCAFFOLD)
+    //  Lesson 6.4 — Describing Length
+    //  TEKS 1.7D | 135 questions (45E / 55M / 35H)
+    //  8 categories: C1 statement, C2 number+unit, C3 match, C4 about,
+    //  C5 too-short/too-long, C6 unit-mismatch, C7 error repair, C8 mixed
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u6-l4',
@@ -2317,10 +2943,14 @@ export const G1_U6_SPEC = {
       teks: ['1.7D'],
       skill: 'describe_length',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l64KeyIdeas,
+      workedExamples: _l64Examples,
+      quizBank: _l64Bank,
+      diagnostics: {
+        commonDistractors: [_64MN, _64WN, _64WC, _64AC, _64NW, _64SP, _64CO, _64DC],
+        errorTags:         [_64MN, _64WN, _64WC, _64AC, _64NW, _64SP, _64CO, _64DC],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
