@@ -10,7 +10,7 @@
  *
  *  Lessons:
  *    L7.1  Sorting and Organizing Data       ← 150 questions (50E / 60M / 40H)
- *    L7.2  Picture Graphs                    ← SCAFFOLD (0 questions)
+ *    L7.2  Picture Graphs                    ← 140 questions (45E / 55M / 40H)
  *    L7.3  Bar-Type Graphs                   ← SCAFFOLD (0 questions)
  *    L7.4  Drawing Conclusions from Data     ← SCAFFOLD (0 questions)
  *
@@ -1285,6 +1285,1589 @@ var _l71C10 = [
 var _l71Bank = [].concat(_l71C1, _l71C2, _l71C3, _l71C4, _l71C5, _l71C6, _l71C7, _l71C8, _l71C9, _l71C10);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.2 — Picture Graphs
+//  TEKS 1.8B (picture-graph half) | 140 questions (45E / 55M / 40H)
+//
+//  Scope: read scale-of-1 picture graphs, identify most/fewest, match data
+//  to graphs (imgChoice both directions), complete a row, identify labels,
+//  fix simple errors, read total visible pictures.
+//
+//  HARD RULE: one picture means one item. Always. Grade 1 picture graphs
+//  in this lesson never use scaled keys.
+//
+//  HARD GUARDRAILS:
+//    - NO scaled picture graphs, NO graph keys, NO skip-count scales
+//    - NO bar graphs as primary skill (reserved for L7.3)
+//    - NO "how many more / fewer" (reserved for L7.4)
+//    - NO multi-step graph reasoning, NO line plots, NO mean/median/mode
+//    - NO drag-and-drop interaction
+//    - NO graph questions where the source data is missing
+//    - Max 6 pictures per row, max ~10 visible pictures for C9 totals
+//
+//  No err_scaled_key_confusion tag in either q.o[].tag or q.i.errorTag —
+//  L7.2 teaches "one picture means one item" without ever surfacing the
+//  scaled-key misconception to the student.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L7.2 error tags ──────────────────────────────────────────────────────────
+var _72PC = 'err_picture_count_wrong';
+var _72MP = 'err_misses_picture';
+var _72DC = 'err_double_counts_picture';
+var _72WR = 'err_wrong_category_row';
+var _72MF = 'err_most_fewest_confusion';
+var _72DM = 'err_picture_graph_data_mismatch';
+var _72MG = 'err_missing_picture_in_graph';
+var _72TC = 'err_total_vs_category_confusion';
+
+// ── L7.2 visual helpers ──────────────────────────────────────────────────────
+
+// _u7PictureGraph — main picture-graph visual.
+// rows: [{label, items:[iconKey,...]}]  iconKey ∈ keys of _U7_ICONS.
+// Bordered card with one row per category. Each row: bold label (right-
+// aligned, fixed-width column) + icon row using _u7IconCell. Max 6 icons
+// per row should be enforced by the caller — 7+ wraps and looks bad.
+function _u7PictureGraph(rows) {
+  var html = '<div style="display:inline-block;border:2px solid #37474F;border-radius:8px;' +
+    'background:#fff;padding:8px 10px;margin:6px auto;font-family:Nunito,sans-serif">';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;' +
+      (i < rows.length - 1 ? 'border-bottom:1px dashed #B0BEC5;' : '') + '">' +
+      '<div style="min-width:80px;max-width:80px;font-size:14px;font-weight:bold;color:#37474F;' +
+        'text-align:right;padding-right:8px;border-right:2px solid #37474F">' + r.label + '</div>' +
+      '<div style="display:flex;gap:4px;align-items:center;flex-wrap:nowrap;min-height:32px">' +
+        (r.items || []).map(_u7IconCell).join('') +
+      '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  return '<div style="text-align:center;margin:8px 0">' + html + '</div>';
+}
+
+// Compact variant for imgChoice cards. Smaller icons (22px) and label
+// column (54px) so 4 cards fit in the standard imgChoice grid at 414px.
+function _u7PictureGraphForChoice(rows) {
+  var html = '<div style="display:inline-block;border:2px solid #37474F;border-radius:6px;' +
+    'background:#fff;padding:4px 6px;margin:2px auto;font-family:Nunito,sans-serif;max-width:100%">';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<div style="display:flex;align-items:center;gap:4px;padding:2px 0;' +
+      (i < rows.length - 1 ? 'border-bottom:1px dashed #B0BEC5;' : '') + '">' +
+      '<div style="min-width:54px;max-width:54px;font-size:11px;font-weight:bold;color:#37474F;' +
+        'text-align:right;padding-right:4px;border-right:2px solid #37474F">' + r.label + '</div>' +
+      '<div style="display:flex;gap:2px;align-items:center;flex-wrap:nowrap;min-height:22px">' +
+        (r.items || []).map(function(it){
+          var glyph = _U7_ICONS[it] || '?';
+          return '<span style="display:inline-flex;align-items:center;justify-content:center;' +
+            'width:22px;height:22px;font-size:16px;line-height:1;vertical-align:middle">' + glyph + '</span>';
+        }).join('') +
+      '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// _u7DataTable — 2-column source data table (Category | Count).
+// Used as source data above C4 / C6 / C8 answer cards.
+function _u7DataTable(rows) {
+  var html = '<table style="border-collapse:collapse;margin:4px auto;border:2px solid #37474F;' +
+    'background:#fff;font-family:Nunito,sans-serif">';
+  html += '<thead><tr>' +
+    '<th style="border-bottom:2px solid #37474F;padding:4px 12px;font-size:13px;color:#1976D2">Category</th>' +
+    '<th style="border-bottom:2px solid #37474F;border-left:2px solid #37474F;padding:4px 12px;font-size:13px;color:#1976D2">Count</th>' +
+    '</tr></thead><tbody>';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<tr>' +
+      '<td style="border:1px solid #B0BEC5;padding:4px 10px;font-weight:bold;font-size:13px;color:#37474F">' + r.label + '</td>' +
+      '<td style="border:1px solid #B0BEC5;padding:4px 10px;text-align:center;font-size:14px;color:#37474F">' + r.count + '</td>' +
+      '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+// _u7SourceDataCard — amber-wrapped source data block (same visual language
+// as L7.1 C6's "Sorted items" card). When this card lives inside q.t, the
+// _u7PromptWithSource helper inserts a hidden <svg> sentinel so _qText()
+// returns the prompt as raw HTML instead of escaping it.
+function _u7SourceDataCard(innerHtml, label) {
+  return '<div style="background:#FFF8E1;border:2px solid #FFB300;border-radius:10px;' +
+    'padding:6px 8px 8px;margin:8px auto 4px;max-width:520px">' +
+    '<div style="font-size:13px;font-weight:bold;color:#5a7080;text-align:center;' +
+      'margin-bottom:4px;font-family:Nunito,sans-serif">⭐ ' + (label || 'Data') + '</div>' +
+    innerHtml + '</div>';
+}
+
+// Wrap a plain-text question prompt with an inline source-data card. The
+// hidden <svg> sentinel is what triggers _qText() raw-HTML rendering — the
+// SVG itself paints nothing (display:none, 0×0).
+function _u7PromptWithSource(questionText, sourceCard) {
+  return questionText +
+    '<svg width="0" height="0" aria-hidden="true" focusable="false" ' +
+      'style="display:none;width:0;height:0"></svg>' +
+    sourceCard;
+}
+
+// ── L7.2 teaching visuals (intervention overlays) ────────────────────────────
+function _u72TvCountRow() {
+  return _u7TvWrap(_u7PictureGraph([
+    {label: 'Apples', items: ['apple','apple','apple']}
+  ]), 'Touch each picture once and count: 1, 2, 3.');
+}
+function _u72TvWholeGraph() {
+  return _u7TvWrap(_u7PictureGraph([
+    {label: 'Fruit',   items: ['apple','apple','banana']},
+    {label: 'Animals', items: ['cat','dog']}
+  ]), 'A picture graph shows each category in its own row. One picture means one item.');
+}
+function _u72TvMostFewest() {
+  return _u7TvWrap(_u7PictureGraph([
+    {label: 'Toys',    items: ['ball','car','kite','die']},
+    {label: 'Fruit',   items: ['apple']}
+  ]), 'Toys has the longest row (most). Fruit has the shortest row (fewest).');
+}
+function _u72TvDataMatch() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Fruit',count:2},{label:'Animals',count:1}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ matches ↓</div>' +
+    _u7PictureGraph([
+      {label: 'Fruit',   items: ['apple','banana']},
+      {label: 'Animals', items: ['cat']}
+    ]),
+    'Every row in the graph has the same count as the data.');
+}
+function _u72TvWrongRow() {
+  return _u7TvWrap(_u7PictureGraph([
+    {label: 'Fruit',   items: ['apple','banana']},
+    {label: 'Animals', items: ['cat','dog','rabbit']}
+  ]), 'For "How many animals?" — find the Animals row and count only that row.');
+}
+function _u72TvBuildRow() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Toys',count:4},{label:'Fruit',count:2}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ build ↓</div>' +
+    _u7PictureGraph([
+      {label: 'Toys',  items: ['ball','car','kite','die']},
+      {label: 'Fruit', items: ['apple','banana']}
+    ]),
+    'Make each row match the data: the Toys row needs 4 pictures, the Fruit row needs 2.');
+}
+function _u72TvFixError() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ but graph says ↓</div>' +
+    _u7PictureGraph([
+      {label: 'Fruit',   items: ['apple','banana','orange']},
+      {label: 'Animals', items: ['cat']}
+    ]),
+    'Compare every row. The Animals row is missing one picture.');
+}
+function _u72TvCountTotal() {
+  return _u7TvWrap(_u7PictureGraph([
+    {label: 'Fruit',   items: ['apple','banana']},
+    {label: 'Animals', items: ['cat','dog','rabbit']}
+  ]), 'For the total, touch each picture in every row one time. Count them all.');
+}
+
+// ── L7.2 intervention factories ──────────────────────────────────────────────
+function _i72PictureCount() { return {
+  errorTag: _72PC, title: 'Count each picture once',
+  teachingSteps: [
+    'Find the right row.',
+    'Touch each picture as you count.',
+    'Stop when you reach the last picture in that row.',
+    'Each picture stands for one item.'
+  ],
+  teachingVisualRaw: _u72TvCountRow(),
+  correctAnswerExplanation: 'Each picture counts as 1. The total for the row is the count.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72MissesPicture() { return {
+  errorTag: _72MP, title: 'Do not skip any pictures',
+  teachingSteps: [
+    'Start at the left side of the row.',
+    'Touch every picture as you move right.',
+    'End on the last picture.',
+    'If you skip one, your count will be too low.'
+  ],
+  teachingVisualRaw: _u72TvCountRow(),
+  correctAnswerExplanation: 'Count every picture in the row — do not leave any out.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72DoubleCounts() { return {
+  errorTag: _72DC, title: 'Each picture counts as one',
+  teachingSteps: [
+    'Touch each picture one time only.',
+    'Move your finger left to right.',
+    'Do not count the same picture twice.',
+    'Stop when you reach the last picture.'
+  ],
+  teachingVisualRaw: _u72TvCountRow(),
+  correctAnswerExplanation: 'Each picture stands for one item. Counting it twice makes the count too high.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72WrongRow() { return {
+  errorTag: _72WR, title: 'Read the row label first',
+  teachingSteps: [
+    'Read the question — what category does it ask about?',
+    'Find the row with that label.',
+    'Stay on that row.',
+    'Count only the pictures in that row.'
+  ],
+  teachingVisualRaw: _u72TvWrongRow(),
+  correctAnswerExplanation: 'Match the row label to the category in the question.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72MostFewest() { return {
+  errorTag: _72MF, title: 'Most is the longest row; fewest is the shortest',
+  teachingSteps: [
+    '"Most" means the row with the biggest count — the longest row.',
+    '"Fewest" means the row with the smallest count — the shortest row.',
+    'Compare every row before you choose.',
+    'Do not pick the opposite of what is asked.'
+  ],
+  teachingVisualRaw: _u72TvMostFewest(),
+  correctAnswerExplanation: 'Most = longest row. Fewest = shortest row.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72DataMismatch() { return {
+  errorTag: _72DM, title: 'Every row must match the data',
+  teachingSteps: [
+    'Read the count next to each category in the data.',
+    'Count the pictures in the matching row of the graph.',
+    'A graph matches only when every row count is the same as the data.',
+    'Check every row — not just one.'
+  ],
+  teachingVisualRaw: _u72TvDataMatch(),
+  correctAnswerExplanation: 'A matching graph has the same count for every category.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72MissingPicture() { return {
+  errorTag: _72MG, title: 'Compare graph to data',
+  teachingSteps: [
+    'Read the data target for each category.',
+    'Count the pictures in the matching row.',
+    'If the graph row is shorter than the target, it is missing pictures.',
+    'If it is longer, it has too many.'
+  ],
+  teachingVisualRaw: _u72TvFixError(),
+  correctAnswerExplanation: 'A row needs pictures added when its count is less than the data target.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72TotalVsCategory() { return {
+  errorTag: _72TC, title: 'Read the question carefully',
+  teachingSteps: [
+    'If the question names one category — count only that row.',
+    'If the question asks about the whole graph — count every picture in every row.',
+    'Re-read the prompt before counting.',
+    'Do not mix the two.'
+  ],
+  teachingVisualRaw: _u72TvCountTotal(),
+  correctAnswerExplanation: 'One category = one row. The whole graph = every picture across every row.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72BuildRow() { return {
+  errorTag: _72MG, title: 'Build the row to match the data',
+  teachingSteps: [
+    'Read the data target for each row.',
+    'Count the pictures already in the graph row.',
+    'A row that is shorter than its target needs more pictures.',
+    'Each picture you add stands for one item.'
+  ],
+  teachingVisualRaw: _u72TvBuildRow(),
+  correctAnswerExplanation: 'Add pictures one at a time until the row count equals the data target.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i72LabelMatch() { return {
+  errorTag: _72WR, title: 'Match the row to its category',
+  teachingSteps: [
+    'Look at the pictures in the row.',
+    'Find a label that describes what those pictures are.',
+    'Apples, bananas, oranges → Fruit.',
+    'Cats, dogs, fish → Animals.'
+  ],
+  teachingVisualRaw: _u72TvWholeGraph(),
+  correctAnswerExplanation: 'The row label describes what the pictures stand for.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L7.2 question factory functions ──────────────────────────────────────────
+
+// _q72ReadCategoryCount — C1: graph + ask the count of one named category row.
+// rows: [{label, items:[iconKey,...]}]   askCat: label of the row to count.
+function _q72ReadCategoryCount(rows, askCat, diff, aIdx) {
+  var target = rows.filter(function(r){ return r.label === askCat; })[0];
+  var n = target.items.length;
+  var otherRow = rows.filter(function(r){ return r.label !== askCat; })[0];
+  var otherN = otherRow ? otherRow.items.length : 0;
+  var wrong1 = Math.max(0, n - 1);                  // missed one (off-by-one low)
+  var wrong2 = n + 1;                               // double-counted (off-by-one high)
+  var wrong3 = (otherN !== n && otherN > 0) ? otherN : n + 2;  // wrong row count
+  var seen = {}; seen[String(n)] = true;
+  var picks = [wrong1, wrong2, wrong3].filter(function(w){
+    if (seen[String(w)]) return false; seen[String(w)] = true; return true;
+  });
+  var bump = 2;
+  while (picks.length < 3) {
+    var f = n + bump++;
+    if (!seen[String(f)]) { picks.push(f); seen[String(f)] = true; }
+  }
+  var opts = [
+    {val: String(n)},
+    {val: String(picks[0]), tag: _72MP},
+    {val: String(picks[1]), tag: _72DC},
+    {val: String(picks[2]), tag: _72WR}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the picture graph. How many ' + askCat + ' are there?',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: 'Count the pictures in the ' + askCat + ' row: there are ' + n + '. Each picture stands for one item.',
+    d: diff,
+    h: 'Find the row labeled ' + askCat + '. Count each picture in that row one time.',
+    sk: 'read_build_picture_graphs',
+    i: _i72PictureCount()
+  };
+}
+
+// _q72IdentifyMost — C2: graph + "which has the most?" (longest row).
+// Input rows must have a clear winner (no ties for max).
+function _q72IdentifyMost(rows, diff, aIdx) {
+  var counts = rows.map(function(r){ return {label: r.label, n: r.items.length}; });
+  var sorted = counts.slice().sort(function(a,b){ return b.n - a.n; });
+  var winner = sorted[0].label;
+  var fewest = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var distractors = [
+    {val: fewest, tag: _72MF},
+    {val: middle || notInGraph[0] || fewest, tag: _72WR},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || fewest, tag: _72WR}
+  ];
+  var opts = [{val: winner}].concat(distractors);
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var fill = notInGraph.slice();
+  while (unique.length < 4 && fill.length) {
+    var c = fill.shift();
+    if (!seen[c]) { unique.push({val: c, tag: _72WR}); seen[c] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'Look at the picture graph. Which category has the most?',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: winner + ' has the most pictures — its row is the longest, with ' + sorted[0].n + ' pictures.',
+    d: diff,
+    h: 'The longest row has the most. Count each row and pick the biggest count.',
+    sk: 'read_build_picture_graphs',
+    i: _i72MostFewest()
+  };
+}
+
+// _q72IdentifyFewest — C3: graph + "which has the fewest?" (shortest row).
+function _q72IdentifyFewest(rows, diff, aIdx) {
+  var counts = rows.map(function(r){ return {label: r.label, n: r.items.length}; });
+  var sorted = counts.slice().sort(function(a,b){ return a.n - b.n; });
+  var winner = sorted[0].label;
+  var most = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var distractors = [
+    {val: most, tag: _72MF},
+    {val: middle || notInGraph[0] || most, tag: _72WR},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || most, tag: _72WR}
+  ];
+  var opts = [{val: winner}].concat(distractors);
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var fill = notInGraph.slice();
+  while (unique.length < 4 && fill.length) {
+    var c = fill.shift();
+    if (!seen[c]) { unique.push({val: c, tag: _72WR}); seen[c] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'Look at the picture graph. Which category has the fewest?',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: winner + ' has the fewest pictures — its row is the shortest, with ' + sorted[0].n + ' pictures.',
+    d: diff,
+    h: 'The shortest row has the fewest. Count each row and pick the smallest count.',
+    sk: 'read_build_picture_graphs',
+    i: _i72MostFewest()
+  };
+}
+
+// _q72MatchDataToGraph — C4: imgChoice. Show data table, 4 graph cards.
+// Distractors: (1) row[0] +1, (2) row[1] -1 (or +1 if length<=1), (3) swap
+// labels (2-cat) or row[2] off-by-one (3-cat).
+function _q72MatchDataToGraph(rows, diff, aIdx) {
+  function bumpRow(r, delta) {
+    if (delta > 0) {
+      var fill = r.items[0] || 'apple';
+      return {label: r.label, items: r.items.concat(new Array(delta).fill(fill)).slice(0, 6)};
+    }
+    return {label: r.label, items: r.items.slice(0, Math.max(0, r.items.length + delta))};
+  }
+  var d1Rows = rows.map(function(r, i){ return i === 0 ? bumpRow(r, +1) : r; });
+  var d2Rows = rows.map(function(r, i){
+    if (i === 1) return bumpRow(r, r.items.length > 1 ? -1 : +1);
+    return r;
+  });
+  var d3Rows;
+  if (rows.length === 2) {
+    d3Rows = [
+      {label: rows[1].label, items: rows[0].items},
+      {label: rows[0].label, items: rows[1].items}
+    ];
+  } else {
+    d3Rows = rows.map(function(r, i){
+      if (i === 2) return bumpRow(r, r.items.length > 1 ? -1 : +1);
+      return r;
+    });
+  }
+  var slot = [d1Rows, d2Rows, d3Rows];
+  slot.splice(aIdx, 0, rows);
+  var letters = ['A','B','C','D'];
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var svgs = slot.map(function(r){ return _u7PictureGraphForChoice(r); });
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _72DM};
+  });
+  var dataRows = rows.map(function(r){ return {label: r.label, count: r.items.length}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  var promptHtml = _u7PromptWithSource(
+    'Which picture graph matches these data? Tap a picture.', sourceCard);
+  return {
+    t: promptHtml,
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: sourceCard,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' matches every row: ' +
+       dataRows.map(function(d){ return d.label + ' = ' + d.count; }).join(', ') + '.',
+    d: diff,
+    h: 'Read each count in the data. Count the pictures in each row of each graph. Pick the one where every row matches.',
+    sk: 'read_build_picture_graphs',
+    i: _i72DataMismatch()
+  };
+}
+
+// _q72MatchGraphToData — C5: graph shown, 4 text data-table options.
+function _q72MatchGraphToData(rows, diff, aIdx) {
+  function fmt(r){ return r.map(function(x){ return x.label + ' ' + x.count; }).join(', '); }
+  var correctRows = rows.map(function(r){ return {label: r.label, count: r.items.length}; });
+  var d1Rows = correctRows.map(function(r, i){
+    return i === 0 ? {label: r.label, count: r.count + 1} : r;
+  });
+  var d2Rows = correctRows.map(function(r, i){
+    return i === 1 ? {label: r.label, count: Math.max(0, r.count - 1)} : r;
+  });
+  var d3Rows;
+  if (rows.length === 2) {
+    d3Rows = [
+      {label: correctRows[1].label, count: correctRows[0].count},
+      {label: correctRows[0].label, count: correctRows[1].count}
+    ];
+  } else {
+    d3Rows = correctRows.map(function(r, i){
+      return i === 2 ? {label: r.label, count: r.count + 1} : r;
+    });
+  }
+  var opts = [
+    {val: fmt(correctRows)},
+    {val: fmt(d1Rows), tag: _72DM},
+    {val: fmt(d2Rows), tag: _72DM},
+    {val: fmt(d3Rows), tag: _72DM}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the picture graph. Which data set matches?',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: 'The graph shows ' + fmt(correctRows) + ' — every row count matches that data.',
+    d: diff,
+    h: 'Count each row in the graph. Find the data set with the same counts.',
+    sk: 'read_build_picture_graphs',
+    i: _i72DataMismatch()
+  };
+}
+
+// _q72BuildRow — C6: source data above + partial graph. Which row needs more?
+// shortRowIdx: which row in targetRows is rendered short (by 1–2 pictures).
+function _q72BuildRow(targetRows, shortRowIdx, diff, aIdx) {
+  var shortBy = targetRows[shortRowIdx].items.length >= 3 ? 2 : 1;
+  var currentRows = targetRows.map(function(r, i){
+    if (i === shortRowIdx) {
+      return {label: r.label, items: r.items.slice(0, Math.max(0, r.items.length - shortBy))};
+    }
+    return r;
+  });
+  var shortLabel = targetRows[shortRowIdx].label;
+  var inGraphOthers = targetRows.filter(function(r, i){ return i !== shortRowIdx; });
+  var nonExistent = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  })[0] || 'Other';
+  var distractors = [
+    {val: 'The ' + (inGraphOthers[0] ? inGraphOthers[0].label : nonExistent) + ' row', tag: _72WR},
+    {val: 'The ' + (inGraphOthers[1] ? inGraphOthers[1].label : nonExistent) + ' row', tag: _72WR},
+    {val: 'No row needs more pictures', tag: _72MG}
+  ];
+  // Dedup
+  var seen = {}; seen['The ' + shortLabel + ' row'] = true;
+  var unique = [];
+  distractors.forEach(function(d){ if (!seen[d.val]) { seen[d.val] = true; unique.push(d); } });
+  // Fill if dedup left fewer (happens with 2-cat where inGraphOthers has 1 row)
+  var fill = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  });
+  for (var i = 0; i < fill.length && unique.length < 3; i++) {
+    var v = 'The ' + fill[i] + ' row';
+    if (!seen[v]) { unique.push({val: v, tag: _72WR}); seen[v] = true; }
+  }
+  while (unique.length < 3) unique.push({val: 'No row needs more pictures', tag: _72MG});
+  var opts = [{val: 'The ' + shortLabel + ' row'}].concat(unique.slice(0, 3));
+  opts = _u7Place(opts, aIdx);
+  var dataRows = targetRows.map(function(r){ return {label: r.label, count: r.items.length}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  return {
+    t: 'The graph below should match the data above. Which row needs more pictures?',
+    s: sourceCard + _u7PictureGraph(currentRows),
+    o: opts, a: aIdx,
+    e: 'The ' + shortLabel + ' row has ' + currentRows[shortRowIdx].items.length +
+       ' pictures, but the data says ' + targetRows[shortRowIdx].items.length + ' — that row needs more.',
+    d: diff,
+    h: 'Count each row in the graph. Compare to the data. The shorter row is the one that needs more.',
+    sk: 'read_build_picture_graphs',
+    i: _i72BuildRow()
+  };
+}
+
+// _q72IdentifyLabel — C7: graph with one row's label hidden as "???".
+// hiddenIdx: which row has the hidden label. All items in that row must
+// belong to the same category (so the correct label is unambiguous).
+function _q72IdentifyLabel(rows, hiddenIdx, diff, aIdx) {
+  var hiddenRow = rows[hiddenIdx];
+  var firstItem = hiddenRow.items[0];
+  var correctLabel = _U7_ITEM_CAT[firstItem];
+  var displayRows = rows.map(function(r, i){
+    if (i === hiddenIdx) return {label: '???', items: r.items};
+    return r;
+  });
+  var distractors = _U7_CATEGORIES.filter(function(c){ return c !== correctLabel; }).slice(0, 3);
+  var opts = [
+    {val: correctLabel},
+    {val: distractors[0], tag: _72WR},
+    {val: distractors[1], tag: _72WR},
+    {val: distractors[2], tag: _72WR}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the picture graph. What category goes in the "???" row?',
+    s: _u7PictureGraph(displayRows),
+    o: opts, a: aIdx,
+    e: 'The "???" row shows ' + hiddenRow.items.map(function(it){ return _U7_ITEM_NAME[it]; }).join(', ') +
+       ' — all are ' + correctLabel + '.',
+    d: diff,
+    h: 'Look at the pictures in the "???" row. Find the label that describes what they are.',
+    sk: 'read_build_picture_graphs',
+    i: _i72LabelMatch()
+  };
+}
+
+// _q72FixError — C8: source data above + graph with one wrong row.
+// errorDelta: −1 means the graph row is short by 1; +1 means it has one extra.
+function _q72FixError(targetRows, errorRowIdx, errorDelta, diff, aIdx) {
+  var graphRows = targetRows.map(function(r, i){
+    if (i === errorRowIdx) {
+      if (errorDelta < 0) {
+        return {label: r.label, items: r.items.slice(0, Math.max(0, r.items.length + errorDelta))};
+      }
+      var extra = r.items[0] || 'apple';
+      return {label: r.label, items: r.items.concat(new Array(errorDelta).fill(extra)).slice(0, 6)};
+    }
+    return r;
+  });
+  var errorLabel = targetRows[errorRowIdx].label;
+  var rightRow = targetRows.filter(function(r, i){ return i !== errorRowIdx; })[0];
+  var nonExistent = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  })[0] || 'Other';
+  var opts = [
+    {val: 'The ' + errorLabel + ' row is wrong'},
+    {val: 'The ' + (rightRow ? rightRow.label : nonExistent) + ' row is wrong', tag: _72MG},
+    {val: 'The ' + nonExistent + ' row is wrong', tag: _72WR},
+    {val: 'Every row is correct', tag: _72DM}
+  ];
+  opts = _u7Place(opts, aIdx);
+  var dataRows = targetRows.map(function(r){ return {label: r.label, count: r.items.length}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  return {
+    t: 'The data above shows the right counts. The graph below has a mistake. Where is the mistake?',
+    s: sourceCard + _u7PictureGraph(graphRows),
+    o: opts, a: aIdx,
+    e: 'The ' + errorLabel + ' row in the graph has ' + graphRows[errorRowIdx].items.length +
+       ' pictures, but the data says ' + targetRows[errorRowIdx].items.length + '. That row is wrong.',
+    d: diff,
+    h: 'Compare every row to the data. Find the row whose count does not match.',
+    sk: 'read_build_picture_graphs',
+    i: _i72MissingPicture()
+  };
+}
+
+// _q72CountTotal — C9: graph + "how many pictures are in the whole graph?"
+// Caller must keep total ≤ 10 (visible-count cap).
+function _q72CountTotal(rows, diff, aIdx) {
+  var total = rows.reduce(function(s, r){ return s + r.items.length; }, 0);
+  var firstRow = rows[0].items.length;
+  var opts = [
+    {val: String(total)},
+    {val: String(firstRow), tag: _72TC},
+    {val: String(Math.max(0, total - 1)), tag: _72MP},
+    {val: String(total + 1), tag: _72DC}
+  ];
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var bump = 2;
+  while (unique.length < 4) {
+    var f = String(total + bump++);
+    if (!seen[f]) { unique.push({val: f, tag: _72PC}); seen[f] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'How many pictures are in the whole graph? Count all the pictures.',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: 'Count every picture across every row: there are ' + total + ' pictures in the whole graph.',
+    d: diff,
+    h: 'Touch each picture in every row one time. Count them all together.',
+    sk: 'read_build_picture_graphs',
+    i: _i72TotalVsCategory()
+  };
+}
+
+// _q72MixedReview — C10: pick the TRUE statement about the graph.
+// statementType: 'count' | 'most' | 'fewest' | 'total' | 'label'
+// All distractors are simple graph-reading mistakes — NO comparisons /
+// differences (those belong to L7.4).
+function _q72MixedReview(rows, statementType, diff, aIdx) {
+  var truthful;
+  var falsy = [];
+  var tagFor = {};
+  var counts = rows.map(function(r){ return {label: r.label, n: r.items.length}; });
+  var maxRow = counts.reduce(function(a,b){ return a.n >= b.n ? a : b; });
+  var minRow = counts.reduce(function(a,b){ return a.n <= b.n ? a : b; });
+  var total = counts.reduce(function(s,c){ return s + c.n; }, 0);
+  var allLabels = counts.map(function(c){ return c.label; });
+  var notInGraph = _U7_CATEGORIES.filter(function(c){ return allLabels.indexOf(c) === -1; });
+
+  if (statementType === 'count') {
+    var rowForStmt = counts[0];
+    truthful = 'There are exactly ' + rowForStmt.n + ' ' + rowForStmt.label;
+    var otherRow = counts[1] || rowForStmt;
+    falsy = [
+      'There are exactly ' + (rowForStmt.n + 1) + ' ' + rowForStmt.label,
+      'There are exactly ' + otherRow.n + ' ' + (notInGraph[0] || rowForStmt.label),
+      'There are exactly ' + Math.max(0, rowForStmt.n - 1) + ' ' + rowForStmt.label
+    ];
+    tagFor[falsy[0]] = _72DC; tagFor[falsy[1]] = _72WR; tagFor[falsy[2]] = _72MP;
+  } else if (statementType === 'most') {
+    truthful = maxRow.label + ' has the most';
+    falsy = [
+      minRow.label + ' has the most',
+      (counts.filter(function(c){ return c.label !== maxRow.label && c.label !== minRow.label; })[0] || minRow).label + ' has the most',
+      (notInGraph[0] || maxRow.label) + ' has the most'
+    ];
+    tagFor[falsy[0]] = _72MF; tagFor[falsy[1]] = _72WR; tagFor[falsy[2]] = _72WR;
+  } else if (statementType === 'fewest') {
+    truthful = minRow.label + ' has the fewest';
+    falsy = [
+      maxRow.label + ' has the fewest',
+      (counts.filter(function(c){ return c.label !== maxRow.label && c.label !== minRow.label; })[0] || maxRow).label + ' has the fewest',
+      (notInGraph[0] || minRow.label) + ' has the fewest'
+    ];
+    tagFor[falsy[0]] = _72MF; tagFor[falsy[1]] = _72WR; tagFor[falsy[2]] = _72WR;
+  } else if (statementType === 'total') {
+    truthful = 'There are ' + total + ' pictures in the whole graph';
+    falsy = [
+      'There are ' + counts[0].n + ' pictures in the whole graph',
+      'There are ' + (total + 1) + ' pictures in the whole graph',
+      'There are ' + Math.max(0, total - 1) + ' pictures in the whole graph'
+    ];
+    tagFor[falsy[0]] = _72TC; tagFor[falsy[1]] = _72DC; tagFor[falsy[2]] = _72MP;
+  } else {
+    // 'label'
+    truthful = maxRow.label + ' is one of the categories in the graph';
+    falsy = [
+      (notInGraph[0] || 'Toys') + ' is one of the categories in the graph',
+      (notInGraph[1] || notInGraph[0] || 'Nature') + ' is one of the categories in the graph',
+      minRow.label + ' is not in the graph'
+    ];
+    tagFor[falsy[0]] = _72WR; tagFor[falsy[1]] = _72WR; tagFor[falsy[2]] = _72WR;
+  }
+  var seen = {}; seen[truthful] = true;
+  var unique = [];
+  falsy.forEach(function(s){ if (!seen[s]) { seen[s] = true; unique.push(s); } });
+  var bump = 5;
+  while (unique.length < 3) {
+    var fb = 'There are exactly ' + (total + bump++) + ' pictures in the whole graph';
+    if (!seen[fb]) { unique.push(fb); seen[fb] = true; }
+  }
+  var opts = [
+    {val: truthful},
+    {val: unique[0], tag: tagFor[unique[0]] || _72WR},
+    {val: unique[1], tag: tagFor[unique[1]] || _72WR},
+    {val: unique[2], tag: tagFor[unique[2]] || _72WR}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the picture graph. Which statement is true?',
+    s: _u7PictureGraph(rows),
+    o: opts, a: aIdx,
+    e: 'The true statement is: "' + truthful + '." Check each statement against the graph.',
+    d: diff,
+    h: 'Read each statement. Check it against the graph. Pick the one that matches.',
+    sk: 'read_build_picture_graphs',
+    i: _i72TotalVsCategory()
+  };
+}
+
+// ── L7.2 key ideas ────────────────────────────────────────────────────────────
+var _l72KeyIdeas = [
+  'A picture graph organizes data into rows. Each row shows one category, and each picture in the row stands for one item.',
+  'One picture means one item. To find how many, count the pictures in that row one at a time.',
+  'Every row has a label. The label tells you what category the pictures stand for.',
+  'The longest row has the most. The shortest row has the fewest. Compare row lengths to see which is most or fewest.',
+  'A picture graph and a data set match only when every row count in the graph equals the count for the same category in the data.',
+  'The total is the count of all pictures across every row. Touch each picture once and count them all.'
+];
+
+// ── L7.2 worked examples ──────────────────────────────────────────────────────
+var _l72Examples = [
+  {
+    id: 'g1-u7-l2-ex-1',
+    title: 'Example 1: Read a row',
+    prompt: 'How many students chose Toys?',
+    visual: {type: 'rawHtml', html: _u7PictureGraph([
+      {label: 'Fruit',   items: ['apple','apple','apple','apple']},
+      {label: 'Animals', items: ['cat','cat']},
+      {label: 'Toys',    items: ['ball','car','kite','die','ball']}
+    ])},
+    steps: [
+      'Find the row labeled Toys.',
+      'Touch each picture in the Toys row one at a time.',
+      'Count: 1, 2, 3, 4, 5.',
+      'There are 5 pictures in the Toys row.'
+    ],
+    finalAnswer: '5 students chose Toys.'
+  },
+  {
+    id: 'g1-u7-l2-ex-2',
+    title: 'Example 2: Most and fewest',
+    prompt: 'Which category has the most? Which has the fewest?',
+    visual: {type: 'rawHtml', html: _u7PictureGraph([
+      {label: 'Fruit',   items: ['apple','apple','apple']},
+      {label: 'Animals', items: ['cat']},
+      {label: 'Toys',    items: ['ball','car','kite','die']}
+    ])},
+    steps: [
+      'Look at every row.',
+      'The Toys row is the longest — 4 pictures.',
+      'The Animals row is the shortest — 1 picture.',
+      'Most = Toys. Fewest = Animals.'
+    ],
+    finalAnswer: 'Toys has the most. Animals has the fewest.'
+  },
+  {
+    id: 'g1-u7-l2-ex-3',
+    title: 'Example 3: Match data to a graph',
+    prompt: 'Which picture graph matches: Fruit 3, Animals 2?',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ which one matches? ↓</div>' +
+      _u7PictureGraph([
+        {label:'Fruit',  items:['apple','banana','orange']},
+        {label:'Animals',items:['cat','dog']}
+      ])},
+    steps: [
+      'Read the data: Fruit needs 3, Animals needs 2.',
+      'Count the Fruit row in the graph — 3 pictures.',
+      'Count the Animals row in the graph — 2 pictures.',
+      'Every row matches the data.'
+    ],
+    finalAnswer: 'The graph above matches: Fruit = 3, Animals = 2.'
+  },
+  {
+    id: 'g1-u7-l2-ex-4',
+    title: 'Example 4: Complete a row',
+    prompt: 'The data says Toys = 4. The graph row has 2. What is needed?',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Toys',count:4},{label:'Fruit',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ partial graph ↓</div>' +
+      _u7PictureGraph([
+        {label:'Toys',  items:['ball','car']},
+        {label:'Fruit', items:['apple','banana']}
+      ])},
+    steps: [
+      'Read the data target for Toys: 4.',
+      'Count the Toys row in the graph: 2.',
+      'The Toys row needs more pictures.',
+      'Add pictures until the row has 4 in all.'
+    ],
+    finalAnswer: 'The Toys row needs more pictures to reach 4.'
+  },
+  {
+    id: 'g1-u7-l2-ex-5',
+    title: 'Example 5: Fix a graph error',
+    prompt: 'Find the mistake. Data says Fruit 3, Animals 2. What does the graph show?',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ but the graph shows ↓</div>' +
+      _u7PictureGraph([
+        {label:'Fruit',  items:['apple','banana','orange']},
+        {label:'Animals',items:['cat']}
+      ])},
+    steps: [
+      'Compare each row of the graph to the data.',
+      'Fruit: graph has 3, data says 3 — match.',
+      'Animals: graph has 1, data says 2 — mismatch.',
+      'The Animals row is wrong — it is missing one picture.'
+    ],
+    finalAnswer: 'The Animals row is missing one picture.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.2 question banks (10 categories, 140 total)
+//  Target: 45E / 55M / 40H
+//  C1 read-count(18) + C2 most(14) + C3 fewest(14) + C4 data→graph(15) +
+//  C5 graph→data(15) + C6 build-row(14) + C7 label(11) + C8 fix-error(13) +
+//  C9 total(13) + C10 mixed(13)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Read category count (18 = 6E / 8M / 4H) ──────────────────────────────
+var _l72C1 = [
+  // Easy (6) — 2 categories, 1–3 items per row
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat']}
+  ], 'Fruit', 'e', 0),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','leaf','star']}
+  ], 'Nature', 'e', 1),
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'Animals', 'e', 2),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 'Toys', 'e', 3),
+  _q72ReadCategoryCount([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Toys',    items:['ball']}
+  ], 'Animals', 'e', 0),
+  _q72ReadCategoryCount([
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Fruit',   items:['apple','orange','grapes']}
+  ], 'Fruit', 'e', 2),
+  // Medium (8) — bigger 2-cat counts or 3-cat with clear gap
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'Fruit', 'm', 1),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'Toys', 'm', 2),
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']}
+  ], 'Animals', 'm', 0),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','kite','die']},
+    {label:'Fruit',   items:['apple','banana','grapes','orange']},
+    {label:'Animals', items:['cat']}
+  ], 'Fruit', 'm', 3),
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'Animals', 'm', 0),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','star','leaf','flower']},
+    {label:'Fruit',   items:['apple']}
+  ], 'Nature', 'm', 1),
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'Toys', 'm', 2),
+  _q72ReadCategoryCount([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'Animals', 'm', 0),
+  // Hard (4) — 3-cat with similar counts
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'Animals', 'h', 1),
+  _q72ReadCategoryCount([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','leaf','star']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'Nature', 'h', 0),
+  _q72ReadCategoryCount([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Nature',  items:['sun','flower','star']}
+  ], 'Fruit', 'h', 2),
+  _q72ReadCategoryCount([
+    {label:'Fruit',   items:['apple','banana','grapes']},
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'Toys', 'h', 3)
+];
+
+// ── C2: Identify most (14 = 5E / 5M / 4H) ────────────────────────────────────
+var _l72C2 = [
+  // Easy (5)
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat']}
+  ], 'e', 0),
+  _q72IdentifyMost([
+    {label:'Toys',    items:['ball']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'e', 1),
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']}
+  ], 'e', 2),
+  _q72IdentifyMost([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Fruit',   items:['apple']}
+  ], 'e', 3),
+  _q72IdentifyMost([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Nature',  items:['sun','flower','star','leaf']}
+  ], 'e', 0),
+  // Medium (5)
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'm', 1),
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']}
+  ], 'm', 2),
+  _q72IdentifyMost([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'm', 3),
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Toys',    items:['ball','car']},
+    {label:'Animals', items:['cat']}
+  ], 'm', 0),
+  _q72IdentifyMost([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'm', 0),
+  // Hard (4) — 3-cat with close counts
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car']}
+  ], 'h', 0),
+  _q72IdentifyMost([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']}
+  ], 'h', 2),
+  _q72IdentifyMost([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Nature',  items:['sun','flower','star','leaf','grapes']}
+  ], 'h', 1),
+  _q72IdentifyMost([
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog','rabbit','fish','cat']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'h', 3)
+];
+
+// ── C3: Identify fewest (14 = 5E / 5M / 4H) ──────────────────────────────────
+var _l72C3 = [
+  // Easy (5)
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat']}
+  ], 'e', 1),
+  _q72IdentifyFewest([
+    {label:'Toys',    items:['ball']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'e', 0),
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']}
+  ], 'e', 0),
+  _q72IdentifyFewest([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Fruit',   items:['apple']}
+  ], 'e', 2),
+  _q72IdentifyFewest([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Nature',  items:['sun','flower','star','leaf']}
+  ], 'e', 3),
+  // Medium (5)
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'm', 0),
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']}
+  ], 'm', 1),
+  _q72IdentifyFewest([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'm', 2),
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Toys',    items:['ball','car']},
+    {label:'Animals', items:['cat']}
+  ], 'm', 3),
+  _q72IdentifyFewest([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'm', 0),
+  // Hard (4) — 3-cat with close counts
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car']}
+  ], 'h', 1),
+  _q72IdentifyFewest([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']}
+  ], 'h', 0),
+  _q72IdentifyFewest([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Nature',  items:['sun','flower','star','leaf','grapes']}
+  ], 'h', 2),
+  _q72IdentifyFewest([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Toys',    items:['ball']}
+  ], 'h', 3)
+];
+
+// ── C4: Match data → graph (imgChoice) (15 = 4E / 7M / 4H) ───────────────────
+var _l72C4 = [
+  // Easy (4)
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat']}
+  ], 'e', 0),
+  _q72MatchDataToGraph([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'e', 1),
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'e', 2),
+  _q72MatchDataToGraph([
+    {label:'Toys',    items:['ball']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'e', 3),
+  // Medium (7)
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'm', 0),
+  _q72MatchDataToGraph([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','leaf','star']}
+  ], 'm', 1),
+  _q72MatchDataToGraph([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 'm', 2),
+  _q72MatchDataToGraph([
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'm', 3),
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog']},
+    {label:'Toys',    items:['ball']}
+  ], 'm', 0),
+  _q72MatchDataToGraph([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Fruit',   items:['apple']}
+  ], 'm', 1),
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'm', 2),
+  // Hard (4) — 3-cat with bigger counts
+  _q72MatchDataToGraph([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car']}
+  ], 'h', 3),
+  _q72MatchDataToGraph([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower','leaf']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'h', 0),
+  _q72MatchDataToGraph([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'h', 1),
+  _q72MatchDataToGraph([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 'h', 2)
+];
+
+// ── C5: Match graph → data table (15 = 4E / 7M / 4H) ─────────────────────────
+var _l72C5 = [
+  // Easy (4)
+  _q72MatchGraphToData([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat']}
+  ], 'e', 0),
+  _q72MatchGraphToData([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun']}
+  ], 'e', 1),
+  _q72MatchGraphToData([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'e', 2),
+  _q72MatchGraphToData([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'e', 3),
+  // Medium (7)
+  _q72MatchGraphToData([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'm', 0),
+  _q72MatchGraphToData([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'm', 1),
+  _q72MatchGraphToData([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']}
+  ], 'm', 2),
+  _q72MatchGraphToData([
+    {label:'Nature',  items:['sun','flower','leaf']},
+    {label:'Toys',    items:['ball','car']}
+  ], 'm', 3),
+  _q72MatchGraphToData([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']},
+    {label:'Toys',    items:['ball']}
+  ], 'm', 0),
+  _q72MatchGraphToData([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 'm', 1),
+  _q72MatchGraphToData([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Toys',    items:['ball']}
+  ], 'm', 2),
+  // Hard (4)
+  _q72MatchGraphToData([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'h', 3),
+  _q72MatchGraphToData([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'h', 0),
+  _q72MatchGraphToData([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'h', 1),
+  _q72MatchGraphToData([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Toys',    items:['ball','car']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'h', 2)
+];
+
+// ── C6: Build / complete a row (14 = 4E / 5M / 5H) ───────────────────────────
+var _l72C6 = [
+  // Easy (4) — 2-cat, one row short by 1–2
+  _q72BuildRow([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 0, 'e', 0),
+  _q72BuildRow([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','leaf','star']}
+  ], 1, 'e', 1),
+  _q72BuildRow([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 0, 'e', 0),
+  _q72BuildRow([
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 1, 'e', 1),
+  // Medium (5) — 2-cat with bigger counts or 3-cat
+  _q72BuildRow([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog']}
+  ], 0, 'm', 0),
+  _q72BuildRow([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower','star']}
+  ], 1, 'm', 2),
+  _q72BuildRow([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball']}
+  ], 1, 'm', 1),
+  _q72BuildRow([
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Toys',    items:['ball','car']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 0, 'm', 0),
+  _q72BuildRow([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Nature',  items:['sun']}
+  ], 0, 'm', 2),
+  // Hard (5) — 3-cat with similar counts
+  _q72BuildRow([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car']}
+  ], 1, 'h', 0),
+  _q72BuildRow([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Animals', items:['cat','dog']}
+  ], 2, 'h', 1),
+  _q72BuildRow([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 0, 'h', 2),
+  _q72BuildRow([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 2, 'h', 0),
+  _q72BuildRow([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 1, 'h', 1)
+];
+
+// ── C7: Identify category labels (11 = 4E / 4M / 3H) ─────────────────────────
+// Each row's items must all be from the same category so the hidden label
+// is unambiguously determined by _U7_ITEM_CAT.
+var _l72C7 = [
+  // Easy (4) — 2-cat, hide one row
+  _q72IdentifyLabel([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 0, 'e', 0),
+  _q72IdentifyLabel([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 1, 'e', 1),
+  _q72IdentifyLabel([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 0, 'e', 2),
+  _q72IdentifyLabel([
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Toys',    items:['ball','car']}
+  ], 1, 'e', 3),
+  // Medium (4) — 3-cat, hide one row
+  _q72IdentifyLabel([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']},
+    {label:'Toys',    items:['ball','car']}
+  ], 2, 'm', 0),
+  _q72IdentifyLabel([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Animals', items:['cat','dog']}
+  ], 1, 'm', 1),
+  _q72IdentifyLabel([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 0, 'm', 2),
+  _q72IdentifyLabel([
+    {label:'Nature',  items:['sun','flower','leaf']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 0, 'm', 3),
+  // Hard (3) — 3-cat with 1-item row (less info for guessing)
+  _q72IdentifyLabel([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat']},
+    {label:'Toys',    items:['ball','car']}
+  ], 1, 'h', 0),
+  _q72IdentifyLabel([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun']},
+    {label:'Animals', items:['cat','dog']}
+  ], 1, 'h', 1),
+  _q72IdentifyLabel([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Nature',  items:['sun']}
+  ], 2, 'h', 2)
+];
+
+// ── C8: Fix error (13 = 3E / 5M / 5H) ────────────────────────────────────────
+var _l72C8 = [
+  // Easy (3) — 2-cat, one row off by 1
+  _q72FixError([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 1, -1, 'e', 0),
+  _q72FixError([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 0, 1, 'e', 1),
+  _q72FixError([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 0, -1, 'e', 2),
+  // Medium (5) — 2-cat or 3-cat with off-by-1
+  _q72FixError([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 1, -1, 'm', 1),
+  _q72FixError([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 0, 1, 'm', 0),
+  _q72FixError([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball']}
+  ], 1, -1, 'm', 2),
+  _q72FixError([
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Toys',    items:['ball','car']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 2, 1, 'm', 3),
+  _q72FixError([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 0, 1, 'm', 0),
+  // Hard (5) — 3-cat with off-by-1 in middle row
+  _q72FixError([
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car']}
+  ], 1, -1, 'h', 1),
+  _q72FixError([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Animals', items:['cat','dog']}
+  ], 2, 1, 'h', 2),
+  _q72FixError([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 0, -1, 'h', 0),
+  _q72FixError([
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 1, -1, 'h', 3),
+  _q72FixError([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 2, 1, 'h', 2)
+];
+
+// ── C9: Read total pictures (13 = 4E / 5M / 4H) — totals ≤ 10 ────────────────
+var _l72C9 = [
+  // Easy (4) — total ≤ 5
+  _q72CountTotal([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat']}
+  ], 'e', 0),
+  _q72CountTotal([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'e', 1),
+  _q72CountTotal([
+    {label:'Fruit',   items:['apple']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'e', 2),
+  _q72CountTotal([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana']}
+  ], 'e', 3),
+  // Medium (5) — total 6–8
+  _q72CountTotal([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'm', 0),
+  _q72CountTotal([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'm', 1),
+  _q72CountTotal([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']}
+  ], 'm', 2),
+  _q72CountTotal([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog']},
+    {label:'Toys',    items:['ball','car']}
+  ], 'm', 3),
+  _q72CountTotal([
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'm', 0),
+  // Hard (4) — total 9–10, 3-cat
+  _q72CountTotal([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car','kite']}
+  ], 'h', 1),
+  _q72CountTotal([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'h', 2),
+  _q72CountTotal([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Nature',  items:['sun','flower','star','leaf']}
+  ], 'h', 0),
+  _q72CountTotal([
+    {label:'Nature',  items:['sun','flower','star']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']}
+  ], 'h', 3)
+];
+
+// ── C10: Mixed review (13 = 6E / 4M / 3H) ────────────────────────────────────
+// Statement types are graph-reading only: count, most, fewest, total, label.
+// NO comparison/difference statements (those are L7.4).
+var _l72C10 = [
+  // Easy (6)
+  _q72MixedReview([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat']}
+  ], 'most', 'e', 0),
+  _q72MixedReview([
+    {label:'Toys',    items:['ball']},
+    {label:'Nature',  items:['sun','flower','leaf']}
+  ], 'fewest', 'e', 1),
+  _q72MixedReview([
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'count', 'e', 2),
+  _q72MixedReview([
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball']}
+  ], 'most', 'e', 3),
+  _q72MixedReview([
+    {label:'Nature',  items:['sun']},
+    {label:'Fruit',   items:['apple','banana','orange']}
+  ], 'fewest', 'e', 0),
+  _q72MixedReview([
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple']}
+  ], 'label', 'e', 1),
+  // Medium (4)
+  _q72MixedReview([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog']}
+  ], 'total', 'm', 0),
+  _q72MixedReview([
+    {label:'Toys',    items:['ball','car','kite','die']},
+    {label:'Nature',  items:['sun','flower']}
+  ], 'count', 'm', 2),
+  _q72MixedReview([
+    {label:'Animals', items:['cat','dog','rabbit','fish']},
+    {label:'Fruit',   items:['apple','banana']},
+    {label:'Toys',    items:['ball']}
+  ], 'most', 'm', 1),
+  _q72MixedReview([
+    {label:'Nature',  items:['sun','flower']},
+    {label:'Toys',    items:['ball','car','kite']},
+    {label:'Fruit',   items:['apple']}
+  ], 'fewest', 'm', 3),
+  // Hard (3) — 3-cat with various statement types
+  _q72MixedReview([
+    {label:'Fruit',   items:['apple','banana','orange']},
+    {label:'Animals', items:['cat','dog','rabbit']},
+    {label:'Toys',    items:['ball','car','kite','die']}
+  ], 'total', 'h', 0),
+  _q72MixedReview([
+    {label:'Toys',    items:['ball','car']},
+    {label:'Nature',  items:['sun','flower','star','leaf']},
+    {label:'Animals', items:['cat','dog','rabbit']}
+  ], 'most', 'h', 2),
+  _q72MixedReview([
+    {label:'Animals', items:['cat','dog']},
+    {label:'Fruit',   items:['apple','banana','orange','grapes']},
+    {label:'Nature',  items:['sun']}
+  ], 'fewest', 'h', 1)
+];
+
+// ── L7.2 combined bank ───────────────────────────────────────────────────────
+var _l72Bank = [].concat(_l72C1, _l72C2, _l72C3, _l72C4, _l72C5, _l72C6, _l72C7, _l72C8, _l72C9, _l72C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U7_SPEC = {
   unitId: 'g1u7',
@@ -1325,7 +2908,12 @@ export const G1_U7_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 7.2 — Picture Graphs   (SCAFFOLD)
+    //  Lesson 7.2 — Picture Graphs
+    //  TEKS 1.8B (picture-graph half) | 140 questions (45E / 55M / 40H)
+    //  10 categories: C1 read-count, C2 most, C3 fewest, C4 data→graph
+    //  (imgChoice), C5 graph→data, C6 build-row, C7 label, C8 fix-error,
+    //  C9 total (≤10 visible pictures), C10 mixed review.
+    //  Scale of 1 always: one picture = one item. No scaled keys.
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u7-l2',
@@ -1333,10 +2921,14 @@ export const G1_U7_SPEC = {
       teks: ['1.8B'],
       skill: 'read_build_picture_graphs',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l72KeyIdeas,
+      workedExamples: _l72Examples,
+      quizBank: _l72Bank,
+      diagnostics: {
+        commonDistractors: [_72PC, _72MP, _72DC, _72WR, _72MF, _72DM, _72MG, _72TC],
+        errorTags:         [_72PC, _72MP, _72DC, _72WR, _72MF, _72DM, _72MG, _72TC],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
