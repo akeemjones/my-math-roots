@@ -11,7 +11,7 @@
  *  Lessons:
  *    L7.1  Sorting and Organizing Data       ← 150 questions (50E / 60M / 40H)
  *    L7.2  Picture Graphs                    ← 140 questions (45E / 55M / 40H)
- *    L7.3  Bar-Type Graphs                   ← SCAFFOLD (0 questions)
+ *    L7.3  Bar-Type Graphs                   ← 140 questions (45E / 55M / 40H)
  *    L7.4  Drawing Conclusions from Data     ← SCAFFOLD (0 questions)
  *
  *  Hard scope guardrails (apply to every question added to this unit):
@@ -2868,6 +2868,1369 @@ var _l72C10 = [
 var _l72Bank = [].concat(_l72C1, _l72C2, _l72C3, _l72C4, _l72C5, _l72C6, _l72C7, _l72C8, _l72C9, _l72C10);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.3 — Bar-Type Graphs
+//  TEKS 1.8B (bar-graph half) | 140 questions (45E / 55M / 40H)
+//
+//  Scope: read scale-of-1 horizontal bar-type graphs with discrete filled
+//  cells, identify most/fewest, match data to graphs (imgChoice both
+//  directions), complete a bar, identify labels, fix simple errors, read
+//  total visible cells.
+//
+//  HARD RULE: one cell means one item. Always. Grade 1 bar graphs in this
+//  lesson never use scaled cells, axes, tick marks, or skip-count scales.
+//
+//  HARD GUARDRAILS:
+//    - NO scaled bar graphs, NO skip-count scales
+//    - NO axis / y-axis / tick marks / scale labels
+//    - NO count-by-2 / count-by-5 language anywhere
+//    - NO picture graphs as primary skill (L7.2)
+//    - NO tally charts as primary skill (L7.1)
+//    - NO "how many more / fewer" (reserved for L7.4)
+//    - NO multi-step graph reasoning, NO line plots, NO mean/median/mode
+//    - NO drag-and-drop interaction, NO vertical bars, NO partial cells
+//    - NO graph questions where source data is missing
+//    - Max 6 cells per bar, max ~10 visible cells for C9 totals
+//
+//  No err_scale_confusion tag exists in this lesson — not declared, not
+//  used in q.o[].tag, not used in q.i.errorTag, not in diagnostics. L7.3
+//  consistently teaches "each cell means 1" without ever surfacing the
+//  scaled-cell misconception to the student.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L7.3 error tags ──────────────────────────────────────────────────────────
+var _73BC = 'err_bar_count_wrong';
+var _73MB = 'err_misses_bar_cell';
+var _73DB = 'err_double_counts_bar_cell';
+var _73WB = 'err_wrong_category_bar';
+var _73MF = 'err_most_fewest_confusion';
+var _73DM = 'err_bar_graph_data_mismatch';
+var _73MC = 'err_missing_bar_cell';
+var _73TC = 'err_total_vs_category_confusion';
+
+// ── L7.3 category color map ──────────────────────────────────────────────────
+// Each category gets a distinct fill color for its bar cells. Colors stay
+// consistent across every L7.3 question so students implicitly learn the
+// color↔category mapping (red = Fruit, blue = Animals, amber = Toys, green
+// = Nature). Cells also carry a dark outline so colorblind users see the
+// shape and count, not only the fill.
+var _U7_BAR_COLORS = {
+  Fruit:   { fill: '#EF4444', stroke: '#7F1D1D' },   // red-500 / red-900
+  Animals: { fill: '#3B82F6', stroke: '#1E3A8A' },   // blue-500 / blue-900
+  Toys:    { fill: '#F59E0B', stroke: '#92400E' },   // amber-500 / amber-800
+  Nature:  { fill: '#10B981', stroke: '#065F46' }    // emerald-500 / emerald-900
+};
+var _U7_BAR_NEUTRAL = { fill: '#9CA3AF', stroke: '#374151' };  // gray-400 / gray-700
+
+// ── L7.3 visual helpers ──────────────────────────────────────────────────────
+
+// _u7BarCell — single filled cell. size: 24 main / 16 imgChoice. category
+// determines fill color; falls back to neutral gray for unknown labels.
+function _u7BarCell(label, size) {
+  var s = size || 24;
+  var c = _U7_BAR_COLORS[label] || _U7_BAR_NEUTRAL;
+  return '<span style="display:inline-block;width:' + s + 'px;height:' + s + 'px;' +
+    'background:' + c.fill + ';border:2px solid ' + c.stroke + ';border-radius:3px;' +
+    'vertical-align:middle"></span>';
+}
+
+// _u7BarTypeGraph — main bar-type graph visual.
+// rows: [{label, count}]
+// Bordered card with one row per category. Each row: label cell (right-
+// aligned, fixed-width column) + a horizontal strip of N filled cells.
+// No axis, no tick marks. Caller must cap count at 6 (one row width).
+function _u7BarTypeGraph(rows) {
+  var html = '<div style="display:inline-block;border:2px solid #37474F;border-radius:8px;' +
+    'background:#fff;padding:8px 10px;margin:6px auto;font-family:Nunito,sans-serif">';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var n = r.count || 0;
+    var cells = '';
+    for (var j = 0; j < n; j++) cells += _u7BarCell(r.label, 24);
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;' +
+      (i < rows.length - 1 ? 'border-bottom:1px dashed #B0BEC5;' : '') + '">' +
+      '<div style="min-width:80px;max-width:80px;font-size:14px;font-weight:bold;color:#37474F;' +
+        'text-align:right;padding-right:8px;border-right:2px solid #37474F">' + r.label + '</div>' +
+      '<div style="display:flex;gap:2px;align-items:center;flex-wrap:nowrap;min-height:28px">' +
+        cells +
+      '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  return '<div style="text-align:center;margin:8px 0">' + html + '</div>';
+}
+
+// Compact variant for imgChoice cards. Smaller cells (16px) and label
+// column (54px) so 4 cards fit in the imgChoice grid at 414px viewport.
+function _u7BarTypeGraphForChoice(rows) {
+  var html = '<div style="display:inline-block;border:2px solid #37474F;border-radius:6px;' +
+    'background:#fff;padding:4px 6px;margin:2px auto;font-family:Nunito,sans-serif;max-width:100%">';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var n = r.count || 0;
+    var cells = '';
+    for (var j = 0; j < n; j++) cells += _u7BarCell(r.label, 16);
+    html += '<div style="display:flex;align-items:center;gap:4px;padding:2px 0;' +
+      (i < rows.length - 1 ? 'border-bottom:1px dashed #B0BEC5;' : '') + '">' +
+      '<div style="min-width:54px;max-width:54px;font-size:11px;font-weight:bold;color:#37474F;' +
+        'text-align:right;padding-right:4px;border-right:2px solid #37474F">' + r.label + '</div>' +
+      '<div style="display:flex;gap:2px;align-items:center;flex-wrap:nowrap;min-height:20px">' +
+        cells +
+      '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ── L7.3 teaching visuals (intervention overlays) ────────────────────────────
+function _u73TvBarCount() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit', count: 3}
+  ]), 'Touch each cell once and count: 1, 2, 3.');
+}
+function _u73TvWholeGraph() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit',   count: 3},
+    {label: 'Animals', count: 2}
+  ]), 'Each bar shows one category. Each cell stands for one item.');
+}
+function _u73TvMostFewest() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Toys',  count: 4},
+    {label: 'Fruit', count: 1}
+  ]), 'Toys is the longest bar (most). Fruit is the shortest bar (fewest).');
+}
+function _u73TvDataMatch() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Fruit',count:2},{label:'Animals',count:1}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ matches ↓</div>' +
+    _u7BarTypeGraph([
+      {label: 'Fruit',   count: 2},
+      {label: 'Animals', count: 1}
+    ]),
+    'Every bar in the graph has the same count as the data.');
+}
+function _u73TvWrongBar() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit',   count: 2},
+    {label: 'Animals', count: 3}
+  ]), 'For a question about Animals — find the Animals bar and count only that bar.');
+}
+function _u73TvBuildBar() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Toys',count:4},{label:'Fruit',count:2}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ build ↓</div>' +
+    _u7BarTypeGraph([
+      {label: 'Toys',  count: 4},
+      {label: 'Fruit', count: 2}
+    ]),
+    'Each bar should have the same number of cells as its data target.');
+}
+function _u73TvFixError() {
+  return _u7TvWrap(
+    _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+    '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ but the graph shows ↓</div>' +
+    _u7BarTypeGraph([
+      {label: 'Fruit',   count: 3},
+      {label: 'Animals', count: 1}
+    ]),
+    'Compare every bar to the data. The Animals bar is short one cell.');
+}
+function _u73TvCountTotal() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit',   count: 2},
+    {label: 'Animals', count: 3}
+  ]), 'For the total, touch each cell in every bar one time. Count them all.');
+}
+
+// ── L7.3 intervention factories ──────────────────────────────────────────────
+function _i73BarCount() { return {
+  errorTag: _73BC, title: 'Count each cell once',
+  teachingSteps: [
+    'Find the right bar.',
+    'Touch each cell as you count.',
+    'Stop at the last cell.',
+    'Each cell stands for one item.'
+  ],
+  teachingVisualRaw: _u73TvBarCount(),
+  correctAnswerExplanation: 'Each cell counts as 1. The total for the bar is the count.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73MissesCell() { return {
+  errorTag: _73MB, title: 'Do not skip any cells',
+  teachingSteps: [
+    'Start at the label end of the bar.',
+    'Touch every cell as you move along.',
+    'End on the last cell.',
+    'If you skip one, your count will be too low.'
+  ],
+  teachingVisualRaw: _u73TvBarCount(),
+  correctAnswerExplanation: 'Count every cell in the bar — do not leave any out.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73DoubleCounts() { return {
+  errorTag: _73DB, title: 'Each cell counts as one',
+  teachingSteps: [
+    'Touch each cell one time only.',
+    'Move along the bar without going back.',
+    'Do not count the same cell twice.',
+    'Stop when you reach the last cell.'
+  ],
+  teachingVisualRaw: _u73TvBarCount(),
+  correctAnswerExplanation: 'Each cell stands for one item. Counting it twice makes the count too high.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73WrongBar() { return {
+  errorTag: _73WB, title: 'Read the bar label first',
+  teachingSteps: [
+    'Read the question — what category does it ask about?',
+    'Find the bar with that label.',
+    'Stay on that bar.',
+    'Count only the cells in that bar.'
+  ],
+  teachingVisualRaw: _u73TvWrongBar(),
+  correctAnswerExplanation: 'Match the bar label to the category in the question.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73MostFewest() { return {
+  errorTag: _73MF, title: 'Most is the longest bar; fewest is the shortest',
+  teachingSteps: [
+    '"Most" means the bar with the biggest count — the longest bar.',
+    '"Fewest" means the bar with the smallest count — the shortest bar.',
+    'Compare every bar before you choose.',
+    'Do not pick the opposite of what is asked.'
+  ],
+  teachingVisualRaw: _u73TvMostFewest(),
+  correctAnswerExplanation: 'Most = longest bar. Fewest = shortest bar.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73DataMismatch() { return {
+  errorTag: _73DM, title: 'Every bar must match the data',
+  teachingSteps: [
+    'Read the count next to each category in the data.',
+    'Count the cells in the matching bar of the graph.',
+    'A graph matches only when every bar has the same count as the data.',
+    'Check every bar — not just one.'
+  ],
+  teachingVisualRaw: _u73TvDataMatch(),
+  correctAnswerExplanation: 'A matching graph has the same count for every category.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73MissingCell() { return {
+  errorTag: _73MC, title: 'Compare bar to data',
+  teachingSteps: [
+    'Read the data target for each category.',
+    'Count the cells in the matching bar.',
+    'If the bar is shorter than the target, it needs cells added.',
+    'If it is longer, it has too many cells.'
+  ],
+  teachingVisualRaw: _u73TvFixError(),
+  correctAnswerExplanation: 'A bar needs cells added when its count is less than the data target.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73TotalVsCategory() { return {
+  errorTag: _73TC, title: 'Read the question carefully',
+  teachingSteps: [
+    'If the question names one category — count only that bar.',
+    'If the question asks about the whole graph — count every cell across every bar.',
+    'Re-read the prompt before counting.',
+    'Do not mix the two.'
+  ],
+  teachingVisualRaw: _u73TvCountTotal(),
+  correctAnswerExplanation: 'One category = one bar. The whole graph = every cell across every bar.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73BuildBar() { return {
+  errorTag: _73MC, title: 'Build the bar to match the data',
+  teachingSteps: [
+    'Read the data target for each bar.',
+    'Count the cells already in the graph bar.',
+    'A bar that is shorter than its target needs cells added.',
+    'Each cell you add stands for one item.'
+  ],
+  teachingVisualRaw: _u73TvBuildBar(),
+  correctAnswerExplanation: 'A bar matches the data when its cell count equals the data target.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i73LabelMatch() { return {
+  errorTag: _73WB, title: 'Match the bar to its category',
+  teachingSteps: [
+    'Look at the bar — the color of its cells hints at the category.',
+    'Find a label that describes the category.',
+    'Each cell still counts as one item, no matter the color.'
+  ],
+  teachingVisualRaw: _u73TvWholeGraph(),
+  correctAnswerExplanation: 'The bar label describes the category, and the cell color matches that category.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L7.3 question factory functions ──────────────────────────────────────────
+
+// _q73ReadCategoryCount — C1: bar graph + ask the count of one named bar.
+function _q73ReadCategoryCount(rows, askCat, diff, aIdx) {
+  var target = rows.filter(function(r){ return r.label === askCat; })[0];
+  var n = target.count;
+  var otherRow = rows.filter(function(r){ return r.label !== askCat; })[0];
+  var otherN = otherRow ? otherRow.count : 0;
+  var wrong1 = Math.max(0, n - 1);                  // missed one
+  var wrong2 = n + 1;                               // double-counted
+  var wrong3 = (otherN !== n && otherN > 0) ? otherN : n + 2;  // wrong bar count
+  var seen = {}; seen[String(n)] = true;
+  var picks = [wrong1, wrong2, wrong3].filter(function(w){
+    if (seen[String(w)]) return false; seen[String(w)] = true; return true;
+  });
+  var bump = 2;
+  while (picks.length < 3) {
+    var f = n + bump++;
+    if (!seen[String(f)]) { picks.push(f); seen[String(f)] = true; }
+  }
+  var opts = [
+    {val: String(n)},
+    {val: String(picks[0]), tag: _73MB},
+    {val: String(picks[1]), tag: _73DB},
+    {val: String(picks[2]), tag: _73WB}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the bar graph. How many ' + askCat + ' are there?',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: 'Count the cells in the ' + askCat + ' bar: there are ' + n + '. Each cell stands for one item.',
+    d: diff,
+    h: 'Find the bar labeled ' + askCat + '. Count each cell in that bar one time.',
+    sk: 'read_build_bar_graphs',
+    i: _i73BarCount()
+  };
+}
+
+// _q73IdentifyMost — C2: bar graph + "which is longest?"
+function _q73IdentifyMost(rows, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var winner = sorted[0].label;
+  var fewest = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var distractors = [
+    {val: fewest, tag: _73MF},
+    {val: middle || notInGraph[0] || fewest, tag: _73WB},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || fewest, tag: _73WB}
+  ];
+  var opts = [{val: winner}].concat(distractors);
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var fill = notInGraph.slice();
+  while (unique.length < 4 && fill.length) {
+    var c = fill.shift();
+    if (!seen[c]) { unique.push({val: c, tag: _73WB}); seen[c] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'Look at the bar graph. Which category has the most?',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: winner + ' has the most — its bar is the longest, with ' + sorted[0].count + ' cells.',
+    d: diff,
+    h: 'The longest bar has the most. Count each bar and pick the biggest count.',
+    sk: 'read_build_bar_graphs',
+    i: _i73MostFewest()
+  };
+}
+
+// _q73IdentifyFewest — C3: bar graph + "which is shortest?"
+function _q73IdentifyFewest(rows, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return a.count - b.count; });
+  var winner = sorted[0].label;
+  var most = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var distractors = [
+    {val: most, tag: _73MF},
+    {val: middle || notInGraph[0] || most, tag: _73WB},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || most, tag: _73WB}
+  ];
+  var opts = [{val: winner}].concat(distractors);
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var fill = notInGraph.slice();
+  while (unique.length < 4 && fill.length) {
+    var c = fill.shift();
+    if (!seen[c]) { unique.push({val: c, tag: _73WB}); seen[c] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'Look at the bar graph. Which category has the fewest?',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: winner + ' has the fewest — its bar is the shortest, with ' + sorted[0].count + ' cells.',
+    d: diff,
+    h: 'The shortest bar has the fewest. Count each bar and pick the smallest count.',
+    sk: 'read_build_bar_graphs',
+    i: _i73MostFewest()
+  };
+}
+
+// _q73MatchDataToGraph — C4: imgChoice. Source data table, 4 bar-graph cards.
+function _q73MatchDataToGraph(rows, diff, aIdx) {
+  function bumpRow(r, delta) {
+    return {label: r.label, count: Math.max(0, Math.min(6, r.count + delta))};
+  }
+  var d1Rows = rows.map(function(r, i){ return i === 0 ? bumpRow(r, +1) : r; });
+  var d2Rows = rows.map(function(r, i){
+    if (i === 1) return bumpRow(r, r.count > 1 ? -1 : +1);
+    return r;
+  });
+  var d3Rows;
+  if (rows.length === 2) {
+    d3Rows = [
+      {label: rows[1].label, count: rows[0].count},
+      {label: rows[0].label, count: rows[1].count}
+    ];
+  } else {
+    d3Rows = rows.map(function(r, i){
+      if (i === 2) return bumpRow(r, r.count > 1 ? -1 : +1);
+      return r;
+    });
+  }
+  var slot = [d1Rows, d2Rows, d3Rows];
+  slot.splice(aIdx, 0, rows);
+  var letters = ['A','B','C','D'];
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var svgs = slot.map(function(r){ return _u7BarTypeGraphForChoice(r); });
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _73DM};
+  });
+  var dataRows = rows.map(function(r){ return {label: r.label, count: r.count}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  var promptHtml = _u7PromptWithSource(
+    'Which bar graph matches these data? Tap a picture.', sourceCard);
+  return {
+    t: promptHtml,
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: sourceCard,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' matches every bar: ' +
+       dataRows.map(function(d){ return d.label + ' = ' + d.count; }).join(', ') + '.',
+    d: diff,
+    h: 'Read each count in the data. Count the cells in each bar of each graph. Pick the one where every bar matches.',
+    sk: 'read_build_bar_graphs',
+    i: _i73DataMismatch()
+  };
+}
+
+// _q73MatchGraphToData — C5: bar graph + 4 text data-table options.
+function _q73MatchGraphToData(rows, diff, aIdx) {
+  function fmt(r){ return r.map(function(x){ return x.label + ' ' + x.count; }).join(', '); }
+  var correctRows = rows.map(function(r){ return {label: r.label, count: r.count}; });
+  var d1Rows = correctRows.map(function(r, i){
+    return i === 0 ? {label: r.label, count: r.count + 1} : r;
+  });
+  var d2Rows = correctRows.map(function(r, i){
+    return i === 1 ? {label: r.label, count: Math.max(0, r.count - 1)} : r;
+  });
+  var d3Rows;
+  if (rows.length === 2) {
+    d3Rows = [
+      {label: correctRows[1].label, count: correctRows[0].count},
+      {label: correctRows[0].label, count: correctRows[1].count}
+    ];
+  } else {
+    d3Rows = correctRows.map(function(r, i){
+      return i === 2 ? {label: r.label, count: r.count + 1} : r;
+    });
+  }
+  var opts = [
+    {val: fmt(correctRows)},
+    {val: fmt(d1Rows), tag: _73DM},
+    {val: fmt(d2Rows), tag: _73DM},
+    {val: fmt(d3Rows), tag: _73DM}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the bar graph. Which data set matches?',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: 'The graph shows ' + fmt(correctRows) + ' — every bar matches that data.',
+    d: diff,
+    h: 'Count each bar in the graph. Find the data set with the same counts.',
+    sk: 'read_build_bar_graphs',
+    i: _i73DataMismatch()
+  };
+}
+
+// _q73BuildBar — C6: source data above + partial graph. Pick the unfinished bar.
+// Approved wording: "Which bar needs cells added to match the data?" — NOT
+// "how many more cells does X need?" (that wording belongs to L7.4).
+function _q73BuildBar(targetRows, shortRowIdx, diff, aIdx) {
+  var shortBy = targetRows[shortRowIdx].count >= 3 ? 2 : 1;
+  var currentRows = targetRows.map(function(r, i){
+    if (i === shortRowIdx) {
+      return {label: r.label, count: Math.max(0, r.count - shortBy)};
+    }
+    return r;
+  });
+  var shortLabel = targetRows[shortRowIdx].label;
+  var inGraphOthers = targetRows.filter(function(r, i){ return i !== shortRowIdx; });
+  var nonExistent = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  })[0] || 'Other';
+  var distractors = [
+    {val: 'The ' + (inGraphOthers[0] ? inGraphOthers[0].label : nonExistent) + ' bar', tag: _73WB},
+    {val: 'The ' + (inGraphOthers[1] ? inGraphOthers[1].label : nonExistent) + ' bar', tag: _73WB},
+    {val: 'No bar needs cells added', tag: _73MC}
+  ];
+  var seen = {}; seen['The ' + shortLabel + ' bar'] = true;
+  var unique = [];
+  distractors.forEach(function(d){ if (!seen[d.val]) { seen[d.val] = true; unique.push(d); } });
+  var fill = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  });
+  for (var i = 0; i < fill.length && unique.length < 3; i++) {
+    var v = 'The ' + fill[i] + ' bar';
+    if (!seen[v]) { unique.push({val: v, tag: _73WB}); seen[v] = true; }
+  }
+  while (unique.length < 3) unique.push({val: 'No bar needs cells added', tag: _73MC});
+  var opts = [{val: 'The ' + shortLabel + ' bar'}].concat(unique.slice(0, 3));
+  opts = _u7Place(opts, aIdx);
+  var dataRows = targetRows.map(function(r){ return {label: r.label, count: r.count}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  return {
+    t: 'The graph below should match the data above. Which bar needs cells added to match the data?',
+    s: sourceCard + _u7BarTypeGraph(currentRows),
+    o: opts, a: aIdx,
+    e: 'The ' + shortLabel + ' bar has ' + currentRows[shortRowIdx].count +
+       ' cells, but the data says ' + targetRows[shortRowIdx].count + ' — that bar needs cells added.',
+    d: diff,
+    h: 'Count each bar in the graph. Compare to the data. The shorter bar is the one that needs cells added.',
+    sk: 'read_build_bar_graphs',
+    i: _i73BuildBar()
+  };
+}
+
+// _q73IdentifyLabel — C7: bar graph with one row's label hidden as "???".
+// hiddenIdx: which row has the hidden label. The cell color (category-themed)
+// is the primary visual cue for the correct label.
+function _q73IdentifyLabel(rows, hiddenIdx, diff, aIdx) {
+  var hiddenRow = rows[hiddenIdx];
+  var correctLabel = hiddenRow.label;
+  // Render the row with "???" but keep the original color (via a hidden-label flag)
+  // Use displayLabel field to pass through; _u7BarTypeGraph uses r.label for both
+  // text and color, so we need a custom render here.
+  var displayHtml = (function(){
+    var html = '<div style="display:inline-block;border:2px solid #37474F;border-radius:8px;' +
+      'background:#fff;padding:8px 10px;margin:6px auto;font-family:Nunito,sans-serif">';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var n = r.count || 0;
+      var cells = '';
+      // For the hidden row, keep using r.label internally for color (so color hint shows)
+      for (var j = 0; j < n; j++) cells += _u7BarCell(r.label, 24);
+      var labelText = (i === hiddenIdx) ? '???' : r.label;
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;' +
+        (i < rows.length - 1 ? 'border-bottom:1px dashed #B0BEC5;' : '') + '">' +
+        '<div style="min-width:80px;max-width:80px;font-size:14px;font-weight:bold;color:#37474F;' +
+          'text-align:right;padding-right:8px;border-right:2px solid #37474F">' + labelText + '</div>' +
+        '<div style="display:flex;gap:2px;align-items:center;flex-wrap:nowrap;min-height:28px">' +
+          cells +
+        '</div>' +
+        '</div>';
+    }
+    html += '</div>';
+    return '<div style="text-align:center;margin:8px 0">' + html + '</div>';
+  })();
+  var distractors = _U7_CATEGORIES.filter(function(c){ return c !== correctLabel; }).slice(0, 3);
+  var opts = [
+    {val: correctLabel},
+    {val: distractors[0], tag: _73WB},
+    {val: distractors[1], tag: _73WB},
+    {val: distractors[2], tag: _73WB}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the bar graph. What category goes in the "???" bar?',
+    s: displayHtml,
+    o: opts, a: aIdx,
+    e: 'The "???" bar has ' + hiddenRow.count + ' cells and the color matches the ' + correctLabel + ' category.',
+    d: diff,
+    h: 'Look at the cells in the "???" bar. The color of the cells is a hint about the category.',
+    sk: 'read_build_bar_graphs',
+    i: _i73LabelMatch()
+  };
+}
+
+// _q73FixError — C8: source data above + bar graph with one wrong row.
+// errorDelta: −1 means the graph bar is short by 1; +1 means it has one extra cell.
+function _q73FixError(targetRows, errorRowIdx, errorDelta, diff, aIdx) {
+  var graphRows = targetRows.map(function(r, i){
+    if (i === errorRowIdx) {
+      return {label: r.label, count: Math.max(0, Math.min(6, r.count + errorDelta))};
+    }
+    return r;
+  });
+  var errorLabel = targetRows[errorRowIdx].label;
+  var rightRow = targetRows.filter(function(r, i){ return i !== errorRowIdx; })[0];
+  var nonExistent = _U7_CATEGORIES.filter(function(c){
+    return !targetRows.some(function(r){ return r.label === c; });
+  })[0] || 'Other';
+  var opts = [
+    {val: 'The ' + errorLabel + ' bar is wrong'},
+    {val: 'The ' + (rightRow ? rightRow.label : nonExistent) + ' bar is wrong', tag: _73MC},
+    {val: 'The ' + nonExistent + ' bar is wrong', tag: _73WB},
+    {val: 'Every bar is correct', tag: _73DM}
+  ];
+  opts = _u7Place(opts, aIdx);
+  var dataRows = targetRows.map(function(r){ return {label: r.label, count: r.count}; });
+  var sourceCard = _u7SourceDataCard(_u7DataTable(dataRows), 'Data');
+  return {
+    t: 'The data above shows the right counts. The bar graph below has a mistake. Where is the mistake?',
+    s: sourceCard + _u7BarTypeGraph(graphRows),
+    o: opts, a: aIdx,
+    e: 'The ' + errorLabel + ' bar in the graph has ' + graphRows[errorRowIdx].count +
+       ' cells, but the data says ' + targetRows[errorRowIdx].count + '. That bar is wrong.',
+    d: diff,
+    h: 'Compare every bar to the data. Find the bar whose count does not match.',
+    sk: 'read_build_bar_graphs',
+    i: _i73MissingCell()
+  };
+}
+
+// _q73CountTotal — C9: graph + "how many cells in the whole graph?"
+// Caller must keep total ≤ 10 (visible-count cap).
+function _q73CountTotal(rows, diff, aIdx) {
+  var total = rows.reduce(function(s, r){ return s + r.count; }, 0);
+  var firstRow = rows[0].count;
+  var opts = [
+    {val: String(total)},
+    {val: String(firstRow), tag: _73TC},
+    {val: String(Math.max(0, total - 1)), tag: _73MB},
+    {val: String(total + 1), tag: _73DB}
+  ];
+  var seen = {}; var unique = [];
+  opts.forEach(function(o){ if (!seen[o.val]) { seen[o.val] = true; unique.push(o); } });
+  var bump = 2;
+  while (unique.length < 4) {
+    var f = String(total + bump++);
+    if (!seen[f]) { unique.push({val: f, tag: _73BC}); seen[f] = true; }
+  }
+  opts = _u7Place(unique.slice(0, 4), aIdx);
+  return {
+    t: 'How many filled cells are in the whole bar graph? Count all the cells.',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: 'Count every cell across every bar: there are ' + total + ' cells in all.',
+    d: diff,
+    h: 'Touch each cell in every bar one time. Count them all together.',
+    sk: 'read_build_bar_graphs',
+    i: _i73TotalVsCategory()
+  };
+}
+
+// _q73MixedReview — C10: pick the TRUE statement about the bar graph.
+// statementType: 'count' | 'most' | 'fewest' | 'total' | 'label'
+// Graph-reading only — NO comparison/difference statements (those are L7.4).
+function _q73MixedReview(rows, statementType, diff, aIdx) {
+  var truthful;
+  var falsy = [];
+  var tagFor = {};
+  var maxRow = rows.reduce(function(a,b){ return a.count >= b.count ? a : b; });
+  var minRow = rows.reduce(function(a,b){ return a.count <= b.count ? a : b; });
+  var total = rows.reduce(function(s,r){ return s + r.count; }, 0);
+  var allLabels = rows.map(function(r){ return r.label; });
+  var notInGraph = _U7_CATEGORIES.filter(function(c){ return allLabels.indexOf(c) === -1; });
+
+  if (statementType === 'count') {
+    var rowForStmt = rows[0];
+    truthful = 'There are exactly ' + rowForStmt.count + ' ' + rowForStmt.label;
+    var otherRow = rows[1] || rowForStmt;
+    falsy = [
+      'There are exactly ' + (rowForStmt.count + 1) + ' ' + rowForStmt.label,
+      'There are exactly ' + otherRow.count + ' ' + (notInGraph[0] || rowForStmt.label),
+      'There are exactly ' + Math.max(0, rowForStmt.count - 1) + ' ' + rowForStmt.label
+    ];
+    tagFor[falsy[0]] = _73DB; tagFor[falsy[1]] = _73WB; tagFor[falsy[2]] = _73MB;
+  } else if (statementType === 'most') {
+    truthful = maxRow.label + ' has the most';
+    falsy = [
+      minRow.label + ' has the most',
+      (rows.filter(function(r){ return r.label !== maxRow.label && r.label !== minRow.label; })[0] || minRow).label + ' has the most',
+      (notInGraph[0] || maxRow.label) + ' has the most'
+    ];
+    tagFor[falsy[0]] = _73MF; tagFor[falsy[1]] = _73WB; tagFor[falsy[2]] = _73WB;
+  } else if (statementType === 'fewest') {
+    truthful = minRow.label + ' has the fewest';
+    falsy = [
+      maxRow.label + ' has the fewest',
+      (rows.filter(function(r){ return r.label !== maxRow.label && r.label !== minRow.label; })[0] || maxRow).label + ' has the fewest',
+      (notInGraph[0] || minRow.label) + ' has the fewest'
+    ];
+    tagFor[falsy[0]] = _73MF; tagFor[falsy[1]] = _73WB; tagFor[falsy[2]] = _73WB;
+  } else if (statementType === 'total') {
+    truthful = 'There are ' + total + ' filled cells in the whole graph';
+    falsy = [
+      'There are ' + rows[0].count + ' filled cells in the whole graph',
+      'There are ' + (total + 1) + ' filled cells in the whole graph',
+      'There are ' + Math.max(0, total - 1) + ' filled cells in the whole graph'
+    ];
+    tagFor[falsy[0]] = _73TC; tagFor[falsy[1]] = _73DB; tagFor[falsy[2]] = _73MB;
+  } else {
+    // 'label'
+    truthful = maxRow.label + ' is one of the categories in the graph';
+    falsy = [
+      (notInGraph[0] || 'Toys') + ' is one of the categories in the graph',
+      (notInGraph[1] || notInGraph[0] || 'Nature') + ' is one of the categories in the graph',
+      minRow.label + ' is not in the graph'
+    ];
+    tagFor[falsy[0]] = _73WB; tagFor[falsy[1]] = _73WB; tagFor[falsy[2]] = _73WB;
+  }
+  var seen = {}; seen[truthful] = true;
+  var unique = [];
+  falsy.forEach(function(s){ if (!seen[s]) { seen[s] = true; unique.push(s); } });
+  var bump = 5;
+  while (unique.length < 3) {
+    var fb = 'There are exactly ' + (total + bump++) + ' filled cells in the whole graph';
+    if (!seen[fb]) { unique.push(fb); seen[fb] = true; }
+  }
+  var opts = [
+    {val: truthful},
+    {val: unique[0], tag: tagFor[unique[0]] || _73WB},
+    {val: unique[1], tag: tagFor[unique[1]] || _73WB},
+    {val: unique[2], tag: tagFor[unique[2]] || _73WB}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the bar graph. Which statement is true?',
+    s: _u7BarTypeGraph(rows),
+    o: opts, a: aIdx,
+    e: 'The true statement is: "' + truthful + '." Check each statement against the graph.',
+    d: diff,
+    h: 'Read each statement. Check it against the graph. Pick the one that matches.',
+    sk: 'read_build_bar_graphs',
+    i: _i73TotalVsCategory()
+  };
+}
+
+// ── L7.3 key ideas ────────────────────────────────────────────────────────────
+var _l73KeyIdeas = [
+  'A bar-type graph shows data as bars made of cells. Each bar is one category, and each cell in a bar is one item from that category.',
+  'One cell means one item. To find how many, count the cells in that bar one at a time.',
+  'Every bar has a label. The label tells you what category the bar stands for.',
+  'The longest bar has the most. The shortest bar has the fewest. Compare bar lengths to see which is most or fewest.',
+  'A bar-type graph and a data set match only when every bar has the same number of cells as the count for that category in the data.',
+  'The total is the count of all filled cells across every bar. Touch each cell once and count them all.'
+];
+
+// ── L7.3 worked examples ──────────────────────────────────────────────────────
+var _l73Examples = [
+  {
+    id: 'g1-u7-l3-ex-1',
+    title: 'Example 1: Read a bar',
+    prompt: 'How many votes does the Toys bar show?',
+    visual: {type: 'rawHtml', html: _u7BarTypeGraph([
+      {label: 'Fruit',   count: 4},
+      {label: 'Animals', count: 2},
+      {label: 'Toys',    count: 5}
+    ])},
+    steps: [
+      'Find the bar labeled Toys.',
+      'Touch each cell in the Toys bar one at a time.',
+      'Count: 1, 2, 3, 4, 5.',
+      'There are 5 cells in the Toys bar.'
+    ],
+    finalAnswer: 'The Toys bar shows 5.'
+  },
+  {
+    id: 'g1-u7-l3-ex-2',
+    title: 'Example 2: Most and fewest',
+    prompt: 'Which category has the most? Which has the fewest?',
+    visual: {type: 'rawHtml', html: _u7BarTypeGraph([
+      {label: 'Fruit',   count: 3},
+      {label: 'Animals', count: 1},
+      {label: 'Toys',    count: 4}
+    ])},
+    steps: [
+      'Look at every bar.',
+      'The Toys bar is the longest — 4 cells.',
+      'The Animals bar is the shortest — 1 cell.',
+      'Most = Toys. Fewest = Animals.'
+    ],
+    finalAnswer: 'Toys has the most. Animals has the fewest.'
+  },
+  {
+    id: 'g1-u7-l3-ex-3',
+    title: 'Example 3: Match data to a bar graph',
+    prompt: 'Which bar graph matches: Fruit 3, Animals 2?',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ which one matches? ↓</div>' +
+      _u7BarTypeGraph([
+        {label:'Fruit',  count:3},
+        {label:'Animals',count:2}
+      ])},
+    steps: [
+      'Read the data: Fruit needs 3, Animals needs 2.',
+      'Count the Fruit bar in the graph — 3 cells.',
+      'Count the Animals bar in the graph — 2 cells.',
+      'Every bar matches the data.'
+    ],
+    finalAnswer: 'The graph above matches: Fruit = 3, Animals = 2.'
+  },
+  {
+    id: 'g1-u7-l3-ex-4',
+    title: 'Example 4: Complete a bar',
+    prompt: 'Which bar should have 4 cells to match the data?',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Toys',count:4},{label:'Fruit',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ partial graph ↓</div>' +
+      _u7BarTypeGraph([
+        {label:'Toys',  count:2},
+        {label:'Fruit', count:2}
+      ])},
+    steps: [
+      'Read the data: Toys needs 4 and Fruit needs 2.',
+      'Count each bar in the graph.',
+      'The Toys bar has 2 cells, but the data says 4. That bar is short.',
+      'The Fruit bar has 2 cells and the data says 2. That bar matches.',
+      'The Toys bar is the one that should have 4 cells.'
+    ],
+    finalAnswer: 'The Toys bar should have 4 cells.'
+  },
+  {
+    id: 'g1-u7-l3-ex-5',
+    title: 'Example 5: Fix a bar graph error',
+    prompt: 'Find the mistake. Data says Fruit 3, Animals 2.',
+    visual: {type: 'rawHtml', html:
+      _u7DataTable([{label:'Fruit',count:3},{label:'Animals',count:2}]) +
+      '<div style="text-align:center;color:#5a7080;font-size:13px;margin:6px 0">↓ but the graph shows ↓</div>' +
+      _u7BarTypeGraph([
+        {label:'Fruit',  count:3},
+        {label:'Animals',count:1}
+      ])},
+    steps: [
+      'Compare each bar of the graph to the data.',
+      'Fruit: graph has 3, data says 3 — match.',
+      'Animals: graph has 1, data says 2 — mismatch.',
+      'The Animals bar is wrong — it is short one cell.'
+    ],
+    finalAnswer: 'The Animals bar is wrong (short one cell).'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.3 question banks (10 categories, 140 total)
+//  Target: 45E / 55M / 40H
+//  C1 read-count(18) + C2 most(14) + C3 fewest(14) + C4 data→graph(15) +
+//  C5 graph→data(15) + C6 build-bar(14) + C7 label(11) + C8 fix-error(13) +
+//  C9 total(13) + C10 mixed(13)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Read category count (18 = 6E / 8M / 4H) ──────────────────────────────
+var _l73C1 = [
+  // Easy (6)
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:2}, {label:'Animals', count:1}
+  ], 'Fruit', 'e', 0),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:2}, {label:'Nature', count:3}
+  ], 'Nature', 'e', 1),
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:1}, {label:'Animals', count:3}
+  ], 'Animals', 'e', 2),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 'Toys', 'e', 3),
+  _q73ReadCategoryCount([
+    {label:'Animals', count:2}, {label:'Toys', count:1}
+  ], 'Animals', 'e', 0),
+  _q73ReadCategoryCount([
+    {label:'Nature', count:2}, {label:'Fruit', count:3}
+  ], 'Fruit', 'e', 2),
+  // Medium (8)
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:4}, {label:'Animals', count:2}
+  ], 'Fruit', 'm', 1),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:4}, {label:'Nature', count:3}
+  ], 'Toys', 'm', 2),
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:3}, {label:'Animals', count:4}
+  ], 'Animals', 'm', 0),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:3}, {label:'Fruit', count:4}, {label:'Animals', count:1}
+  ], 'Fruit', 'm', 3),
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:2}, {label:'Animals', count:3}, {label:'Nature', count:2}
+  ], 'Animals', 'm', 0),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:2}, {label:'Nature', count:4}, {label:'Fruit', count:1}
+  ], 'Nature', 'm', 1),
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:2}, {label:'Toys', count:3}
+  ], 'Toys', 'm', 2),
+  _q73ReadCategoryCount([
+    {label:'Animals', count:3}, {label:'Nature', count:2}
+  ], 'Animals', 'm', 0),
+  // Hard (4)
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:4}, {label:'Animals', count:4}, {label:'Toys', count:3}
+  ], 'Animals', 'h', 1),
+  _q73ReadCategoryCount([
+    {label:'Toys', count:3}, {label:'Nature', count:4}, {label:'Fruit', count:3}
+  ], 'Nature', 'h', 0),
+  _q73ReadCategoryCount([
+    {label:'Animals', count:4}, {label:'Fruit', count:4}, {label:'Nature', count:3}
+  ], 'Fruit', 'h', 2),
+  _q73ReadCategoryCount([
+    {label:'Fruit', count:3}, {label:'Toys', count:4}, {label:'Animals', count:2}
+  ], 'Toys', 'h', 3)
+];
+
+// ── C2: Identify most (14 = 5E / 5M / 4H) ────────────────────────────────────
+var _l73C2 = [
+  // Easy (5)
+  _q73IdentifyMost([
+    {label:'Fruit', count:3}, {label:'Animals', count:1}
+  ], 'e', 0),
+  _q73IdentifyMost([
+    {label:'Toys', count:1}, {label:'Nature', count:3}
+  ], 'e', 1),
+  _q73IdentifyMost([
+    {label:'Fruit', count:1}, {label:'Animals', count:4}
+  ], 'e', 2),
+  _q73IdentifyMost([
+    {label:'Toys', count:4}, {label:'Fruit', count:1}
+  ], 'e', 3),
+  _q73IdentifyMost([
+    {label:'Animals', count:2}, {label:'Nature', count:4}
+  ], 'e', 0),
+  // Medium (5)
+  _q73IdentifyMost([
+    {label:'Fruit', count:2}, {label:'Toys', count:3}
+  ], 'm', 1),
+  _q73IdentifyMost([
+    {label:'Fruit', count:3}, {label:'Animals', count:4}
+  ], 'm', 2),
+  _q73IdentifyMost([
+    {label:'Toys', count:4}, {label:'Nature', count:2}
+  ], 'm', 3),
+  _q73IdentifyMost([
+    {label:'Fruit', count:4}, {label:'Toys', count:2}, {label:'Animals', count:1}
+  ], 'm', 0),
+  _q73IdentifyMost([
+    {label:'Nature', count:4}, {label:'Fruit', count:1}, {label:'Animals', count:2}
+  ], 'm', 0),
+  // Hard (4)
+  _q73IdentifyMost([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:2}
+  ], 'h', 0),
+  _q73IdentifyMost([
+    {label:'Toys', count:2}, {label:'Nature', count:3}, {label:'Fruit', count:4}
+  ], 'h', 2),
+  _q73IdentifyMost([
+    {label:'Animals', count:2}, {label:'Fruit', count:3}, {label:'Nature', count:5}
+  ], 'h', 1),
+  _q73IdentifyMost([
+    {label:'Fruit', count:1}, {label:'Animals', count:5}, {label:'Toys', count:3}
+  ], 'h', 3)
+];
+
+// ── C3: Identify fewest (14 = 5E / 5M / 4H) ──────────────────────────────────
+var _l73C3 = [
+  // Easy (5)
+  _q73IdentifyFewest([
+    {label:'Fruit', count:3}, {label:'Animals', count:1}
+  ], 'e', 1),
+  _q73IdentifyFewest([
+    {label:'Toys', count:1}, {label:'Nature', count:3}
+  ], 'e', 0),
+  _q73IdentifyFewest([
+    {label:'Fruit', count:1}, {label:'Animals', count:4}
+  ], 'e', 0),
+  _q73IdentifyFewest([
+    {label:'Toys', count:4}, {label:'Fruit', count:1}
+  ], 'e', 2),
+  _q73IdentifyFewest([
+    {label:'Animals', count:2}, {label:'Nature', count:4}
+  ], 'e', 3),
+  // Medium (5)
+  _q73IdentifyFewest([
+    {label:'Fruit', count:2}, {label:'Toys', count:3}
+  ], 'm', 0),
+  _q73IdentifyFewest([
+    {label:'Fruit', count:3}, {label:'Animals', count:4}
+  ], 'm', 1),
+  _q73IdentifyFewest([
+    {label:'Toys', count:4}, {label:'Nature', count:2}
+  ], 'm', 2),
+  _q73IdentifyFewest([
+    {label:'Fruit', count:4}, {label:'Toys', count:2}, {label:'Animals', count:1}
+  ], 'm', 3),
+  _q73IdentifyFewest([
+    {label:'Nature', count:4}, {label:'Fruit', count:1}, {label:'Animals', count:2}
+  ], 'm', 0),
+  // Hard (4)
+  _q73IdentifyFewest([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:2}
+  ], 'h', 1),
+  _q73IdentifyFewest([
+    {label:'Toys', count:2}, {label:'Nature', count:3}, {label:'Fruit', count:4}
+  ], 'h', 0),
+  _q73IdentifyFewest([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}, {label:'Nature', count:5}
+  ], 'h', 2),
+  _q73IdentifyFewest([
+    {label:'Fruit', count:2}, {label:'Animals', count:4}, {label:'Toys', count:1}
+  ], 'h', 3)
+];
+
+// ── C4: Match data → graph (imgChoice) (15 = 4E / 7M / 4H) ───────────────────
+var _l73C4 = [
+  // Easy (4)
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:2}, {label:'Animals', count:1}
+  ], 'e', 0),
+  _q73MatchDataToGraph([
+    {label:'Toys', count:2}, {label:'Nature', count:3}
+  ], 'e', 1),
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 'e', 2),
+  _q73MatchDataToGraph([
+    {label:'Toys', count:1}, {label:'Fruit', count:3}
+  ], 'e', 3),
+  // Medium (7)
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:4}, {label:'Animals', count:2}
+  ], 'm', 0),
+  _q73MatchDataToGraph([
+    {label:'Toys', count:3}, {label:'Nature', count:4}
+  ], 'm', 1),
+  _q73MatchDataToGraph([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}
+  ], 'm', 2),
+  _q73MatchDataToGraph([
+    {label:'Nature', count:3}, {label:'Toys', count:3}
+  ], 'm', 3),
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:2}, {label:'Animals', count:2}, {label:'Toys', count:1}
+  ], 'm', 0),
+  _q73MatchDataToGraph([
+    {label:'Toys', count:2}, {label:'Nature', count:2}, {label:'Fruit', count:1}
+  ], 'm', 1),
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:3}, {label:'Animals', count:1}, {label:'Nature', count:2}
+  ], 'm', 2),
+  // Hard (4)
+  _q73MatchDataToGraph([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:2}
+  ], 'h', 3),
+  _q73MatchDataToGraph([
+    {label:'Toys', count:4}, {label:'Nature', count:3}, {label:'Animals', count:2}
+  ], 'h', 0),
+  _q73MatchDataToGraph([
+    {label:'Animals', count:3}, {label:'Fruit', count:4}, {label:'Nature', count:2}
+  ], 'h', 1),
+  _q73MatchDataToGraph([
+    {label:'Nature', count:4}, {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 'h', 2)
+];
+
+// ── C5: Match graph → data table (15 = 4E / 7M / 4H) ─────────────────────────
+var _l73C5 = [
+  // Easy (4)
+  _q73MatchGraphToData([
+    {label:'Fruit', count:2}, {label:'Animals', count:1}
+  ], 'e', 0),
+  _q73MatchGraphToData([
+    {label:'Toys', count:3}, {label:'Nature', count:1}
+  ], 'e', 1),
+  _q73MatchGraphToData([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 'e', 2),
+  _q73MatchGraphToData([
+    {label:'Toys', count:2}, {label:'Fruit', count:3}
+  ], 'e', 3),
+  // Medium (7)
+  _q73MatchGraphToData([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}
+  ], 'm', 0),
+  _q73MatchGraphToData([
+    {label:'Toys', count:4}, {label:'Nature', count:2}
+  ], 'm', 1),
+  _q73MatchGraphToData([
+    {label:'Animals', count:2}, {label:'Fruit', count:4}
+  ], 'm', 2),
+  _q73MatchGraphToData([
+    {label:'Nature', count:3}, {label:'Toys', count:2}
+  ], 'm', 3),
+  _q73MatchGraphToData([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}, {label:'Toys', count:1}
+  ], 'm', 0),
+  _q73MatchGraphToData([
+    {label:'Toys', count:3}, {label:'Nature', count:2}, {label:'Fruit', count:2}
+  ], 'm', 1),
+  _q73MatchGraphToData([
+    {label:'Animals', count:4}, {label:'Fruit', count:2}, {label:'Toys', count:1}
+  ], 'm', 2),
+  // Hard (4)
+  _q73MatchGraphToData([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:3}
+  ], 'h', 3),
+  _q73MatchGraphToData([
+    {label:'Toys', count:4}, {label:'Nature', count:3}, {label:'Animals', count:2}
+  ], 'h', 0),
+  _q73MatchGraphToData([
+    {label:'Animals', count:2}, {label:'Fruit', count:4}, {label:'Nature', count:3}
+  ], 'h', 1),
+  _q73MatchGraphToData([
+    {label:'Nature', count:4}, {label:'Toys', count:2}, {label:'Fruit', count:3}
+  ], 'h', 2)
+];
+
+// ── C6: Build / complete a bar (14 = 4E / 5M / 5H) ───────────────────────────
+var _l73C6 = [
+  // Easy (4)
+  _q73BuildBar([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 0, 'e', 0),
+  _q73BuildBar([
+    {label:'Toys', count:2}, {label:'Nature', count:4}
+  ], 1, 'e', 1),
+  _q73BuildBar([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}
+  ], 0, 'e', 0),
+  _q73BuildBar([
+    {label:'Nature', count:2}, {label:'Toys', count:3}
+  ], 1, 'e', 1),
+  // Medium (5)
+  _q73BuildBar([
+    {label:'Fruit', count:4}, {label:'Animals', count:2}
+  ], 0, 'm', 0),
+  _q73BuildBar([
+    {label:'Toys', count:4}, {label:'Nature', count:3}
+  ], 1, 'm', 2),
+  _q73BuildBar([
+    {label:'Fruit', count:2}, {label:'Animals', count:3}, {label:'Toys', count:1}
+  ], 1, 'm', 1),
+  _q73BuildBar([
+    {label:'Nature', count:3}, {label:'Toys', count:2}, {label:'Fruit', count:2}
+  ], 0, 'm', 0),
+  _q73BuildBar([
+    {label:'Animals', count:4}, {label:'Fruit', count:2}, {label:'Nature', count:1}
+  ], 0, 'm', 2),
+  // Hard (5)
+  _q73BuildBar([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:2}
+  ], 1, 'h', 0),
+  _q73BuildBar([
+    {label:'Toys', count:3}, {label:'Nature', count:4}, {label:'Animals', count:2}
+  ], 2, 'h', 1),
+  _q73BuildBar([
+    {label:'Animals', count:4}, {label:'Fruit', count:3}, {label:'Nature', count:2}
+  ], 0, 'h', 2),
+  _q73BuildBar([
+    {label:'Nature', count:4}, {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 2, 'h', 0),
+  _q73BuildBar([
+    {label:'Fruit', count:3}, {label:'Animals', count:4}, {label:'Toys', count:3}
+  ], 1, 'h', 1)
+];
+
+// ── C7: Identify category labels (11 = 4E / 4M / 3H) ─────────────────────────
+var _l73C7 = [
+  // Easy (4)
+  _q73IdentifyLabel([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 0, 'e', 0),
+  _q73IdentifyLabel([
+    {label:'Toys', count:3}, {label:'Nature', count:2}
+  ], 1, 'e', 1),
+  _q73IdentifyLabel([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}
+  ], 0, 'e', 2),
+  _q73IdentifyLabel([
+    {label:'Nature', count:3}, {label:'Toys', count:2}
+  ], 1, 'e', 3),
+  // Medium (4)
+  _q73IdentifyLabel([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}, {label:'Toys', count:2}
+  ], 2, 'm', 0),
+  _q73IdentifyLabel([
+    {label:'Toys', count:3}, {label:'Nature', count:3}, {label:'Animals', count:2}
+  ], 1, 'm', 1),
+  _q73IdentifyLabel([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}, {label:'Nature', count:2}
+  ], 0, 'm', 2),
+  _q73IdentifyLabel([
+    {label:'Nature', count:3}, {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 0, 'm', 3),
+  // Hard (3)
+  _q73IdentifyLabel([
+    {label:'Fruit', count:4}, {label:'Animals', count:1}, {label:'Toys', count:2}
+  ], 1, 'h', 0),
+  _q73IdentifyLabel([
+    {label:'Toys', count:4}, {label:'Nature', count:1}, {label:'Animals', count:2}
+  ], 1, 'h', 1),
+  _q73IdentifyLabel([
+    {label:'Animals', count:3}, {label:'Fruit', count:3}, {label:'Nature', count:1}
+  ], 2, 'h', 2)
+];
+
+// ── C8: Fix error (13 = 3E / 5M / 5H) ────────────────────────────────────────
+var _l73C8 = [
+  // Easy (3)
+  _q73FixError([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 1, -1, 'e', 0),
+  _q73FixError([
+    {label:'Toys', count:2}, {label:'Nature', count:3}
+  ], 0, 1, 'e', 1),
+  _q73FixError([
+    {label:'Animals', count:3}, {label:'Fruit', count:2}
+  ], 0, -1, 'e', 2),
+  // Medium (5)
+  _q73FixError([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}
+  ], 1, -1, 'm', 1),
+  _q73FixError([
+    {label:'Toys', count:3}, {label:'Nature', count:2}
+  ], 0, 1, 'm', 0),
+  _q73FixError([
+    {label:'Fruit', count:2}, {label:'Animals', count:3}, {label:'Toys', count:1}
+  ], 1, -1, 'm', 2),
+  _q73FixError([
+    {label:'Nature', count:3}, {label:'Toys', count:2}, {label:'Fruit', count:2}
+  ], 2, 1, 'm', 3),
+  _q73FixError([
+    {label:'Animals', count:2}, {label:'Fruit', count:3}, {label:'Nature', count:2}
+  ], 0, 1, 'm', 0),
+  // Hard (5)
+  _q73FixError([
+    {label:'Fruit', count:4}, {label:'Animals', count:3}, {label:'Toys', count:2}
+  ], 1, -1, 'h', 1),
+  _q73FixError([
+    {label:'Toys', count:3}, {label:'Nature', count:4}, {label:'Animals', count:2}
+  ], 2, 1, 'h', 2),
+  _q73FixError([
+    {label:'Animals', count:4}, {label:'Fruit', count:3}, {label:'Nature', count:2}
+  ], 0, -1, 'h', 0),
+  _q73FixError([
+    {label:'Nature', count:4}, {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 1, -1, 'h', 3),
+  _q73FixError([
+    {label:'Fruit', count:3}, {label:'Animals', count:3}, {label:'Toys', count:3}
+  ], 2, 1, 'h', 2)
+];
+
+// ── C9: Read total cells (13 = 4E / 5M / 4H) — totals ≤ 10 ───────────────────
+var _l73C9 = [
+  // Easy (4) — total ≤ 5
+  _q73CountTotal([
+    {label:'Fruit', count:2}, {label:'Animals', count:1}
+  ], 'e', 0),
+  _q73CountTotal([
+    {label:'Toys', count:2}, {label:'Nature', count:2}
+  ], 'e', 1),
+  _q73CountTotal([
+    {label:'Fruit', count:1}, {label:'Animals', count:3}
+  ], 'e', 2),
+  _q73CountTotal([
+    {label:'Toys', count:3}, {label:'Fruit', count:2}
+  ], 'e', 3),
+  // Medium (5) — total 6–8
+  _q73CountTotal([
+    {label:'Fruit', count:3}, {label:'Animals', count:3}
+  ], 'm', 0),
+  _q73CountTotal([
+    {label:'Toys', count:4}, {label:'Nature', count:2}
+  ], 'm', 1),
+  _q73CountTotal([
+    {label:'Animals', count:2}, {label:'Fruit', count:4}
+  ], 'm', 2),
+  _q73CountTotal([
+    {label:'Fruit', count:2}, {label:'Animals', count:2}, {label:'Toys', count:2}
+  ], 'm', 3),
+  _q73CountTotal([
+    {label:'Nature', count:2}, {label:'Toys', count:3}, {label:'Fruit', count:3}
+  ], 'm', 0),
+  // Hard (4) — total 9–10
+  _q73CountTotal([
+    {label:'Fruit', count:3}, {label:'Animals', count:3}, {label:'Toys', count:3}
+  ], 'h', 1),
+  _q73CountTotal([
+    {label:'Toys', count:3}, {label:'Nature', count:4}, {label:'Animals', count:3}
+  ], 'h', 2),
+  _q73CountTotal([
+    {label:'Animals', count:2}, {label:'Fruit', count:4}, {label:'Nature', count:4}
+  ], 'h', 0),
+  _q73CountTotal([
+    {label:'Nature', count:3}, {label:'Toys', count:3}, {label:'Fruit', count:4}
+  ], 'h', 3)
+];
+
+// ── C10: Mixed review (13 = 6E / 4M / 3H) — graph-reading only ───────────────
+var _l73C10 = [
+  // Easy (6)
+  _q73MixedReview([
+    {label:'Fruit', count:3}, {label:'Animals', count:1}
+  ], 'most', 'e', 0),
+  _q73MixedReview([
+    {label:'Toys', count:1}, {label:'Nature', count:3}
+  ], 'fewest', 'e', 1),
+  _q73MixedReview([
+    {label:'Fruit', count:2}, {label:'Animals', count:2}
+  ], 'count', 'e', 2),
+  _q73MixedReview([
+    {label:'Animals', count:3}, {label:'Toys', count:1}
+  ], 'most', 'e', 3),
+  _q73MixedReview([
+    {label:'Nature', count:1}, {label:'Fruit', count:3}
+  ], 'fewest', 'e', 0),
+  _q73MixedReview([
+    {label:'Toys', count:3}, {label:'Fruit', count:1}
+  ], 'label', 'e', 1),
+  // Medium (4)
+  _q73MixedReview([
+    {label:'Fruit', count:3}, {label:'Animals', count:2}
+  ], 'total', 'm', 0),
+  _q73MixedReview([
+    {label:'Toys', count:4}, {label:'Nature', count:2}
+  ], 'count', 'm', 2),
+  _q73MixedReview([
+    {label:'Animals', count:4}, {label:'Fruit', count:2}, {label:'Toys', count:1}
+  ], 'most', 'm', 1),
+  _q73MixedReview([
+    {label:'Nature', count:2}, {label:'Toys', count:3}, {label:'Fruit', count:1}
+  ], 'fewest', 'm', 3),
+  // Hard (3)
+  _q73MixedReview([
+    {label:'Fruit', count:3}, {label:'Animals', count:3}, {label:'Toys', count:4}
+  ], 'total', 'h', 0),
+  _q73MixedReview([
+    {label:'Toys', count:2}, {label:'Nature', count:4}, {label:'Animals', count:3}
+  ], 'most', 'h', 2),
+  _q73MixedReview([
+    {label:'Animals', count:2}, {label:'Fruit', count:4}, {label:'Nature', count:1}
+  ], 'fewest', 'h', 1)
+];
+
+// ── L7.3 combined bank ───────────────────────────────────────────────────────
+var _l73Bank = [].concat(_l73C1, _l73C2, _l73C3, _l73C4, _l73C5, _l73C6, _l73C7, _l73C8, _l73C9, _l73C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U7_SPEC = {
   unitId: 'g1u7',
@@ -2932,7 +4295,12 @@ export const G1_U7_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 7.3 — Bar-Type Graphs   (SCAFFOLD)
+    //  Lesson 7.3 — Bar-Type Graphs
+    //  TEKS 1.8B (bar-graph half) | 140 questions (45E / 55M / 40H)
+    //  10 categories: C1 read-count, C2 most, C3 fewest, C4 data→graph
+    //  (imgChoice), C5 graph→data, C6 build-bar, C7 label, C8 fix-error,
+    //  C9 total (≤10 visible cells), C10 mixed review.
+    //  Scale of 1 always: one cell = one item. No axes, no scaled cells.
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u7-l3',
@@ -2940,10 +4308,14 @@ export const G1_U7_SPEC = {
       teks: ['1.8B'],
       skill: 'read_build_bar_graphs',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l73KeyIdeas,
+      workedExamples: _l73Examples,
+      quizBank: _l73Bank,
+      diagnostics: {
+        commonDistractors: [_73BC, _73MB, _73DB, _73WB, _73MF, _73DM, _73MC, _73TC],
+        errorTags:         [_73BC, _73MB, _73DB, _73WB, _73MF, _73DM, _73MC, _73TC],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
