@@ -570,13 +570,14 @@ function _q71ReadTally(n, diff, aIdx) {
 // _q71MatchTallyChart — C6: imgChoice. Given a sorted item set, pick the tally
 // chart that matches. Cards are equal-size (reuses L6.4's imgChoice engine).
 //
-// Because imgChoice renders only the 4 picture cards (not q.s), the sorted
-// items themselves are surfaced INLINE in the prompt via emoji characters
-// (which pass through _escHtml unchanged). Students see both groups in the
-// question text + the 4 tally-chart options as tappable cards.
+// Source data (the sorted items themselves) is rendered as a "Sorted items"
+// card embedded INSIDE the prompt via _qText's raw-HTML escape hatch — without
+// this, imgChoice would only show the 4 picture choices with no source data to
+// compare (q.s is discarded by quiz.js's imgChoice render path). A hidden
+// <svg> sentinel in the prompt triggers raw-HTML mode (_qText returns the
+// string as-is when it contains the literal substring "<svg"). q.s also
+// includes the source card for review-mode and the no-imgChoice fallback.
 function _q71MatchTallyChart(catA, catB, itemsA, itemsB, diff, aIdx) {
-  var iconsA = itemsA.map(function(it){ return _U7_ICONS[it]; }).join(' ');
-  var iconsB = itemsB.map(function(it){ return _U7_ICONS[it]; }).join(' ');
   var groups = [
     {label: catA, items: itemsA},
     {label: catB, items: itemsB}
@@ -597,6 +598,21 @@ function _q71MatchTallyChart(catA, catB, itemsA, itemsB, diff, aIdx) {
   var letters = ['A', 'B', 'C', 'D'];
   var labels = letters.map(function(L){ return 'Picture ' + L; });
   var svgs   = slotRows.map(function(rows){ return _u7TallyChartForChoice(rows); });
+
+  // ── Source-data card ───────────────────────────────────────────────────────
+  // Shown above the 4 tappable tally-chart cards. Uses _u7SortingMat (the
+  // same widget used by C2/C8 source visuals) so the visual language is
+  // consistent across the lesson: bordered category boxes, labeled header,
+  // emoji item row. The amber wrapper distinguishes "source data" from the
+  // white tally-chart answer cards below.
+  var sourceCard =
+    '<div style="background:#FFF8E1;border:2px solid #FFB300;border-radius:10px;' +
+      'padding:8px 8px 6px;margin:8px auto 4px;max-width:520px">' +
+      '<div style="font-size:13px;font-weight:bold;color:#5a7080;text-align:center;' +
+        'margin-bottom:4px;font-family:Nunito,sans-serif">⭐ Sorted items</div>' +
+      _u7SortingMat(groups) +
+    '</div>';
+
   // Fallback (review mode / no imgChoice): inline 4 mini-charts side-by-side
   var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
     'gap:6px;padding:4px 0">' +
@@ -614,16 +630,103 @@ function _q71MatchTallyChart(catA, catB, itemsA, itemsB, diff, aIdx) {
     if (i === aIdx) return {val: 'Picture ' + L};
     return {val: 'Picture ' + L, tag: _71DR};
   });
+
+  // Prompt: question text + hidden <svg> sentinel + source-data card. The
+  // sentinel (display:none, 0×0) is the trigger that makes _qText() return
+  // the string as raw HTML instead of escaping it; without the literal
+  // substring "<svg" the sortingmat below would render as visible angle-
+  // bracket text. The sentinel itself never paints anything.
+  var promptHtml =
+    'Which tally chart matches these sorted items? Tap a picture.' +
+    '<svg width="0" height="0" aria-hidden="true" focusable="false" ' +
+      'style="display:none;width:0;height:0"></svg>' +
+    sourceCard;
+
   return {
-    t: catA + ': ' + iconsA + '   |   ' + catB + ': ' + iconsB + '. ' +
-       'Which tally chart matches? Tap a picture.',
+    t: promptHtml,
     v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
-    s: _u7SortingMat(groups) + fallback,
+    s: sourceCard + fallback,
     o: opts, a: aIdx,
     e: 'Picture ' + letters[aIdx] + ' shows ' + itemsA.length + ' tally marks for ' + catA +
        ' and ' + itemsB.length + ' for ' + catB + ' — matching the items exactly.',
     d: diff,
     h: 'Count the items in each group. Find the chart where each row has the same count.',
+    sk: 'sort_and_organize_data',
+    i: _i71TallyChartMatch()
+  };
+}
+
+// _q71MatchTallyChart3 — 3-category C6 variant. Same source-data card + imgChoice
+// design as the 2-category factory, but the sorting mat shows three groups and
+// every tally-chart option has three rows. Distractors keep two rows correct
+// and bump exactly one row by +1, so each wrong card differs from the correct
+// card in a single locatable place (no label swaps — three labels would make a
+// swap distractor too easy to spot).
+function _q71MatchTallyChart3(catA, catB, catC, itemsA, itemsB, itemsC, diff, aIdx) {
+  var groups = [
+    {label: catA, items: itemsA},
+    {label: catB, items: itemsB},
+    {label: catC, items: itemsC}
+  ];
+  var correctRows = [
+    {label: catA, count: itemsA.length},
+    {label: catB, count: itemsB.length},
+    {label: catC, count: itemsC.length}
+  ];
+  // 3 distractors: each bumps a different category by +1; the other two rows
+  // stay correct. Counts stay ≥ 1 so no tally row renders as "(0)".
+  var alts = [
+    [{label: catA, count: itemsA.length + 1}, {label: catB, count: itemsB.length},     {label: catC, count: itemsC.length}],
+    [{label: catA, count: itemsA.length},     {label: catB, count: itemsB.length + 1}, {label: catC, count: itemsC.length}],
+    [{label: catA, count: itemsA.length},     {label: catB, count: itemsB.length},     {label: catC, count: itemsC.length + 1}]
+  ];
+  var slotRows = alts.slice();
+  slotRows.splice(aIdx, 0, correctRows);
+  var letters = ['A', 'B', 'C', 'D'];
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var svgs   = slotRows.map(function(rows){ return _u7TallyChartForChoice(rows); });
+
+  var sourceCard =
+    '<div style="background:#FFF8E1;border:2px solid #FFB300;border-radius:10px;' +
+      'padding:8px 8px 6px;margin:8px auto 4px;max-width:520px">' +
+      '<div style="font-size:13px;font-weight:bold;color:#5a7080;text-align:center;' +
+        'margin-bottom:4px;font-family:Nunito,sans-serif">⭐ Sorted items</div>' +
+      _u7SortingMat(groups) +
+    '</div>';
+
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:6px;padding:4px 0">' +
+    slotRows.map(function(rows, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:160px;' +
+        'vertical-align:top">' +
+        '<div style="font-size:15px;font-weight:800;color:#333;margin-bottom:3px">' +
+          letters[i] + '</div>' +
+        _u7TallyChartForChoice(rows) +
+      '</div>';
+    }).join('') +
+  '</div>';
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _71DR};
+  });
+
+  var promptHtml =
+    'Which tally chart matches these sorted items? Tap a picture.' +
+    '<svg width="0" height="0" aria-hidden="true" focusable="false" ' +
+      'style="display:none;width:0;height:0"></svg>' +
+    sourceCard;
+
+  return {
+    t: promptHtml,
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: sourceCard + fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows ' + itemsA.length + ' for ' + catA + ', ' +
+       itemsB.length + ' for ' + catB + ', and ' + itemsC.length + ' for ' + catC +
+       ' — every row matches the items.',
+    d: diff,
+    h: 'Count the items in each group. Find the chart where every row matches.',
     sk: 'sort_and_organize_data',
     i: _i71TallyChartMatch()
   };
@@ -973,12 +1076,18 @@ var _l71C6 = [
   _q71MatchTallyChart('Nature','Fruit', ['flower','sun','leaf'],    ['banana','grapes'],  'm', 3),
   _q71MatchTallyChart('Fruit','Animals',['apple','banana','grapes','orange'],['rabbit','fish'],'m', 0),
   _q71MatchTallyChart('Toys','Nature',  ['die','car'],              ['flower','star','sun','leaf'],'m', 1),
-  _q71MatchTallyChart('Animals','Fruit',['cat','dog','rabbit','fish'],['apple','banana','grapes'],'m', 2),
+  // 3-category Medium: 2+1+2 items across Fruit/Animals/Toys.
+  _q71MatchTallyChart3('Fruit','Animals','Toys',
+    ['apple','banana'], ['cat'], ['ball','car'],
+    'm', 2),
   // Hard (4)
   _q71MatchTallyChart('Fruit','Toys',   ['apple','banana','orange','grapes'],['ball','car','kite'],'h', 3),
   _q71MatchTallyChart('Animals','Nature',['cat','dog','rabbit','fish'],['flower','star','sun','leaf'],'h', 0),
   _q71MatchTallyChart('Toys','Animals', ['ball','car','kite','die'],['cat','dog','rabbit','fish'],'h', 1),
-  _q71MatchTallyChart('Nature','Fruit', ['flower','star','sun','leaf'],['apple','banana','orange','grapes'],'h', 2)
+  // 3-category Hard: 3+2+2 items across Animals/Fruit/Nature.
+  _q71MatchTallyChart3('Animals','Fruit','Nature',
+    ['cat','dog','rabbit'], ['apple','banana'], ['flower','sun'],
+    'h', 2)
 ];
 
 // ── C7: Complete a T-chart (15 = 3E / 7M / 5H) ───────────────────────────────
