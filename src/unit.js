@@ -1534,6 +1534,42 @@ function buildPracticeQ(pid, q){
     </div>`;
   }
 
+  // imgChoice — picture cards ARE the answer choices. Student taps the
+  // picture, not a separate "Picture A/B/C/D" text button. Used by L6.4 C3
+  // (match statement → picture), L6.5 C4 (match digital → analog clock),
+  // L7.1 C6 (match tally chart) and L7.2 C4 (match data → picture graph).
+  //
+  // Without this case, _buildVisualHTML (called in the fallback return
+  // below) does not handle imgChoice — it returns '' — and the practice
+  // drill renders only the q.o text values as pq-choice buttons. That
+  // makes "Tap a picture" questions impossible because the picture
+  // choices never appear.
+  //
+  // Card classes inherit:
+  //   - .vimg-card outer-size + border styling from styles.css
+  //   - .pq-vgroup-btn.pq-c-correct (green) and .pq-c-wrong (red)
+  //     feedback classes applied by _pickPracticeVisualAns
+  // data-value is the q.o text label ("Picture A/B/C/D") so the existing
+  // _pickPracticeVisualAns matches by string against correctText.
+  if (q.v && q.v.type === 'imgChoice' && q.v.config && q.v.config.items && q.v.config.svgs) {
+    const icItems = q.v.config.items;
+    const icSvgs = q.v.config.svgs;
+    if (icItems.length >= 2 && icItems.length === icSvgs.length) {
+      const cards = icItems.map((label, i) => {
+        const badge = String(label).replace(/^Picture\s+/i, '');
+        return `<button class="vimg-card pq-vgroup-btn" type="button" data-value="${_escHtml(label)}" onclick="_pickPracticeVisualAns('${pid}','${_escHtml(label)}')">` +
+          `<span class="vimg-label">${_escHtml(badge)}</span>` +
+          `<span class="vimg-svg">${icSvgs[i] || ''}</span>` +
+        `</button>`;
+      }).join('');
+      return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
+        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="q-visual"><div class="vimg-grid" role="group" aria-label="Picture choices">${cards}</div></div>
+        <div class="pq-drill-fb" id="${pid}-fb"></div>
+      </div>`;
+    }
+  }
+
   return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
     <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
     <div class="pq-choices">
