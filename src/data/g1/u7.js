@@ -12,7 +12,7 @@
  *    L7.1  Sorting and Organizing Data       ← 150 questions (50E / 60M / 40H)
  *    L7.2  Picture Graphs                    ← 140 questions (45E / 55M / 40H)
  *    L7.3  Bar-Type Graphs                   ← 140 questions (45E / 55M / 40H)
- *    L7.4  Drawing Conclusions from Data     ← SCAFFOLD (0 questions)
+ *    L7.4  Drawing Conclusions from Data     ← 135 questions (40E / 55M / 40H)
  *
  *  Hard scope guardrails (apply to every question added to this unit):
  *    - Picture graphs: 1 picture = 1 data point ONLY (no scaled keys).
@@ -4231,6 +4231,1038 @@ var _l73C10 = [
 var _l73Bank = [].concat(_l73C1, _l73C2, _l73C3, _l73C4, _l73C5, _l73C6, _l73C7, _l73C8, _l73C9, _l73C10);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.4 — Drawing Conclusions from Data
+//  TEKS 1.8C | 135 questions (40E / 55M / 40H)
+//  Students arrive with 280 fluent graph reads (140 picture from L7.2,
+//  140 bar from L7.3). L7.4 puts those graphs to work answering simple
+//  conclusion questions.
+//
+//  10 categories: C1 most, C2 fewest, C3 in-all, C4 more, C5 fewer,
+//  C6 compare-two, C7 true-conclusion, C8 false-conclusion,
+//  C9 match-question-to-answer, C10 error-repair.
+//
+//  Hard guardrails (verified by scope scans before lock):
+//    NO scaled picture graphs. NO scaled bar graphs. NO graph keys.
+//    NO skip-count scales. NO axes, tick marks, or y-axis labels.
+//    NO line plots, dot plots, mean, median, mode, histograms.
+//    NO multi-step problems, NO more than one operation per question.
+//    NO Grade 2 data-analysis content.
+//    NO drag-and-drop, NO imgChoice (multipleChoice only).
+//    NO more than 3 graph categories per question.
+//    NO equation symbols (+, -, −, =) anywhere in student-facing strings.
+//    Per-category counts capped at 6 (5 in 3-cat). Differences 1–4.
+//    Total visible items ≤ 10 for "how many in all" questions.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L7.4 error tags ──────────────────────────────────────────────────────────
+var _74MF  = 'err_most_fewest_confusion';
+var _74TC  = 'err_total_vs_category_confusion';
+var _74HMM = 'err_how_many_more_confusion';
+var _74HMF = 'err_how_many_fewer_confusion';
+var _74CW  = 'err_compares_wrong_categories';
+var _74SD  = 'err_subtracts_wrong_direction';
+var _74CG  = 'err_counts_graph_wrong';
+var _74TS  = 'err_true_statement_confusion';
+var _74FS  = 'err_false_statement_confusion';
+var _74NS  = 'err_conclusion_not_supported';
+
+// ── L7.4 visual helpers ──────────────────────────────────────────────────────
+// Convert {label, count} row defs into picture-graph row defs by cycling
+// through the category's item pool. Used by _u74Graph below.
+function _u74PicRows(rows) {
+  return rows.map(function(r){
+    var pool = _U7_CAT_ITEMS[r.label] || [];
+    var items = [];
+    for (var i = 0; i < r.count; i++) items.push(pool[i % pool.length] || 'flower');
+    return {label: r.label, items: items};
+  });
+}
+
+// _u74Graph — render rows as either a picture graph or a bar graph. Every
+// L7.4 question takes a graph-type flag ('pic' or 'bar') so each category
+// can alternate between the two and reinforce that the conclusion skill
+// works the same on either kind of graph.
+function _u74Graph(rows, g) {
+  if (g === 'bar') return _u7BarTypeGraph(rows);
+  return _u7PictureGraph(_u74PicRows(rows));
+}
+
+// ── L7.4 teaching visuals (intervention overlays) ────────────────────────────
+function _u74TvMost() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Toys',  count: 4},
+    {label: 'Fruit', count: 1}
+  ]), 'Toys has the longest bar. Toys has the most.');
+}
+function _u74TvFewest() {
+  return _u7TvWrap(_u7PictureGraph(_u74PicRows([
+    {label: 'Fruit',   count: 4},
+    {label: 'Animals', count: 1}
+  ])), 'Animals has the shortest row. Animals has the fewest.');
+}
+function _u74TvTotal() {
+  return _u7TvWrap(_u7PictureGraph(_u74PicRows([
+    {label: 'Fruit',   count: 2},
+    {label: 'Animals', count: 3}
+  ])), 'For the total, touch each picture in every row one time. Count them all: 1, 2, 3, 4, 5.');
+}
+function _u74TvHowManyMore() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Animals', count: 5},
+    {label: 'Fruit',   count: 3}
+  ]), 'Animals has 5. Fruit has 3. The gap is 2. There are 2 more Animals than Fruit.');
+}
+function _u74TvHowManyFewer() {
+  return _u7TvWrap(_u7PictureGraph(_u74PicRows([
+    {label: 'Toys',    count: 2},
+    {label: 'Fruit',   count: 5}
+  ])), 'Fruit has 5. Toys has 2. The gap is 3. There are 3 fewer Toys than Fruit.');
+}
+function _u74TvCompare() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit',   count: 4},
+    {label: 'Animals', count: 2}
+  ]), 'A sentence about two categories is true only when the numbers in it match the graph.');
+}
+function _u74TvTrueSentence() {
+  return _u7TvWrap(_u7PictureGraph(_u74PicRows([
+    {label: 'Animals', count: 3},
+    {label: 'Toys',    count: 1}
+  ])), 'A statement is true only when every number in it matches the graph.');
+}
+function _u74TvFalseSentence() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Fruit',   count: 2},
+    {label: 'Animals', count: 4}
+  ]), 'A false statement has at least one number that does not match the graph. Check every sentence.');
+}
+function _u74TvMatchQA() {
+  return _u7TvWrap(_u7BarTypeGraph([
+    {label: 'Toys',  count: 5},
+    {label: 'Fruit', count: 2}
+  ]), 'Read the question. Find the rows it names. Use the graph to answer.');
+}
+function _u74TvErrorRepair() {
+  return _u7TvWrap(_u7PictureGraph(_u74PicRows([
+    {label: 'Animals', count: 5},
+    {label: 'Fruit',   count: 3}
+  ])), 'The graph shows Animals has 5 and Fruit has 3. The gap is 2. The correct fix names the right gap.');
+}
+
+// ── L7.4 intervention factories ──────────────────────────────────────────────
+function _i74MostFewest() { return {
+  errorTag: _74MF, title: 'Most is the longest. Fewest is the shortest.',
+  teachingSteps: [
+    '"Most" means the biggest count. That is the longest row or bar.',
+    '"Fewest" means the smallest count. That is the shortest row or bar.',
+    'Compare every category before you choose.',
+    'Do not pick the opposite of what is asked.'
+  ],
+  teachingVisualRaw: _u74TvMost(),
+  correctAnswerExplanation: 'Most is the longest. Fewest is the shortest.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74TotalVsCategory() { return {
+  errorTag: _74TC, title: 'In all means the whole graph',
+  teachingSteps: [
+    '"In all" asks about the whole graph.',
+    'Touch every picture or cell in every row one time.',
+    'Count them all.',
+    'Do not stop at one category.'
+  ],
+  teachingVisualRaw: _u74TvTotal(),
+  correctAnswerExplanation: 'For "in all," count every picture or every cell across every row.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74HowManyMore() { return {
+  errorTag: _74HMM, title: 'Find the gap',
+  teachingSteps: [
+    'Find the two rows the question names.',
+    'Count the bigger row and the smaller row.',
+    'The answer is the gap between them.',
+    'Start from the bigger count and find how many extra it has.'
+  ],
+  teachingVisualRaw: _u74TvHowManyMore(),
+  correctAnswerExplanation: '"How many more" is the gap between the bigger count and the smaller count.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74HowManyFewer() { return {
+  errorTag: _74HMF, title: 'How many fewer is also the gap',
+  teachingSteps: [
+    'Find the two rows the question names.',
+    '"How many fewer" asks for the same gap as "how many more."',
+    'Start from the bigger count and find how many extra it has.',
+    'That gap is your answer.'
+  ],
+  teachingVisualRaw: _u74TvHowManyFewer(),
+  correctAnswerExplanation: '"How many fewer" asks for the same gap, from the other side.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74CompareWrong() { return {
+  errorTag: _74CW, title: 'Use only the categories named',
+  teachingSteps: [
+    'Read the question slowly. Which two categories does it name?',
+    'Find those two rows in the graph.',
+    'Do not drift to a different pair.',
+    'Do not use a category the graph does not show.'
+  ],
+  teachingVisualRaw: _u74TvCompare(),
+  correctAnswerExplanation: 'Compare only the two categories the question names — nothing else.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74SubtractDirection() { return {
+  errorTag: _74SD, title: 'Start from the bigger count',
+  teachingSteps: [
+    'Find the bigger row and the smaller row.',
+    'Start at the bigger count.',
+    'Find how many extra cells it has beyond the smaller row.',
+    'That gap is the answer — not the smaller count itself.'
+  ],
+  teachingVisualRaw: _u74TvHowManyMore(),
+  correctAnswerExplanation: 'Always work from the bigger count. The gap is the extra it has beyond the smaller one.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74CountsWrong() { return {
+  errorTag: _74CG, title: 'Count each one carefully',
+  teachingSteps: [
+    'Touch each picture or cell one time as you count.',
+    'Do not skip any.',
+    'Do not count the same one twice.',
+    'Stop at the last one.'
+  ],
+  teachingVisualRaw: _u74TvTotal(),
+  correctAnswerExplanation: 'Touch each picture or cell once. Do not skip, do not double-count.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74TrueSentence() { return {
+  errorTag: _74TS, title: 'Every number must match',
+  teachingSteps: [
+    'Read each sentence carefully.',
+    'Check every number in the sentence against the graph.',
+    'A sentence is true only when all of its numbers match.',
+    'If even one number is wrong, the sentence is false.'
+  ],
+  teachingVisualRaw: _u74TvTrueSentence(),
+  correctAnswerExplanation: 'A true sentence has every number matching what the graph shows.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74FalseSentence() { return {
+  errorTag: _74FS, title: 'Find the one that does not match',
+  teachingSteps: [
+    'The question asks for the sentence that does not match.',
+    'Check every sentence against the graph.',
+    'Three of them are true.',
+    'Pick the one with at least one number that does not match.'
+  ],
+  teachingVisualRaw: _u74TvFalseSentence(),
+  correctAnswerExplanation: 'The false sentence has at least one number that does not match the graph.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i74Unsupported() { return {
+  errorTag: _74NS, title: 'Use only what the graph shows',
+  teachingSteps: [
+    'A conclusion must come from the graph in front of you.',
+    'If a sentence names a category the graph does not show, it cannot be true.',
+    'Stick to the rows the graph has.',
+    'Do not invent new categories.'
+  ],
+  teachingVisualRaw: _u74TvCompare(),
+  correctAnswerExplanation: 'A supported conclusion uses only categories the graph actually shows.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L7.4 question factory functions ──────────────────────────────────────────
+
+// _q74IdentifyMost — C1: graph + "Which has the most?" with 4 category names.
+// rows: [{label, count}]  g: 'pic' | 'bar'
+function _q74IdentifyMost(rows, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var winner = sorted[0].label;
+  var fewest = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var raw = [
+    {val: fewest,                                   tag: _74MF},
+    {val: middle || notInGraph[0] || fewest,        tag: _74CG},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || fewest, tag: _74NS}
+  ];
+  var seen = {}; seen[winner] = true;
+  var clean = [];
+  for (var i = 0; i < raw.length; i++) {
+    if (raw[i].val && !seen[raw[i].val]) { seen[raw[i].val] = true; clean.push(raw[i]); }
+  }
+  for (var k = 0; k < _U7_CATEGORIES.length && clean.length < 3; k++) {
+    var c = _U7_CATEGORIES[k];
+    if (!seen[c]) { seen[c] = true; clean.push({val: c, tag: _74NS}); }
+  }
+  var opts = [{val: winner}].concat(clean.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. Which category has the most?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'The ' + winner + ' row is the longest. ' + winner + ' has the most.',
+    d: diff,
+    h: 'Find the longest row or bar. That category has the most.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74MostFewest()
+  };
+}
+
+// _q74IdentifyFewest — C2: graph + "Which has the fewest?" with 4 category names.
+function _q74IdentifyFewest(rows, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return a.count - b.count; });
+  var fewest = sorted[0].label;
+  var most = sorted[sorted.length - 1].label;
+  var middle = sorted.length >= 3 ? sorted[1].label : null;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var raw = [
+    {val: most,                                     tag: _74MF},
+    {val: middle || notInGraph[0] || most,          tag: _74CG},
+    {val: notInGraph[middle ? 0 : 1] || notInGraph[0] || most, tag: _74NS}
+  ];
+  var seen = {}; seen[fewest] = true;
+  var clean = [];
+  for (var i = 0; i < raw.length; i++) {
+    if (raw[i].val && !seen[raw[i].val]) { seen[raw[i].val] = true; clean.push(raw[i]); }
+  }
+  for (var k = 0; k < _U7_CATEGORIES.length && clean.length < 3; k++) {
+    var c = _U7_CATEGORIES[k];
+    if (!seen[c]) { seen[c] = true; clean.push({val: c, tag: _74NS}); }
+  }
+  var opts = [{val: fewest}].concat(clean.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. Which category has the fewest?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'The ' + fewest + ' row is the shortest. ' + fewest + ' has the fewest.',
+    d: diff,
+    h: 'Find the shortest row or bar. That category has the fewest.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74MostFewest()
+  };
+}
+
+// _q74HowManyInAll — C3: graph + "How many in all?" Total visible ≤ 10.
+function _q74HowManyInAll(rows, g, diff, aIdx) {
+  var total = rows.reduce(function(s,r){ return s + r.count; }, 0);
+  var biggestRow = rows.reduce(function(a,b){ return a.count >= b.count ? a : b; });
+  var seen = {}; seen[String(total)] = true;
+  var wrongs = [];
+  function tryAdd(val, tag) {
+    var v = String(val);
+    if (val < 0 || seen[v]) return;
+    seen[v] = true;
+    wrongs.push({val: v, tag: tag});
+  }
+  tryAdd(biggestRow.count, _74TC);    // counts only one category
+  tryAdd(total + 1, _74CG);            // off by one (double-count)
+  tryAdd(Math.max(0, total - 1), _74CG); // off by one (missed)
+  tryAdd(rows[0].count, _74TC);        // counts only first row
+  var bump = 2;
+  while (wrongs.length < 3) {
+    var f = total + bump++;
+    if (!seen[String(f)]) { seen[String(f)] = true; wrongs.push({val: String(f), tag: _74CG}); }
+  }
+  var opts = [{val: String(total)}].concat(wrongs.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. How many in all?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'Count every picture or cell across every row. There are ' + total + ' in all.',
+    d: diff,
+    h: 'Count every picture or cell in every row. Do not stop at one row.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74TotalVsCategory()
+  };
+}
+
+// _q74HowManyMore — C4: graph + "How many more X than Y?" X > Y, gap 1–4.
+function _q74HowManyMore(rows, biggerCat, smallerCat, g, diff, aIdx) {
+  var bigger = rows.filter(function(r){ return r.label === biggerCat; })[0].count;
+  var smaller = rows.filter(function(r){ return r.label === smallerCat; })[0].count;
+  var gap = bigger - smaller;
+  var seen = {}; seen[String(gap)] = true;
+  var wrongs = [];
+  function tryAdd(val, tag) {
+    var v = String(val);
+    if (val < 0 || seen[v]) return;
+    seen[v] = true;
+    wrongs.push({val: v, tag: tag});
+  }
+  tryAdd(bigger,                     _74HMM); // picks the bigger raw count
+  tryAdd(smaller,                    _74SD);  // picks the smaller raw count
+  tryAdd(gap + 1,                    _74CG);  // off by one
+  tryAdd(Math.max(0, gap - 1),       _74CG);  // off by one (under)
+  tryAdd(bigger + smaller,           _74TC);  // total
+  var bump = 2;
+  while (wrongs.length < 3) {
+    var f = gap + bump++;
+    if (!seen[String(f)]) { seen[String(f)] = true; wrongs.push({val: String(f), tag: _74CG}); }
+  }
+  var opts = [{val: String(gap)}].concat(wrongs.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. How many more ' + biggerCat + ' than ' + smallerCat + '?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: biggerCat + ' has ' + bigger + '. ' + smallerCat + ' has ' + smaller + '. The gap is ' + gap + '. There are ' + gap + ' more ' + biggerCat + ' than ' + smallerCat + '.',
+    d: diff,
+    h: 'Find the ' + biggerCat + ' row and the ' + smallerCat + ' row. The gap between them is the answer.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74HowManyMore()
+  };
+}
+
+// _q74HowManyFewer — C5: graph + "How many fewer X than Y?" X < Y, gap 1–4.
+function _q74HowManyFewer(rows, smallerCat, biggerCat, g, diff, aIdx) {
+  var bigger = rows.filter(function(r){ return r.label === biggerCat; })[0].count;
+  var smaller = rows.filter(function(r){ return r.label === smallerCat; })[0].count;
+  var gap = bigger - smaller;
+  var seen = {}; seen[String(gap)] = true;
+  var wrongs = [];
+  function tryAdd(val, tag) {
+    var v = String(val);
+    if (val < 0 || seen[v]) return;
+    seen[v] = true;
+    wrongs.push({val: v, tag: tag});
+  }
+  tryAdd(smaller,                    _74HMF); // picks the smaller raw count
+  tryAdd(bigger,                     _74SD);  // picks the bigger raw count
+  tryAdd(gap + 1,                    _74CG);
+  tryAdd(Math.max(0, gap - 1),       _74CG);
+  tryAdd(bigger + smaller,           _74TC);
+  var bump = 2;
+  while (wrongs.length < 3) {
+    var f = gap + bump++;
+    if (!seen[String(f)]) { seen[String(f)] = true; wrongs.push({val: String(f), tag: _74CG}); }
+  }
+  var opts = [{val: String(gap)}].concat(wrongs.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. How many fewer ' + smallerCat + ' than ' + biggerCat + '?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: biggerCat + ' has ' + bigger + '. ' + smallerCat + ' has ' + smaller + '. The gap is ' + gap + '. There are ' + gap + ' fewer ' + smallerCat + ' than ' + biggerCat + '.',
+    d: diff,
+    h: 'Find the two rows. The gap between the bigger and the smaller is the answer.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74HowManyFewer()
+  };
+}
+
+// _q74CompareTwo — C6: graph + 4 candidate comparison sentences. Caller
+// passes biggerCat (X) and smallerCat (Y), with X > Y by gap ≥ 1.
+function _q74CompareTwo(rows, biggerCat, smallerCat, g, diff, aIdx) {
+  var bigger = rows.filter(function(r){ return r.label === biggerCat; })[0].count;
+  var smaller = rows.filter(function(r){ return r.label === smallerCat; })[0].count;
+  var gap = bigger - smaller;
+  var correctSentence = biggerCat + ' has ' + gap + ' more than ' + smallerCat;
+  var wrongDir = smallerCat + ' has ' + gap + ' more than ' + biggerCat;
+  var sameClaim = biggerCat + ' and ' + smallerCat + ' are the same';
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var ng = notInGraph[0] || 'Nature';
+  var unrelated = ng + ' has the most';
+  var opts = [
+    {val: correctSentence},
+    {val: wrongDir,  tag: _74SD},
+    {val: sameClaim, tag: _74CW},
+    {val: unrelated, tag: _74NS}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. Which sentence is true?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: biggerCat + ' has ' + bigger + '. ' + smallerCat + ' has ' + smaller + '. The gap is ' + gap + '. So ' + biggerCat + ' has ' + gap + ' more than ' + smallerCat + '.',
+    d: diff,
+    h: 'Compare the two rows the sentence names. Find the gap.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74CompareWrong()
+  };
+}
+
+// _q74TrueConclusion — C7: graph + 4 sentences, one is true. Sentence mix
+// includes "X has the most," "Y has the fewest," "X has K more than Y,"
+// "X has K." Distractors flip numbers, categories, or use unsupported cats.
+function _q74TrueConclusion(rows, sentenceType, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var most = sorted[0];
+  var fewest = sorted[sorted.length - 1];
+  var gap = most.count - fewest.count;
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var ng = notInGraph[0] || 'Nature';
+
+  var correctSentence, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (sentenceType === 'most') {
+    correctSentence = most.label + ' has the most';
+    wrong1 = fewest.label + ' has the most';
+    wrong2 = ng + ' has the most';
+    wrong3 = most.label + ' has the fewest';
+    t1 = _74MF; t2 = _74NS; t3 = _74TS;
+  } else if (sentenceType === 'fewest') {
+    correctSentence = fewest.label + ' has the fewest';
+    wrong1 = most.label + ' has the fewest';
+    wrong2 = ng + ' has the fewest';
+    wrong3 = fewest.label + ' has the most';
+    t1 = _74MF; t2 = _74NS; t3 = _74TS;
+  } else if (sentenceType === 'gap') {
+    correctSentence = most.label + ' has ' + gap + ' more than ' + fewest.label;
+    wrong1 = fewest.label + ' has ' + gap + ' more than ' + most.label;
+    wrong2 = most.label + ' has ' + (gap + 1) + ' more than ' + fewest.label;
+    wrong3 = ng + ' has ' + gap + ' more than ' + fewest.label;
+    t1 = _74SD; t2 = _74CG; t3 = _74NS;
+  } else {
+    // 'count' — "X has K" sentence
+    correctSentence = most.label + ' has ' + most.count;
+    wrong1 = most.label + ' has ' + (most.count + 1);
+    wrong2 = most.label + ' has ' + Math.max(0, most.count - 1);
+    wrong3 = ng + ' has ' + most.count;
+    t1 = _74CG; t2 = _74CG; t3 = _74NS;
+  }
+  var opts = [
+    {val: correctSentence},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. Which sentence is true?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'True: "' + correctSentence + '." The others have at least one number or category that does not match the graph.',
+    d: diff,
+    h: 'Check every sentence against the graph. Pick the one where all the numbers match.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74TrueSentence()
+  };
+}
+
+// _q74FalseConclusion — C8: graph + 4 sentences, three are true, one is false.
+// The student picks the false one. Sentence types are mixed.
+function _q74FalseConclusion(rows, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var most = sorted[0];
+  var fewest = sorted[sorted.length - 1];
+  var gap = most.count - fewest.count;
+  var total = rows.reduce(function(s,r){ return s + r.count; }, 0);
+
+  // Three true sentences
+  var trueA = most.label + ' has the most';
+  var trueB = fewest.label + ' has the fewest';
+  var trueC = 'There are ' + total + ' in all';
+  // One false sentence (the correct answer to "which does NOT match")
+  // Use a wrong-direction gap claim
+  var falseSentence = fewest.label + ' has ' + gap + ' more than ' + most.label;
+
+  // Build options: false answer first (correct slot), then the three true ones as distractors
+  var opts = [
+    {val: falseSentence},
+    {val: trueA, tag: _74FS},
+    {val: trueB, tag: _74FS},
+    {val: trueC, tag: _74FS}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. Which sentence does NOT match?',
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: '"' + falseSentence + '" is false. ' + most.label + ' has more than ' + fewest.label + ', not the other way. The other three sentences all match the graph.',
+    d: diff,
+    h: 'Three sentences are true. One has a number or direction that does not match. Pick the wrong one.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74FalseSentence()
+  };
+}
+
+// _q74MatchQA — C9: graph + a stated question + 4 numeric options.
+// mode: 'inAll' | 'more' | 'fewer' | 'count' | 'most' | 'fewest'
+function _q74MatchQA(rows, mode, askA, askB, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var most = sorted[0];
+  var fewest = sorted[sorted.length - 1];
+  var total = rows.reduce(function(s,r){ return s + r.count; }, 0);
+  var questionText, correctVal, interventionFn;
+  var distractorVals = [];
+  var distractorTags = [];
+
+  if (mode === 'inAll') {
+    questionText = 'How many in all?';
+    correctVal = total;
+    distractorVals = [most.count, total + 1, Math.max(0, total - 1)];
+    distractorTags = [_74TC, _74CG, _74CG];
+    interventionFn = _i74TotalVsCategory;
+  } else if (mode === 'more') {
+    var biggerR = rows.filter(function(r){ return r.label === askA; })[0];
+    var smallerR = rows.filter(function(r){ return r.label === askB; })[0];
+    var bigA = biggerR.count, smA = smallerR.count, gapA = bigA - smA;
+    questionText = 'How many more ' + askA + ' than ' + askB + '?';
+    correctVal = gapA;
+    distractorVals = [bigA, smA, gapA + 1];
+    distractorTags = [_74HMM, _74SD, _74CG];
+    interventionFn = _i74HowManyMore;
+  } else if (mode === 'fewer') {
+    var bigR = rows.filter(function(r){ return r.label === askB; })[0];
+    var smR = rows.filter(function(r){ return r.label === askA; })[0];
+    var bigF = bigR.count, smF = smR.count, gapF = bigF - smF;
+    questionText = 'How many fewer ' + askA + ' than ' + askB + '?';
+    correctVal = gapF;
+    distractorVals = [smF, bigF, gapF + 1];
+    distractorTags = [_74HMF, _74SD, _74CG];
+    interventionFn = _i74HowManyFewer;
+  } else if (mode === 'count') {
+    var target = rows.filter(function(r){ return r.label === askA; })[0];
+    questionText = 'How many ' + askA + '?';
+    correctVal = target.count;
+    distractorVals = [target.count + 1, Math.max(0, target.count - 1), total];
+    distractorTags = [_74CG, _74CG, _74TC];
+    interventionFn = _i74CountsWrong;
+  } else if (mode === 'most') {
+    // numeric answer = max count
+    questionText = 'How many does ' + most.label + ' have?';
+    correctVal = most.count;
+    distractorVals = [fewest.count, most.count + 1, Math.max(0, most.count - 1)];
+    distractorTags = [_74MF, _74CG, _74CG];
+    interventionFn = _i74CountsWrong;
+  } else {
+    // 'fewest' — numeric answer = min count
+    questionText = 'How many does ' + fewest.label + ' have?';
+    correctVal = fewest.count;
+    distractorVals = [most.count, fewest.count + 1, Math.max(0, fewest.count - 1)];
+    distractorTags = [_74MF, _74CG, _74CG];
+    interventionFn = _i74CountsWrong;
+  }
+
+  // Dedupe numeric distractors
+  var seen = {}; seen[String(correctVal)] = true;
+  var wrongs = [];
+  for (var i = 0; i < distractorVals.length; i++) {
+    var v = String(distractorVals[i]);
+    if (distractorVals[i] >= 0 && !seen[v]) { seen[v] = true; wrongs.push({val: v, tag: distractorTags[i]}); }
+  }
+  var bump = 2;
+  while (wrongs.length < 3) {
+    var f = correctVal + bump++;
+    if (!seen[String(f)]) { seen[String(f)] = true; wrongs.push({val: String(f), tag: _74CG}); }
+  }
+  var opts = [{val: String(correctVal)}].concat(wrongs.slice(0,3));
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: 'Look at the graph. ' + questionText,
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'The graph answers the question with ' + correctVal + '. Read the rows the question names.',
+    d: diff,
+    h: 'Read the question. Use the graph to find the answer.',
+    sk: 'draw_conclusions_from_data',
+    i: interventionFn()
+  };
+}
+
+// _q74ErrorRepair — C10: graph + a student's wrong statement + 4 fix choices.
+// mistakeType: 'wrongMost' | 'wrongGap' | 'wrongCount'
+function _q74ErrorRepair(rows, mistakeType, askA, askB, g, diff, aIdx) {
+  var sorted = rows.slice().sort(function(a,b){ return b.count - a.count; });
+  var most = sorted[0];
+  var fewest = sorted[sorted.length - 1];
+  var notInGraph = _U7_CATEGORIES.filter(function(c){
+    return !rows.some(function(r){ return r.label === c; });
+  });
+  var ng = notInGraph[0] || 'Nature';
+
+  var studentClaim, correctFix, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (mistakeType === 'wrongMost') {
+    // Student wrongly says fewest has the most
+    studentClaim = 'A student says ' + fewest.label + ' has the most. What is the correct fix?';
+    correctFix = most.label + ' has the most, not ' + fewest.label;
+    wrong1 = fewest.label + ' has the fewest, not the most';      // close-but-still-not-the-fix
+    wrong2 = ng + ' has the most';                                // wrong category
+    wrong3 = most.label + ' and ' + fewest.label + ' are the same'; // wrong sameness
+    t1 = _74TS; t2 = _74NS; t3 = _74CW;
+  } else if (mistakeType === 'wrongGap') {
+    // Student names the wrong gap between most and fewest
+    var actualGap = most.count - fewest.count;
+    var wrongGap = actualGap + 2;
+    studentClaim = 'A student says ' + most.label + ' has ' + wrongGap + ' more than ' + fewest.label + '. What is the correct fix?';
+    correctFix = most.label + ' has ' + actualGap + ' more, not ' + wrongGap + ' more';
+    wrong1 = fewest.label + ' has ' + actualGap + ' more than ' + most.label;        // wrong direction
+    wrong2 = most.label + ' and ' + fewest.label + ' are the same';                   // sameness
+    wrong3 = ng + ' has ' + actualGap + ' more than ' + most.label;                   // wrong cat
+    t1 = _74SD; t2 = _74CW; t3 = _74NS;
+  } else {
+    // 'wrongCount' — student names the wrong count for one category
+    var target = askA ? rows.filter(function(r){ return r.label === askA; })[0] : most;
+    var wrongCount = target.count + 2;
+    studentClaim = 'A student says ' + target.label + ' has ' + wrongCount + '. What is the correct fix?';
+    correctFix = target.label + ' has ' + target.count + ', not ' + wrongCount;
+    wrong1 = target.label + ' has ' + (target.count + 1);          // close miss
+    wrong2 = ng + ' has ' + target.count;                           // wrong cat
+    wrong3 = target.label + ' has the most';                         // off-topic
+    t1 = _74CG; t2 = _74NS; t3 = _74TS;
+  }
+
+  var opts = [
+    {val: correctFix},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u7Place(opts, aIdx);
+  return {
+    t: studentClaim,
+    s: _u74Graph(rows, g),
+    o: opts, a: aIdx,
+    e: 'The graph supports: "' + correctFix + '." Compare every number in the student claim to the graph.',
+    d: diff,
+    h: 'Check every number in the student claim against the graph. Pick the option that names the right fix.',
+    sk: 'draw_conclusions_from_data',
+    i: _i74Unsupported()
+  };
+}
+
+// ── L7.4 key ideas (6) ───────────────────────────────────────────────────────
+var _l74KeyIdeas = [
+  'A graph can answer questions. Read the graph carefully, then answer.',
+  '"Most" means the longest row of pictures or the longest bar. "Fewest" means the shortest.',
+  '"How many in all" means count every picture or every cell across every row.',
+  '"How many more" means compare two rows. Find the bigger count and the smaller count. The gap between them is the answer.',
+  '"How many fewer" asks for the same gap, from the other side.',
+  'A statement is true when every number in it matches what the graph shows. If even one number is wrong, the statement is false.'
+];
+
+// ── L7.4 worked examples (5) ─────────────────────────────────────────────────
+var _l74Examples = [
+  {
+    id: 'g1-u7-l4-ex-1',
+    title: 'Example 1: Find the most',
+    prompt: 'Which category has the most?',
+    visual: {type: 'rawHtml', html: _u7PictureGraph(_u74PicRows([
+      {label: 'Fruit',   count: 3},
+      {label: 'Animals', count: 1},
+      {label: 'Toys',    count: 4}
+    ]))},
+    steps: [
+      'Look at every row.',
+      'The Fruit row has 3 pictures.',
+      'The Animals row has 1 picture.',
+      'The Toys row has 4 pictures — that is the longest row.'
+    ],
+    finalAnswer: 'Toys has the longest row. Toys has the most.'
+  },
+  {
+    id: 'g1-u7-l4-ex-2',
+    title: 'Example 2: Find the fewest',
+    prompt: 'Which category has the fewest?',
+    visual: {type: 'rawHtml', html: _u7BarTypeGraph([
+      {label: 'Fruit',   count: 2},
+      {label: 'Animals', count: 4},
+      {label: 'Toys',    count: 1}
+    ])},
+    steps: [
+      'Look at every bar.',
+      'The Fruit bar has 2 cells.',
+      'The Animals bar has 4 cells.',
+      'The Toys bar has 1 cell — that is the shortest bar.'
+    ],
+    finalAnswer: 'Toys has the shortest bar. Toys has the fewest.'
+  },
+  {
+    id: 'g1-u7-l4-ex-3',
+    title: 'Example 3: How many in all',
+    prompt: 'How many pictures are in the whole graph?',
+    visual: {type: 'rawHtml', html: _u7PictureGraph(_u74PicRows([
+      {label: 'Fruit',   count: 2},
+      {label: 'Animals', count: 3}
+    ]))},
+    steps: [
+      'Touch each picture in the Fruit row: 1, 2.',
+      'Then keep counting in the Animals row: 3, 4, 5.',
+      'Count every picture across every row.'
+    ],
+    finalAnswer: 'There are 5 pictures in all.'
+  },
+  {
+    id: 'g1-u7-l4-ex-4',
+    title: 'Example 4: How many more',
+    prompt: 'How many more Animals than Fruit?',
+    visual: {type: 'rawHtml', html: _u7BarTypeGraph([
+      {label: 'Fruit',   count: 3},
+      {label: 'Animals', count: 5}
+    ])},
+    steps: [
+      'Find the Fruit bar. It has 3 cells.',
+      'Find the Animals bar. It has 5 cells.',
+      'Start from the bigger count. Animals has 5.',
+      'Fruit has 3. The gap between 5 and 3 is 2.'
+    ],
+    finalAnswer: 'There are 2 more Animals than Fruit.'
+  },
+  {
+    id: 'g1-u7-l4-ex-5',
+    title: 'Example 5: True or false conclusion',
+    prompt: 'Which sentence is true about the graph?',
+    visual: {type: 'rawHtml', html: _u7PictureGraph(_u74PicRows([
+      {label: 'Fruit',   count: 4},
+      {label: 'Animals', count: 2}
+    ]))},
+    steps: [
+      'Fruit has 4. Animals has 2. The gap is 2.',
+      'Sentence A: "Fruit has 2 more than Animals." Check: yes, the gap is 2 and Fruit is bigger. True.',
+      'Sentence B: "Animals has 2 more than Fruit." Wrong direction. False.',
+      'Sentence C: "Fruit and Animals are the same." Their counts are not the same. False.'
+    ],
+    finalAnswer: 'Sentence A is true: Fruit has 2 more than Animals.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L7.4 question banks (10 categories, 135 total)
+//  Target: 40E / 55M / 40H
+//  C1 most(14) + C2 fewest(14) + C3 inAll(12) + C4 more(16) + C5 fewer(16) +
+//  C6 compare-two(14) + C7 true-conclusion(14) + C8 false-conclusion(12) +
+//  C9 match-Q-A(12) + C10 error-repair(11)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Identify Most (14 = 5E / 5M / 4H) ────────────────────────────────────
+var _l74C1 = [
+  // Easy (5) — 2-cat, counts 1–4
+  _q74IdentifyMost([{label:'Fruit',count:3},{label:'Animals',count:1}],            'pic', 'e', 0),
+  _q74IdentifyMost([{label:'Toys',count:1},{label:'Nature',count:3}],              'bar', 'e', 1),
+  _q74IdentifyMost([{label:'Animals',count:4},{label:'Fruit',count:2}],            'pic', 'e', 2),
+  _q74IdentifyMost([{label:'Nature',count:2},{label:'Toys',count:4}],              'bar', 'e', 3),
+  _q74IdentifyMost([{label:'Fruit',count:1},{label:'Animals',count:3}],            'pic', 'e', 0),
+  // Medium (5) — 2-cat bigger counts or 3-cat small counts
+  _q74IdentifyMost([{label:'Fruit',count:5},{label:'Animals',count:2}],            'bar', 'm', 1),
+  _q74IdentifyMost([{label:'Toys',count:6},{label:'Nature',count:1}],              'pic', 'm', 2),
+  _q74IdentifyMost([{label:'Fruit',count:2},{label:'Animals',count:4},{label:'Toys',count:1}],  'bar', 'm', 0),
+  _q74IdentifyMost([{label:'Nature',count:3},{label:'Toys',count:1},{label:'Fruit',count:4}],   'pic', 'm', 3),
+  _q74IdentifyMost([{label:'Toys',count:3},{label:'Animals',count:6}],             'bar', 'm', 1),
+  // Hard (4) — 3-cat near-equal counts
+  _q74IdentifyMost([{label:'Fruit',count:4},{label:'Animals',count:3},{label:'Toys',count:5}],  'bar', 'h', 2),
+  _q74IdentifyMost([{label:'Nature',count:5},{label:'Toys',count:4},{label:'Animals',count:3}], 'pic', 'h', 0),
+  _q74IdentifyMost([{label:'Animals',count:3},{label:'Fruit',count:4},{label:'Nature',count:5}],'bar', 'h', 3),
+  _q74IdentifyMost([{label:'Toys',count:4},{label:'Fruit',count:5},{label:'Nature',count:3}],   'pic', 'h', 1)
+];
+
+// ── C2: Identify Fewest (14 = 5E / 5M / 4H) ──────────────────────────────────
+var _l74C2 = [
+  // Easy (5)
+  _q74IdentifyFewest([{label:'Fruit',count:3},{label:'Animals',count:1}],          'pic', 'e', 0),
+  _q74IdentifyFewest([{label:'Toys',count:1},{label:'Nature',count:3}],            'bar', 'e', 1),
+  _q74IdentifyFewest([{label:'Animals',count:4},{label:'Fruit',count:2}],          'pic', 'e', 2),
+  _q74IdentifyFewest([{label:'Nature',count:2},{label:'Toys',count:4}],            'bar', 'e', 3),
+  _q74IdentifyFewest([{label:'Fruit',count:1},{label:'Animals',count:3}],          'pic', 'e', 0),
+  // Medium (5)
+  _q74IdentifyFewest([{label:'Fruit',count:5},{label:'Animals',count:2}],          'bar', 'm', 1),
+  _q74IdentifyFewest([{label:'Toys',count:6},{label:'Nature',count:1}],            'pic', 'm', 2),
+  _q74IdentifyFewest([{label:'Fruit',count:2},{label:'Animals',count:4},{label:'Toys',count:1}], 'bar', 'm', 0),
+  _q74IdentifyFewest([{label:'Nature',count:3},{label:'Toys',count:1},{label:'Fruit',count:4}],  'pic', 'm', 3),
+  _q74IdentifyFewest([{label:'Toys',count:3},{label:'Animals',count:6}],           'bar', 'm', 1),
+  // Hard (4)
+  _q74IdentifyFewest([{label:'Fruit',count:4},{label:'Animals',count:3},{label:'Toys',count:5}], 'bar', 'h', 2),
+  _q74IdentifyFewest([{label:'Nature',count:5},{label:'Toys',count:4},{label:'Animals',count:3}],'pic', 'h', 0),
+  _q74IdentifyFewest([{label:'Animals',count:3},{label:'Fruit',count:4},{label:'Nature',count:5}],'bar', 'h', 3),
+  _q74IdentifyFewest([{label:'Toys',count:4},{label:'Fruit',count:5},{label:'Nature',count:3}],  'pic', 'h', 1)
+];
+
+// ── C3: How Many In All (12 = 3E / 5M / 4H) ──────────────────────────────────
+// Constraint: every row's count cap, and the SUM across rows ≤ 10.
+var _l74C3 = [
+  // Easy (3) — small totals
+  _q74HowManyInAll([{label:'Fruit',count:2},{label:'Animals',count:1}],            'pic', 'e', 0),
+  _q74HowManyInAll([{label:'Toys',count:2},{label:'Nature',count:2}],              'bar', 'e', 1),
+  _q74HowManyInAll([{label:'Fruit',count:3},{label:'Animals',count:1}],            'pic', 'e', 2),
+  // Medium (5)
+  _q74HowManyInAll([{label:'Toys',count:3},{label:'Nature',count:4}],              'bar', 'm', 0),
+  _q74HowManyInAll([{label:'Animals',count:2},{label:'Fruit',count:5}],            'pic', 'm', 1),
+  _q74HowManyInAll([{label:'Toys',count:4},{label:'Nature',count:4}],              'bar', 'm', 2),
+  _q74HowManyInAll([{label:'Fruit',count:3},{label:'Animals',count:2},{label:'Toys',count:1}],   'pic', 'm', 3),
+  _q74HowManyInAll([{label:'Nature',count:2},{label:'Toys',count:2},{label:'Fruit',count:3}],    'bar', 'm', 0),
+  // Hard (4) — 3-cat, totals up to 10
+  _q74HowManyInAll([{label:'Fruit',count:4},{label:'Animals',count:2},{label:'Toys',count:3}],   'bar', 'h', 1),
+  _q74HowManyInAll([{label:'Nature',count:3},{label:'Toys',count:3},{label:'Animals',count:4}],  'pic', 'h', 2),
+  _q74HowManyInAll([{label:'Fruit',count:2},{label:'Animals',count:3},{label:'Nature',count:5}], 'bar', 'h', 3),
+  _q74HowManyInAll([{label:'Toys',count:3},{label:'Fruit',count:4},{label:'Animals',count:3}],   'pic', 'h', 0)
+];
+
+// ── C4: How Many More (16 = 4E / 7M / 5H) ────────────────────────────────────
+// Format: rows + (biggerCat, smallerCat). gap = bigger.count - smaller.count.
+var _l74C4 = [
+  // Easy (4) — 2-cat, gap 1–3
+  _q74HowManyMore([{label:'Fruit',count:3},{label:'Animals',count:1}],   'Fruit',   'Animals', 'pic', 'e', 0),
+  _q74HowManyMore([{label:'Toys',count:4},{label:'Nature',count:2}],     'Toys',    'Nature',  'bar', 'e', 1),
+  _q74HowManyMore([{label:'Animals',count:4},{label:'Fruit',count:1}],   'Animals', 'Fruit',   'pic', 'e', 2),
+  _q74HowManyMore([{label:'Nature',count:3},{label:'Toys',count:2}],     'Nature',  'Toys',    'bar', 'e', 3),
+  // Medium (7)
+  _q74HowManyMore([{label:'Fruit',count:5},{label:'Animals',count:2}],   'Fruit',   'Animals', 'pic', 'm', 0),
+  _q74HowManyMore([{label:'Toys',count:6},{label:'Nature',count:3}],     'Toys',    'Nature',  'bar', 'm', 1),
+  _q74HowManyMore([{label:'Animals',count:6},{label:'Fruit',count:2}],   'Animals', 'Fruit',   'pic', 'm', 2),
+  _q74HowManyMore([{label:'Nature',count:5},{label:'Toys',count:1}],     'Nature',  'Toys',    'bar', 'm', 3),
+  _q74HowManyMore([{label:'Fruit',count:4},{label:'Animals',count:2},{label:'Toys',count:1}],   'Fruit',   'Animals', 'bar', 'm', 0),
+  _q74HowManyMore([{label:'Toys',count:5},{label:'Nature',count:3},{label:'Fruit',count:1}],    'Toys',    'Nature',  'pic', 'm', 1),
+  _q74HowManyMore([{label:'Animals',count:4},{label:'Fruit',count:3},{label:'Nature',count:2}], 'Animals', 'Fruit',   'bar', 'm', 2),
+  // Hard (5) — 3-cat, near-equal counts
+  _q74HowManyMore([{label:'Fruit',count:5},{label:'Animals',count:4},{label:'Toys',count:3}],   'Fruit',   'Animals', 'pic', 'h', 0),
+  _q74HowManyMore([{label:'Toys',count:5},{label:'Nature',count:2},{label:'Fruit',count:3}],    'Toys',    'Fruit',   'bar', 'h', 1),
+  _q74HowManyMore([{label:'Animals',count:5},{label:'Toys',count:2},{label:'Nature',count:4}],  'Animals', 'Toys',    'pic', 'h', 2),
+  _q74HowManyMore([{label:'Fruit',count:5},{label:'Animals',count:1},{label:'Nature',count:4}], 'Fruit',   'Animals', 'bar', 'h', 3),
+  _q74HowManyMore([{label:'Toys',count:4},{label:'Fruit',count:3},{label:'Nature',count:5}],    'Nature',  'Fruit',   'pic', 'h', 0)
+];
+
+// ── C5: How Many Fewer (16 = 4E / 7M / 5H) ───────────────────────────────────
+// Format: rows + (smallerCat, biggerCat). gap = bigger.count - smaller.count.
+var _l74C5 = [
+  // Easy (4)
+  _q74HowManyFewer([{label:'Animals',count:1},{label:'Fruit',count:3}],  'Animals', 'Fruit',  'pic', 'e', 0),
+  _q74HowManyFewer([{label:'Nature',count:2},{label:'Toys',count:4}],    'Nature',  'Toys',   'bar', 'e', 1),
+  _q74HowManyFewer([{label:'Fruit',count:1},{label:'Animals',count:4}],  'Fruit',   'Animals','pic', 'e', 2),
+  _q74HowManyFewer([{label:'Toys',count:2},{label:'Nature',count:3}],    'Toys',    'Nature', 'bar', 'e', 3),
+  // Medium (7)
+  _q74HowManyFewer([{label:'Animals',count:2},{label:'Fruit',count:5}],  'Animals', 'Fruit',  'pic', 'm', 0),
+  _q74HowManyFewer([{label:'Nature',count:3},{label:'Toys',count:6}],    'Nature',  'Toys',   'bar', 'm', 1),
+  _q74HowManyFewer([{label:'Fruit',count:2},{label:'Animals',count:6}],  'Fruit',   'Animals','pic', 'm', 2),
+  _q74HowManyFewer([{label:'Toys',count:1},{label:'Nature',count:5}],    'Toys',    'Nature', 'bar', 'm', 3),
+  _q74HowManyFewer([{label:'Animals',count:2},{label:'Fruit',count:4},{label:'Toys',count:1}], 'Animals', 'Fruit',  'bar', 'm', 0),
+  _q74HowManyFewer([{label:'Nature',count:3},{label:'Toys',count:5},{label:'Fruit',count:1}],  'Nature',  'Toys',   'pic', 'm', 1),
+  _q74HowManyFewer([{label:'Fruit',count:3},{label:'Animals',count:4},{label:'Nature',count:2}],'Fruit',  'Animals','bar', 'm', 2),
+  // Hard (5)
+  _q74HowManyFewer([{label:'Animals',count:4},{label:'Fruit',count:5},{label:'Toys',count:3}], 'Animals', 'Fruit',  'pic', 'h', 0),
+  _q74HowManyFewer([{label:'Nature',count:2},{label:'Toys',count:5},{label:'Fruit',count:3}],  'Nature',  'Toys',   'bar', 'h', 1),
+  _q74HowManyFewer([{label:'Toys',count:2},{label:'Animals',count:5},{label:'Nature',count:4}],'Toys',    'Animals','pic', 'h', 2),
+  _q74HowManyFewer([{label:'Animals',count:1},{label:'Fruit',count:5},{label:'Nature',count:4}],'Animals','Fruit',  'bar', 'h', 3),
+  _q74HowManyFewer([{label:'Fruit',count:3},{label:'Toys',count:4},{label:'Nature',count:5}],  'Fruit',   'Nature', 'pic', 'h', 0)
+];
+
+// ── C6: Compare Two Categories (14 = 4E / 6M / 4H) ───────────────────────────
+// Correct sentence form: "X has N more than Y." Always X > Y.
+var _l74C6 = [
+  // Easy (4)
+  _q74CompareTwo([{label:'Fruit',count:3},{label:'Animals',count:1}],   'Fruit',   'Animals', 'pic', 'e', 0),
+  _q74CompareTwo([{label:'Toys',count:4},{label:'Nature',count:2}],     'Toys',    'Nature',  'bar', 'e', 1),
+  _q74CompareTwo([{label:'Animals',count:4},{label:'Fruit',count:1}],   'Animals', 'Fruit',   'pic', 'e', 2),
+  _q74CompareTwo([{label:'Nature',count:3},{label:'Toys',count:2}],     'Nature',  'Toys',    'bar', 'e', 3),
+  // Medium (6)
+  _q74CompareTwo([{label:'Fruit',count:5},{label:'Animals',count:2}],   'Fruit',   'Animals', 'pic', 'm', 0),
+  _q74CompareTwo([{label:'Toys',count:6},{label:'Nature',count:3}],     'Toys',    'Nature',  'bar', 'm', 1),
+  _q74CompareTwo([{label:'Animals',count:4},{label:'Fruit',count:2},{label:'Toys',count:1}],   'Animals', 'Fruit',   'pic', 'm', 2),
+  _q74CompareTwo([{label:'Nature',count:5},{label:'Toys',count:1},{label:'Animals',count:3}],  'Nature',  'Toys',    'bar', 'm', 3),
+  _q74CompareTwo([{label:'Fruit',count:6},{label:'Animals',count:2}],   'Fruit',   'Animals', 'pic', 'm', 0),
+  _q74CompareTwo([{label:'Toys',count:5},{label:'Nature',count:4}],     'Toys',    'Nature',  'bar', 'm', 1),
+  // Hard (4) — 3-cat
+  _q74CompareTwo([{label:'Fruit',count:5},{label:'Animals',count:4},{label:'Toys',count:3}],   'Fruit',   'Animals', 'bar', 'h', 0),
+  _q74CompareTwo([{label:'Nature',count:5},{label:'Toys',count:2},{label:'Fruit',count:3}],    'Nature',  'Fruit',   'pic', 'h', 1),
+  _q74CompareTwo([{label:'Animals',count:4},{label:'Fruit',count:5},{label:'Nature',count:2}], 'Fruit',   'Nature',  'bar', 'h', 2),
+  _q74CompareTwo([{label:'Toys',count:5},{label:'Fruit',count:3},{label:'Nature',count:1}],    'Toys',    'Fruit',   'pic', 'h', 3)
+];
+
+// ── C7: Choose True Conclusion (14 = 4E / 6M / 4H) ───────────────────────────
+// sentenceType cycles: 'most', 'fewest', 'gap', 'count'
+var _l74C7 = [
+  // Easy (4)
+  _q74TrueConclusion([{label:'Fruit',count:3},{label:'Animals',count:1}], 'most',   'pic', 'e', 0),
+  _q74TrueConclusion([{label:'Toys',count:4},{label:'Nature',count:2}],   'fewest', 'bar', 'e', 1),
+  _q74TrueConclusion([{label:'Animals',count:4},{label:'Fruit',count:1}], 'gap',    'pic', 'e', 2),
+  _q74TrueConclusion([{label:'Nature',count:3},{label:'Toys',count:2}],   'count',  'bar', 'e', 3),
+  // Medium (6)
+  _q74TrueConclusion([{label:'Fruit',count:5},{label:'Animals',count:2}], 'most',   'pic', 'm', 0),
+  _q74TrueConclusion([{label:'Toys',count:6},{label:'Nature',count:1}],   'fewest', 'bar', 'm', 1),
+  _q74TrueConclusion([{label:'Fruit',count:3},{label:'Animals',count:4},{label:'Toys',count:1}], 'gap',   'pic', 'm', 2),
+  _q74TrueConclusion([{label:'Nature',count:2},{label:'Toys',count:5},{label:'Animals',count:3}],'count', 'bar', 'm', 3),
+  _q74TrueConclusion([{label:'Fruit',count:2},{label:'Animals',count:6}], 'gap',    'pic', 'm', 0),
+  _q74TrueConclusion([{label:'Toys',count:3},{label:'Nature',count:5}],   'most',   'bar', 'm', 1),
+  // Hard (4) — 3-cat
+  _q74TrueConclusion([{label:'Fruit',count:5},{label:'Animals',count:4},{label:'Toys',count:3}], 'fewest', 'bar', 'h', 0),
+  _q74TrueConclusion([{label:'Nature',count:5},{label:'Toys',count:2},{label:'Animals',count:3}],'gap',    'pic', 'h', 1),
+  _q74TrueConclusion([{label:'Animals',count:4},{label:'Fruit',count:5},{label:'Nature',count:3}],'count', 'bar', 'h', 2),
+  _q74TrueConclusion([{label:'Toys',count:5},{label:'Fruit',count:3},{label:'Nature',count:1}],   'most',  'pic', 'h', 3)
+];
+
+// ── C8: Find False Conclusion (12 = 4E / 4M / 4H) ────────────────────────────
+// Three sentences are true, one is false (wrong-direction gap claim). Student picks the false one.
+var _l74C8 = [
+  // Easy (4)
+  _q74FalseConclusion([{label:'Fruit',count:3},{label:'Animals',count:1}], 'pic', 'e', 0),
+  _q74FalseConclusion([{label:'Toys',count:4},{label:'Nature',count:2}],   'bar', 'e', 1),
+  _q74FalseConclusion([{label:'Animals',count:4},{label:'Fruit',count:1}], 'pic', 'e', 2),
+  _q74FalseConclusion([{label:'Nature',count:3},{label:'Toys',count:2}],   'bar', 'e', 3),
+  // Medium (4)
+  _q74FalseConclusion([{label:'Fruit',count:5},{label:'Animals',count:2}], 'pic', 'm', 0),
+  _q74FalseConclusion([{label:'Toys',count:6},{label:'Nature',count:1}],   'bar', 'm', 1),
+  _q74FalseConclusion([{label:'Fruit',count:3},{label:'Animals',count:4},{label:'Toys',count:1}], 'pic', 'm', 2),
+  _q74FalseConclusion([{label:'Nature',count:5},{label:'Toys',count:1},{label:'Animals',count:3}],'bar', 'm', 3),
+  // Hard (4)
+  _q74FalseConclusion([{label:'Fruit',count:5},{label:'Animals',count:4},{label:'Toys',count:3}], 'bar', 'h', 0),
+  _q74FalseConclusion([{label:'Nature',count:4},{label:'Toys',count:5},{label:'Animals',count:3}],'pic', 'h', 1),
+  _q74FalseConclusion([{label:'Animals',count:4},{label:'Fruit',count:5},{label:'Nature',count:3}],'bar', 'h', 2),
+  _q74FalseConclusion([{label:'Toys',count:5},{label:'Fruit',count:3},{label:'Nature',count:1}],   'pic', 'h', 3)
+];
+
+// ── C9: Match Question to Answer (12 = 4E / 5M / 3H) ─────────────────────────
+// Graph + stated question + 4 numeric options. mode cycles across question types.
+var _l74C9 = [
+  // Easy (4)
+  _q74MatchQA([{label:'Fruit',count:3},{label:'Animals',count:1}], 'most',  null,       null,       'pic', 'e', 0),
+  _q74MatchQA([{label:'Toys',count:4},{label:'Nature',count:2}],   'inAll', null,       null,       'bar', 'e', 1),
+  _q74MatchQA([{label:'Animals',count:4},{label:'Fruit',count:1}], 'more',  'Animals',  'Fruit',    'pic', 'e', 2),
+  _q74MatchQA([{label:'Nature',count:3},{label:'Toys',count:2}],   'count', 'Nature',   null,       'bar', 'e', 3),
+  // Medium (5)
+  _q74MatchQA([{label:'Fruit',count:5},{label:'Animals',count:2}], 'inAll', null,       null,       'pic', 'm', 0),
+  _q74MatchQA([{label:'Toys',count:5},{label:'Fruit',count:2}],    'more',  'Toys',     'Fruit',    'bar', 'm', 1),
+  _q74MatchQA([{label:'Animals',count:6},{label:'Fruit',count:2}], 'fewer', 'Fruit',    'Animals',  'pic', 'm', 2),
+  _q74MatchQA([{label:'Nature',count:5},{label:'Toys',count:1},{label:'Animals',count:3}], 'fewest', null, null, 'bar', 'm', 3),
+  _q74MatchQA([{label:'Fruit',count:4},{label:'Animals',count:2},{label:'Toys',count:1}],  'inAll',  null, null, 'pic', 'm', 0),
+  // Hard (3)
+  _q74MatchQA([{label:'Fruit',count:5},{label:'Animals',count:4},{label:'Toys',count:3}], 'more',  'Fruit',  'Toys',   'bar', 'h', 1),
+  _q74MatchQA([{label:'Nature',count:5},{label:'Toys',count:2},{label:'Animals',count:3}],'fewer', 'Toys',   'Nature', 'pic', 'h', 2),
+  _q74MatchQA([{label:'Fruit',count:3},{label:'Animals',count:4},{label:'Toys',count:2}], 'count', 'Animals',null,     'bar', 'h', 0)
+];
+
+// ── C10: Error Repair (11 = 3E / 5M / 3H) ────────────────────────────────────
+// Student's wrong statement + 4 fix options. mistakeType cycles.
+var _l74C10 = [
+  // Easy (3)
+  _q74ErrorRepair([{label:'Fruit',count:3},{label:'Animals',count:1}], 'wrongMost',  null,      null, 'pic', 'e', 0),
+  _q74ErrorRepair([{label:'Toys',count:4},{label:'Nature',count:2}],   'wrongGap',   null,      null, 'bar', 'e', 1),
+  _q74ErrorRepair([{label:'Animals',count:4},{label:'Fruit',count:1}], 'wrongCount', 'Animals', null, 'pic', 'e', 2),
+  // Medium (5)
+  _q74ErrorRepair([{label:'Fruit',count:5},{label:'Animals',count:2}], 'wrongMost',  null,      null, 'bar', 'm', 0),
+  _q74ErrorRepair([{label:'Toys',count:6},{label:'Nature',count:1}],   'wrongGap',   null,      null, 'pic', 'm', 1),
+  _q74ErrorRepair([{label:'Fruit',count:2},{label:'Animals',count:4},{label:'Toys',count:1}],   'wrongMost',  null,    null, 'bar', 'm', 2),
+  _q74ErrorRepair([{label:'Nature',count:3},{label:'Toys',count:2},{label:'Animals',count:1}],  'wrongCount', 'Toys',  null, 'pic', 'm', 3),
+  _q74ErrorRepair([{label:'Fruit',count:5},{label:'Animals',count:1}], 'wrongGap',   null,      null, 'bar', 'm', 0),
+  // Hard (3)
+  _q74ErrorRepair([{label:'Fruit',count:4},{label:'Animals',count:3},{label:'Toys',count:5}],   'wrongMost', null,        null, 'bar', 'h', 1),
+  _q74ErrorRepair([{label:'Nature',count:5},{label:'Toys',count:2},{label:'Animals',count:3}],  'wrongGap',  null,        null, 'pic', 'h', 2),
+  _q74ErrorRepair([{label:'Fruit',count:5},{label:'Animals',count:3},{label:'Toys',count:4}],   'wrongCount','Animals',   null, 'bar', 'h', 0)
+];
+
+// ── L7.4 combined bank ───────────────────────────────────────────────────────
+var _l74Bank = [].concat(_l74C1, _l74C2, _l74C3, _l74C4, _l74C5, _l74C6, _l74C7, _l74C8, _l74C9, _l74C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U7_SPEC = {
   unitId: 'g1u7',
@@ -4319,7 +5351,13 @@ export const G1_U7_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 7.4 — Drawing Conclusions from Data   (SCAFFOLD)
+    //  Lesson 7.4 — Drawing Conclusions from Data
+    //  TEKS 1.8C | 135 questions (40E / 55M / 40H)
+    //  10 categories: C1 most, C2 fewest, C3 in-all, C4 more, C5 fewer,
+    //  C6 compare-two, C7 true-conclusion, C8 false-conclusion,
+    //  C9 match-question-to-answer, C10 error-repair.
+    //  Picture and bar-type graphs interleaved. Scale of 1 always. No
+    //  equation symbols in student-facing strings.
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u7-l4',
@@ -4327,10 +5365,14 @@ export const G1_U7_SPEC = {
       teks: ['1.8C'],
       skill: 'draw_conclusions_from_data',
       allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      keyIdeas: _l74KeyIdeas,
+      workedExamples: _l74Examples,
+      quizBank: _l74Bank,
+      diagnostics: {
+        commonDistractors: [_74MF, _74TC, _74HMM, _74HMF, _74CW, _74SD, _74CG, _74TS, _74FS, _74NS],
+        errorTags:         [_74MF, _74TC, _74HMM, _74HMF, _74CW, _74SD, _74CG, _74TS, _74FS, _74NS],
+        interventionRules: []
+      }
     }
 
   ]
