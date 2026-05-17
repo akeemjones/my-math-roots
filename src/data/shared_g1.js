@@ -142,11 +142,14 @@ const _UNITS_DATA_G1 = [
     id: 'g1u8', name: 'Financial Literacy',
     icon: '💰',
     svg: '<svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="27" fill="#4CAF50" opacity="0.08"/><circle cx="30" cy="30" r="16" fill="none" stroke="#4CAF50" stroke-width="2.5"/><text x="30" y="36" text-anchor="middle" font-size="16" fill="#4CAF50">$</text></svg>',
-    color: '#4CAF50', gp: 1, teks: 'TEKS 1.9',
+    color: '#4CAF50', gp: 1, teks: 'TEKS 1.9A–D',
     lessons: [
-      { id:'g1u8l1', title:'Earning and Spending', icon:'💰', desc:'Understand income, saving, and spending' }
+      { id:'g1-u8-l1', title:'Earning Income',       icon:'💼', desc:'Money earned by working at a job is called income',                            teks:'TEKS 1.9A' },
+      { id:'g1-u8-l2', title:'Goods and Services',   icon:'🛒', desc:'Income helps people obtain goods and services; people make purchase choices',  teks:'TEKS 1.9B' },
+      { id:'g1-u8-l3', title:'Spending and Saving',  icon:'🐷', desc:'Distinguish between spending money now and saving money for later',           teks:'TEKS 1.9C' },
+      { id:'g1-u8-l4', title:'Charitable Giving',    icon:'❤️', desc:'Consider giving money to help others',                                        teks:'TEKS 1.9D' }
     ],
-    _loaded: true
+    _loaded: false
   }
 ];
 
@@ -169,10 +172,10 @@ function _loadG1Unit(idx){
   if(u._loaded) return Promise.resolve();
   if(_g1UnitLoadPromises[idx]) return _g1UnitLoadPromises[idx];
 
-  // Units with data files: idx 0 → u1.js … idx 6 → u7.js.
-  // Unit 8 (idx 7) is still shell-only — short-circuit so the loader
+  // Units with data files: idx 0 → u1.js … idx 7 → u8.js.
+  // Any future shell-only unit beyond idx 7 short-circuits so the loader
   // does not try to fetch a file that doesn't exist yet.
-  if(idx > 6){
+  if(idx > 7){
     u._loaded = true;
     return Promise.resolve();
   }
