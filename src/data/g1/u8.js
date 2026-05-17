@@ -81,14 +81,18 @@ function _u8IconCell(emoji, size) {
 }
 
 // _u8WorkerCard — bordered card with a single large emoji and a bold caption.
-// Used as the building block for C3 / C5 / C6 grids and as the right side of
-// C4 gift-vs-work pairs.
+// Used as the building block for C3 / C4 / C5 / C6 imgChoice grids and the
+// rest of the L8.1 visuals. FIXED width (not min/max range) so every card
+// in any grid renders at identical outer dimensions — required for the
+// imgChoice equal-size constraint. Long labels wrap onto multiple lines
+// inside the fixed width.
 function _u8WorkerCard(emoji, label) {
   return '<div style="display:inline-block;border:2px solid #37474F;border-radius:8px;' +
-    'background:#fff;padding:6px 10px;margin:4px;text-align:center;min-width:90px;' +
-    'max-width:120px;font-family:Nunito,sans-serif;vertical-align:top">' +
+    'background:#fff;padding:6px 10px;margin:4px;text-align:center;' +
+    'width:108px;font-family:Nunito,sans-serif;vertical-align:top">' +
     '<div style="font-size:36px;line-height:1;margin-bottom:4px">' + emoji + '</div>' +
-    '<div style="font-size:12px;font-weight:bold;color:#37474F">' + label + '</div>' +
+    '<div style="font-size:12px;font-weight:bold;color:#37474F;line-height:1.2;' +
+      'overflow-wrap:break-word;word-wrap:break-word">' + label + '</div>' +
     '</div>';
 }
 
@@ -453,57 +457,113 @@ function _q81JobVsNotJob(jobItem, restItems, diff, aIdx) {
   };
 }
 
-// _q81GiftVsIncome — C4: gift-vs-work card pair + "Which one is income?"
-// or "Which one is a gift?" askForGift inverts which side is the correct answer.
+// _q81GiftVsIncome — C4: 2 tappable picture cards (imgChoice). One card shows
+// a gift (with 🎁 badge), the other shows someone working for pay. Prompt
+// asks the child to tap either "the card that shows income" or "the card
+// that shows a gift". No "both"/"neither" — those concepts are not what
+// this question type tests.
+// aIdx ∈ {0, 1} (mod 2 to tolerate legacy bank values): 0 = correct card on
+// the left, 1 = correct card on the right. Cards equal-size by construction.
 function _q81GiftVsIncome(giftEmoji, giftLabel, workEmoji, workLabel, askForGift, diff, aIdx) {
-  var pair = _u8GiftVsWork(giftEmoji, giftLabel, workEmoji, workLabel);
-  var correctText, wrong1, wrong2, wrong3;
-  if (askForGift) {
-    correctText = 'the ' + giftLabel;
-    wrong1 = 'the ' + workLabel;
-    wrong2 = 'both are gifts';
-    wrong3 = 'neither is a gift';
-  } else {
-    correctText = 'the ' + workLabel;
-    wrong1 = 'the ' + giftLabel;
-    wrong2 = 'both are income';
-    wrong3 = 'neither is income';
+  var letters = ['A', 'B'];
+  aIdx = aIdx % 2;
+
+  // Both cards use the same outer wrapper so the engine sizes them identically.
+  // The gift card gets a 🎁 badge overlay; the work card gets an invisible
+  // placeholder that occupies the same flow space (zero-width span) so neither
+  // card is visually wider than the other.
+  function buildCard(emoji, label, isGift) {
+    var badge = isGift
+      ? '<span style="position:absolute;top:-6px;left:-6px;font-size:20px;z-index:1" aria-hidden="true">🎁</span>'
+      : '';
+    return '<div style="position:relative;display:inline-block;vertical-align:top">' +
+      badge +
+      _u8WorkerCard(emoji, label) +
+    '</div>';
   }
-  var opts = [
-    {val: correctText},
-    {val: wrong1, tag: _81GI},
-    {val: wrong2, tag: _81GI},
-    {val: wrong3, tag: _81PW}
+
+  // Which card is correct depends on askForGift.
+  var correctSpec = askForGift ? {emoji: giftEmoji, label: giftLabel, isGift: true}
+                                : {emoji: workEmoji, label: workLabel, isGift: false};
+  var wrongSpec   = askForGift ? {emoji: workEmoji, label: workLabel, isGift: false}
+                                : {emoji: giftEmoji, label: giftLabel, isGift: true};
+
+  var slot0 = aIdx === 0 ? correctSpec : wrongSpec;
+  var slot1 = aIdx === 1 ? correctSpec : wrongSpec;
+
+  var svgs = [
+    buildCard(slot0.emoji, slot0.label, slot0.isGift),
+    buildCard(slot1.emoji, slot1.label, slot1.isGift)
   ];
-  opts = _u8Place(opts, aIdx);
+  var labels = ['Picture A', 'Picture B'];
+
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        buildCard(card.emoji, card.label, card.isGift) +
+      '</div>';
+    }).join('') +
+  '</div>';
+
+  var opts = aIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _81GI}]
+    : [{val: 'Picture A', tag: _81GI}, {val: 'Picture B'}];
+
   return {
-    t: askForGift ? 'Look at the two cards. Which one is a gift?' : 'Look at the two cards. Which one is income?',
-    s: pair,
+    t: askForGift ? 'Tap the card that shows a gift.' : 'Tap the card that shows income.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
     o: opts, a: aIdx,
-    e: askForGift ? ('The ' + giftLabel + ' is a gift — it was given for free. The ' + workLabel + ' is income because work was done for pay.')
-                  : ('The ' + workLabel + ' is income — work was done for pay. The ' + giftLabel + ' is a gift because it was given for free.'),
+    e: askForGift ? ('Picture ' + letters[aIdx] + ' shows the ' + giftLabel + ' — a gift, given for free. The other card shows the ' + workLabel + ' (work done for pay, which is income).')
+                  : ('Picture ' + letters[aIdx] + ' shows the ' + workLabel + ' — work done for pay, which is income. The other card shows the ' + giftLabel + ' (a gift, given for free).'),
     d: diff,
-    h: askForGift ? 'A gift is given for free. Income comes from doing work.' : 'Income comes from doing work. A gift is given for free.',
+    h: askForGift ? 'A gift is given for free, often wrapped or in a card.' : 'Income comes from doing work and being paid.',
     sk: 'earning_income',
     i: _i81GiftVsIncome()
   };
 }
 
-// _q81WorkVsPlay — C5: work-vs-leisure pair + "Which one earns income?"
+// _q81WorkVsPlay — C5: 2 tappable picture cards (imgChoice). The child taps
+// the card itself; there are no separate text buttons below. No "both"/"neither"
+// — those concepts are not what this question type tests.
+// aIdx ∈ {0, 1} (mod 2 to tolerate legacy bank values): 0 = correct card on
+// the left, 1 = correct card on the right. Cards equal-size by construction.
 function _q81WorkVsPlay(workEmoji, workLabel, playEmoji, playLabel, diff, aIdx) {
-  var pair = _u8WorkVsRest(workEmoji, workLabel, playEmoji, playLabel);
-  var opts = [
-    {val: 'the ' + workLabel},
-    {val: 'the ' + playLabel,   tag: _81WP},
-    {val: 'both earn income',   tag: _81WP},
-    {val: 'neither earns income', tag: _81NW}
-  ];
-  opts = _u8Place(opts, aIdx);
+  var letters = ['A', 'B'];
+  aIdx = aIdx % 2;
+
+  var slot0 = aIdx === 0 ? {emoji: workEmoji, label: workLabel} : {emoji: playEmoji, label: playLabel};
+  var slot1 = aIdx === 1 ? {emoji: workEmoji, label: workLabel} : {emoji: playEmoji, label: playLabel};
+
+  var svgs = [_u8WorkerCard(slot0.emoji, slot0.label), _u8WorkerCard(slot1.emoji, slot1.label)];
+  var labels = ['Picture A', 'Picture B'];
+
+  // Fallback grid for review mode / Practice Drills imgChoice branch
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(card.emoji, card.label) +
+      '</div>';
+    }).join('') +
+  '</div>';
+
+  // Two options: aIdx is correct (no tag), the other gets _81WP (play-vs-work)
+  var opts = aIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _81WP}]
+    : [{val: 'Picture A', tag: _81WP}, {val: 'Picture B'}];
+
   return {
-    t: 'Look at the two cards. Which one earns income?',
-    s: pair,
+    t: 'Tap the card that shows someone earning income.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
     o: opts, a: aIdx,
-    e: 'The ' + workLabel + ' is doing work for pay. That earns income. The ' + playLabel + ' is for fun and does not earn income.',
+    e: 'Picture ' + letters[aIdx] + ' shows the ' + workLabel + ' — doing work for pay. That earns income. The other card shows ' + playLabel + ' (for fun, not work).',
     d: diff,
     h: 'Working for pay earns income. Playing or resting does not.',
     sk: 'earning_income',
