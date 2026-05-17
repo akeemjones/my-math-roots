@@ -13,7 +13,10 @@
  *    L8.1  Earning Income           ← 140 questions (45E / 55M / 40H)
  *    L8.2  Goods and Services       ← 140 questions (45E / 55M / 40H)
  *    L8.3  Spending and Saving      ← 150 questions (45E / 60M / 45H)
- *    L8.4  Charitable Giving        ← SCAFFOLD (0 questions)
+ *    L8.4  Charitable Giving        ← 130 questions (40E / 55M / 35H)
+ *
+ *  Unit 8 is content-complete at 560 questions. Locking L8.4 closes
+ *  Grade 1 — all 8 units (U1–U8) now have all lessons locked.
  *
  *  Hard scope guardrails (apply to every question added to this unit):
  *    - NO coin identification (penny / nickel / dime / quarter) — K.4A territory.
@@ -3391,6 +3394,1036 @@ var _l83C10 = [
 var _l83Bank = [].concat(_l83C1, _l83C2, _l83C3, _l83C4, _l83C5, _l83C6, _l83C7, _l83C8, _l83C9, _l83C10);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.4 — Charitable Giving
+//  TEKS 1.9D | 130 questions (40E / 55M / 35H)
+//
+//  Introduces giving as a third choice alongside L8.3's spend/save binary.
+//  After L8.4, students understand: charitable giving means sharing money
+//  or resources to help others (food bank, animal shelter, school drive,
+//  park cleanup, helping families).
+//
+//  10 categories. 58 imgChoice (4-card 30 + 2-card 28).
+//
+//  Tone locked as neutral: "can give" / "may choose to give" / "people
+//  may decide to give" / "sharing to help others." Never "should" or
+//  "must." No guilt. No religious tithing. No political causes. No
+//  deservingness judgments. No sad/distressing imagery.
+//
+//  Hard guardrails:
+//    NO $ symbol, NO ¢ symbol, NO dollar/cents amounts, NO coin vocab.
+//    NO religious tithing (tithe/church/synagogue/mosque/temple).
+//    NO political causes.
+//    NO guilt language ("should give", "must give", "feel bad", "selfish").
+//    NO deservingness judgments ("deserve", recipient ranking).
+//    NO Grade 2 financial-literacy content.
+//    "Give"/"giving" IS the lesson topic — allowed everywhere.
+//    multipleChoice + imgChoice only.
+//
+//  Locking L8.4 completes Unit 8 (4/4 lessons) and Grade 1 (8/8 units).
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L8.4 error tags ──────────────────────────────────────────────────────────
+var _84GD = 'err_giving_definition_confusion';
+var _84GS = 'err_give_vs_spend_confusion';
+var _84GV = 'err_give_vs_save_confusion';
+var _84HO = 'err_helping_others_confusion';
+var _84SP = 'err_self_purchase_as_giving';
+var _84SA = 'err_saving_as_giving';
+var _84CE = 'err_charity_example_confusion';
+var _84TC = 'err_three_choice_confusion';
+var _84NS = 'err_category_not_supported';
+
+// ── L8.4 teaching visuals (intervention overlays) ────────────────────────────
+function _u84TvGivingDefinition() {
+  return _u8TvWrap(_u8WorkerCard('🤝', 'helping others'),
+    'Charitable giving means sharing money or resources to help others.');
+}
+function _u84TvGiveVsSpend() {
+  return _u8TvWrap(_u8GoodServicePair('🥫', 'shares food at a food bank', '📕', 'buys a book today'),
+    'Sharing to help others is giving. Buying for yourself is spending.');
+}
+function _u84TvGiveVsSave() {
+  return _u8TvWrap(_u8GoodServicePair('🥫', 'shares food at a food bank', '🐷', 'saves for a bike later'),
+    'Sharing to help others is giving. Keeping income for your own later is saving.');
+}
+function _u84TvHelpingOthers() {
+  return _u8TvWrap(_u8WorkerCard('❤️', 'sharing to help others'),
+    'Giving means helping someone else — not just doing something with income.');
+}
+function _u84TvSelfPurchase() {
+  return _u8TvWrap(_u8WorkerCard('🎒', 'buys a backpack today'),
+    'Buying something for yourself is spending. Giving means helping someone else.');
+}
+function _u84TvSavingAsGiving() {
+  return _u8TvWrap(_u8WorkerCard('🐷', 'saves for a bike later'),
+    'Keeping income for your own future is saving — not giving. Giving means sharing with others.');
+}
+function _u84TvCharityExample() {
+  return _u8TvWrap(_u8WorkerCard('🥫', 'shares food at a food bank'),
+    'Examples of giving: food bank, animal shelter, school drive, park cleanup, helping families.');
+}
+function _u84TvThreeChoice() {
+  return _u8TvWrap(
+    '<div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap">' +
+      _u8WorkerCard('📕', 'spend (for self now)') +
+      _u8WorkerCard('🐷', 'save (for self later)') +
+      _u8WorkerCard('🤝', 'give (to help others)') +
+    '</div>',
+    'Three choices: spend for yourself now, save for yourself later, or give to help others.');
+}
+function _u84TvUnsupported() {
+  return _u8TvWrap(_u8WorkerCard('🤝', 'helping others'),
+    'Pick the option that fits the scenario. Stick to the choices given.');
+}
+
+// ── L8.4 intervention factories ──────────────────────────────────────────────
+function _i84GivingDefinition() { return {
+  errorTag: _84GD, title: 'Giving means sharing to help others',
+  teachingSteps: [
+    'Charitable giving means sharing money or resources to help others.',
+    'It is different from buying something for yourself.',
+    'It is different from keeping income for yourself.',
+    'When the goal is to help someone else, that is giving.'
+  ],
+  teachingVisualRaw: _u84TvGivingDefinition(),
+  correctAnswerExplanation: 'Charitable giving means sharing to help others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84GiveVsSpend() { return {
+  errorTag: _84GS, title: 'Giving is for others. Spending is for self.',
+  teachingSteps: [
+    'Spending uses income for yourself or your family.',
+    'Giving uses income to help others.',
+    'Ask: who benefits — yourself or someone else?',
+    'If it helps you, it is spending. If it helps others, it is giving.'
+  ],
+  teachingVisualRaw: _u84TvGiveVsSpend(),
+  correctAnswerExplanation: 'Spending is for yourself. Giving is for others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84GiveVsSave() { return {
+  errorTag: _84GV, title: 'Giving is shared now. Saving is kept for later.',
+  teachingSteps: [
+    'Saving keeps income for your own future.',
+    'Giving shares income with others to help them.',
+    'Saving stays with you. Giving goes to help others.',
+    'Ask: is the income kept for yourself, or shared with others?'
+  ],
+  teachingVisualRaw: _u84TvGiveVsSave(),
+  correctAnswerExplanation: 'Saving keeps income for self. Giving shares income with others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84HelpingOthers() { return {
+  errorTag: _84HO, title: 'Giving helps others',
+  teachingSteps: [
+    'The key feature of giving is helping someone else.',
+    'Using income for any reason is not always giving.',
+    'Ask: is this helping others?',
+    'If yes, it is giving. If no, it is spending or saving.'
+  ],
+  teachingVisualRaw: _u84TvHelpingOthers(),
+  correctAnswerExplanation: 'Giving means sharing to help others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84SelfPurchase() { return {
+  errorTag: _84SP, title: 'Buying for self is spending, not giving',
+  teachingSteps: [
+    'When someone buys a thing for themselves, that is spending.',
+    'Giving means using income to help someone else.',
+    'A backpack for yourself is spending.',
+    'A backpack for a school drive is giving.'
+  ],
+  teachingVisualRaw: _u84TvSelfPurchase(),
+  correctAnswerExplanation: 'Self-purchases are spending. Giving helps someone else.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84SavingAsGiving() { return {
+  errorTag: _84SA, title: 'Saving is for self. Giving is for others.',
+  teachingSteps: [
+    'Putting income in a piggy bank or jar is saving — for your own future.',
+    'Sharing income to help others is giving.',
+    'Saving keeps income with you. Giving sends income to help others.',
+    'Saving and giving are not the same.'
+  ],
+  teachingVisualRaw: _u84TvSavingAsGiving(),
+  correctAnswerExplanation: 'Saving is keeping for self. Giving is sharing with others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84CharityExample() { return {
+  errorTag: _84CE, title: 'Examples of giving',
+  teachingSteps: [
+    'A food bank shares food with families.',
+    'An animal shelter helps cats and dogs.',
+    'A school supply drive helps kids.',
+    'A park cleanup helps the community.',
+    'These are all examples of charitable giving.'
+  ],
+  teachingVisualRaw: _u84TvCharityExample(),
+  correctAnswerExplanation: 'Food bank, animal shelter, school drive, park cleanup — all examples of giving to help others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84ThreeChoice() { return {
+  errorTag: _84TC, title: 'Three choices: spend, save, give',
+  teachingSteps: [
+    'Spend means using income for yourself now.',
+    'Save means keeping income for yourself for later.',
+    'Give means sharing income to help others.',
+    'Three different choices people may make with income.'
+  ],
+  teachingVisualRaw: _u84TvThreeChoice(),
+  correctAnswerExplanation: 'Spend = for self now. Save = for self later. Give = for others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i84Unsupported() { return {
+  errorTag: _84NS, title: 'Stick to the choices',
+  teachingSteps: [
+    'Read the scenario and the choices carefully.',
+    'Pick the option that fits the scenario.',
+    'Do not invent a choice that is not listed.',
+    'Only the option that matches the scenario is correct.'
+  ],
+  teachingVisualRaw: _u84TvUnsupported(),
+  correctAnswerExplanation: 'Pick the option that fits the scenario from the choices given.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L8.4 question factory functions ──────────────────────────────────────────
+
+// _q84DefineGiving — C1: text MC, "What does charitable giving mean?"
+function _q84DefineGiving(promptText, correctText, distractors, diff, aIdx) {
+  var opts = [{val: correctText}].concat(distractors);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: promptText,
+    o: opts, a: aIdx,
+    e: 'Charitable giving means sharing money or resources to help others.',
+    d: diff,
+    h: 'Giving is for others. Spending is for self. Saving is for self later.',
+    sk: 'charitable_giving',
+    i: _i84GivingDefinition()
+  };
+}
+
+// _q84IdentifyGiving — C2: scenario + Yes/No-with-reason. isGiving true if scenario is giving.
+function _q84IdentifyGiving(name, sceneEmoji, sceneCaption, isGiving, diff, aIdx) {
+  var sceneHtml = _u8ScenarioCard(sceneEmoji, sceneCaption);
+  var correctText, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (isGiving) {
+    correctText = 'Yes — ' + name + ' is sharing to help others.';
+    wrong1 = 'No — ' + name + ' is buying for self.';
+    wrong2 = 'No — ' + name + ' is keeping income for later.';
+    wrong3 = 'No — ' + name + ' is earning income.';
+    t1 = _84SP; t2 = _84SA; t3 = _84NS;
+  } else {
+    correctText = 'No — ' + name + ' is not sharing to help others.';
+    wrong1 = 'Yes — ' + name + ' is sharing to help others.';
+    wrong2 = 'Yes — any use of income is charitable giving.';
+    wrong3 = 'Yes — buying for self counts as giving.';
+    t1 = _84HO; t2 = _84GD; t3 = _84SP;
+  }
+  var opts = [
+    {val: correctText},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Look at what ' + name + ' is doing. Is this charitable giving?',
+    s: sceneHtml,
+    o: opts, a: aIdx,
+    e: isGiving ? (name + ' is sharing to help others — that is charitable giving.')
+                : (name + ' is using income for self, not sharing to help others.'),
+    d: diff,
+    h: 'Ask: is ' + name + ' helping others, or doing something for self?',
+    sk: 'charitable_giving',
+    i: isGiving ? _i84GivingDefinition() : _i84HelpingOthers()
+  };
+}
+
+// _q84NotGiving — C3: scenario is NOT giving (spending or saving). Ask "Is this charitable giving?"
+// kind: 'spending' | 'saving'
+function _q84NotGiving(name, sceneEmoji, sceneCaption, kind, diff, aIdx) {
+  var sceneHtml = _u8ScenarioCard(sceneEmoji, sceneCaption);
+  var correctText, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (kind === 'spending') {
+    correctText = 'No — ' + name + ' is spending for self, not giving to help others.';
+    wrong1 = 'Yes — anything done with income is giving.';
+    wrong2 = 'Yes — buying for self counts as giving.';
+    wrong3 = 'Yes — ' + name + ' is sharing to help others.';
+    t1 = _84GD; t2 = _84SP; t3 = _84HO;
+  } else {
+    // saving
+    correctText = 'No — ' + name + ' is saving for self, not giving to help others.';
+    wrong1 = 'Yes — keeping income for later counts as giving.';
+    wrong2 = 'Yes — anything done with income is giving.';
+    wrong3 = 'Yes — ' + name + ' is sharing to help others.';
+    t1 = _84SA; t2 = _84GD; t3 = _84HO;
+  }
+  var opts = [
+    {val: correctText},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Look at what ' + name + ' is doing. Is this charitable giving?',
+    s: sceneHtml,
+    o: opts, a: aIdx,
+    e: kind === 'spending' ? (name + ' is using income for self today — that is spending, not giving.')
+                            : (name + ' is keeping income for self later — that is saving, not giving.'),
+    d: diff,
+    h: 'Giving helps others. ' + (kind === 'spending' ? 'Spending is for self.' : 'Saving is for self later.'),
+    sk: 'charitable_giving',
+    i: kind === 'spending' ? _i84SelfPurchase() : _i84SavingAsGiving()
+  };
+}
+
+// _q84GiveVsSpend — C4: 2-card imgChoice. 1 giving + 1 spending. askForGive: true=tap giving.
+function _q84GiveVsSpend(giveItem, spendItem, askForGive, diff, aIdx) {
+  var letters = ['A', 'B'];
+  var localAIdx = aIdx % 2;
+  var correctCard = askForGive ? giveItem : spendItem;
+  var wrongCard = askForGive ? spendItem : giveItem;
+  var slot0 = localAIdx === 0 ? correctCard : wrongCard;
+  var slot1 = localAIdx === 1 ? correctCard : wrongCard;
+  var svgs = [_u8WorkerCard(slot0.emoji, slot0.label), _u8WorkerCard(slot1.emoji, slot1.label)];
+  var labels = ['Picture A', 'Picture B'];
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(card.emoji, card.label) +
+      '</div>';
+    }).join('') + '</div>';
+  var opts = localAIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _84GS}]
+    : [{val: 'Picture A', tag: _84GS}, {val: 'Picture B'}];
+  return {
+    t: askForGive ? 'Tap the card that shows charitable giving.' : 'Tap the card that shows spending.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: localAIdx,
+    e: 'Picture ' + letters[localAIdx] + ' shows "' + correctCard.label + '" — ' +
+       (askForGive ? 'sharing to help others. That is charitable giving.' : 'buying for self. That is spending.'),
+    d: diff,
+    h: 'Giving is for others. Spending is for self.',
+    sk: 'charitable_giving',
+    i: _i84GiveVsSpend()
+  };
+}
+
+// _q84GiveVsSave — C5: 2-card imgChoice. 1 giving + 1 saving. askForGive: true=tap giving.
+function _q84GiveVsSave(giveItem, saveItem, askForGive, diff, aIdx) {
+  var letters = ['A', 'B'];
+  var localAIdx = aIdx % 2;
+  var correctCard = askForGive ? giveItem : saveItem;
+  var wrongCard = askForGive ? saveItem : giveItem;
+  var slot0 = localAIdx === 0 ? correctCard : wrongCard;
+  var slot1 = localAIdx === 1 ? correctCard : wrongCard;
+  var svgs = [_u8WorkerCard(slot0.emoji, slot0.label), _u8WorkerCard(slot1.emoji, slot1.label)];
+  var labels = ['Picture A', 'Picture B'];
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(card.emoji, card.label) +
+      '</div>';
+    }).join('') + '</div>';
+  var opts = localAIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _84GV}]
+    : [{val: 'Picture A', tag: _84GV}, {val: 'Picture B'}];
+  return {
+    t: askForGive ? 'Tap the card that shows charitable giving.' : 'Tap the card that shows saving.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: localAIdx,
+    e: 'Picture ' + letters[localAIdx] + ' shows "' + correctCard.label + '" — ' +
+       (askForGive ? 'sharing to help others. That is charitable giving.' : 'keeping income for self later. That is saving.'),
+    d: diff,
+    h: 'Giving is for others. Saving is for self later.',
+    sk: 'charitable_giving',
+    i: _i84GiveVsSave()
+  };
+}
+
+// _q84ChooseGivingExample — C6: 4-card imgChoice. 1 giving + 3 non-giving. Tap giving.
+function _q84ChooseGivingExample(giveItem, distractors, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = distractors.slice();
+  gridItems.splice(aIdx, 0, giveItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _84CE};
+  });
+  return {
+    t: 'Tap the picture that shows charitable giving.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows "' + giveItem.label + '" — sharing to help others. That is charitable giving.',
+    d: diff,
+    h: 'Giving means sharing to help others. Spending is for self. Saving is for self later.',
+    sk: 'charitable_giving',
+    i: _i84CharityExample()
+  };
+}
+
+// _q84WhoHelped — C7: 4-card imgChoice. "Which choice shows giving to help others?"
+// Same as C6 but framing emphasizes "helping others."
+function _q84WhoHelped(giveItem, distractors, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = distractors.slice();
+  gridItems.splice(aIdx, 0, giveItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _84HO};
+  });
+  return {
+    t: 'Which choice shows giving to help others? Tap a picture.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows "' + giveItem.label + '" — that helps others. That is charitable giving.',
+    d: diff,
+    h: 'Look for the picture that shows helping others.',
+    sk: 'charitable_giving',
+    i: _i84HelpingOthers()
+  };
+}
+
+// _q84SpendSaveGive — C8: text MC with 4 options. Three-way framing.
+// kind: 'spend' | 'save' | 'give' — the correct answer.
+function _q84SpendSaveGive(name, sceneEmoji, sceneCaption, kind, diff, aIdx) {
+  var sceneHtml = _u8ScenarioCard(sceneEmoji, sceneCaption);
+  var correctText, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (kind === 'spend') {
+    correctText = name + ' is spending — using income for self now.';
+    wrong1 = name + ' is saving — keeping income for later.';
+    wrong2 = name + ' is giving — sharing to help others.';
+    wrong3 = name + ' is earning — making more income.';
+    t1 = _84TC; t2 = _84TC; t3 = _84NS;
+  } else if (kind === 'save') {
+    correctText = name + ' is saving — keeping income for later.';
+    wrong1 = name + ' is spending — using income for self now.';
+    wrong2 = name + ' is giving — sharing to help others.';
+    wrong3 = name + ' is earning — making more income.';
+    t1 = _84TC; t2 = _84TC; t3 = _84NS;
+  } else {
+    // give
+    correctText = name + ' is giving — sharing to help others.';
+    wrong1 = name + ' is spending — using income for self now.';
+    wrong2 = name + ' is saving — keeping income for later.';
+    wrong3 = name + ' is earning — making more income.';
+    t1 = _84TC; t2 = _84TC; t3 = _84NS;
+  }
+  var opts = [
+    {val: correctText},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'What is ' + name + ' doing with income?',
+    s: sceneHtml,
+    o: opts, a: aIdx,
+    e: kind === 'spend' ? (name + ' is using income for self now — that is spending.')
+        : kind === 'save' ? (name + ' is keeping income for later — that is saving.')
+        : (name + ' is sharing income to help others — that is giving.'),
+    d: diff,
+    h: 'Three choices: spend (self now), save (self later), give (help others).',
+    sk: 'charitable_giving',
+    i: _i84ThreeChoice()
+  };
+}
+
+// _q84ErrorRepair — C9: wrong claim + correct fix.
+function _q84ErrorRepair(claim, correctFix, wrongs, diff, aIdx) {
+  var opts = [{val: correctFix}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'A student says: "' + claim + '" What is the correct fix?',
+    o: opts, a: aIdx,
+    e: 'The correct fix is: "' + correctFix + '"',
+    d: diff,
+    h: 'Giving is sharing to help others. Spending is for self. Saving is for self later.',
+    sk: 'charitable_giving',
+    i: _i84GivingDefinition()
+  };
+}
+
+// _q84TrueSentence — C10: 4 candidate sentences, one true.
+function _q84TrueSentence(correctText, wrongs, diff, aIdx) {
+  var opts = [{val: correctText}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Which sentence is true about spending, saving, and giving?',
+    o: opts, a: aIdx,
+    e: 'True: "' + correctText + '"',
+    d: diff,
+    h: 'Spend = self now. Save = self later. Give = others.',
+    sk: 'charitable_giving',
+    i: _i84ThreeChoice()
+  };
+}
+
+// ── L8.4 key ideas (6) ───────────────────────────────────────────────────────
+var _l84KeyIdeas = [
+  'Charitable giving means sharing money or resources to help others.',
+  'Giving is different from spending — spending uses income for yourself; giving uses income to help others.',
+  'Giving is different from saving — saving keeps income for later; giving shares income with others.',
+  'People can choose to give to a food bank, an animal shelter, a school supply drive, a park cleanup, or families who need help.',
+  'People may choose to spend, save, or give — it is their choice. Giving is one of three options.',
+  'To tell giving from spending or saving, ask: "Is this sharing to help others?"'
+];
+
+// ── L8.4 worked examples (5) ─────────────────────────────────────────────────
+var _l84Examples = [
+  {
+    id: 'g1-u8-l4-ex-1',
+    title: 'Example 1: What is charitable giving?',
+    prompt: 'What does charitable giving mean?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🤝', 'helping others')},
+    steps: [
+      'Charitable giving means sharing money or resources to help others.',
+      'It is when a person shares with someone else — not for themselves.',
+      'A food bank, an animal shelter, or a school drive are places people can give to.',
+      'Giving is a choice people may make.'
+    ],
+    finalAnswer: 'Charitable giving means sharing money or resources to help others.'
+  },
+  {
+    id: 'g1-u8-l4-ex-2',
+    title: 'Example 2: Identify giving',
+    prompt: 'Maya shares some income to help a food bank. Is this charitable giving?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🥫', 'shares food at a food bank')},
+    steps: [
+      'Maya is sharing her income.',
+      'The food bank helps families who need food.',
+      'When income is shared to help others, that is charitable giving.',
+      'Yes — Maya is giving.'
+    ],
+    finalAnswer: 'Yes — Maya is charitable giving.'
+  },
+  {
+    id: 'g1-u8-l4-ex-3',
+    title: 'Example 3: Not giving',
+    prompt: 'Lin keeps income in a jar for a bike later. Is this charitable giving?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🐷', 'saves for a bike later')},
+    steps: [
+      'Lin is keeping her income.',
+      'The bike is for Lin — not for someone else.',
+      'When income is kept for self, that is saving, not giving.',
+      'No — Lin is saving.'
+    ],
+    finalAnswer: 'No — Lin is saving, not charitable giving.'
+  },
+  {
+    id: 'g1-u8-l4-ex-4',
+    title: 'Example 4: Giving vs spending',
+    prompt: 'Nia uses income to buy a backpack for herself. Is she spending or giving?',
+    visual: {type: 'rawHtml', html: _u8GoodServicePair('🎒', 'buys a backpack for self', '🤝', 'helps families who need help')},
+    steps: [
+      'Nia is using income for herself — to get a backpack for her own use.',
+      'That is spending, not giving.',
+      'Giving would be sharing income to help others.',
+      'The card on the right shows giving — helping families who need help.'
+    ],
+    finalAnswer: 'Nia is spending. Giving would be helping others.'
+  },
+  {
+    id: 'g1-u8-l4-ex-5',
+    title: 'Example 5: Spend, save, or give',
+    prompt: 'Sam has income. What are three choices Sam can make?',
+    visual: {type: 'rawHtml', html:
+      '<div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap">' +
+        _u8WorkerCard('📕', 'spend — gets a book today') +
+        _u8WorkerCard('🐷', 'save — keeps for later') +
+        _u8WorkerCard('🤝', 'give — helps others') +
+      '</div>'},
+    steps: [
+      'Sam can spend the income today — using it for self now.',
+      'Sam can save the income for later — keeping it for self.',
+      'Sam can give some income to help others — sharing with someone else.',
+      'Three different choices Sam may make.'
+    ],
+    finalAnswer: 'Sam can spend, save, or give. It is Sam\'s choice.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.4 question banks (10 categories, 130 total)
+//  Target: 40E / 55M / 35H · imgChoice count: 58 (4-card 30 + 2-card 28)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Define Charitable Giving (10 = 3E / 4M / 3H) ─────────────────────────
+var _l84C1 = [
+  // Easy (3)
+  _q84DefineGiving('What does charitable giving mean?',
+    'Charitable giving means sharing money or resources to help others.',
+    [{val:'Giving means using money for yourself.', tag:_84GS},
+     {val:'Giving means keeping money for later.', tag:_84GV},
+     {val:'Giving means earning money.', tag:_84NS}], 'e', 0),
+  _q84DefineGiving('Which sentence describes charitable giving?',
+    'When a person shares money or things to help others, that is charitable giving.',
+    [{val:'When a person saves money for later, that is charitable giving.', tag:_84GV},
+     {val:'When a person earns money, that is charitable giving.', tag:_84NS},
+     {val:'When a person buys a toy for themselves, that is charitable giving.', tag:_84SP}], 'e', 1),
+  _q84DefineGiving('What is charitable giving?',
+    'Giving means sharing income to help others.',
+    [{val:'Giving means spending on yourself.', tag:_84GS},
+     {val:'Giving means putting money in a jar for later.', tag:_84GV},
+     {val:'Giving means making more money.', tag:_84NS}], 'e', 2),
+  // Medium (4)
+  _q84DefineGiving('What does charitable giving mean?',
+    'Charitable giving means sharing money or things to help people, animals, or the community.',
+    [{val:'Charitable giving means buying things for yourself.', tag:_84SP},
+     {val:'Charitable giving means saving for a goal.', tag:_84GV},
+     {val:'Charitable giving means earning money.', tag:_84NS}], 'm', 0),
+  _q84DefineGiving('Which sentence describes charitable giving?',
+    'Giving is sharing money or resources to help others — people, animals, or the community.',
+    [{val:'Giving is keeping money for yourself.', tag:_84GS},
+     {val:'Giving is saving money for a future goal.', tag:_84GV},
+     {val:'Giving is buying something for yourself.', tag:_84SP}], 'm', 1),
+  _q84DefineGiving('What makes something charitable giving?',
+    'Sharing money or things to help others makes it charitable giving.',
+    [{val:'Buying something today makes it charitable giving.', tag:_84GS},
+     {val:'Keeping money for later makes it charitable giving.', tag:_84GV},
+     {val:'Earning money makes it charitable giving.', tag:_84NS}], 'm', 2),
+  _q84DefineGiving('Which sentence describes giving?',
+    'Charitable giving means using income to help others, not yourself.',
+    [{val:'Charitable giving means using income for yourself.', tag:_84GS},
+     {val:'Charitable giving means saving income.', tag:_84GV},
+     {val:'Charitable giving means spending on snacks.', tag:_84SP}], 'm', 3),
+  // Hard (3)
+  _q84DefineGiving('Which best describes charitable giving?',
+    'Charitable giving is sharing money or resources to help people, animals, or the community.',
+    [{val:'Charitable giving is the same as spending on yourself.', tag:_84GS},
+     {val:'Charitable giving is the same as saving for a future goal.', tag:_84GV},
+     {val:'Charitable giving is earning more income.', tag:_84NS}], 'h', 0),
+  _q84DefineGiving('What is the best definition of charitable giving?',
+    'Sharing money or things with others, often to a food bank, animal shelter, or community helper, is charitable giving.',
+    [{val:'Buying a toy for yourself is charitable giving.', tag:_84SP},
+     {val:'Keeping income in a piggy bank is charitable giving.', tag:_84SA},
+     {val:'Earning income from a job is charitable giving.', tag:_84NS}], 'h', 1),
+  _q84DefineGiving('Which sentence is the best definition of charitable giving?',
+    'Charitable giving means people can share money or resources to help others — it is a choice they may make.',
+    [{val:'Charitable giving means people earn money from others.', tag:_84NS},
+     {val:'Charitable giving means using money to buy things for yourself.', tag:_84GS},
+     {val:'Charitable giving means saving for a future goal.', tag:_84GV}], 'h', 2)
+];
+
+// ── C2: Identify Giving (14 = 4E / 6M / 4H) ──────────────────────────────────
+// All scenarios ARE giving — answer is Yes.
+var _l84C2 = [
+  // Easy (4)
+  _q84IdentifyGiving('Maya',   '🥫', 'shares food at a food bank',           true, 'e', 0),
+  _q84IdentifyGiving('Carlos', '🐾', 'helps at an animal shelter',           true, 'e', 1),
+  _q84IdentifyGiving('Lin',    '🌳', 'helps clean the park',                 true, 'e', 2),
+  _q84IdentifyGiving('Mei',    '📚', 'gives books to a library drive',       true, 'e', 3),
+  // Medium (6)
+  _q84IdentifyGiving('Ben',    '🥫', 'shares food at a food bank',           true, 'm', 0),
+  _q84IdentifyGiving('Sara',   '🤝', 'helps neighbors',                       true, 'm', 1),
+  _q84IdentifyGiving('Pat',    '🎒', 'gives school supplies to a class',     true, 'm', 2),
+  _q84IdentifyGiving('Sam',    '🌱', 'helps plant trees at the park',        true, 'm', 3),
+  _q84IdentifyGiving('Dev',    '🦮', 'helps care for shelter animals',       true, 'm', 0),
+  _q84IdentifyGiving('Rina',   '🥕', 'shares vegetables with families',      true, 'm', 1),
+  // Hard (4)
+  _q84IdentifyGiving('Lily',   '🧺', 'puts food in a donation basket',       true, 'h', 2),
+  _q84IdentifyGiving('Tomas',  '❤️', 'shares income to help others',          true, 'h', 3),
+  _q84IdentifyGiving('Ana',    '🧑‍🤝‍🧑', 'helps families who need food',         true, 'h', 0),
+  _q84IdentifyGiving('Eli',    '🥫', 'shares food at a food bank',           true, 'h', 1)
+];
+
+// ── C3: Not Giving (12 = 4E / 5M / 3H) ───────────────────────────────────────
+// Scenarios are spending or saving — answer is No (not giving).
+var _l84C3 = [
+  // Easy (4)
+  _q84NotGiving('Maya',   '🎒',  'buys a backpack for herself',         'spending', 'e', 0),
+  _q84NotGiving('Carlos', '🐷',  'saves for a bike later',              'saving',   'e', 1),
+  _q84NotGiving('Lin',    '🏺',  'puts income in a jar',                'saving',   'e', 2),
+  _q84NotGiving('Mei',    '💇',  'pays for her own haircut',            'spending', 'e', 3),
+  // Medium (5)
+  _q84NotGiving('Ben',    '🐷',  'saves for a future toy',              'saving',   'm', 0),
+  _q84NotGiving('Sara',   '🥪',  'gets a sandwich for lunch today',     'spending', 'm', 1),
+  _q84NotGiving('Pat',    '🐷',  'keeps income for later',              'saving',   'm', 2),
+  _q84NotGiving('Sam',    '👨‍⚕️', 'pays for a doctor visit today',       'spending', 'm', 3),
+  _q84NotGiving('Dev',    '🐷',  'saves for shoes later',               'saving',   'm', 0),
+  // Hard (3)
+  _q84NotGiving('Rina',   '🚌',  'pays for her own bus ride today',     'spending', 'h', 1),
+  _q84NotGiving('Lily',   '🐷',  'saves for a future book',             'saving',   'h', 2),
+  _q84NotGiving('Tomas',  '👟',  'buys shoes for himself today',        'spending', 'h', 3)
+];
+
+// ── C4: Giving vs Spending (14 = 5E / 6M / 3H) ───────────────────────────────
+// 2-card imgChoice. 1 giving + 1 spending.
+var _l84C4 = [
+  // Easy (5)
+  _q84GiveVsSpend({emoji:'🥫', label:'shares food at a food bank'},
+    {emoji:'📕', label:'gets a book today'}, true, 'e', 0),
+  _q84GiveVsSpend({emoji:'🐾', label:'helps at an animal shelter'},
+    {emoji:'🍎', label:'gets an apple today'}, true, 'e', 1),
+  _q84GiveVsSpend({emoji:'🌳', label:'helps clean the park'},
+    {emoji:'💇', label:'pays for a haircut today'}, false, 'e', 0),
+  _q84GiveVsSpend({emoji:'🎒', label:'gives school supplies to a class'},
+    {emoji:'👕', label:'gets a shirt today'}, true, 'e', 1),
+  _q84GiveVsSpend({emoji:'🤝', label:'helps neighbors'},
+    {emoji:'🚌', label:'pays for a bus ride today'}, false, 'e', 0),
+  // Medium (6)
+  _q84GiveVsSpend({emoji:'🧺', label:'puts food in a donation basket'},
+    {emoji:'👟', label:'buys shoes today'}, true, 'm', 1),
+  _q84GiveVsSpend({emoji:'📚', label:'gives books to a library drive'},
+    {emoji:'🎒', label:'buys a backpack today'}, false, 'm', 0),
+  _q84GiveVsSpend({emoji:'🦮', label:'helps care for shelter animals'},
+    {emoji:'👨‍⚕️', label:'pays for a doctor visit today'}, true, 'm', 1),
+  _q84GiveVsSpend({emoji:'🥕', label:'shares vegetables with families'},
+    {emoji:'🥪', label:'buys a sandwich today'}, false, 'm', 0),
+  _q84GiveVsSpend({emoji:'🌱', label:'helps plant trees at the park'},
+    {emoji:'🍎', label:'gets an apple today'}, true, 'm', 1),
+  _q84GiveVsSpend({emoji:'❤️', label:'shares income to help others'},
+    {emoji:'📕', label:'gets a book today'}, false, 'm', 0),
+  // Hard (3)
+  _q84GiveVsSpend({emoji:'🧑‍🤝‍🧑', label:'helps families who need food'},
+    {emoji:'💇', label:'pays for a haircut today'}, true, 'h', 1),
+  _q84GiveVsSpend({emoji:'🥫', label:'shares food at a food bank'},
+    {emoji:'🍎', label:'gets an apple today'}, false, 'h', 0),
+  _q84GiveVsSpend({emoji:'🐾', label:'helps at an animal shelter'},
+    {emoji:'👟', label:'buys shoes today'}, true, 'h', 1)
+];
+
+// ── C5: Giving vs Saving (14 = 5E / 6M / 3H) ─────────────────────────────────
+// 2-card imgChoice. 1 giving + 1 saving.
+var _l84C5 = [
+  // Easy (5)
+  _q84GiveVsSave({emoji:'🥫', label:'shares food at a food bank'},
+    {emoji:'🐷', label:'saves for a bike later'}, true, 'e', 0),
+  _q84GiveVsSave({emoji:'🐾', label:'helps at an animal shelter'},
+    {emoji:'🐷', label:'keeps income for later'}, true, 'e', 1),
+  _q84GiveVsSave({emoji:'🌳', label:'helps clean the park'},
+    {emoji:'🏺', label:'puts income in a jar'}, false, 'e', 0),
+  _q84GiveVsSave({emoji:'🎒', label:'gives school supplies to a class'},
+    {emoji:'🐷', label:'saves for shoes later'}, true, 'e', 1),
+  _q84GiveVsSave({emoji:'🤝', label:'helps neighbors'},
+    {emoji:'🐷', label:'saves for a future toy'}, false, 'e', 0),
+  // Medium (6)
+  _q84GiveVsSave({emoji:'🧺', label:'puts food in a donation basket'},
+    {emoji:'🐷', label:'saves for a future gift'}, true, 'm', 1),
+  _q84GiveVsSave({emoji:'📚', label:'gives books to a library drive'},
+    {emoji:'🐷', label:'saves for a future book'}, false, 'm', 0),
+  _q84GiveVsSave({emoji:'🦮', label:'helps care for shelter animals'},
+    {emoji:'🐷', label:'saves for a future pet'}, true, 'm', 1),
+  _q84GiveVsSave({emoji:'🥕', label:'shares vegetables with families'},
+    {emoji:'🐷', label:'saves for a future trip'}, false, 'm', 0),
+  _q84GiveVsSave({emoji:'🌱', label:'helps plant trees at the park'},
+    {emoji:'🐷', label:'saves for a future garden'}, true, 'm', 1),
+  _q84GiveVsSave({emoji:'❤️', label:'shares income to help others'},
+    {emoji:'🐷', label:'keeps income for later'}, false, 'm', 0),
+  // Hard (3)
+  _q84GiveVsSave({emoji:'🧑‍🤝‍🧑', label:'helps families who need food'},
+    {emoji:'🐷', label:'saves for a future trip'}, true, 'h', 1),
+  _q84GiveVsSave({emoji:'🥫', label:'shares food at a food bank'},
+    {emoji:'🐷', label:'saves for a future hat'}, false, 'h', 0),
+  _q84GiveVsSave({emoji:'🐾', label:'helps at an animal shelter'},
+    {emoji:'🐷', label:'saves for a future toy'}, true, 'h', 1)
+];
+
+// ── C6: Choose the Giving Example (16 = 5E / 7M / 4H) ────────────────────────
+// 4-card imgChoice. 1 giving + 3 non-giving (mixed spending/saving).
+var _l84C6 = [
+  // Easy (5)
+  _q84ChooseGivingExample({emoji:'🥫', label:'shares food at a food bank'},
+    [{emoji:'📕', label:'gets a book today'},
+     {emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'💇', label:'pays for a haircut today'}], 'e', 0),
+  _q84ChooseGivingExample({emoji:'🐾', label:'helps at an animal shelter'},
+    [{emoji:'🍎', label:'gets an apple today'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🚌', label:'pays for a bus ride today'}], 'e', 1),
+  _q84ChooseGivingExample({emoji:'🌳', label:'helps clean the park'},
+    [{emoji:'👕', label:'gets a shirt today'},
+     {emoji:'🏺', label:'puts income in a jar'},
+     {emoji:'🥪', label:'buys a sandwich today'}], 'e', 2),
+  _q84ChooseGivingExample({emoji:'🎒', label:'gives school supplies to a class'},
+    [{emoji:'🐷', label:'saves for shoes later'},
+     {emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+     {emoji:'🐷', label:'saves for a future toy'}], 'e', 3),
+  _q84ChooseGivingExample({emoji:'🤝', label:'helps neighbors'},
+    [{emoji:'📕', label:'gets a book today'},
+     {emoji:'🍎', label:'gets an apple today'},
+     {emoji:'🐷', label:'saves for a future toy'}], 'e', 0),
+  // Medium (7)
+  _q84ChooseGivingExample({emoji:'📚', label:'gives books to a library drive'},
+    [{emoji:'👕', label:'gets a shirt today'},
+     {emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'💇', label:'pays for a haircut today'}], 'm', 1),
+  _q84ChooseGivingExample({emoji:'🧺', label:'puts food in a donation basket'},
+    [{emoji:'🍎', label:'gets an apple today'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'👟', label:'buys shoes today'}], 'm', 2),
+  _q84ChooseGivingExample({emoji:'🥕', label:'shares vegetables with families'},
+    [{emoji:'🥪', label:'buys a sandwich today'},
+     {emoji:'🏺', label:'puts income in a jar'},
+     {emoji:'🎒', label:'buys a backpack today'}], 'm', 3),
+  _q84ChooseGivingExample({emoji:'🦮', label:'helps care for shelter animals'},
+    [{emoji:'🐷', label:'saves for a future toy'},
+     {emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'📕', label:'gets a book today'}], 'm', 0),
+  _q84ChooseGivingExample({emoji:'🌱', label:'helps plant trees at the park'},
+    [{emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+     {emoji:'🐷', label:'saves for shoes later'},
+     {emoji:'🍎', label:'gets an apple today'}], 'm', 1),
+  _q84ChooseGivingExample({emoji:'❤️', label:'shares income to help others'},
+    [{emoji:'👕', label:'gets a shirt today'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🥪', label:'buys a sandwich today'}], 'm', 2),
+  _q84ChooseGivingExample({emoji:'🧑‍🤝‍🧑', label:'helps families who need food'},
+    [{emoji:'🐷', label:'saves for a future trip'},
+     {emoji:'💇', label:'pays for a haircut today'},
+     {emoji:'🐷', label:'saves for a hat later'}], 'm', 3),
+  // Hard (4) — distractors share theme with the giving card
+  _q84ChooseGivingExample({emoji:'🥫', label:'shares food at a food bank'},
+    [{emoji:'🍎', label:'gets an apple today'},
+     {emoji:'🥕', label:'buys vegetables for self today'},
+     {emoji:'🐷', label:'saves for an apple later'}], 'h', 0),
+  _q84ChooseGivingExample({emoji:'🌳', label:'helps clean the park'},
+    [{emoji:'🌳', label:'plays at the park'},
+     {emoji:'🐷', label:'saves for a park visit later'},
+     {emoji:'🚌', label:'pays for a bus ride to the park'}], 'h', 1),
+  _q84ChooseGivingExample({emoji:'🎒', label:'gives school supplies to a class'},
+    [{emoji:'🎒', label:'buys a backpack today'},
+     {emoji:'🐷', label:'saves for school supplies later'},
+     {emoji:'✏️', label:'buys a pencil today'}], 'h', 2),
+  _q84ChooseGivingExample({emoji:'🐾', label:'helps at an animal shelter'},
+    [{emoji:'🐕', label:'plays with a pet at home'},
+     {emoji:'🐷', label:'saves for a future pet'},
+     {emoji:'🥫', label:'buys cat food for own cat today'}], 'h', 3)
+];
+
+// ── C7: Who/What Can Be Helped (14 = 4E / 6M / 4H) ───────────────────────────
+// 4-card imgChoice. "Which choice shows giving to help others?"
+var _l84C7 = [
+  // Easy (4)
+  _q84WhoHelped({emoji:'🥫', label:'sharing food at a food bank'},
+    [{emoji:'📕', label:'buying a book today'},
+     {emoji:'🐷', label:'saving for later'},
+     {emoji:'🍎', label:'buying an apple today'}], 'e', 0),
+  _q84WhoHelped({emoji:'🐾', label:'helping at an animal shelter'},
+    [{emoji:'👕', label:'buying a shirt today'},
+     {emoji:'🐷', label:'keeping income for later'},
+     {emoji:'💇', label:'paying for a haircut today'}], 'e', 1),
+  _q84WhoHelped({emoji:'🌳', label:'cleaning the park together'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🚌', label:'buying a bus ride today'},
+     {emoji:'🐷', label:'keeping income in a jar'}], 'e', 2),
+  _q84WhoHelped({emoji:'🎒', label:'giving school supplies'},
+    [{emoji:'🥪', label:'buying a sandwich'},
+     {emoji:'🏺', label:'putting income in a jar'},
+     {emoji:'👟', label:'buying shoes today'}], 'e', 3),
+  // Medium (6)
+  _q84WhoHelped({emoji:'📚', label:'giving books to a drive'},
+    [{emoji:'🎒', label:'buying a backpack'},
+     {emoji:'🐷', label:'saving for later'},
+     {emoji:'💇', label:'paying for a haircut'}], 'm', 0),
+  _q84WhoHelped({emoji:'🤝', label:'helping a neighbor'},
+    [{emoji:'👨‍⚕️', label:'buying a doctor visit'},
+     {emoji:'🐷', label:'saving for a future toy'},
+     {emoji:'🥪', label:'buying lunch today'}], 'm', 1),
+  _q84WhoHelped({emoji:'🥕', label:'sharing vegetables with families'},
+    [{emoji:'🍎', label:'buying an apple today'},
+     {emoji:'🐷', label:'keeping income for later'},
+     {emoji:'👕', label:'buying a shirt'}], 'm', 2),
+  _q84WhoHelped({emoji:'🦮', label:'helping at an animal shelter'},
+    [{emoji:'🐷', label:'saving for a future pet'},
+     {emoji:'📕', label:'buying a book'},
+     {emoji:'🍎', label:'buying an apple'}], 'm', 3),
+  _q84WhoHelped({emoji:'🧺', label:'filling a donation basket'},
+    [{emoji:'🎒', label:'buying a backpack'},
+     {emoji:'🐷', label:'saving for shoes later'},
+     {emoji:'🚌', label:'buying a bus ride'}], 'm', 0),
+  _q84WhoHelped({emoji:'🌱', label:'planting trees at the park'},
+    [{emoji:'🍎', label:'buying an apple'},
+     {emoji:'🐷', label:'saving for later'},
+     {emoji:'🦷', label:'paying for a dentist'}], 'm', 1),
+  // Hard (4)
+  _q84WhoHelped({emoji:'❤️', label:'sharing income to help others'},
+    [{emoji:'👕', label:'buying a shirt today'},
+     {emoji:'🐷', label:'keeping income for later'},
+     {emoji:'🥪', label:'buying lunch today'}], 'h', 2),
+  _q84WhoHelped({emoji:'🧑‍🤝‍🧑', label:'helping families who need food'},
+    [{emoji:'🐷', label:'saving for a future trip'},
+     {emoji:'💇', label:'paying for a haircut'},
+     {emoji:'🐷', label:'saving for a hat later'}], 'h', 3),
+  _q84WhoHelped({emoji:'🥫', label:'sharing food at a food bank'},
+    [{emoji:'🍎', label:'buying an apple'},
+     {emoji:'🐷', label:'saving for an apple later'},
+     {emoji:'🥕', label:'buying vegetables for self'}], 'h', 0),
+  _q84WhoHelped({emoji:'🐾', label:'helping at an animal shelter'},
+    [{emoji:'🐕', label:'playing with own pet'},
+     {emoji:'🐷', label:'saving for a future pet'},
+     {emoji:'🦷', label:'paying for a dentist'}], 'h', 1)
+];
+
+// ── C8: Spend / Save / Give Three-Way (14 = 4E / 6M / 4H) ────────────────────
+var _l84C8 = [
+  // Easy (4)
+  _q84SpendSaveGive('Maya',   '📕',  'gets a book today',                'spend', 'e', 0),
+  _q84SpendSaveGive('Carlos', '🐷',  'saves for a bike later',           'save',  'e', 1),
+  _q84SpendSaveGive('Lin',    '🥫',  'shares food at a food bank',       'give',  'e', 2),
+  _q84SpendSaveGive('Mei',    '👕',  'gets a shirt today',               'spend', 'e', 3),
+  // Medium (6)
+  _q84SpendSaveGive('Ben',    '🐷',  'keeps income for later',           'save',  'm', 0),
+  _q84SpendSaveGive('Sara',   '🐾',  'helps at an animal shelter',       'give',  'm', 1),
+  _q84SpendSaveGive('Pat',    '💇',  'pays for a haircut today',         'spend', 'm', 2),
+  _q84SpendSaveGive('Sam',    '🐷',  'saves for new shoes later',        'save',  'm', 3),
+  _q84SpendSaveGive('Dev',    '🌳',  'helps clean the park',             'give',  'm', 0),
+  _q84SpendSaveGive('Rina',   '🚌',  'pays for a bus ride today',        'spend', 'm', 1),
+  // Hard (4)
+  _q84SpendSaveGive('Lily',   '🐷',  'saves for a future toy',           'save',  'h', 2),
+  _q84SpendSaveGive('Tomas',  '🎒',  'gives school supplies to a class', 'give',  'h', 3),
+  _q84SpendSaveGive('Ana',    '🍎',  'gets an apple today',              'spend', 'h', 0),
+  _q84SpendSaveGive('Eli',    '🧺',  'puts food in a donation basket',   'give',  'h', 1)
+];
+
+// ── C9: Error Repair (12 = 3E / 5M / 4H) ─────────────────────────────────────
+var _l84C9 = [
+  // Easy (3)
+  _q84ErrorRepair('Buying a toy for yourself is charitable giving.',
+    'Buying a toy for yourself is spending. Giving means helping others.',
+    [{val:'Buying a toy is saving for later.', tag:_84GV},
+     {val:'Buying a toy is earning income.', tag:_84NS},
+     {val:'Buying a toy is the same as donating.', tag:_84SP}], 'e', 0),
+  _q84ErrorRepair('Keeping income in a piggy bank is charitable giving.',
+    'Keeping income in a piggy bank is saving. Giving means sharing with others.',
+    [{val:'Keeping income in a piggy bank is spending.', tag:_84GS},
+     {val:'Keeping income in a piggy bank is earning.', tag:_84NS},
+     {val:'Keeping income in a piggy bank is helping others.', tag:_84SA}], 'e', 1),
+  _q84ErrorRepair('Earning income is charitable giving.',
+    'Earning income is making money. Giving means sharing income to help others.',
+    [{val:'Earning income is the same as donating.', tag:_84GD},
+     {val:'Earning income is saving.', tag:_84GV},
+     {val:'Earning income is spending.', tag:_84GS}], 'e', 2),
+  // Medium (5)
+  _q84ErrorRepair('A food bank is for keeping income for self.',
+    'A food bank is a place where people share food to help families who need help. Sharing food there is giving.',
+    [{val:'A food bank is for earning income.', tag:_84NS},
+     {val:'A food bank is for spending on snacks.', tag:_84GS},
+     {val:'A food bank is for saving money.', tag:_84GV}], 'm', 0),
+  _q84ErrorRepair('Helping at an animal shelter is spending.',
+    'Helping at an animal shelter is charitable giving — sharing to help animals.',
+    [{val:'Helping at an animal shelter is saving.', tag:_84GV},
+     {val:'Helping at an animal shelter is buying a pet.', tag:_84GS},
+     {val:'Helping at an animal shelter is earning income.', tag:_84NS}], 'm', 1),
+  _q84ErrorRepair('Putting money in a piggy bank is the same as sharing at a food bank.',
+    'A piggy bank keeps money for self. A food bank shares food to help others. They are different.',
+    [{val:'They are the same because both are jars.', tag:_84SA},
+     {val:'A piggy bank is for spending.', tag:_84GS},
+     {val:'A food bank is for earning.', tag:_84NS}], 'm', 2),
+  _q84ErrorRepair('Buying yourself a sandwich is the same as sharing food at a food bank.',
+    'Buying yourself a sandwich is spending. Sharing food at a food bank is giving — sharing to help others.',
+    [{val:'Buying a sandwich is saving.', tag:_84GV},
+     {val:'Sharing food is earning.', tag:_84NS},
+     {val:'They are the same because both involve food.', tag:_84SP}], 'm', 3),
+  _q84ErrorRepair('Saving for a future bike is the same as helping at the park.',
+    'Saving keeps income for self later. Helping at the park is giving — helping the community. They are different.',
+    [{val:'They are the same because both happen later.', tag:_84SA},
+     {val:'Saving means donating.', tag:_84GD},
+     {val:'Helping at the park is spending.', tag:_84GS}], 'm', 0),
+  // Hard (4)
+  _q84ErrorRepair('Anything done with income is charitable giving.',
+    'Only sharing income to help others is charitable giving. Spending and saving are different.',
+    [{val:'Spending is the same as giving.', tag:_84GS},
+     {val:'Saving is the same as giving.', tag:_84GV},
+     {val:'Earning is the same as giving.', tag:_84NS}], 'h', 1),
+  _q84ErrorRepair('Maya saves food in her own kitchen — that is charitable giving.',
+    'Saving food in your own kitchen is for yourself. Giving means sharing with others.',
+    [{val:'Maya is spending.', tag:_84GS},
+     {val:'Maya is earning food.', tag:_84NS},
+     {val:'Maya is helping others by saving for herself.', tag:_84SA}], 'h', 2),
+  _q84ErrorRepair('Buying a backpack at the store is the same as giving school supplies to a class drive.',
+    'Buying for yourself is spending. Giving school supplies to a class drive helps others — that is giving.',
+    [{val:'They are the same because both involve backpacks.', tag:_84SP},
+     {val:'Buying a backpack is saving.', tag:_84GV},
+     {val:'Giving school supplies is earning.', tag:_84NS}], 'h', 3),
+  _q84ErrorRepair('Spending, saving, and giving are all the same.',
+    'Spending is for self now. Saving is for self later. Giving is sharing to help others. Three different choices.',
+    [{val:'They are the same because all use income.', tag:_84TC},
+     {val:'Spending and saving are different, but giving is the same as saving.', tag:_84GV},
+     {val:'Spending and giving are different, but saving is the same as giving.', tag:_84SA}], 'h', 0)
+];
+
+// ── C10: True Sentence / Mixed Review (10 = 3E / 4M / 3H) ────────────────────
+var _l84C10 = [
+  // Easy (3)
+  _q84TrueSentence('Charitable giving means sharing to help others.',
+    [{val:'Charitable giving means using money for self.', tag:_84GS},
+     {val:'Charitable giving means keeping money for later.', tag:_84GV},
+     {val:'Charitable giving means earning money.', tag:_84NS}], 'e', 0),
+  _q84TrueSentence('A food bank is an example of a place where people can give to help others.',
+    [{val:'A food bank is for spending on yourself.', tag:_84GS},
+     {val:'A food bank is for saving money.', tag:_84GV},
+     {val:'A food bank is for earning income.', tag:_84NS}], 'e', 1),
+  _q84TrueSentence('People can spend, save, or give with their income.',
+    [{val:'People can only spend with their income.', tag:_84NS},
+     {val:'People can only save with their income.', tag:_84NS},
+     {val:'People cannot make a choice with their income.', tag:_84NS}], 'e', 2),
+  // Medium (4)
+  _q84TrueSentence('Giving is different from spending — spending is for self, giving is for others.',
+    [{val:'Giving and spending are the same.', tag:_84GS},
+     {val:'Giving means earning more income.', tag:_84NS},
+     {val:'Giving is when you buy something cheap.', tag:_84SP}], 'm', 3),
+  _q84TrueSentence('Giving is different from saving — saving is for self later, giving is for others.',
+    [{val:'Giving and saving are the same.', tag:_84GV},
+     {val:'Giving means putting money in a jar.', tag:_84SA},
+     {val:'Giving means waiting forever.', tag:_84NS}], 'm', 0),
+  _q84TrueSentence('People may choose to give to a food bank, an animal shelter, a school drive, or families who need help.',
+    [{val:'People always give all their income away.', tag:_84NS},
+     {val:'Giving is only for adults.', tag:_84NS},
+     {val:'Giving means spending on self.', tag:_84GS}], 'm', 1),
+  _q84TrueSentence('Helping others at an animal shelter is an example of charitable giving.',
+    [{val:'Helping others at an animal shelter is spending.', tag:_84GS},
+     {val:'Helping others at an animal shelter is saving.', tag:_84GV},
+     {val:'Helping others at an animal shelter is earning.', tag:_84NS}], 'm', 2),
+  // Hard (3)
+  _q84TrueSentence('Spend, save, and give are three different choices people can make with income.',
+    [{val:'Spend, save, and give are all the same.', tag:_84TC},
+     {val:'Spend and save are the same, but give is different.', tag:_84GS},
+     {val:'Income can only be spent.', tag:_84NS}], 'h', 3),
+  _q84TrueSentence('Giving means helping others — not yourself.',
+    [{val:'Giving means helping yourself.', tag:_84SP},
+     {val:'Giving means earning more income.', tag:_84NS},
+     {val:'Giving means keeping income for later use.', tag:_84SA}], 'h', 0),
+  _q84TrueSentence('People may choose to give — it is one of three choices: spend, save, or give.',
+    [{val:'Giving is the only choice with income.', tag:_84NS},
+     {val:'Giving and spending are the same choice.', tag:_84GS},
+     {val:'Giving is not really a choice people make.', tag:_84NS}], 'h', 1)
+];
+
+// ── L8.4 combined bank ───────────────────────────────────────────────────────
+var _l84Bank = [].concat(_l84C1, _l84C2, _l84C3, _l84C4, _l84C5, _l84C6, _l84C7, _l84C8, _l84C9, _l84C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U8_SPEC = {
   unitId: 'g1u8',
@@ -3486,19 +4519,31 @@ export const G1_U8_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 8.4 — Charitable Giving   (SCAFFOLD)
-    //  TEKS 1.9D | Focus: consider giving money to help others.
+    //  Lesson 8.4 — Charitable Giving
+    //  TEKS 1.9D | 130 questions (40E / 55M / 35H)
+    //  10 categories: C1 define-giving, C2 identify-giving, C3 not-giving,
+    //  C4 give-vs-spend (imgChoice 2-card), C5 give-vs-save (imgChoice 2-card),
+    //  C6 choose-giving-example (imgChoice 4-card), C7 who/what-helped
+    //  (imgChoice 4-card), C8 spend/save/give three-way, C9 error-repair,
+    //  C10 true-sentence. 58 imgChoice (4-card: 30, 2-card: 28).
+    //  Tone locked neutral: "can give" / "may choose to give"; no guilt,
+    //  no religious tithing, no political causes, no deservingness.
+    //  Locking L8.4 completes Unit 8 (4/4 lessons) and Grade 1 (8/8 units).
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u8-l4',
       title: 'Charitable Giving',
       teks: ['1.9D'],
       skill: 'charitable_giving',
-      allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      allowedQuestionTypes: ['multipleChoice', 'imgChoice'],
+      keyIdeas: _l84KeyIdeas,
+      workedExamples: _l84Examples,
+      quizBank: _l84Bank,
+      diagnostics: {
+        commonDistractors: [_84GD, _84GS, _84GV, _84HO, _84SP, _84SA, _84CE, _84TC, _84NS],
+        errorTags:         [_84GD, _84GS, _84GV, _84HO, _84SP, _84SA, _84CE, _84TC, _84NS],
+        interventionRules: []
+      }
     }
 
   ]
