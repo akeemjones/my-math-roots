@@ -401,25 +401,53 @@ function _q81IdentifyEarning(name, sceneEmoji, sceneCaption, reason, diff, aIdx)
   };
 }
 
-// _q81JobVsNotJob — C3: 4-card grid + "Which person is working at a job?"
+// _q81JobVsNotJob — C3: 4 tappable image cards (imgChoice). The student
+// taps the picture itself; there are no separate text buttons below.
 // jobItem: {emoji, label}  3 non-job items: [{emoji, label, tag}]
+// Mirrors the imgChoice pattern from L6.4 C3 / L7.1 C6 / L7.2 C4 / L7.3 C4 —
+// q.v is the active-quiz imgChoice config; q.s is the fallback grid shown
+// in review mode and in the Practice Drills imgChoice branch.
 function _q81JobVsNotJob(jobItem, restItems, diff, aIdx) {
-  // Place the job item at position aIdx in the visual grid AND in the options
-  var allItems = [jobItem].concat(restItems);
+  var letters = ['A','B','C','D'];
+  // Place jobItem at aIdx in the on-screen grid; distractors fill the rest in order.
   var gridItems = restItems.slice();
   gridItems.splice(aIdx, 0, jobItem);
-  var grid = _u8JobGrid(gridItems);
-  var opts = [
-    {val: jobItem.label}
-  ].concat(restItems.map(function(r){ return {val: r.label, tag: r.tag}; }));
-  opts = _u8Place(opts, aIdx);
+
+  // svgs: one tappable card per slot. Reuses _u8WorkerCard so visual language
+  // matches the rest of the unit. Cards are equal-size by construction.
+  var svgs = gridItems.map(function(item){ return _u8WorkerCard(item.emoji, item.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+
+  // Fallback grid for review mode / Practice Drills: same 4 cards in a row
+  // with letter headers so the explanation can reference Picture A/B/C/D.
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:6px;padding:4px 0">' +
+    gridItems.map(function(item, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:110px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(item.emoji, item.label) +
+      '</div>';
+    }).join('') +
+  '</div>';
+
+  // Options: aIdx = correct (no tag); other slots carry the distractor's tag
+  // so wrong answers route to the right intervention/error-tag bucket.
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    var restIdx = i < aIdx ? i : i - 1;
+    var tag = (restItems[restIdx] && restItems[restIdx].tag) || _81JC;
+    return {val: 'Picture ' + L, tag: tag};
+  });
+
   return {
-    t: 'Look at the four people. Which one is working at a job?',
-    s: grid,
+    t: 'Look at the four pictures. Which picture shows someone working at a job? Tap a picture.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
     o: opts, a: aIdx,
-    e: 'The ' + jobItem.label + ' is doing work for pay. That is a job.',
+    e: 'Picture ' + letters[aIdx] + ' shows ' + jobItem.label + ' — doing work for pay. That is a job.',
     d: diff,
-    h: 'A job is work people do for pay. Look for the one who is doing work, not playing or resting.',
+    h: 'A job is work people do for pay. Look for the picture showing someone doing work, not playing or resting.',
     sk: 'earning_income',
     i: _i81JobConfusion()
   };
@@ -483,24 +511,45 @@ function _q81WorkVsPlay(workEmoji, workLabel, playEmoji, playLabel, diff, aIdx) 
   };
 }
 
-// _q81WorkThatEarns — C6: 4-card grid + "Which activity shows someone
-// earning income?" with mixed distractors (play, rest, gift, unpaid help).
-// jobItem: {emoji, label}  distractors: [{emoji, label, tag}] length 3.
+// _q81WorkThatEarns — C6: 4 tappable image cards (imgChoice). The student
+// taps the picture itself; there are no separate text buttons below.
+// jobItem: {emoji, label}  distractors: [{emoji, label, tag}] length 3 with
+// mixed reasons (play, rest, gift, unpaid help — exactly one correct).
+// Same imgChoice pattern as L7.1 C6 / L7.2 C4 / L7.3 C4.
 function _q81WorkThatEarns(jobItem, distractors, diff, aIdx) {
+  var letters = ['A','B','C','D'];
   var gridItems = distractors.slice();
   gridItems.splice(aIdx, 0, jobItem);
-  var grid = _u8JobGrid(gridItems);
-  var opts = [
-    {val: jobItem.label}
-  ].concat(distractors.map(function(d){ return {val: d.label, tag: d.tag}; }));
-  opts = _u8Place(opts, aIdx);
+
+  var svgs = gridItems.map(function(item){ return _u8WorkerCard(item.emoji, item.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:6px;padding:4px 0">' +
+    gridItems.map(function(item, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:110px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(item.emoji, item.label) +
+      '</div>';
+    }).join('') +
+  '</div>';
+
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    var restIdx = i < aIdx ? i : i - 1;
+    var tag = (distractors[restIdx] && distractors[restIdx].tag) || _81WP;
+    return {val: 'Picture ' + L, tag: tag};
+  });
+
   return {
-    t: 'Look at the four activities. Which one shows someone earning income?',
-    s: grid,
+    t: 'Look at the four pictures. Which picture shows someone earning income? Tap a picture.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
     o: opts, a: aIdx,
-    e: '"' + jobItem.label + '" shows someone doing work and being paid. That earns income.',
+    e: 'Picture ' + letters[aIdx] + ' shows ' + jobItem.label + ' — doing work and being paid. That earns income.',
     d: diff,
-    h: 'Look for the one who is doing work for pay. Playing, resting, getting gifts, and helping for free do not earn income.',
+    h: 'Look for the picture showing someone doing work for pay. Playing, resting, getting gifts, and helping for free do not earn income.',
     sk: 'earning_income',
     i: _i81PaidWork()
   };
@@ -904,7 +953,7 @@ var _l81C6 = [
     [{emoji:'\u{1F37F}', label:'kid eating popcorn', tag:_81WP},
      {emoji:'\u{1F381}', label:'kid getting a gift', tag:_81GI},
      {emoji:'\u{1F96B}', label:'kid volunteering at the food bank', tag:_81PW}], 'm', 2),
-  _q81WorkThatEarns({emoji:'\u{1F4DA}', label:'librarian helping patrons'},
+  _q81WorkThatEarns({emoji:'\u{1F4DA}', label:'librarian helping kids find books'},
     [{emoji:'⚽', label:'kid playing soccer', tag:_81WP},
      {emoji:'\u{1F380}', label:'kid unwrapping a gift', tag:_81GI},
      {emoji:'\u{1F37D}️', label:'kid washing pots at home for free', tag:_81PW}], 'm', 3),
@@ -1188,7 +1237,7 @@ export const G1_U8_SPEC = {
       title: 'Earning Income',
       teks: ['1.9A'],
       skill: 'earning_income',
-      allowedQuestionTypes: ['multipleChoice'],
+      allowedQuestionTypes: ['multipleChoice', 'imgChoice'],
       keyIdeas: _l81KeyIdeas,
       workedExamples: _l81Examples,
       quizBank: _l81Bank,
