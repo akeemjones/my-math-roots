@@ -11,7 +11,7 @@
  *
  *  Lessons:
  *    L8.1  Earning Income           ← 140 questions (45E / 55M / 40H)
- *    L8.2  Goods and Services       ← SCAFFOLD (0 questions)
+ *    L8.2  Goods and Services       ← 140 questions (45E / 55M / 40H)
  *    L8.3  Spending and Saving      ← SCAFFOLD (0 questions)
  *    L8.4  Charitable Giving        ← SCAFFOLD (0 questions)
  *
@@ -1267,6 +1267,1034 @@ var _l81C9 = [
 var _l81Bank = [].concat(_l81C1, _l81C2, _l81C3, _l81C4, _l81C5, _l81C6, _l81C7, _l81C8, _l81C9);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.2 — Goods and Services
+//  TEKS 1.9B | 140 questions (45E / 55M / 40H)
+//
+//  Puts L8.1's income definition to work: people use income to obtain goods
+//  and services, and they make purchase choices about what to obtain.
+//
+//  10 categories: C1 identify-goods (imgChoice 4-card), C2 identify-services
+//  (imgChoice 4-card), C3 good-vs-service (text MC), C4 match-scenario
+//  (text MC), C5 income→good (text MC), C6 income→service (text MC),
+//  C7 purchase-choice (imgChoice 4-card), C8 wants-needs-supporting-context
+//  (text MC), C9 error-repair (text MC), C10 true-sentence/mixed-review
+//  (text MC). imgChoice count: 46 (C1+C2+C7).
+//
+//  Goods are things (book, apple, shirt, …). Services are work someone does
+//  (haircut, doctor visit, mechanic fixing a car, …). Cards for goods and
+//  services use the SAME visual format (_u8WorkerCard) so the category is
+//  never given away by styling.
+//
+//  Hard guardrails (verified by scope scans before lock):
+//    NO $ symbol, NO ¢ symbol, NO dollar/cents amounts.
+//    NO coin names, NO price/cost vocabulary.
+//    NO spending/saving/giving content (L8.3/L8.4).
+//    NO wants/needs as the assessed skill.
+//    "wants"/"needs" (financial-literacy noun sense) appear ONLY in C8
+//    prompts (12 questions). Other categories use neutral framings like
+//    "is broken", "is hungry", "is sick".
+//    NO Grade 2 financial-literacy content.
+//    NO drag-and-drop. multipleChoice + imgChoice only.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L8.2 error tags ──────────────────────────────────────────────────────────
+var _82GS = 'err_good_vs_service_confusion';
+var _82GD = 'err_good_definition_confusion';
+var _82SD = 'err_service_definition_confusion';
+var _82IP = 'err_income_purchase_confusion';
+var _82PC = 'err_purchase_choice_confusion';
+var _82WN = 'err_want_need_context_confusion';
+var _82WS = 'err_worker_service_confusion';
+var _82IS = 'err_item_service_confusion';
+var _82NS = 'err_category_not_supported';
+
+// ── L8.2 visual helpers ──────────────────────────────────────────────────────
+
+// _u8GoodServicePair — 2-card vs pair. Both cards use _u8WorkerCard so they
+// are visually identical (no badge or color hints which side is which).
+function _u8GoodServicePair(goodEmoji, goodLabel, serviceEmoji, serviceLabel) {
+  return '<div style="display:flex;justify-content:center;align-items:center;' +
+    'gap:10px;margin:8px 0;flex-wrap:wrap">' +
+    _u8WorkerCard(goodEmoji, goodLabel) +
+    '<span style="font-size:14px;color:#9ca3af">vs</span>' +
+    _u8WorkerCard(serviceEmoji, serviceLabel) +
+    '</div>';
+}
+
+// _u8ItemGridFallback — 4-card grid with letter headers, used as the q.s
+// fallback for C1/C2/C7 imgChoice questions (review mode + Practice Drills).
+function _u8ItemGridFallback(items, letters) {
+  return '<div style="display:flex;flex-wrap:wrap;justify-content:center;' +
+    'gap:6px;padding:4px 0">' +
+    items.map(function(it, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:110px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(it.emoji, it.label) +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+// _u8IncomeChainCard — visualizes "income → result" for C5/C6/C7/C8 scenarios.
+// resultHtml is typically a _u8WorkerCard showing the good or service obtained.
+function _u8IncomeChainCard(incomeHtml, resultHtml) {
+  return '<div style="display:flex;justify-content:center;align-items:center;' +
+    'gap:10px;margin:8px 0;flex-wrap:wrap">' +
+    incomeHtml +
+    '<span style="font-size:24px;color:#5a7080;font-weight:bold">→</span>' +
+    resultHtml +
+    '</div>';
+}
+
+// ── L8.2 teaching visuals (intervention overlays) ────────────────────────────
+function _u82TvGoodVsService() {
+  return _u8TvWrap(_u8GoodServicePair('📕', 'book', '💇', 'haircut'),
+    'A book is a thing — that is a good. A haircut is work someone does — that is a service.');
+}
+function _u82TvGoodDefinition() {
+  return _u8TvWrap(_u8WorkerCard('📕', 'book'),
+    'A good is a thing people can have or use. Books, apples, shirts, and shoes are goods.');
+}
+function _u82TvServiceDefinition() {
+  return _u8TvWrap(_u8WorkerCard('💇', 'haircut'),
+    'A service is work people do to help others. Haircuts, bus rides, and doctor visits are services.');
+}
+function _u82TvIncomePurchase() {
+  return _u8TvWrap(_u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard('📕', 'book')),
+    'Income obtains goods and services. The thing or work that the income paid for is what was obtained.');
+}
+function _u82TvPurchaseChoice() {
+  return _u8TvWrap(_u8WorkerCard('🔧', 'mechanic fixing a bike'),
+    'Match the choice to the scenario. Pick the good or service that fits the situation.');
+}
+function _u82TvWantsNeedsContext() {
+  return _u8TvWrap(_u8WorkerCard('🍎', 'apple'),
+    'The question is still which good or service fits. The scenario tells you what is needed.');
+}
+function _u82TvWorkerService() {
+  return _u8TvWrap(_u8WorkerCard('💇', 'haircut'),
+    'The barber is a person. The haircut is the work the barber does — that work is the service.');
+}
+function _u82TvItemService() {
+  return _u8TvWrap(_u8WorkerCard('📕', 'book'),
+    'Paying for something does not make it a service. A thing is still a good — like a book.');
+}
+function _u82TvUnsupported() {
+  return _u8TvWrap(_u8WorkerCard('🍎', 'apple'),
+    'Pick the option that fits the scenario. Stick to the choices given.');
+}
+
+// ── L8.2 intervention factories ──────────────────────────────────────────────
+function _i82GoodVsService() { return {
+  errorTag: _82GS, title: 'A thing is a good. Work is a service.',
+  teachingSteps: [
+    'A good is a thing — something you can hold, use, eat, wear, or own.',
+    'A service is work — something someone does to help others.',
+    'Ask yourself: is this a thing, or is this work?',
+    'If it is a thing, it is a good. If it is work, it is a service.'
+  ],
+  teachingVisualRaw: _u82TvGoodVsService(),
+  correctAnswerExplanation: 'Goods are things. Services are work.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82GoodDefinition() { return {
+  errorTag: _82GD, title: 'Goods are things',
+  teachingSteps: [
+    'A good is a thing people can have or use.',
+    'Books, apples, shirts, toys, backpacks, and shoes are goods.',
+    'You can hold a good. You can use a good. You can eat or wear a good.',
+    'If the answer is a thing, it is a good.'
+  ],
+  teachingVisualRaw: _u82TvGoodDefinition(),
+  correctAnswerExplanation: 'A good is a thing you can have or use.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82ServiceDefinition() { return {
+  errorTag: _82SD, title: 'Services are work people do',
+  teachingSteps: [
+    'A service is work someone does to help others.',
+    'A haircut, a bus ride, a doctor visit, and a teacher teaching are services.',
+    'When someone works to help another person, that work is a service.',
+    'If the answer is work that helps someone, it is a service.'
+  ],
+  teachingVisualRaw: _u82TvServiceDefinition(),
+  correctAnswerExplanation: 'A service is work people do to help others.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82IncomePurchase() { return {
+  errorTag: _82IP, title: 'Income obtains goods and services',
+  teachingSteps: [
+    'Income is money people earn by working.',
+    'People can use income to obtain goods — like a book or a backpack.',
+    'People can use income to obtain services — like a haircut or a bus ride.',
+    'The thing or work that the income paid for is what was obtained.'
+  ],
+  teachingVisualRaw: _u82TvIncomePurchase(),
+  correctAnswerExplanation: 'Income obtains goods (things) and services (work).',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82PurchaseChoice() { return {
+  errorTag: _82PC, title: 'Match the choice to the situation',
+  teachingSteps: [
+    'Read the scenario carefully.',
+    'Find the choice that fits what the situation is asking for.',
+    'A broken bike calls for a mechanic. Hunger calls for food.',
+    'Pick the good or service that helps with the situation.'
+  ],
+  teachingVisualRaw: _u82TvPurchaseChoice(),
+  correctAnswerExplanation: 'The right purchase choice fits the situation in the scenario.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82WantsNeedsContext() { return {
+  errorTag: _82WN, title: 'The question is still which fits',
+  teachingSteps: [
+    'The scenario tells you what is needed.',
+    'You are still picking which good or service fits the situation.',
+    'A scenario about food needs a food good. A scenario about a ride needs a ride service.',
+    'Pick the option that solves what the scenario asks for.'
+  ],
+  teachingVisualRaw: _u82TvWantsNeedsContext(),
+  correctAnswerExplanation: 'Pick the good or service that solves the situation.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82WorkerService() { return {
+  errorTag: _82WS, title: 'The work is the service',
+  teachingSteps: [
+    'A barber is a person who cuts hair.',
+    'The haircut is the work the barber does.',
+    'When income pays for the haircut, it pays for the work — the service.',
+    'The worker is a person; the service is the work the worker does.'
+  ],
+  teachingVisualRaw: _u82TvWorkerService(),
+  correctAnswerExplanation: 'The service is the work the worker does — not the worker themselves.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82ItemService() { return {
+  errorTag: _82IS, title: 'A thing is still a good',
+  teachingSteps: [
+    'Paying for something does not make it a service.',
+    'A book costs money, but a book is still a thing — a good.',
+    'An apple costs money, but an apple is still a thing — a good.',
+    'A thing is a good, no matter how it was obtained.'
+  ],
+  teachingVisualRaw: _u82TvItemService(),
+  correctAnswerExplanation: 'A thing is a good. Paying for it does not turn it into a service.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i82Unsupported() { return {
+  errorTag: _82NS, title: 'Stick to the choices given',
+  teachingSteps: [
+    'Read the scenario and the choices carefully.',
+    'Pick the option that fits the scenario.',
+    'Do not invent a choice that is not listed.',
+    'Only the good or service that matches the situation is correct.'
+  ],
+  teachingVisualRaw: _u82TvUnsupported(),
+  correctAnswerExplanation: 'Pick the option that fits the scenario from the choices given.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L8.2 question factory functions ──────────────────────────────────────────
+
+// _q82IdentifyGood — C1: imgChoice 4-card. 1 good + 3 services. Tap the good.
+// goodItem: {emoji, label}  serviceItems: [{emoji, label}] length 3.
+function _q82IdentifyGood(goodItem, serviceItems, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = serviceItems.slice();
+  gridItems.splice(aIdx, 0, goodItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _82GD};
+  });
+  return {
+    t: 'Tap the picture that shows a good.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows ' + goodItem.label + '. A good is a thing you can have or use.',
+    d: diff,
+    h: 'A good is a thing. A service is work someone does.',
+    sk: 'goods_and_services',
+    i: _i82GoodDefinition()
+  };
+}
+
+// _q82IdentifyService — C2: imgChoice 4-card. 1 service + 3 goods. Tap the service.
+function _q82IdentifyService(serviceItem, goodItems, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = goodItems.slice();
+  gridItems.splice(aIdx, 0, serviceItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _82SD};
+  });
+  return {
+    t: 'Tap the picture that shows a service.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows ' + serviceItem.label + '. A service is work someone does to help others.',
+    d: diff,
+    h: 'A service is work people do. A good is a thing.',
+    sk: 'goods_and_services',
+    i: _i82ServiceDefinition()
+  };
+}
+
+// _q82GoodVsService — C3: item card + "Is this a good or a service?" text MC.
+// item: {emoji, label}  isGood: boolean
+function _q82GoodVsService(item, isGood, diff, aIdx) {
+  var sceneHtml = _u8ScenarioCard(item.emoji, item.label);
+  var correctText = isGood ? 'a good' : 'a service';
+  var oppositeText = isGood ? 'a service' : 'a good';
+  var opts = [
+    {val: correctText},
+    {val: oppositeText, tag: _82GS},
+    {val: 'income', tag: _82IP},
+    {val: 'a worker', tag: _82WS}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Look at the picture. Is this a good or a service?',
+    s: sceneHtml,
+    o: opts, a: aIdx,
+    e: isGood ? ('A ' + item.label + ' is a thing you can have or use. That is a good.')
+              : ('A ' + item.label + ' is work that someone does to help others. That is a service.'),
+    d: diff,
+    h: 'Ask: is this a thing, or is this work someone does?',
+    sk: 'goods_and_services',
+    i: isGood ? _i82GoodDefinition() : _i82ServiceDefinition()
+  };
+}
+
+// _q82MatchScenario — C4: scenario sentence + binary classification text MC.
+// scenarioText: e.g., "A family pays someone to fix a sink."  isService: boolean
+function _q82MatchScenario(scenarioText, isService, diff, aIdx) {
+  var correctText = isService ? 'a service' : 'a good';
+  var oppositeText = isService ? 'a good' : 'a service';
+  var opts = [
+    {val: correctText},
+    {val: oppositeText, tag: _82GS},
+    {val: 'income', tag: _82IP},
+    {val: isService ? 'a worker' : 'a thing for sale'},
+  ];
+  // Add tag to the 4th option
+  opts[3].tag = isService ? _82WS : _82IS;
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: scenarioText + ' Is that a good or a service?',
+    o: opts, a: aIdx,
+    e: isService ? 'Work that someone does to help others is a service.'
+                 : 'A thing someone obtains is a good.',
+    d: diff,
+    h: 'Ask: is it a thing, or is it work someone does?',
+    sk: 'goods_and_services',
+    i: _i82GoodVsService()
+  };
+}
+
+// _q82IncomeGood — C5: "Maya earned income. She uses it to get a [good].
+// What kind of thing did she get?" Income → good text MC + chain visual.
+function _q82IncomeGood(name, goodEmoji, goodLabel, diff, aIdx) {
+  var visual = _u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard(goodEmoji, goodLabel));
+  var opts = [
+    {val: 'a good'},
+    {val: 'a service', tag: _82GS},
+    {val: 'income', tag: _82IP},
+    {val: 'a worker', tag: _82WS}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: name + ' earned income. ' + name + ' uses it to get a ' + goodLabel + '. What did ' + name + ' get?',
+    s: visual,
+    o: opts, a: aIdx,
+    e: 'A ' + goodLabel + ' is a thing — that is a good. Income obtained a good.',
+    d: diff,
+    h: 'Ask: is the thing in the picture a thing, or is it work?',
+    sk: 'goods_and_services',
+    i: _i82IncomePurchase()
+  };
+}
+
+// _q82IncomeService — C6: "[Name] uses income to pay for [service].
+// What did [name] get?" Income → service text MC + chain visual.
+function _q82IncomeService(name, serviceEmoji, serviceLabel, diff, aIdx) {
+  var visual = _u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard(serviceEmoji, serviceLabel));
+  var opts = [
+    {val: 'a service'},
+    {val: 'a good', tag: _82GS},
+    {val: 'income', tag: _82IP},
+    {val: 'a thing for sale', tag: _82IS}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: name + ' earned income. ' + name + ' uses it to pay for ' + serviceLabel + '. What did ' + name + ' get?',
+    s: visual,
+    o: opts, a: aIdx,
+    e: serviceLabel + ' is work someone does — that is a service. Income obtained a service.',
+    d: diff,
+    h: 'Ask: is the thing in the picture a thing, or is it work?',
+    sk: 'goods_and_services',
+    i: _i82IncomePurchase()
+  };
+}
+
+// _q82PurchaseChoice — C7: imgChoice 4-card. Scenario + 4 cards (mix of goods
+// and services), tap the one that fits the scenario.
+// correctItem: {emoji, label}  distractors: [{emoji, label}] length 3 (mixed goods/services).
+function _q82PurchaseChoice(scenarioText, correctItem, distractors, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = distractors.slice();
+  gridItems.splice(aIdx, 0, correctItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _82PC};
+  });
+  return {
+    t: scenarioText + ' Tap the picture that fits.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows ' + correctItem.label + ' — that fits the scenario.',
+    d: diff,
+    h: 'Match the choice to the scenario. Pick the good or service that helps with the situation.',
+    sk: 'goods_and_services',
+    i: _i82PurchaseChoice()
+  };
+}
+
+// _q82WantsNeedsContext — C8: scenario explicitly invokes a need + 4 text options
+// listing item names. Assessed skill is still picking the matching purchase.
+// scenarioText already contains the need ("A family needs food. ...").
+// correctOption: text label for the correct item  wrongs: [{val, tag}] length 3.
+function _q82WantsNeedsContext(scenarioText, correctOption, wrongs, diff, aIdx) {
+  var opts = [{val: correctOption}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: scenarioText + ' Which is a good choice?',
+    o: opts, a: aIdx,
+    e: '"' + correctOption + '" fits the situation in the scenario.',
+    d: diff,
+    h: 'Read the scenario. Pick the choice that solves what is needed.',
+    sk: 'goods_and_services',
+    i: _i82WantsNeedsContext()
+  };
+}
+
+// _q82ErrorRepair — C9: student's wrong claim + correct fix text MC.
+function _q82ErrorRepair(claim, correctFix, wrongs, diff, aIdx) {
+  var opts = [{val: correctFix}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'A student says: "' + claim + '" What is the correct fix?',
+    o: opts, a: aIdx,
+    e: 'The correct fix is: "' + correctFix + '"',
+    d: diff,
+    h: 'Think about whether the answer is a thing or work someone does.',
+    sk: 'goods_and_services',
+    i: _i82GoodVsService()
+  };
+}
+
+// _q82TrueSentence — C10: 4 candidate sentences about goods and services, one true.
+function _q82TrueSentence(correctText, wrongs, diff, aIdx) {
+  var opts = [{val: correctText}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Which sentence is true about goods and services?',
+    o: opts, a: aIdx,
+    e: 'True: "' + correctText + '"',
+    d: diff,
+    h: 'A good is a thing. A service is work. Income can obtain either one.',
+    sk: 'goods_and_services',
+    i: _i82GoodVsService()
+  };
+}
+
+// ── L8.2 key ideas (6) ───────────────────────────────────────────────────────
+var _l82KeyIdeas = [
+  'Goods are things people can have or use — like a book, an apple, a shirt, a toy, a backpack, or a pair of shoes.',
+  'Services are work that people do to help others — like a haircut, a doctor visit, a bus ride, or a teacher teaching.',
+  'People can use income to obtain goods.',
+  'People can use income to obtain services.',
+  'People make choices about what to obtain with their income — they pick the good or service that fits their situation.',
+  'To tell goods from services, ask: "Is it a thing, or is it work someone does?" A thing is a good. Work that helps others is a service.'
+];
+
+// ── L8.2 worked examples (5) ─────────────────────────────────────────────────
+var _l82Examples = [
+  {
+    id: 'g1-u8-l2-ex-1',
+    title: 'Example 1: What is a good?',
+    prompt: 'What is a good?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('📕', 'book')},
+    steps: [
+      'A good is a thing people can have or use.',
+      'A book is a thing — you can hold it, open it, and read it.',
+      'A book is a good.',
+      'Apples, shirts, toys, and shoes are also goods.'
+    ],
+    finalAnswer: 'A book is a good. Goods are things people have or use.'
+  },
+  {
+    id: 'g1-u8-l2-ex-2',
+    title: 'Example 2: What is a service?',
+    prompt: 'What is a service?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('💇', 'haircut')},
+    steps: [
+      'A service is work that someone does to help others.',
+      'A haircut is work — someone uses scissors to cut hair.',
+      'A haircut is a service.',
+      'Bus rides, doctor visits, and teacher teaching are also services.'
+    ],
+    finalAnswer: 'A haircut is a service. Services are work people do to help others.'
+  },
+  {
+    id: 'g1-u8-l2-ex-3',
+    title: 'Example 3: Goods vs services',
+    prompt: 'Is a hat a good or a service? What about a dentist cleaning teeth?',
+    visual: {type: 'rawHtml', html: _u8GoodServicePair('🧢', 'hat', '🦷', 'dentist cleaning teeth')},
+    steps: [
+      'A hat is a thing you wear — that is a good.',
+      'A dentist cleaning teeth is work someone does — that is a service.',
+      'Goods are things. Services are work.',
+      'Ask: is it a thing, or is it work?'
+    ],
+    finalAnswer: 'A hat is a good. A dentist cleaning teeth is a service.'
+  },
+  {
+    id: 'g1-u8-l2-ex-4',
+    title: 'Example 4: Income obtains a good',
+    prompt: 'Maya earned income. She uses it to get a backpack for school. What did she get?',
+    visual: {type: 'rawHtml', html: _u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard('🎒', 'backpack'))},
+    steps: [
+      'Maya earned income by working.',
+      'She uses her income to get a backpack.',
+      'A backpack is a thing she can hold and use.',
+      'Income obtained a good.'
+    ],
+    finalAnswer: 'Maya got a good (a backpack).'
+  },
+  {
+    id: 'g1-u8-l2-ex-5',
+    title: 'Example 5: Income obtains a service',
+    prompt: 'Dad earned income. He uses it to pay a mechanic to fix his car. What did he get?',
+    visual: {type: 'rawHtml', html: _u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard('🔧', 'mechanic fixing a car'))},
+    steps: [
+      'Dad earned income by working.',
+      'He uses his income to pay a mechanic.',
+      'The mechanic does work — fixing the car.',
+      'Income obtained a service.'
+    ],
+    finalAnswer: 'Dad got a service (the mechanic fixing the car).'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.2 question banks (10 categories, 140 total)
+//  Target: 45E / 55M / 40H · imgChoice count: 46 (C1=16, C2=16, C7=14)
+//  C1 identify-goods + C2 identify-services + C3 good-vs-service +
+//  C4 match-scenario + C5 income→good + C6 income→service +
+//  C7 purchase-choice + C8 wants-needs-supporting-context +
+//  C9 error-repair + C10 true-sentence/mixed-review
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Identify Goods (16 = 5E / 6M / 5H) ───────────────────────────────────
+// 1 good + 3 services. Tap the good.
+var _l82C1 = [
+  // Easy (5)
+  _q82IdentifyGood({emoji:'📕', label:'book'},
+    [{emoji:'💇', label:'haircut'},
+     {emoji:'👨‍⚕️', label:'doctor visit'},
+     {emoji:'🚌', label:'bus ride'}], 'e', 0),
+  _q82IdentifyGood({emoji:'🍎', label:'apple'},
+    [{emoji:'🔧', label:'mechanic fixing a car'},
+     {emoji:'👩‍🏫', label:'teacher teaching'},
+     {emoji:'🦷', label:'dentist cleaning teeth'}], 'e', 1),
+  _q82IdentifyGood({emoji:'👕', label:'shirt'},
+    [{emoji:'🚿', label:'plumber fixing a sink'},
+     {emoji:'💇', label:'haircut'},
+     {emoji:'🚌', label:'bus ride'}], 'e', 2),
+  _q82IdentifyGood({emoji:'🎒', label:'backpack'},
+    [{emoji:'📚', label:'librarian helping kids find books'},
+     {emoji:'👨‍⚕️', label:'doctor visit'},
+     {emoji:'📫', label:'mail carrier delivering'}], 'e', 3),
+  _q82IdentifyGood({emoji:'✏️', label:'pencil'},
+    [{emoji:'🐾', label:'vet caring for animals'},
+     {emoji:'💇', label:'haircut'},
+     {emoji:'🚌', label:'bus ride'}], 'e', 0),
+  // Medium (6)
+  _q82IdentifyGood({emoji:'👟', label:'shoes'},
+    [{emoji:'👩‍🏫', label:'teacher teaching'},
+     {emoji:'🦷', label:'dentist cleaning teeth'},
+     {emoji:'🔧', label:'mechanic fixing a car'}], 'm', 1),
+  _q82IdentifyGood({emoji:'🥪', label:'sandwich'},
+    [{emoji:'🚿', label:'plumber fixing a sink'},
+     {emoji:'📫', label:'mail carrier delivering'},
+     {emoji:'📚', label:'librarian helping kids find books'}], 'm', 2),
+  _q82IdentifyGood({emoji:'🥛', label:'milk'},
+    [{emoji:'🐾', label:'vet caring for animals'},
+     {emoji:'💇', label:'haircut'},
+     {emoji:'👨‍⚕️', label:'doctor visit'}], 'm', 3),
+  _q82IdentifyGood({emoji:'🧢', label:'hat'},
+    [{emoji:'🚌', label:'bus ride'},
+     {emoji:'👩‍🏫', label:'teacher teaching'},
+     {emoji:'🔧', label:'mechanic fixing a car'}], 'm', 0),
+  _q82IdentifyGood({emoji:'🍞', label:'bread'},
+    [{emoji:'🦷', label:'dentist cleaning teeth'},
+     {emoji:'📚', label:'librarian helping kids find books'},
+     {emoji:'🚿', label:'plumber fixing a sink'}], 'm', 1),
+  _q82IdentifyGood({emoji:'🚲', label:'bike'},
+    [{emoji:'👨‍⚕️', label:'doctor visit'},
+     {emoji:'🐾', label:'vet caring for animals'},
+     {emoji:'📫', label:'mail carrier delivering'}], 'm', 2),
+  // Hard (5)
+  _q82IdentifyGood({emoji:'🪥', label:'toothbrush'},
+    [{emoji:'🦷', label:'dentist cleaning teeth'},
+     {emoji:'🔧', label:'mechanic fixing a car'},
+     {emoji:'💇', label:'haircut'}], 'h', 3),
+  _q82IdentifyGood({emoji:'🍌', label:'banana'},
+    [{emoji:'👩‍🏫', label:'teacher teaching'},
+     {emoji:'🚿', label:'plumber fixing a sink'},
+     {emoji:'🐾', label:'vet caring for animals'}], 'h', 0),
+  _q82IdentifyGood({emoji:'📕', label:'book'},
+    [{emoji:'📚', label:'librarian helping kids find books'},
+     {emoji:'👩‍🏫', label:'teacher teaching'},
+     {emoji:'🚌', label:'bus ride'}], 'h', 1),
+  _q82IdentifyGood({emoji:'👕', label:'shirt'},
+    [{emoji:'📫', label:'mail carrier delivering'},
+     {emoji:'💇', label:'haircut'},
+     {emoji:'👨‍⚕️', label:'doctor visit'}], 'h', 2),
+  _q82IdentifyGood({emoji:'🍎', label:'apple'},
+    [{emoji:'🐾', label:'vet caring for animals'},
+     {emoji:'🦷', label:'dentist cleaning teeth'},
+     {emoji:'🔧', label:'mechanic fixing a car'}], 'h', 3)
+];
+
+// ── C2: Identify Services (16 = 5E / 6M / 5H) ────────────────────────────────
+// 1 service + 3 goods. Tap the service.
+var _l82C2 = [
+  // Easy (5)
+  _q82IdentifyService({emoji:'💇', label:'haircut'},
+    [{emoji:'📕', label:'book'}, {emoji:'🍎', label:'apple'}, {emoji:'👕', label:'shirt'}], 'e', 0),
+  _q82IdentifyService({emoji:'👨‍⚕️', label:'doctor visit'},
+    [{emoji:'👟', label:'shoes'}, {emoji:'🧢', label:'hat'}, {emoji:'🥛', label:'milk'}], 'e', 1),
+  _q82IdentifyService({emoji:'🚌', label:'bus ride'},
+    [{emoji:'🎒', label:'backpack'}, {emoji:'✏️', label:'pencil'}, {emoji:'🥪', label:'sandwich'}], 'e', 2),
+  _q82IdentifyService({emoji:'👩‍🏫', label:'teacher teaching'},
+    [{emoji:'🍞', label:'bread'}, {emoji:'🚲', label:'bike'}, {emoji:'🍌', label:'banana'}], 'e', 3),
+  _q82IdentifyService({emoji:'🔧', label:'mechanic fixing a car'},
+    [{emoji:'📕', label:'book'}, {emoji:'🍎', label:'apple'}, {emoji:'🪥', label:'toothbrush'}], 'e', 0),
+  // Medium (6)
+  _q82IdentifyService({emoji:'🚿', label:'plumber fixing a sink'},
+    [{emoji:'👕', label:'shirt'}, {emoji:'🧢', label:'hat'}, {emoji:'👟', label:'shoes'}], 'm', 1),
+  _q82IdentifyService({emoji:'📚', label:'librarian helping kids find books'},
+    [{emoji:'✏️', label:'pencil'}, {emoji:'🥪', label:'sandwich'}, {emoji:'🥛', label:'milk'}], 'm', 2),
+  _q82IdentifyService({emoji:'🐾', label:'vet caring for animals'},
+    [{emoji:'🍞', label:'bread'}, {emoji:'🚲', label:'bike'}, {emoji:'🍌', label:'banana'}], 'm', 3),
+  _q82IdentifyService({emoji:'🦷', label:'dentist cleaning teeth'},
+    [{emoji:'📕', label:'book'}, {emoji:'👕', label:'shirt'}, {emoji:'🧢', label:'hat'}], 'm', 0),
+  _q82IdentifyService({emoji:'📫', label:'mail carrier delivering'},
+    [{emoji:'🍎', label:'apple'}, {emoji:'👟', label:'shoes'}, {emoji:'🎒', label:'backpack'}], 'm', 1),
+  _q82IdentifyService({emoji:'💇', label:'haircut'},
+    [{emoji:'🥛', label:'milk'}, {emoji:'🥪', label:'sandwich'}, {emoji:'🍞', label:'bread'}], 'm', 2),
+  // Hard (5)
+  _q82IdentifyService({emoji:'🦷', label:'dentist cleaning teeth'},
+    [{emoji:'🪥', label:'toothbrush'}, {emoji:'🍎', label:'apple'}, {emoji:'🥛', label:'milk'}], 'h', 3),
+  _q82IdentifyService({emoji:'👨‍⚕️', label:'doctor visit'},
+    [{emoji:'🎒', label:'backpack'}, {emoji:'🚲', label:'bike'}, {emoji:'🍌', label:'banana'}], 'h', 0),
+  _q82IdentifyService({emoji:'👩‍🏫', label:'teacher teaching'},
+    [{emoji:'📕', label:'book'}, {emoji:'✏️', label:'pencil'}, {emoji:'🎒', label:'backpack'}], 'h', 1),
+  _q82IdentifyService({emoji:'🔧', label:'mechanic fixing a car'},
+    [{emoji:'🚲', label:'bike'}, {emoji:'🧢', label:'hat'}, {emoji:'👟', label:'shoes'}], 'h', 2),
+  _q82IdentifyService({emoji:'📚', label:'librarian helping kids find books'},
+    [{emoji:'📕', label:'book'}, {emoji:'✏️', label:'pencil'}, {emoji:'🍌', label:'banana'}], 'h', 3)
+];
+
+// ── C3: Goods vs Services (18 = 6E / 7M / 5H) ────────────────────────────────
+// Item card + binary classification.
+var _l82C3 = [
+  // Easy (6) — clear cases
+  _q82GoodVsService({emoji:'📕', label:'book'},                     true,  'e', 0),
+  _q82GoodVsService({emoji:'💇', label:'haircut'},                  false, 'e', 1),
+  _q82GoodVsService({emoji:'🍎', label:'apple'},                    true,  'e', 2),
+  _q82GoodVsService({emoji:'👨‍⚕️', label:'doctor visit'},            false, 'e', 3),
+  _q82GoodVsService({emoji:'👕', label:'shirt'},                    true,  'e', 0),
+  _q82GoodVsService({emoji:'🚌', label:'bus ride'},                 false, 'e', 1),
+  // Medium (7)
+  _q82GoodVsService({emoji:'🎒', label:'backpack'},                 true,  'm', 2),
+  _q82GoodVsService({emoji:'👩‍🏫', label:'teacher teaching'},         false, 'm', 3),
+  _q82GoodVsService({emoji:'✏️', label:'pencil'},                   true,  'm', 0),
+  _q82GoodVsService({emoji:'🔧', label:'mechanic fixing a car'},    false, 'm', 1),
+  _q82GoodVsService({emoji:'👟', label:'shoes'},                    true,  'm', 2),
+  _q82GoodVsService({emoji:'🚿', label:'plumber fixing a sink'},    false, 'm', 3),
+  _q82GoodVsService({emoji:'🥪', label:'sandwich'},                 true,  'm', 0),
+  // Hard (5) — tricky pairings
+  _q82GoodVsService({emoji:'📚', label:'librarian helping kids find books'}, false, 'h', 1),
+  _q82GoodVsService({emoji:'🪥', label:'toothbrush'},               true,  'h', 2),
+  _q82GoodVsService({emoji:'🦷', label:'dentist cleaning teeth'},   false, 'h', 3),
+  _q82GoodVsService({emoji:'🚲', label:'bike'},                     true,  'h', 0),
+  _q82GoodVsService({emoji:'🐾', label:'vet caring for animals'},   false, 'h', 1)
+];
+
+// ── C4: Match Scenario (14 = 5E / 5M / 4H) ───────────────────────────────────
+var _l82C4 = [
+  // Easy (5)
+  _q82MatchScenario('A family pays someone to fix a sink.',         true,  'e', 0),
+  _q82MatchScenario('Sam buys a backpack at the store.',            false, 'e', 1),
+  _q82MatchScenario('Mei pays a barber to cut her hair.',           true,  'e', 2),
+  _q82MatchScenario('Carlos buys an apple at the store.',           false, 'e', 3),
+  _q82MatchScenario('Lin pays for a bus ride downtown.',            true,  'e', 0),
+  // Medium (5)
+  _q82MatchScenario('Pat buys a new pair of shoes.',                false, 'm', 1),
+  _q82MatchScenario('A family pays a doctor for a visit.',          true,  'm', 2),
+  _q82MatchScenario('Mei buys a hat at the store.',                 false, 'm', 3),
+  _q82MatchScenario('Dad pays a mechanic to fix his car.',          true,  'm', 0),
+  _q82MatchScenario('Sara buys a sandwich for lunch.',              false, 'm', 1),
+  // Hard (4)
+  _q82MatchScenario('Ben pays a dentist to clean his teeth.',       true,  'h', 2),
+  _q82MatchScenario('Maya pays a plumber to fix a leaky pipe.',     true,  'h', 3),
+  _q82MatchScenario('Jay buys a toothbrush at the store.',          false, 'h', 0),
+  _q82MatchScenario('A family pays the vet to care for their dog.', true,  'h', 1)
+];
+
+// ── C5: Income → Goods (12 = 4E / 5M / 3H) ───────────────────────────────────
+var _l82C5 = [
+  // Easy (4)
+  _q82IncomeGood('Maya',   '📕', 'book',      'e', 0),
+  _q82IncomeGood('Carlos', '🍎', 'apple',     'e', 1),
+  _q82IncomeGood('Sara',   '👕', 'shirt',     'e', 2),
+  _q82IncomeGood('Lin',    '🎒', 'backpack',  'e', 3),
+  // Medium (5)
+  _q82IncomeGood('Pat',    '✏️', 'pencil',    'm', 0),
+  _q82IncomeGood('Ben',    '👟', 'pair of shoes', 'm', 1),
+  _q82IncomeGood('Mei',    '🥪', 'sandwich',  'm', 2),
+  _q82IncomeGood('Dev',    '🥛', 'carton of milk', 'm', 3),
+  _q82IncomeGood('Rina',   '🧢', 'hat',       'm', 0),
+  // Hard (3)
+  _q82IncomeGood('Sam',    '🍞', 'loaf of bread', 'h', 1),
+  _q82IncomeGood('Mia',    '🚲', 'bike',      'h', 2),
+  _q82IncomeGood('Lily',   '🪥', 'toothbrush','h', 3)
+];
+
+// ── C6: Income → Services (12 = 4E / 5M / 3H) ────────────────────────────────
+var _l82C6 = [
+  // Easy (4)
+  _q82IncomeService('Maya',   '💇',  'a haircut',                        'e', 0),
+  _q82IncomeService('Carlos', '👨‍⚕️', 'a doctor visit',                   'e', 1),
+  _q82IncomeService('Sara',   '🚌',  'a bus ride',                       'e', 2),
+  _q82IncomeService('Lin',    '🔧',  'a mechanic to fix the car',        'e', 3),
+  // Medium (5)
+  _q82IncomeService('Pat',    '🚿',  'a plumber to fix the sink',        'm', 0),
+  _q82IncomeService('Ben',    '🦷',  'a dentist to clean teeth',         'm', 1),
+  _q82IncomeService('Mei',    '🐾',  'a vet to care for her pet',        'm', 2),
+  _q82IncomeService('Dev',    '💇',  'a haircut',                        'm', 3),
+  _q82IncomeService('Rina',   '🔧',  'a mechanic to fix the car',        'm', 0),
+  // Hard (3)
+  _q82IncomeService('Sam',    '👨‍⚕️', 'a doctor visit',                   'h', 1),
+  _q82IncomeService('Mia',    '🚌',  'a bus ride to school',             'h', 2),
+  _q82IncomeService('Lily',   '🚿',  'a plumber to fix the sink',        'h', 3)
+];
+
+// ── C7: Purchase Choice (14 = 4E / 6M / 4H) ──────────────────────────────────
+// Scenario + 4 tappable cards (mix of goods and services).
+var _l82C7 = [
+  // Easy (4)
+  _q82PurchaseChoice("Mei's bike is broken.",
+    {emoji:'🔧', label:'mechanic fixing a bike'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'💇', label:'haircut'},
+     {emoji:'👕', label:'shirt'}], 'e', 0),
+  _q82PurchaseChoice('Pat is hungry.',
+    {emoji:'🍎', label:'apple'},
+    [{emoji:'🚌', label:'bus ride'},
+     {emoji:'🔧', label:'mechanic fixing a car'},
+     {emoji:'👕', label:'shirt'}], 'e', 1),
+  _q82PurchaseChoice("Lin's hair is long.",
+    {emoji:'💇', label:'haircut'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'🍎', label:'apple'},
+     {emoji:'🎒', label:'backpack'}], 'e', 2),
+  _q82PurchaseChoice("Carlos's tooth hurts.",
+    {emoji:'🦷', label:'dentist cleaning teeth'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'👕', label:'shirt'},
+     {emoji:'🚲', label:'bike'}], 'e', 3),
+  // Medium (6)
+  _q82PurchaseChoice('Sara is going to school across town.',
+    {emoji:'🚌', label:'bus ride'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'🍎', label:'apple'},
+     {emoji:'👟', label:'shoes'}], 'm', 0),
+  _q82PurchaseChoice("Mei's sink has a leak.",
+    {emoji:'🚿', label:'plumber fixing a sink'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'🍎', label:'apple'},
+     {emoji:'💇', label:'haircut'}], 'm', 1),
+  _q82PurchaseChoice('Ben is sick.',
+    {emoji:'👨‍⚕️', label:'doctor visit'},
+    [{emoji:'🚲', label:'bike'},
+     {emoji:'🍎', label:'apple'},
+     {emoji:'👕', label:'shirt'}], 'm', 2),
+  _q82PurchaseChoice("Mia's puppy is sick.",
+    {emoji:'🐾', label:'vet caring for animals'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'👕', label:'shirt'},
+     {emoji:'🚌', label:'bus ride'}], 'm', 3),
+  _q82PurchaseChoice("Dev's hair is messy.",
+    {emoji:'💇', label:'haircut'},
+    [{emoji:'🚲', label:'bike'},
+     {emoji:'🚿', label:'plumber fixing a sink'},
+     {emoji:'📕', label:'book'}], 'm', 0),
+  _q82PurchaseChoice('Rina is hungry for lunch.',
+    {emoji:'🥪', label:'sandwich'},
+    [{emoji:'💇', label:'haircut'},
+     {emoji:'🔧', label:'mechanic fixing a car'},
+     {emoji:'🦷', label:'dentist cleaning teeth'}], 'm', 1),
+  // Hard (4)
+  _q82PurchaseChoice("Sam's car will not start.",
+    {emoji:'🔧', label:'mechanic fixing a car'},
+    [{emoji:'🚌', label:'bus ride'},
+     {emoji:'🚲', label:'bike'},
+     {emoji:'👕', label:'shirt'}], 'h', 2),
+  _q82PurchaseChoice('Mia is going to read a story.',
+    {emoji:'📕', label:'book'},
+    [{emoji:'💇', label:'haircut'},
+     {emoji:'🍎', label:'apple'},
+     {emoji:'👕', label:'shirt'}], 'h', 3),
+  _q82PurchaseChoice('Lily has a toothache.',
+    {emoji:'🦷', label:'dentist cleaning teeth'},
+    [{emoji:'📕', label:'book'},
+     {emoji:'👨‍⚕️', label:'doctor visit'},
+     {emoji:'🚲', label:'bike'}], 'h', 0),
+  _q82PurchaseChoice('Dev is making breakfast.',
+    {emoji:'🍞', label:'loaf of bread'},
+    [{emoji:'💇', label:'haircut'},
+     {emoji:'🔧', label:'mechanic fixing a car'},
+     {emoji:'🚌', label:'bus ride'}], 'h', 1)
+];
+
+// ── C8: Wants/Needs Supporting Context (12 = 3E / 5M / 4H) ───────────────────
+// "Needs" appears in scenario; assessed skill is still picking the matching purchase.
+var _l82C8 = [
+  // Easy (3)
+  _q82WantsNeedsContext('A family needs food.',
+    'an apple',
+    [{val:'a toy',     tag:_82WN},
+     {val:'a haircut', tag:_82PC},
+     {val:'a bike',    tag:_82WN}], 'e', 0),
+  _q82WantsNeedsContext('Sam needs to get to school.',
+    'a bus ride',
+    [{val:'a book',    tag:_82PC},
+     {val:'a hat',     tag:_82WN},
+     {val:'a haircut', tag:_82PC}], 'e', 1),
+  _q82WantsNeedsContext('Mei needs clothes to wear.',
+    'a shirt',
+    [{val:'a bus ride', tag:_82PC},
+     {val:'a haircut',  tag:_82PC},
+     {val:'a toy',      tag:_82WN}], 'e', 2),
+  // Medium (5)
+  _q82WantsNeedsContext("Pat needs to fix his bike.",
+    'a mechanic',
+    [{val:'a book',     tag:_82PC},
+     {val:'an apple',   tag:_82WN},
+     {val:'a sandwich', tag:_82WN}], 'm', 3),
+  _q82WantsNeedsContext("A family needs help with a leaky sink.",
+    'a plumber',
+    [{val:'a hat',     tag:_82WN},
+     {val:'a haircut', tag:_82PC},
+     {val:'a book',    tag:_82PC}], 'm', 0),
+  _q82WantsNeedsContext('Carlos needs to brush his teeth.',
+    'a toothbrush',
+    [{val:'a bus ride', tag:_82PC},
+     {val:'a bike',     tag:_82WN},
+     {val:'a sandwich', tag:_82WN}], 'm', 1),
+  _q82WantsNeedsContext('Lin needs new shoes for school.',
+    'a pair of shoes',
+    [{val:'a haircut', tag:_82PC},
+     {val:'an apple',  tag:_82WN},
+     {val:'a book',    tag:_82WN}], 'm', 2),
+  _q82WantsNeedsContext('Sara needs to get her hair cut.',
+    'a haircut',
+    [{val:'a hat',     tag:_82WN},
+     {val:'a book',    tag:_82WN},
+     {val:'a bus ride', tag:_82PC}], 'm', 3),
+  // Hard (4)
+  _q82WantsNeedsContext('Ben needs help because he is sick.',
+    'a doctor visit',
+    [{val:'a book',     tag:_82WN},
+     {val:'a bike',     tag:_82WN},
+     {val:'a sandwich', tag:_82WN}], 'h', 0),
+  _q82WantsNeedsContext("Mia's puppy needs care.",
+    'a vet',
+    [{val:'a toy',     tag:_82WN},
+     {val:'a haircut', tag:_82PC},
+     {val:'a hat',     tag:_82WN}], 'h', 1),
+  _q82WantsNeedsContext('Dev needs something to read.',
+    'a book',
+    [{val:'a bus ride', tag:_82PC},
+     {val:'a haircut',  tag:_82PC},
+     {val:'an apple',   tag:_82WN}], 'h', 2),
+  _q82WantsNeedsContext('A family needs food for breakfast.',
+    'a loaf of bread',
+    [{val:'a toy',     tag:_82WN},
+     {val:'a haircut', tag:_82PC},
+     {val:'a bike',    tag:_82WN}], 'h', 3)
+];
+
+// ── C9: Error Repair (12 = 4E / 5M / 3H) ─────────────────────────────────────
+var _l82C9 = [
+  // Easy (4)
+  _q82ErrorRepair('A haircut is a good because people pay for it.',
+    'A haircut is a service because it is work someone does.',
+    [{val:'A haircut is a worker.', tag:_82WS},
+     {val:'A haircut is income.', tag:_82IP},
+     {val:'A haircut is just a thing.', tag:_82IS}], 'e', 0),
+  _q82ErrorRepair('A book is a service because reading takes work.',
+    'A book is a good because it is a thing you can hold and use.',
+    [{val:'A book is income.', tag:_82IP},
+     {val:'A book is a worker.', tag:_82WS},
+     {val:'A book is just an idea.', tag:_82NS}], 'e', 1),
+  _q82ErrorRepair('An apple is a service because someone grew it.',
+    'An apple is a good because it is a thing you can eat.',
+    [{val:'An apple is the farmer.', tag:_82WS},
+     {val:'An apple is income.', tag:_82IP},
+     {val:'An apple is not a real choice.', tag:_82NS}], 'e', 2),
+  _q82ErrorRepair('A doctor visit is a good because the doctor gives you a thing.',
+    'A doctor visit is a service because the doctor does work to help you.',
+    [{val:'A doctor visit is a worker.', tag:_82WS},
+     {val:'A doctor visit is income.', tag:_82IP},
+     {val:'A doctor visit is anything you pay for.', tag:_82IS}], 'e', 3),
+  // Medium (5)
+  _q82ErrorRepair('A bus ride is a good because the bus is a thing.',
+    'A bus ride is a service because the driver does work to take you somewhere.',
+    [{val:'A bus ride is a worker.', tag:_82WS},
+     {val:'A bus ride is income.', tag:_82IP},
+     {val:'A bus ride is a thing.', tag:_82IS}], 'm', 0),
+  _q82ErrorRepair('A backpack is a service because you carry things with it.',
+    'A backpack is a good because it is a thing you can have or use.',
+    [{val:'A backpack is a worker.', tag:_82WS},
+     {val:'A backpack is income.', tag:_82IP},
+     {val:'A backpack is a kind of work.', tag:_82IS}], 'm', 1),
+  _q82ErrorRepair('A teacher teaching is a good because students get knowledge.',
+    'A teacher teaching is a service because the teacher does work to help students learn.',
+    [{val:'A teacher is just a worker, not a service.', tag:_82WS},
+     {val:'A teacher is income.', tag:_82IP},
+     {val:'A teacher teaching is anything paid for.', tag:_82IS}], 'm', 2),
+  _q82ErrorRepair('A pencil is a service because writing is work.',
+    'A pencil is a good because it is a thing you can use.',
+    [{val:'A pencil is a worker.', tag:_82WS},
+     {val:'A pencil is income.', tag:_82IP},
+     {val:'A pencil is whatever you pay for.', tag:_82IS}], 'm', 3),
+  _q82ErrorRepair('A mechanic fixing a car is a good because the car is a thing.',
+    'A mechanic fixing a car is a service because the mechanic does work.',
+    [{val:'A mechanic is just a worker.', tag:_82WS},
+     {val:'A mechanic is income.', tag:_82IP},
+     {val:'The fixing is a thing.', tag:_82IS}], 'm', 0),
+  // Hard (3)
+  _q82ErrorRepair('Income is a good because it is something you can hold.',
+    'Income is money earned by working. It is not a good or a service — it is what people use to obtain them.',
+    [{val:'Income is a service because money is work.', tag:_82IP},
+     {val:'Income is a worker.', tag:_82WS},
+     {val:'Income is anything that is paid.', tag:_82IS}], 'h', 1),
+  _q82ErrorRepair('A toothbrush is a service because brushing is work.',
+    'A toothbrush is a good because it is a thing you can hold and use.',
+    [{val:'A toothbrush is a worker.', tag:_82WS},
+     {val:'A toothbrush is income.', tag:_82IP},
+     {val:'A toothbrush is the dentist.', tag:_82WS}], 'h', 2),
+  _q82ErrorRepair('A plumber fixing a sink is a good because the sink is a thing.',
+    'A plumber fixing a sink is a service because the plumber does work to fix something.',
+    [{val:'A plumber is just a worker.', tag:_82WS},
+     {val:'A plumber is income.', tag:_82IP},
+     {val:'The sink is the service.', tag:_82IS}], 'h', 3)
+];
+
+// ── C10: True Sentence / Mixed Review (14 = 5E / 5M / 4H) ────────────────────
+var _l82C10 = [
+  // Easy (5)
+  _q82TrueSentence('Goods are things people can have or use.',
+    [{val:'Goods are work someone does.', tag:_82GS},
+     {val:'Goods are workers.', tag:_82WS},
+     {val:'Goods are income.', tag:_82IP}], 'e', 0),
+  _q82TrueSentence('Services are work people do to help others.',
+    [{val:'Services are things.', tag:_82GS},
+     {val:'Services are income.', tag:_82IP},
+     {val:'Services are anything not free.', tag:_82IS}], 'e', 1),
+  _q82TrueSentence('A book is a good.',
+    [{val:'A book is a service.', tag:_82GS},
+     {val:'A book is income.', tag:_82IP},
+     {val:'A book is a worker.', tag:_82WS}], 'e', 2),
+  _q82TrueSentence('A haircut is a service.',
+    [{val:'A haircut is a good.', tag:_82GS},
+     {val:'A haircut is a worker.', tag:_82WS},
+     {val:'A haircut is anything paid for.', tag:_82IS}], 'e', 3),
+  _q82TrueSentence('Income can be used to obtain goods.',
+    [{val:'Income is a kind of good.', tag:_82IP},
+     {val:'Income is the worker.', tag:_82WS},
+     {val:'Income only buys services.', tag:_82GS}], 'e', 0),
+  // Medium (5)
+  _q82TrueSentence('Income can be used to obtain services.',
+    [{val:'Income is a kind of service.', tag:_82IP},
+     {val:'Income only buys goods.', tag:_82GS},
+     {val:'Income is the work.', tag:_82WS}], 'm', 1),
+  _q82TrueSentence('A thing is a good. Work is a service.',
+    [{val:'Things and work are both goods.', tag:_82GS},
+     {val:'Both are services.', tag:_82GS},
+     {val:'Both are income.', tag:_82IP}], 'm', 2),
+  _q82TrueSentence('People make choices about what to obtain with their income.',
+    [{val:'People always obtain the same thing.', tag:_82NS},
+     {val:'People only obtain goods.', tag:_82GS},
+     {val:'People only obtain services.', tag:_82GS}], 'm', 3),
+  _q82TrueSentence('Paying for something does not make it a service.',
+    [{val:'Paying for something makes it a service.', tag:_82IS},
+     {val:'Paying makes it a worker.', tag:_82WS},
+     {val:'Paying makes it income.', tag:_82IP}], 'm', 0),
+  _q82TrueSentence('A bus ride is a service because the driver does work.',
+    [{val:'A bus ride is a good because the bus is a thing.', tag:_82IS},
+     {val:'A bus ride is income.', tag:_82IP},
+     {val:'A bus ride is a worker.', tag:_82WS}], 'm', 1),
+  // Hard (4)
+  _q82TrueSentence('A backpack is a good even though people pay for it.',
+    [{val:'A backpack is a service because people pay for it.', tag:_82IS},
+     {val:'A backpack is income.', tag:_82IP},
+     {val:'A backpack is a worker.', tag:_82WS}], 'h', 2),
+  _q82TrueSentence('A teacher teaching is a service. The teacher is a worker.',
+    [{val:'A teacher teaching is a good.', tag:_82GS},
+     {val:'A teacher teaching is income.', tag:_82IP},
+     {val:'A teacher teaching is a thing.', tag:_82IS}], 'h', 3),
+  _q82TrueSentence('Both adults and kids can use income to obtain goods or services.',
+    [{val:'Only adults can use income.', tag:_82NS},
+     {val:'Only kids can use income.', tag:_82NS},
+     {val:'Income only obtains goods, never services.', tag:_82GS}], 'h', 0),
+  _q82TrueSentence('Goods are things; services are work. Income obtains both.',
+    [{val:'Goods and services are the same.', tag:_82GS},
+     {val:'Income is the same as goods.', tag:_82IP},
+     {val:'Services are only at restaurants.', tag:_82NS}], 'h', 1)
+];
+
+// ── L8.2 combined bank ───────────────────────────────────────────────────────
+var _l82Bank = [].concat(_l82C1, _l82C2, _l82C3, _l82C4, _l82C5, _l82C6, _l82C7, _l82C8, _l82C9, _l82C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U8_SPEC = {
   unitId: 'g1u8',
@@ -1309,20 +2337,29 @@ export const G1_U8_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 8.2 — Goods and Services   (SCAFFOLD)
-    //  TEKS 1.9B | Focus: income helps people obtain goods and services;
-    //  people make purchase choices.
+    //  Lesson 8.2 — Goods and Services
+    //  TEKS 1.9B | 140 questions (45E / 55M / 40H)
+    //  10 categories: C1 identify-goods (imgChoice), C2 identify-services
+    //  (imgChoice), C3 good-vs-service, C4 match-scenario, C5 income→good,
+    //  C6 income→service, C7 purchase-choice (imgChoice), C8 wants-needs-
+    //  supporting-context, C9 error-repair, C10 true-sentence/mixed-review.
+    //  46 imgChoice questions (C1=16 + C2=16 + C7=14). Goods and services
+    //  cards use the same visual format (no styling hints).
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u8-l2',
       title: 'Goods and Services',
       teks: ['1.9B'],
       skill: 'goods_and_services',
-      allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      allowedQuestionTypes: ['multipleChoice', 'imgChoice'],
+      keyIdeas: _l82KeyIdeas,
+      workedExamples: _l82Examples,
+      quizBank: _l82Bank,
+      diagnostics: {
+        commonDistractors: [_82GS, _82GD, _82SD, _82IP, _82PC, _82WN, _82WS, _82IS, _82NS],
+        errorTags:         [_82GS, _82GD, _82SD, _82IP, _82PC, _82WN, _82WS, _82IS, _82NS],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
