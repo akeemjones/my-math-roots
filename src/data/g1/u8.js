@@ -12,7 +12,7 @@
  *  Lessons:
  *    L8.1  Earning Income           ← 140 questions (45E / 55M / 40H)
  *    L8.2  Goods and Services       ← 140 questions (45E / 55M / 40H)
- *    L8.3  Spending and Saving      ← SCAFFOLD (0 questions)
+ *    L8.3  Spending and Saving      ← 150 questions (45E / 60M / 45H)
  *    L8.4  Charitable Giving        ← SCAFFOLD (0 questions)
  *
  *  Hard scope guardrails (apply to every question added to this unit):
@@ -2295,6 +2295,1102 @@ var _l82C10 = [
 var _l82Bank = [].concat(_l82C1, _l82C2, _l82C3, _l82C4, _l82C5, _l82C6, _l82C7, _l82C8, _l82C9, _l82C10);
 
 
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.3 — Spending and Saving
+//  TEKS 1.9C | 150 questions (45E / 60M / 45H)
+//
+//  Distinguishes spending (using income now to obtain a good or service)
+//  from saving (keeping income for later). Builds on L8.1 (income) and
+//  L8.2 (goods/services). 10 categories. 68 imgChoice questions
+//  (C3+C4 = 4-card 36, C6+C10 = 2-card 32).
+//
+//  Delayed-spending rule (locked): if income is kept for a future purchase,
+//  it counts as saving — spending requires the income to be used NOW.
+//
+//  Hard guardrails (verified by scope scans before lock):
+//    NO $ symbol, NO ¢ symbol, NO dollar/cents amounts.
+//    NO coin names, NO price/cost vocabulary.
+//    NO charitable giving (L8.4), NO donations, NO charity.
+//    NO "give/giving/gave" in donation sense.
+//    NO wants-vs-needs classification (K.9D territory).
+//    NO Grade 2 financial-literacy content.
+//    "Spend"/"save" ARE the lesson topic — allowed everywhere.
+//    multipleChoice + imgChoice only.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── L8.3 error tags ──────────────────────────────────────────────────────────
+var _83SS = 'err_spend_vs_save_confusion';
+var _83SD = 'err_spending_definition_confusion';
+var _83VD = 'err_saving_definition_confusion';
+var _83NL = 'err_now_vs_later_confusion';
+var _83GS = 'err_goal_saving_confusion';
+var _83IU = 'err_income_use_confusion';
+var _83GP = 'err_good_service_spending_confusion';
+var _83SA = 'err_saving_as_spending_confusion';
+var _83NS = 'err_category_not_supported';
+
+// ── L8.3 teaching visuals (intervention overlays) ────────────────────────────
+function _u83TvSpendVsSave() {
+  return _u8TvWrap(_u8GoodServicePair('📕', 'gets a book today', '🐷', 'saves for later'),
+    'Using income now is spending. Keeping income for later is saving.');
+}
+function _u83TvSpendingDefinition() {
+  return _u8TvWrap(_u8WorkerCard('📕', 'gets a book today'),
+    'Spending means using income now to get a good or service.');
+}
+function _u83TvSavingDefinition() {
+  return _u8TvWrap(_u8WorkerCard('🐷', 'saves for later'),
+    'Saving means keeping income for later — not using it right now.');
+}
+function _u83TvNowVsLater() {
+  return _u8TvWrap(_u8GoodServicePair('📕', 'gets a book today', '🐷', 'saves for a book later'),
+    '"Today" or "now" means spending. "Later" or "for a future thing" means saving.');
+}
+function _u83TvGoalSaving() {
+  return _u8TvWrap(_u8WorkerCard('🐷', 'saves for a bike later'),
+    'Saving for a goal means keeping income aside until later. The goal is in the future.');
+}
+function _u83TvIncomeUse() {
+  return _u8TvWrap(_u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard('📕', 'book today')),
+    'When income is used now, it obtains a good or service. When kept for later, it is saving.');
+}
+function _u83TvGoodServiceSpending() {
+  return _u8TvWrap(_u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard('🚌', 'bus ride today')),
+    'Spending uses income to get a good or a service. The good or service is what was obtained.');
+}
+function _u83TvSavingAsSpending() {
+  return _u8TvWrap(_u8WorkerCard('🐷', 'keeps income for later'),
+    'Keeping income in a jar is NOT spending. The money has not been used yet — that is saving.');
+}
+function _u83TvUnsupported() {
+  return _u8TvWrap(_u8WorkerCard('🐷', 'saves for later'),
+    'Pick the option that fits the scenario. Stick to the choices given.');
+}
+
+// ── L8.3 intervention factories ──────────────────────────────────────────────
+function _i83SpendVsSave() { return {
+  errorTag: _83SS, title: 'Now means spending. Later means saving.',
+  teachingSteps: [
+    'Ask: is the income being used NOW, or kept for LATER?',
+    'If used now to get a good or service, that is spending.',
+    'If kept for later, that is saving.',
+    'Look for "today" / "now" (spending) or "later" / "for a future thing" (saving).'
+  ],
+  teachingVisualRaw: _u83TvSpendVsSave(),
+  correctAnswerExplanation: 'Spending = used now. Saving = kept for later.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83SpendingDefinition() { return {
+  errorTag: _83SD, title: 'Spending means using income now',
+  teachingSteps: [
+    'Spending means using income right now.',
+    'When someone spends, they get a good or a service today.',
+    'A book bought today, a haircut today, a bus ride today — those are all spending.',
+    'If the income is used right away, it is spending.'
+  ],
+  teachingVisualRaw: _u83TvSpendingDefinition(),
+  correctAnswerExplanation: 'Spending means using income now to get a good or service.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83SavingDefinition() { return {
+  errorTag: _83VD, title: 'Saving means keeping income for later',
+  teachingSteps: [
+    'Saving means keeping income for later — not using it right now.',
+    'Money in a piggy bank or a jar is being saved.',
+    'Money kept for a future goal — like a bike later — is being saved.',
+    'If the income is NOT used right now, it is saving.'
+  ],
+  teachingVisualRaw: _u83TvSavingDefinition(),
+  correctAnswerExplanation: 'Saving means keeping income for later.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83NowVsLater() { return {
+  errorTag: _83NL, title: 'Look for now vs later',
+  teachingSteps: [
+    '"Today" and "now" mean spending — the income is used right away.',
+    '"Later," "next month," and "for a future thing" mean saving.',
+    'Even if the future goal is just tomorrow, money kept for later is saving.',
+    'Read the scenario and look for the time words.'
+  ],
+  teachingVisualRaw: _u83TvNowVsLater(),
+  correctAnswerExplanation: '"Now" = spending. "Later" = saving. Always.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83GoalSaving() { return {
+  errorTag: _83GS, title: 'Saving for a goal is still saving',
+  teachingSteps: [
+    'A goal is something a person wants for the future.',
+    'Saving for a goal means keeping income until later, when the goal is reached.',
+    'Even if the goal is to buy something later, the income is being saved right now.',
+    'The decision is made now, but the using happens later — that is saving.'
+  ],
+  teachingVisualRaw: _u83TvGoalSaving(),
+  correctAnswerExplanation: 'Saving for a future goal is saving, not spending.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83IncomeUse() { return {
+  errorTag: _83IU, title: 'Income use is the question',
+  teachingSteps: [
+    'Income is money earned by working.',
+    'When income is used now, it obtains a good or a service — that is spending.',
+    'When income is kept for later, that is saving.',
+    'Earning is separate — the question is what happens to the income after it is earned.'
+  ],
+  teachingVisualRaw: _u83TvIncomeUse(),
+  correctAnswerExplanation: 'Spending uses income now. Saving keeps income for later.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83GoodServiceSpending() { return {
+  errorTag: _83GP, title: 'Spending gets a good or a service',
+  teachingSteps: [
+    'When income is spent, it obtains a good or a service.',
+    'A good is a thing — like a book or an apple.',
+    'A service is work someone does — like a haircut or a bus ride.',
+    'Either way, the money was used now — that is spending.'
+  ],
+  teachingVisualRaw: _u83TvGoodServiceSpending(),
+  correctAnswerExplanation: 'Spending uses income to get a good or a service right now.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83SavingAsSpending() { return {
+  errorTag: _83SA, title: 'Keeping income is not spending',
+  teachingSteps: [
+    'When income is put in a jar or piggy bank, it is being kept — not used.',
+    'Keeping money does not count as spending it.',
+    'Spending requires the income to be used right now.',
+    'If the money is still there, ready for later, that is saving.'
+  ],
+  teachingVisualRaw: _u83TvSavingAsSpending(),
+  correctAnswerExplanation: 'Putting income aside is saving, not spending.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+function _i83Unsupported() { return {
+  errorTag: _83NS, title: 'Stick to the choices',
+  teachingSteps: [
+    'Read the scenario and the choices carefully.',
+    'Pick the option that fits the scenario.',
+    'Do not invent a choice that is not listed.',
+    'Only the answer that matches the spending or saving in the scenario is correct.'
+  ],
+  teachingVisualRaw: _u83TvUnsupported(),
+  correctAnswerExplanation: 'Pick the option that fits the scenario from the choices given.',
+  followUpRule: 'same_skill_new_numbers', doNotRepeatOriginalQuestion: true
+};}
+
+// ── L8.3 question factory functions ──────────────────────────────────────────
+
+// _q83DefineSpending — C1: text MC, "What does spending mean?"
+function _q83DefineSpending(promptText, correctText, distractors, diff, aIdx) {
+  var opts = [{val: correctText}].concat(distractors);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: promptText,
+    o: opts, a: aIdx,
+    e: 'Spending means using income now to get a good or service.',
+    d: diff,
+    h: 'Spending uses income today to get something right now.',
+    sk: 'spending_and_saving',
+    i: _i83SpendingDefinition()
+  };
+}
+
+// _q83DefineSaving — C2: text MC, "What does saving mean?"
+function _q83DefineSaving(promptText, correctText, distractors, diff, aIdx) {
+  var opts = [{val: correctText}].concat(distractors);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: promptText,
+    o: opts, a: aIdx,
+    e: 'Saving means keeping income for later.',
+    d: diff,
+    h: 'Saving keeps income for the future — does not use it today.',
+    sk: 'spending_and_saving',
+    i: _i83SavingDefinition()
+  };
+}
+
+// _q83IdentifySpending — C3: imgChoice 4-card. 1 spending + 3 saving. Tap spending.
+// spendItem: {emoji, label}  saveItems: [{emoji, label}] length 3.
+function _q83IdentifySpending(spendItem, saveItems, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = saveItems.slice();
+  gridItems.splice(aIdx, 0, spendItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _83SS};
+  });
+  return {
+    t: 'Tap the picture that shows spending.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows "' + spendItem.label + '" — using income now. That is spending.',
+    d: diff,
+    h: 'Spending uses income today. Saving keeps it for later.',
+    sk: 'spending_and_saving',
+    i: _i83SpendingDefinition()
+  };
+}
+
+// _q83IdentifySaving — C4: imgChoice 4-card. 1 saving + 3 spending. Tap saving.
+function _q83IdentifySaving(saveItem, spendItems, diff, aIdx) {
+  var letters = ['A','B','C','D'];
+  var gridItems = spendItems.slice();
+  gridItems.splice(aIdx, 0, saveItem);
+  var svgs = gridItems.map(function(it){ return _u8WorkerCard(it.emoji, it.label); });
+  var labels = letters.map(function(L){ return 'Picture ' + L; });
+  var fallback = _u8ItemGridFallback(gridItems, letters);
+  var opts = letters.map(function(L, i){
+    if (i === aIdx) return {val: 'Picture ' + L};
+    return {val: 'Picture ' + L, tag: _83SS};
+  });
+  return {
+    t: 'Tap the picture that shows saving.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: aIdx,
+    e: 'Picture ' + letters[aIdx] + ' shows "' + saveItem.label + '" — keeping income for later. That is saving.',
+    d: diff,
+    h: 'Saving keeps income for later. Spending uses it now.',
+    sk: 'spending_and_saving',
+    i: _i83SavingDefinition()
+  };
+}
+
+// _q83SpendNowVsSaveLater — C5: scenario + 4 text decision options.
+// scenarioText describes a situation; isSave true if the right answer is to save.
+function _q83SpendNowVsSaveLater(scenarioText, isSave, diff, aIdx) {
+  var correctText, wrong1, wrong2, wrong3;
+  var t1, t2, t3;
+  if (isSave) {
+    correctText = 'save the income for the future goal';
+    wrong1 = 'spend the income today on something else';
+    wrong2 = 'spend the income now on a snack';
+    wrong3 = 'not use the income at all';
+    t1 = _83SS; t2 = _83NL; t3 = _83NS;
+  } else {
+    correctText = 'spend the income now to get what is needed today';
+    wrong1 = 'save the income for later';
+    wrong2 = 'keep the income in a jar';
+    wrong3 = 'not use the income at all';
+    t1 = _83SS; t2 = _83NL; t3 = _83NS;
+  }
+  var opts = [
+    {val: correctText},
+    {val: wrong1, tag: t1},
+    {val: wrong2, tag: t2},
+    {val: wrong3, tag: t3}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: scenarioText + ' What should they do with the income?',
+    o: opts, a: aIdx,
+    e: isSave ? 'Saving for a future goal keeps the income until later — when the goal can be reached.'
+              : 'Spending now uses the income to get what is needed today.',
+    d: diff,
+    h: 'Future goals call for saving. Today needs call for spending.',
+    sk: 'spending_and_saving',
+    i: isSave ? _i83GoalSaving() : _i83SpendingDefinition()
+  };
+}
+
+// _q83MatchActionToJar — C6: 2-card imgChoice. 1 saving jar + 1 spending action.
+// saveItem: {emoji, label}  spendItem: {emoji, label}  askForSave: true asks
+// for the saving card; false asks for the spending card.
+function _q83MatchActionToJar(saveItem, spendItem, askForSave, diff, aIdx) {
+  var letters = ['A', 'B'];
+  var localAIdx = aIdx % 2;
+  var correctCard = askForSave ? saveItem : spendItem;
+  var wrongCard = askForSave ? spendItem : saveItem;
+  var slot0 = localAIdx === 0 ? correctCard : wrongCard;
+  var slot1 = localAIdx === 1 ? correctCard : wrongCard;
+  var svgs = [_u8WorkerCard(slot0.emoji, slot0.label), _u8WorkerCard(slot1.emoji, slot1.label)];
+  var labels = ['Picture A', 'Picture B'];
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(card.emoji, card.label) +
+      '</div>';
+    }).join('') + '</div>';
+  var opts = localAIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _83SS}]
+    : [{val: 'Picture A', tag: _83SS}, {val: 'Picture B'}];
+  return {
+    t: askForSave ? 'Tap the card that shows saving.' : 'Tap the card that shows spending.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: localAIdx,
+    e: 'Picture ' + letters[localAIdx] + ' shows "' + correctCard.label + '" — ' +
+       (askForSave ? 'keeping income for later. That is saving.' : 'using income now. That is spending.'),
+    d: diff,
+    h: 'Saving keeps income for later. Spending uses it now.',
+    sk: 'spending_and_saving',
+    i: _i83SpendVsSave()
+  };
+}
+
+// _q83SpendingObtains — C7: scenario shows income used today, asks what's happening.
+// itemEmoji/itemLabel describe the good or service obtained. isService true if a service.
+function _q83SpendingObtains(name, itemEmoji, itemLabel, isService, diff, aIdx) {
+  var visual = _u8IncomeChainCard(_u8MoneyBag(), _u8WorkerCard(itemEmoji, itemLabel));
+  var correctText = isService
+    ? 'spending — they paid for a service today'
+    : 'spending — they got a good today';
+  var wrong1 = 'saving — they kept income for later';
+  var wrong2 = 'earning — they made income';
+  var wrong3 = isService
+    ? 'spending — they got a good'
+    : 'spending — they paid for a service';
+  var opts = [
+    {val: correctText},
+    {val: wrong1, tag: _83SS},
+    {val: wrong2, tag: _83IU},
+    {val: wrong3, tag: _83GP}
+  ];
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: name + ' uses income to get ' + itemLabel + ' today. What is ' + name + ' doing with the income?',
+    s: visual,
+    o: opts, a: aIdx,
+    e: name + ' is spending — using income today to get ' + (isService ? 'a service' : 'a good') + '.',
+    d: diff,
+    h: 'Income used today = spending. The thing or work obtained tells you whether it was a good or a service.',
+    sk: 'spending_and_saving',
+    i: _i83GoodServiceSpending()
+  };
+}
+
+// _q83ErrorRepair — C8: student's wrong claim + correct fix text MC.
+function _q83ErrorRepair(claim, correctFix, wrongs, diff, aIdx) {
+  var opts = [{val: correctFix}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'A student says: "' + claim + '" What is the correct fix?',
+    o: opts, a: aIdx,
+    e: 'The correct fix is: "' + correctFix + '"',
+    d: diff,
+    h: 'Spending uses income now. Saving keeps income for later.',
+    sk: 'spending_and_saving',
+    i: _i83SpendVsSave()
+  };
+}
+
+// _q83TrueSentence — C9: 4 candidate sentences, one true.
+function _q83TrueSentence(correctText, wrongs, diff, aIdx) {
+  var opts = [{val: correctText}].concat(wrongs);
+  opts = _u8Place(opts, aIdx);
+  return {
+    t: 'Which sentence is true about spending and saving?',
+    o: opts, a: aIdx,
+    e: 'True: "' + correctText + '"',
+    d: diff,
+    h: 'Spending is now. Saving is later. Both come from income.',
+    sk: 'spending_and_saving',
+    i: _i83SpendVsSave()
+  };
+}
+
+// _q83VisualChoice — C10: 2-card imgChoice (1 spending + 1 saving), prompt
+// varies between "Tap spending" and "Tap saving" per askForSpend.
+function _q83VisualChoice(spendItem, saveItem, askForSpend, diff, aIdx) {
+  var letters = ['A', 'B'];
+  var localAIdx = aIdx % 2;
+  var correctCard = askForSpend ? spendItem : saveItem;
+  var wrongCard = askForSpend ? saveItem : spendItem;
+  var slot0 = localAIdx === 0 ? correctCard : wrongCard;
+  var slot1 = localAIdx === 1 ? correctCard : wrongCard;
+  var svgs = [_u8WorkerCard(slot0.emoji, slot0.label), _u8WorkerCard(slot1.emoji, slot1.label)];
+  var labels = ['Picture A', 'Picture B'];
+  var fallback = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:4px 0">' +
+    [slot0, slot1].map(function(card, i){
+      return '<div style="display:inline-block;text-align:center;border:1px solid #B0BEC5;' +
+        'border-radius:6px;padding:4px;margin:3px;background:#fff;min-width:140px;vertical-align:top">' +
+        '<div style="font-size:14px;font-weight:800;color:#333;margin-bottom:3px">' + letters[i] + '</div>' +
+        _u8WorkerCard(card.emoji, card.label) +
+      '</div>';
+    }).join('') + '</div>';
+  var opts = localAIdx === 0
+    ? [{val: 'Picture A'}, {val: 'Picture B', tag: _83SS}]
+    : [{val: 'Picture A', tag: _83SS}, {val: 'Picture B'}];
+  return {
+    t: askForSpend ? 'Tap the picture that shows spending.' : 'Tap the picture that shows saving.',
+    v: {type: 'imgChoice', config: {items: labels, svgs: svgs}},
+    s: fallback,
+    o: opts, a: localAIdx,
+    e: 'Picture ' + letters[localAIdx] + ' shows "' + correctCard.label + '" — ' +
+       (askForSpend ? 'using income now. That is spending.' : 'keeping income for later. That is saving.'),
+    d: diff,
+    h: 'Spending uses income today. Saving keeps it for later.',
+    sk: 'spending_and_saving',
+    i: _i83SpendVsSave()
+  };
+}
+
+// ── L8.3 key ideas (6) ───────────────────────────────────────────────────────
+var _l83KeyIdeas = [
+  'Spending means using income now to get a good or a service.',
+  'Saving means keeping income for later.',
+  'People can spend income today, or they can save income for a future goal.',
+  'Saving for a future goal means setting income aside instead of using it now.',
+  'Spending gets goods or services right away. Saving keeps the income for the future.',
+  'To tell spending from saving, ask: "Is the income being used now, or kept for later?"'
+];
+
+// ── L8.3 worked examples (5) ─────────────────────────────────────────────────
+var _l83Examples = [
+  {
+    id: 'g1-u8-l3-ex-1',
+    title: 'Example 1: What is spending?',
+    prompt: 'What does spending mean?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('📕', 'gets a book today')},
+    steps: [
+      'Spending means using income right now.',
+      'When someone spends, they get a good or a service today.',
+      'A book bought today is a good — that is spending.',
+      'A haircut paid for today is a service — that is also spending.'
+    ],
+    finalAnswer: 'Spending means using income now to get a good or a service.'
+  },
+  {
+    id: 'g1-u8-l3-ex-2',
+    title: 'Example 2: What is saving?',
+    prompt: 'What does saving mean?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🐷', 'saves for later')},
+    steps: [
+      'Saving means keeping income for later.',
+      'Money in a piggy bank or a jar is being saved.',
+      'Money kept for a future goal — like a bike later — is being saved.',
+      'When the income is NOT used right now, it is saving.'
+    ],
+    finalAnswer: 'Saving means keeping income for later.'
+  },
+  {
+    id: 'g1-u8-l3-ex-3',
+    title: 'Example 3: Identify spending',
+    prompt: 'Maya gets a book today. Is Maya spending or saving?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('📕', 'gets a book today')},
+    steps: [
+      'Maya is using her income right now.',
+      'She is getting a book — a good — today.',
+      'When income is used today to get a good, that is spending.',
+      'Maya is spending.'
+    ],
+    finalAnswer: 'Maya is spending.'
+  },
+  {
+    id: 'g1-u8-l3-ex-4',
+    title: 'Example 4: Identify saving',
+    prompt: 'Lin keeps income in a jar for a bike later. Is Lin spending or saving?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🐷', 'saves for a bike later')},
+    steps: [
+      'Lin is keeping her income — not using it now.',
+      'The bike is a future goal — later, not today.',
+      'When income is kept for later, that is saving.',
+      'Lin is saving.'
+    ],
+    finalAnswer: 'Lin is saving.'
+  },
+  {
+    id: 'g1-u8-l3-ex-5',
+    title: 'Example 5: Spend now or save for later?',
+    prompt: 'Nia has a future goal — she wants a bigger thing later. What should she do with her income?',
+    visual: {type: 'rawHtml', html: _u8WorkerCard('🐷', 'saves for the future goal')},
+    steps: [
+      'Nia\'s goal is for later — not today.',
+      'To reach a future goal, the income should be kept.',
+      'Saving keeps income for later — when the goal can be reached.',
+      'Nia should save her income for the future goal.'
+    ],
+    finalAnswer: 'Nia should save her income for the future goal.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════════
+//  L8.3 question banks (10 categories, 150 total)
+//  Target: 45E / 60M / 45H · imgChoice count: 68 (4-card 36 + 2-card 32)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── C1: Define Spending (12 = 4E / 5M / 3H) ──────────────────────────────────
+var _l83C1 = [
+  // Easy (4)
+  _q83DefineSpending('What does spending mean?',
+    'Spending means using income now to get a good or service.',
+    [{val:'Spending means keeping income for later.', tag:_83SS},
+     {val:'Spending means earning money.', tag:_83IU},
+     {val:'Spending means putting money in a jar.', tag:_83SA}], 'e', 0),
+  _q83DefineSpending('Which sentence describes spending?',
+    'When a person uses income today to get something, that is spending.',
+    [{val:'When a person saves income for later, that is spending.', tag:_83SS},
+     {val:'When a person finds money, that is spending.', tag:_83IU},
+     {val:'When a person waits to use money, that is spending.', tag:_83NL}], 'e', 1),
+  _q83DefineSpending('What does spending mean?',
+    'Spending uses income right away.',
+    [{val:'Spending puts income in a piggy bank.', tag:_83SA},
+     {val:'Spending saves income for a future goal.', tag:_83GS},
+     {val:'Spending earns income.', tag:_83IU}], 'e', 2),
+  _q83DefineSpending('Which sentence is true about spending?',
+    'Spending means using income now.',
+    [{val:'Spending means using income later.', tag:_83NL},
+     {val:'Spending means not using income at all.', tag:_83NS},
+     {val:'Spending means earning income.', tag:_83IU}], 'e', 3),
+  // Medium (5)
+  _q83DefineSpending('What does spending mean?',
+    'Spending means using income today to get a good or service.',
+    [{val:'Spending means keeping income in a jar.', tag:_83SA},
+     {val:'Spending means saving income for a goal.', tag:_83GS},
+     {val:'Spending means money that has no use.', tag:_83SD}], 'm', 0),
+  _q83DefineSpending('Which sentence is true?',
+    'When someone spends, they get a good or a service today.',
+    [{val:'When someone spends, they put money in a piggy bank.', tag:_83SA},
+     {val:'When someone spends, they earn more money.', tag:_83IU},
+     {val:'When someone spends, they wait until later.', tag:_83NL}], 'm', 1),
+  _q83DefineSpending('What is spending?',
+    'Spending is using income now to obtain a good or service.',
+    [{val:'Spending is keeping income safe for later.', tag:_83SS},
+     {val:'Spending is working to earn money.', tag:_83IU},
+     {val:'Spending is having lots of money.', tag:_83SD}], 'm', 2),
+  _q83DefineSpending('Which sentence describes spending correctly?',
+    'A person spends when income is used right now.',
+    [{val:'A person spends when income is kept for a future goal.', tag:_83GS},
+     {val:'A person spends when they wait to use income.', tag:_83NL},
+     {val:'A person spends only when they have a job.', tag:_83IU}], 'm', 3),
+  _q83DefineSpending('What does spending mean?',
+    'Spending means using income today to get something.',
+    [{val:'Spending means putting income aside.', tag:_83SA},
+     {val:'Spending means money in a piggy bank.', tag:_83SA},
+     {val:'Spending means setting income aside for later.', tag:_83GS}], 'm', 0),
+  // Hard (3)
+  _q83DefineSpending('Which best describes spending?',
+    'Spending uses income now to get a good or service — not for later.',
+    [{val:'Spending uses income later to get something.', tag:_83NL},
+     {val:'Spending puts income aside for a future goal.', tag:_83GS},
+     {val:'Spending earns more income.', tag:_83IU}], 'h', 1),
+  _q83DefineSpending('What makes income spending?',
+    'Income becomes spending when it is used right now to get something.',
+    [{val:'Income becomes spending when it is saved.', tag:_83SS},
+     {val:'Income becomes spending when it is earned.', tag:_83IU},
+     {val:'Income becomes spending when it is kept in a jar.', tag:_83SA}], 'h', 2),
+  _q83DefineSpending('Which sentence is the best definition of spending?',
+    'Spending means using income right now to obtain a good or a service.',
+    [{val:'Spending means waiting to use income later.', tag:_83NL},
+     {val:'Spending means saving for a future goal.', tag:_83GS},
+     {val:'Spending means making more money.', tag:_83IU}], 'h', 3)
+];
+
+// ── C2: Define Saving (12 = 4E / 5M / 3H) ────────────────────────────────────
+var _l83C2 = [
+  // Easy (4)
+  _q83DefineSaving('What does saving mean?',
+    'Saving means keeping income for later.',
+    [{val:'Saving means using income now.', tag:_83SS},
+     {val:'Saving means earning money.', tag:_83IU},
+     {val:'Saving means buying things today.', tag:_83NL}], 'e', 0),
+  _q83DefineSaving('Which sentence describes saving?',
+    'When a person keeps income for a future goal, that is saving.',
+    [{val:'When a person spends income today, that is saving.', tag:_83SS},
+     {val:'When a person earns income, that is saving.', tag:_83IU},
+     {val:'When a person finds money, that is saving.', tag:_83NS}], 'e', 1),
+  _q83DefineSaving('What is saving?',
+    'Saving is keeping income for later.',
+    [{val:'Saving is spending income now.', tag:_83SS},
+     {val:'Saving is using income today.', tag:_83NL},
+     {val:'Saving is making more income.', tag:_83IU}], 'e', 2),
+  _q83DefineSaving('Which sentence is true about saving?',
+    'Saving means putting income aside instead of using it now.',
+    [{val:'Saving means using income now.', tag:_83SS},
+     {val:'Saving means earning income.', tag:_83IU},
+     {val:'Saving means money that is gone.', tag:_83VD}], 'e', 3),
+  // Medium (5)
+  _q83DefineSaving('What does saving mean?',
+    'Saving means keeping income for later — not using it right now.',
+    [{val:'Saving means using income today.', tag:_83SS},
+     {val:'Saving means earning extra money.', tag:_83IU},
+     {val:'Saving means buying things.', tag:_83NL}], 'm', 0),
+  _q83DefineSaving('Which sentence is true?',
+    'A person saves when they keep income for a future goal.',
+    [{val:'A person saves when they spend income today.', tag:_83SS},
+     {val:'A person saves when they earn money.', tag:_83IU},
+     {val:'A person saves when they find money.', tag:_83NS}], 'm', 1),
+  _q83DefineSaving('What is saving?',
+    'Saving keeps income until later, when it might be used for a goal.',
+    [{val:'Saving uses income right now.', tag:_83SS},
+     {val:'Saving means putting money in a store.', tag:_83NL},
+     {val:'Saving means making income disappear.', tag:_83VD}], 'm', 2),
+  _q83DefineSaving('Which sentence describes saving correctly?',
+    'Saving is when income is set aside instead of used now.',
+    [{val:'Saving is when income is used today.', tag:_83SS},
+     {val:'Saving is when income is earned.', tag:_83IU},
+     {val:'Saving is when income is forgotten.', tag:_83VD}], 'm', 3),
+  _q83DefineSaving('What does saving mean?',
+    'Saving means keeping money for a future time or goal.',
+    [{val:'Saving means buying snacks today.', tag:_83NL},
+     {val:'Saving means earning a paycheck.', tag:_83IU},
+     {val:'Saving means spending right away.', tag:_83SS}], 'm', 0),
+  // Hard (3)
+  _q83DefineSaving('Which best describes saving?',
+    'Saving keeps income for the future — the money is not used right now.',
+    [{val:'Saving uses income right now.', tag:_83SS},
+     {val:'Saving puts income in the store today.', tag:_83NL},
+     {val:'Saving earns income.', tag:_83IU}], 'h', 1),
+  _q83DefineSaving('What makes income saving?',
+    'Income becomes saving when it is kept for later instead of used now.',
+    [{val:'Income becomes saving when it is spent today.', tag:_83SS},
+     {val:'Income becomes saving when more is earned.', tag:_83IU},
+     {val:'Income becomes saving when the day ends.', tag:_83NS}], 'h', 2),
+  _q83DefineSaving('Which sentence is the best definition of saving?',
+    'Saving means keeping income for later — often for a future goal.',
+    [{val:'Saving means using income on a snack now.', tag:_83NL},
+     {val:'Saving means working to earn income.', tag:_83IU},
+     {val:'Saving means money lost forever.', tag:_83VD}], 'h', 3)
+];
+
+// ── C3: Identify Spending (18 = 6E / 7M / 5H) ────────────────────────────────
+// 1 spending + 3 saving distractors. Tap spending.
+var _l83C3 = [
+  // Easy (6)
+  _q83IdentifySpending({emoji:'📕', label:'gets a book today'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🏺', label:'puts income in a jar'}], 'e', 0),
+  _q83IdentifySpending({emoji:'🍎', label:'gets an apple today'},
+    [{emoji:'🐷', label:'saves for a future trip'},
+     {emoji:'🐷', label:'saves for a backpack later'},
+     {emoji:'🐷', label:'saves for a future gift'}], 'e', 1),
+  _q83IdentifySpending({emoji:'💇', label:'pays for a haircut today'},
+    [{emoji:'🐷', label:'saves for shoes later'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🐷', label:'saves for a future toy'}], 'e', 2),
+  _q83IdentifySpending({emoji:'🚌', label:'pays for a bus ride today'},
+    [{emoji:'🐷', label:'saves for a hat later'},
+     {emoji:'🏺', label:'puts income in a jar'},
+     {emoji:'🐷', label:'saves for a future trip'}], 'e', 3),
+  _q83IdentifySpending({emoji:'👕', label:'gets a shirt today'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🐷', label:'saves for a book later'},
+     {emoji:'🐷', label:'saves for a future gift'}], 'e', 0),
+  _q83IdentifySpending({emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+    [{emoji:'🐷', label:'saves for a future toy'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🏺', label:'puts income in a jar'}], 'e', 1),
+  // Medium (7)
+  _q83IdentifySpending({emoji:'🎒', label:'gets a backpack today'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🐷', label:'saves for new shoes later'},
+     {emoji:'🐷', label:'saves for a future trip'}], 'm', 2),
+  _q83IdentifySpending({emoji:'🔧', label:'pays a mechanic today'},
+    [{emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🐷', label:'saves for a hat later'},
+     {emoji:'🏺', label:'puts income in a jar'}], 'm', 3),
+  _q83IdentifySpending({emoji:'👟', label:'buys shoes today'},
+    [{emoji:'🐷', label:'saves for a future gift'},
+     {emoji:'🐷', label:'saves for a book later'},
+     {emoji:'🐷', label:'saves for a bike later'}], 'm', 0),
+  _q83IdentifySpending({emoji:'🥪', label:'buys a sandwich today'},
+    [{emoji:'🐷', label:'saves for a future trip'},
+     {emoji:'🐷', label:'saves for a future toy'},
+     {emoji:'🐷', label:'saves for new shoes later'}], 'm', 1),
+  _q83IdentifySpending({emoji:'🦷', label:'pays a dentist today'},
+    [{emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🏺', label:'puts income in a jar'},
+     {emoji:'🐷', label:'saves for a backpack later'}], 'm', 2),
+  _q83IdentifySpending({emoji:'🚿', label:'pays a plumber today'},
+    [{emoji:'🐷', label:'saves for a future toy'},
+     {emoji:'🐷', label:'saves for a hat later'},
+     {emoji:'🐷', label:'saves for a future gift'}], 'm', 3),
+  _q83IdentifySpending({emoji:'🍎', label:'gets an apple today'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🐷', label:'saves for shoes later'},
+     {emoji:'🐷', label:'saves for a future trip'}], 'm', 0),
+  // Hard (5) — tricky: distractors related to the spending item
+  _q83IdentifySpending({emoji:'📕', label:'gets a book today'},
+    [{emoji:'🐷', label:'saves for a book later'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🐷', label:'saves for a backpack later'}], 'h', 1),
+  _q83IdentifySpending({emoji:'💇', label:'pays for a haircut today'},
+    [{emoji:'🐷', label:'saves for a future toy'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🐷', label:'saves for a future gift'}], 'h', 2),
+  _q83IdentifySpending({emoji:'🚌', label:'pays for a bus ride today'},
+    [{emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🐷', label:'saves for a future trip'},
+     {emoji:'🏺', label:'puts income in a jar'}], 'h', 3),
+  _q83IdentifySpending({emoji:'🥪', label:'buys a sandwich today'},
+    [{emoji:'🐷', label:'saves for a future gift'},
+     {emoji:'🐷', label:'saves for a hat later'},
+     {emoji:'🐷', label:'saves for new shoes later'}], 'h', 0),
+  _q83IdentifySpending({emoji:'🔧', label:'pays a mechanic today'},
+    [{emoji:'🐷', label:'saves for a bike later'},
+     {emoji:'🐷', label:'keeps income for later'},
+     {emoji:'🏺', label:'puts income in a jar'}], 'h', 1)
+];
+
+// ── C4: Identify Saving (18 = 6E / 7M / 5H) ──────────────────────────────────
+// 1 saving + 3 spending distractors. Tap saving.
+var _l83C4 = [
+  // Easy (6)
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a bike later'},
+    [{emoji:'📕', label:'gets a book today'},
+     {emoji:'🍎', label:'gets an apple today'},
+     {emoji:'💇', label:'pays for a haircut today'}], 'e', 0),
+  _q83IdentifySaving({emoji:'🐷', label:'keeps income for later'},
+    [{emoji:'👕', label:'gets a shirt today'},
+     {emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'🥪', label:'buys a sandwich today'}], 'e', 1),
+  _q83IdentifySaving({emoji:'🏺', label:'puts income in a jar'},
+    [{emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+     {emoji:'👟', label:'buys shoes today'},
+     {emoji:'🎒', label:'gets a backpack today'}], 'e', 2),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future toy'},
+    [{emoji:'🔧', label:'pays a mechanic today'},
+     {emoji:'🦷', label:'pays a dentist today'},
+     {emoji:'🚿', label:'pays a plumber today'}], 'e', 3),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for shoes later'},
+    [{emoji:'📕', label:'gets a book today'},
+     {emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'🍎', label:'gets an apple today'}], 'e', 0),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future trip'},
+    [{emoji:'💇', label:'pays for a haircut today'},
+     {emoji:'👕', label:'gets a shirt today'},
+     {emoji:'🥪', label:'buys a sandwich today'}], 'e', 1),
+  // Medium (7)
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a backpack later'},
+    [{emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+     {emoji:'👟', label:'buys shoes today'},
+     {emoji:'🔧', label:'pays a mechanic today'}], 'm', 2),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future gift'},
+    [{emoji:'🦷', label:'pays a dentist today'},
+     {emoji:'🚿', label:'pays a plumber today'},
+     {emoji:'📕', label:'gets a book today'}], 'm', 3),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a hat later'},
+    [{emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'🍎', label:'gets an apple today'},
+     {emoji:'💇', label:'pays for a haircut today'}], 'm', 0),
+  _q83IdentifySaving({emoji:'🐷', label:'keeps income for later'},
+    [{emoji:'🎒', label:'gets a backpack today'},
+     {emoji:'🥪', label:'buys a sandwich today'},
+     {emoji:'👕', label:'gets a shirt today'}], 'm', 1),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future toy'},
+    [{emoji:'🔧', label:'pays a mechanic today'},
+     {emoji:'👟', label:'buys shoes today'},
+     {emoji:'👨‍⚕️', label:'pays for a doctor visit today'}], 'm', 2),
+  _q83IdentifySaving({emoji:'🏺', label:'puts income in a jar'},
+    [{emoji:'🦷', label:'pays a dentist today'},
+     {emoji:'🚿', label:'pays a plumber today'},
+     {emoji:'📕', label:'gets a book today'}], 'm', 3),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a bike later'},
+    [{emoji:'💇', label:'pays for a haircut today'},
+     {emoji:'🍎', label:'gets an apple today'},
+     {emoji:'🚌', label:'pays for a bus ride today'}], 'm', 0),
+  // Hard (5) — tricky: distractors related to the saving goal
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future bike'},
+    [{emoji:'🔧', label:'pays a mechanic today'},
+     {emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'👟', label:'buys shoes today'}], 'h', 1),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a book later'},
+    [{emoji:'📕', label:'gets a book today'},
+     {emoji:'🎒', label:'gets a backpack today'},
+     {emoji:'🥪', label:'buys a sandwich today'}], 'h', 2),
+  _q83IdentifySaving({emoji:'🐷', label:'keeps income for a future haircut'},
+    [{emoji:'💇', label:'pays for a haircut today'},
+     {emoji:'🍎', label:'gets an apple today'},
+     {emoji:'👕', label:'gets a shirt today'}], 'h', 3),
+  _q83IdentifySaving({emoji:'🐷', label:'saves for a future trip'},
+    [{emoji:'🚌', label:'pays for a bus ride today'},
+     {emoji:'🥪', label:'buys a sandwich today'},
+     {emoji:'🦷', label:'pays a dentist today'}], 'h', 0),
+  _q83IdentifySaving({emoji:'🏺', label:'puts income in a jar'},
+    [{emoji:'🚿', label:'pays a plumber today'},
+     {emoji:'🔧', label:'pays a mechanic today'},
+     {emoji:'👨‍⚕️', label:'pays for a doctor visit today'}], 'h', 1)
+];
+
+// ── C5: Spend Now vs Save for Later (16 = 5E / 6M / 5H) ──────────────────────
+var _l83C5 = [
+  // Easy (5)
+  _q83SpendNowVsSaveLater('Lin has a goal of getting a bike next month.',         true,  'e', 0),
+  _q83SpendNowVsSaveLater('Pat is hungry right now.',                              false, 'e', 1),
+  _q83SpendNowVsSaveLater('Carlos is saving for a future trip.',                   true,  'e', 2),
+  _q83SpendNowVsSaveLater("Maya's hair is long and needs to be cut today.",        false, 'e', 3),
+  _q83SpendNowVsSaveLater('Mei has a future goal of new shoes.',                   true,  'e', 0),
+  // Medium (6)
+  _q83SpendNowVsSaveLater('Sam needs to ride the bus to school today.',            false, 'm', 1),
+  _q83SpendNowVsSaveLater('Ben has a future goal of a backpack.',                  true,  'm', 2),
+  _q83SpendNowVsSaveLater('Lily is sick and needs a doctor today.',                false, 'm', 3),
+  _q83SpendNowVsSaveLater('Sara is working toward a future toy.',                  true,  'm', 0),
+  _q83SpendNowVsSaveLater("Mia's bike is broken and she needs it fixed today.",    false, 'm', 1),
+  _q83SpendNowVsSaveLater('Dev is keeping income for a future book.',              true,  'm', 2),
+  // Hard (5)
+  _q83SpendNowVsSaveLater('Tomas needs lunch right now.',                          false, 'h', 3),
+  _q83SpendNowVsSaveLater('Ana is saving for a future birthday gift.',             true,  'h', 0),
+  _q83SpendNowVsSaveLater('Eli has a goal of new shoes for next year.',            true,  'h', 1),
+  _q83SpendNowVsSaveLater('Jaden is sick and needs a doctor today.',               false, 'h', 2),
+  _q83SpendNowVsSaveLater('Rina has a future goal of a bike.',                     true,  'h', 3)
+];
+
+// ── C6: Match Action to Jar (14 = 4E / 6M / 4H) ──────────────────────────────
+// 2-card imgChoice. 1 saving jar + 1 spending action. Half ask saving, half spending.
+var _l83C6 = [
+  // Easy (4)
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for later'},
+    {emoji:'📕', label:'gets a book today'}, true, 'e', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a bike later'},
+    {emoji:'💇', label:'pays for a haircut today'}, true, 'e', 1),
+  _q83MatchActionToJar({emoji:'🏺', label:'puts income in a jar'},
+    {emoji:'🚌', label:'pays for a bus ride today'}, false, 'e', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'keeps income for later'},
+    {emoji:'🍎', label:'gets an apple today'}, false, 'e', 1),
+  // Medium (6)
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for shoes later'},
+    {emoji:'👟', label:'buys shoes today'}, true, 'm', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a future trip'},
+    {emoji:'🚌', label:'pays for a bus ride today'}, true, 'm', 1),
+  _q83MatchActionToJar({emoji:'🏺', label:'puts income in a jar'},
+    {emoji:'👨‍⚕️', label:'pays for a doctor visit today'}, false, 'm', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a backpack later'},
+    {emoji:'🎒', label:'gets a backpack today'}, true, 'm', 1),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a future gift'},
+    {emoji:'🦷', label:'pays a dentist today'}, false, 'm', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a future toy'},
+    {emoji:'🔧', label:'pays a mechanic today'}, true, 'm', 1),
+  // Hard (4) — same item on both sides (book/now vs book/later)
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a book later'},
+    {emoji:'📕', label:'gets a book today'}, true, 'h', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a future toy'},
+    {emoji:'🍎', label:'gets an apple today'}, false, 'h', 1),
+  _q83MatchActionToJar({emoji:'🐷', label:'saves for a future bike'},
+    {emoji:'🚲', label:'buys a bike today'}, true, 'h', 0),
+  _q83MatchActionToJar({emoji:'🐷', label:'keeps income for later'},
+    {emoji:'👨‍⚕️', label:'pays for a doctor visit today'}, false, 'h', 1)
+];
+
+// ── C7: Spending Obtains Goods/Services (12 = 3E / 5M / 4H) ──────────────────
+var _l83C7 = [
+  // Easy (3)
+  _q83SpendingObtains('Maya',   '📕', 'a book',         false, 'e', 0),
+  _q83SpendingObtains('Pat',    '💇', 'a haircut',      true,  'e', 1),
+  _q83SpendingObtains('Lin',    '🍎', 'an apple',       false, 'e', 2),
+  // Medium (5)
+  _q83SpendingObtains('Carlos', '🚌', 'a bus ride',     true,  'm', 3),
+  _q83SpendingObtains('Mei',    '👕', 'a shirt',        false, 'm', 0),
+  _q83SpendingObtains('Ben',    '👨‍⚕️', 'a doctor visit', true,  'm', 1),
+  _q83SpendingObtains('Sam',    '🎒', 'a backpack',     false, 'm', 2),
+  _q83SpendingObtains('Dev',    '🔧', 'a mechanic visit', true, 'm', 3),
+  // Hard (4)
+  _q83SpendingObtains('Rina',   '👟', 'shoes',          false, 'h', 0),
+  _q83SpendingObtains('Lily',   '🦷', 'a dentist visit', true,  'h', 1),
+  _q83SpendingObtains('Mia',    '🥪', 'a sandwich',     false, 'h', 2),
+  _q83SpendingObtains('Tomas',  '🚿', 'a plumber visit', true,  'h', 3)
+];
+
+// ── C8: Error Repair (14 = 4E / 5M / 5H) ─────────────────────────────────────
+var _l83C8 = [
+  // Easy (4)
+  _q83ErrorRepair('Spending means keeping money in a jar.',
+    'Spending means using income now to get a good or service.',
+    [{val:'Spending means earning money.', tag:_83IU},
+     {val:'Spending means saving for a goal.', tag:_83GS},
+     {val:'Spending means waiting to use money.', tag:_83NL}], 'e', 0),
+  _q83ErrorRepair('Saving means using money today.',
+    'Saving means keeping income for later, not using it today.',
+    [{val:'Saving means making more money.', tag:_83IU},
+     {val:'Saving means spending right away.', tag:_83SS},
+     {val:'Saving means losing money.', tag:_83VD}], 'e', 1),
+  _q83ErrorRepair('Buying a book today is saving.',
+    'Buying a book today is spending — using income now to get a good.',
+    [{val:'Buying a book today is earning.', tag:_83IU},
+     {val:'Buying a book today is saving for later.', tag:_83SS},
+     {val:'Buying a book today is not using income.', tag:_83NS}], 'e', 2),
+  _q83ErrorRepair('Putting income in a piggy bank is spending.',
+    'Putting income in a piggy bank is saving — keeping it for later.',
+    [{val:'Putting income in a piggy bank is earning.', tag:_83IU},
+     {val:'Putting income in a piggy bank is using it now.', tag:_83SS},
+     {val:'Putting income in a piggy bank is losing it.', tag:_83VD}], 'e', 3),
+  // Medium (5)
+  _q83ErrorRepair('Saving for a bike later is spending.',
+    'Saving for a bike later is saving — keeping income for a future goal.',
+    [{val:'Saving for a bike later is using income today.', tag:_83SS},
+     {val:'Saving for a bike later means the bike is gone.', tag:_83VD},
+     {val:'Saving for a bike later is earning a bike.', tag:_83IU}], 'm', 0),
+  _q83ErrorRepair('Paying for a haircut today is saving.',
+    'Paying for a haircut today is spending — using income now for a service.',
+    [{val:'Paying for a haircut today is earning income.', tag:_83IU},
+     {val:'Paying for a haircut today is keeping income for later.', tag:_83SS},
+     {val:'Paying for a haircut today is not using income.', tag:_83NS}], 'm', 1),
+  _q83ErrorRepair('Keeping income for a future trip is spending.',
+    'Keeping income for a future trip is saving — the income is kept for later.',
+    [{val:'Keeping income for a future trip is using it today.', tag:_83SS},
+     {val:'Keeping income for a future trip is earning.', tag:_83IU},
+     {val:'Keeping income for a future trip means losing it.', tag:_83VD}], 'm', 2),
+  _q83ErrorRepair('Maya keeps income for a future book — that is spending.',
+    'Maya is saving — she is keeping income for later, not using it now.',
+    [{val:'Maya is earning a book.', tag:_83IU},
+     {val:'Maya is using income today.', tag:_83SS},
+     {val:'Maya is not using income at all.', tag:_83NS}], 'm', 3),
+  _q83ErrorRepair('Spending means making money.',
+    'Spending means using income to get a good or service — not making money.',
+    [{val:'Spending means saving for the future.', tag:_83SS},
+     {val:'Spending means waiting to use income.', tag:_83NL},
+     {val:'Spending means putting income in a jar.', tag:_83SA}], 'm', 0),
+  // Hard (5)
+  _q83ErrorRepair('Lin keeps income for a haircut tomorrow — she is spending.',
+    'Lin is saving — even though the goal is just tomorrow, the income is being kept for later, not used today.',
+    [{val:'Lin is earning a haircut.', tag:_83IU},
+     {val:'Lin is spending — the haircut is the same as today.', tag:_83NL},
+     {val:'Lin is not using income.', tag:_83NS}], 'h', 1),
+  _q83ErrorRepair('Spending uses income to keep for the future.',
+    'Spending uses income right now. Saving keeps income for the future.',
+    [{val:'Spending means waiting forever.', tag:_83NL},
+     {val:'Spending means earning more money.', tag:_83IU},
+     {val:'Spending means putting income in a jar.', tag:_83SA}], 'h', 2),
+  _q83ErrorRepair('Pat saves income today for a snack right now.',
+    'If Pat is using income today for a snack, that is spending, not saving.',
+    [{val:'Pat is earning a snack.', tag:_83IU},
+     {val:'Pat is keeping the snack for later.', tag:_83NL},
+     {val:'Pat is not using income.', tag:_83NS}], 'h', 3),
+  _q83ErrorRepair('Saving for a future goal means buying the goal today.',
+    'Saving for a future goal means keeping income now, then using it later when the goal is reached.',
+    [{val:'Saving for a future goal means earning extra.', tag:_83IU},
+     {val:'Saving for a future goal means losing income.', tag:_83VD},
+     {val:'Saving for a future goal means not using income at all.', tag:_83NS}], 'h', 0),
+  _q83ErrorRepair('Putting income in a piggy bank counts as spending because the decision was made.',
+    'Saving requires the income to be kept — putting income in a piggy bank is saving, not spending.',
+    [{val:'Putting income in a piggy bank is earning income.', tag:_83IU},
+     {val:'Putting income in a piggy bank is using it for a snack.', tag:_83NL},
+     {val:'Putting income in a piggy bank is losing it.', tag:_83VD}], 'h', 1)
+];
+
+// ── C9: True Sentence / Mixed Review (16 = 5E / 7M / 4H) ─────────────────────
+var _l83C9 = [
+  // Easy (5)
+  _q83TrueSentence('Spending means using income now.',
+    [{val:'Spending means keeping income for later.', tag:_83SS},
+     {val:'Spending means earning income.', tag:_83IU},
+     {val:'Spending means losing income.', tag:_83VD}], 'e', 0),
+  _q83TrueSentence('Saving means keeping income for later.',
+    [{val:'Saving means using income today.', tag:_83SS},
+     {val:'Saving means earning income.', tag:_83IU},
+     {val:'Saving means money in a store.', tag:_83NL}], 'e', 1),
+  _q83TrueSentence('People can spend income today or save income for later.',
+    [{val:'People can only spend income.', tag:_83NS},
+     {val:'People can only save income.', tag:_83NS},
+     {val:'People cannot make a choice with income.', tag:_83NS}], 'e', 2),
+  _q83TrueSentence('A piggy bank is for saving.',
+    [{val:'A piggy bank is for spending.', tag:_83SS},
+     {val:'A piggy bank is for earning.', tag:_83IU},
+     {val:'A piggy bank is not for income.', tag:_83NS}], 'e', 3),
+  _q83TrueSentence('Saving keeps income for the future.',
+    [{val:'Saving uses income today.', tag:_83SS},
+     {val:'Saving means earning extra income.', tag:_83IU},
+     {val:'Saving means money no one can find.', tag:_83VD}], 'e', 0),
+  // Medium (7)
+  _q83TrueSentence('Spending uses income to get a good or a service today.',
+    [{val:'Spending uses income to get a future goal.', tag:_83NL},
+     {val:'Spending means making more income.', tag:_83IU},
+     {val:'Spending means putting income aside.', tag:_83SA}], 'm', 1),
+  _q83TrueSentence('Saving for a future goal means keeping income aside until later.',
+    [{val:'Saving for a future goal means using income today.', tag:_83SS},
+     {val:'Saving for a future goal means earning extra.', tag:_83IU},
+     {val:'Saving for a future goal means the goal is now.', tag:_83NL}], 'm', 2),
+  _q83TrueSentence('When someone pays for a haircut today, that is spending.',
+    [{val:'When someone pays for a haircut today, that is saving.', tag:_83SS},
+     {val:'When someone pays for a haircut today, they are earning income.', tag:_83IU},
+     {val:'When someone pays for a haircut today, no income is used.', tag:_83NS}], 'm', 3),
+  _q83TrueSentence('When someone keeps income in a piggy bank, that is saving.',
+    [{val:'When someone keeps income in a piggy bank, that is spending.', tag:_83SS},
+     {val:'When someone keeps income in a piggy bank, they are earning.', tag:_83IU},
+     {val:'When someone keeps income in a piggy bank, they are using it today.', tag:_83NL}], 'm', 0),
+  _q83TrueSentence('Spending gets a good or service right away. Saving keeps income for the future.',
+    [{val:'Spending and saving are the same thing.', tag:_83SS},
+     {val:'Spending is for later. Saving is for today.', tag:_83NL},
+     {val:'Spending earns income. Saving spends income.', tag:_83IU}], 'm', 1),
+  _q83TrueSentence('A goal in the future is reached by saving income now.',
+    [{val:'A goal in the future is reached by spending today.', tag:_83GS},
+     {val:'A goal in the future is reached by earning more.', tag:_83IU},
+     {val:'A goal in the future cannot be reached.', tag:_83NS}], 'm', 2),
+  _q83TrueSentence('Asking "now or later?" helps tell spending from saving.',
+    [{val:'Asking "how much?" tells spending from saving.', tag:_83NS},
+     {val:'Asking "who earned it?" tells spending from saving.', tag:_83IU},
+     {val:'There is no way to tell them apart.', tag:_83SS}], 'm', 3),
+  // Hard (4)
+  _q83TrueSentence('Even if a goal is just for tomorrow, keeping income for it is saving.',
+    [{val:'Keeping income for tomorrow counts as spending.', tag:_83NL},
+     {val:'Keeping income for tomorrow means earning it.', tag:_83IU},
+     {val:'Keeping income for tomorrow means losing it.', tag:_83VD}], 'h', 0),
+  _q83TrueSentence('Spending obtains a good or a service. Saving obtains nothing yet — the income waits.',
+    [{val:'Spending obtains a future goal. Saving obtains a good today.', tag:_83SS},
+     {val:'Spending and saving both obtain a good right away.', tag:_83NS},
+     {val:'Spending earns income. Saving spends it.', tag:_83IU}], 'h', 1),
+  _q83TrueSentence('Both adults and kids can spend income or save income.',
+    [{val:'Only adults can spend or save income.', tag:_83NS},
+     {val:'Only kids can save income.', tag:_83NS},
+     {val:'Spending and saving are not real choices.', tag:_83NS}], 'h', 2),
+  _q83TrueSentence('Saving for a future goal is still saving — the income is kept, not used.',
+    [{val:'Saving for a future goal is spending because the goal is real.', tag:_83GS},
+     {val:'Saving for a future goal is the same as earning.', tag:_83IU},
+     {val:'Saving for a future goal means the goal is here today.', tag:_83NL}], 'h', 3)
+];
+
+// ── C10: Visual Choice (18 = 4E / 7M / 7H) ───────────────────────────────────
+// 2-card imgChoice. 1 spending + 1 saving. Half ask spending, half ask saving.
+var _l83C10 = [
+  // Easy (4)
+  _q83VisualChoice({emoji:'📕', label:'gets a book today'},
+    {emoji:'🐷', label:'saves for a bike later'}, true, 'e', 0),
+  _q83VisualChoice({emoji:'💇', label:'pays for a haircut today'},
+    {emoji:'🐷', label:'keeps income for later'}, false, 'e', 1),
+  _q83VisualChoice({emoji:'🍎', label:'gets an apple today'},
+    {emoji:'🐷', label:'saves for a future toy'}, true, 'e', 0),
+  _q83VisualChoice({emoji:'🚌', label:'pays for a bus ride today'},
+    {emoji:'🏺', label:'puts income in a jar'}, false, 'e', 1),
+  // Medium (7)
+  _q83VisualChoice({emoji:'👕', label:'gets a shirt today'},
+    {emoji:'🐷', label:'saves for a future trip'}, true, 'm', 0),
+  _q83VisualChoice({emoji:'🎒', label:'gets a backpack today'},
+    {emoji:'🐷', label:'saves for shoes later'}, false, 'm', 1),
+  _q83VisualChoice({emoji:'👨‍⚕️', label:'pays for a doctor visit today'},
+    {emoji:'🐷', label:'saves for a future gift'}, true, 'm', 0),
+  _q83VisualChoice({emoji:'🔧', label:'pays a mechanic today'},
+    {emoji:'🐷', label:'saves for a hat later'}, false, 'm', 1),
+  _q83VisualChoice({emoji:'👟', label:'buys shoes today'},
+    {emoji:'🐷', label:'saves for a backpack later'}, true, 'm', 0),
+  _q83VisualChoice({emoji:'🥪', label:'buys a sandwich today'},
+    {emoji:'🐷', label:'saves for a future toy'}, false, 'm', 1),
+  _q83VisualChoice({emoji:'🦷', label:'pays a dentist today'},
+    {emoji:'🐷', label:'keeps income for later'}, true, 'm', 0),
+  // Hard (7) — same item on both sides
+  _q83VisualChoice({emoji:'📕', label:'gets a book today'},
+    {emoji:'🐷', label:'saves for a book later'}, true, 'h', 0),
+  _q83VisualChoice({emoji:'💇', label:'pays for a haircut today'},
+    {emoji:'🐷', label:'saves for a future toy'}, false, 'h', 1),
+  _q83VisualChoice({emoji:'🚌', label:'pays for a bus ride today'},
+    {emoji:'🐷', label:'saves for a future trip'}, true, 'h', 0),
+  _q83VisualChoice({emoji:'🔧', label:'pays a mechanic today'},
+    {emoji:'🐷', label:'saves for a bike later'}, false, 'h', 1),
+  _q83VisualChoice({emoji:'🎒', label:'gets a backpack today'},
+    {emoji:'🐷', label:'saves for a backpack later'}, true, 'h', 0),
+  _q83VisualChoice({emoji:'🥪', label:'buys a sandwich today'},
+    {emoji:'🐷', label:'keeps income for later'}, false, 'h', 1),
+  _q83VisualChoice({emoji:'👟', label:'buys shoes today'},
+    {emoji:'🐷', label:'saves for new shoes later'}, true, 'h', 0)
+];
+
+// ── L8.3 combined bank ───────────────────────────────────────────────────────
+var _l83Bank = [].concat(_l83C1, _l83C2, _l83C3, _l83C4, _l83C5, _l83C6, _l83C7, _l83C8, _l83C9, _l83C10);
+
+
 // ── Unit spec ────────────────────────────────────────────────────────────────
 export const G1_U8_SPEC = {
   unitId: 'g1u8',
@@ -2363,19 +3459,30 @@ export const G1_U8_SPEC = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  Lesson 8.3 — Spending and Saving   (SCAFFOLD)
-    //  TEKS 1.9C | Focus: distinguish between spending and saving.
+    //  Lesson 8.3 — Spending and Saving
+    //  TEKS 1.9C | 150 questions (45E / 60M / 45H)
+    //  10 categories: C1 define-spending, C2 define-saving, C3 identify-
+    //  spending (imgChoice 4-card), C4 identify-saving (imgChoice 4-card),
+    //  C5 spend-now-vs-save-later, C6 match-action-to-jar (imgChoice 2-card),
+    //  C7 spending-obtains-goods/services, C8 error-repair, C9 true-sentence,
+    //  C10 visual-choice (imgChoice 2-card mixed).
+    //  68 imgChoice questions (4-card: 36; 2-card: 32). Delayed-spending
+    //  rule locked: kept income = saving, regardless of future intent.
     // ═══════════════════════════════════════════════════════════════════════
     {
       lessonId: 'g1-u8-l3',
       title: 'Spending and Saving',
       teks: ['1.9C'],
       skill: 'spending_and_saving',
-      allowedQuestionTypes: ['multipleChoice'],
-      keyIdeas: [],
-      workedExamples: [],
-      quizBank: [],
-      diagnostics: { commonDistractors: [], errorTags: [], interventionRules: [] }
+      allowedQuestionTypes: ['multipleChoice', 'imgChoice'],
+      keyIdeas: _l83KeyIdeas,
+      workedExamples: _l83Examples,
+      quizBank: _l83Bank,
+      diagnostics: {
+        commonDistractors: [_83SS, _83SD, _83VD, _83NL, _83GS, _83IU, _83GP, _83SA, _83NS],
+        errorTags:         [_83SS, _83SD, _83VD, _83NL, _83GS, _83IU, _83GP, _83SA, _83NS],
+        interventionRules: []
+      }
     },
 
     // ═══════════════════════════════════════════════════════════════════════
