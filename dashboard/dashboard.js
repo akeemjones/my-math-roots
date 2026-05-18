@@ -1193,6 +1193,12 @@ async function _dbSaveUnlock() {
     });
     if (result.error) throw result.error;
     _unlockDirty = false;
+    // Mirror to local cache so the student-side lock gates (which read
+    // wb_unlock_<sid> via _readUnlockCache) see the change on the very next
+    // navigation, instead of waiting up to 3 minutes for the next sync poll.
+    if (_activeId && _activeId !== 'local') {
+      try { localStorage.setItem('wb_unlock_' + _activeId, JSON.stringify(_unlockDraft)); } catch (_e) {}
+    }
     if (msg) { msg.style.color = '#2e7d32'; msg.textContent = '✅ Saved!'; }
     setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
   } catch(e) {
@@ -1206,6 +1212,10 @@ async function _dbRelockAll() {
   _unlockDraft = _parseUnlockSettings({ freeMode: false, units: [], lessons: {} });
   _unlockDirty = false;
   _activeDrawerUnit = -1;
+  // Mirror to local cache so re-lock takes effect on the next student-side navigation.
+  if (_activeId && _activeId !== 'local') {
+    try { localStorage.setItem('wb_unlock_' + _activeId, JSON.stringify(_unlockDraft)); } catch (_e) {}
+  }
   if (!_supaDb) { _reRenderUnlock(); return; }
   try {
     await _supaDb.rpc('update_unlock_settings', {
