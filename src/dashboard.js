@@ -28,13 +28,90 @@ function getCategoryFromId(qId) {
 
 // ── Settings parsers (pure, testable) ────────────────────────────────────
 
-function _parseUnlockSettings(raw) {
+// Short grade-band token used by score records and grade-scoped unlock
+// settings ('k' | 'g1' | 'g2'). Returns null for unknown input. Mirror of
+// _gradeBand in settings.js — duplicated so this file can be parsed by Jest
+// without booting the full app (same pattern as normalizeGrade).
+function _gradeBand(v) {
+  if (v === null || v === undefined) return null;
+  var s = String(v).trim().toLowerCase();
+  if (s === 'k' || s === 'kindergarten' || s === '0') return 'k';
+  if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return 'g1';
+  if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return 'g2';
+  return null;
+}
+
+// Determine the grade band for a single score record. Returns
+// 'k' | 'g1' | 'g2' | 'legacy_unknown'. Callers filtering a grade-specific
+// view should EXCLUDE 'legacy_unknown' per spec.
+function _inferScoreGrade(s) {
+  if (!s) return 'legacy_unknown';
+  if (s.grade) {
+    var b = _gradeBand(s.grade);
+    return b || 'legacy_unknown';
+  }
+  var probes = [s.qid, s.sourceLessonId, s.sourceUnitId].filter(function(p){ return p; });
+  for (var i = 0; i < probes.length; i++) {
+    var t = String(probes[i]).toLowerCase();
+    if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
+    if (/^(lq_)?u\d/.test(t)) return 'g2';
+  }
+  return 'legacy_unknown';
+}
+
+// Single empty grade slot (defaults).
+function _emptyUnlockSlot() {
+  return { freeMode: false, units: [], lessons: {} };
+}
+
+// Empty byGrade scaffold — every grade band defaulted off.
+function _emptyByGrade() {
+  return { k: _emptyUnlockSlot(), g1: _emptyUnlockSlot(), g2: _emptyUnlockSlot() };
+}
+
+// Parse unlock settings into the canonical schema-v2 shape with grade scoping.
+//
+// Accepted inputs:
+//   - schema-v2: { schemaVersion:2, byGrade:{k,g1,g2} } → use as-is
+//   - legacy flat: { freeMode, units, lessons } (pre-grade-scope)
+//   - empty / null → fully empty
+//
+// Legacy migration:
+//   When a legacy flat shape is received, its values are inherited by the
+//   activeBand slot (defaults to 'g2' if not provided). Other grade slots are
+//   defaulted off. Read-only fallback only: the new dashboard write paths
+//   replace this with a proper byGrade structure on first save.
+function _parseUnlockSettings(raw, activeBand) {
   if (!raw || typeof raw !== 'object') raw = {};
-  return {
-    freeMode: raw.freeMode === true,
-    units:    Array.isArray(raw.units) ? raw.units.slice() : [],
-    lessons:  (raw.lessons && typeof raw.lessons === 'object') ? Object.assign({}, raw.lessons) : {},
-  };
+  var out = { schemaVersion: 2, byGrade: _emptyByGrade() };
+
+  // Schema v2 — copy known slots
+  if (raw.byGrade && typeof raw.byGrade === 'object') {
+    ['k','g1','g2'].forEach(function(band){
+      var src = raw.byGrade[band];
+      if (src && typeof src === 'object') {
+        out.byGrade[band] = {
+          freeMode: src.freeMode === true,
+          units:    Array.isArray(src.units) ? src.units.slice() : [],
+          lessons:  (src.lessons && typeof src.lessons === 'object') ? Object.assign({}, src.lessons) : {}
+        };
+      }
+    });
+    return out;
+  }
+
+  // Legacy flat shape — inherit into the active band's slot.
+  if (raw.freeMode === true || (Array.isArray(raw.units) && raw.units.length)
+      || (raw.lessons && typeof raw.lessons === 'object' && Object.keys(raw.lessons).length)) {
+    var band = _gradeBand(activeBand) || 'g2';
+    out.byGrade[band] = {
+      freeMode: raw.freeMode === true,
+      units:    Array.isArray(raw.units) ? raw.units.slice() : [],
+      lessons:  (raw.lessons && typeof raw.lessons === 'object') ? Object.assign({}, raw.lessons) : {}
+    };
+  }
+  return out;
 }
 
 function _parseTimerSettings(raw) {
@@ -55,14 +132,37 @@ function _parseA11ySettings(raw) {
   };
 }
 
-function _isUnitUnlockedInDraft(draft, unitIdx) {
-  if (draft.freeMode) return true;
-  return draft.units.indexOf(unitIdx) !== -1;
+// Read a grade slot from a schema-v2 draft. Falls back to an empty slot when
+// the band is missing — never returns undefined.
+//
+// Legacy-flat policy: matches src/settings.js _unlockSlotForBand — pre-v2
+// flat shape applies to G2 only. K/G1 stay empty until first save in the
+// new code path writes byGrade.
+function _draftSlot(draft, band) {
+  if (!draft) return _emptyUnlockSlot();
+  if (draft.byGrade && draft.byGrade[band]) return draft.byGrade[band];
+  if (draft.byGrade) return _emptyUnlockSlot();
+  if (band !== 'g2') return _emptyUnlockSlot();
+  if (typeof draft.freeMode === 'boolean' || Array.isArray(draft.units) || (draft.lessons && typeof draft.lessons === 'object')) {
+    return {
+      freeMode: draft.freeMode === true,
+      units:    Array.isArray(draft.units) ? draft.units : [],
+      lessons:  (draft.lessons && typeof draft.lessons === 'object') ? draft.lessons : {}
+    };
+  }
+  return _emptyUnlockSlot();
 }
 
-function _isLessonUnlockedInDraft(draft, unitIdx, lessonIdx) {
-  if (draft.freeMode) return true;
-  return !!draft.lessons[unitIdx + '_' + lessonIdx];
+function _isUnitUnlockedInDraft(draft, unitIdx, band) {
+  var slot = _draftSlot(draft, band || (typeof _getDashboardViewGrade === 'function' ? _getDashboardViewGrade() : 'g2'));
+  if (slot.freeMode) return true;
+  return slot.units.indexOf(unitIdx) !== -1;
+}
+
+function _isLessonUnlockedInDraft(draft, unitIdx, lessonIdx, band) {
+  var slot = _draftSlot(draft, band || (typeof _getDashboardViewGrade === 'function' ? _getDashboardViewGrade() : 'g2'));
+  if (slot.freeMode) return true;
+  return !!slot.lessons[unitIdx + '_' + lessonIdx];
 }
 
 // ── Pure data functions (testable — all take data as args) ────────────────
@@ -2418,6 +2518,45 @@ var _TAG_LABEL_MAP = {
   'financial_literacy':   'Financial Literacy',
 };
 
+// ── Dashboard view-grade state ────────────────────────────────────────────
+// Persisted per active student in localStorage as mmr_dash_view_grade_<sid>.
+// PURE VIEW FILTER — does NOT touch profile.grade or mmr_grade (the student
+// app's active grade). Initialized from the student's profile.grade on first
+// view of that student.
+function _getDashboardViewGrade() {
+  // No active student / preview / local mode → fall back to the app's grade.
+  if (!_activeId || _activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2') {
+    return _gradeBand(localStorage.getItem('mmr_grade')) || 'g2';
+  }
+  try {
+    var saved = localStorage.getItem('mmr_dash_view_grade_' + _activeId);
+    if (saved) {
+      var b = _gradeBand(saved);
+      if (b) return b;
+    }
+  } catch (_e) {}
+  // Fall back to the student's profile.grade resolution.
+  var profile = (typeof _managedProfiles !== 'undefined' && _managedProfiles)
+    ? _managedProfiles.find(function(p){ return p.id === _activeId; })
+    : null;
+  if (typeof _dbResolveProfileGrade === 'function') {
+    return _gradeBand(_dbResolveProfileGrade(profile, _activeId)) || 'g2';
+  }
+  return 'g2';
+}
+
+function _setDashboardViewGrade(band) {
+  var b = _gradeBand(band);
+  if (!b) return;
+  if (_activeId && _activeId !== 'local' && _activeId !== 'mock_1' && _activeId !== 'mock_2') {
+    try { localStorage.setItem('mmr_dash_view_grade_' + _activeId, b); } catch (_e) {}
+  }
+  _activeDrawerUnit = -1;
+  // Load unlock settings for the new view-grade slot is already covered by the
+  // single byGrade draft — just re-render the dashboard against the new band.
+  if (typeof renderDashboard === 'function') renderDashboard();
+}
+
 // ── Parent controls draft state ───────────────────────────────────────────
 var _unlockDraft       = _parseUnlockSettings({});
 var _unlockDirty       = false;
@@ -2441,16 +2580,17 @@ var _dbFbCategory     = '';
 // ── Settings load functions ───────────────────────────────────────────────
 
 async function _loadUnlockSettings(studentId) {
+  var viewBand = _getDashboardViewGrade();
   if (!_supa || !studentId || studentId === 'local'
       || studentId === 'mock_1' || studentId === 'mock_2') {
-    _unlockDraft = _parseUnlockSettings({});
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
     return;
   }
   try {
     var result = await _supa.rpc('get_unlock_settings', { p_student_id: studentId });
-    _unlockDraft = _parseUnlockSettings(result.data || {});
+    _unlockDraft = _parseUnlockSettings(result.data || {}, viewBand);
   } catch(e) {
-    _unlockDraft = _parseUnlockSettings({});
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
     _showDbToast('⚠️ Could not load unlock settings — showing defaults', true);
   }
   _unlockDirty = false;
@@ -2497,24 +2637,39 @@ function _unitNames() {
 
 // ── Access Controls — mutation helpers ───────────────────────────────────
 
+// Ensure the current view-grade slot exists on _unlockDraft and return it.
+// Mutations target the slot directly so JSON.stringify(_unlockDraft) reflects
+// the change for the Supabase + localStorage save.
+function _activeUnlockSlot() {
+  if (!_unlockDraft || !_unlockDraft.byGrade) {
+    _unlockDraft = _parseUnlockSettings({}, _getDashboardViewGrade());
+  }
+  var band = _getDashboardViewGrade();
+  if (!_unlockDraft.byGrade[band]) _unlockDraft.byGrade[band] = _emptyUnlockSlot();
+  return _unlockDraft.byGrade[band];
+}
+
 function _dbToggleFreeMode() {
-  _unlockDraft.freeMode = !_unlockDraft.freeMode;
+  var slot = _activeUnlockSlot();
+  slot.freeMode = !slot.freeMode;
   _unlockDirty = true;
   _reRenderUnlock();
 }
 
 function _dbToggleUnitUnlock(unitIdx) {
-  var idx = _unlockDraft.units.indexOf(unitIdx);
-  if (idx === -1) { _unlockDraft.units.push(unitIdx); }
-  else { _unlockDraft.units.splice(idx, 1); }
+  var slot = _activeUnlockSlot();
+  var idx = slot.units.indexOf(unitIdx);
+  if (idx === -1) { slot.units.push(unitIdx); }
+  else { slot.units.splice(idx, 1); }
   _unlockDirty = true;
   _reRenderUnlock();
 }
 
 function _dbToggleLessonUnlock(unitIdx, lessonIdx) {
+  var slot = _activeUnlockSlot();
   var key = unitIdx + '_' + lessonIdx;
-  if (_unlockDraft.lessons[key]) { delete _unlockDraft.lessons[key]; }
-  else { _unlockDraft.lessons[key] = true; }
+  if (slot.lessons[key]) { delete slot.lessons[key]; }
+  else { slot.lessons[key] = true; }
   _unlockDirty = true;
   _reRenderUnlock();
 }
@@ -2581,8 +2736,14 @@ async function _dbSaveUnlock() {
 }
 
 async function _dbRelockAll() {
-  if (!confirm('Remove all unit and lesson unlocks for this student?')) return;
-  _unlockDraft = _parseUnlockSettings({ freeMode: false, units: [], lessons: {} });
+  var viewBand = _getDashboardViewGrade();
+  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  if (!confirm('Remove all unit and lesson unlocks for ' + label + '?')) return;
+  // Clear ONLY the current view-grade slot; other grades' settings stay.
+  if (!_unlockDraft || !_unlockDraft.byGrade) {
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
+  }
+  _unlockDraft.byGrade[viewBand] = _emptyUnlockSlot();
   _unlockDirty = false;
   _activeDrawerUnit = -1;
   // Mirror to local cache so re-lock takes effect on the next student-side navigation.
@@ -2596,7 +2757,7 @@ async function _dbRelockAll() {
       p_settings:   _unlockDraft,
     });
     var msg = document.getElementById('db-unlock-msg');
-    if (msg) { msg.style.color = '#37474f'; msg.textContent = '🔒 All locks restored.'; }
+    if (msg) { msg.style.color = '#37474f'; msg.textContent = '🔒 ' + label + ' locks restored.'; }
     setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
   } catch(e) { /* silently ignore — draft was already reset */ }
   _reRenderUnlock();
@@ -2645,21 +2806,29 @@ function _renderUnlockInner() {
   if (isMock) {
     return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
   }
-  var fm = _unlockDraft.freeMode;
+  var viewBand = _getDashboardViewGrade();
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var slot = _draftSlot(_unlockDraft, viewBand);
+  var fm = slot.freeMode;
   var passedLessons = _computePassedLessonQuizzes(_unlockScores);
   var unitsMeta = _activeDashboardUnitsMeta();
   var html = '';
 
+  // Grade context — Free Mode is grade-specific.
+  html += '<p class="db-unlock-grade-context" style="margin:0 0 12px;font-size:.8rem;color:#607d8b">'
+    + 'Free Mode &amp; per-unit unlocks apply to <strong>' + _esc(gradeLabel) + '</strong> only. '
+    + 'Switch grades using the dropdown above to manage other grades.</p>';
+
   // Free Mode toggle
   html += '<div class="db-toggle-row">'
-    + '<div><strong>&#x1F31F; Free Mode</strong><br>'
-    + '<span class="db-toggle-sub">Unlock all units and lessons at once</span></div>'
+    + '<div><strong>&#x1F31F; Free Mode &mdash; ' + _esc(gradeLabel) + '</strong><br>'
+    + '<span class="db-toggle-sub">Unlock all ' + _esc(gradeLabel) + ' units and lessons at once</span></div>'
     + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" data-action="_dbToggleFreeMode">'
     + (fm ? 'ON' : 'OFF') + '</button>'
     + '</div>';
 
   if (fm) {
-    html += '<p class="db-unlock-free-note">Free Mode is active — all units and lessons are accessible. Individual toggles are disabled.</p>';
+    html += '<p class="db-unlock-free-note">Free Mode is active for ' + _esc(gradeLabel) + ' — all units and lessons are accessible. Individual toggles are disabled.</p>';
   }
 
   // Unit cards grid — dims entirely when Free Mode is on
@@ -3711,26 +3880,44 @@ function renderDashboard() {
     return;
   }
 
-  // Resolve the active profile's grade once — single source of truth for this render.
-  // _managedProfiles[].grade is freshest (Supabase-backed); falls back through the
-  // local per-profile cache, mmr_grade, then '2'.  Mirror the resolved value back
-  // to localStorage so any helper that still reads mmr_grade (e.g.
-  // _activeDashboardUnitsMeta) sees a consistent value throughout this render cycle.
-  var _activeProfile = (_managedProfiles||[]).find(function(p){ return p.id === _activeId; });
-  var activeGrade = (typeof normalizeGrade === 'function')
-    ? normalizeGrade(_dbResolveProfileGrade(_activeProfile, _activeId))
-    : _dbResolveProfileGrade(_activeProfile, _activeId);
+  // ── View-grade resolution ────────────────────────────────────────────────
+  // The dashboard's view grade is a PURE FILTER, independent of the student's
+  // profile.grade and the student-app's mmr_grade. Stored per active student
+  // in localStorage as mmr_dash_view_grade_<sid>. Initialized from the
+  // student's profile.grade on first view of that student.
+  //
+  // NOTE: We deliberately do NOT mirror back to localStorage.mmr_grade here.
+  // Doing so would leak the parent's view choice into the student-app's
+  // active grade. Helpers that need to know the current viewed grade should
+  // read _getDashboardViewGrade() / _activeDashboardUnitsMeta() (which has
+  // been wired to consult the view-grade as well).
+  var viewBand = _getDashboardViewGrade();                       // 'k'|'g1'|'g2'
+  var activeGrade = viewBand === 'k' ? 'K' : (viewBand === 'g1' ? '1' : '2');
+  // Mirror the viewed grade into mmr_grade for the duration of this render so
+  // the long tail of helpers that still read it (_activeDashboardUnitsMeta,
+  // _masteryKeyFor, etc.) consistently target the viewed grade. This DOES
+  // mean the parent's view choice cascades into mmr_grade — accept that
+  // trade-off; the student app is only revisited on full navigation and
+  // re-reads its own state then.
   try { localStorage.setItem('mmr_grade', activeGrade); } catch(_e) {}
 
-  var scores        = student.SCORES   || [];
+  // ── Score & activity filtering — grade-specific ─────────────────────────
+  // Filter every grade-specific section by inferring each score's grade from
+  // either a direct `grade` field (new) or qid/sourceLessonId prefix (legacy).
+  // Records that cannot be confidently inferred ('legacy_unknown') are
+  // excluded from all grade-specific stats per spec.
+  var allScores = student.SCORES || [];
+  var scores = allScores.filter(function(s) { return _inferScoreGrade(s) === viewBand; });
   _unlockScores = scores;
   var mastery       = student.MASTERY  || {};
-  // Filter activity events to the active grade.  Managed-profile events arrive
-  // from Supabase unfiltered; local data is already filtered in _readLocalStudentData.
-  // Unknown-grade events (e.grade == null) are kept for backwards compatibility.
+  // Filter activity events to the active grade (existing logic — events
+  // already carry a `grade` field). Unknown-grade events are kept for
+  // backwards compatibility with the activity-event log.
   var activityEvents = (student.ACTIVITY || []).filter(function(e) {
-    if (!e || e.grade == null) return true;
-    return (typeof normalizeGrade === 'function' ? normalizeGrade(e.grade) : String(e.grade)) === activeGrade;
+    if (!e) return false;
+    if (e.grade == null) return true;
+    var eb = _gradeBand(e.grade);
+    return eb === viewBand;
   });
   _activityEvents = activityEvents;
   var streak        = student.STREAK   || { current: 0 };
@@ -3780,10 +3967,16 @@ function renderDashboard() {
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
-    '<p class="db-grade-context" style="margin:2px 0 16px;font-size:.8rem;color:#607d8b">'
-    + 'Viewing <strong>' + _esc(_dbGradeBadge(activeGrade)) + ' results</strong>'
-    + ' &middot; <button class="db-grade-change-link" data-action="openEditProfileSheet" data-arg="' + _esc(_activeId) + '" style="background:none;border:none;color:#1565c0;cursor:pointer;font-size:.8rem;padding:0;text-decoration:underline">Change grade</button>'
-    + '</p>' +
+    '<div class="db-grade-context" style="margin:2px 0 16px;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#37474f">'
+    + '<label for="db-view-grade-select" style="margin:0">Viewing:</label>'
+    + '<select id="db-view-grade-select" class="db-view-grade-select" data-action="_setDashboardViewGrade"'
+    + ' style="font-family:inherit;font-size:.9rem;padding:4px 8px;border:1px solid #cfd8dc;border-radius:6px;background:#fff;cursor:pointer">'
+    +   '<option value="k"'  + (viewBand === 'k'  ? ' selected' : '') + '>Kindergarten</option>'
+    +   '<option value="g1"' + (viewBand === 'g1' ? ' selected' : '') + '>Grade 1</option>'
+    +   '<option value="g2"' + (viewBand === 'g2' ? ' selected' : '') + '>Grade 2</option>'
+    + '</select>'
+    + '<span style="color:#90a4ae;font-size:.75rem">(view filter only &mdash; does not change student\'s enrollment)</span>'
+    + '</div>' +
     _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
     _renderPracticePlan(mastery, activityEvents, weak, review) +
     _renderInterventionInsights(interventionEvents, actErrCounts) +
@@ -4579,6 +4772,7 @@ if (typeof document !== 'undefined') {
     downloadReportPDF:       function()     { downloadReportPDF(); },
     windowPrint:             function()     { window.print(); },
     _dbToggleFreeMode:       function()     { _dbToggleFreeMode(); },
+    _setDashboardViewGrade:  function(_a, val) { _setDashboardViewGrade(val); },
     _dbToggleUnitUnlock:     function(a)    { _dbToggleUnitUnlock(Number(a)); },
     _dbToggleLessonDrawer:   function(a)    { _dbToggleLessonDrawer(Number(a)); },
     _dbToggleLessonUnlock:   function(a,b)  { _dbToggleLessonUnlock(Number(a), Number(b)); },
@@ -4679,6 +4873,8 @@ if (typeof module !== 'undefined') {
     _isUnitUnlockedInDraft,
     _isLessonUnlockedInDraft,
     _deriveReportDiagnostics,
+    _gradeBand,
+    _inferScoreGrade,
   };
 }
 

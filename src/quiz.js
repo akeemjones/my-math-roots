@@ -2205,6 +2205,7 @@ function _finishQuiz(){
     unitIdx: CUR.unitIdx, color: u.color,
     name: studentName, id: Date.now(),
     timeTaken,
+    grade: (typeof _gradeBand === 'function') ? (_gradeBand(localStorage.getItem('mmr_grade')) || 'g2') : null,
     answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})

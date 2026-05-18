@@ -29,13 +29,76 @@ function getCategoryFromId(qId) {
 
 // ── Settings parsers (pure, testable) ────────────────────────────────────
 
-function _parseUnlockSettings(raw) {
+// Short grade-band token used by score records and grade-scoped unlock
+// settings ('k' | 'g1' | 'g2'). Returns null for unknown input. Mirror of
+// _gradeBand in src/settings.js — duplicated so this file can be parsed by
+// Jest without booting the full app.
+function _gradeBand(v) {
+  if (v === null || v === undefined) return null;
+  var s = String(v).trim().toLowerCase();
+  if (s === 'k' || s === 'kindergarten' || s === '0') return 'k';
+  if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return 'g1';
+  if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return 'g2';
+  return null;
+}
+
+// Determine the grade band for a single score record. Returns
+// 'k' | 'g1' | 'g2' | 'legacy_unknown'.
+function _inferScoreGrade(s) {
+  if (!s) return 'legacy_unknown';
+  if (s.grade) {
+    var b = _gradeBand(s.grade);
+    return b || 'legacy_unknown';
+  }
+  var probes = [s.qid, s.sourceLessonId, s.sourceUnitId].filter(function(p){ return p; });
+  for (var i = 0; i < probes.length; i++) {
+    var t = String(probes[i]).toLowerCase();
+    if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
+    if (/^(lq_)?u\d/.test(t)) return 'g2';
+  }
+  return 'legacy_unknown';
+}
+
+function _emptyUnlockSlot() {
+  return { freeMode: false, units: [], lessons: {} };
+}
+
+function _emptyByGrade() {
+  return { k: _emptyUnlockSlot(), g1: _emptyUnlockSlot(), g2: _emptyUnlockSlot() };
+}
+
+// Parse unlock settings into the canonical schema-v2 byGrade shape. Legacy
+// flat shape is migrated into the activeBand slot (read-only fallback). See
+// design doc 2026-05-18-parent-dashboard-grade-scoped-state-design.md.
+function _parseUnlockSettings(raw, activeBand) {
   if (!raw || typeof raw !== 'object') raw = {};
-  return {
-    freeMode: raw.freeMode === true,
-    units:    Array.isArray(raw.units) ? raw.units.slice() : [],
-    lessons:  (raw.lessons && typeof raw.lessons === 'object') ? Object.assign({}, raw.lessons) : {},
-  };
+  var out = { schemaVersion: 2, byGrade: _emptyByGrade() };
+
+  if (raw.byGrade && typeof raw.byGrade === 'object') {
+    ['k','g1','g2'].forEach(function(band){
+      var src = raw.byGrade[band];
+      if (src && typeof src === 'object') {
+        out.byGrade[band] = {
+          freeMode: src.freeMode === true,
+          units:    Array.isArray(src.units) ? src.units.slice() : [],
+          lessons:  (src.lessons && typeof src.lessons === 'object') ? Object.assign({}, src.lessons) : {}
+        };
+      }
+    });
+    return out;
+  }
+
+  if (raw.freeMode === true || (Array.isArray(raw.units) && raw.units.length)
+      || (raw.lessons && typeof raw.lessons === 'object' && Object.keys(raw.lessons).length)) {
+    var band = _gradeBand(activeBand) || 'g2';
+    out.byGrade[band] = {
+      freeMode: raw.freeMode === true,
+      units:    Array.isArray(raw.units) ? raw.units.slice() : [],
+      lessons:  (raw.lessons && typeof raw.lessons === 'object') ? Object.assign({}, raw.lessons) : {}
+    };
+  }
+  return out;
 }
 
 function _parseTimerSettings(raw) {
@@ -56,14 +119,33 @@ function _parseA11ySettings(raw) {
   };
 }
 
-function _isUnitUnlockedInDraft(draft, unitIdx) {
-  if (draft.freeMode) return true;
-  return draft.units.indexOf(unitIdx) !== -1;
+// Legacy flat shape applies to G2 only (historical default). See src/dashboard.js
+// for the rationale.
+function _draftSlot(draft, band) {
+  if (!draft) return _emptyUnlockSlot();
+  if (draft.byGrade && draft.byGrade[band]) return draft.byGrade[band];
+  if (draft.byGrade) return _emptyUnlockSlot();
+  if (band !== 'g2') return _emptyUnlockSlot();
+  if (typeof draft.freeMode === 'boolean' || Array.isArray(draft.units) || (draft.lessons && typeof draft.lessons === 'object')) {
+    return {
+      freeMode: draft.freeMode === true,
+      units:    Array.isArray(draft.units) ? draft.units : [],
+      lessons:  (draft.lessons && typeof draft.lessons === 'object') ? draft.lessons : {}
+    };
+  }
+  return _emptyUnlockSlot();
 }
 
-function _isLessonUnlockedInDraft(draft, unitIdx, lessonIdx) {
-  if (draft.freeMode) return true;
-  return !!draft.lessons[unitIdx + '_' + lessonIdx];
+function _isUnitUnlockedInDraft(draft, unitIdx, band) {
+  var slot = _draftSlot(draft, band || (typeof _getDashboardViewGrade === 'function' ? _getDashboardViewGrade() : 'g2'));
+  if (slot.freeMode) return true;
+  return slot.units.indexOf(unitIdx) !== -1;
+}
+
+function _isLessonUnlockedInDraft(draft, unitIdx, lessonIdx, band) {
+  var slot = _draftSlot(draft, band || (typeof _getDashboardViewGrade === 'function' ? _getDashboardViewGrade() : 'g2'));
+  if (slot.freeMode) return true;
+  return !!slot.lessons[unitIdx + '_' + lessonIdx];
 }
 
 // ── Pure data functions (testable — all take data as args) ────────────────
@@ -1093,16 +1175,17 @@ var _dbFbCategory     = '';
 // ── Settings load functions ───────────────────────────────────────────────
 
 async function _loadUnlockSettings(studentId) {
+  var viewBand = (typeof _getDashboardViewGrade === 'function') ? _getDashboardViewGrade() : 'g2';
   if (!_supaDb || !studentId || studentId === 'local'
       || studentId === 'mock_1' || studentId === 'mock_2') {
-    _unlockDraft = _parseUnlockSettings({});
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
     return;
   }
   try {
     var result = await _supaDb.rpc('get_unlock_settings', { p_student_id: studentId });
-    _unlockDraft = _parseUnlockSettings(result.data || {});
+    _unlockDraft = _parseUnlockSettings(result.data || {}, viewBand);
   } catch(e) {
-    _unlockDraft = _parseUnlockSettings({});
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
     _showDbToast('⚠️ Could not load unlock settings — showing defaults', true);
   }
   _unlockDirty = false;
@@ -1147,26 +1230,65 @@ function _unitNames() {
   ];
 }
 
+// ── Dashboard view-grade state (standalone) ──────────────────────────────
+// Pure view filter; see src/dashboard.js for design notes. Persisted in
+// localStorage as mmr_dash_view_grade_<sid>.
+function _getDashboardViewGrade() {
+  if (!_activeId || _activeId === 'local' || _activeId === 'mock_1' || _activeId === 'mock_2') {
+    return _gradeBand(localStorage.getItem('mmr_grade')) || 'g2';
+  }
+  try {
+    var saved = localStorage.getItem('mmr_dash_view_grade_' + _activeId);
+    if (saved) {
+      var b = _gradeBand(saved);
+      if (b) return b;
+    }
+  } catch (_e) {}
+  return 'g2';
+}
+
+function _setDashboardViewGrade(band) {
+  var b = _gradeBand(band);
+  if (!b) return;
+  if (_activeId && _activeId !== 'local' && _activeId !== 'mock_1' && _activeId !== 'mock_2') {
+    try { localStorage.setItem('mmr_dash_view_grade_' + _activeId, b); } catch (_e) {}
+  }
+  _activeDrawerUnit = -1;
+  if (typeof renderDashboard === 'function') renderDashboard();
+}
+
 // ── Access Controls — mutation helpers ───────────────────────────────────
 
+function _activeUnlockSlot() {
+  if (!_unlockDraft || !_unlockDraft.byGrade) {
+    _unlockDraft = _parseUnlockSettings({}, _getDashboardViewGrade());
+  }
+  var band = _getDashboardViewGrade();
+  if (!_unlockDraft.byGrade[band]) _unlockDraft.byGrade[band] = _emptyUnlockSlot();
+  return _unlockDraft.byGrade[band];
+}
+
 function _dbToggleFreeMode() {
-  _unlockDraft.freeMode = !_unlockDraft.freeMode;
+  var slot = _activeUnlockSlot();
+  slot.freeMode = !slot.freeMode;
   _unlockDirty = true;
   _reRenderUnlock();
 }
 
 function _dbToggleUnitUnlock(unitIdx) {
-  var idx = _unlockDraft.units.indexOf(unitIdx);
-  if (idx === -1) { _unlockDraft.units.push(unitIdx); }
-  else { _unlockDraft.units.splice(idx, 1); }
+  var slot = _activeUnlockSlot();
+  var idx = slot.units.indexOf(unitIdx);
+  if (idx === -1) { slot.units.push(unitIdx); }
+  else { slot.units.splice(idx, 1); }
   _unlockDirty = true;
   _reRenderUnlock();
 }
 
 function _dbToggleLessonUnlock(unitIdx, lessonIdx) {
+  var slot = _activeUnlockSlot();
   var key = unitIdx + '_' + lessonIdx;
-  if (_unlockDraft.lessons[key]) { delete _unlockDraft.lessons[key]; }
-  else { _unlockDraft.lessons[key] = true; }
+  if (slot.lessons[key]) { delete slot.lessons[key]; }
+  else { slot.lessons[key] = true; }
   _unlockDirty = true;
   _reRenderUnlock();
 }
@@ -1208,8 +1330,13 @@ async function _dbSaveUnlock() {
 }
 
 async function _dbRelockAll() {
-  if (!confirm('Remove all unit and lesson unlocks for this student?')) return;
-  _unlockDraft = _parseUnlockSettings({ freeMode: false, units: [], lessons: {} });
+  var viewBand = _getDashboardViewGrade();
+  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  if (!confirm('Remove all unit and lesson unlocks for ' + label + '?')) return;
+  if (!_unlockDraft || !_unlockDraft.byGrade) {
+    _unlockDraft = _parseUnlockSettings({}, viewBand);
+  }
+  _unlockDraft.byGrade[viewBand] = _emptyUnlockSlot();
   _unlockDirty = false;
   _activeDrawerUnit = -1;
   // Mirror to local cache so re-lock takes effect on the next student-side navigation.
@@ -1223,7 +1350,7 @@ async function _dbRelockAll() {
       p_settings:   _unlockDraft,
     });
     var msg = document.getElementById('db-unlock-msg');
-    if (msg) { msg.style.color = '#37474f'; msg.textContent = '🔒 All locks restored.'; }
+    if (msg) { msg.style.color = '#37474f'; msg.textContent = '🔒 ' + label + ' locks restored.'; }
     setTimeout(function() { if (msg) msg.textContent = ''; }, 2000);
   } catch(e) { /* silently ignore — draft was already reset */ }
   _reRenderUnlock();
@@ -1265,13 +1392,19 @@ function _renderUnlockInner() {
   if (isMock) {
     return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
   }
-  var fm = _unlockDraft.freeMode;
+  var viewBand = _getDashboardViewGrade();
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var slot = _draftSlot(_unlockDraft, viewBand);
+  var fm = slot.freeMode;
   var html = '';
+
+  html += '<p class="db-unlock-grade-context" style="margin:0 0 12px;font-size:.8rem;color:#607d8b">'
+    + 'Free Mode &amp; per-unit unlocks apply to <strong>' + _esc(gradeLabel) + '</strong> only.</p>';
 
   // Free Mode toggle
   html += '<div class="db-toggle-row">'
-    + '<div><strong>🌟 Free Mode</strong><br>'
-    + '<span class="db-toggle-sub">Unlock all units and lessons at once</span></div>'
+    + '<div><strong>🌟 Free Mode &mdash; ' + _esc(gradeLabel) + '</strong><br>'
+    + '<span class="db-toggle-sub">Unlock all ' + _esc(gradeLabel) + ' units and lessons at once</span></div>'
     + '<button class="db-toggle-btn' + (fm ? ' db-toggle-on' : '') + '" data-action="_dbToggleFreeMode">'
     + (fm ? 'ON' : 'OFF') + '</button>'
     + '</div>';
@@ -1279,7 +1412,7 @@ function _renderUnlockInner() {
   // Unit cards grid
   html += '<div class="db-unit-grid"' + (fm ? ' style="opacity:.5;pointer-events:none"' : '') + '>';
   _UNITS_META.forEach(function(u, i) {
-    var unlocked = _isUnitUnlockedInDraft(_unlockDraft, i);
+    var unlocked = _isUnitUnlockedInDraft(_unlockDraft, i, viewBand);
     html += '<div class="db-unit-card' + (unlocked ? ' db-unit-unlocked' : '') + '">'
       + '<div class="db-unit-card-top">'
       + '<span class="db-unit-num">Unit ' + (i+1) + '</span>'
@@ -1295,7 +1428,7 @@ function _renderUnlockInner() {
     if (_activeDrawerUnit === i) {
       html += '</div><div class="db-lesson-drawer">';
       u.lessons.forEach(function(lName, li) {
-        var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li);
+        var lu = _isLessonUnlockedInDraft(_unlockDraft, i, li, viewBand);
         html += '<div class="db-lesson-row">'
           + '<span class="db-lesson-name">' + _esc(lName) + '</span>'
           + '<button class="db-toggle-btn db-toggle-sm' + (lu ? ' db-toggle-on' : '') + '" data-action="_dbToggleLessonUnlock" data-arg="' + i + '" data-arg2="' + li + '">'
@@ -1727,7 +1860,10 @@ function renderDashboard() {
     return;
   }
 
-  var scores   = student.SCORES  || [];
+  // View-grade filter — see design doc 2026-05-18-parent-dashboard-grade-scoped-state-design.md
+  var viewBand = _getDashboardViewGrade();           // 'k'|'g1'|'g2'
+  var allScores = student.SCORES  || [];
+  var scores  = allScores.filter(function(s){ return _inferScoreGrade(s) === viewBand; });
   var mastery  = student.MASTERY || {};
   var streak   = student.STREAK  || { current: 0 };
   var appTime  = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
@@ -1753,9 +1889,23 @@ function renderDashboard() {
   var hdrTitle = document.querySelector('.db-header-title');
   if (hdrTitle) hdrTitle.textContent = '📊 Parent Dashboard';
 
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var gradeDropdown = ''
+    + '<div class="db-grade-context" style="margin:2px 0 16px;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#37474f">'
+    +   '<label for="db-view-grade-select" style="margin:0">Viewing:</label>'
+    +   '<select id="db-view-grade-select" class="db-view-grade-select" data-action="_setDashboardViewGrade"'
+    +     ' style="font-family:inherit;font-size:.9rem;padding:4px 8px;border:1px solid #cfd8dc;border-radius:6px;background:#fff;cursor:pointer">'
+    +     '<option value="k"'  + (viewBand === 'k'  ? ' selected' : '') + '>Kindergarten</option>'
+    +     '<option value="g1"' + (viewBand === 'g1' ? ' selected' : '') + '>Grade 1</option>'
+    +     '<option value="g2"' + (viewBand === 'g2' ? ' selected' : '') + '>Grade 2</option>'
+    +   '</select>'
+    +   '<span style="color:#90a4ae;font-size:.75rem">(view filter only)</span>'
+    + '</div>';
+
   root.innerHTML =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
+    gradeDropdown +
     _renderManageProfiles() +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderRootSystem(scores, _unitNames()) +
@@ -2304,6 +2454,7 @@ if (typeof document !== 'undefined') {
     downloadReportPDF:       function()     { downloadReportPDF(); },
     windowPrint:             function()     { window.print(); },
     _dbToggleFreeMode:       function()     { _dbToggleFreeMode(); },
+    _setDashboardViewGrade:  function(_a, val) { _setDashboardViewGrade(val); },
     _dbToggleUnitUnlock:     function(a)    { _dbToggleUnitUnlock(Number(a)); },
     _dbToggleLessonDrawer:   function(a)    { _dbToggleLessonDrawer(Number(a)); },
     _dbToggleLessonUnlock:   function(a,b)  { _dbToggleLessonUnlock(Number(a), Number(b)); },
@@ -2349,10 +2500,14 @@ if (typeof document !== 'undefined') {
     fn(arg, arg2, el);
   }, true);
 
-  // Student selector change
+  // Student selector change + delegated select-change actions
   document.addEventListener('change', function(e) {
-    if (e.target && e.target.id === 'db-student-select') {
-      switchStudent(e.target.value);
+    var t = e.target;
+    if (!t) return;
+    if (t.id === 'db-student-select') { switchStudent(t.value); return; }
+    if (t.tagName === 'SELECT' && t.dataset && t.dataset.action) {
+      var fn = _DB_ACTIONS[t.dataset.action];
+      if (fn) fn(t.dataset.arg !== undefined ? t.dataset.arg : null, t.value, t);
     }
   });
 }
@@ -2829,5 +2984,7 @@ if (typeof module !== 'undefined') {
     _dbProfileGradeKey,
     _dbReadProfileGrade,
     _dbWriteProfileGrade,
+    _gradeBand,
+    _inferScoreGrade,
   };
 }

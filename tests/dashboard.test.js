@@ -25,6 +25,8 @@ const {
   _parseTimerSettings,
   _isUnitUnlockedInDraft,
   _isLessonUnlockedInDraft,
+  _gradeBand,
+  _inferScoreGrade,
   buildParentInsight,
   _computeUnitInsights,
   _unitIndexFromId,
@@ -268,23 +270,71 @@ describe('_computeReviewQueue', () => {
 
 // ── _parseUnlockSettings ──────────────────────────────────────────────────
 describe('_parseUnlockSettings', () => {
-  test('returns defaults for empty object', () => {
+  test('empty object returns empty byGrade scaffold', () => {
     const r = _parseUnlockSettings({});
-    expect(r.freeMode).toBe(false);
-    expect(r.units).toEqual([]);
-    expect(r.lessons).toEqual({});
+    expect(r.schemaVersion).toBe(2);
+    expect(r.byGrade.k.freeMode).toBe(false);
+    expect(r.byGrade.g1.freeMode).toBe(false);
+    expect(r.byGrade.g2.freeMode).toBe(false);
+    expect(r.byGrade.g1.units).toEqual([]);
+    expect(r.byGrade.g2.lessons).toEqual({});
   });
 
-  test('returns defaults for null/undefined', () => {
-    expect(_parseUnlockSettings(null).freeMode).toBe(false);
-    expect(_parseUnlockSettings(undefined).units).toEqual([]);
+  test('null/undefined return empty byGrade scaffold', () => {
+    expect(_parseUnlockSettings(null).byGrade.g2.freeMode).toBe(false);
+    expect(_parseUnlockSettings(undefined).byGrade.g2.units).toEqual([]);
   });
 
-  test('parses freeMode, units, lessons from valid object', () => {
+  test('legacy flat shape migrates into active band slot, defaulting to g2', () => {
     const r = _parseUnlockSettings({ freeMode: true, units: [0,2], lessons: { '1_2': true } });
-    expect(r.freeMode).toBe(true);
-    expect(r.units).toEqual([0, 2]);
-    expect(r.lessons['1_2']).toBe(true);
+    expect(r.schemaVersion).toBe(2);
+    expect(r.byGrade.g2.freeMode).toBe(true);
+    expect(r.byGrade.g2.units).toEqual([0, 2]);
+    expect(r.byGrade.g2.lessons['1_2']).toBe(true);
+    // Other grades stay defaulted off
+    expect(r.byGrade.g1.freeMode).toBe(false);
+    expect(r.byGrade.k.freeMode).toBe(false);
+  });
+
+  test('legacy flat shape migrates into supplied activeBand', () => {
+    const r = _parseUnlockSettings({ freeMode: true, units: [3], lessons: {} }, 'g1');
+    expect(r.byGrade.g1.freeMode).toBe(true);
+    expect(r.byGrade.g1.units).toEqual([3]);
+    expect(r.byGrade.g2.freeMode).toBe(false);
+  });
+
+  test('schema-v2 byGrade input is preserved verbatim', () => {
+    const r = _parseUnlockSettings({
+      schemaVersion: 2,
+      byGrade: {
+        k:  { freeMode: false, units: [], lessons: {} },
+        g1: { freeMode: true,  units: [2,4], lessons: { '3_1': true } },
+        g2: { freeMode: false, units: [1], lessons: {} }
+      }
+    });
+    expect(r.byGrade.g1.freeMode).toBe(true);
+    expect(r.byGrade.g1.units).toEqual([2,4]);
+    expect(r.byGrade.g1.lessons['3_1']).toBe(true);
+    expect(r.byGrade.g2.units).toEqual([1]);
+    expect(r.byGrade.k.freeMode).toBe(false);
+  });
+
+  test('LEGACY (pre-v2) flat-shape fields no longer leak onto top level', () => {
+    const r = _parseUnlockSettings({ freeMode: true, units: [], lessons: {} });
+    // After parse the new shape replaces the legacy flat shape — top-level
+    // freeMode should be undefined, byGrade should be the source of truth.
+    expect(r.freeMode).toBeUndefined();
+    expect(r.units).toBeUndefined();
+    expect(r.lessons).toBeUndefined();
+  });
+
+  // Backwards-compat (legacy flat input still produces a valid byGrade output)
+  test('legacy shape with grades inherited still works for top-level access via byGrade.g2', () => {
+    const r = _parseUnlockSettings({ freeMode: true, units: [0,2], lessons: { '1_2': true } });
+    // Use byGrade.g2 directly for assertions against the migrated values.
+    expect(r.byGrade.g2.freeMode).toBe(true);
+    expect(r.byGrade.g2.units).toEqual([0, 2]);
+    expect(r.byGrade.g2.lessons['1_2']).toBe(true);
   });
 });
 
@@ -326,6 +376,44 @@ describe('_isUnitUnlockedInDraft', () => {
   });
 });
 
+// ── _isUnitUnlockedInDraft (byGrade-aware) ────────────────────────────────
+describe('_isUnitUnlockedInDraft byGrade', () => {
+  const draftWithBands = {
+    schemaVersion: 2,
+    byGrade: {
+      k:  { freeMode: false, units: [],    lessons: {} },
+      g1: { freeMode: true,  units: [],    lessons: {} },
+      g2: { freeMode: false, units: [3,5], lessons: {} }
+    }
+  };
+
+  test('g1 slot freeMode unlocks all G1 units', () => {
+    expect(_isUnitUnlockedInDraft(draftWithBands, 7, 'g1')).toBe(true);
+  });
+
+  test('g2 slot units list unlocks just those units', () => {
+    expect(_isUnitUnlockedInDraft(draftWithBands, 3, 'g2')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draftWithBands, 5, 'g2')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draftWithBands, 4, 'g2')).toBe(false);
+  });
+
+  test('k slot with no unlocks stays locked', () => {
+    expect(_isUnitUnlockedInDraft(draftWithBands, 2, 'k')).toBe(false);
+  });
+
+  test('G1 freeMode does NOT leak into G2 or K', () => {
+    expect(_isUnitUnlockedInDraft(draftWithBands, 7, 'g2')).toBe(false);
+    expect(_isUnitUnlockedInDraft(draftWithBands, 7, 'k')).toBe(false);
+  });
+
+  test('legacy flat freeMode:true applies to G2 only — not G1 or K', () => {
+    var legacy = { freeMode: true, units: [], lessons: {} };
+    expect(_isUnitUnlockedInDraft(legacy, 5, 'g2')).toBe(true);
+    expect(_isUnitUnlockedInDraft(legacy, 5, 'g1')).toBe(false);
+    expect(_isUnitUnlockedInDraft(legacy, 5, 'k')).toBe(false);
+  });
+});
+
 // ── _isLessonUnlockedInDraft ──────────────────────────────────────────────
 describe('_isLessonUnlockedInDraft', () => {
   test('returns true when freeMode is on', () => {
@@ -338,6 +426,69 @@ describe('_isLessonUnlockedInDraft', () => {
 
   test('returns false when lesson key absent', () => {
     expect(_isLessonUnlockedInDraft({ freeMode: false, units: [], lessons: {} }, 2, 1)).toBe(false);
+  });
+});
+
+// ── _gradeBand ────────────────────────────────────────────────────────────
+describe('_gradeBand', () => {
+  test('K aliases collapse to "k"', () => {
+    expect(_gradeBand('K')).toBe('k');
+    expect(_gradeBand('k')).toBe('k');
+    expect(_gradeBand('Kindergarten')).toBe('k');
+    expect(_gradeBand('0')).toBe('k');
+  });
+  test('Grade 1 aliases collapse to "g1"', () => {
+    expect(_gradeBand('1')).toBe('g1');
+    expect(_gradeBand('g1')).toBe('g1');
+    expect(_gradeBand('Grade1')).toBe('g1');
+    expect(_gradeBand('Grade 1')).toBe('g1');
+  });
+  test('Grade 2 aliases collapse to "g2"', () => {
+    expect(_gradeBand('2')).toBe('g2');
+    expect(_gradeBand('g2')).toBe('g2');
+    expect(_gradeBand('Grade 2')).toBe('g2');
+  });
+  test('Unknown returns null', () => {
+    expect(_gradeBand(null)).toBe(null);
+    expect(_gradeBand(undefined)).toBe(null);
+    expect(_gradeBand('')).toBe(null);
+    expect(_gradeBand('foo')).toBe(null);
+    expect(_gradeBand('5')).toBe(null);
+  });
+});
+
+// ── _inferScoreGrade ──────────────────────────────────────────────────────
+describe('_inferScoreGrade', () => {
+  test('direct grade field takes precedence', () => {
+    expect(_inferScoreGrade({ grade: 'g1', qid: 'lq_u2-l1-xyz' })).toBe('g1');
+    expect(_inferScoreGrade({ grade: 'K' })).toBe('k');
+  });
+  test('Grade 1 qid prefix → g1', () => {
+    expect(_inferScoreGrade({ qid: 'lq_g1u1-l1-xyz' })).toBe('g1');
+    expect(_inferScoreGrade({ qid: 'g1u3_uq' })).toBe('g1');
+  });
+  test('Kindergarten qid prefix → k', () => {
+    expect(_inferScoreGrade({ qid: 'lq_ku2-l1-zzz' })).toBe('k');
+    expect(_inferScoreGrade({ qid: 'ku4_uq' })).toBe('k');
+  });
+  test('Legacy Grade 2 (no prefix) → g2', () => {
+    expect(_inferScoreGrade({ qid: 'lq_u1-l2-add-01' })).toBe('g2');
+    expect(_inferScoreGrade({ qid: 'u3_uq' })).toBe('g2');
+  });
+  test('sourceLessonId fallback used if qid is absent', () => {
+    expect(_inferScoreGrade({ sourceLessonId: 'g1u4-l5-tens-add' })).toBe('g1');
+  });
+  test('Unrecognized → legacy_unknown', () => {
+    expect(_inferScoreGrade({ qid: 'final_test' })).toBe('legacy_unknown');
+    expect(_inferScoreGrade({ qid: 'random_thing' })).toBe('legacy_unknown');
+    expect(_inferScoreGrade(null)).toBe('legacy_unknown');
+    expect(_inferScoreGrade({})).toBe('legacy_unknown');
+  });
+  test('invalid grade field falls through to inference / legacy_unknown', () => {
+    // Bad grade='5' with no qid → no inference possible → legacy_unknown
+    expect(_inferScoreGrade({ grade: '5' })).toBe('legacy_unknown');
+    // Bad grade='5' but qid prefix wins
+    expect(_inferScoreGrade({ grade: '5', qid: 'lq_g1u1-l1' })).toBe('legacy_unknown');
   });
 });
 

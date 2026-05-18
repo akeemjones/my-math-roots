@@ -868,6 +868,44 @@ function _studentIdForCache() {
   return localStorage.getItem('mmr_active_student_id') || 'local';
 }
 
+// Map any grade-ish input to the short grade-band token used by score records
+// and grade-scoped unlock settings ('k' | 'g1' | 'g2'). Returns null for
+// unknown inputs. Distinct from normalizeGrade() in state.js, which returns
+// the canonical 'K' / '1' / '2' tokens used by mmr_grade and storage key
+// namespacing — kept in sync below.
+function _gradeBand(v) {
+  if (v === null || v === undefined) return null;
+  var s = String(v).trim().toLowerCase();
+  if (s === 'k' || s === 'kindergarten' || s === '0') return 'k';
+  if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return 'g1';
+  if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return 'g2';
+  return null;
+}
+
+// Determine the grade band for a single score record. Returns 'k'|'g1'|'g2'
+// from a direct `grade` field if present, otherwise infers from qid /
+// sourceLessonId / sourceUnitId prefixes. Returns 'legacy_unknown' when the
+// grade cannot be determined; callers should EXCLUDE those records from
+// grade-specific stats per spec.
+function _inferScoreGrade(s) {
+  if (!s) return 'legacy_unknown';
+  if (s.grade) {
+    var b = _gradeBand(s.grade);
+    return b || 'legacy_unknown';
+  }
+  var probes = [s.qid, s.sourceLessonId, s.sourceUnitId].filter(function(p){ return p; });
+  for (var i = 0; i < probes.length; i++) {
+    var t = String(probes[i]).toLowerCase();
+    // Grade 1: ids carry an explicit g1 prefix (e.g. lq_g1u1-l1-..., g1u8_uq)
+    if (/^(lq_)?g1/.test(t)) return 'g1';
+    // Kindergarten: ids carry an explicit k prefix (e.g. lq_ku2-..., ku4_uq)
+    if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
+    // Legacy Grade 2 default: no grade prefix, just u<N>... or lq_u<N>...
+    if (/^(lq_)?u\d/.test(t)) return 'g2';
+  }
+  return 'legacy_unknown';
+}
+
 function _readUnlockCache() {
   var sid = _studentIdForCache();
   if (sid === 'local') return null;
@@ -875,6 +913,35 @@ function _readUnlockCache() {
     var raw = localStorage.getItem('wb_unlock_' + sid);
     return raw ? JSON.parse(raw) : null;
   } catch(e) { return null; }
+}
+
+// Resolve the active student's current grade band for unlock-cache lookups.
+// Reads from mmr_grade (the student-app's active grade), then falls back to
+// 'g2' to match the historical default.
+function _activeGradeBand() {
+  return _gradeBand(localStorage.getItem('mmr_grade')) || 'g2';
+}
+
+// Read a grade-band slot from the unlock cache. Handles both the new shape
+// (cache.byGrade.<band>) and the legacy flat shape (read-only fallback so
+// existing accounts don't lose their settings until the parent re-saves).
+//
+// Legacy-flat policy: the pre-v2 shape has no per-grade metadata. To avoid
+// silently unlocking every grade for legacy parents (spec: "Avoid continuing
+// to let old global freeMode:true unlock every grade"), we map legacy values
+// to the G2 slot only — G2 is the historical default that pre-dates both
+// Grade 1 and Kindergarten content. K/G1 stay locked until the parent saves
+// in the new code (which writes the byGrade shape).
+function _unlockSlotForBand(cache, band) {
+  if (!cache) return null;
+  if (cache.byGrade && cache.byGrade[band]) return cache.byGrade[band];
+  if (cache.byGrade) return null;
+  if (band !== 'g2') return null;
+  return {
+    freeMode: cache.freeMode === true,
+    units:    Array.isArray(cache.units) ? cache.units : [],
+    lessons:  (cache.lessons && typeof cache.lessons === 'object') ? cache.lessons : {}
+  };
 }
 
 function _readTimerCache() {
@@ -895,18 +962,22 @@ function saveLessonUnlocks(obj){ saveSigned(LESSON_UNLOCK_KEY, obj); }
 function isUnitIndividuallyUnlocked(idx){
   var cache = _readUnlockCache();
   if (cache) {
-    if (cache.freeMode === true) return true;
-    return Array.isArray(cache.units) && cache.units.indexOf(idx) !== -1;
+    var slot = _unlockSlotForBand(cache, _activeGradeBand());
+    if (!slot) return false;
+    if (slot.freeMode === true) return true;
+    return Array.isArray(slot.units) && slot.units.indexOf(idx) !== -1;
   }
-  // Fallback to legacy signed key
+  // Fallback to legacy signed key (no Supabase cache present — guest mode etc.)
   return getUnitUnlocks().includes(idx);
 }
 
 function isLessonIndividuallyUnlocked(unitIdx, lessonIdx){
   var cache = _readUnlockCache();
   if (cache) {
-    if (cache.freeMode === true) return true;
-    return !!(cache.lessons && cache.lessons[unitIdx+'_'+lessonIdx]);
+    var slot = _unlockSlotForBand(cache, _activeGradeBand());
+    if (!slot) return false;
+    if (slot.freeMode === true) return true;
+    return !!(slot.lessons && slot.lessons[unitIdx+'_'+lessonIdx]);
   }
   // Fallback to legacy signed key
   return !!getLessonUnlocks()[unitIdx+'_'+lessonIdx];
