@@ -2563,12 +2563,13 @@ function buildParentInsight(opts) {
 }
 
 // ── Canonical grade normalizer (also defined in src/state.js) ────────────
-// Map any grade-ish input to canonical 'K' or '2'. Duplicated here so Jest
-// can call it without booting the full app.
+// Map any grade-ish input to canonical 'K', '1', or '2'. Duplicated here so
+// Jest can call it without booting the full app.
 function normalizeGrade(value) {
   if (value === null || value === undefined) return '2';
   var s = String(value).trim().toLowerCase();
   if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+  if (s === '1') return '1';
   return '2';
 }
 

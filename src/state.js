@@ -36,14 +36,16 @@ function saveSigned(key, value){
 }
 
 // ── Canonical grade normalizer ────────────────────────────────────────────
-// Map any grade-ish input to canonical 'K' or '2'. K-aliases ('k','K',
-// 'kindergarten','0') resolve to 'K'; everything else (including missing/
-// invalid) resolves to '2' (the historical default). Use this everywhere a
-// grade value is read or compared to avoid casing inconsistencies.
+// Map any grade-ish input to canonical 'K', '1', or '2'. K-aliases ('k','K',
+// 'kindergarten','0') resolve to 'K'; '1' resolves to '1'; everything else
+// (including missing/invalid) resolves to '2' (the historical default).
+// Use this everywhere a grade value is read or compared to avoid casing
+// inconsistencies.
 function normalizeGrade(value) {
   if (value === null || value === undefined) return '2';
   var s = String(value).trim().toLowerCase();
   if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+  if (s === '1') return '1';
   return '2';
 }
 
