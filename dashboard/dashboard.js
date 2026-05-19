@@ -1864,7 +1864,18 @@ function renderDashboard() {
   var viewBand = _getDashboardViewGrade();           // 'k'|'g1'|'g2'
   var allScores = student.SCORES  || [];
   var scores  = allScores.filter(function(s){ return _inferScoreGrade(s) === viewBand; });
-  var mastery  = student.MASTERY || {};
+  // Activity events: filter to selected grade (untagged legacy events kept).
+  var activityEvents = (student.ACTIVITY || []).filter(function(e){
+    if (!e) return false;
+    if (e.grade == null) return true;
+    return (_gradeBand(e.grade) === viewBand);
+  });
+  // Derive a grade-scoped mastery from grade-filtered activity events so the
+  // Learning Insights section does not leak tags across grades. The legacy
+  // unscoped mastery is still passed to existing sections for backwards compat.
+  var rawMastery   = student.MASTERY || {};
+  var gradeMastery = _deriveMasteryFromActivity(activityEvents);
+  var mastery      = Object.keys(gradeMastery).length ? gradeMastery : rawMastery;
   var streak   = student.STREAK  || { current: 0 };
   var appTime  = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
 
@@ -1881,6 +1892,20 @@ function renderDashboard() {
   var weak     = _computeWeakAreas(skills);
   var activity = _computeActivityData(scores, 7);
   var review   = _computeReviewQueue(mastery, qTextMap);
+  // Phase 1 Learning Insights: build from already-grade-filtered inputs.
+  var interventionEvents = _filterInterventionsByGrade(_getInterventionEvents(), viewBand);
+  var learningInsights = buildLearningInsights({
+    viewBand:           viewBand,
+    studentName:        student.name,
+    scores:             scores,
+    activityEvents:     activityEvents,
+    interventionEvents: interventionEvents,
+    mastery:            gradeMastery,
+    tagLabels:          _TAG_LABEL_MAP,
+    errLabels:          _ERR_LABEL_MAP,
+    errHelpMap:         _ERR_HELP_MAP,
+    lessonNameFn:       function(){ return null; },
+  });
 
   _prStatsHtml  = '';
   _prReportText = '';
@@ -1906,6 +1931,7 @@ function renderDashboard() {
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
     gradeDropdown +
+    _renderLearningInsightsV2(learningInsights) +
     _renderManageProfiles() +
     _renderWeeklySnapshot(scores, appTime, streak) +
     _renderRootSystem(scores, _unitNames()) +
@@ -2512,6 +2538,279 @@ if (typeof document !== 'undefined') {
   });
 }
 
+// ── Phase 1 Learning Insights: label maps + intervention event helpers ───
+// Mirrors src/dashboard.js. Copies kept in lockstep — see the in-app file
+// for the canonical version. Update both whenever a new tag is added.
+
+var _TAG_LABEL_MAP = {
+  // K: Counting & Cardinality
+  'counting':'Counting','count_to_10':'Counting to 10','count_to_20':'Counting to 20',
+  'count_backward':'Counting Backward','count_forward':'Counting Forward',
+  'count_from_any':'Counting from Any Number','count_strategy':'Counting Strategies',
+  'cardinality':'How Many in All','subitize':'Quick Look (Subitize)',
+  'recognize_groups':'Recognizing Groups','organize_groups':'Organizing Groups',
+  'numeral_recognition':'Reading Numerals','teen_numbers':'Teen Numbers',
+  'by_ones':'Counting by Ones','by_tens':'Counting by Tens','skip_count':'Skip Counting',
+  // K: Number Relationships
+  'number_relationships':'Number Relationships','one_more':'One More','one_less':'One Less',
+  'compare':'Comparing Numbers','more_fewer_same':'More, Fewer, or Same',
+  'greater_less_equal':'Greater, Less, or Equal','more_less_equal':'More, Less, or Equal',
+  'more_fewer':'More or Fewer','compose':'Putting Numbers Together',
+  'decompose':'Breaking Numbers Apart','missing_number':'Missing Numbers','pattern':'Number Patterns',
+  // K: Addition & Subtraction
+  'add_sub':'Adding & Subtracting','addition':'Addition','subtraction':'Subtraction',
+  'join':'Joining Groups','take_away':'Taking Away','word_problem':'Word Problems',
+  'operation_choice':'Choosing the Right Operation','reasoning':'Explaining Thinking',
+  'join_separate':'Joining & Separating',
+  // K: Geometry
+  'shapes':'Shapes','2d':'Flat Shapes (2D)','3d':'Solid Shapes (3D)',
+  'sides':'Sides of Shapes','corners':'Corners of Shapes','identify':'Identifying',
+  'sort':'Sorting','attributes':'Shape Attributes',
+  // K: Measurement
+  'measurement':'Measurement','length':'Length','height':'Height',
+  'weight':'Weight','capacity':'Capacity','order':'Ordering','sequence':'Ordering in Sequence',
+  // K: Data Analysis
+  'data':'Reading Data','categorize':'Sorting into Categories',
+  'picture_graph':'Picture Graphs','build_read':'Building & Reading Graphs',
+  // K: Financial Literacy
+  'money':'Money','income':'Earning Money','jobs':'Jobs & Income',
+  'wants':'Wants','needs':'Needs','coins':'Coins',
+  'penny':'Pennies','nickel':'Nickels','dime':'Dimes','quarter':'Quarters',
+  // Grade 1/2: Basic Facts
+  'basic_facts':'Basic Math Facts','doubles':'Doubles','make_ten':'Make a 10',
+  'count_up':'Count Up','count_back':'Count Back','number_families':'Fact Families',
+  // Grade 1/2: Place Value & Operations
+  'place_value':'Place Value','regrouping':'Regrouping','skip_counting':'Skip Counting',
+  'estimation':'Estimating','rounding':'Rounding','mental_math':'Mental Math',
+  // Grade 1/2: Other
+  'fractions':'Fractions','geometry':'Geometry','time':'Telling Time',
+  'multiplication':'Multiplication','division':'Division','financial_literacy':'Financial Literacy',
+};
+
+// Parent-facing labels for every err_* tag used across K and Grade 1/2.
+var _ERR_LABEL_MAP = {
+  'err_count_inclusive':'Counted from wrong start','err_off_by_one':'Off by one',
+  'err_wrong_operation':'Used wrong operation (+/−)','err_forgot_carry':'Forgot to carry',
+  'err_forgot_borrow':'Forgot to borrow','err_no_regroup':'Forgot to regroup',
+  'err_place_value_confusion':'Place value mix-up','err_skip_count_error':'Skip-count mistake',
+  'err_double_count':'Counted same thing twice','err_magnitude_error':'Answer size was off',
+  'err_inverse_confusion':'Add vs. subtract direction',
+  'err_under_count':'Counted too few','err_over_count':'Counted too many',
+  'err_count_all':'Counted each one (no shortcut)','err_teen':'Mixed up teen numbers',
+  'err_subitize':'Needed to count one by one',
+  'err_more':'Chose more instead of less','err_less':'Chose less instead of more',
+  'err_same':'Said same when different','err_not_equal':'Said not equal when equal',
+  'err_equal_confusion':'Thought amounts were equal',
+  'err_sub_instead':'Subtracted instead of added','err_add_instead':'Added instead of subtracted',
+  'err_keep_start':'Used starting number as answer','err_keep_total':'Kept total instead of separating',
+  'err_double_left':'Doubled the first number','err_double_right':'Doubled the second number',
+  'err_shape_confuse':'Mixed up shape names','err_shape_orient':'Confused by shape rotation',
+  'err_shape_sort':'Sorted shapes incorrectly','err_corner_count':'Wrong corner count',
+  'err_2d_3d_confuse':'Flat vs. solid mix-up','err_wrong_solid':'Named wrong solid shape',
+  'err_size_distractor':'Distracted by size','err_color_distractor':'Confused by color',
+  'err_visual_confusion':'Visual mix-up',
+  'err_size_confuse':'Judged by size, not measurement','err_size_confusion':'Chose wrong size',
+  'err_length_confuse':'Length vs. height mix-up','err_longer_shorter':'Longer vs. shorter mix-up',
+  'err_heavier_lighter':'Heavier vs. lighter mix-up','err_weight_confuse':'Weight mix-up',
+  'err_capacity_confuse':'Which holds more — mix-up',
+  'err_wrong_category':'Wrong group or category','err_whole':'Chose total instead of one group',
+  'err_coin_confusion':'Mixed up coin names','err_wrong_coin':'Named the wrong coin',
+  'err_confuses_want_need':'Want vs. need mix-up','err_picks_want_as_need':'Chose a want as a need',
+  'err_picks_need_as_want':'Chose a need as a want','err_not_income':'Missed the income source',
+  'err_confuses_gift_income':'Gift vs. earned money mix-up',
+  'err_confused':'General mix-up',
+};
+
+// One-sentence parent guidance shown below each mistake label.
+var _ERR_HELP_MAP = {
+  'err_count_inclusive':'When counting up, start from the next number — not the number itself.',
+  'err_off_by_one':'Use objects: one finger touch per count, stop on the very last one.',
+  'err_wrong_operation':'Read the question aloud — "altogether" means add; "left over" means subtract.',
+  'err_forgot_carry':'Try graph paper with one digit per box so carrying is easier to track.',
+  'err_forgot_borrow':'Stack the numbers and circle the column you are borrowing from before starting.',
+  'err_no_regroup':'Write out each step — show them to circle the tens and carry that amount over.',
+  'err_place_value_confusion':'Use physical tens-rods and ones-cubes so each digit has a visible value.',
+  'err_skip_count_error':'Chant the skip-count sequence together daily; clap on each number.',
+  'err_double_count':'After counting an object, push it aside so it cannot be counted again.',
+  'err_magnitude_error':'Ask first: "Should the answer be bigger or smaller than what we started with?"',
+  'err_inverse_confusion':'Draw a number line: adding slides right, subtracting slides left.',
+  'err_under_count':'Slow the count down — touch each object once and say the number out loud.',
+  'err_over_count':'Stop counting the moment you run out of objects to touch.',
+  'err_count_all':'Show a group of 2 or 3 dots briefly and ask how many — practice without counting.',
+  'err_teen':'Use a number chart together — point to each teen number and say it aloud.',
+  'err_subitize':'Flash dot cards (1 to 5 dots) quickly; practice naming the group without counting.',
+  'err_more':'Reread the question — look for the word "fewer" or "less" to know the direction.',
+  'err_less':'Reread the question — look for the word "more" to know the direction.',
+  'err_same':'Line two groups side by side and count each — do the totals match?',
+  'err_not_equal':'Count both groups together; if the counts match, they are equal.',
+  'err_equal_confusion':'Put two groups side by side; count each and compare the totals out loud.',
+  'err_sub_instead':'The + sign means getting more — act it out by adding objects to a pile.',
+  'err_add_instead':'The minus sign means taking away — physically remove objects from a group.',
+  'err_keep_start':'Start at the first number and count on — use fingers for the second number.',
+  'err_keep_total':'Use objects: put the total in a pile, then take out the part you know.',
+  'err_double_left':'Put two separate groups on the table — make sure they are different amounts.',
+  'err_double_right':'Put two separate groups on the table — make sure they are different amounts.',
+  'err_shape_confuse':'Count corners together: triangle = 3, square = 4, rectangle = 4, circle = 0.',
+  'err_shape_orient':'A triangle upside down is still a triangle — its name comes from its corners.',
+  'err_shape_sort':'Sort shapes into two piles: "curved sides" and "straight sides."',
+  'err_corner_count':'Trace each corner with a finger and tap the table once per corner.',
+  'err_2d_3d_confuse':'Flat shapes can be drawn on paper; solid shapes can be picked up and rolled.',
+  'err_wrong_solid':'Hold real solid shapes and name each one by touching its faces and edges.',
+  'err_size_distractor':'Shape names do not change by size — a tiny triangle and a huge one are both triangles.',
+  'err_color_distractor':'Shape names do not change by color — a red square is still a square.',
+  'err_visual_confusion':'Focus on the key feature: flat or curved sides, and how many corners.',
+  'err_size_confuse':'Focus only on the attribute asked (length, weight) — ignore other differences.',
+  'err_size_confusion':'Bigger does not always mean heavier — focus on the attribute being measured.',
+  'err_length_confuse':'Length goes side to side; height goes up and down — use a ruler to show both.',
+  'err_longer_shorter':'Line objects up at one end; which sticks out further is longer.',
+  'err_heavier_lighter':'Hold one object in each hand and feel which pulls down more.',
+  'err_weight_confuse':'Hold one object in each hand and feel which pulls down more.',
+  'err_capacity_confuse':'Pour water into two containers — which one overflows first holds less.',
+  'err_wrong_category':'Point to the label of each column or group and read it together out loud.',
+  'err_whole':'Find the bar for just one category — do not add all groups together.',
+  'err_coin_confusion':'Sort real coins; say name and value: penny 1c, nickel 5c, dime 10c, quarter 25c.',
+  'err_wrong_coin':'Make a coin chart: penny = small copper, nickel = big silver, dime = small silver.',
+  'err_confuses_want_need':'Needs are things to survive (food, shelter); wants are extras we enjoy.',
+  'err_picks_want_as_need':'Ask: "Could you stay healthy without this?" If yes, it is probably a want.',
+  'err_picks_need_as_want':'Ask: "Do you need this to stay safe and healthy?" If yes, it is a need.',
+  'err_not_income':'Income is money earned by working — ask "is someone being paid for a job here?"',
+  'err_confuses_gift_income':'A gift is given freely; income is earned by working.',
+  'err_confused':'Work through one example together with real objects before trying on screen.',
+};
+
+// Read intervention events from localStorage. Phase 1 standalone reads only
+// from the local key; cross-device Supabase fetch is in the in-app dashboard
+// (see _loadRemoteInterventionData in src/dashboard.js) and remains a Phase 2
+// follow-up on the standalone surface.
+function _getInterventionEvents() {
+  try {
+    var raw = (typeof localStorage !== 'undefined') ? localStorage.getItem('mmr_intervention_events_v1') : null;
+    var parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_e) {
+    return [];
+  }
+}
+
+// Phase 1 Learning Insights renderer. Mirrors src/dashboard.js. Returns the
+// section HTML wrapped in _dbSection('insights', ...) so collapse state is
+// shared across the dashboard's sections.
+function _renderLearningInsightsV2(insights) {
+  if (!insights) return '';
+
+  var card = function(cssClass, headerHtml, bodyHtml) {
+    return '<div class="li-card ' + cssClass + '" '
+      + 'style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;margin:0;">'
+      + '<div class="li-card-h" style="font-size:.85rem;font-weight:700;color:#37474f;margin:0 0 8px;display:flex;align-items:center;gap:6px">'
+      + headerHtml + '</div>'
+      + bodyHtml
+      + '</div>';
+  };
+  var subLine = function(txt) {
+    return '<div class="li-sub" style="font-size:.78rem;color:#546e7a;margin-top:4px;line-height:1.35">' + txt + '</div>';
+  };
+
+  var gradeChip = '<span style="display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:#eceff1;color:#37474f;font-size:.7rem;font-weight:600;letter-spacing:.04em">'
+    + (insights.viewBand === 'k' ? 'KINDERGARTEN' : insights.viewBand === 'g1' ? 'GRADE 1' : 'GRADE 2')
+    + '</span>';
+
+  if (!insights.hasAnyData) {
+    var emptyBody = '<p style="margin:0;color:#546e7a;font-size:.85rem">Not enough data yet to spot patterns for this grade.</p>'
+      + '<p style="margin:8px 0 0;font-size:.85rem"><strong>Try this:</strong> ' + _esc(insights.parentAction.label) + '</p>';
+    return _dbSection('insights', '&#x1F9E0; Learning Insights' + gradeChip, emptyBody);
+  }
+
+  var sections = [];
+
+  if (insights.needsPractice.length) {
+    var npRows = insights.needsPractice.map(function(np, idx) {
+      var sep = idx === 0 ? '' : 'border-top:1px dashed #eceff1;padding-top:6px;margin-top:6px;';
+      return '<div style="' + sep + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(np.label) + '</span>'
+        + '<span style="color:#c62828;font-weight:700">' + np.accuracy + '%</span>'
+        + '</div>'
+        + subLine(_esc(np.why))
+        + (np.lessonName ? subLine('<strong>Try:</strong> ' + _esc(np.recommendation)) : '')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-needs-practice', '&#x1F4DD; Needs Practice', npRows));
+  }
+
+  if (insights.commonMistakes.length) {
+    var cmRows = insights.commonMistakes.map(function(cm, idx) {
+      var sep = idx === 0 ? '' : 'border-top:1px dashed #eceff1;padding-top:6px;margin-top:6px;';
+      var lessonLine = '';
+      if (cm.lessonId && cm.lessonName) {
+        var um = String(cm.lessonId).match(/u(\d+)[-]?l(\d+)$/i);
+        var prefix = um ? ('Unit ' + um[1] + ' Lesson ' + um[2] + ': ') : '';
+        lessonLine = subLine('&#x1F4CD; Most common in ' + _esc(prefix + cm.lessonName));
+      }
+      return '<div style="' + sep + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(cm.label) + '</span>'
+        + '<span style="color:#e65100;font-weight:700">' + cm.count + '&#xD7;</span>'
+        + '</div>'
+        + lessonLine
+        + (cm.helpText ? subLine('&#x1F4A1; ' + _esc(cm.helpText)) : '')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-common-mistakes', '&#x26A0;&#xFE0F; Common Mistakes', cmRows));
+  }
+
+  if (insights.strengths.length) {
+    var stRows = insights.strengths.map(function(st, idx) {
+      var sep = idx === 0 ? '' : 'border-top:1px dashed #eceff1;padding-top:6px;margin-top:6px;';
+      return '<div style="' + sep + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(st.label) + '</span>'
+        + '<span style="color:#2e7d32;font-weight:700">' + st.accuracy + '%</span>'
+        + '</div>'
+        + subLine(st.attempts + ' attempt' + (st.attempts !== 1 ? 's' : '') + ' &mdash; strong.')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-strengths', '&#x2B50; Strengths', stRows));
+  }
+
+  var trendBadge, trendText, trendColor;
+  switch (insights.trend.state) {
+    case 'improving': trendBadge = '&#x2191; Improving';       trendText = 'Recent answers are getting more right.'; trendColor = '#2e7d32'; break;
+    case 'declining': trendBadge = '&#x2193; Needs attention'; trendText = 'Recent answers show more misses.';        trendColor = '#c62828'; break;
+    case 'steady':    trendBadge = '&#x2192; Steady';          trendText = 'Accuracy is holding steady.';            trendColor = '#1565c0'; break;
+    default:          trendBadge = 'Not enough data yet';      trendText = 'A few more quizzes will unlock the trend.'; trendColor = '#90a4ae';
+  }
+  sections.push(card('li-trend', '&#x1F4C8; Trend',
+    '<div><span style="display:inline-block;padding:3px 8px;border-radius:999px;background:' + trendColor + '15;color:' + trendColor + ';font-weight:700;font-size:.78rem">'
+    + trendBadge + '</span></div>' + subLine(_esc(trendText))));
+
+  sections.push(card('li-next-step', '&#x1F3AF; Recommended Next Step',
+    '<div style="font-weight:700;color:#263238;font-size:.92rem">' + _esc(insights.nextStep.label) + '</div>'
+    + subLine(_esc(insights.nextStep.why))));
+
+  if (insights.interventionRecovery.state === 'not-enough-data') {
+    sections.push(card('li-recovery li-recovery-empty', '&#x1F501; Intervention Recovery',
+      '<div style="color:#90a4ae;font-size:.85rem">Not enough intervention data yet.</div>'));
+  } else {
+    var rec = insights.interventionRecovery;
+    var recColor = rec.state === 'good' ? '#2e7d32' : rec.state === 'ok' ? '#e65100' : '#c62828';
+    var perTag = (rec.topTag && rec.topTagPct != null)
+      ? subLine(_esc(rec.topTagLabel) + ': ' + rec.topTagPct + '% corrected on next try.')
+      : '';
+    sections.push(card('li-recovery', '&#x1F501; Intervention Recovery',
+      '<div style="font-size:1.4rem;font-weight:700;color:' + recColor + '">' + rec.overallPct + '%</div>'
+      + subLine(rec.total + ' extra-help moment' + (rec.total !== 1 ? 's' : '') + '.')
+      + perTag));
+  }
+
+  sections.push(card('li-parent-action', '&#x1F44B; Parent Action',
+    '<div style="font-weight:700;color:#263238;font-size:.92rem">' + _esc(insights.parentAction.label) + '</div>'
+    + subLine(_esc(insights.parentAction.why))));
+
+  var body = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:6px">'
+    + sections.join('') + '</div>';
+  return _dbSection('insights', '&#x1F9E0; Learning Insights' + gradeChip, body);
+}
+
 // ── Insight engine helpers (duplicated here for testability) ─────────────
 
 function _bie_computeTagStats(mastery) {
@@ -2960,6 +3259,542 @@ function _computeUnitInsights(opts) {
   });
 }
 
+// ── Lesson-name resolution (Phase 2B) ────────────────────────────────────
+// Per-grade unit/lesson-title metadata. Mirrors src/dashboard.js so the
+// standalone surface can resolve G1 lesson IDs in tests. Update both files
+// together when content changes.
+
+var _K_UNITS_META = [
+  { name: 'Counting & Cardinality',             lessons: ['Counting to 10','Quick Look','Counting to 20','Count to 20 — Review','Read and Represent 11–20','Counting Strategies','Quick Look: Subitize'] },
+  { name: 'Number Relationships',               lessons: ['One More, One Less','Compare Sets','Compare Numbers','Compose & Decompose','More, Less, and Equal','One More / One Less — Review'] },
+  { name: 'Addition & Subtraction',             lessons: ['Adding Numbers','Subtracting Numbers','Word Problems','Explain Thinking','Story Problems: Join & Separate','Explain Your Math'] },
+  { name: 'Counting Patterns',                  lessons: ['Count Forward by Ones','Count by Tens','Count from Any Number','Missing Numbers in Patterns'] },
+  { name: 'Geometry — Shapes & Solids',         lessons: ['Flat Shapes (2D)','Solid Shapes (3D)','Sides & Corners','Sort & Create Shapes'] },
+  { name: 'Measurement — Comparing & Ordering', lessons: ['Comparing Length & Height','Comparing Weight & Capacity','Ordering by Size','Measurable Attributes'] },
+  { name: 'Data Analysis',                      lessons: ['Sort Into Groups','Build and Read Picture Graphs','Read Picture Graphs','Compare Data'] },
+  { name: 'Financial Literacy & Money',         lessons: ['Earning Money & Jobs','Wants vs Needs','Identify Coins','Compare Coins'] },
+];
+
+var _G1_UNITS_META = [
+  { name: 'Counting and Number Relationships to 120',
+    lessons: ['Quick Looks','Count Forward','Count Backward','Skip Count by 2s, 5s, and 10s','One More and One Less','Ten More and Ten Less','Order Numbers','Compare Numbers'] },
+  { name: 'Place Value',
+    lessons: ['Groups of Ten','Tens and Ones','Numbers to 120','Represent Numbers'] },
+  { name: 'Addition and Subtraction to 20',
+    lessons: ['Add Within 20','Subtract Within 20','Doubles and Near Doubles','Make 10','Fact Families and Word Problems'] },
+  { name: 'Tens and Ones Operations',
+    lessons: ['Add Tens and Ones','10 More and 10 Less','Add Multiples of 10','Add Tens to Two-Digit Numbers','Tens and Ones Word Problems'] },
+  { name: 'Geometry',
+    lessons: ['2D Shapes — Identify and Describe','3D Shapes — Identify and Describe','Shape Attributes and Sorting','Compose and Recognize 2D Shapes','Equal Parts — Halves and Fourths'] },
+  { name: 'Measurement & Time',
+    lessons: ['Measuring with Non-Standard Units','Understanding Units of Length','Comparing Measurements','Describing Length','Telling Time'] },
+  { name: 'Data Analysis',
+    lessons: ['Sorting and Organizing Data','Picture Graphs','Bar-Type Graphs','Drawing Conclusions from Data'] },
+  { name: 'Financial Literacy',
+    lessons: ['Earning Income','Goods and Services','Spending and Saving','Charitable Giving'] },
+];
+
+// Resolve a lessonId string to { lesson, unit }. Supported formats:
+//   - K:  'ku<n>l<m>'      e.g. 'ku3l2'
+//   - G1: 'g1-u<n>-l<m>'   e.g. 'g1-u8-l3' (also accepts 'g1u<n>-l<m>' / 'g1u<n>l<m>')
+//   - G2: 'u<n>l<m>'       e.g. 'u3l2'
+// Returns null when unresolvable.
+function _lessonDisplayName(lessonId) {
+  if (!lessonId) return null;
+  var s = String(lessonId);
+  var kMatch = s.match(/^ku(\d+)l(\d+)$/i);
+  if (kMatch) {
+    var ku = _K_UNITS_META[parseInt(kMatch[1], 10) - 1];
+    if (!ku) return null;
+    var kl = ku.lessons[parseInt(kMatch[2], 10) - 1];
+    return kl ? { lesson: kl, unit: ku.name } : null;
+  }
+  var g1Match = s.match(/^g1[-]?u(\d+)[-]?l(\d+)$/i);
+  if (g1Match) {
+    var g1u = _G1_UNITS_META[parseInt(g1Match[1], 10) - 1];
+    if (!g1u) return null;
+    var g1l = g1u.lessons[parseInt(g1Match[2], 10) - 1];
+    return g1l ? { lesson: g1l, unit: g1u.name } : null;
+  }
+  var g2Match = s.match(/^u(\d+)l(\d+)$/i);
+  if (g2Match) {
+    var g2u = _UNITS_META[parseInt(g2Match[1], 10) - 1];
+    if (!g2u) return null;
+    var g2l = g2u.lessons[parseInt(g2Match[2], 10) - 1];
+    return g2l ? { lesson: g2l, unit: g2u.name } : null;
+  }
+  return null;
+}
+
+// Map a lessonId prefix to a viewBand ('k'|'g1'|'g2'|null). Used by Phase 2B
+// to keep static-index lesson recommendations grade-strict.
+function _lessonIdBand(lessonId) {
+  if (!lessonId) return null;
+  var s = String(lessonId).toLowerCase();
+  if (/^g1[-]?u\d+[-]?l\d+$/.test(s)) return 'g1';
+  if (/^ku\d+l\d+$/.test(s))          return 'k';
+  if (/^u\d+l\d+$/.test(s))           return 'g2';
+  return null;
+}
+
+// ── Phase 1 Learning Insights: grade-filter helpers + builder ────────────
+// These power the redesigned Learning Insights section that lives on both
+// the in-app dashboard (src/dashboard.js) and the standalone dashboard
+// (dashboard/dashboard.js). All inputs to buildLearningInsights are assumed
+// to have already been filtered to the selected dashboard view-band.
+
+// Infer the grade band of a single intervention event. Mirrors
+// _inferScoreGrade's probe order but reads intervention-shaped fields.
+// Returns 'k'|'g1'|'g2'|'legacy_unknown'.
+function _inferInterventionGrade(e) {
+  if (!e) return 'legacy_unknown';
+  if (e.grade) {
+    return _gradeBand(e.grade) || 'legacy_unknown';
+  }
+  var probes = [e.sessionId, e.questionId, e.lessonId, e.unitId]
+    .filter(function(p) { return p; });
+  for (var i = 0; i < probes.length; i++) {
+    var t = String(probes[i]).toLowerCase();
+    if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
+    if (/^(lq_)?u\d/.test(t)) return 'g2';
+  }
+  return 'legacy_unknown';
+}
+
+// Filter intervention events to the selected view-band. Records that cannot
+// be confidently inferred ('legacy_unknown') are excluded — see audit spec.
+function _filterInterventionsByGrade(events, viewBand) {
+  if (!Array.isArray(events)) return [];
+  var band = _gradeBand(viewBand);
+  if (!band) return [];
+  return events.filter(function(e) {
+    return _inferInterventionGrade(e) === band;
+  });
+}
+
+// Rebuild a mastery dictionary from already-grade-filtered activity events.
+// Avoids leaking student.MASTERY (which is global) into a grade-specific
+// view. Each tag accumulates { attempts, correct, lastSeen }.
+function _deriveMasteryFromActivity(activityEvents) {
+  var out = {};
+  if (!Array.isArray(activityEvents)) return out;
+  activityEvents.forEach(function(e) {
+    if (!e || typeof e.correct !== 'boolean') return;
+    var tags = Array.isArray(e.tags) ? e.tags : [];
+    tags.forEach(function(tag) {
+      if (!tag) return;
+      if (!out[tag]) out[tag] = { attempts: 0, correct: 0, lastSeen: 0 };
+      out[tag].attempts++;
+      if (e.correct) out[tag].correct++;
+      if (typeof e.ts === 'number' && e.ts > out[tag].lastSeen) {
+        out[tag].lastSeen = e.ts;
+      }
+    });
+  });
+  return out;
+}
+
+// Phase 2A: per-question diagnostic error tags now ride along on
+// score.answers[].errTag. This aggregator turns a list of (already
+// grade-filtered) scores into an { errorType: count } map compatible with the
+// Common Mistakes pipeline. Answers without errTag (legacy) or with
+// errTag === null (correct answers, by convention) are ignored.
+// ── Phase 2C: intervention_events.grade column helpers ──────────────────
+// Pure builder used by _syncPendingInterventionEvents to construct the upsert
+// row sent to Supabase. Extracted so jest can verify the new `grade` field
+// round-trips without booting the full app.
+function _buildInterventionRowForSync(e, studentId) {
+  e = e || {};
+  return {
+    client_id:          e.clientId,
+    student_id:         studentId,
+    session_id:         e.sessionId  || '',
+    event_type:         e.type       || '',
+    error_tag:          e.errorTag   || null,
+    question_id:        e.questionId || null,
+    resolved_correctly: e.resolvedCorrectly != null ? e.resolvedCorrectly : null,
+    occurred_at:        new Date(e.timestamp || Date.now()).toISOString(),
+    // Phase 2C: explicit grade tagging. Null on legacy events; the server-side
+    // backfill (in the Supabase migration) infers a grade from session_id /
+    // question_id for the rows that have null at write time. Future fetches
+    // from new clients always include grade.
+    grade:              e.grade || null,
+  };
+}
+
+// Normalize a Supabase intervention_events row into the in-memory event shape
+// consumed by _filterInterventionsByGrade / _summarizeInterventions. Phase 2C
+// adds `grade` to the projection — older rows (where the column is missing or
+// null) fall back to session-id inference downstream.
+function _normalizeInterventionRow(r) {
+  r = r || {};
+  return {
+    type:              r.event_type,
+    errorTag:          r.error_tag,
+    sessionId:         r.session_id,
+    resolvedCorrectly: r.resolved_correctly,
+    timestamp:         r.occurred_at ? new Date(r.occurred_at).getTime() : null,
+    grade:             r.grade || null,
+  };
+}
+
+function _aggregateMistakesFromScoreAnswers(scores) {
+  var counts = {};
+  if (!Array.isArray(scores)) return counts;
+  scores.forEach(function(s) {
+    if (!s || !Array.isArray(s.answers)) return;
+    s.answers.forEach(function(a) {
+      if (!a) return;
+      var tag = a.errTag;
+      if (!tag) return;
+      counts[tag] = (counts[tag] || 0) + 1;
+    });
+  });
+  return counts;
+}
+
+// Thresholds — kept in one place so the renderer and parent-action text can
+// reference them consistently.
+var _LI_THRESH = {
+  WEAK_MIN_ATTEMPTS:        3,
+  WEAK_MAX_ACCURACY:        0.60,
+  STRONG_MIN_ATTEMPTS:      5,
+  STRONG_MIN_ACCURACY:      0.85,
+  MISTAKE_MIN_COUNT:        3,
+  TREND_MIN_EVENTS:         6,
+  RECOVERY_MIN_TOTAL:       2,
+  NEEDS_PRACTICE_LIMIT:     3,
+  COMMON_MISTAKES_LIMIT:    3,
+  STRENGTHS_LIMIT:          3,
+};
+
+// Build the Phase 1 Learning Insights bundle. All inputs are assumed to be
+// pre-filtered to opts.viewBand by the caller. The output is a structured
+// object describing each card; the renderer turns it into HTML.
+function buildLearningInsights(opts) {
+  opts = opts || {};
+  var viewBand           = opts.viewBand           || 'g2';
+  var scores             = opts.scores             || [];
+  var activityEvents     = opts.activityEvents     || [];
+  var interventionEvents = opts.interventionEvents || [];
+  var mastery            = opts.mastery            || {};
+  var studentName        = opts.studentName        || 'Your child';
+  var tagLabels          = opts.tagLabels          || {};
+  var errLabels          = opts.errLabels          || {};
+  var errHelpMap         = opts.errHelpMap         || {};
+  var lessonNameFn       = opts.lessonNameFn       || function() { return null; };
+  // Phase 2B: static tag→lesson index emitted by build.js. Used as a fallback
+  // when live activity events don't already include a lessonId for the tag.
+  var tagLessonIndex     = opts.tagLessonIndex     || null;
+
+  function toTitle(s) {
+    return s ? String(s).replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) : s;
+  }
+  function tagLabel(t) { return tagLabels[t] || toTitle(t); }
+  function errLabel(t) { return errLabels[t] || toTitle(String(t || '').replace(/^err_/, '')); }
+
+  var hasAnyData =
+    (Array.isArray(scores) && scores.length > 0) ||
+    (Array.isArray(activityEvents) && activityEvents.length > 0) ||
+    (Array.isArray(interventionEvents) && interventionEvents.length > 0) ||
+    (mastery && Object.keys(mastery).length > 0);
+
+  // ── Needs Practice ──────────────────────────────────────────────────────
+  var tagStats = Object.keys(mastery).map(function(tag) {
+    var m = mastery[tag] || {};
+    var attempts = m.attempts || 0;
+    var correct  = m.correct  || 0;
+    return {
+      tag: tag,
+      attempts: attempts,
+      correct: correct,
+      accuracy: attempts > 0 ? (correct / attempts) : 0,
+    };
+  });
+  var weakTags = tagStats
+    .filter(function(t) {
+      return t.attempts >= _LI_THRESH.WEAK_MIN_ATTEMPTS
+        && t.accuracy <  _LI_THRESH.WEAK_MAX_ACCURACY;
+    })
+    .sort(function(a, b) { return a.accuracy - b.accuracy; });
+
+  // Build a tag → lessonId frequency map from grade-filtered activity events.
+  var tagLessonMap = {};
+  activityEvents.forEach(function(e) {
+    if (!e || !e.lessonId || !Array.isArray(e.tags)) return;
+    e.tags.forEach(function(tg) {
+      if (!tg) return;
+      if (!tagLessonMap[tg]) tagLessonMap[tg] = {};
+      tagLessonMap[tg][e.lessonId] = (tagLessonMap[tg][e.lessonId] || 0) + 1;
+    });
+  });
+
+  // Phase 2B: prefer the lesson with the most live attempts for this tag, but
+  // restrict to lessons that match the active viewBand. If no live lesson
+  // qualifies, fall through to the static tag→lesson index. Returns null when
+  // neither source has a band-matching lesson.
+  function topLessonForTag(tag) {
+    var liveLessons = tagLessonMap[tag] || {};
+    var liveKeys = Object.keys(liveLessons).filter(function(id) {
+      return _lessonIdBand(id) === viewBand;
+    });
+    if (liveKeys.length) {
+      liveKeys.sort(function(a, b) { return liveLessons[b] - liveLessons[a]; });
+      return liveKeys[0];
+    }
+    if (tagLessonIndex && tagLessonIndex.byTag && tagLessonIndex.byTag[tag]) {
+      var staticLessons = tagLessonIndex.byTag[tag];
+      var staticKeys = Object.keys(staticLessons).filter(function(id) {
+        return _lessonIdBand(id) === viewBand;
+      });
+      if (staticKeys.length) {
+        staticKeys.sort(function(a, b) { return staticLessons[b] - staticLessons[a]; });
+        return staticKeys[0];
+      }
+    }
+    return null;
+  }
+
+  var needsPractice = weakTags
+    .slice(0, _LI_THRESH.NEEDS_PRACTICE_LIMIT)
+    .map(function(t) {
+      var lessonId   = topLessonForTag(t.tag);
+      var ldn        = lessonId ? lessonNameFn(lessonId) : null;
+      var lessonName = ldn && ldn.lesson ? ldn.lesson : null;
+      var unitName   = ldn && ldn.unit   ? ldn.unit   : null;
+      var label      = tagLabel(t.tag);
+      var accuracyPct = Math.round(t.accuracy * 100);
+      var why = accuracyPct + '% on ' + label + ' across ' + t.attempts
+        + ' attempt' + (t.attempts !== 1 ? 's' : '') + '.';
+      var recommendation = lessonName
+        ? 'Try ' + lessonName + ' again.'
+        : 'Spend a few minutes practicing ' + label + '.';
+      return {
+        tag:            t.tag,
+        label:          label,
+        accuracy:       accuracyPct,
+        attempts:       t.attempts,
+        lessonId:       lessonId,
+        lessonName:     lessonName,
+        unitName:       unitName,
+        why:            why,
+        recommendation: recommendation,
+      };
+    });
+
+  // ── Common Mistakes ─────────────────────────────────────────────────────
+  var errCounts = {};
+  var errLastTs = {};
+  activityEvents.forEach(function(e) {
+    if (!e || !e.errorType) return;
+    errCounts[e.errorType] = (errCounts[e.errorType] || 0) + 1;
+    if (typeof e.ts === 'number' && (!errLastTs[e.errorType] || e.ts > errLastTs[e.errorType])) {
+      errLastTs[e.errorType] = e.ts;
+    }
+  });
+  // Phase 2A: merge score.answers[].errTag counts. A single attempt produces
+  // BOTH an activity-event errorType AND a score.answers errTag for the same
+  // mistake, so summing would double-count. Take Math.max per tag — whichever
+  // source has higher coverage wins. Legacy attempts (no errTag) contribute
+  // nothing here and continue to rely on activity events.
+  var scoreErrCounts = _aggregateMistakesFromScoreAnswers(scores);
+  Object.keys(scoreErrCounts).forEach(function(t) {
+    if (!errCounts[t] || scoreErrCounts[t] > errCounts[t]) {
+      errCounts[t] = scoreErrCounts[t];
+    }
+  });
+  var commonMistakes = Object.keys(errCounts)
+    .filter(function(t) { return errCounts[t] >= _LI_THRESH.MISTAKE_MIN_COUNT; })
+    .sort(function(a, b) { return errCounts[b] - errCounts[a]; })
+    .slice(0, _LI_THRESH.COMMON_MISTAKES_LIMIT)
+    .map(function(t) {
+      // Phase 2B: resolve a band-matching lesson for this err_* tag. Live
+      // activity wins; static index falls in when live data lacks coverage.
+      var lessonId   = topLessonForTag(t);
+      var ldn        = lessonId ? lessonNameFn(lessonId) : null;
+      var lessonName = ldn && ldn.lesson ? ldn.lesson : null;
+      var unitName   = ldn && ldn.unit   ? ldn.unit   : null;
+      return {
+        errorType:  t,
+        label:      errLabels[t] || errLabel(t),
+        helpText:   errHelpMap[t] || null,
+        count:      errCounts[t],
+        lastTs:     errLastTs[t] || null,
+        lessonId:   lessonId,
+        lessonName: lessonName,
+        unitName:   unitName,
+      };
+    });
+
+  // ── Strengths ───────────────────────────────────────────────────────────
+  var strengths = tagStats
+    .filter(function(t) {
+      return t.attempts  >= _LI_THRESH.STRONG_MIN_ATTEMPTS
+        && t.accuracy >= _LI_THRESH.STRONG_MIN_ACCURACY;
+    })
+    .sort(function(a, b) { return b.accuracy - a.accuracy; })
+    .slice(0, _LI_THRESH.STRENGTHS_LIMIT)
+    .map(function(t) {
+      return {
+        tag:      t.tag,
+        label:    tagLabel(t.tag),
+        accuracy: Math.round(t.accuracy * 100),
+        attempts: t.attempts,
+      };
+    });
+
+  // ── Trend ───────────────────────────────────────────────────────────────
+  var sortedGraded = activityEvents
+    .filter(function(e) { return e && typeof e.correct === 'boolean'; })
+    .sort(function(a, b) { return (a.ts || 0) - (b.ts || 0); });
+  var trend;
+  if (sortedGraded.length < _LI_THRESH.TREND_MIN_EVENTS) {
+    trend = { state: 'not-enough-data', sampleSize: sortedGraded.length };
+  } else {
+    var slice = sortedGraded.slice(-10);
+    var first5 = slice.slice(0, 5);
+    var last5  = slice.slice(-5);
+    var acc5first = first5.filter(function(e) { return e.correct; }).length / 5;
+    var acc5last  = last5.filter(function(e)  { return e.correct; }).length / 5;
+    var delta = acc5last - acc5first;
+    var state = 'steady';
+    if (delta >=  0.20) state = 'improving';
+    else if (delta <= -0.20) state = 'declining';
+    trend = { state: state, sampleSize: slice.length };
+  }
+
+  // ── Intervention Recovery ───────────────────────────────────────────────
+  var interventionRecovery = (function() {
+    if (!interventionEvents || !interventionEvents.length) {
+      return { state: 'not-enough-data' };
+    }
+    var summary = _summarizeInterventions(interventionEvents);
+    if (summary.total < _LI_THRESH.RECOVERY_MIN_TOTAL) {
+      return { state: 'not-enough-data', total: summary.total };
+    }
+    var topTag = null, topCount = 0;
+    Object.keys(summary.byTag).forEach(function(t) {
+      if (summary.byTag[t].count > topCount) { topTag = t; topCount = summary.byTag[t].count; }
+    });
+    var topTagPct = null;
+    if (topTag && summary.byTag[topTag].count > 0) {
+      topTagPct = Math.round((summary.byTag[topTag].resolved / summary.byTag[topTag].count) * 100);
+    }
+    var state;
+    if      (summary.recoveryRate >= 70) state = 'good';
+    else if (summary.recoveryRate >= 40) state = 'ok';
+    else                                 state = 'needs-attention';
+    return {
+      state:        state,
+      overallPct:   summary.recoveryRate,
+      total:        summary.total,
+      topTag:       topTag,
+      topTagLabel:  topTag ? (errLabels[topTag] || errLabel(topTag)) : null,
+      topTagPct:    topTagPct,
+    };
+  })();
+
+  // ── Next Step ───────────────────────────────────────────────────────────
+  var completedScores = scores.filter(function(s) { return s.pct != null && s.total > 0; });
+  var totalQuestions = completedScores.reduce(function(a, s) { return a + (s.total || 0); }, 0);
+  var overallAccuracy = completedScores.length > 0
+    ? Math.round(completedScores.reduce(function(a, s) { return a + s.pct; }, 0) / completedScores.length)
+    : 0;
+
+  var nextStep;
+  if (!hasAnyData || totalQuestions < 3) {
+    nextStep = {
+      kind:  'not-enough-data',
+      label: 'Try a 5-question quiz to unlock insights.',
+      why:   'A few more answers are needed before we can spot patterns.',
+    };
+  } else if (needsPractice.length > 0 && needsPractice[0].lessonName) {
+    nextStep = {
+      kind:       'lesson',
+      lessonId:   needsPractice[0].lessonId,
+      lessonName: needsPractice[0].lessonName,
+      unitName:   needsPractice[0].unitName,
+      skillLabel: needsPractice[0].label,
+      label:      'Try ' + needsPractice[0].lessonName + ' again.',
+      why:        needsPractice[0].why,
+    };
+  } else if (needsPractice.length > 0) {
+    nextStep = {
+      kind:       'practice-skill',
+      skillLabel: needsPractice[0].label,
+      label:      'Spend a few minutes practicing ' + needsPractice[0].label + '.',
+      why:        needsPractice[0].why,
+    };
+  } else if (overallAccuracy >= 80 || strengths.length > 0) {
+    nextStep = {
+      kind:  'keep-going',
+      label: 'Keep going — no major weak area yet.',
+      why:   'Recent accuracy is ' + overallAccuracy + '% across ' + completedScores.length
+              + ' quiz' + (completedScores.length !== 1 ? 'zes' : '') + '.',
+    };
+  } else {
+    nextStep = {
+      kind:  'practice-skill',
+      label: 'Try one more quiz to build the streak.',
+      why:   totalQuestions + ' question' + (totalQuestions !== 1 ? 's' : '') + ' answered so far.',
+    };
+  }
+
+  // ── Parent Action ───────────────────────────────────────────────────────
+  // One simple takeaway, sourced from the highest-priority signal.
+  var parentAction;
+  if (!hasAnyData || totalQuestions < 3) {
+    parentAction = {
+      label: 'Try a 5-question quiz on any lesson.',
+      why:   'A few more answers will unlock skill-specific insights.',
+    };
+  } else if (commonMistakes.length > 0 && commonMistakes[0].helpText) {
+    parentAction = {
+      label: commonMistakes[0].helpText,
+      why:   'Most common mistake: ' + commonMistakes[0].label
+              + ' (' + commonMistakes[0].count + ' time'
+              + (commonMistakes[0].count !== 1 ? 's' : '') + ').',
+    };
+  } else if (needsPractice.length > 0 && needsPractice[0].lessonName) {
+    parentAction = {
+      label: 'Practice ' + needsPractice[0].lessonName + ' together.',
+      why:   needsPractice[0].why,
+    };
+  } else if (needsPractice.length > 0) {
+    parentAction = {
+      label: 'Spend a few minutes on ' + needsPractice[0].label + ' this week.',
+      why:   needsPractice[0].why,
+    };
+  } else if (strengths.length > 0) {
+    parentAction = {
+      label: 'Celebrate progress on ' + strengths[0].label + ' and try the next lesson.',
+      why:   strengths[0].label + ' is at ' + strengths[0].accuracy + '% across '
+              + strengths[0].attempts + ' attempts.',
+    };
+  } else {
+    parentAction = {
+      label: 'Try one more lesson quiz this week.',
+      why:   'Steady practice unlocks better insights.',
+    };
+  }
+
+  return {
+    viewBand:             viewBand,
+    studentName:          studentName,
+    hasAnyData:           hasAnyData,
+    overallAccuracy:      overallAccuracy,
+    totalQuestions:       totalQuestions,
+    needsPractice:        needsPractice,
+    commonMistakes:       commonMistakes,
+    strengths:            strengths,
+    trend:                trend,
+    nextStep:             nextStep,
+    interventionRecovery: interventionRecovery,
+    parentAction:         parentAction,
+  };
+}
+
 // ── Jest bridge ───────────────────────────────────────────────────────────
 if (typeof module !== 'undefined') {
   module.exports = {
@@ -2986,5 +3821,13 @@ if (typeof module !== 'undefined') {
     _dbWriteProfileGrade,
     _gradeBand,
     _inferScoreGrade,
+    _filterInterventionsByGrade,
+    _deriveMasteryFromActivity,
+    buildLearningInsights,
+    _aggregateMistakesFromScoreAnswers,
+    _lessonDisplayName,
+    _lessonIdBand,
+    _buildInterventionRowForSync,
+    _normalizeInterventionRow,
   };
 }

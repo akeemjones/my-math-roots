@@ -38,6 +38,13 @@ const {
   _dbProfileGradeKey,
   _dbReadProfileGrade,
   _dbWriteProfileGrade,
+  _filterInterventionsByGrade,
+  _deriveMasteryFromActivity,
+  buildLearningInsights,
+  _aggregateMistakesFromScoreAnswers,
+  _lessonDisplayName,
+  _buildInterventionRowForSync,
+  _normalizeInterventionRow,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -1197,6 +1204,1045 @@ describe('_summarizeInterventions', () => {
     const sAAfterReset = _summarizeInterventions([]);
     expect(sAAfterReset.total).toBe(0);
     expect(sB.total).toBe(2); // B unchanged
+  });
+});
+
+// ── _filterInterventionsByGrade ───────────────────────────────────────────
+// Phase 1 grade-filter for Learning Insights intervention events. Events
+// carry a `sessionId` minted by the quiz runtime which contains the qid prefix
+// (lq_g1u1-l1-..., lq_ku2-l1-..., lq_u3-l2-...). Some events also carry an
+// explicit `grade` field — when present, it overrides the inference.
+
+describe('_filterInterventionsByGrade', () => {
+  const events = [
+    { type: 'triggered', errorTag: 'err_off_by_one',  sessionId: 'lq_g1u1-l1-abc' }, // → g1
+    { type: 'triggered', errorTag: 'err_no_regroup',  sessionId: 'lq_u3-l2-xyz'  }, // → g2
+    { type: 'triggered', errorTag: 'err_under_count', sessionId: 'lq_ku2-l1-abc' }, // → k
+    { type: 'triggered', errorTag: 'err_explicit_g1', grade: 'g1', sessionId: 'random' }, // explicit g1
+    { type: 'triggered', errorTag: 'err_legacy',      sessionId: 'final_test'    }, // → legacy_unknown
+  ];
+
+  test('Grade 1 view returns only g1 events', () => {
+    const out = _filterInterventionsByGrade(events, 'g1');
+    const tags = out.map(function(e){ return e.errorTag; });
+    expect(tags).toContain('err_off_by_one');
+    expect(tags).toContain('err_explicit_g1');
+    expect(tags).not.toContain('err_no_regroup');
+    expect(tags).not.toContain('err_under_count');
+    expect(tags).not.toContain('err_legacy');
+  });
+
+  test('Grade 2 view returns only g2 events', () => {
+    const out = _filterInterventionsByGrade(events, 'g2');
+    expect(out.length).toBe(1);
+    expect(out[0].errorTag).toBe('err_no_regroup');
+  });
+
+  test('Kindergarten view returns only k events', () => {
+    const out = _filterInterventionsByGrade(events, 'k');
+    expect(out.length).toBe(1);
+    expect(out[0].errorTag).toBe('err_under_count');
+  });
+
+  test('legacy_unknown events are excluded from every grade view', () => {
+    ['g1', 'g2', 'k'].forEach(function(band) {
+      const out = _filterInterventionsByGrade(events, band);
+      expect(out.find(function(e){ return e.errorTag === 'err_legacy'; })).toBeUndefined();
+    });
+  });
+
+  test('explicit grade field overrides session-id inference', () => {
+    const e = { type: 'triggered', errorTag: 'err_x', grade: 'k', sessionId: 'lq_g1u1-l1-xyz' };
+    expect(_filterInterventionsByGrade([e], 'k').length).toBe(1);
+    expect(_filterInterventionsByGrade([e], 'g1').length).toBe(0);
+  });
+
+  test('handles null/undefined event list', () => {
+    expect(_filterInterventionsByGrade(null, 'g1')).toEqual([]);
+    expect(_filterInterventionsByGrade(undefined, 'g1')).toEqual([]);
+  });
+
+  test('accepts canonical normalizeGrade aliases for the band argument', () => {
+    expect(_filterInterventionsByGrade(events, '1').length).toBe(2);  // alias for g1
+    expect(_filterInterventionsByGrade(events, '2').length).toBe(1);  // alias for g2
+    expect(_filterInterventionsByGrade(events, 'K').length).toBe(1);  // alias for k
+  });
+});
+
+// ── _deriveMasteryFromActivity ────────────────────────────────────────────
+// Phase 1 mastery derivation: rebuild a mastery dict from already-grade-
+// filtered activity events. Avoids leaking mastery across grades when the
+// dashboard's view-band changes.
+
+describe('_deriveMasteryFromActivity', () => {
+  test('empty events → empty mastery', () => {
+    expect(_deriveMasteryFromActivity([])).toEqual({});
+    expect(_deriveMasteryFromActivity(null)).toEqual({});
+    expect(_deriveMasteryFromActivity(undefined)).toEqual({});
+  });
+
+  test('aggregates attempts and correct per tag across events', () => {
+    const events = [
+      { ts: 1, correct: true,  tags: ['counting'] },
+      { ts: 2, correct: false, tags: ['counting'] },
+      { ts: 3, correct: true,  tags: ['counting', 'subtraction'] },
+    ];
+    const m = _deriveMasteryFromActivity(events);
+    expect(m.counting.attempts).toBe(3);
+    expect(m.counting.correct).toBe(2);
+    expect(m.subtraction.attempts).toBe(1);
+    expect(m.subtraction.correct).toBe(1);
+  });
+
+  test('tracks lastSeen as the max ts across events', () => {
+    const events = [
+      { ts: 5, correct: true, tags: ['x'] },
+      { ts: 2, correct: true, tags: ['x'] },
+      { ts: 8, correct: true, tags: ['x'] },
+    ];
+    expect(_deriveMasteryFromActivity(events).x.lastSeen).toBe(8);
+  });
+
+  test('skips events without a boolean correct field', () => {
+    const events = [
+      { ts: 1, tags: ['x'] },                 // no correct → skip
+      { ts: 2, correct: 'yes', tags: ['x'] }, // not a boolean → skip
+      { ts: 3, correct: true, tags: ['x'] },  // counts
+    ];
+    expect(_deriveMasteryFromActivity(events).x.attempts).toBe(1);
+  });
+
+  test('skips events with empty / missing tag arrays', () => {
+    const events = [
+      { ts: 1, correct: true, tags: [] },
+      { ts: 2, correct: true },               // no tags
+      { ts: 3, correct: true, tags: ['x'] },  // counts
+    ];
+    const m = _deriveMasteryFromActivity(events);
+    expect(Object.keys(m)).toEqual(['x']);
+  });
+
+  test('grade-leak guard: derived mastery only contains tags from the events passed in', () => {
+    // Caller filtered to g1 — derived mastery has no g2 traces.
+    const g1Events = [
+      { ts: 1, correct: false, tags: ['g1_saving'] },
+      { ts: 2, correct: false, tags: ['g1_saving'] },
+    ];
+    const m = _deriveMasteryFromActivity(g1Events);
+    expect(Object.keys(m)).toEqual(['g1_saving']);
+    expect(m.g1_saving.attempts).toBe(2);
+  });
+});
+
+// ── buildLearningInsights ─────────────────────────────────────────────────
+// The Phase 1 redesigned Learning Insights builder. Returns a structured
+// object describing the rendered cards. All inputs are assumed to be already
+// filtered to the selected viewBand.
+
+const LI_TAG_LABELS = {
+  counting:   'Counting',
+  regrouping: 'Regrouping',
+  shapes:     'Shapes',
+  saving:     'Saving and Spending',
+  steady:     'Steady Practice',
+};
+const LI_ERR_LABELS = {
+  err_off_by_one:              'Off by one',
+  err_no_regroup:              'Forgot to regroup',
+  err_spend_vs_save_confusion: 'Confuses spending now with saving for later',
+};
+const LI_ERR_HELP = {
+  err_off_by_one:              'Use objects: one finger touch per count.',
+  err_no_regroup:              'Write out each step.',
+  err_spend_vs_save_confusion: 'Ask: "Are we using money today, or putting it away?"',
+};
+const LI_LESSON_FN = (id) => {
+  if (id === 'g1u8-l3') return { lesson: 'Spending and Saving', unit: 'Financial Literacy' };
+  if (id === 'g1u5-l1') return { lesson: 'Equal Parts',         unit: 'Geometry'           };
+  return null;
+};
+
+describe('buildLearningInsights', () => {
+  const BASE = {
+    viewBand:     'g1',
+    studentName:  'Alex',
+    tagLabels:    LI_TAG_LABELS,
+    errLabels:    LI_ERR_LABELS,
+    errHelpMap:   LI_ERR_HELP,
+    lessonNameFn: LI_LESSON_FN,
+  };
+
+  test('empty inputs → hasAnyData=false and not-enough-data on every card', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: [], interventionEvents: [], mastery: {},
+    }));
+    expect(r.hasAnyData).toBe(false);
+    expect(r.needsPractice).toEqual([]);
+    expect(r.commonMistakes).toEqual([]);
+    expect(r.strengths).toEqual([]);
+    expect(r.trend.state).toBe('not-enough-data');
+    expect(r.interventionRecovery.state).toBe('not-enough-data');
+    expect(r.nextStep.kind).toBe('not-enough-data');
+    expect(r.parentAction.label).toBeTruthy();
+  });
+
+  test('viewBand is carried through unchanged', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g1',
+      scores: [], activityEvents: [], interventionEvents: [], mastery: {},
+    }));
+    expect(r.viewBand).toBe('g1');
+  });
+
+  test('needsPractice: top weak tag (≥3 attempts, <60%) labeled in parent language', () => {
+    const mastery = {
+      counting:   { attempts: 5, correct: 1, lastSeen: 0 }, // 20% — weakest
+      regrouping: { attempts: 4, correct: 1, lastSeen: 0 }, // 25%
+      shapes:     { attempts: 3, correct: 1, lastSeen: 0 }, // 33%
+      saving:     { attempts: 6, correct: 5, lastSeen: 0 }, // strong, excluded
+      tooFew:     { attempts: 2, correct: 0, lastSeen: 0 }, // <3, excluded
+    };
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 30, total: 10 }],
+      activityEvents: [], interventionEvents: [],
+      mastery: mastery,
+    }));
+    expect(r.needsPractice.length).toBeGreaterThanOrEqual(1);
+    expect(r.needsPractice.length).toBeLessThanOrEqual(3);
+    expect(r.needsPractice[0].label).toBe('Counting');
+    expect(r.needsPractice[0].accuracy).toBe(20);
+    r.needsPractice.forEach(function(np) {
+      expect(np.label).not.toMatch(/^[a-z_]+$/);
+      expect(np.why).not.toMatch(/err_/);
+    });
+  });
+
+  test('commonMistakes: translates known err tags via errLabels and gates on count', () => {
+    const events = [
+      { ts: 1, correct: false, errorType: 'err_off_by_one', tags: [] },
+      { ts: 2, correct: false, errorType: 'err_off_by_one', tags: [] },
+      { ts: 3, correct: false, errorType: 'err_off_by_one', tags: [] },
+      { ts: 4, correct: false, errorType: 'err_no_regroup', tags: [] },
+      { ts: 5, correct: false, errorType: 'err_no_regroup', tags: [] }, // only 2, below 3 threshold
+    ];
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 30, total: 10 }],
+      activityEvents: events,
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].errorType).toBe('err_off_by_one');
+    expect(r.commonMistakes[0].label).toBe('Off by one');
+    expect(r.commonMistakes[0].helpText).toBe('Use objects: one finger touch per count.');
+    expect(r.commonMistakes[0].count).toBe(3);
+  });
+
+  test('strengths: only surfaced with ≥5 attempts AND ≥85% accuracy', () => {
+    const mastery = {
+      counting: { attempts: 10, correct: 9, lastSeen: 0 }, // 90% ✓
+      shapes:   { attempts: 6,  correct: 5, lastSeen: 0 }, // 83% — below 85
+      tooFew:   { attempts: 4,  correct: 4, lastSeen: 0 }, // <5 attempts
+    };
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 90, total: 20 }],
+      activityEvents: [], interventionEvents: [],
+      mastery: mastery,
+    }));
+    expect(r.strengths.length).toBe(1);
+    expect(r.strengths[0].label).toBe('Counting');
+    expect(r.strengths[0].accuracy).toBe(90);
+  });
+
+  test('trend: not-enough-data when fewer than 6 graded events', () => {
+    const events = Array.from({length: 3}).map(function(_, i) {
+      return { ts: i + 1, correct: true, tags: ['x'] };
+    });
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: events, interventionEvents: [], mastery: {},
+    }));
+    expect(r.trend.state).toBe('not-enough-data');
+    expect(r.trend.sampleSize).toBe(3);
+  });
+
+  test('trend: improving when recent accuracy is ≥20% higher than older slice', () => {
+    const events = [
+      { ts: 1,  correct: false, tags: ['x'] },
+      { ts: 2,  correct: false, tags: ['x'] },
+      { ts: 3,  correct: false, tags: ['x'] },
+      { ts: 4,  correct: false, tags: ['x'] },
+      { ts: 5,  correct: false, tags: ['x'] },
+      { ts: 6,  correct: true,  tags: ['x'] },
+      { ts: 7,  correct: true,  tags: ['x'] },
+      { ts: 8,  correct: true,  tags: ['x'] },
+      { ts: 9,  correct: true,  tags: ['x'] },
+      { ts: 10, correct: true,  tags: ['x'] },
+    ];
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: events, interventionEvents: [], mastery: {},
+    }));
+    expect(r.trend.state).toBe('improving');
+  });
+
+  test('nextStep: recommends the lesson where the top weak tag was most missed', () => {
+    const mastery = { saving: { attempts: 5, correct: 1, lastSeen: 0 } }; // 20% weak
+    const events = [
+      { ts: 1, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+      { ts: 2, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+      { ts: 3, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+    ];
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 30, total: 10 }],
+      activityEvents: events, interventionEvents: [],
+      mastery: mastery,
+    }));
+    expect(r.nextStep.kind).toBe('lesson');
+    expect(r.nextStep.lessonId).toBe('g1u8-l3');
+    expect(r.nextStep.lessonName).toBe('Spending and Saving');
+  });
+
+  test('nextStep: keep-going when no weak tags and overall accuracy strong', () => {
+    const mastery = { counting: { attempts: 10, correct: 9, lastSeen: 0 } };
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 90, total: 10 }, { pct: 92, total: 10 }, { pct: 88, total: 10 }],
+      activityEvents: [], interventionEvents: [], mastery: mastery,
+    }));
+    expect(r.nextStep.kind).toBe('keep-going');
+  });
+
+  test('interventionRecovery: not-enough-data when fewer than 2 triggered interventions', () => {
+    const r1 = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: [], interventionEvents: [], mastery: {},
+    }));
+    expect(r1.interventionRecovery.state).toBe('not-enough-data');
+
+    const r2 = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: [],
+      interventionEvents: [{ type: 'triggered', errorTag: 'err_x' }],
+      mastery: {},
+    }));
+    expect(r2.interventionRecovery.state).toBe('not-enough-data');
+  });
+
+  test('interventionRecovery: surfaces percent and top tag when ≥2 interventions', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [], activityEvents: [],
+      interventionEvents: [
+        { type: 'triggered', errorTag: 'err_off_by_one' },
+        { type: 'triggered', errorTag: 'err_off_by_one' },
+        { type: 'resolved',  errorTag: 'err_off_by_one', resolvedCorrectly: true },
+      ],
+      mastery: {},
+    }));
+    expect(r.interventionRecovery.state).not.toBe('not-enough-data');
+    expect(r.interventionRecovery.total).toBe(2);
+    expect(r.interventionRecovery.overallPct).toBe(50);
+    expect(r.interventionRecovery.topTag).toBe('err_off_by_one');
+  });
+
+  test('parentAction.label is a complete parent sentence (no raw tags)', () => {
+    const events = Array.from({length: 5}).map(function(_, i) {
+      return { ts: i + 1, correct: false, tags: ['saving'], lessonId: 'g1u8-l3',
+               errorType: 'err_spend_vs_save_confusion' };
+    });
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{ pct: 30, total: 10 }],
+      activityEvents: events, interventionEvents: [],
+      mastery: { saving: { attempts: 5, correct: 1, lastSeen: 0 } },
+    }));
+    expect(r.parentAction.label.length).toBeGreaterThan(10);
+    expect(r.parentAction.label).not.toMatch(/err_/);
+    expect(r.parentAction.label).not.toMatch(/^[a-z_]+$/);
+  });
+
+  test('grade-leak guard: when the builder receives only g1 inputs the output has no g2 traces', () => {
+    const g1Mastery = { saving: { attempts: 5, correct: 1, lastSeen: 0 } };
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g1',
+      scores: [{ pct: 30, total: 10 }],
+      activityEvents: [
+        { ts: 1, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+        { ts: 2, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+        { ts: 3, correct: false, tags: ['saving'], lessonId: 'g1u8-l3', errorType: 'err_spend_vs_save_confusion' },
+      ],
+      interventionEvents: [],
+      mastery: g1Mastery,
+    }));
+    const blob = JSON.stringify(r);
+    // No legacy-G2 lesson id pattern (u3-l*) and no K prefix (ku*) in any field.
+    expect(blob).not.toMatch(/\bu\d+-l\d+\b/);
+    expect(blob).not.toMatch(/\bku\d+/);
+    expect(r.needsPractice[0].label).toBe('Saving and Spending');
+  });
+
+  test('integration: Grade 1 view does not surface Grade 2 mistakes', () => {
+    // Mixed intervention events; filter to g1 then feed to builder.
+    const mixed = [
+      { type: 'triggered', errorTag: 'err_no_regroup',  sessionId: 'lq_u3-l2-xyz'  }, // G2
+      { type: 'triggered', errorTag: 'err_off_by_one',  sessionId: 'lq_g1u1-l1-a' },  // G1
+      { type: 'triggered', errorTag: 'err_off_by_one',  sessionId: 'lq_g1u1-l1-b' },  // G1
+      { type: 'triggered', errorTag: 'err_off_by_one',  sessionId: 'lq_g1u1-l1-c' },  // G1
+    ];
+    const filtered = _filterInterventionsByGrade(mixed, 'g1');
+    expect(filtered.find(function(e){ return e.errorTag === 'err_no_regroup'; })).toBeUndefined();
+
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g1',
+      scores: [{ pct: 50, total: 10 }],
+      activityEvents: [],
+      interventionEvents: filtered,
+      mastery: {},
+    }));
+    expect(JSON.stringify(r)).not.toContain('Forgot to regroup');
+  });
+
+  test('integration: Grade 2 view does not surface Grade 1 mistakes', () => {
+    const mixed = [
+      { type: 'triggered', errorTag: 'err_off_by_one', sessionId: 'lq_g1u1-l1-a' }, // G1
+      { type: 'triggered', errorTag: 'err_no_regroup', sessionId: 'lq_u3-l2-x'   }, // G2
+      { type: 'triggered', errorTag: 'err_no_regroup', sessionId: 'lq_u3-l2-y'   }, // G2
+      { type: 'triggered', errorTag: 'err_no_regroup', sessionId: 'lq_u3-l2-z'   }, // G2
+    ];
+    const filtered = _filterInterventionsByGrade(mixed, 'g2');
+    expect(filtered.find(function(e){ return e.errorTag === 'err_off_by_one'; })).toBeUndefined();
+
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g2',
+      scores: [{ pct: 50, total: 10 }],
+      activityEvents: [],
+      interventionEvents: filtered,
+      mastery: {},
+    }));
+    expect(JSON.stringify(r)).not.toContain('Off by one');
+  });
+});
+
+// ── _aggregateMistakesFromScoreAnswers (Phase 2A) ─────────────────────────
+// Aggregates per-question diagnostic error tags from score.answers[]. Inputs
+// are assumed to already be grade-filtered by the caller. Output is an
+// { errorType: count } map compatible with the existing Common Mistakes
+// pipeline in buildLearningInsights.
+
+describe('_aggregateMistakesFromScoreAnswers', () => {
+  function sc(answers, overrides) {
+    return Object.assign(
+      { qid: 'lq_g1u8-l3-x', label: 'Test', type: 'lesson',
+        score: 5, total: 10, pct: 50, stars: '', unitIdx: 7,
+        date: '2026-05-18', time: '12:00', id: Date.now() + Math.random(),
+        answers: answers || [], grade: 'g1' },
+      overrides || {}
+    );
+  }
+
+  test('returns empty object for empty input', () => {
+    expect(_aggregateMistakesFromScoreAnswers([])).toEqual({});
+    expect(_aggregateMistakesFromScoreAnswers(null)).toEqual({});
+    expect(_aggregateMistakesFromScoreAnswers(undefined)).toEqual({});
+  });
+
+  test('counts errTag values across answers', () => {
+    const scores = [
+      sc([
+        { t: 'q1', ok: false, errTag: 'err_off_by_one' },
+        { t: 'q2', ok: false, errTag: 'err_off_by_one' },
+        { t: 'q3', ok: true,  errTag: null },
+      ]),
+      sc([
+        { t: 'q4', ok: false, errTag: 'err_off_by_one' },
+        { t: 'q5', ok: false, errTag: 'err_no_regroup' },
+      ]),
+    ];
+    const r = _aggregateMistakesFromScoreAnswers(scores);
+    expect(r.err_off_by_one).toBe(3);
+    expect(r.err_no_regroup).toBe(1);
+  });
+
+  test('ignores answers with errTag === null', () => {
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc([
+        { t: 'q1', ok: true,  errTag: null },
+        { t: 'q2', ok: false, errTag: null },
+      ]),
+    ]);
+    expect(r).toEqual({});
+  });
+
+  test('ignores answers missing the errTag field entirely (legacy)', () => {
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc([
+        { t: 'q1', ok: false },                       // legacy — no errTag
+        { t: 'q2', ok: false, errTag: 'err_no_regroup' },
+      ]),
+    ]);
+    expect(r.err_no_regroup).toBe(1);
+    expect(Object.keys(r).length).toBe(1);
+  });
+
+  test('does not crash on legacy scores with no answers field', () => {
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc(undefined, { answers: undefined }),
+      sc(undefined, { answers: null }),
+      sc(undefined, { answers: [] }),
+    ]);
+    expect(r).toEqual({});
+  });
+
+  test('does not crash on answers missing fields or null entries', () => {
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc([
+        null,
+        undefined,
+        { errTag: 'err_off_by_one' },                // no other fields
+        { t: 'q', ok: true,  errTag: 'err_should_be_ignored' }, // correct: still counted? see next test
+      ]),
+    ]);
+    // We include any answer with a truthy errTag (so the engine can record
+    // a tag on correct-after-intervention etc.). The "ignore correct"
+    // behavior is governed by errTag value, not by ok.
+    expect(r.err_off_by_one).toBe(1);
+  });
+
+  test('correct answers with errTag: null are not counted', () => {
+    // The quiz runtime sets errTag: null on correct answers by convention.
+    // This test pins that convention.
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc([
+        { t: 'q1', ok: true, errTag: null },
+        { t: 'q2', ok: true, errTag: null },
+        { t: 'q3', ok: false, errTag: 'err_off_by_one' },
+      ]),
+    ]);
+    expect(r.err_off_by_one).toBe(1);
+    expect(Object.keys(r).length).toBe(1);
+  });
+
+  test('handles answers as a non-array gracefully', () => {
+    const r = _aggregateMistakesFromScoreAnswers([
+      sc(undefined, { answers: 'not an array' }),
+      sc(undefined, { answers: 42 }),
+    ]);
+    expect(r).toEqual({});
+  });
+});
+
+// ── buildLearningInsights merges score.answers errTags into Common Mistakes ─
+
+describe('buildLearningInsights with score.answers errTags', () => {
+  const BASE = {
+    viewBand:     'g1',
+    studentName:  'Alex',
+    tagLabels:    LI_TAG_LABELS,
+    errLabels:    LI_ERR_LABELS,
+    errHelpMap:   LI_ERR_HELP,
+    lessonNameFn: LI_LESSON_FN,
+  };
+  function scoreWith(errTags, grade) {
+    var answers = errTags.map(function(t, i) {
+      return { t: 'q'+i, ok: t == null, errTag: t };
+    });
+    return {
+      qid: 'lq_g1u8-l3-x', pct: 50, total: errTags.length,
+      score: errTags.filter(function(t){ return t == null; }).length,
+      type: 'lesson', unitIdx: 7, grade: grade || 'g1',
+      date: '2026-05-18', time: '10:00', id: Math.random(),
+      answers: answers,
+    };
+  }
+
+  test('Common Mistakes can be built from score.answers when activity is empty', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [
+        scoreWith(['err_spend_vs_save_confusion', 'err_spend_vs_save_confusion', 'err_spend_vs_save_confusion']),
+      ],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].errorType).toBe('err_spend_vs_save_confusion');
+    expect(r.commonMistakes[0].count).toBe(3);
+  });
+
+  test('Common Mistakes merges activity errors and score.answers errTags', () => {
+    // Activity has 2 of err_no_regroup; score.answers has 3 of err_off_by_one.
+    // Both should appear; threshold (>=3) is required, so err_no_regroup is below threshold.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreWith(['err_off_by_one', 'err_off_by_one', 'err_off_by_one'])],
+      activityEvents: [
+        { ts: 1, correct: false, errorType: 'err_no_regroup', tags: [] },
+        { ts: 2, correct: false, errorType: 'err_no_regroup', tags: [] },
+      ],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].errorType).toBe('err_off_by_one');
+    expect(r.commonMistakes[0].count).toBe(3);
+  });
+
+  test('When both sources have the SAME errorType, the higher count wins (no double-count)', () => {
+    // Activity has 5 of err_off_by_one; score.answers has 3 of err_off_by_one.
+    // Result should be max=5, not 8.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreWith(['err_off_by_one', 'err_off_by_one', 'err_off_by_one'])],
+      activityEvents: [
+        { ts: 1, correct: false, errorType: 'err_off_by_one', tags: [] },
+        { ts: 2, correct: false, errorType: 'err_off_by_one', tags: [] },
+        { ts: 3, correct: false, errorType: 'err_off_by_one', tags: [] },
+        { ts: 4, correct: false, errorType: 'err_off_by_one', tags: [] },
+        { ts: 5, correct: false, errorType: 'err_off_by_one', tags: [] },
+      ],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].errorType).toBe('err_off_by_one');
+    expect(r.commonMistakes[0].count).toBe(5);
+  });
+
+  test('Phase 1 threshold rules still apply (≥3 count required)', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreWith(['err_off_by_one', 'err_off_by_one'])], // only 2, below threshold
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(0);
+  });
+
+  test('Grade 1 view: only G1-grade scores contribute to score-answer mistakes', () => {
+    // Caller is responsible for filtering scores. We feed only G1 scores here,
+    // demonstrating that no G2 errTags can leak.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g1',
+      scores: [scoreWith(['err_spend_vs_save_confusion', 'err_spend_vs_save_confusion', 'err_spend_vs_save_confusion'], 'g1')],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].label).toBe('Confuses spending now with saving for later');
+  });
+
+  test('Grade 2 view: G1 score-answer mistakes are not in the Common Mistakes output', () => {
+    // Caller passes only G2 scores; G1 ones are absent.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g2',
+      scores: [scoreWith(['err_no_regroup', 'err_no_regroup', 'err_no_regroup'], 'g2')],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(JSON.stringify(r)).not.toContain('err_spend_vs_save_confusion');
+    expect(r.commonMistakes[0].errorType).toBe('err_no_regroup');
+  });
+
+  test('legacy scores without errTag on answers still contribute zero to score-answer mistakes', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [{
+        qid: 'lq_g1u1-l1-legacy', pct: 30, total: 5, score: 1, type: 'lesson',
+        unitIdx: 0, grade: 'g1', date: '', time: '', id: 1,
+        answers: [
+          { t: 'q1', ok: false, chosen: 'wrong', correct: 'right' }, // no errTag
+          { t: 'q2', ok: false, chosen: 'wrong', correct: 'right' },
+          { t: 'q3', ok: false, chosen: 'wrong', correct: 'right' },
+        ],
+      }],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(0);
+  });
+});
+
+// ── _lessonDisplayName Grade 1 extension (Phase 2B) ───────────────────────
+// Phase 1 _lessonDisplayName only handled ku<n>l<m> (K) and u<n>l<m> (G2/default).
+// Phase 2B adds support for g1-u<n>-l<m> so the dashboard can name G1 lessons
+// like "Spending and Saving" instead of falling back to the raw lessonId.
+
+describe('_lessonDisplayName (Phase 2B G1 support)', () => {
+  test('resolves g1-u8-l3 to Spending and Saving', () => {
+    const r = _lessonDisplayName('g1-u8-l3');
+    expect(r).not.toBeNull();
+    expect(r.lesson).toBe('Spending and Saving');
+    expect(r.unit).toBe('Financial Literacy');
+  });
+
+  test('resolves g1-u8-l4 to Charitable Giving', () => {
+    const r = _lessonDisplayName('g1-u8-l4');
+    expect(r.lesson).toBe('Charitable Giving');
+    expect(r.unit).toBe('Financial Literacy');
+  });
+
+  test('resolves g1-u7-l2 to Picture Graphs', () => {
+    const r = _lessonDisplayName('g1-u7-l2');
+    expect(r.lesson).toBe('Picture Graphs');
+    expect(r.unit).toBe('Data Analysis');
+  });
+
+  test('resolves g1-u5-l1 to 2D Shapes — Identify and Describe', () => {
+    const r = _lessonDisplayName('g1-u5-l1');
+    expect(r.lesson).toMatch(/2D Shapes/);
+    expect(r.unit).toBe('Geometry');
+  });
+
+  test('resolves g1-u1-l1 to Quick Looks', () => {
+    const r = _lessonDisplayName('g1-u1-l1');
+    expect(r.lesson).toBe('Quick Looks');
+    expect(r.unit).toBe('Counting and Number Relationships to 120');
+  });
+
+  test('still resolves Kindergarten IDs (ku<n>l<m>)', () => {
+    const r = _lessonDisplayName('ku3l2');
+    expect(r).not.toBeNull();
+    expect(r.lesson).toBeTruthy();
+    expect(r.unit).toBe('Addition & Subtraction');
+  });
+
+  test('still resolves legacy Grade 2 IDs (u<n>l<m>)', () => {
+    const r = _lessonDisplayName('u1l1');
+    expect(r).not.toBeNull();
+    expect(r.lesson).toBeTruthy();
+    expect(r.unit).toBe('Basic Fact Strategies');
+  });
+
+  test('returns null for unknown lesson ID patterns', () => {
+    expect(_lessonDisplayName('totally-unknown')).toBeNull();
+    expect(_lessonDisplayName(null)).toBeNull();
+    expect(_lessonDisplayName('')).toBeNull();
+  });
+
+  test('returns null for out-of-range G1 unit/lesson indices', () => {
+    expect(_lessonDisplayName('g1-u99-l1')).toBeNull();
+    expect(_lessonDisplayName('g1-u1-l99')).toBeNull();
+  });
+});
+
+// ── buildLearningInsights tagLessonIndex integration (Phase 2B) ───────────
+// The builder now accepts a tagLessonIndex (the static index emitted by build.js)
+// and uses it as a FALLBACK lesson resolver when live activity events don't
+// already include lessonId info for the weak tag. Grade filtering is strict:
+// only lessons whose lessonId matches the viewBand can be recommended.
+
+describe('buildLearningInsights with tagLessonIndex (Phase 2B)', () => {
+  // Phase 2B uses the production _lessonDisplayName resolver (which handles
+  // K, G1, and G2 lessonIds) so the recommended-lesson names round-trip.
+  const BASE = {
+    viewBand:     'g1',
+    studentName:  'Alex',
+    tagLabels:    LI_TAG_LABELS,
+    errLabels:    LI_ERR_LABELS,
+    errHelpMap:   LI_ERR_HELP,
+    lessonNameFn: _lessonDisplayName,
+  };
+
+  function scoreOf(errTags, grade) {
+    const answers = errTags.map(function(t, i) { return { t: 'q'+i, ok: t == null, errTag: t }; });
+    return { qid:'lq_g1u8-l3-x', pct: 50, total: errTags.length, score: 0, type:'lesson',
+             unitIdx: 7, grade: grade || 'g1', date:'', time:'', id: Math.random(),
+             answers: answers };
+  }
+
+  test('Common Mistakes entries include lessonId / lessonName when static index has it', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf(['err_spend_vs_save_confusion', 'err_spend_vs_save_confusion', 'err_spend_vs_save_confusion'])],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: {
+          'err_spend_vs_save_confusion': { 'g1-u8-l3': 12 },
+        },
+      },
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].lessonId).toBe('g1-u8-l3');
+    // lessonName comes from lessonNameFn — in BASE that's LI_LESSON_FN which maps g1u8-l3.
+    expect(r.commonMistakes[0].lessonName).toBe('Spending and Saving');
+  });
+
+  test('live activity lesson wins over static index when both have data for the same tag', () => {
+    // Live activity says the saving misses happened in g1u5-l1 (Equal Parts).
+    // Static index says they happened in g1u8-l3. Live wins.
+    const events = [
+      { ts: 1, correct: false, tags: ['saving'], lessonId: 'g1u5-l1', errorType: 'err_spend_vs_save_confusion' },
+      { ts: 2, correct: false, tags: ['saving'], lessonId: 'g1u5-l1', errorType: 'err_spend_vs_save_confusion' },
+      { ts: 3, correct: false, tags: ['saving'], lessonId: 'g1u5-l1', errorType: 'err_spend_vs_save_confusion' },
+    ];
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf([])],
+      activityEvents: events,
+      interventionEvents: [],
+      mastery: { saving: { attempts: 3, correct: 0, lastSeen: 0 } },
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: { 'saving': { 'g1-u8-l3': 12 } },
+      },
+    }));
+    // Needs Practice's top entry should use the LIVE lesson (g1u5-l1, not g1-u8-l3).
+    expect(r.needsPractice.length).toBeGreaterThan(0);
+    expect(r.needsPractice[0].lessonId).toBe('g1u5-l1');
+  });
+
+  test('static index falls back when live activity lacks lessonId for the tag', () => {
+    // Score-answer mistakes only (no lessonId info in score.answers, no activity).
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf(['err_spend_vs_save_confusion', 'err_spend_vs_save_confusion', 'err_spend_vs_save_confusion'])],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: {
+          'err_spend_vs_save_confusion': { 'g1-u8-l3': 12 },
+        },
+      },
+    }));
+    expect(r.commonMistakes[0].lessonId).toBe('g1-u8-l3');
+    expect(r.commonMistakes[0].lessonName).toBe('Spending and Saving');
+  });
+
+  test('Grade 1 view excludes Grade 2 lessons from static-index recommendations', () => {
+    // Static index has BOTH a G1 lesson (g1-u8-l3) and a G2 lesson (u5l1).
+    // Viewing G1, the G2 lesson must not be selected.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g1',
+      scores: [scoreOf(['err_x', 'err_x', 'err_x'])],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: { 'err_x': { 'u5l1': 99, 'g1-u8-l3': 1 } }, // G2 has more, but G1 view must pick G1
+      },
+    }));
+    expect(r.commonMistakes[0].lessonId).toBe('g1-u8-l3');
+  });
+
+  test('Grade 2 view excludes Grade 1 lessons from static-index recommendations', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'g2',
+      scores: [scoreOf(['err_x', 'err_x', 'err_x'], 'g2')],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: { 'err_x': { 'g1-u8-l3': 99, 'u5l1': 1 } },
+      },
+    }));
+    expect(r.commonMistakes[0].lessonId).toBe('u5l1');
+  });
+
+  test('Kindergarten view excludes G1 and G2 lessons from static-index recommendations', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      viewBand: 'k',
+      scores: [scoreOf(['err_x', 'err_x', 'err_x'], 'K')],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: { 'err_x': { 'g1-u8-l3': 99, 'u5l1': 99, 'ku2l1': 5 } },
+      },
+    }));
+    expect(r.commonMistakes[0].lessonId).toBe('ku2l1');
+  });
+
+  test('no lesson info anywhere → Common Mistakes still renders (just no lessonId/lessonName)', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf(['err_spend_vs_save_confusion', 'err_spend_vs_save_confusion', 'err_spend_vs_save_confusion'])],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      // no tagLessonIndex at all
+    }));
+    expect(r.commonMistakes.length).toBe(1);
+    expect(r.commonMistakes[0].errorType).toBe('err_spend_vs_save_confusion');
+    expect(r.commonMistakes[0].lessonId).toBeFalsy();
+    expect(r.commonMistakes[0].lessonName).toBeFalsy();
+  });
+
+  test('empty / null tagLessonIndex behaves as if absent (no crash, no recommendation)', () => {
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf(['err_x', 'err_x', 'err_x'])],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: {},
+      tagLessonIndex: null,
+    }));
+    expect(r.commonMistakes[0].errorType).toBe('err_x');
+    expect(r.commonMistakes[0].lessonId).toBeFalsy();
+  });
+
+  test('Recommended Next Step uses static-index lesson when live activity is empty', () => {
+    // Weak tag from mastery; no live lessonId on activity; static index points
+    // to g1-u8-l3. Score record carries enough volume to clear the totalQuestions
+    // gate so the builder reaches the lesson branch.
+    const fillerScore = { qid: 'lq_g1u8-l3-x', pct: 30, total: 10, score: 3, type: 'lesson',
+                          unitIdx: 7, grade: 'g1', date: '', time: '', id: 99, answers: [] };
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [fillerScore],
+      activityEvents: [],
+      interventionEvents: [],
+      mastery: { saving: { attempts: 5, correct: 1, lastSeen: 0 } },
+      tagLessonIndex: {
+        schemaVersion: 1,
+        byTag: { 'saving': { 'g1-u8-l3': 12 } },
+      },
+    }));
+    expect(r.nextStep.kind).toBe('lesson');
+    expect(r.nextStep.lessonId).toBe('g1-u8-l3');
+    expect(r.nextStep.lessonName).toBe('Spending and Saving');
+  });
+
+  test('Phase 1 + 2A integration still passes (no regression)', () => {
+    // Mixed inputs — activity + score.answers + intervention + mastery.
+    // No tagLessonIndex. All Phase 1/2A behavior preserved.
+    const r = buildLearningInsights(Object.assign({}, BASE, {
+      scores: [scoreOf(['err_off_by_one', 'err_off_by_one', 'err_off_by_one'])],
+      activityEvents: [
+        { ts: 1, correct: false, errorType: 'err_no_regroup', tags: ['regrouping'] },
+        { ts: 2, correct: false, errorType: 'err_no_regroup', tags: ['regrouping'] },
+        { ts: 3, correct: false, errorType: 'err_no_regroup', tags: ['regrouping'] },
+      ],
+      interventionEvents: [
+        { type: 'triggered', errorTag: 'err_off_by_one' },
+        { type: 'triggered', errorTag: 'err_off_by_one' },
+      ],
+      mastery: {},
+    }));
+    expect(r.commonMistakes.length).toBe(2);
+    expect(r.interventionRecovery.state).not.toBe('not-enough-data');
+  });
+});
+
+// ── Phase 2C: intervention_events.grade column wiring ────────────────────
+// Two new pure helpers extracted from the previously-inline sync/fetch code
+// in src/dashboard.js so the round-trip of the new `grade` field can be
+// exercised by jest without a live Supabase connection.
+
+describe('_buildInterventionRowForSync (Phase 2C)', () => {
+  test('includes grade field on the upsert row when event has explicit grade', () => {
+    const row = _buildInterventionRowForSync({
+      clientId: 'c1', type: 'triggered', errorTag: 'err_x',
+      sessionId: 'lq_g1u1-l1', questionId: 'g1-u1-l1-q-001',
+      grade: 'g1', timestamp: 1700000000000,
+    }, 'student-uuid');
+    expect(row.client_id).toBe('c1');
+    expect(row.student_id).toBe('student-uuid');
+    expect(row.grade).toBe('g1');
+    expect(row.session_id).toBe('lq_g1u1-l1');
+    expect(row.error_tag).toBe('err_x');
+    expect(row.event_type).toBe('triggered');
+    expect(typeof row.occurred_at).toBe('string');
+  });
+
+  test('grade is null on the row when event lacks an explicit grade (legacy)', () => {
+    const row = _buildInterventionRowForSync({
+      clientId: 'c2', type: 'triggered', errorTag: 'err_y',
+      sessionId: 'lq_u3-l2', questionId: 'u3-l2-001',
+      timestamp: 1700000000000,
+    }, 'student-uuid');
+    expect(row.grade).toBeNull();
+  });
+
+  test('grade=k|g1|g2 all round-trip unchanged', () => {
+    ['k','g1','g2'].forEach(function(g) {
+      const row = _buildInterventionRowForSync({
+        clientId: 'cx', type: 'triggered', grade: g, timestamp: 1700000000000,
+      }, 'sid');
+      expect(row.grade).toBe(g);
+    });
+  });
+
+  test('handles missing optional fields gracefully', () => {
+    const row = _buildInterventionRowForSync({ clientId: 'c3' }, 'sid');
+    expect(row.client_id).toBe('c3');
+    expect(row.student_id).toBe('sid');
+    expect(row.session_id).toBe('');
+    expect(row.event_type).toBe('');
+    expect(row.error_tag).toBeNull();
+    expect(row.question_id).toBeNull();
+    expect(row.resolved_correctly).toBeNull();
+    expect(row.grade).toBeNull();
+  });
+});
+
+describe('_normalizeInterventionRow (Phase 2C)', () => {
+  test('includes grade on the normalized event when Supabase row carries it', () => {
+    const e = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_x', session_id: 'lq_g1u1-l1',
+      resolved_correctly: null, occurred_at: '2026-05-19T10:00:00.000Z',
+      grade: 'g1',
+    });
+    expect(e.type).toBe('triggered');
+    expect(e.errorTag).toBe('err_x');
+    expect(e.sessionId).toBe('lq_g1u1-l1');
+    expect(e.grade).toBe('g1');
+    expect(typeof e.timestamp).toBe('number');
+  });
+
+  test('grade is null on normalized event when Supabase row lacks the column (legacy backfill miss)', () => {
+    const e = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_z',
+      session_id: 'lq_legacy-no-prefix', resolved_correctly: null,
+      occurred_at: '2026-05-19T10:00:00.000Z',
+      // grade column omitted entirely (older rows pre-backfill)
+    });
+    expect(e.grade).toBeNull();
+  });
+
+  test('explicit-grade event still wins over session-id inference downstream', () => {
+    // _normalizeInterventionRow just round-trips the column; the
+    // _filterInterventionsByGrade helper applies the precedence rule.
+    const e = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_x',
+      session_id: 'lq_g1u1-l1-xyz', // session looks like G1...
+      resolved_correctly: null,
+      occurred_at: '2026-05-19T10:00:00.000Z',
+      grade: 'k',                   // ...but explicit grade says K.
+    });
+    expect(e.grade).toBe('k');
+    expect(_filterInterventionsByGrade([e], 'k').length).toBe(1);
+    expect(_filterInterventionsByGrade([e], 'g1').length).toBe(0);
+  });
+});
+
+describe('intervention_events grade round-trip (Phase 2C integration)', () => {
+  test('event with grade=g1 + g2-looking sessionId surfaces only in G1 view', () => {
+    const evt = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_x',
+      session_id: 'lq_u3-l2-abc', resolved_correctly: null,
+      occurred_at: '2026-05-19T10:00:00.000Z',
+      grade: 'g1',
+    });
+    expect(_filterInterventionsByGrade([evt], 'g1').length).toBe(1);
+    expect(_filterInterventionsByGrade([evt], 'g2').length).toBe(0);
+  });
+
+  test('legacy event (no grade) with g1 sessionId still resolves to G1', () => {
+    const evt = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_x',
+      session_id: 'lq_g1u1-l1-abc', resolved_correctly: null,
+      occurred_at: '2026-05-19T10:00:00.000Z',
+      // grade absent — falls through to session-id inference
+    });
+    expect(_filterInterventionsByGrade([evt], 'g1').length).toBe(1);
+    expect(_filterInterventionsByGrade([evt], 'g2').length).toBe(0);
+  });
+
+  test('legacy event with no grade and no inferable session is excluded from every grade-specific view', () => {
+    const evt = _normalizeInterventionRow({
+      event_type: 'triggered', error_tag: 'err_x',
+      session_id: 'opaque_session_id', resolved_correctly: null,
+      occurred_at: '2026-05-19T10:00:00.000Z',
+    });
+    ['k','g1','g2'].forEach(function(b) {
+      expect(_filterInterventionsByGrade([evt], b).length).toBe(0);
+    });
   });
 });
 

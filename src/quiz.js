@@ -931,7 +931,13 @@ function _pickAnswer(btnIdx){
       if(hintBtn){ hintBtn.setAttribute('aria-disabled','true'); hintBtn.setAttribute('tabindex','-1'); }
     }
 
-    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs, hintUsed:qz._hintRevealed||false});
+    // Phase 2A: capture the selected distractor's diagnostic tag for Common
+    // Mistakes aggregation in the Parent Dashboard. Correct answers and
+    // string-shaped legacy options resolve to null. _selectedRawOpt was
+    // computed at the top of this setTimeout callback.
+    const _ansErrTag = (!isOk && _selectedRawOpt && typeof _selectedRawOpt === 'object')
+      ? (_selectedRawOpt.tag || null) : null;
+    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs, hintUsed:qz._hintRevealed||false, errTag:_ansErrTag});
 
     const nb = document.getElementById('next-btn');
     if(nb){
@@ -957,6 +963,11 @@ function _handleAnswer(selectedIndex){
   // ── Log intervention resolution if returning from an intervention ──
   if(activeIntervention){
     var retryCorrect = selectedIndex === q.a;
+    // Phase 2C: tag the resolved event with the same grade-band semantics as
+    // the triggered event so server-side filtering is grade-strict.
+    var _resEvtGrade = (typeof _gradeBand === 'function')
+      ? (_gradeBand(localStorage.getItem('mmr_grade')) || null)
+      : null;
     var resolvedEvt = {
       type: 'resolved',
       timestamp: Date.now(),
@@ -967,6 +978,7 @@ function _handleAnswer(selectedIndex){
       questionText: activeIntervention.questionText,
       errorTag: activeIntervention.errorTag,
       resolvedCorrectly: retryCorrect,
+      grade: _resEvtGrade,
       retryChosenValue: _ov(q.o[selectedIndex]),
       correctValue: _ov(q.o[q.a]),
       lessonTitle: activeIntervention.lessonTitle
@@ -1254,7 +1266,10 @@ function _tapGroupSubmit() {
     qz.answers.push({
       t: q.t || q.prompt, ok: isOk, exp: exp,
       selectedIds: selectedIds, timeSecs: qTimeSecs,
-      hintUsed: qz._hintRevealed || false
+      hintUsed: qz._hintRevealed || false,
+      // Phase 2A: tapGroup's grading function already computes errorType.
+      // Correct answers resolve to null per convention.
+      errTag: !isOk ? (gradeResult.errorType || null) : null
     });
 
     var nb = document.getElementById('next-btn');
@@ -1815,6 +1830,12 @@ function _pauseForIntervention(errorTag, selectedIndex){
   var _misconception = (q && q.o && selectedIndex != null && typeof q.o[selectedIndex] === 'object') ? q.o[selectedIndex].me : null;
 
   // ── Log triggered intervention event ──
+  // Phase 2C: tag with grade band ('k'|'g1'|'g2') sourced from the active
+  // student's mmr_grade. Null when grade can't be determined — server-side
+  // backfill will infer from session_id / question_id for legacy rows.
+  var _evtGrade = (typeof _gradeBand === 'function')
+    ? (_gradeBand(localStorage.getItem('mmr_grade')) || null)
+    : null;
   var triggeredEvt = {
     type: 'triggered',
     timestamp: Date.now(),
@@ -1826,7 +1847,8 @@ function _pauseForIntervention(errorTag, selectedIndex){
     errorTag: errorTag,
     chosenValue: chosenVal,
     correctValue: correctVal,
-    lessonTitle: title
+    lessonTitle: title,
+    grade: _evtGrade
   };
   interventionEvents.push(triggeredEvt);
   _appendInterventionEvent(triggeredEvt);

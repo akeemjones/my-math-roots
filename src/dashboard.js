@@ -2336,6 +2336,12 @@ var _pinResetBuffer = [];
 // null = not yet fetched; [] or array = fetched (may be empty). Populated by
 // _loadRemoteInterventionData(); renderDashboard() prefers this over localStorage.
 var _remoteInterventionEvents = null;
+// Phase 2B static tag→lesson index. Loaded once per dashboard session via
+// _loadTagLessonIndex(); null until the fetch resolves. The Learning Insights
+// builder accepts a null index and degrades gracefully (no static-fallback
+// lesson recommendations).
+var _tagLessonIndex = null;
+var _tagLessonIndexLoading = false;
 
 // ── Units metadata (for Access Controls lesson drawer) ────────────────────
 var _UNITS_META = [
@@ -2349,6 +2355,29 @@ var _UNITS_META = [
   { name: 'Fractions',                lessons: ['What is a Fraction?','Halves, Fourths and Eighths','Which Piece is Bigger?'] },
   { name: 'Geometry',                 lessons: ['Flat Shapes','Solid Shapes','Mirror Shapes'] },
   { name: 'Multiplication & Division', lessons: ['Equal Groups','Adding the Same Number','Sharing Equally'] },
+];
+
+// ── G1 lesson-name lookup table (Phase 2B) ────────────────────────────────
+// Mirrors src/data/shared_g1.js; used by _lessonDisplayName() to convert a
+// raw G1 lessonId (e.g. 'g1-u8-l3') into a human-readable name for parents.
+// Index 0 = g1u1, index 1 = g1u2, …
+var _G1_UNITS_META = [
+  { name: 'Counting and Number Relationships to 120',
+    lessons: ['Quick Looks','Count Forward','Count Backward','Skip Count by 2s, 5s, and 10s','One More and One Less','Ten More and Ten Less','Order Numbers','Compare Numbers'] },
+  { name: 'Place Value',
+    lessons: ['Groups of Ten','Tens and Ones','Numbers to 120','Represent Numbers'] },
+  { name: 'Addition and Subtraction to 20',
+    lessons: ['Add Within 20','Subtract Within 20','Doubles and Near Doubles','Make 10','Fact Families and Word Problems'] },
+  { name: 'Tens and Ones Operations',
+    lessons: ['Add Tens and Ones','10 More and 10 Less','Add Multiples of 10','Add Tens to Two-Digit Numbers','Tens and Ones Word Problems'] },
+  { name: 'Geometry',
+    lessons: ['2D Shapes — Identify and Describe','3D Shapes — Identify and Describe','Shape Attributes and Sorting','Compose and Recognize 2D Shapes','Equal Parts — Halves and Fourths'] },
+  { name: 'Measurement & Time',
+    lessons: ['Measuring with Non-Standard Units','Understanding Units of Length','Comparing Measurements','Describing Length','Telling Time'] },
+  { name: 'Data Analysis',
+    lessons: ['Sorting and Organizing Data','Picture Graphs','Bar-Type Graphs','Drawing Conclusions from Data'] },
+  { name: 'Financial Literacy',
+    lessons: ['Earning Income','Goods and Services','Spending and Saving','Charitable Giving'] },
 ];
 
 // ── K lesson-name lookup table ────────────────────────────────────────────
@@ -2378,7 +2407,8 @@ function _activeDashboardUnitsMeta() {
 }
 
 // Resolve a lessonId string to { lesson, unit } name objects.
-// Handles K IDs (ku1l1) and grade-2 IDs (u1l1). Returns null when unresolvable.
+// Handles K IDs (ku<n>l<m>), G1 IDs (g1-u<n>-l<m>), and grade-2 IDs (u<n>l<m>).
+// Returns null when unresolvable.
 function _lessonDisplayName(lessonId) {
   if (!lessonId) return null;
   var s = String(lessonId);
@@ -2389,6 +2419,15 @@ function _lessonDisplayName(lessonId) {
     var kl = ku.lessons[parseInt(kMatch[2], 10) - 1];
     return kl ? { lesson: kl, unit: ku.name } : null;
   }
+  // Phase 2B: G1 lessonId support — canonical form is 'g1-u<n>-l<m>' but we
+  // also accept the no-hyphen variant 'g1u<n>l<m>' that some legacy probes use.
+  var g1Match = s.match(/^g1[-]?u(\d+)[-]?l(\d+)$/i);
+  if (g1Match) {
+    var g1u = _G1_UNITS_META[parseInt(g1Match[1], 10) - 1];
+    if (!g1u) return null;
+    var g1l = g1u.lessons[parseInt(g1Match[2], 10) - 1];
+    return g1l ? { lesson: g1l, unit: g1u.name } : null;
+  }
   var g2Match = s.match(/^u(\d+)l(\d+)$/i);
   if (g2Match) {
     var g2u = _UNITS_META[parseInt(g2Match[1], 10) - 1];
@@ -2396,6 +2435,17 @@ function _lessonDisplayName(lessonId) {
     var g2l = g2u.lessons[parseInt(g2Match[2], 10) - 1];
     return g2l ? { lesson: g2l, unit: g2u.name } : null;
   }
+  return null;
+}
+
+// Map a lessonId to its grade band ('k'|'g1'|'g2'|null). Used by Phase 2B
+// to keep tagLessonIndex recommendations strictly grade-scoped.
+function _lessonIdBand(lessonId) {
+  if (!lessonId) return null;
+  var s = String(lessonId).toLowerCase();
+  if (/^g1[-]?u\d+[-]?l\d+$/.test(s)) return 'g1';
+  if (/^ku\d+l\d+$/.test(s))          return 'k';
+  if (/^u\d+l\d+$/.test(s))           return 'g2';
   return null;
 }
 
@@ -3530,7 +3580,7 @@ function _summarizeInterventions(events) {
   var byTag = {};
   var total = 0;
   var resolved = 0;
-  events.forEach(function(e) {
+  (events || []).forEach(function(e) {
     if (e.type === 'triggered') {
       total++;
       if (!byTag[e.errorTag]) byTag[e.errorTag] = { count: 0, resolved: 0 };
@@ -3548,47 +3598,525 @@ function _summarizeInterventions(events) {
   };
 }
 
-function _renderInterventionInsights(events, activityErrCounts) {
-  var summary = _summarizeInterventions(events);
-  // Merge activity-derived error counts (every wrong answer) into byTag.
-  // Activity counts are more granular than intervention events (threshold-triggered only).
-  var mergedByTag = Object.assign({}, summary.byTag);
-  if (activityErrCounts) {
-    Object.keys(activityErrCounts).forEach(function(tag) {
-      if (!mergedByTag[tag]) mergedByTag[tag] = { count: 0, resolved: 0 };
-      if (activityErrCounts[tag] > mergedByTag[tag].count) {
-        mergedByTag[tag] = { count: activityErrCounts[tag], resolved: mergedByTag[tag].resolved || 0 };
+// ── Phase 1 Learning Insights: grade-filter helpers + builder ────────────
+// Mirrors dashboard/dashboard.js. The standalone copy is the test surface
+// (tests/dashboard.test.js imports from dashboard/dashboard.js); this copy
+// must stay logic-identical so the in-app dashboard renders the same cards.
+
+// Infer the grade band of a single intervention event.
+function _inferInterventionGrade(e) {
+  if (!e) return 'legacy_unknown';
+  if (e.grade) {
+    return _gradeBand(e.grade) || 'legacy_unknown';
+  }
+  var probes = [e.sessionId, e.questionId, e.lessonId, e.unitId]
+    .filter(function(p) { return p; });
+  for (var i = 0; i < probes.length; i++) {
+    var t = String(probes[i]).toLowerCase();
+    if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
+    if (/^(lq_)?u\d/.test(t)) return 'g2';
+  }
+  return 'legacy_unknown';
+}
+
+function _filterInterventionsByGrade(events, viewBand) {
+  if (!Array.isArray(events)) return [];
+  var band = _gradeBand(viewBand);
+  if (!band) return [];
+  return events.filter(function(e) {
+    return _inferInterventionGrade(e) === band;
+  });
+}
+
+function _deriveMasteryFromActivity(activityEvents) {
+  var out = {};
+  if (!Array.isArray(activityEvents)) return out;
+  activityEvents.forEach(function(e) {
+    if (!e || typeof e.correct !== 'boolean') return;
+    var tags = Array.isArray(e.tags) ? e.tags : [];
+    tags.forEach(function(tag) {
+      if (!tag) return;
+      if (!out[tag]) out[tag] = { attempts: 0, correct: 0, lastSeen: 0 };
+      out[tag].attempts++;
+      if (e.correct) out[tag].correct++;
+      if (typeof e.ts === 'number' && e.ts > out[tag].lastSeen) {
+        out[tag].lastSeen = e.ts;
       }
     });
+  });
+  return out;
+}
+
+// Phase 2A: per-question diagnostic error tags now ride along on
+// score.answers[].errTag. This aggregator turns a list of (already
+// grade-filtered) scores into an { errorType: count } map compatible with
+// the Common Mistakes pipeline. Answers without errTag (legacy) or with
+// errTag === null (correct answers, by convention) are ignored.
+// ── Phase 2C: intervention_events.grade column helpers ──────────────────
+// Pure builder used by _syncPendingInterventionEvents to construct the upsert
+// row sent to Supabase. Mirrors dashboard/dashboard.js — see the standalone
+// copy for the canonical version + test coverage.
+function _buildInterventionRowForSync(e, studentId) {
+  e = e || {};
+  return {
+    client_id:          e.clientId,
+    student_id:         studentId,
+    session_id:         e.sessionId  || '',
+    event_type:         e.type       || '',
+    error_tag:          e.errorTag   || null,
+    question_id:        e.questionId || null,
+    resolved_correctly: e.resolvedCorrectly != null ? e.resolvedCorrectly : null,
+    occurred_at:        new Date(e.timestamp || Date.now()).toISOString(),
+    grade:              e.grade || null,
+  };
+}
+
+// Normalize a Supabase intervention_events row into the in-memory event shape
+// consumed by _filterInterventionsByGrade / _summarizeInterventions. Phase 2C
+// adds `grade` to the projection — older rows (where the column is missing or
+// null) fall back to session-id inference downstream.
+function _normalizeInterventionRow(r) {
+  r = r || {};
+  return {
+    type:              r.event_type,
+    errorTag:          r.error_tag,
+    sessionId:         r.session_id,
+    resolvedCorrectly: r.resolved_correctly,
+    timestamp:         r.occurred_at ? new Date(r.occurred_at).getTime() : null,
+    grade:             r.grade || null,
+  };
+}
+
+function _aggregateMistakesFromScoreAnswers(scores) {
+  var counts = {};
+  if (!Array.isArray(scores)) return counts;
+  scores.forEach(function(s) {
+    if (!s || !Array.isArray(s.answers)) return;
+    s.answers.forEach(function(a) {
+      if (!a) return;
+      var tag = a.errTag;
+      if (!tag) return;
+      counts[tag] = (counts[tag] || 0) + 1;
+    });
+  });
+  return counts;
+}
+
+var _LI_THRESH = {
+  WEAK_MIN_ATTEMPTS:        3,
+  WEAK_MAX_ACCURACY:        0.60,
+  STRONG_MIN_ATTEMPTS:      5,
+  STRONG_MIN_ACCURACY:      0.85,
+  MISTAKE_MIN_COUNT:        3,
+  TREND_MIN_EVENTS:         6,
+  RECOVERY_MIN_TOTAL:       2,
+  NEEDS_PRACTICE_LIMIT:     3,
+  COMMON_MISTAKES_LIMIT:    3,
+  STRENGTHS_LIMIT:          3,
+};
+
+function buildLearningInsights(opts) {
+  opts = opts || {};
+  var viewBand           = opts.viewBand           || 'g2';
+  var scores             = opts.scores             || [];
+  var activityEvents     = opts.activityEvents     || [];
+  var interventionEvents = opts.interventionEvents || [];
+  var mastery            = opts.mastery            || {};
+  var studentName        = opts.studentName        || 'Your child';
+  var tagLabels          = opts.tagLabels          || {};
+  var errLabels          = opts.errLabels          || {};
+  var errHelpMap         = opts.errHelpMap         || {};
+  var lessonNameFn       = opts.lessonNameFn       || function() { return null; };
+  // Phase 2B: static tag→lesson index emitted by build.js. Used as a fallback
+  // when live activity events don't already include a lessonId for the tag.
+  var tagLessonIndex     = opts.tagLessonIndex     || null;
+
+  function toTitle(s) {
+    return s ? String(s).replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) : s;
   }
-  if (!events.length && !Object.keys(mergedByTag).length) return '';
-  var tags = Object.keys(mergedByTag)
-    .map(function(tag) { return [tag, mergedByTag[tag]]; })
-    .sort(function(a, b) { return b[1].count - a[1].count; })
-    .slice(0, 5);
-  var items = tags.map(function(pair) {
-    var tag      = pair[0], data = pair[1];
-    var tagLabel = _friendlyInterventionTag(tag)
-      || _toTitleCase(tag.replace(/^err_/, ''));
-    var helpText = _ERR_HELP_MAP[tag] || null;
-    var rateColor = data.count > 0 && (data.resolved / data.count) >= 0.7 ? '#2e7d32' : '#e65100';
-    return '<div class="db-intervention-item">'
-      + '<div class="db-int-top">'
-      + '<span class="db-intervention-tag">' + _esc(tagLabel) + '</span>'
-      + '<span class="db-intervention-count" style="color:' + rateColor + '">' + data.count + '&#xD7;</span>'
-      + '</div>'
-      + (helpText ? '<div class="db-int-help">&#x1F4A1; ' + _esc(helpText) + '</div>' : '')
+  function tagLabel(t) { return tagLabels[t] || toTitle(t); }
+  function errLabel(t) { return errLabels[t] || toTitle(String(t || '').replace(/^err_/, '')); }
+
+  var hasAnyData =
+    (Array.isArray(scores) && scores.length > 0) ||
+    (Array.isArray(activityEvents) && activityEvents.length > 0) ||
+    (Array.isArray(interventionEvents) && interventionEvents.length > 0) ||
+    (mastery && Object.keys(mastery).length > 0);
+
+  var tagStats = Object.keys(mastery).map(function(tag) {
+    var m = mastery[tag] || {};
+    var attempts = m.attempts || 0;
+    var correct  = m.correct  || 0;
+    return {
+      tag: tag, attempts: attempts, correct: correct,
+      accuracy: attempts > 0 ? (correct / attempts) : 0,
+    };
+  });
+  var weakTags = tagStats
+    .filter(function(t) {
+      return t.attempts >= _LI_THRESH.WEAK_MIN_ATTEMPTS
+        && t.accuracy <  _LI_THRESH.WEAK_MAX_ACCURACY;
+    })
+    .sort(function(a, b) { return a.accuracy - b.accuracy; });
+
+  var tagLessonMap = {};
+  activityEvents.forEach(function(e) {
+    if (!e || !e.lessonId || !Array.isArray(e.tags)) return;
+    e.tags.forEach(function(tg) {
+      if (!tg) return;
+      if (!tagLessonMap[tg]) tagLessonMap[tg] = {};
+      tagLessonMap[tg][e.lessonId] = (tagLessonMap[tg][e.lessonId] || 0) + 1;
+    });
+  });
+
+  // Phase 2B: prefer the lesson with the most live attempts for this tag, but
+  // restrict to lessons that match the active viewBand. If no live lesson
+  // qualifies, fall through to the static tag→lesson index. Returns null when
+  // neither source has a band-matching lesson.
+  function topLessonForTag(tag) {
+    var liveLessons = tagLessonMap[tag] || {};
+    var liveKeys = Object.keys(liveLessons).filter(function(id) {
+      return _lessonIdBand(id) === viewBand;
+    });
+    if (liveKeys.length) {
+      liveKeys.sort(function(a, b) { return liveLessons[b] - liveLessons[a]; });
+      return liveKeys[0];
+    }
+    if (tagLessonIndex && tagLessonIndex.byTag && tagLessonIndex.byTag[tag]) {
+      var staticLessons = tagLessonIndex.byTag[tag];
+      var staticKeys = Object.keys(staticLessons).filter(function(id) {
+        return _lessonIdBand(id) === viewBand;
+      });
+      if (staticKeys.length) {
+        staticKeys.sort(function(a, b) { return staticLessons[b] - staticLessons[a]; });
+        return staticKeys[0];
+      }
+    }
+    return null;
+  }
+
+  var needsPractice = weakTags
+    .slice(0, _LI_THRESH.NEEDS_PRACTICE_LIMIT)
+    .map(function(t) {
+      var lessonId   = topLessonForTag(t.tag);
+      var ldn        = lessonId ? lessonNameFn(lessonId) : null;
+      var lessonName = ldn && ldn.lesson ? ldn.lesson : null;
+      var unitName   = ldn && ldn.unit   ? ldn.unit   : null;
+      var label      = tagLabel(t.tag);
+      var accuracyPct = Math.round(t.accuracy * 100);
+      var why = accuracyPct + '% on ' + label + ' across ' + t.attempts
+        + ' attempt' + (t.attempts !== 1 ? 's' : '') + '.';
+      var recommendation = lessonName
+        ? 'Try ' + lessonName + ' again.'
+        : 'Spend a few minutes practicing ' + label + '.';
+      return {
+        tag: t.tag, label: label, accuracy: accuracyPct, attempts: t.attempts,
+        lessonId: lessonId, lessonName: lessonName, unitName: unitName,
+        why: why, recommendation: recommendation,
+      };
+    });
+
+  var errCounts = {};
+  var errLastTs = {};
+  activityEvents.forEach(function(e) {
+    if (!e || !e.errorType) return;
+    errCounts[e.errorType] = (errCounts[e.errorType] || 0) + 1;
+    if (typeof e.ts === 'number' && (!errLastTs[e.errorType] || e.ts > errLastTs[e.errorType])) {
+      errLastTs[e.errorType] = e.ts;
+    }
+  });
+  // Phase 2A: merge score.answers[].errTag counts. A single attempt produces
+  // BOTH an activity-event errorType AND a score.answers errTag for the same
+  // mistake, so summing would double-count. Take Math.max per tag — whichever
+  // source has higher coverage wins. Legacy attempts (no errTag) contribute
+  // nothing here and continue to rely on activity events.
+  var scoreErrCounts = _aggregateMistakesFromScoreAnswers(scores);
+  Object.keys(scoreErrCounts).forEach(function(t) {
+    if (!errCounts[t] || scoreErrCounts[t] > errCounts[t]) {
+      errCounts[t] = scoreErrCounts[t];
+    }
+  });
+  var commonMistakes = Object.keys(errCounts)
+    .filter(function(t) { return errCounts[t] >= _LI_THRESH.MISTAKE_MIN_COUNT; })
+    .sort(function(a, b) { return errCounts[b] - errCounts[a]; })
+    .slice(0, _LI_THRESH.COMMON_MISTAKES_LIMIT)
+    .map(function(t) {
+      // Phase 2B: resolve a band-matching lesson for this err_* tag. Live
+      // activity wins; static index falls in when live data lacks coverage.
+      var lessonId   = topLessonForTag(t);
+      var ldn        = lessonId ? lessonNameFn(lessonId) : null;
+      var lessonName = ldn && ldn.lesson ? ldn.lesson : null;
+      var unitName   = ldn && ldn.unit   ? ldn.unit   : null;
+      return {
+        errorType:  t,
+        label:      errLabels[t] || errLabel(t),
+        helpText:   errHelpMap[t] || null,
+        count:      errCounts[t],
+        lastTs:     errLastTs[t] || null,
+        lessonId:   lessonId,
+        lessonName: lessonName,
+        unitName:   unitName,
+      };
+    });
+
+  var strengths = tagStats
+    .filter(function(t) {
+      return t.attempts  >= _LI_THRESH.STRONG_MIN_ATTEMPTS
+        && t.accuracy >= _LI_THRESH.STRONG_MIN_ACCURACY;
+    })
+    .sort(function(a, b) { return b.accuracy - a.accuracy; })
+    .slice(0, _LI_THRESH.STRENGTHS_LIMIT)
+    .map(function(t) {
+      return { tag: t.tag, label: tagLabel(t.tag),
+               accuracy: Math.round(t.accuracy * 100), attempts: t.attempts };
+    });
+
+  var sortedGraded = activityEvents
+    .filter(function(e) { return e && typeof e.correct === 'boolean'; })
+    .sort(function(a, b) { return (a.ts || 0) - (b.ts || 0); });
+  var trend;
+  if (sortedGraded.length < _LI_THRESH.TREND_MIN_EVENTS) {
+    trend = { state: 'not-enough-data', sampleSize: sortedGraded.length };
+  } else {
+    var slice = sortedGraded.slice(-10);
+    var first5 = slice.slice(0, 5);
+    var last5  = slice.slice(-5);
+    var acc5first = first5.filter(function(e) { return e.correct; }).length / 5;
+    var acc5last  = last5.filter(function(e)  { return e.correct; }).length / 5;
+    var delta = acc5last - acc5first;
+    var state = 'steady';
+    if (delta >=  0.20) state = 'improving';
+    else if (delta <= -0.20) state = 'declining';
+    trend = { state: state, sampleSize: slice.length };
+  }
+
+  var interventionRecovery = (function() {
+    if (!interventionEvents || !interventionEvents.length) {
+      return { state: 'not-enough-data' };
+    }
+    var summary = _summarizeInterventions(interventionEvents);
+    if (summary.total < _LI_THRESH.RECOVERY_MIN_TOTAL) {
+      return { state: 'not-enough-data', total: summary.total };
+    }
+    var topTag = null, topCount = 0;
+    Object.keys(summary.byTag).forEach(function(t) {
+      if (summary.byTag[t].count > topCount) { topTag = t; topCount = summary.byTag[t].count; }
+    });
+    var topTagPct = null;
+    if (topTag && summary.byTag[topTag].count > 0) {
+      topTagPct = Math.round((summary.byTag[topTag].resolved / summary.byTag[topTag].count) * 100);
+    }
+    var rState;
+    if      (summary.recoveryRate >= 70) rState = 'good';
+    else if (summary.recoveryRate >= 40) rState = 'ok';
+    else                                 rState = 'needs-attention';
+    return {
+      state: rState, overallPct: summary.recoveryRate, total: summary.total,
+      topTag: topTag,
+      topTagLabel: topTag ? (errLabels[topTag] || errLabel(topTag)) : null,
+      topTagPct: topTagPct,
+    };
+  })();
+
+  var completedScores = scores.filter(function(s) { return s.pct != null && s.total > 0; });
+  var totalQuestions = completedScores.reduce(function(a, s) { return a + (s.total || 0); }, 0);
+  var overallAccuracy = completedScores.length > 0
+    ? Math.round(completedScores.reduce(function(a, s) { return a + s.pct; }, 0) / completedScores.length)
+    : 0;
+
+  var nextStep;
+  if (!hasAnyData || totalQuestions < 3) {
+    nextStep = { kind: 'not-enough-data',
+      label: 'Try a 5-question quiz to unlock insights.',
+      why:   'A few more answers are needed before we can spot patterns.' };
+  } else if (needsPractice.length > 0 && needsPractice[0].lessonName) {
+    nextStep = { kind: 'lesson',
+      lessonId:   needsPractice[0].lessonId,
+      lessonName: needsPractice[0].lessonName,
+      unitName:   needsPractice[0].unitName,
+      skillLabel: needsPractice[0].label,
+      label:      'Try ' + needsPractice[0].lessonName + ' again.',
+      why:        needsPractice[0].why };
+  } else if (needsPractice.length > 0) {
+    nextStep = { kind: 'practice-skill',
+      skillLabel: needsPractice[0].label,
+      label:      'Spend a few minutes practicing ' + needsPractice[0].label + '.',
+      why:        needsPractice[0].why };
+  } else if (overallAccuracy >= 80 || strengths.length > 0) {
+    nextStep = { kind: 'keep-going',
+      label: 'Keep going — no major weak area yet.',
+      why:   'Recent accuracy is ' + overallAccuracy + '% across ' + completedScores.length
+              + ' quiz' + (completedScores.length !== 1 ? 'zes' : '') + '.' };
+  } else {
+    nextStep = { kind: 'practice-skill',
+      label: 'Try one more quiz to build the streak.',
+      why:   totalQuestions + ' question' + (totalQuestions !== 1 ? 's' : '') + ' answered so far.' };
+  }
+
+  var parentAction;
+  if (!hasAnyData || totalQuestions < 3) {
+    parentAction = { label: 'Try a 5-question quiz on any lesson.',
+                     why:   'A few more answers will unlock skill-specific insights.' };
+  } else if (commonMistakes.length > 0 && commonMistakes[0].helpText) {
+    parentAction = { label: commonMistakes[0].helpText,
+                     why:   'Most common mistake: ' + commonMistakes[0].label
+                             + ' (' + commonMistakes[0].count + ' time'
+                             + (commonMistakes[0].count !== 1 ? 's' : '') + ').' };
+  } else if (needsPractice.length > 0 && needsPractice[0].lessonName) {
+    parentAction = { label: 'Practice ' + needsPractice[0].lessonName + ' together.',
+                     why:   needsPractice[0].why };
+  } else if (needsPractice.length > 0) {
+    parentAction = { label: 'Spend a few minutes on ' + needsPractice[0].label + ' this week.',
+                     why:   needsPractice[0].why };
+  } else if (strengths.length > 0) {
+    parentAction = { label: 'Celebrate progress on ' + strengths[0].label + ' and try the next lesson.',
+                     why:   strengths[0].label + ' is at ' + strengths[0].accuracy + '% across '
+                             + strengths[0].attempts + ' attempts.' };
+  } else {
+    parentAction = { label: 'Try one more lesson quiz this week.',
+                     why:   'Steady practice unlocks better insights.' };
+  }
+
+  return {
+    viewBand: viewBand, studentName: studentName, hasAnyData: hasAnyData,
+    overallAccuracy: overallAccuracy, totalQuestions: totalQuestions,
+    needsPractice: needsPractice, commonMistakes: commonMistakes,
+    strengths: strengths, trend: trend, nextStep: nextStep,
+    interventionRecovery: interventionRecovery, parentAction: parentAction,
+  };
+}
+
+// Phase 1 Learning Insights renderer. Takes the structured output of
+// buildLearningInsights and turns it into a card-grid HTML body wrapped in
+// the standard _dbSection('insights', ...) for collapse-state continuity.
+function _renderLearningInsightsV2(insights) {
+  if (!insights) return '';
+
+  var card = function(cssClass, headerHtml, bodyHtml) {
+    return '<div class="li-card ' + cssClass + '" '
+      + 'style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;margin:0;">'
+      + '<div class="li-card-h" style="font-size:.85rem;font-weight:700;color:#37474f;margin:0 0 8px;display:flex;align-items:center;gap:6px">'
+      + headerHtml + '</div>'
+      + bodyHtml
       + '</div>';
-  }).join('');
-  var rateColor = summary.recoveryRate >= 70 ? '#2e7d32' : summary.recoveryRate >= 40 ? '#e65100' : '#c62828';
-  var insightsBody = '<button class="db-info-btn" tabindex="0" aria-label="About Learning Insights"'
-    + ' data-tip="Skills listed here needed extra practice during quizzes. Recovery Rate shows how often your child corrected a mistake on the very next try.">ⓘ</button>'
-    + '<div class="db-intervention-box">'
-    + '<div class="db-intervention-rate">Recovery Rate: <strong style="color:' + rateColor + '">' + summary.recoveryRate + '%</strong>'
-    + ' <span style="font-size:.78rem;color:#90a4ae">(' + summary.total + ' intervention' + (summary.total !== 1 ? 's' : '') + ')</span></div>'
-    + (items ? '<div class="db-intervention-tags">' + items + '</div>' : '')
-    + '</div>';
-  return _dbSection('insights', '&#x1F9E0; Learning Insights', insightsBody);
+  };
+  var subLine = function(txt) {
+    return '<div class="li-sub" style="font-size:.78rem;color:#546e7a;margin-top:4px;line-height:1.35">' + txt + '</div>';
+  };
+
+  var gradeChip = '<span style="display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:#eceff1;color:#37474f;font-size:.7rem;font-weight:600;letter-spacing:.04em">'
+    + (insights.viewBand === 'k' ? 'KINDERGARTEN' : insights.viewBand === 'g1' ? 'GRADE 1' : 'GRADE 2')
+    + '</span>';
+
+  // Empty state
+  if (!insights.hasAnyData) {
+    var emptyBody = '<p style="margin:0;color:#546e7a;font-size:.85rem">Not enough data yet to spot patterns for this grade.</p>'
+      + '<p style="margin:8px 0 0;font-size:.85rem"><strong>Try this:</strong> ' + _esc(insights.parentAction.label) + '</p>';
+    return _dbSection('insights', '&#x1F9E0; Learning Insights' + gradeChip, emptyBody);
+  }
+
+  var sections = [];
+
+  // A. Needs Practice
+  if (insights.needsPractice.length) {
+    var npRows = insights.needsPractice.map(function(np) {
+      return '<div style="margin-top:6px;padding-top:6px;border-top:1px dashed #eceff1">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(np.label) + '</span>'
+        + '<span style="color:#c62828;font-weight:700">' + np.accuracy + '%</span>'
+        + '</div>'
+        + subLine(_esc(np.why))
+        + (np.lessonName ? subLine('<strong>Try:</strong> ' + _esc(np.recommendation)) : '')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-needs-practice',
+      '&#x1F4DD; Needs Practice',
+      npRows.replace(/^<div style="margin-top:6px;padding-top:6px;border-top:1px dashed #eceff1">/, '<div>')));
+  }
+
+  // B. Common Mistakes
+  if (insights.commonMistakes.length) {
+    var cmRows = insights.commonMistakes.map(function(cm, idx) {
+      var sep = idx === 0 ? '' : 'border-top:1px dashed #eceff1;padding-top:6px;margin-top:6px;';
+      // Phase 2B: surface "Most common in [Unit X Lesson Y: Title]" when the
+      // lesson resolver returned both a band-matching lessonId and a name.
+      var lessonLine = '';
+      if (cm.lessonId && cm.lessonName) {
+        var um = String(cm.lessonId).match(/u(\d+)[-]?l(\d+)$/i);
+        var prefix = um ? ('Unit ' + um[1] + ' Lesson ' + um[2] + ': ') : '';
+        lessonLine = subLine('&#x1F4CD; Most common in ' + _esc(prefix + cm.lessonName));
+      }
+      return '<div style="' + sep + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(cm.label) + '</span>'
+        + '<span style="color:#e65100;font-weight:700">' + cm.count + '&#xD7;</span>'
+        + '</div>'
+        + lessonLine
+        + (cm.helpText ? subLine('&#x1F4A1; ' + _esc(cm.helpText)) : '')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-common-mistakes', '&#x26A0;&#xFE0F; Common Mistakes', cmRows));
+  }
+
+  // C. Strengths
+  if (insights.strengths.length) {
+    var stRows = insights.strengths.map(function(st, idx) {
+      var sep = idx === 0 ? '' : 'border-top:1px dashed #eceff1;padding-top:6px;margin-top:6px;';
+      return '<div style="' + sep + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-weight:600;color:#263238">' + _esc(st.label) + '</span>'
+        + '<span style="color:#2e7d32;font-weight:700">' + st.accuracy + '%</span>'
+        + '</div>'
+        + subLine(st.attempts + ' attempt' + (st.attempts !== 1 ? 's' : '') + ' &mdash; strong.')
+        + '</div>';
+    }).join('');
+    sections.push(card('li-strengths', '&#x2B50; Strengths', stRows));
+  }
+
+  // D. Trend
+  var trendBadge, trendText, trendColor;
+  switch (insights.trend.state) {
+    case 'improving':       trendBadge = '&#x2191; Improving'; trendText = 'Recent answers are getting more right.';   trendColor = '#2e7d32'; break;
+    case 'declining':       trendBadge = '&#x2193; Needs attention'; trendText = 'Recent answers show more misses.';    trendColor = '#c62828'; break;
+    case 'steady':          trendBadge = '&#x2192; Steady';    trendText = 'Accuracy is holding steady.';              trendColor = '#1565c0'; break;
+    default:                trendBadge = 'Not enough data yet'; trendText = 'A few more quizzes will unlock the trend.'; trendColor = '#90a4ae';
+  }
+  sections.push(card('li-trend', '&#x1F4C8; Trend',
+    '<div><span style="display:inline-block;padding:3px 8px;border-radius:999px;background:' + trendColor + '15;color:' + trendColor + ';font-weight:700;font-size:.78rem">'
+    + trendBadge + '</span></div>' + subLine(_esc(trendText))));
+
+  // E. Recommended Next Step
+  sections.push(card('li-next-step', '&#x1F3AF; Recommended Next Step',
+    '<div style="font-weight:700;color:#263238;font-size:.92rem">' + _esc(insights.nextStep.label) + '</div>'
+    + subLine(_esc(insights.nextStep.why))));
+
+  // F. Intervention Recovery
+  if (insights.interventionRecovery.state === 'not-enough-data') {
+    sections.push(card('li-recovery li-recovery-empty', '&#x1F501; Intervention Recovery',
+      '<div style="color:#90a4ae;font-size:.85rem">Not enough intervention data yet.</div>'));
+  } else {
+    var rec = insights.interventionRecovery;
+    var recColor = rec.state === 'good' ? '#2e7d32' : rec.state === 'ok' ? '#e65100' : '#c62828';
+    var perTag = (rec.topTag && rec.topTagPct != null)
+      ? subLine(_esc(rec.topTagLabel) + ': ' + rec.topTagPct + '% corrected on next try.')
+      : '';
+    sections.push(card('li-recovery', '&#x1F501; Intervention Recovery',
+      '<div style="font-size:1.4rem;font-weight:700;color:' + recColor + '">' + rec.overallPct + '%</div>'
+      + subLine(rec.total + ' extra-help moment' + (rec.total !== 1 ? 's' : '') + '.')
+      + perTag));
+  }
+
+  // G. Parent Action
+  sections.push(card('li-parent-action', '&#x1F44B; Parent Action',
+    '<div style="font-weight:700;color:#263238;font-size:.92rem">' + _esc(insights.parentAction.label) + '</div>'
+    + subLine(_esc(insights.parentAction.why))));
+
+  var body = '<button class="db-info-btn" tabindex="0" aria-label="About Learning Insights"'
+    + ' data-tip="Insights below reflect only the selected grade. Cards appear when there is enough recent activity to be useful.">ⓘ</button>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:6px">'
+    + sections.join('') + '</div>';
+  return _dbSection('insights', '&#x1F9E0; Learning Insights' + gradeChip, body);
 }
 
 // ── Insight engine helpers (also in dashboard/dashboard.js for testability) ─
@@ -3909,7 +4437,6 @@ function renderDashboard() {
   var allScores = student.SCORES || [];
   var scores = allScores.filter(function(s) { return _inferScoreGrade(s) === viewBand; });
   _unlockScores = scores;
-  var mastery       = student.MASTERY  || {};
   // Filter activity events to the active grade (existing logic — events
   // already carry a `grade` field). Unknown-grade events are kept for
   // backwards compatibility with the activity-event log.
@@ -3920,6 +4447,16 @@ function renderDashboard() {
     return eb === viewBand;
   });
   _activityEvents = activityEvents;
+  // Mastery: student.MASTERY is global (not grade-scoped on the dashboard
+  // side). For the Learning Insights section we derive a grade-scoped
+  // mastery from the grade-filtered activity events. The legacy unscoped
+  // mastery is still passed to existing renderers (Practice Plan etc.) for
+  // backwards compat — Phase 2 will retire those.
+  var rawMastery     = student.MASTERY || {};
+  var gradeMastery   = _deriveMasteryFromActivity(activityEvents);
+  // Use the derived mastery when it has signal; otherwise fall back to the
+  // unscoped mastery so the legacy renderers still find tags.
+  var mastery        = Object.keys(gradeMastery).length ? gradeMastery : rawMastery;
   var streak        = student.STREAK   || { current: 0 };
   var appTime       = student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} };
 
@@ -3942,10 +4479,33 @@ function renderDashboard() {
   var activity = _computeActivityData(scores, 7);
   var review   = _computeReviewQueue(mastery, qTextMap);
   // Prefer Supabase-fetched events (cross-device); fall back to localStorage.
-  var interventionEvents = _remoteInterventionEvents !== null
+  // Then filter the result to the dashboard's view-band so Learning Insights
+  // never mixes grades. legacy_unknown events are dropped by the filter.
+  var allInterventionEvents = _remoteInterventionEvents !== null
     ? _remoteInterventionEvents
     : _getInterventionEvents();
-  var actErrCounts = _computeMisconceptions(activityEvents);
+  var interventionEvents = _filterInterventionsByGrade(allInterventionEvents, viewBand);
+  // Phase 2B: kick off the static index fetch on first render. Subsequent
+  // renders see a populated _tagLessonIndex and use it for fallback lesson
+  // resolution. Initial render is fast; the index arrives within a tick and
+  // re-renders.
+  if (_tagLessonIndex === null && !_tagLessonIndexLoading) _loadTagLessonIndex();
+
+  // Build the Phase 1 Learning Insights bundle from already-grade-filtered
+  // data only. The mastery passed here is the grade-derived dict (see above).
+  var learningInsights = buildLearningInsights({
+    viewBand:           viewBand,
+    studentName:        student.name,
+    scores:             scores,
+    activityEvents:     activityEvents,
+    interventionEvents: interventionEvents,
+    mastery:            gradeMastery,
+    tagLabels:          (typeof _TAG_LABEL_MAP !== 'undefined') ? _TAG_LABEL_MAP : {},
+    errLabels:          _ERR_LABEL_MAP,
+    errHelpMap:         _ERR_HELP_MAP,
+    lessonNameFn:       (typeof _lessonDisplayName === 'function') ? _lessonDisplayName : function(){ return null; },
+    tagLessonIndex:     _tagLessonIndex,
+  });
 
   _prStatsHtml  = '';
   _prReportText = '';
@@ -3979,7 +4539,7 @@ function renderDashboard() {
     + '</div>' +
     _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
     _renderPracticePlan(mastery, activityEvents, weak, review) +
-    _renderInterventionInsights(interventionEvents, actErrCounts) +
+    _renderLearningInsightsV2(learningInsights) +
     _renderUnitProgressMap(scores, activityEvents) +
     _renderRecentQuizzes(scores) +
     _renderActivitySnapshot(stats, scores, appTime, activity, streak, activityEvents) +
@@ -4585,18 +5145,9 @@ async function _syncPendingInterventionEvents(studentId) {
   var pending = events.filter(function(e) { return !e.synced && e.clientId; });
   if (!pending.length) return;
   try {
-    var rows = pending.map(function(e) {
-      return {
-        client_id:          e.clientId,
-        student_id:         studentId,
-        session_id:         e.sessionId  || '',
-        event_type:         e.type       || '',
-        error_tag:          e.errorTag   || null,
-        question_id:        e.questionId || null,
-        resolved_correctly: e.resolvedCorrectly != null ? e.resolvedCorrectly : null,
-        occurred_at:        new Date(e.timestamp || Date.now()).toISOString(),
-      };
-    });
+    // Phase 2C: row construction extracted into _buildInterventionRowForSync
+    // so the new `grade` column round-trips and is testable from jest.
+    var rows = pending.map(function(e) { return _buildInterventionRowForSync(e, studentId); });
     var result = await _supa
       .from('intervention_events')
       .upsert(rows, { onConflict: 'client_id', ignoreDuplicates: true });
@@ -4620,23 +5171,42 @@ async function _fetchInterventionEventsFromSupabase(studentId) {
     var result = await Promise.race([
       _supa
         .from('intervention_events')
-        .select('event_type, error_tag, session_id, resolved_correctly, occurred_at')
+        // Phase 2C: select the new `grade` column so the filter uses the
+        // authoritative server value when present. Legacy rows where the
+        // column is null fall through to session-id inference downstream.
+        .select('event_type, error_tag, session_id, resolved_correctly, occurred_at, grade')
         .eq('student_id', studentId)
         .order('occurred_at', { ascending: false })
         .limit(500),
       new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 5000); })
     ]);
     if (result.error || !result.data) return null;
-    return result.data.map(function(r) {
-      return {
-        type:              r.event_type,
-        errorTag:          r.error_tag,
-        sessionId:         r.session_id,
-        resolvedCorrectly: r.resolved_correctly,
-        timestamp:         new Date(r.occurred_at).getTime(),
-      };
-    });
+    return result.data.map(_normalizeInterventionRow);
   } catch(e) { return null; }
+}
+
+// Phase 2B: lazily fetch the static tag→lesson index emitted by build.js.
+// Caches once per dashboard session. Re-renders the dashboard when the index
+// arrives so any Common Mistakes / Recommended Next Step that lacked a live
+// lesson can pick one up. Safe to call repeatedly — only fetches once.
+function _loadTagLessonIndex() {
+  if (_tagLessonIndex !== null || _tagLessonIndexLoading) return;
+  _tagLessonIndexLoading = true;
+  try {
+    fetch('data/tag_lesson_index.json', { cache: 'force-cache' })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(json) {
+        _tagLessonIndexLoading = false;
+        if (json && json.byTag) {
+          _tagLessonIndex = json;
+          // Re-render so Learning Insights picks up the new fallback resolver.
+          if (typeof renderDashboard === 'function' && document.getElementById('db-root')) {
+            renderDashboard();
+          }
+        }
+      })
+      .catch(function() { _tagLessonIndexLoading = false; });
+  } catch (_e) { _tagLessonIndexLoading = false; }
 }
 
 // Sync unsynced local events then fetch remote events for the given student.

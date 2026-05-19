@@ -302,6 +302,22 @@ async function build(){
 
   // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed
 
+  // ── Tag-to-lesson static index (Phase 2B) ─────────────────────────────────
+  // Scans the just-built dist/data/ files and emits a static {errTag → {lessonId: count}}
+  // index used by the Parent Dashboard Learning Insights as a FALLBACK lesson
+  // resolver. Live student activity always wins; this index helps when the
+  // student hasn't yet attempted the lesson where the tag is most prevalent.
+  //
+  // Coverage:
+  //   - G1: variable-name → 'err_*' map + diagnostics.errorTags arrays per lesson.
+  //   - K and G2: per-question option { tag: 'err_*' } with proximity-based
+  //     attribution to the question's lessonId (best-effort regex scan).
+  //
+  // Output: dist/data/tag_lesson_index.json — typically ~10–30 KB uncompressed.
+  buildTagLessonIndex(DIST);
+
+  // ── Admin analytics dashboard (standalone, not in app.js bundle) ──────────
+
   // ── Admin analytics dashboard (standalone, not in app.js bundle) ──────────
   const adminHtmlSrc = path.join(ROOT, 'admin-analytics.html');
   const adminJsSrc   = path.join(ROOT, 'src', 'admin-analytics.js');
@@ -319,6 +335,108 @@ async function build(){
   }
 
   console.log('\n🚀 Build complete → dist/');
+}
+
+// ── buildTagLessonIndex (Phase 2B) ──────────────────────────────────────────
+// Walks the just-built dist/data/ tree and emits a static tag-to-lesson index
+// to dist/data/tag_lesson_index.json. The Parent Dashboard's Learning
+// Insights consumes this as a fallback lesson resolver when live activity
+// events don't include a lessonId for a given error tag.
+function buildTagLessonIndex(DIST) {
+  const indexPath = path.join(DIST, 'data', 'tag_lesson_index.json');
+  const byTag = {};
+
+  function bump(tag, lessonId, n) {
+    if (!byTag[tag]) byTag[tag] = {};
+    byTag[tag][lessonId] = (byTag[tag][lessonId] || 0) + (n || 1);
+  }
+
+  // ── G1: parse variable map + per-lesson diagnostics.errorTags arrays ────
+  const g1Dir = path.join(DIST, 'data', 'g1');
+  if (fs.existsSync(g1Dir)) {
+    fs.readdirSync(g1Dir).filter(f => /^u\d+\.js$/.test(f)).forEach(f => {
+      const text = fs.readFileSync(path.join(g1Dir, f), 'utf8');
+      // 1. Variable-name → err_* string map (e.g. `var _83NL = 'err_now_later_confusion';`).
+      const varMap = {};
+      const varRe = /var\s+(_\w+)\s*=\s*['"](err_[^'"]+)['"]/g;
+      let m;
+      while ((m = varRe.exec(text)) !== null) varMap[m[1]] = m[2];
+      // 2. Per-lesson diagnostics blocks: `lessonId: 'g1-u8-l3', ... errorTags: [_83SS, _83SD, ...]`.
+      //    We allow up to a few hundred chars of fluff between the two markers.
+      const lessonRe = /lessonId\s*:\s*['"](g1-u\d+-l\d+)['"][\s\S]{0,3000}?errorTags\s*:\s*\[([^\]]*)\]/g;
+      while ((m = lessonRe.exec(text)) !== null) {
+        const lessonId = m[1];
+        const tagListRaw = m[2];
+        // Split the array body and resolve each entry against varMap.
+        tagListRaw.split(',').forEach(token => {
+          const t = token.trim().replace(/^['"]|['"]$/g, '');
+          if (!t) return;
+          const resolved = varMap[t] || (/^err_/.test(t) ? t : null);
+          if (resolved) bump(resolved, lessonId, 1);
+        });
+      }
+    });
+  }
+
+  // ── K and G2: per-question option { tag: 'err_*' } scanned with proximity
+  //    attribution to the closest preceding `lessonId: '...'` token.
+  function scanKOrG2(filePath) {
+    const text = fs.readFileSync(filePath, 'utf8');
+    const tokens = [];
+    let m;
+    // K files use JS object literals: lessonId: 'ku1l1'
+    // G2 files use JSON: "lessonId":"u1l1". Allow either form.
+    const lessonIdRe = /['"]?lessonId['"]?\s*:\s*['"]((?:ku|u)\d+l\d+)['"]/g;
+    while ((m = lessonIdRe.exec(text)) !== null) tokens.push({ type: 'lesson', value: m[1], pos: m.index });
+    const tagRe = /['"]?tag['"]?\s*:\s*['"](err_[^'"]+)['"]/g;
+    while ((m = tagRe.exec(text)) !== null) tokens.push({ type: 'tag', value: m[1], pos: m.index });
+    tokens.sort((a, b) => a.pos - b.pos);
+    // K and G2 minified files use field order { ..., tag, ... lessonId } per question.
+    // For each tag token, attribute it to the NEXT lessonId within the same question
+    // (or the PREVIOUS one if no next lessonId is within 4KB). Both directions tried.
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      if (t.type !== 'tag') continue;
+      let attributed = null;
+      // Look forward for the next lessonId within 4 KB
+      for (let j = i + 1; j < tokens.length; j++) {
+        if (tokens[j].pos - t.pos > 4000) break;
+        if (tokens[j].type === 'lesson') { attributed = tokens[j].value; break; }
+      }
+      // Fall back to the most recent lessonId within 4 KB
+      if (!attributed) {
+        for (let j = i - 1; j >= 0; j--) {
+          if (t.pos - tokens[j].pos > 4000) break;
+          if (tokens[j].type === 'lesson') { attributed = tokens[j].value; break; }
+        }
+      }
+      if (attributed) bump(t.value, attributed, 1);
+    }
+  }
+
+  const kDir = path.join(DIST, 'data', 'k');
+  if (fs.existsSync(kDir)) {
+    fs.readdirSync(kDir).filter(f => /^u\d+\.js$/.test(f)).forEach(f => {
+      scanKOrG2(path.join(kDir, f));
+    });
+  }
+  // G2/default lives directly at dist/data/u*.js
+  const g2Dir = path.join(DIST, 'data');
+  if (fs.existsSync(g2Dir)) {
+    fs.readdirSync(g2Dir).filter(f => /^u\d+\.js$/.test(f)).forEach(f => {
+      scanKOrG2(path.join(g2Dir, f));
+    });
+  }
+
+  const out = {
+    schemaVersion: 1,
+    generatedAt:   new Date().toISOString(),
+    byTag:         byTag,
+  };
+  fs.writeFileSync(indexPath, JSON.stringify(out));
+  const sizeKB = (fs.statSync(indexPath).size / 1024).toFixed(1);
+  const tagCount = Object.keys(byTag).length;
+  console.log(`📋 Built:   data/tag_lesson_index.json (${tagCount} tags, ${sizeKB} KB)`);
 }
 
 build().catch(e => {
