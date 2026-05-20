@@ -910,6 +910,16 @@ function _pickAnswer(btnIdx){
     else { playWrong(); }
     document.getElementById('qscore').textContent = qz.score+' correct';
 
+    // Compute selected raw option BEFORE the reveal block so it is in scope
+    // for the Phase 2A errTag computation below. Block-scoping this inside
+    // `if(rev){...}` previously caused a ReferenceError on wrong answers when
+    // the reveal element wasn't found, AND on every wrong answer at the
+    // _ansErrTag site below (it lives outside the if). The ReferenceError
+    // aborted the rest of the callback, so the answer was never pushed and
+    // the Next button was never shown — manifesting as "wrong answer leaves
+    // the student stuck." Phase 2A regression.
+    const _selectedRawOpt = q.o ? q.o[qz._opts[btnIdx].i] : null;
+
     const rev = document.getElementById('qreveal');
     if(rev){
       // Pick a short formative nudge for wrong answers (cycles through a few phrases)
@@ -923,7 +933,6 @@ function _pickAnswer(btnIdx){
       const nudge = _nudges[(qz.idx || 0) % _nudges.length];
       const revId = 'rev-'+Date.now();
       rev.className = 'reveal show '+(isOk?'ok':'no');
-      const _selectedRawOpt = q.o ? q.o[qz._opts[btnIdx].i] : null;
       const _intv = q.i || null;
       let _revHtml = '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>';
       if (!isOk) {
