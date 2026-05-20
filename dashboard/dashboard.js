@@ -1375,6 +1375,23 @@ function _dbFriendlyError(e) {
   return 'Something went wrong — please try again.';
 }
 
+// Pure helper: clear every in-memory field on a student object that the
+// server-side reset_student_data RPC clears. Mirrors src/dashboard.js so
+// tests can exercise the same shape via the dashboard/dashboard.js export.
+function _dbResetStudentInMemory(student) {
+  if (!student) return;
+  student.SCORES     = [];
+  student.MASTERY    = {};
+  student.ACTIVITY   = [];
+  student.STREAK     = { current: 0, longest: 0, lastDate: null };
+  student.APP_TIME   = { totalSecs: 0, sessions: 0, dailySecs: {} };
+  student.DONE       = {};
+  student.ACT_DATES  = [];
+  student.SETTINGS   = {};
+  student.ONBOARDING = null;
+  student._scoresLoaded = false;
+}
+
 async function _dbFullReset() {
   if (!confirm('DELETE all quiz scores and mastery data for this student? This cannot be undone.')) return;
   if (!_supaDb || !_activeId || _activeId === 'local') return;
@@ -3969,5 +3986,6 @@ if (typeof module !== 'undefined') {
     _lessonIdBand,
     _buildInterventionRowForSync,
     _normalizeInterventionRow,
+    _dbResetStudentInMemory,
   };
 }

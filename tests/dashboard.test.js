@@ -49,6 +49,7 @@ const {
   _aggregateDifficultyPerformance,
   _aggregateDifficultyByLesson,
   _renderRecentQuizzes,
+  _dbResetStudentInMemory,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2626,5 +2627,92 @@ describe('_aggregateDifficultyByLesson', () => {
     ]);
     expect(r['ku4-l1']).toBeDefined();
     expect(r['g2u1-l1']).toBeDefined();
+  });
+});
+
+// ── _dbResetStudentInMemory (Reset All in-memory wipe) ───────────────────
+// Regression guard for the "Reset failed" bug where the Manage Profile
+// "Reset Student Data" button reported failure even though the server reset
+// had succeeded. The dashboard now relies on this helper to mirror the
+// server-side reset_student_data RPC for every in-memory field, so the UI
+// refreshes in real time without a page reload. Identity (name, grade,
+// avatar) is intentionally preserved — Reset All is a progress wipe, not a
+// profile deletion.
+
+describe('_dbResetStudentInMemory', () => {
+  function makePopulatedStudent() {
+    return {
+      name: 'Ada',
+      grade: '1',
+      avatar_emoji: '🧮',
+      SCORES:    [{ qid: 'lq_g1u1-l1', pct: 80, id: Date.now() }],
+      MASTERY:   { err_off_by_one: { attempts: 4, correct: 2 } },
+      ACTIVITY:  [{ lessonId: 'g1u1-l1', ts: Date.now() }],
+      STREAK:    { current: 5, longest: 10, lastDate: '2026-05-19' },
+      APP_TIME:  { totalSecs: 3600, sessions: 4, dailySecs: { '2026-05-19': 900 } },
+      DONE:      { 'g1u1-l1': true },
+      ACT_DATES: ['2026-05-19', '2026-05-18'],
+      SETTINGS:  { sound: true, theme: 'dark' },
+      ONBOARDING: { step: 'home_tour', completed: false },
+      _scoresLoaded: true,
+    };
+  }
+
+  test('clears SCORES, MASTERY, ACTIVITY, STREAK (the original four fields)', () => {
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    expect(s.SCORES).toEqual([]);
+    expect(s.MASTERY).toEqual({});
+    expect(s.ACTIVITY).toEqual([]);
+    expect(s.STREAK).toEqual({ current: 0, longest: 0, lastDate: null });
+  });
+
+  test('also clears APP_TIME, DONE, ACT_DATES, SETTINGS, ONBOARDING (the fields the SQL function clears that were previously stale)', () => {
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    expect(s.APP_TIME).toEqual({ totalSecs: 0, sessions: 0, dailySecs: {} });
+    expect(s.DONE).toEqual({});
+    expect(s.ACT_DATES).toEqual([]);
+    expect(s.SETTINGS).toEqual({});
+    expect(s.ONBOARDING).toBeNull();
+  });
+
+  test('preserves profile identity (name, grade, avatar) — Reset All is NOT a profile deletion', () => {
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    expect(s.name).toBe('Ada');
+    expect(s.grade).toBe('1');
+    expect(s.avatar_emoji).toBe('🧮');
+  });
+
+  test('sets _scoresLoaded to false so the next async fetch re-populates', () => {
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    expect(s._scoresLoaded).toBe(false);
+  });
+
+  test('does not throw on missing / null / undefined student', () => {
+    expect(() => _dbResetStudentInMemory(null)).not.toThrow();
+    expect(() => _dbResetStudentInMemory(undefined)).not.toThrow();
+  });
+
+  test('post-reset student object behaves like a fresh profile for downstream renderers', () => {
+    // Smoke-test: after the reset, the same shape the dashboard reads for
+    // its render pipeline produces empty insights and no NaN/undefined.
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    const stats = _computeOverallStats(s.SCORES, s.STREAK, s.APP_TIME);
+    expect(stats.quizCount).toBe(0);
+    expect(stats.accuracy).toBe(0);
+    expect(stats.streak).toBe(0);
+    expect(stats.weekSecs).toBe(0);
+  });
+
+  test('repeat invocations are idempotent (Reset All clicked twice in a row)', () => {
+    const s = makePopulatedStudent();
+    _dbResetStudentInMemory(s);
+    const snapshot = JSON.stringify(s);
+    _dbResetStudentInMemory(s);
+    expect(JSON.stringify(s)).toBe(snapshot);
   });
 });

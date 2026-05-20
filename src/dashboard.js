@@ -2832,40 +2832,95 @@ async function _dbRelockAll() {
   _reRenderUnlock();
 }
 
+// Pure helper: clear every in-memory field on a student object that the
+// server-side reset_student_data RPC clears server-side. Kept pure (no DOM,
+// no Supabase, no globals) so it can be unit-tested directly via the
+// dashboard/dashboard.js mirror.
+//
+// Fields cleared mirror the SQL function exactly: quiz_scores + user_mastery
+// + the seven progress columns on student_profiles (mastery_json,
+// streak_*, apptime_json, done_json, act_dates_json, settings_json,
+// onboarding_json). The student identity (name, grade, avatar, etc.) is
+// preserved — Reset All is a progress wipe, not a profile deletion.
+function _dbResetStudentInMemory(student) {
+  if (!student) return;
+  student.SCORES     = [];
+  student.MASTERY    = {};
+  student.ACTIVITY   = [];
+  student.STREAK     = { current: 0, longest: 0, lastDate: null };
+  student.APP_TIME   = { totalSecs: 0, sessions: 0, dailySecs: {} };
+  student.DONE       = {};
+  student.ACT_DATES  = [];
+  student.SETTINGS   = {};
+  student.ONBOARDING = null;
+  student._scoresLoaded = false;
+}
+
 async function _dbFullReset() {
   if (!confirm('DELETE all quiz scores, mastery data, and streak for this student? This cannot be undone.')) return;
   if (!_supa) return;
+
+  function _setResetMsg(text, color) {
+    var el = document.getElementById('db-reset-msg');
+    if (el) { el.style.color = color || ''; el.textContent = text || ''; }
+  }
+
+  _setResetMsg('Resetting…', '#37474f');
+
+  // ── Phase 1: main RPC — the ONLY place that may report "Reset failed" ───
+  // If this throws, no server data was touched, so it is safe to bail out.
   try {
     var result = await _supa.rpc('reset_student_data', { p_student_id: _activeId });
     if (result.error) throw result.error;
-
-    // Clear Learning Insights data from Supabase.  Fire-and-forget: the RPC is
-    // ownership-checked server-side; a network failure here is non-fatal.
-    _supa.rpc('clear_intervention_events', { p_student_id: _activeId }).catch(function(){});
-
-    // Clear in-memory student data so the dashboard reflects the reset immediately
-    // without waiting for a full page reload or another Supabase round-trip.
-    var student = _students[_activeId];
-    if (student) {
-      student.SCORES   = [];
-      student.MASTERY  = {};
-      student.ACTIVITY = [];
-      student.STREAK   = { current: 0, longest: 0, lastDate: null };
-      student._scoresLoaded = false;
+  } catch(e) {
+    if (typeof console !== 'undefined' && console.error) {
+      console.error('[Reset] reset_student_data RPC failed:', e);
     }
-    // Use an empty array (not null) so renderDashboard does not fall back to the
-    // stale mmr_intervention_events_v1 localStorage key during this render.
+    _setResetMsg('❌ Reset failed — try again.', '#c62828');
+    return;
+  }
+
+  // ── Phase 2: post-reset cleanup (server data is ALREADY cleared) ────────
+  // Each step is independently best-effort. A failure here MUST NOT surface
+  // as "Reset failed" because that would lie to the user — the underlying
+  // data is already gone on the server. Failures are logged for diagnosis.
+  try {
+    // Fire-and-forget — the RPC is ownership-checked server-side, so a
+    // network blip here is non-fatal. The events table is also drained on
+    // the next sync poll.
+    _supa.rpc('clear_intervention_events', { p_student_id: _activeId })
+      .catch(function(err) {
+        if (typeof console !== 'undefined' && console.warn) {
+          console.warn('[Reset] clear_intervention_events failed (non-fatal):', err);
+        }
+      });
+
+    // Clear in-memory state so renderDashboard reflects empty progress on
+    // the very next paint — no page reload required.
+    _dbResetStudentInMemory(_students[_activeId]);
+
+    // The dashboard prefers _remoteInterventionEvents over the legacy local
+    // cache; resetting both prevents a renderDashboard fall-through to the
+    // stale cache while the next sync is in flight.
     _remoteInterventionEvents = [];
+    try { localStorage.removeItem('mmr_intervention_events_v1'); } catch (_e) {}
 
     renderDashboard();
-    _showDbToast('Student data cleared.', false);
 
     // Reload from Supabase async — will re-render with confirmed-empty data.
     _loadManagedStudentScores(_activeId);
   } catch(e) {
-    var msg2 = document.getElementById('db-unlock-msg');
-    if (msg2) { msg2.style.color = '#c62828'; msg2.textContent = '❌ Reset failed.'; }
+    if (typeof console !== 'undefined' && console.error) {
+      console.error('[Reset] post-reset cleanup error (server data IS cleared, UI may need refresh):', e);
+    }
+    // Intentionally fall through to the success message — the actual reset
+    // succeeded; only the local refresh hit a snag. A page reload picks up
+    // the empty state from the server.
   }
+
+  _setResetMsg('✅ Student data cleared.', '#2e7d32');
+  setTimeout(function() { _setResetMsg('', ''); }, 3000);
+  _showDbToast('Student data cleared.', false);
 }
 
 // ── Access Controls — render ──────────────────────────────────────────────
@@ -2986,6 +3041,7 @@ function _renderDangerZoneSection() {
   return '<section class="db-section db-danger-zone">'
     + '<h2 class="db-sec-h db-danger-heading">&#x1F5D1;&#xFE0F; Profile Reset</h2>'
     + '<p class="db-danger-desc">Resetting student data permanently deletes quiz scores, mastery, streaks, and progress history. This cannot be undone.</p>'
+    + '<div id="db-reset-msg" class="db-ctrl-msg" aria-live="polite" style="min-height:1em"></div>'
     + '<div class="db-ctrl-btns">'
     + '<button class="db-ctrl-reset" data-action="_dbFullReset">Reset Student Data</button>'
     + '</div>'
