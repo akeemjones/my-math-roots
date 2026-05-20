@@ -1618,6 +1618,128 @@ describe('buildLearningInsights', () => {
     }));
     expect(JSON.stringify(r)).not.toContain('Off by one');
   });
+
+  describe('difficultyBreakdown (Phase 3A)', () => {
+    function ans(ok, difficulty) { return { ok: ok, difficulty: difficulty }; }
+    function scWith(answers, qid) {
+      return {
+        qid: qid || 'lq_g1u4-l1-x', pct: 80, id: Date.now() + Math.random(),
+        type: 'lesson', label: 'Test', date: '2026-05-19',
+        score: 0, total: answers.length, unitIdx: 3, answers: answers, grade: 'g1',
+      };
+    }
+    const BASE3A = Object.assign({}, BASE, {
+      viewBand: 'g1', activityEvents: [], mastery: {},
+      interventionEvents: [], tagLessonIndex: null,
+    });
+
+    test('returns not-enough-data when total tagged answers < DIFF_MIN_TOTAL', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true,  'easy'), ans(true,  'easy'),
+          ans(false, 'hard'), ans(false, 'hard'),
+          ans(true,  'medium'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('not-enough-data');
+    });
+
+    test('returns hard-struggle when hard accuracy < 60% and hard total >= 3', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true,  'easy'),   ans(true,  'easy'),   ans(true,  'easy'),
+          ans(true,  'medium'), ans(true,  'medium'), ans(true,  'medium'),
+          ans(false, 'hard'),   ans(false, 'hard'),   ans(false, 'hard'),
+          ans(true,  'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('hard-struggle');
+      expect(r.difficultyBreakdown.perf.hard.accuracy).toBeCloseTo(0.25, 2);
+    });
+
+    test('returns foundation-review when easy accuracy < 70% and easy total >= 3', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(false, 'easy'), ans(false, 'easy'), ans(true, 'easy'),
+          ans(true,  'medium'), ans(true,  'medium'), ans(true, 'medium'),
+          ans(true,  'hard'),   ans(true,  'hard'),   ans(true, 'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('foundation-review');
+    });
+
+    test('returns ready-for-challenge when easy + medium >= 80% and hard >= 70%', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true, 'easy'),   ans(true, 'easy'),   ans(true, 'easy'),
+          ans(true, 'medium'), ans(true, 'medium'), ans(true, 'medium'),
+          ans(true, 'hard'),   ans(true, 'hard'),   ans(true, 'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('ready-for-challenge');
+    });
+
+    test('returns balanced-progress when neither struggle nor ready triggers', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true, 'easy'),   ans(true, 'easy'),   ans(true, 'easy'),   ans(false, 'easy'),
+          ans(true, 'medium'), ans(true, 'medium'), ans(true, 'medium'), ans(false, 'medium'),
+          ans(true, 'hard'),   ans(true, 'hard'),   ans(true, 'hard'),   ans(false, 'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('balanced-progress');
+    });
+
+    test('hard-struggle takes precedence over foundation-review when both trigger', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(false, 'easy'), ans(false, 'easy'), ans(true, 'easy'),
+          ans(true,  'medium'), ans(true,  'medium'), ans(true, 'medium'),
+          ans(false, 'hard'), ans(false, 'hard'), ans(false, 'hard'), ans(true, 'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).toBe('hard-struggle');
+    });
+
+    test('does not make a claim about a level with < DIFF_MIN_PER_LEVEL answers', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true, 'easy'), ans(true, 'easy'), ans(true, 'easy'), ans(true, 'easy'),
+          ans(true, 'medium'), ans(true, 'medium'), ans(true, 'medium'),
+          ans(false, 'hard'), ans(false, 'hard'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.state).not.toBe('hard-struggle');
+    });
+
+    test('topCluster identifies the lesson with the most hard misses', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [
+          scWith([
+            ans(false, 'hard'), ans(false, 'hard'), ans(false, 'hard'),
+            ans(true,  'easy'), ans(true,  'easy'), ans(true,  'easy'),
+          ], 'lq_g1u8-l3-a'),
+          scWith([
+            ans(false, 'hard'),
+          ], 'lq_g1u5-l2-b'),
+        ],
+      }));
+      expect(r.difficultyBreakdown.topCluster).toBeTruthy();
+      expect(r.difficultyBreakdown.topCluster.lessonId).toBe('g1u8-l3');
+      expect(r.difficultyBreakdown.topCluster.hardWrong).toBe(3);
+    });
+
+    test('topCluster is null when no lesson has DIFF_LESSON_CLUSTER_MIN+ hard misses', () => {
+      const r = buildLearningInsights(Object.assign({}, BASE3A, {
+        scores: [scWith([
+          ans(true, 'easy'), ans(true, 'easy'), ans(true, 'easy'),
+          ans(false, 'hard'), ans(false, 'hard'),
+          ans(true, 'medium'), ans(true, 'medium'), ans(true, 'medium'),
+        ])],
+      }));
+      expect(r.difficultyBreakdown.topCluster).toBe(null);
+    });
+  });
 });
 
 // ── _aggregateMistakesFromScoreAnswers (Phase 2A) ─────────────────────────

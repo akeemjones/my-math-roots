@@ -3793,6 +3793,13 @@ var _LI_THRESH = {
   NEEDS_PRACTICE_LIMIT:     3,
   COMMON_MISTAKES_LIMIT:    3,
   STRENGTHS_LIMIT:          3,
+  DIFF_MIN_TOTAL:           6,
+  DIFF_MIN_PER_LEVEL:       3,
+  DIFF_HARD_STRUGGLE_PCT:   0.60,
+  DIFF_FOUNDATION_PCT:      0.70,
+  DIFF_READY_PCT:           0.80,
+  DIFF_READY_HARD_PCT:      0.70,
+  DIFF_LESSON_CLUSTER_MIN:  3,
 };
 
 function buildLearningInsights(opts) {
@@ -4057,12 +4064,55 @@ function buildLearningInsights(opts) {
                      why:   'Steady practice unlocks better insights.' };
   }
 
+  // ── Difficulty Breakdown (Phase 3A) ─────────────────────────────────────
+  var diffPerf = _aggregateDifficultyPerformance(scores);
+  var diffByLesson = _aggregateDifficultyByLesson(scores);
+  var diffTotal = diffPerf.easy.total + diffPerf.medium.total + diffPerf.hard.total;
+  var diffState;
+  if (diffTotal < _LI_THRESH.DIFF_MIN_TOTAL) {
+    diffState = 'not-enough-data';
+  } else {
+    var hasEasy   = diffPerf.easy.total   >= _LI_THRESH.DIFF_MIN_PER_LEVEL;
+    var hasMedium = diffPerf.medium.total >= _LI_THRESH.DIFF_MIN_PER_LEVEL;
+    var hasHard   = diffPerf.hard.total   >= _LI_THRESH.DIFF_MIN_PER_LEVEL;
+    if (!hasEasy && !hasMedium && !hasHard) {
+      diffState = 'not-enough-data';
+    } else if (hasHard && diffPerf.hard.accuracy < _LI_THRESH.DIFF_HARD_STRUGGLE_PCT) {
+      diffState = 'hard-struggle';
+    } else if (hasEasy && diffPerf.easy.accuracy < _LI_THRESH.DIFF_FOUNDATION_PCT) {
+      diffState = 'foundation-review';
+    } else if (hasEasy && hasMedium
+               && diffPerf.easy.accuracy   >= _LI_THRESH.DIFF_READY_PCT
+               && diffPerf.medium.accuracy >= _LI_THRESH.DIFF_READY_PCT
+               && (!hasHard || diffPerf.hard.accuracy >= _LI_THRESH.DIFF_READY_HARD_PCT)) {
+      diffState = 'ready-for-challenge';
+    } else {
+      diffState = 'balanced-progress';
+    }
+  }
+  var topCluster = null;
+  var bestHardWrong = 0;
+  Object.keys(diffByLesson).forEach(function(lid) {
+    var hw = diffByLesson[lid].hard.total - diffByLesson[lid].hard.correct;
+    if (hw >= _LI_THRESH.DIFF_LESSON_CLUSTER_MIN && hw > bestHardWrong) {
+      bestHardWrong = hw;
+      topCluster = { lessonId: lid, hardWrong: hw };
+    }
+  });
+  var difficultyBreakdown = {
+    state:      diffState,
+    perf:       diffPerf,
+    byLesson:   diffByLesson,
+    topCluster: topCluster,
+  };
+
   return {
     viewBand: viewBand, studentName: studentName, hasAnyData: hasAnyData,
     overallAccuracy: overallAccuracy, totalQuestions: totalQuestions,
     needsPractice: needsPractice, commonMistakes: commonMistakes,
     strengths: strengths, trend: trend, nextStep: nextStep,
     interventionRecovery: interventionRecovery, parentAction: parentAction,
+    difficultyBreakdown: difficultyBreakdown,
   };
 }
 
