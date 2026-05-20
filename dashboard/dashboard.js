@@ -1375,6 +1375,30 @@ function _dbFriendlyError(e) {
   return 'Something went wrong — please try again.';
 }
 
+// Pure helper: returns the list of localStorage keys Reset Student Data
+// must remove so the student-side render doesn't fall back to stale local
+// progress. Mirrors src/dashboard.js so the same key set is testable
+// without a DOM / Supabase setup.
+function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
+  var keys = [];
+  if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2') {
+    keys.push('wb_sc5_'         + gradeBand);
+    keys.push('wb_done5_'       + gradeBand);
+    keys.push('wb_mastery_'     + gradeBand);
+    keys.push('mmr_mastery_v1_' + gradeBand);
+  }
+  if (sessionMatches) {
+    keys.push('wb_streak');
+    keys.push('wb_act_dates');
+    keys.push('wb_apptime');
+    keys.push('wb_paused_quiz');
+    keys.push('wb_sc5');
+    keys.push('wb_done5');
+    keys.push('wb_mastery');
+  }
+  return keys;
+}
+
 // Pure helper: clear every in-memory field on a student object that the
 // server-side reset_student_data RPC clears. Mirrors src/dashboard.js so
 // tests can exercise the same shape via the dashboard/dashboard.js export.
@@ -3987,5 +4011,6 @@ if (typeof module !== 'undefined') {
     _buildInterventionRowForSync,
     _normalizeInterventionRow,
     _dbResetStudentInMemory,
+    _dbProgressCacheKeysForReset,
   };
 }

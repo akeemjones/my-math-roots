@@ -2832,6 +2832,82 @@ async function _dbRelockAll() {
   _reRenderUnlock();
 }
 
+// Pure helper: returns the list of localStorage keys that Reset Student Data
+// must remove so the student-side render (boot.js, home.js, isUnitUnlocked
+// in nav.js) doesn't fall back to stale local progress after the server
+// wipe.
+//
+// The bug this addresses: state.js loads SCORES/DONE/MASTERY from grade-
+// scoped keys (wb_sc5_<grade>, wb_done5_<grade>, wb_mastery_<grade>,
+// mmr_mastery_v1_<grade>). Those keys survive `reset_student_data` RPC,
+// so on the very next render — including immediately after the parent
+// taps "Go to <Name>'s App" — isUnitUnlocked reads the stale prior-unit
+// quiz scores and unlocks Unit 2+ even though the server has been wiped.
+//
+// gradeBand: 'K' | '1' | '2' — the reset student's grade.
+// sessionMatches: true when localStorage.mmr_active_student_id ===
+//   _activeId. Only when it matches do we touch the non-grade-scoped
+//   session caches (wb_streak, wb_apptime, wb_act_dates, wb_paused_quiz)
+//   and the legacy un-namespaced keys — otherwise we'd wipe a different
+//   student's active local session.
+function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
+  var keys = [];
+  if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2') {
+    keys.push('wb_sc5_'         + gradeBand);
+    keys.push('wb_done5_'       + gradeBand);
+    keys.push('wb_mastery_'     + gradeBand);
+    keys.push('mmr_mastery_v1_' + gradeBand);
+  }
+  if (sessionMatches) {
+    keys.push('wb_streak');
+    keys.push('wb_act_dates');
+    keys.push('wb_apptime');
+    keys.push('wb_paused_quiz');
+    // Legacy un-namespaced keys (pre-grade-scoping). The Grade-2 migration
+    // in state.js copies these into the namespaced slot on next boot, so
+    // clearing them prevents a stale repopulation cycle.
+    keys.push('wb_sc5');
+    keys.push('wb_done5');
+    keys.push('wb_mastery');
+  }
+  return keys;
+}
+
+// Imperative wipe: removes the local progress caches that survive the
+// server reset, then mutates the in-memory consts the student-app
+// renderer reads (SCORES/DONE/MASTERY/STREAK/APP_TIME). The const
+// mutations only run when the device session belongs to the reset
+// student; otherwise we'd corrupt a different student's active session.
+//
+// Safe to call when the const globals aren't defined (test harness) — the
+// typeof guards short-circuit cleanly.
+function _dbWipeLocalProgressCaches(gradeBand, sessionMatches) {
+  var keys = _dbProgressCacheKeysForReset(gradeBand, sessionMatches);
+  keys.forEach(function(k) {
+    try { localStorage.removeItem(k); } catch (_e) {}
+  });
+  if (!sessionMatches) return;
+  if (typeof SCORES !== 'undefined' && SCORES && typeof SCORES.length === 'number') {
+    SCORES.length = 0;
+  }
+  if (typeof DONE !== 'undefined' && DONE && typeof DONE === 'object') {
+    Object.keys(DONE).forEach(function(k) { delete DONE[k]; });
+  }
+  if (typeof MASTERY !== 'undefined' && MASTERY && typeof MASTERY === 'object') {
+    Object.keys(MASTERY).forEach(function(k) { delete MASTERY[k]; });
+  }
+  if (typeof STREAK !== 'undefined' && STREAK) {
+    STREAK.current = 0; STREAK.longest = 0; STREAK.lastDate = null;
+  }
+  if (typeof APP_TIME !== 'undefined' && APP_TIME) {
+    APP_TIME.totalSecs = 0;
+    APP_TIME.sessions  = 0;
+    if (APP_TIME.dailySecs && typeof APP_TIME.dailySecs === 'object') {
+      Object.keys(APP_TIME.dailySecs).forEach(function(k) { delete APP_TIME.dailySecs[k]; });
+    }
+  }
+}
+
 // Pure helper: clear every in-memory field on a student object that the
 // server-side reset_student_data RPC clears server-side. Kept pure (no DOM,
 // no Supabase, no globals) so it can be unit-tested directly via the
@@ -2898,6 +2974,27 @@ async function _dbFullReset() {
     // Clear in-memory state so renderDashboard reflects empty progress on
     // the very next paint — no page reload required.
     _dbResetStudentInMemory(_students[_activeId]);
+
+    // Wipe the student-side local progress caches (wb_sc5_<grade>,
+    // wb_done5_<grade>, wb_mastery_<grade>, mmr_mastery_v1_<grade>) and
+    // their in-memory const mirrors (SCORES/DONE/MASTERY/STREAK/APP_TIME).
+    // Without this step, the very next call to enterStudentLearningSession
+    // — i.e. the parent tapping "Go to <Name>'s App" — re-hydrates SCORES
+    // from the stale local cache and isUnitUnlocked re-opens Unit 2+ on
+    // the strength of pre-reset prior-unit quiz scores.
+    try {
+      var _resetProfile = (_managedProfiles || []).find(function(p) { return p && p.id === _activeId; });
+      var _resetGrade   = (typeof _dbResolveProfileGrade === 'function' && _resetProfile)
+        ? _dbResolveProfileGrade(_resetProfile, _activeId)
+        : ((typeof _dbReadProfileGrade === 'function') ? _dbReadProfileGrade(_activeId) : '2');
+      var _sessionMatches = false;
+      try { _sessionMatches = (localStorage.getItem('mmr_active_student_id') === _activeId); } catch (_e) {}
+      _dbWipeLocalProgressCaches(_resetGrade, _sessionMatches);
+    } catch (e) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[Reset] local progress cache wipe failed (non-fatal):', e);
+      }
+    }
 
     // The dashboard prefers _remoteInterventionEvents over the legacy local
     // cache; resetting both prevents a renderDashboard fall-through to the

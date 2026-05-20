@@ -50,6 +50,7 @@ const {
   _aggregateDifficultyByLesson,
   _renderRecentQuizzes,
   _dbResetStudentInMemory,
+  _dbProgressCacheKeysForReset,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2714,5 +2715,106 @@ describe('_dbResetStudentInMemory', () => {
     const snapshot = JSON.stringify(s);
     _dbResetStudentInMemory(s);
     expect(JSON.stringify(s)).toBe(snapshot);
+  });
+});
+
+// ── _dbProgressCacheKeysForReset (cross-unit stale-unlock fix) ──────────
+// Regression guard for the bug where Reset Student Data left the
+// grade-scoped wb_sc5_<grade> / wb_done5_<grade> / wb_mastery_<grade> /
+// mmr_mastery_v1_<grade> localStorage keys in place. enterStudentLearningSession
+// re-hydrates SCORES from those keys on the next student-app entry, so
+// isUnitUnlocked happily re-opened Unit 2+ on the strength of pre-reset
+// prior-unit quiz scores. The helper enumerates the keys the dashboard
+// must remove; isolating the policy here lets us verify the set explicitly
+// and lock the grade-scoping contract.
+
+describe('_dbProgressCacheKeysForReset', () => {
+  test('Grade 2 reset (active session): wipes wb_sc5_2 + done + mastery + canonical mastery + session keys', () => {
+    const keys = _dbProgressCacheKeysForReset('2', true);
+    expect(keys).toEqual(expect.arrayContaining([
+      'wb_sc5_2', 'wb_done5_2', 'wb_mastery_2', 'mmr_mastery_v1_2',
+      'wb_streak', 'wb_act_dates', 'wb_apptime', 'wb_paused_quiz',
+      'wb_sc5', 'wb_done5', 'wb_mastery',
+    ]));
+    // And does NOT include other grades' score caches
+    expect(keys).not.toContain('wb_sc5_K');
+    expect(keys).not.toContain('wb_sc5_1');
+  });
+
+  test('Grade 1 reset (active session): scoped to G1 keys only', () => {
+    const keys = _dbProgressCacheKeysForReset('1', true);
+    expect(keys).toEqual(expect.arrayContaining([
+      'wb_sc5_1', 'wb_done5_1', 'wb_mastery_1', 'mmr_mastery_v1_1',
+    ]));
+    expect(keys).not.toContain('wb_sc5_K');
+    expect(keys).not.toContain('wb_sc5_2');
+  });
+
+  test('Kindergarten reset (active session): scoped to K keys only', () => {
+    const keys = _dbProgressCacheKeysForReset('K', true);
+    expect(keys).toEqual(expect.arrayContaining([
+      'wb_sc5_K', 'wb_done5_K', 'wb_mastery_K', 'mmr_mastery_v1_K',
+    ]));
+    expect(keys).not.toContain('wb_sc5_1');
+    expect(keys).not.toContain('wb_sc5_2');
+  });
+
+  test('sessionMatches=false omits non-grade-scoped session keys (different student is active on this device)', () => {
+    const keys = _dbProgressCacheKeysForReset('2', false);
+    // Grade-scoped keys still get cleared (the cache is grade-keyed, not student-keyed)
+    expect(keys).toEqual(expect.arrayContaining([
+      'wb_sc5_2', 'wb_done5_2', 'wb_mastery_2', 'mmr_mastery_v1_2',
+    ]));
+    // But the session-scoped keys belonging to a different active student are preserved
+    expect(keys).not.toContain('wb_streak');
+    expect(keys).not.toContain('wb_act_dates');
+    expect(keys).not.toContain('wb_apptime');
+    expect(keys).not.toContain('wb_paused_quiz');
+    expect(keys).not.toContain('wb_sc5');
+    expect(keys).not.toContain('wb_done5');
+    expect(keys).not.toContain('wb_mastery');
+  });
+
+  test('unknown / invalid grade band returns empty grade-scoped keys; session keys still respect sessionMatches', () => {
+    expect(_dbProgressCacheKeysForReset('garbage', false)).toEqual([]);
+    expect(_dbProgressCacheKeysForReset(null, false)).toEqual([]);
+    expect(_dbProgressCacheKeysForReset('garbage', true)).toEqual([
+      'wb_streak', 'wb_act_dates', 'wb_apptime', 'wb_paused_quiz',
+      'wb_sc5', 'wb_done5', 'wb_mastery',
+    ]);
+  });
+
+  test('reset NEVER touches identity / auth / theme / dashboard-view-grade / unlock-settings keys', () => {
+    const keys = _dbProgressCacheKeysForReset('2', true);
+    // Identity / auth — must survive a Reset All
+    expect(keys).not.toContain('mmr_active_student_id');
+    expect(keys).not.toContain('mmr_session_token');
+    expect(keys).not.toContain('mmr_user_role');
+    expect(keys).not.toContain('mmr_family_profiles');
+    expect(keys).not.toContain('mmr_parent_unlock');
+    // Per-profile grade resolution — must survive (re-binding to a fresh profile)
+    expect(keys.some(k => k.startsWith('mmr_profile_grade_'))).toBe(false);
+    // Theme / appearance / settings the parent has configured — must survive
+    expect(keys).not.toContain('wb_theme');
+    expect(keys).not.toContain('mmr_db_section_state');
+    // Dashboard view-grade — must survive
+    expect(keys.some(k => k.startsWith('mmr_dash_view_grade_'))).toBe(false);
+    // Per-student unlock / timer / a11y — managed separately by Lock All
+    expect(keys.some(k => k.startsWith('wb_unlock_'))).toBe(false);
+    expect(keys.some(k => k.startsWith('wb_timer_'))).toBe(false);
+    expect(keys.some(k => k.startsWith('wb_a11y_'))).toBe(false);
+  });
+
+  test('SCENARIO: stale Unit 1 quiz score in wb_sc5_2 no longer unlocks Unit 2 after reset', () => {
+    // Simulates the production bug: after server reset, wb_sc5_2 still
+    // contains a passing Unit 1 quiz score, which isUnitUnlocked(1) reads
+    // via SCORES.some(s => s.qid === 'u1_uq' && s.pct >= 80) to unlock
+    // Unit 2. The helper must include wb_sc5_2 in its removal set so the
+    // student-side render starts from an empty SCORES array.
+    const keys = _dbProgressCacheKeysForReset('2', true);
+    expect(keys).toContain('wb_sc5_2');
+    // And for the equivalent G1 / K paths (so this isn't a Grade 2-only fix)
+    expect(_dbProgressCacheKeysForReset('1', true)).toContain('wb_sc5_1');
+    expect(_dbProgressCacheKeysForReset('K', true)).toContain('wb_sc5_K');
   });
 });
