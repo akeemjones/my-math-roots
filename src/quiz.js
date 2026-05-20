@@ -2228,7 +2228,7 @@ function _finishQuiz(){
     name: studentName, id: Date.now(),
     timeTaken,
     grade: (typeof _gradeBand === 'function') ? (_gradeBand(localStorage.getItem('mmr_grade')) || 'g2') : null,
-    answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false})) : [],
+    answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false,errTag:a.errTag||null,difficulty:a.difficulty||null})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
@@ -2576,7 +2576,7 @@ function confirmQuit(){
     unitIdx: CUR.unitIdx, color: u.color,
     name: cfg.studentName || 'Student', id: Date.now(),
     timeTaken: '',
-    answers: qz.answers ? qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok})) : [],
+    answers: qz.answers ? qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok, errTag:a.errTag||null, difficulty:a.difficulty||null})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
@@ -2611,7 +2611,7 @@ function confirmRestart(){
       unitIdx: CUR.unitIdx, color: u.color,
       name: cfg.studentName || 'Student', id: Date.now(),
       timeTaken: '',
-      answers: qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok})),
+      answers: qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok, errTag:a.errTag||null, difficulty:a.difficulty||null})),
       date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
       time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
     };
