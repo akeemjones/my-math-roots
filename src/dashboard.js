@@ -5298,6 +5298,11 @@ function _loadManagedStudentScores(studentId) {
               color: String(r.color || ''),
               name: String(r.student_name || ''), id: r.local_id,
               timeTaken: r.time_taken || 0,
+              // F5: round-trip `grade` so grade-filtered quiz history works
+              // for managed profiles loaded from Supabase. NULL grades fall
+              // back to qid-pattern inference via _inferScoreGrade on the
+              // grade-filter pass.
+              grade: r.grade || null,
               answers: Array.isArray(r.answers) ? r.answers : [],
               date: String(r.date_str || ''), time: String(r.time_str || ''),
               quit: !!r.quit, abandoned: !!r.abandoned

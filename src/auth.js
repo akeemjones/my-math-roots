@@ -478,6 +478,10 @@ async function _hydrateStudentFromParentSession(studentId) {
             color: String(r.color||''),
             name: String(r.student_name||''), id: r.local_id,
             timeTaken: r.time_taken || 0,
+            // F5: round-trip grade so grade-filtered quiz history works
+            // after cloud reload. NULL grades fall through to qid pattern
+            // inference via _inferScoreGrade.
+            grade: r.grade || null,
             answers: Array.isArray(r.answers) ? r.answers : [],
             date: String(r.date_str||''), time: String(r.time_str||''),
             quit: !!r.quit, abandoned: !!r.abandoned
@@ -1638,6 +1642,8 @@ async function _pullStudentProgress(studentId) {
             color: String(r.color || ''),
             name: String(r.student_name || ''), id: r.local_id,
             timeTaken: r.time_taken || 0,
+            // F5: round-trip grade. See note at line ~482.
+            grade: r.grade || null,
             answers: Array.isArray(r.answers) ? r.answers : [],
             date: String(r.date_str || ''), time: String(r.time_str || ''),
             quit: !!r.quit, abandoned: !!r.abandoned
@@ -1746,6 +1752,8 @@ async function _pullOnLogin(force){
           unitIdx:typeof r.unit_idx==='number'?r.unit_idx:0, color:String(r.color||''),
           name:String(r.student_name||''), id:r.local_id,
           timeTaken: r.time_taken || 0,
+          // F5: round-trip grade. See note at line ~482.
+          grade: r.grade || null,
           answers:Array.isArray(r.answers)?r.answers:[],
           date:String(r.date_str||''), time:String(r.time_str||''),
           quit:!!r.quit, abandoned:!!r.abandoned
@@ -1902,6 +1910,10 @@ async function _pushAll(){
             score: s.score || 0, total: s.total || 0, pct: s.pct || 0,
             stars: s.stars || '', unit_idx: s.unitIdx ?? 0, color: s.color || '',
             student_name: s.name || '', time_taken: s.timeTaken || 0,
+            // F5: include grade band so the parent dashboard can grade-filter
+            // round-tripped scores. Legacy scores without grade push as NULL;
+            // dashboard falls back to qid-pattern inference on read.
+            grade: s.grade || null,
             answers: s.answers || [], date_str: s.date || '', time_str: s.time || '',
             quit: !!s.quit, abandoned: !!s.abandoned
           };
@@ -2521,6 +2533,11 @@ async function _pushScores(){
       score:s.score||0, total:s.total||0, pct:s.pct||0,
       stars:s.stars||'', unit_idx:s.unitIdx??null, color:s.color||null,
       student_name:s.name||null, time_taken:s.timeTaken||null,
+      // F5: include normalized grade band so grade-filtered quiz history
+      // round-trips correctly through Supabase. Legacy in-memory scores
+      // without the field push as NULL; the dashboard side falls back to
+      // qid-pattern inference via _inferScoreGrade on read.
+      grade: s.grade || null,
       answers:s.answers||[], date_str:s.date||null, time_str:s.time||null,
       quit:!!s.quit, abandoned:!!s.abandoned
     }));
