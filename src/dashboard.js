@@ -3744,6 +3744,44 @@ function _aggregateDifficultyPerformance(scores) {
   return result;
 }
 
+// Phase 3A: Cluster per-answer accuracy by (lessonId, difficulty). lessonId
+// is extracted from score.qid via a flexible regex matching k/g1/g2 + uN-lM.
+// Scores whose qid doesn't match (Unit Tests, Free Mode, legacy short qids)
+// are skipped — the helper returns no entry for them.
+function _aggregateDifficultyByLesson(scores) {
+  var result = {};
+  if (!Array.isArray(scores)) return result;
+  var rx = /(k|g1|g2)u\d+-l\d+/i;
+  scores.forEach(function(s) {
+    if (!s || !s.qid || !Array.isArray(s.answers)) return;
+    var m = String(s.qid).match(rx);
+    if (!m) return;
+    var lessonId = m[0].toLowerCase();
+    if (!result[lessonId]) {
+      result[lessonId] = {
+        easy:   { correct: 0, total: 0, accuracy: 0 },
+        medium: { correct: 0, total: 0, accuracy: 0 },
+        hard:   { correct: 0, total: 0, accuracy: 0 }
+      };
+    }
+    s.answers.forEach(function(a) {
+      if (!a) return;
+      var d = a.difficulty;
+      if (d !== 'easy' && d !== 'medium' && d !== 'hard') return;
+      result[lessonId][d].total += 1;
+      if (a.ok) result[lessonId][d].correct += 1;
+    });
+  });
+  Object.keys(result).forEach(function(lid) {
+    ['easy', 'medium', 'hard'].forEach(function(k) {
+      result[lid][k].accuracy = result[lid][k].total > 0
+        ? result[lid][k].correct / result[lid][k].total
+        : 0;
+    });
+  });
+  return result;
+}
+
 var _LI_THRESH = {
   WEAK_MIN_ATTEMPTS:        3,
   WEAK_MAX_ACCURACY:        0.60,

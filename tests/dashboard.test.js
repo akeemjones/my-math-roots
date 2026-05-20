@@ -47,6 +47,7 @@ const {
   _normalizeInterventionRow,
   _normalizeAnswerDifficulty,
   _aggregateDifficultyPerformance,
+  _aggregateDifficultyByLesson,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2386,5 +2387,68 @@ describe('_aggregateDifficultyPerformance', () => {
       sc([{ ok: true, difficulty: 'easy' }]),
     ]);
     expect(r.easy.total).toBe(1);
+  });
+});
+
+// ── _aggregateDifficultyByLesson ──────────────────────────────────────────
+
+describe('_aggregateDifficultyByLesson', () => {
+  function sc(qid, answers) {
+    return {
+      qid: qid, pct: 50, id: Date.now() + Math.random(), type: 'lesson',
+      label: 'Test', date: '2026-05-19', score: 5, total: 10,
+      unitIdx: 7, answers: answers, grade: 'g1',
+    };
+  }
+
+  test('clusters answers by lessonId extracted from qid', () => {
+    const r = _aggregateDifficultyByLesson([
+      sc('lq_g1u8-l3-abc', [
+        { ok: false, difficulty: 'hard' },
+        { ok: false, difficulty: 'hard' },
+        { ok: true,  difficulty: 'easy' },
+      ]),
+      sc('lq_g1u5-l2-xyz', [
+        { ok: true, difficulty: 'medium' },
+      ]),
+    ]);
+    expect(r['g1u8-l3']).toBeDefined();
+    expect(r['g1u8-l3'].hard.total).toBe(2);
+    expect(r['g1u8-l3'].hard.correct).toBe(0);
+    expect(r['g1u8-l3'].easy.total).toBe(1);
+    expect(r['g1u5-l2']).toBeDefined();
+    expect(r['g1u5-l2'].medium.total).toBe(1);
+  });
+
+  test('falls back gracefully when qid does not match the lesson pattern', () => {
+    const r = _aggregateDifficultyByLesson([
+      sc('ut_g1-final', [{ ok: true, difficulty: 'hard' }]),
+      sc('lq_add_01',   [{ ok: true, difficulty: 'easy' }]),
+      sc(null,          [{ ok: true, difficulty: 'easy' }]),
+    ]);
+    expect(Object.keys(r).length).toBe(0);
+  });
+
+  test('merges multiple scores under the same lessonId', () => {
+    const r = _aggregateDifficultyByLesson([
+      sc('lq_g1u8-l3-a', [{ ok: true, difficulty: 'easy' }]),
+      sc('lq_g1u8-l3-b', [{ ok: false, difficulty: 'easy' }]),
+    ]);
+    expect(r['g1u8-l3'].easy.total).toBe(2);
+    expect(r['g1u8-l3'].easy.correct).toBe(1);
+  });
+
+  test('tolerates empty / non-array input', () => {
+    expect(_aggregateDifficultyByLesson([])).toEqual({});
+    expect(_aggregateDifficultyByLesson(null)).toEqual({});
+  });
+
+  test('matches K and G2 qid prefixes too', () => {
+    const r = _aggregateDifficultyByLesson([
+      sc('lq_ku4-l1-x',  [{ ok: true, difficulty: 'easy' }]),
+      sc('lq_g2u1-l1-y', [{ ok: true, difficulty: 'medium' }]),
+    ]);
+    expect(r['ku4-l1']).toBeDefined();
+    expect(r['g2u1-l1']).toBeDefined();
   });
 });
