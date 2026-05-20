@@ -1308,8 +1308,24 @@ function _lsTogglePw(){
 
 // ── Turnstile token state ─────────────────
 let _turnstileToken = null;
-function _onTurnstileSuccess(token){ _turnstileToken = token; }
+let _turnstileFailed = false;
+const _TURNSTILE_FAIL_MSG = '⚠️ Security check could not load. Please refresh and try again. If this continues, contact support.';
+function _onTurnstileSuccess(token){ _turnstileToken = token; _turnstileFailed = false; }
 function _onTurnstileExpired(){ _turnstileToken = null; }
+function _onTurnstileError(code){
+  // Fired by Cloudflare Turnstile when the widget can't initialize (e.g. error 110200
+  // = hostname not in the sitekey's allowlist, or a network/CSP problem). Without this
+  // hook the user only sees the generic "Please complete the security check above"
+  // gate message in _lsSubmit, which is misleading because the widget never offered
+  // them anything to complete (it's data-appearance="interaction-only" in index.html).
+  _turnstileToken = null;
+  _turnstileFailed = true;
+  const msgEl = document.getElementById('ls-msg');
+  if(msgEl){
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = _TURNSTILE_FAIL_MSG;
+  }
+}
 function _resetTurnstile(){
   _turnstileToken = null;
   if(window.turnstile) window.turnstile.reset('#ls-turnstile .cf-turnstile');
@@ -1347,9 +1363,19 @@ async function _lsSubmit(){
   } else {
     if(password.length < 6){ msgEl.textContent='⚠️ Password must be at least 6 characters.'; return; }
   }
-  // Turnstile CAPTCHA — must be verified before submitting
-  if(!_turnstileToken){
-    msgEl.textContent = '⚠️ Please complete the security check above.';
+  // Turnstile CAPTCHA — must be verified before submitting.
+  // In data-appearance="interaction-only" silent-pass mode Cloudflare populates the
+  // hidden input and turnstile.getResponse() but does NOT fire data-callback, so
+  // _turnstileToken stays null even though a real token exists. Fall back to the
+  // Turnstile SDK so the gate doesn't trap users behind an invisible passing widget.
+  let captchaToken = _turnstileToken;
+  if(!captchaToken && window.turnstile && typeof window.turnstile.getResponse === 'function'){
+    try { captchaToken = window.turnstile.getResponse('#ls-turnstile .cf-turnstile') || null; } catch(_){ }
+  }
+  if(!captchaToken){
+    msgEl.textContent = _turnstileFailed
+      ? _TURNSTILE_FAIL_MSG
+      : '⚠️ Please complete the security check above.';
     return;
   }
   _lsLoading = true;
@@ -1364,12 +1390,12 @@ async function _lsSubmit(){
       const displayName = _sanitize(document.getElementById('ls-name').value, 30) || 'Student';
       result = await _supa.auth.signUp({
         email, password,
-        options: { data: { display_name:displayName }, captchaToken: _turnstileToken }
+        options: { data: { display_name:displayName }, captchaToken }
       });
     } else {
       result = await _supa.auth.signInWithPassword({
         email, password,
-        options: { captchaToken: _turnstileToken }
+        options: { captchaToken }
       });
     }
     _resetTurnstile(); // always reset after use — token is single-use
