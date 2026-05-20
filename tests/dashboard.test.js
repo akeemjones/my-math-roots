@@ -48,6 +48,7 @@ const {
   _normalizeAnswerDifficulty,
   _aggregateDifficultyPerformance,
   _aggregateDifficultyByLesson,
+  _renderRecentQuizzes,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2397,6 +2398,59 @@ describe('_unitIndexFromId', () => {
     expect(_unitIndexFromId('')).toBeNull();
     expect(_unitIndexFromId('foo')).toBeNull();
     expect(_unitIndexFromId(NaN)).toBeNull();
+  });
+});
+
+// ── F3 — Quiz history row data-arg uses stable score.id ──────────────────
+// Regression test for the index-mismatch bug where renderer rows had
+// _originalIndex (positional in a grade-filtered list) but openQuizReview
+// looked up student.SCORES unfiltered. After fix: rows carry `data-arg`
+// equal to `score.id`, openQuizReview looks up by id.
+
+describe('quiz history row data-arg', () => {
+  function mkScore(id, type, qid, grade, label) {
+    return {
+      qid: qid, id: id, type: type, label: label,
+      pct: 80, score: 8, total: 10, unitIdx: 0, color: '#888',
+      grade: grade, name: 'Test', answers: [{ t: 'q', chosen: 'a', correct: 'a', ok: true }],
+      date: 'May 19, 2026', time: '10:00 AM',
+    };
+  }
+
+  test('row data-arg holds the stable score id (lesson)', () => {
+    var s = mkScore(1779000000001, 'lesson', 'lq_g1u4-l1-x', 'g1', 'Counting & Cardinality');
+    var html = _renderRecentQuizzes([s]);
+    expect(html).toContain('data-arg="1779000000001"');
+    expect(html).not.toContain('data-arg="0"');
+  });
+
+  test('row data-arg holds the stable score id (unit quiz)', () => {
+    var s = mkScore(1779000000002, 'unit', 'g1u4_uq', 'g1', 'Counting Patterns — Unit Test');
+    var html = _renderRecentQuizzes([s]);
+    expect(html).toContain('data-arg="1779000000002"');
+  });
+
+  test('unit quiz appears in history with correct label', () => {
+    var s = mkScore(1779000000003, 'unit', 'g1u4_uq', 'g1', 'Counting Patterns — Unit Test');
+    var html = _renderRecentQuizzes([s]);
+    expect(html).toContain('Counting Patterns');
+    expect(html).toContain('Unit Test');
+  });
+
+  test('mixed lesson + unit scores all render with id-based data-arg', () => {
+    var lesson = mkScore(1779000000010, 'lesson', 'lq_g1u4-l1-x', 'g1', 'Lesson 1');
+    var unit   = mkScore(1779000000020, 'unit',   'g1u4_uq',      'g1', 'Unit 4 Test');
+    var html = _renderRecentQuizzes([lesson, unit]);
+    expect(html).toContain('data-arg="1779000000010"');
+    expect(html).toContain('data-arg="1779000000020"');
+  });
+
+  test('lesson quiz history still works (does not regress)', () => {
+    var s = mkScore(1779000000004, 'lesson', 'lq_g1u4-l1-x', 'g1', 'Counting to 10');
+    var html = _renderRecentQuizzes([s]);
+    expect(html).toContain('Counting to 10');
+    expect(html).toContain('Lesson Quiz');
+    expect(html).toContain('data-arg="1779000000004"');
   });
 });
 

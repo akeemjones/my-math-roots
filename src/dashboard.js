@@ -909,14 +909,16 @@ function _renderSnapAccuracy(scores) {
   }).join('');
 }
 
-// Build a quiz row HTML using the original-completed-array index so openQuizReview opens the right one.
+// Build a quiz row HTML. Uses the stable `score.id` so openQuizReview can
+// look up the right record across filters and re-renders (no positional
+// index drift).
 function _snapQuizRow(s, origIdx) {
   var pct = (s.pct == null) ? 0 : s.pct;
   var pctColor = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
   var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
   var tLabel    = typeLabel[s.type] || s.type || '';
   var color     = _dbValidColor(s.color);
-  return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + origIdx + '"'
+  return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s.id + '"'
     + ' role="button" tabindex="0">'
     + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
     + '<div class="db-quiz-info">'
@@ -1661,7 +1663,7 @@ function _renderQuizHistoryInner(scores) {
       + (dur ? ' &bull; ' + dur : '')
       + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
       + ' &bull; ' + passBadge;
-    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s._originalIndex + '" role="button" tabindex="0">'
+    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s.id + '" role="button" tabindex="0">'
       + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
       + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
       + '<div class="db-quiz-sub">' + sub + '</div></div>'
@@ -1681,16 +1683,33 @@ function _renderRecentQuizzes(scores) {
 function _reRenderQuizHistory() {
   var st = _students[_activeId]; if (!st) return;
   var wrap = document.getElementById('db-qh-wrap');
-  if (wrap) wrap.innerHTML = _renderQuizHistoryInner(st.SCORES || []);
+  if (!wrap) return;
+  // F3 fix: mirror the initial-render grade filter (src/dashboard.js:4611)
+  // so toggling history filters doesn't re-introduce cross-grade rows.
+  var viewBand = (typeof _getDashboardViewGrade === 'function') ? _getDashboardViewGrade() : null;
+  var all = st.SCORES || [];
+  var scoped = viewBand ? all.filter(function(s){ return _inferScoreGrade(s) === viewBand; }) : all;
+  wrap.innerHTML = _renderQuizHistoryInner(scoped);
 }
 
 // ── Quiz review modal ─────────────────────────────────────────────────────
 
-function openQuizReview(idx) {
+function openQuizReview(scoreId) {
   var student   = _students[_activeId];
   if (!student) return;
-  var completed = (student.SCORES || []).filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
-  var s = completed[idx];
+  // F3 fix: look up by stable score id rather than positional index. The
+  // renderer's `_originalIndex` indexes into a grade-filtered list, but the
+  // unfiltered student.SCORES has a different shape — opening by index
+  // produced the wrong record (or undefined → silent no-op), making unit
+  // quiz review behaviour look broken under non-default view-grades.
+  var scores = student.SCORES || [];
+  var s = null;
+  if (scoreId != null) {
+    var lookup = Number(scoreId);
+    for (var i = 0; i < scores.length; i++) {
+      if (scores[i] && scores[i].id === lookup) { s = scores[i]; break; }
+    }
+  }
   if (!s) return;
 
   var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };

@@ -719,7 +719,7 @@ function _renderRecentQuizzes(scores) {
     var color    = s.color || COLORS[idx % COLORS.length];
     var sub = (s.date || '') + (s.date ? ' &bull; ' : '') + tLabel + (hasQTime ? ' &bull; &#x23F1; ' + qAvg + 's/q' : '')
       + ' &bull; <span style="color:' + color + '">View details →</span>';
-    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + idx + '" role="button" tabindex="0">'
+    return '<div class="db-quiz-row" data-action="openQuizReview" data-arg="' + s.id + '" role="button" tabindex="0">'
       + '<div class="db-quiz-bar" style="background:' + color + '"></div>'
       + '<div class="db-quiz-info"><div class="db-quiz-label">' + dispLabel + '</div>'
       + '<div class="db-quiz-sub">' + sub + '</div></div>'
@@ -733,11 +733,18 @@ function _renderRecentQuizzes(scores) {
 
 // ── Quiz review modal ─────────────────────────────────────────────────────
 
-function openQuizReview(idx) {
+function openQuizReview(scoreId) {
   var student   = _students[_activeId];
   if (!student) return;
-  var completed = (student.SCORES || []).filter(function(s) { return s.pct != null && s.total > 0 && s.type; });
-  var s = completed[idx];
+  // F3 fix: stable id lookup (see src/dashboard.js openQuizReview).
+  var scores = student.SCORES || [];
+  var s = null;
+  if (scoreId != null) {
+    var lookup = Number(scoreId);
+    for (var i = 0; i < scores.length; i++) {
+      if (scores[i] && scores[i].id === lookup) { s = scores[i]; break; }
+    }
+  }
   if (!s) return;
 
   var typeLabel = { lesson: 'Lesson Quiz', unit: 'Unit Test', final: 'Final Test' };
@@ -3957,6 +3964,7 @@ if (typeof module !== 'undefined') {
     _normalizeAnswerDifficulty,
     _aggregateDifficultyPerformance,
     _aggregateDifficultyByLesson,
+    _renderRecentQuizzes,
     _lessonDisplayName,
     _lessonIdBand,
     _buildInterventionRowForSync,
