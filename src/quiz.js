@@ -2622,15 +2622,21 @@ function confirmQuit(){
   // Save quit score entry
   const u = CUR.unitIdx != null ? UNITS_DATA[CUR.unitIdx] : { color:'#e74c3c' };
   const cfg = loadSettings();
+  const _quitPct = Math.floor(qz.score / qz.questions.length * 100);
+  const _quitHintsUsed = qz.hintsUsed || 0;
   const quitEntry = {
     qid: qz.id, label: qz.label, type: qz.type,
     score: qz.score, total: qz.questions.length,
-    pct: Math.floor(qz.score / qz.questions.length * 100),
+    pct: _quitPct,
+    rawPct: _quitPct, penPct: _quitPct, hintsUsed: _quitHintsUsed,
     stars: '🚫', quit: true,
     unitIdx: CUR.unitIdx, color: u.color,
     name: cfg.studentName || 'Student', id: Date.now(),
     timeTaken: '',
-    answers: qz.answers ? qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok, errTag:a.errTag||null, difficulty:a.difficulty||null})) : [],
+    grade: (typeof _gradeBand === 'function') ? (_gradeBand(localStorage.getItem('mmr_grade')) || 'g2') : null,
+    // F4: full answer detail (match auto-finish whitelist) so the review modal
+    // shows the same fields for quit attempts as for completed ones.
+    answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false,errTag:a.errTag||null,difficulty:a.difficulty||null})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
@@ -2657,15 +2663,21 @@ function confirmRestart(){
   if(qz.answers && qz.answers.length > 0){
     const u = CUR.unitIdx != null ? UNITS_DATA[CUR.unitIdx] : { color:'#6c5ce7' };
     const cfg = loadSettings();
+    const _abandPct = Math.floor(qz.score / qz.questions.length * 100);
+    const _abandHintsUsed = qz.hintsUsed || 0;
     const abandonedEntry = {
       qid: qz.id, label: qz.label, type: qz.type,
       score: qz.score, total: qz.questions.length,
-      pct: Math.floor(qz.score / qz.questions.length * 100),
+      pct: _abandPct,
+      rawPct: _abandPct, penPct: _abandPct, hintsUsed: _abandHintsUsed,
       stars: '⚠️', abandoned: true,
       unitIdx: CUR.unitIdx, color: u.color,
       name: cfg.studentName || 'Student', id: Date.now(),
       timeTaken: '',
-      answers: qz.answers.map(a=>({t:a.t, chosen:a.chosen, correct:a.correct, ok:a.ok, errTag:a.errTag||null, difficulty:a.difficulty||null})),
+      grade: (typeof _gradeBand === 'function') ? (_gradeBand(localStorage.getItem('mmr_grade')) || 'g2') : null,
+      // F4: full answer detail (match auto-finish whitelist) so the review
+      // modal shows the same fields for abandoned attempts as for completed.
+      answers: qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false,errTag:a.errTag||null,difficulty:a.difficulty||null})),
       date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
       time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
     };
