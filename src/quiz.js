@@ -649,8 +649,15 @@ function _renderQ(){
   const u = CUR.unitIdx != null ? UNITS_DATA[CUR.unitIdx] : { color:'#6c5ce7' };
   const total = qz.questions.length;
   if(qz.viewIdx == null) qz.viewIdx = qz.idx;
-  const isReview = qz.viewIdx < qz.idx;
+  // Treat any question with an existing saved answer as already-answered.
+  // Bug-fix: previously `isReview = qz.viewIdx < qz.idx`, which missed the
+  // case where viewIdx === idx but qz.answers[viewIdx] has data — happens
+  // when the student goes Prev → Next on a still-current answered question,
+  // or when resuming a paused quiz. The old check fell through to the fresh-
+  // render branch, wiping visual state and allowing a second-chance re-answer
+  // (Bugs 3 + 4). The push-or-not state is the authoritative signal here.
   const qIdx = qz.viewIdx;
+  const isReview = qz.viewIdx < qz.idx || (qz.answers && qz.answers[qIdx] != null);
   const _qRaw = qz.questions[qIdx];
   const q = (typeof QE !== 'undefined') ? QE.normalize(_qRaw, (typeof _lessonContextFor === 'function') ? _lessonContextFor(_qRaw) : null) : _qRaw;
 
@@ -670,7 +677,22 @@ function _renderQ(){
     const past = qz.answers[qIdx];
     const isTapGroupQ = q.type === 'tapGroup' || (q.v && q.v.type === 'tapGroup');
     nb.style.display = 'block';
-    nb.innerHTML = (qIdx >= qz.idx - 1) ? 'Back to Current →' : 'Forward →';
+    // Three cases for the Next button label in review mode:
+    //  - Re-rendering the current answered question (viewIdx===idx, e.g. after
+    //    answer push, after Prev→Next return, or after resume): advance the
+    //    frontier just like the normal Next flow ("Next Question →" or "See
+    //    Results!" on the last item).
+    //  - Viewing one step behind the frontier: clicking Next returns to the
+    //    current unanswered question ("Back to Current →").
+    //  - Viewing further back: clicking Next moves forward through review
+    //    ("Forward →").
+    if (qIdx >= qz.idx) {
+      nb.innerHTML = (qz.idx === total - 1) ? 'See Results! ' + _ICO.trophy : 'Next Question →';
+    } else if (qIdx >= qz.idx - 1) {
+      nb.innerHTML = 'Back to Current →';
+    } else {
+      nb.innerHTML = 'Forward →';
+    }
 
     if (isTapGroupQ) {
       // Render tapGroup review with correct/wrong shape state
@@ -877,6 +899,12 @@ function _pickAnswer(btnIdx){
   const qz = CUR.quiz;
   if(isPaused) return;
   if(!qz || qz._answered) return;
+  // Defense-in-depth: refuse to re-grade an already-answered question.
+  // _renderQ's review path disables answer buttons, but this guard catches
+  // any path where _pickAnswer is invoked on a question with an existing
+  // saved answer (e.g. paused-quiz resume race, hand-crafted dispatch).
+  // Prevents score++ double-count and qz.answers misalignment.
+  if(qz.answers && qz.answers[qz.idx] != null) return;
   qz._answered = true;
 
   const chosen = qz._opts[btnIdx].text;
@@ -1235,6 +1263,8 @@ function _tapGroupToggle(sid) {
 function _tapGroupSubmit() {
   if (isPaused || !CUR.quiz || CUR.quiz._answered) return;
   var qz  = CUR.quiz;
+  // Defense-in-depth: refuse to re-grade an already-answered tapGroup question.
+  if (qz.answers && qz.answers[qz.idx] != null) return;
   var tg  = document.querySelector('.tap-group');
   if (!tg) return;
 
