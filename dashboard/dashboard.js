@@ -3439,6 +3439,18 @@ function _normalizeInterventionRow(r) {
   };
 }
 
+// Phase 3A: Normalize a question's difficulty into the canonical long-form
+// value used by saved answers and dashboard aggregators. Accepts both
+// short-form (q.d = 'e'|'m'|'h') and long-form (q.difficulty = 'easy'|...).
+// Untagged or unrecognized values resolve to null (NOT 'medium').
+function _normalizeAnswerDifficulty(q) {
+  var d = (q && (q.difficulty || q.d)) || null;
+  if (d === 'easy'   || d === 'e') return 'easy';
+  if (d === 'medium' || d === 'm') return 'medium';
+  if (d === 'hard'   || d === 'h') return 'hard';
+  return null;
+}
+
 function _aggregateMistakesFromScoreAnswers(scores) {
   var counts = {};
   if (!Array.isArray(scores)) return counts;
@@ -3825,6 +3837,7 @@ if (typeof module !== 'undefined') {
     _deriveMasteryFromActivity,
     buildLearningInsights,
     _aggregateMistakesFromScoreAnswers,
+    _normalizeAnswerDifficulty,
     _lessonDisplayName,
     _lessonIdBand,
     _buildInterventionRowForSync,

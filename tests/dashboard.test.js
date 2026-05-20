@@ -45,6 +45,7 @@ const {
   _lessonDisplayName,
   _buildInterventionRowForSync,
   _normalizeInterventionRow,
+  _normalizeAnswerDifficulty,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2272,5 +2273,37 @@ describe('_unitIndexFromId', () => {
     expect(_unitIndexFromId('')).toBeNull();
     expect(_unitIndexFromId('foo')).toBeNull();
     expect(_unitIndexFromId(NaN)).toBeNull();
+  });
+});
+
+// ── _normalizeAnswerDifficulty ────────────────────────────────────────────
+
+describe('_normalizeAnswerDifficulty', () => {
+  test('maps short-form e to easy', () => {
+    expect(_normalizeAnswerDifficulty({ d: 'e' })).toBe('easy');
+  });
+  test('maps short-form m to medium', () => {
+    expect(_normalizeAnswerDifficulty({ d: 'm' })).toBe('medium');
+  });
+  test('maps short-form h to hard', () => {
+    expect(_normalizeAnswerDifficulty({ d: 'h' })).toBe('hard');
+  });
+  test('preserves long-form easy/medium/hard', () => {
+    expect(_normalizeAnswerDifficulty({ difficulty: 'easy' })).toBe('easy');
+    expect(_normalizeAnswerDifficulty({ difficulty: 'medium' })).toBe('medium');
+    expect(_normalizeAnswerDifficulty({ difficulty: 'hard' })).toBe('hard');
+  });
+  test('prefers difficulty over d when both present', () => {
+    expect(_normalizeAnswerDifficulty({ difficulty: 'hard', d: 'e' })).toBe('hard');
+  });
+  test('reads q.d when only short-form exists', () => {
+    expect(_normalizeAnswerDifficulty({ d: 'e', t: 'x' })).toBe('easy');
+  });
+  test('returns null for missing or unknown values', () => {
+    expect(_normalizeAnswerDifficulty({})).toBe(null);
+    expect(_normalizeAnswerDifficulty({ d: 'x' })).toBe(null);
+    expect(_normalizeAnswerDifficulty({ difficulty: 'extreme' })).toBe(null);
+    expect(_normalizeAnswerDifficulty(null)).toBe(null);
+    expect(_normalizeAnswerDifficulty(undefined)).toBe(null);
   });
 });
