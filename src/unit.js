@@ -2163,7 +2163,7 @@ function _timeUp(){
   // Fill in any remaining unanswered questions as skipped
   while(qz.answers.length < qz.questions.length){
     const q = qz.questions[qz.answers.length];
-    qz.answers.push({t:q.t, chosen:'(Time ran out)', correct:q.o[q.a], ok:false, exp:q.e});
+    qz.answers.push({t:q.t, chosen:'(Time ran out)', correct:q.o[q.a], ok:false, exp:q.e, difficulty:(typeof _normalizeAnswerDifficulty==='function'?_normalizeAnswerDifficulty(q):null)});
   }
   // Force finish
   _finishQuiz();

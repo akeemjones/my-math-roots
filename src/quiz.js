@@ -7,6 +7,19 @@ function _qText(t){ return (typeof t === 'string' && t.includes('<svg')) ? t : _
 function _cmpLabel(s){ return s ? s.replace(/^[^\w\u00C0-\u024F]+/,'').trim() : s; }
 
 
+// Phase 3A: Normalize a question's difficulty for saved-answer records.
+// Mirrors the helper in dashboard/dashboard.js. Accepts both short-form
+// (q.d = 'e'|'m'|'h') and long-form (q.difficulty = 'easy'|...).
+// Untagged or unrecognized values resolve to null (NOT 'medium').
+function _normalizeAnswerDifficulty(q){
+  var d = (q && (q.difficulty || q.d)) || null;
+  if (d === 'easy'   || d === 'e') return 'easy';
+  if (d === 'medium' || d === 'm') return 'medium';
+  if (d === 'hard'   || d === 'h') return 'hard';
+  return null;
+}
+
+
 // ════════════════════════════════════════
 //  SOUND ENGINE (Web Audio API)
 // ════════════════════════════════════════
@@ -937,7 +950,7 @@ function _pickAnswer(btnIdx){
     // computed at the top of this setTimeout callback.
     const _ansErrTag = (!isOk && _selectedRawOpt && typeof _selectedRawOpt === 'object')
       ? (_selectedRawOpt.tag || null) : null;
-    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs, hintUsed:qz._hintRevealed||false, errTag:_ansErrTag});
+    qz.answers.push({t:q.t, chosen, correct, ok:isOk, exp:q.e, opts:qz._opts.map(o=>o.text), timeSecs:qTimeSecs, hintUsed:qz._hintRevealed||false, errTag:_ansErrTag, difficulty:_normalizeAnswerDifficulty(q)});
 
     const nb = document.getElementById('next-btn');
     if(nb){
@@ -1269,7 +1282,9 @@ function _tapGroupSubmit() {
       hintUsed: qz._hintRevealed || false,
       // Phase 2A: tapGroup's grading function already computes errorType.
       // Correct answers resolve to null per convention.
-      errTag: !isOk ? (gradeResult.errorType || null) : null
+      errTag: !isOk ? (gradeResult.errorType || null) : null,
+      // Phase 3A: normalized difficulty for parent dashboard insights.
+      difficulty: _normalizeAnswerDifficulty(q)
     });
 
     var nb = document.getElementById('next-btn');
