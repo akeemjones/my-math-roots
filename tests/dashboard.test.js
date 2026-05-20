@@ -46,6 +46,7 @@ const {
   _buildInterventionRowForSync,
   _normalizeInterventionRow,
   _normalizeAnswerDifficulty,
+  _aggregateDifficultyPerformance,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2305,5 +2306,85 @@ describe('_normalizeAnswerDifficulty', () => {
     expect(_normalizeAnswerDifficulty({ difficulty: 'extreme' })).toBe(null);
     expect(_normalizeAnswerDifficulty(null)).toBe(null);
     expect(_normalizeAnswerDifficulty(undefined)).toBe(null);
+  });
+});
+
+// ── _aggregateDifficultyPerformance ───────────────────────────────────────
+
+describe('_aggregateDifficultyPerformance', () => {
+  function sc(answers, overrides) {
+    return Object.assign({
+      qid: 'lq_g1u4-l1-x', pct: 80, id: Date.now() + Math.random(), type: 'lesson',
+      label: 'Test', date: '2026-05-19', score: 8, total: 10,
+      unitIdx: 3, answers: answers, grade: 'g1',
+    }, overrides || {});
+  }
+
+  test('buckets answers into easy / medium / hard', () => {
+    const r = _aggregateDifficultyPerformance([sc([
+      { t: 'q1', ok: true,  difficulty: 'easy' },
+      { t: 'q2', ok: true,  difficulty: 'easy' },
+      { t: 'q3', ok: false, difficulty: 'medium' },
+      { t: 'q4', ok: true,  difficulty: 'hard' },
+    ])]);
+    expect(r.easy.total).toBe(2);
+    expect(r.easy.correct).toBe(2);
+    expect(r.medium.total).toBe(1);
+    expect(r.medium.correct).toBe(0);
+    expect(r.hard.total).toBe(1);
+    expect(r.hard.correct).toBe(1);
+  });
+
+  test('computes accuracy as correct / total per level', () => {
+    const r = _aggregateDifficultyPerformance([sc([
+      { ok: true,  difficulty: 'easy' },
+      { ok: true,  difficulty: 'easy' },
+      { ok: false, difficulty: 'easy' },
+      { ok: false, difficulty: 'easy' },
+    ])]);
+    expect(r.easy.accuracy).toBeCloseTo(0.5, 5);
+  });
+
+  test('ignores answers without difficulty (legacy tolerance)', () => {
+    const r = _aggregateDifficultyPerformance([sc([
+      { ok: true },
+      { ok: false, difficulty: null },
+      { ok: true,  difficulty: 'easy' },
+    ])]);
+    expect(r.easy.total).toBe(1);
+    expect(r.medium.total).toBe(0);
+    expect(r.hard.total).toBe(0);
+  });
+
+  test('ignores answers with unrecognized difficulty value', () => {
+    const r = _aggregateDifficultyPerformance([sc([
+      { ok: true, difficulty: 'extreme' },
+      { ok: true, difficulty: 'e' },
+      { ok: true, difficulty: 'easy' },
+    ])]);
+    expect(r.easy.total).toBe(1);
+  });
+
+  test('returns zeroed buckets for empty scores', () => {
+    const r = _aggregateDifficultyPerformance([]);
+    expect(r.easy.total).toBe(0);
+    expect(r.easy.accuracy).toBe(0);
+    expect(r.medium.total).toBe(0);
+    expect(r.hard.total).toBe(0);
+  });
+
+  test('tolerates non-array scores input', () => {
+    expect(_aggregateDifficultyPerformance(null).easy.total).toBe(0);
+    expect(_aggregateDifficultyPerformance(undefined).hard.total).toBe(0);
+  });
+
+  test('tolerates scores with missing or non-array answers', () => {
+    const r = _aggregateDifficultyPerformance([
+      sc(undefined),
+      sc(null),
+      sc([]),
+      sc([{ ok: true, difficulty: 'easy' }]),
+    ]);
+    expect(r.easy.total).toBe(1);
   });
 });

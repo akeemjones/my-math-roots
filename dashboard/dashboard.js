@@ -3466,6 +3466,35 @@ function _aggregateMistakesFromScoreAnswers(scores) {
   return counts;
 }
 
+// Phase 3A: Bucket per-answer accuracy by difficulty level. Input is
+// assumed already-grade-filtered. Untagged or unrecognized difficulty
+// values are skipped (NOT bucketed to medium). Pre-Phase-3A scores have
+// no difficulty field and are tolerated as legacy.
+function _aggregateDifficultyPerformance(scores) {
+  var result = {
+    easy:   { correct: 0, total: 0, accuracy: 0 },
+    medium: { correct: 0, total: 0, accuracy: 0 },
+    hard:   { correct: 0, total: 0, accuracy: 0 }
+  };
+  if (!Array.isArray(scores)) return result;
+  scores.forEach(function(s) {
+    if (!s || !Array.isArray(s.answers)) return;
+    s.answers.forEach(function(a) {
+      if (!a) return;
+      var d = a.difficulty;
+      if (d !== 'easy' && d !== 'medium' && d !== 'hard') return;
+      result[d].total += 1;
+      if (a.ok) result[d].correct += 1;
+    });
+  });
+  ['easy', 'medium', 'hard'].forEach(function(k) {
+    result[k].accuracy = result[k].total > 0
+      ? result[k].correct / result[k].total
+      : 0;
+  });
+  return result;
+}
+
 // Thresholds — kept in one place so the renderer and parent-action text can
 // reference them consistently.
 var _LI_THRESH = {
@@ -3838,6 +3867,7 @@ if (typeof module !== 'undefined') {
     buildLearningInsights,
     _aggregateMistakesFromScoreAnswers,
     _normalizeAnswerDifficulty,
+    _aggregateDifficultyPerformance,
     _lessonDisplayName,
     _lessonIdBand,
     _buildInterventionRowForSync,
