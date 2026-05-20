@@ -4215,6 +4215,50 @@ function _renderLearningInsightsV2(insights) {
     '<div><span style="display:inline-block;padding:3px 8px;border-radius:999px;background:' + trendColor + '15;color:' + trendColor + ';font-weight:700;font-size:.78rem">'
     + trendBadge + '</span></div>' + subLine(_esc(trendText))));
 
+  // D2. Difficulty Breakdown (Phase 3A)
+  var diff = insights.difficultyBreakdown;
+  if (diff && diff.state !== 'not-enough-data') {
+    var diffCopyMap = {
+      'hard-struggle':       'Strong foundation; hard questions need practice.',
+      'foundation-review':   'Easier review first will help build confidence.',
+      'ready-for-challenge': 'Ready for more challenge: easy and medium are strong.',
+      'balanced-progress':   'Balanced progress across difficulty levels.'
+    };
+    var diffRow = function(label, bucket, color) {
+      var pct = bucket.total > 0 ? Math.round(bucket.accuracy * 100) : null;
+      var barW = pct == null ? 0 : pct;
+      var rightLabel = bucket.total > 0
+        ? (pct + '% (' + bucket.correct + '/' + bucket.total + ')')
+        : '&mdash;';
+      return '<div style="display:grid;grid-template-columns:60px 1fr 90px;gap:8px;align-items:center;margin:4px 0">'
+        + '<div style="font-size:.82rem;color:#546e7a">' + label + '</div>'
+        + '<div style="height:8px;border-radius:999px;background:#eceff1;overflow:hidden">'
+        +   '<div style="height:100%;width:' + barW + '%;background:' + color + '"></div>'
+        + '</div>'
+        + '<div style="font-size:.78rem;color:#546e7a;text-align:right">' + rightLabel + '</div>'
+        + '</div>';
+    };
+    var diffBars = diffRow('Easy',   diff.perf.easy,   '#2e7d32')
+                 + diffRow('Medium', diff.perf.medium, '#f9a825')
+                 + diffRow('Hard',   diff.perf.hard,   '#c62828');
+    var diffCopy = diffCopyMap[diff.state] || '';
+    var clusterLine = '';
+    if (diff.topCluster && diff.topCluster.lessonId) {
+      var clusterName = (typeof _lessonDisplayName === 'function')
+        ? _lessonDisplayName(diff.topCluster.lessonId)
+        : diff.topCluster.lessonId;
+      // _lessonDisplayName returns { unit, lesson } when known, else null.
+      var clusterText = clusterName && clusterName.lesson
+        ? ((clusterName.unit ? clusterName.unit + ': ' : '') + clusterName.lesson)
+        : String(diff.topCluster.lessonId);
+      clusterLine = subLine('&#x1F4CD; Most common in ' + _esc(clusterText));
+    }
+    sections.push(card('li-difficulty', '&#x1F3AF; Difficulty Breakdown',
+      diffBars
+      + '<div style="margin-top:8px;color:#263238;font-size:.88rem">' + _esc(diffCopy) + '</div>'
+      + clusterLine));
+  }
+
   // E. Recommended Next Step
   sections.push(card('li-next-step', '&#x1F3AF; Recommended Next Step',
     '<div style="font-weight:700;color:#263238;font-size:.92rem">' + _esc(insights.nextStep.label) + '</div>'
