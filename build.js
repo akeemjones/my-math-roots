@@ -248,6 +248,19 @@ async function build(){
     }
   }
 
+  // ── Copy hosted email assets (referenced by the Supabase Confirm-signup template) ──
+  // Only PNGs ship — the _render-*.html sources stay out of the deploy.
+  const EMAIL_SRC = path.join(ROOT, 'email');
+  if (fs.existsSync(EMAIL_SRC)) {
+    const EMAIL_DIST = path.join(DIST, 'email');
+    if (!fs.existsSync(EMAIL_DIST)) fs.mkdirSync(EMAIL_DIST, { recursive: true });
+    for (const f of fs.readdirSync(EMAIL_SRC)) {
+      if (!/\.png$/i.test(f)) continue;
+      fs.copyFileSync(path.join(EMAIL_SRC, f), path.join(EMAIL_DIST, f));
+      console.log(`📋 Copied:  email/${f}`);
+    }
+  }
+
   // ── Copy per-unit data files to dist/data/ ──
   const DATA_DIR = path.join(DIST, 'data');
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);

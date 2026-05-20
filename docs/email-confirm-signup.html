@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm your My Math Roots account</title>
+  <!--
+    Design notes
+    ────────────
+    - Header logo is a hosted PNG (Boogaloo + plant icon baked in) so the
+      "MY MATH ROOTS" wordmark renders identically in every client. We DO NOT
+      load Google Fonts here — Gmail, Outlook, and Yahoo would silently fall
+      back to Arial and the logo would not match the app.
+    - Math-symbol pattern is a hosted PNG tile. We DO NOT embed it as a data
+      URI: Gmail aggressively strips long `background-image` URLs.
+    - All other text uses Arial / sans-serif so it reads cleanly without
+      depending on remote fonts or app CSS.
+    - Outer table bgcolor + the body bgcolor are the no-image fallback so the
+      card is still readable if the recipient blocks remote images.
+  -->
+</head>
+<body bgcolor="#f5f4f0" style="margin:0;padding:0;background-color:#f5f4f0;">
+
+  <!-- ═══════════════════════════════════
+       OUTER WRAPPER — full-width, tiled math-pattern background
+       (background-image is set on the cell, with bgcolor fallback)
+       ═══════════════════════════════════ -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f5f4f0" style="background-color:#f5f4f0;">
+    <tr>
+      <td align="center" bgcolor="#f5f4f0" background="https://mymathroots.com/email/my-math-roots-email-bg.png" style="background-color:#f5f4f0;background-image:url('https://mymathroots.com/email/my-math-roots-email-bg.png');background-repeat:repeat;background-size:240px 240px;padding:40px 16px;">
+
+        <!-- ═══════════════════════════════════
+             CARD — 560px white card
+             ═══════════════════════════════════ -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="width:560px;max-width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border-collapse:separate;">
+
+          <!-- ── HERO IMAGE ──
+               Single hosted PNG, exact width 560px on desktop, scales down on
+               mobile via the inline max-width:100%. The image carries the blue
+               gradient + plant icon + "MY MATH ROOTS" + "K-5 REVIEW", so no
+               remote fonts are required to make the logo match. -->
+          <tr>
+            <td align="center" bgcolor="#1a4a7a" style="background-color:#1a4a7a;padding:0;line-height:0;font-size:0;">
+              <img src="https://mymathroots.com/email/my-math-roots-email-header.png"
+                   alt="My Math Roots — K-5 Review"
+                   width="560" height="180"
+                   style="display:block;width:100%;max-width:560px;height:auto;border:0;outline:none;text-decoration:none;">
+            </td>
+          </tr>
+
+          <!-- ── EMAIL BODY ──────────────────────────────────────── -->
+          <tr>
+            <td style="padding:32px 40px 28px;background-color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
+
+              <h2 style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:700;color:#1a1a1a;letter-spacing:0.3px;">
+                Confirm your account
+              </h2>
+
+              <p style="margin:0 0 24px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#444444;line-height:1.6;">
+                Thanks for signing up for <strong>My Math Roots</strong>!
+                Click the button below to confirm your email address and get started.
+              </p>
+
+              <!-- CTA button — bgcolor + style both set so Outlook renders the fill.
+                   border-radius is CSS-only and ignored by Outlook (button becomes square). -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 24px;">
+                <tr>
+                  <td align="center" bgcolor="#1a4a2a" style="background-color:#1a4a2a;border-radius:50px;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank"
+                       style="display:inline-block;padding:14px 42px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#ffffff;text-decoration:none;background-color:#1a4a2a;border-radius:50px;white-space:nowrap;">
+                      Confirm your email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fallback plain-text link -->
+              <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#888888;line-height:1.55;">
+                If the button above doesn't work, copy and paste this URL into your browser:
+              </p>
+              <p style="margin:0 0 22px;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.55;word-break:break-all;color:#2563b0;">
+                <a href="{{ .ConfirmationURL }}" style="color:#2563b0;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+              </p>
+
+              <hr style="border:0;border-top:1px solid #eeeeee;margin:0 0 18px;height:1px;">
+
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#888888;line-height:1.55;">
+                If you didn't create a My Math Roots account, you can safely ignore this email.
+                This link will expire in 24&nbsp;hours.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- ── FOOTER ─────────────────────────────────────────── -->
+          <tr>
+            <td align="center" style="padding:14px 28px;background-color:#f5f7fa;border-top:1px solid #e8ecf0;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#9aa3ab;letter-spacing:0.3px;">
+                © 2025 My Math Roots &nbsp;·&nbsp; Created by Akeem Jones
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
