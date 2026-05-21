@@ -44,7 +44,22 @@
 
   // ── Filter state ────────────────────────────────────────────────────────
   // `breakdown` only applies to the Average Scores section (single RPC).
-  var filters = { days: '30', grade: 'all', breakdown: 'lesson' };
+  // `from`/`to` (YYYY-MM-DD) are set only when the user picks Custom and
+  // hits Apply with a valid range; when set, they override `days`.
+  var filters = {
+    days:      '30',
+    grade:     'all',
+    breakdown: 'lesson',
+    from:      null,
+    to:        null,
+  };
+
+  // Default custom-range inputs: today and 30 days ago. Stored separately
+  // from `filters.from`/`filters.to` so editing the inputs doesn't fire a
+  // refetch until Apply is clicked.
+  function _todayStr()    { return new Date().toISOString().slice(0, 10); }
+  function _daysAgoStr(n) { return new Date(Date.now() - n * 86400000).toISOString().slice(0, 10); }
+  var customDraft = { from: _daysAgoStr(30), to: _todayStr() };
 
   // Metric set — every RPC the admin page consumes.
   var METRICS = [
@@ -61,17 +76,38 @@
   ];
 
   function _buildQuery(metric) {
-    var qs = '?metric=' + encodeURIComponent(metric)
-           + '&days='  + encodeURIComponent(filters.days);
+    var qs = '?metric=' + encodeURIComponent(metric);
+    // Custom range (when both ends set) overrides the days preset; the
+    // server-side helper drops `days` when from/to are valid anyway, but
+    // sending both is clearer.
+    if (filters.from && filters.to) {
+      qs += '&from=' + encodeURIComponent(filters.from)
+          + '&to='   + encodeURIComponent(filters.to);
+    } else {
+      qs += '&days=' + encodeURIComponent(filters.days);
+    }
     if (filters.grade && filters.grade !== 'all') {
       qs += '&grade=' + encodeURIComponent(filters.grade);
     }
-    // avg_score is the only RPC that honors breakdown; always send it so the
-    // server doesn't have to guess. Other RPCs ignore the unknown param.
     if (metric === 'avg_score') {
       qs += '&breakdown=' + encodeURIComponent(filters.breakdown);
     }
     return '/.netlify/functions/analytics-query' + qs;
+  }
+
+  // Returns null on valid range, error string otherwise. Mirrors the
+  // server-side _parseAnalyticsFilters guard so users see the issue before
+  // hitting the network.
+  function _validateCustomRange(from, to) {
+    var re = /^\d{4}-\d{2}-\d{2}$/;
+    if (!re.test(from || '') || !re.test(to || '')) return 'Use YYYY-MM-DD for both dates.';
+    var dF = new Date(from + 'T00:00:00.000Z');
+    var dT = new Date(to   + 'T00:00:00.000Z');
+    if (isNaN(dF.getTime()) || dF.toISOString().slice(0,10) !== from) return 'Start date is not a real date.';
+    if (isNaN(dT.getTime()) || dT.toISOString().slice(0,10) !== to)   return 'End date is not a real date.';
+    if (dF.getTime() > dT.getTime()) return 'Start date is after end date.';
+    if (dT.getTime() > Date.now() + 86400000) return 'End date is too far in the future.';
+    return null;
   }
 
   async function _loadMetrics() {
@@ -196,18 +232,32 @@
 
     var grid = _el('div', 'filter-grid');
 
-    // Days
+    // Days (incl. Custom option)
     var dCol = _el('div', 'filter-col');
     dCol.appendChild(_el('label', 'filter-label', 'Date range'));
     var dSel = document.createElement('select');
     dSel.id = 'filter-days';
-    [['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days']].forEach(function(opt){
+    var isCustom = !!(filters.from && filters.to);
+    var presetValue = isCustom ? 'custom' : filters.days;
+    [['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days'],['custom','Custom…']].forEach(function(opt){
       var o = document.createElement('option');
       o.value = opt[0]; o.textContent = opt[1];
-      if (opt[0] === filters.days) o.selected = true;
+      if (opt[0] === presetValue) o.selected = true;
       dSel.appendChild(o);
     });
-    dSel.addEventListener('change', function(){ filters.days = dSel.value; _refresh(); });
+    dSel.addEventListener('change', function(){
+      if (dSel.value === 'custom') {
+        // Show the date inputs panel; don't refetch yet.
+        var panel = document.getElementById('custom-range-panel');
+        if (panel) panel.style.display = '';
+      } else {
+        // Pick a preset — clear any custom range and refetch.
+        filters.days = dSel.value;
+        filters.from = null;
+        filters.to   = null;
+        _refresh();
+      }
+    });
     dCol.appendChild(dSel);
     grid.appendChild(dCol);
 
@@ -227,12 +277,70 @@
     grid.appendChild(gCol);
 
     wrap.appendChild(grid);
+
+    // Custom range panel — hidden unless user picks Custom (or has one active)
+    var panel = _el('div', 'custom-range-panel');
+    panel.id = 'custom-range-panel';
+    panel.style.display = isCustom ? '' : 'none';
+
+    var draftFrom = isCustom ? filters.from : customDraft.from;
+    var draftTo   = isCustom ? filters.to   : customDraft.to;
+
+    var fromCol = _el('div', 'filter-col');
+    fromCol.appendChild(_el('label', 'filter-label', 'Start date'));
+    var fromIn = document.createElement('input');
+    fromIn.type = 'date'; fromIn.value = draftFrom; fromIn.id = 'custom-from';
+    fromIn.addEventListener('input', function(){ customDraft.from = fromIn.value; });
+    fromCol.appendChild(fromIn);
+
+    var toCol = _el('div', 'filter-col');
+    toCol.appendChild(_el('label', 'filter-label', 'End date'));
+    var toIn = document.createElement('input');
+    toIn.type = 'date'; toIn.value = draftTo; toIn.id = 'custom-to';
+    toIn.addEventListener('input', function(){ customDraft.to = toIn.value; });
+    toCol.appendChild(toIn);
+
+    var actCol = _el('div', 'filter-col custom-range-actions');
+    actCol.appendChild(_el('label', 'filter-label', ' '));  // align with sibling labels
+    var apply = document.createElement('button');
+    apply.type = 'button';
+    apply.className = 'apply-btn';
+    apply.textContent = 'Apply range';
+    var err = _el('div', 'custom-range-error');
+    err.id = 'custom-range-error';
+    err.style.display = 'none';
+    apply.addEventListener('click', function(){
+      var msg = _validateCustomRange(customDraft.from, customDraft.to);
+      if (msg) {
+        err.textContent = msg;
+        err.style.display = '';
+        return;
+      }
+      err.style.display = 'none';
+      filters.from = customDraft.from;
+      filters.to   = customDraft.to;
+      // `days` is now ignored because from/to are set; keep last preset for
+      // a clean revert if the user switches back.
+      _refresh();
+    });
+    actCol.appendChild(apply);
+
+    var inputsGrid = _el('div', 'filter-grid custom-range-grid');
+    inputsGrid.appendChild(fromCol);
+    inputsGrid.appendChild(toCol);
+    inputsGrid.appendChild(actCol);
+    panel.appendChild(inputsGrid);
+    panel.appendChild(err);
+
+    wrap.appendChild(panel);
     return wrap;
   }
 
   function _windowLabel() {
-    return 'Last ' + filters.days + ' days'
-         + (filters.grade !== 'all' ? ' · ' + _grade(filters.grade) : '');
+    var range = (filters.from && filters.to)
+      ? (filters.from + ' → ' + filters.to)
+      : ('Last ' + filters.days + ' days');
+    return range + (filters.grade !== 'all' ? ' · ' + _grade(filters.grade) : '');
   }
 
   // ── Render ──────────────────────────────────────────────────────────────

@@ -91,7 +91,8 @@ describe('_normalizeGrade', () => {
 describe('_parseAnalyticsFilters', () => {
   test('returns safe defaults when no filters supplied', () => {
     const r = _parseAnalyticsFilters({});
-    expect(r).toEqual({ p_days: 30, p_grade: null });
+    // Phase C.3A follow-up extended the output with p_from / p_to.
+    expect(r).toEqual({ p_days: 30, p_grade: null, p_from: null, p_to: null });
   });
 
   test('accepts allowed day windows', () => {
@@ -134,13 +135,13 @@ describe('_parseAnalyticsFilters', () => {
     expect(_parseAnalyticsFilters({ grade: 'DROP'   }).p_grade).toBeNull();
   });
 
-  test('returns object with exactly { p_days, p_grade }', () => {
+  test('returns object with exactly { p_days, p_grade, p_from, p_to }', () => {
     const r = _parseAnalyticsFilters({ days: '7', grade: 'g2' });
-    expect(Object.keys(r).sort()).toEqual(['p_days', 'p_grade']);
+    expect(Object.keys(r).sort()).toEqual(['p_days', 'p_from', 'p_grade', 'p_to']);
   });
 
   test('null / undefined input is safe', () => {
-    expect(_parseAnalyticsFilters(null)).toEqual({ p_days: 30, p_grade: null });
-    expect(_parseAnalyticsFilters(undefined)).toEqual({ p_days: 30, p_grade: null });
+    expect(_parseAnalyticsFilters(null)).toEqual({ p_days: 30, p_grade: null, p_from: null, p_to: null });
+    expect(_parseAnalyticsFilters(undefined)).toEqual({ p_days: 30, p_grade: null, p_from: null, p_to: null });
   });
 });

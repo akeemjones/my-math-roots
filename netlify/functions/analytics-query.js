@@ -3,15 +3,35 @@
 // Maps ?metric= to a named SECURITY DEFINER RPC (migration 20260502_analytics_rpcs.sql).
 // Rate limited: 10 req/min per IP.
 
-// ── Filter parsing (Phase C.2) ────────────────────────────────────────────
-// Admin page passes ?days=7|30|90 and ?grade=K|1|2|all (or the band tokens
-// k/g1/g2). Anything else falls back to safe defaults: 30 days, all grades.
-// Parameters are passed to RPCs as named arguments (p_days/p_grade), never
-// concatenated into SQL.
+// ── Filter parsing (Phase C.2 + C.3A follow-up) ──────────────────────────
+// Admin page passes:
+//   ?days=7|30|90                                (preset window)
+//   ?grade=K|1|2|all                             (band token also accepted)
+//   ?from=YYYY-MM-DD & ?to=YYYY-MM-DD            (custom range, overrides days)
+// Anything else falls back to safe defaults: 30 days, all grades.
+// Parameters are passed to RPCs as named args (p_days / p_grade / p_from /
+// p_to). No SQL string concatenation anywhere — the RPCs themselves treat
+// `p_from`/`p_to` as TIMESTAMPTZ inputs.
 const _ALLOWED_DAYS   = new Set([7, 30, 90]);
 const _ALLOWED_GRADES = new Set(['K', '1', '2', '3', '4', '5']);
+const _DATE_RE        = /^\d{4}-\d{2}-\d{2}$/;
+const _FUTURE_TOLERANCE_MS = 24 * 60 * 60 * 1000;  // accept up to ~1 day past 'now' for clock skew / today
+
+// Returns the ISO start-of-day UTC for a strictly-formatted YYYY-MM-DD, or
+// null if the input is not a real date. Strict: rejects e.g. '2026-13-99'.
+function _parseUtcStartOfDay(s) {
+  if (typeof s !== 'string' || !_DATE_RE.test(s)) return null;
+  var d = new Date(s + 'T00:00:00.000Z');
+  if (isNaN(d.getTime())) return null;
+  // Round-trip check: '2026-13-99' would parse to a Date via Date overflow.
+  // Insist the parsed Date renders back to the same YYYY-MM-DD.
+  if (d.toISOString().slice(0, 10) !== s) return null;
+  return d;
+}
+
 function _parseAnalyticsFilters(params) {
   var p = params || {};
+
   // Days — strict: only pure positive integers as strings or numbers; anything
   // with extra characters ('7; DROP', '7d', '-7') is rejected.
   var dRaw = p.days;
@@ -24,6 +44,7 @@ function _parseAnalyticsFilters(params) {
     d = null;
   }
   var p_days = (d !== null && _ALLOWED_DAYS.has(d)) ? d : 30;
+
   // Grade — accept canonical + band tokens, treat 'all' / empty / unknown as no filter
   var gRaw = p.grade;
   var gStr = (gRaw == null) ? '' : String(gRaw).trim().toLowerCase();
@@ -34,9 +55,26 @@ function _parseAnalyticsFilters(params) {
   else if (gStr === '3' || gStr === 'g3' || gStr === 'grade3') p_grade = '3';
   else if (gStr === '4' || gStr === 'g4' || gStr === 'grade4') p_grade = '4';
   else if (gStr === '5' || gStr === 'g5' || gStr === 'grade5') p_grade = '5';
-  // 'all' / empty / unknown → null (no grade filter applied)
   if (p_grade && !_ALLOWED_GRADES.has(p_grade)) p_grade = null;
-  return { p_days: p_days, p_grade: p_grade };
+
+  // Custom date range — both ends must be valid. Invalid pairs silently fall
+  // back to preset days (admin UI is expected to validate before sending,
+  // but the server is the authoritative gatekeeper).
+  var p_from = null, p_to = null;
+  var dFrom = _parseUtcStartOfDay(p.from);
+  var dTo   = _parseUtcStartOfDay(p.to);
+  if (dFrom && dTo && dFrom.getTime() <= dTo.getTime()) {
+    var maxAllowedTo = Date.now() + _FUTURE_TOLERANCE_MS;
+    if (dTo.getTime() <= maxAllowedTo) {
+      // start-of-day UTC for `from`, end-of-day UTC for `to`
+      p_from = dFrom.toISOString();
+      p_to   = new Date(dTo.getTime() + 86399999).toISOString();  // +23:59:59.999
+      // Custom range supersedes the preset window
+      p_days = null;
+    }
+  }
+
+  return { p_days: p_days, p_grade: p_grade, p_from: p_from, p_to: p_to };
 }
 
 // ── Breakdown parsing (Phase C.3A) ────────────────────────────────────────

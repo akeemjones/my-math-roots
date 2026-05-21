@@ -85,8 +85,10 @@ describe('METRIC_TO_RPC — Phase C.3A mappings', () => {
 describe('Phase C.2 helpers still work after C.3A additions', () => {
   // Regression guard: adding _parseBreakdown must not break the existing
   // _parseAnalyticsFilters contract.
-  test('_parseAnalyticsFilters defaults unchanged', () => {
-    expect(_parseAnalyticsFilters({})).toEqual({ p_days: 30, p_grade: null });
+  test('_parseAnalyticsFilters defaults unchanged for days/grade', () => {
+    const r = _parseAnalyticsFilters({});
+    expect(r.p_days).toBe(30);
+    expect(r.p_grade).toBeNull();
   });
 
   test('_parseAnalyticsFilters still validates strict numeric days', () => {

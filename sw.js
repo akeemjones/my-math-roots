@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.11-analytics-phase-c3a';
+const CACHE = 'math-workbook-v6.0.12-analytics-custom-range';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
