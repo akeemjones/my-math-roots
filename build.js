@@ -38,6 +38,12 @@ const COPY_FILES = [
   'robots.txt',   // SEO — crawler directives
 ];
 
+// Files that MUST NOT ship in a production build (see end of build() for the
+// cleanup + assertion step). `unlock.html` is a dev cheat page that flips all
+// K lesson localStorage flags to 100% complete; `app.js.map` is only emitted
+// by --dev builds but stale copies persist across rebuilds.
+const FORBIDDEN_PROD_ARTIFACTS = ['unlock.html', 'app.js.map'];
+
 // ── Load .env file (key=value pairs) ──
 function loadEnv(){
   const envPath = path.join(ROOT, '.env');
@@ -345,6 +351,28 @@ async function build(){
       .replace(/%%SUPA_KEY%%/g, process.env.SUPA_KEY || '');
     fs.writeFileSync(path.join(DIST, 'admin-analytics.js'), adminJs, 'utf8');
     console.log('📋 Copied:  admin-analytics.js (tokens substituted)');
+  }
+
+  // ── Production cleanup: drop cheat/debug artifacts that must never ship ──
+  // build.js itself does not write these in prod, but stale copies from
+  // earlier --dev builds (app.js.map) or hand-placed dev helpers (unlock.html
+  // — a K-lessons "unlock everything" cheat page) can linger in dist/ and
+  // ship via Netlify. Remove every prod build and assert they're gone.
+  if (!DEV_MODE) {
+    for (const name of FORBIDDEN_PROD_ARTIFACTS) {
+      const p = path.join(DIST, name);
+      try {
+        fs.unlinkSync(p);
+        console.log(`🧹 Removed:  ${name} (must not ship in prod)`);
+      } catch (e) {
+        if (e.code !== 'ENOENT') throw e;
+      }
+    }
+    for (const name of FORBIDDEN_PROD_ARTIFACTS) {
+      if (fs.existsSync(path.join(DIST, name))) {
+        throw new Error(`Production build assertion failed: dist/${name} still present`);
+      }
+    }
   }
 
   console.log('\n🚀 Build complete → dist/');
