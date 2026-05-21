@@ -1363,6 +1363,12 @@ function _lsSwitchTab(tab){
   if(forgotRow) forgotRow.style.display = isSignup ? 'none' : 'block';
   // Update placeholder text for password field
   document.getElementById('ls-password').placeholder = isSignup ? 'Password (min 8 characters)' : 'Password';
+  // Tab visibility changes the form's natural height. Wait two frames so the
+  // display:none/block toggles have laid out, then re-measure. The CSS
+  // transition on .ls-carousel-outer's height animates the change.
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { _lsAdaptHeight(); });
+  });
 }
 
 // ── Launch Gate (controlled beta) ────────────────────────────────────────────
