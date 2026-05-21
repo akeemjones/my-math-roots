@@ -1495,7 +1495,6 @@ function _showWaitlistPanel(reason) {
 }
 
 async function _lsJoinWaitlist() {
-  if (!_supa) return;
   const emailInp = document.getElementById('ls-waitlist-email');
   const btn      = document.getElementById('ls-waitlist-btn');
   const msgEl    = document.getElementById('ls-waitlist-msg');
@@ -1506,24 +1505,49 @@ async function _lsJoinWaitlist() {
   if (!_rateLimit('waitlist', 3)) { msgEl.textContent = '⚠️ Too many attempts. Please wait a moment.'; return; }
   if (!email || !_validEmail(email)) { msgEl.textContent = '⚠️ Please enter a valid email address.'; return; }
 
+  // Reuse the login-screen Turnstile widget. Silent-pass mode means the
+  // callback may not fire even when a token exists, so fall back to
+  // getResponse the same way the signup-gate caller does.
+  let captchaToken = _turnstileToken;
+  if (!captchaToken && window.turnstile && typeof window.turnstile.getResponse === 'function') {
+    try { captchaToken = window.turnstile.getResponse('#ls-turnstile .cf-turnstile') || null; } catch (_) {}
+  }
+  if (!captchaToken) {
+    msgEl.textContent = _turnstileFailed
+      ? _TURNSTILE_FAIL_MSG
+      : '⚠️ Please complete the security check above.';
+    return;
+  }
+
   const origTxt = btn.textContent;
   btn.disabled  = true;
   btn.textContent = 'Joining…';
 
   try {
-    const { data, error } = await _supa.rpc('join_waitlist', { p_email: email, p_source: 'login_screen' });
-    const row = Array.isArray(data) ? data[0] : data;
-    if (error || !row || !row.ok) {
-      msgEl.style.color = '#e74c3c';
-      msgEl.textContent = '⚠️ Couldn’t join the waitlist. Please try again.';
-    } else if (row.already_on_list) {
-      msgEl.style.color = '#27ae60';
-      msgEl.textContent = '✅ You’re already on the waitlist. We’ll be in touch.';
-    } else {
+    const res = await fetch('/.netlify/functions/waitlist-join', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, source: 'login_screen', captchaToken }),
+    });
+    let json = {};
+    try { json = await res.json(); } catch (_) {}
+    _resetTurnstile();
+
+    if (res.ok && json && json.ok) {
+      // Non-enumerating: identical message whether the email is new or
+      // already on the list. The server stores both shapes silently.
       msgEl.style.color = '#27ae60';
       msgEl.textContent = '✅ You’re on the waitlist. We’ll email you when more spots open.';
       emailInp.value = '';
       if (typeof _trackEvent === 'function') _trackEvent('waitlist_joined', { source: 'login_screen' });
+    } else if (res.status === 403 && json && json.error === 'turnstile_failed') {
+      msgEl.textContent = '⚠️ Security check failed. Please try again.';
+    } else if (res.status === 429) {
+      msgEl.textContent = '⚠️ Too many attempts. Please wait a few minutes and try again.';
+    } else if (res.status === 400 && json && json.error === 'invalid_email') {
+      msgEl.textContent = '⚠️ Please enter a valid email address.';
+    } else {
+      msgEl.textContent = '⚠️ Couldn’t join the waitlist. Please try again.';
     }
   } catch (e) {
     msgEl.style.color = '#e74c3c';
