@@ -164,7 +164,7 @@ describe('signup-gate handler end-to-end (mocked fetch)', () => {
     expect(reserveCalls).toBe(1);
   });
 
-  test('create-user fails (email already exists): slot is released', async () => {
+  test('create-user fails (email already exists): slot released, non-enumerating 200', async () => {
     const calls = [];
     installFetch([
       { match: 'siteverify',                handler: () => ({ ok: true, json: async () => ({ success: true }) }) },
@@ -174,9 +174,43 @@ describe('signup-gate handler end-to-end (mocked fetch)', () => {
       { match: '/rest/v1/rpc/release_signup_slot', handler: () => { calls.push('release'); return { ok: true }; } },
     ]);
     const res = await mod.handler(freshEvent({ emailExt: 'c' }));
-    // Item 5 keeps the 409 here; Item 13 will change to non-enumerating 200.
-    expect(res.statusCode).toBe(409);
+    // Item 13: duplicate-email returns the SAME 200 body as a new
+    // successful signup, so the client cannot enumerate accounts.
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.body)).toEqual({ ok: true, email_confirmation_required: true });
     expect(calls).toEqual(['reserve', 'createUser', 'release']);
+  });
+
+  test('duplicate-email response is indistinguishable from new-success response', async () => {
+    // Two attempts: one returns 200 from create, the other returns 422
+    // (already exists). Both should yield identical statusCode + body
+    // shape from the gate.
+    installFetch([
+      { match: 'siteverify',                handler: () => ({ ok: true, json: async () => ({ success: true }) }) },
+      { match: '/rest/v1/launch_settings',  handler: () => ({ ok: true, json: async () => ([{ signup_enabled: true, max_parent_accounts: 50, max_students_per_parent: 2, waitlist_enabled: true }]) }) },
+      { match: '/rest/v1/rpc/try_reserve_signup_slot', handler: () => ({ ok: true, json: async () => true }) },
+      { match: '/auth/v1/admin/users',      handler: (u, opts) => {
+          // Use the email in the request body to decide success vs duplicate.
+          const body = JSON.parse(opts.body);
+          if (body.email === 'duplicate@example.com') {
+            return { ok: false, status: 422, text: async () => 'User already registered' };
+          }
+          return { ok: true, json: async () => ({ id: 'u-new' }) };
+        } },
+      { match: '/rest/v1/rpc/release_signup_slot', handler: () => ({ ok: true }) },
+      { match: '/functions/v1/notify-new-signup',  handler: () => ({ ok: true }) },
+    ]);
+    const newRes = await mod.handler(freshEvent({ emailExt: '-new' }));
+    const dupRes = await mod.handler({
+      httpMethod: 'POST',
+      headers: { 'x-forwarded-for': '5.6.7.8', origin: 'https://mymathroots.com' },
+      body: JSON.stringify({
+        email: 'duplicate@example.com', password: 'p4ssword!',
+        displayName: 'Test', captchaToken: 'tok',
+      }),
+    });
+    expect(newRes.statusCode).toBe(dupRes.statusCode);
+    expect(newRes.body).toBe(dupRes.body);
   });
 
   test('create-user fails (server 500): slot is released, returns 500', async () => {

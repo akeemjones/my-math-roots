@@ -1700,8 +1700,6 @@ async function _lsSubmit(){
         msgEl.style.color = '#e74c3c';
         msgEl.textContent = '⚠️ Beta is full — see the waitlist below.';
         return;
-      } else if (gateRes && (gateJson.error === 'email_in_use' || gateRes.status === 409)) {
-        result = { error: { message: 'An account with this email already exists.' } };
       } else if (gateRes && gateJson.error === 'turnstile_failed') {
         result = { error: { message: 'Security check failed. Please try again.' } };
       } else if (gateRes && (gateJson.error === 'invalid_email' || gateJson.error === 'short_password' || gateJson.error === 'invalid_body')) {
@@ -1729,8 +1727,13 @@ async function _lsSubmit(){
       msgEl.style.color = '#e74c3c';
       msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
     } else if(tab==='signup'){
+      // Non-enumerating success: signup-gate now returns 200 ok=true even
+      // when the email is already registered (the original holder owns
+      // the account and gets no new confirmation email). Phrase the
+      // message so it's correct in both cases — new sign-up sees an
+      // email arrive; duplicate sees "sign in" path applicable.
       msgEl.style.color = '#27ae60';
-      msgEl.textContent = '✅ Check your email to confirm your account!';
+      msgEl.textContent = '✅ If this email is new to us, check your inbox to confirm. Already have an account? Try signing in below.';
       _lsLastSignupEmail = email;
       document.getElementById('ls-resend-row').style.display = 'block';
     }

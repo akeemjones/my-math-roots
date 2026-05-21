@@ -217,9 +217,14 @@ exports.handler = async function(event) {
     // the slot back so future signups can use it. Best-effort; drift is
     // monitored via public.reconcile_signup_counter().
     await _releaseSignupSlot(supaUrl, svcKey);
-    // Most likely: email already exists (Supabase returns 422).
+    // Non-enumerating response: if the failure is "email already
+    // registered", return the exact same 200 body as a successful new
+    // signup. The Supabase confirmation email still goes to the original
+    // account holder; the attacker cannot tell from this response
+    // whether the address is already in use. Other (true server-side)
+    // failures still return 500.
     if (created.status === 422 || /already/i.test(created.error || '')) {
-      return { statusCode: 409, headers: corsH, body: JSON.stringify({ error: 'email_in_use' }) };
+      return { statusCode: 200, headers: corsH, body: JSON.stringify({ ok: true, email_confirmation_required: true }) };
     }
     return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: 'create_failed' }) };
   }
