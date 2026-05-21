@@ -195,6 +195,11 @@ function _checkRateLimit(ip) {
   return e.count > 10;
 }
 
+// Verifies the bearer JWT belongs to an admin. Admin source of truth is the
+// service-role-only `admin_users` table (see migration
+// 20260601_admin_source_of_truth.sql). The previous implementation looked up
+// `profiles.role = 'admin'`, which was exploitable because the profiles
+// UPDATE RLS policy is row-only and lets users self-promote.
 async function _verifyAdmin(authHeader, supaUrl, svcKey) {
   if (!authHeader) return false;
   const m = /^Bearer\s+([^\s]+)$/.exec(authHeader);
@@ -206,13 +211,15 @@ async function _verifyAdmin(authHeader, supaUrl, svcKey) {
     if (!r1.ok) return false;
     const user = await r1.json();
     if (!user || !user.id) return false;
+    // admin_users has RLS enabled with no policies; the service-role key
+    // bypasses RLS so this lookup returns the row iff the user is admin.
     const r2 = await fetch(
-      `${supaUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
+      `${supaUrl}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(user.id)}&select=user_id&limit=1`,
       { headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey } }
     );
     if (!r2.ok) return false;
     const rows = await r2.json();
-    return Array.isArray(rows) && rows.length > 0 && rows[0].role === 'admin';
+    return Array.isArray(rows) && rows.length > 0;
   } catch { return false; }
 }
 
@@ -303,4 +310,5 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports._parseAnalyticsFilters     = _parseAnalyticsFilters;
   module.exports._parseBreakdown            = _parseBreakdown;
   module.exports._parseLaunchSettingsUpdate = _parseLaunchSettingsUpdate;
+  module.exports._verifyAdmin               = _verifyAdmin;
 }
