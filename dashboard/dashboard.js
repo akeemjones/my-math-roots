@@ -1375,10 +1375,47 @@ function _dbFriendlyError(e) {
   return 'Something went wrong — please try again.';
 }
 
+// ── reset_epoch helpers ────────────────────────────────────────────
+// Mirrors src/dashboard.js. Per-student "last seen server reset
+// revision" stored in localStorage as mmr_reset_epoch_<sid>. Pull paths
+// compare server.reset_epoch against this value and wipe local caches
+// when the server is newer; push paths forward this value so the
+// server can reject pushes that pre-date the latest reset.
+
+function _dbResetEpochKey(sid) { return 'mmr_reset_epoch_' + String(sid); }
+
+function _dbReadLocalResetEpoch(sid) {
+  if (!sid || sid === 'local') return 0;
+  try {
+    var raw = localStorage.getItem(_dbResetEpochKey(sid));
+    var n = raw ? parseInt(raw, 10) : 0;
+    return (Number.isFinite(n) && n >= 0) ? n : 0;
+  } catch (_e) { return 0; }
+}
+
+function _dbWriteLocalResetEpoch(sid, epoch) {
+  if (!sid || sid === 'local') return;
+  if (typeof epoch !== 'number' || !Number.isFinite(epoch) || epoch < 0) return;
+  try { localStorage.setItem(_dbResetEpochKey(sid), String(Math.floor(epoch))); } catch (_e) {}
+}
+
+function _dbShouldClearForResetEpoch(localEpoch, serverEpoch) {
+  if (typeof serverEpoch !== 'number' || !Number.isFinite(serverEpoch) || serverEpoch <= 0) return false;
+  var le = (typeof localEpoch === 'number' && Number.isFinite(localEpoch) && localEpoch >= 0) ? localEpoch : 0;
+  return serverEpoch > le;
+}
+
 // Pure helper: returns the list of localStorage keys Reset Student Data
 // must remove so the student-side render doesn't fall back to stale local
 // progress. Mirrors src/dashboard.js so the same key set is testable
 // without a DOM / Supabase setup.
+//
+// When sessionMatches=true (device's active student session belongs to the
+// reset student), we wipe ALL grade caches — not just the profile's
+// official grade — because the student may have practiced multiple grades
+// on this device and `mmr_grade` can drift from the profile's grade. The
+// server-side reset_student_data RPC clears scores across all grades for
+// this student, so the local cache must match.
 function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
   var keys = [];
   if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2') {
@@ -1388,6 +1425,12 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('mmr_mastery_v1_' + gradeBand);
   }
   if (sessionMatches) {
+    ['K', '1', '2'].forEach(function(g) {
+      keys.push('wb_sc5_'         + g);
+      keys.push('wb_done5_'       + g);
+      keys.push('wb_mastery_'     + g);
+      keys.push('mmr_mastery_v1_' + g);
+    });
     keys.push('wb_streak');
     keys.push('wb_act_dates');
     keys.push('wb_apptime');
@@ -1396,7 +1439,12 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_done5');
     keys.push('wb_mastery');
   }
-  return keys;
+  var seen = {};
+  var out = [];
+  for (var i = 0; i < keys.length; i++) {
+    if (!seen[keys[i]]) { seen[keys[i]] = true; out.push(keys[i]); }
+  }
+  return out;
 }
 
 // Pure helper: clear every in-memory field on a student object that the
@@ -4012,5 +4060,9 @@ if (typeof module !== 'undefined') {
     _normalizeInterventionRow,
     _dbResetStudentInMemory,
     _dbProgressCacheKeysForReset,
+    _dbResetEpochKey,
+    _dbReadLocalResetEpoch,
+    _dbWriteLocalResetEpoch,
+    _dbShouldClearForResetEpoch,
   };
 }

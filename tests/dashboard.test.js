@@ -51,6 +51,10 @@ const {
   _renderRecentQuizzes,
   _dbResetStudentInMemory,
   _dbProgressCacheKeysForReset,
+  _dbResetEpochKey,
+  _dbReadLocalResetEpoch,
+  _dbWriteLocalResetEpoch,
+  _dbShouldClearForResetEpoch,
 } = require('../dashboard/dashboard.js');
 
 function makeScore(overrides) {
@@ -2729,43 +2733,58 @@ describe('_dbResetStudentInMemory', () => {
 // and lock the grade-scoping contract.
 
 describe('_dbProgressCacheKeysForReset', () => {
-  test('Grade 2 reset (active session): wipes wb_sc5_2 + done + mastery + canonical mastery + session keys', () => {
+  test('Grade 2 reset (active session): wipes all grade caches + session keys (cross-grade safety)', () => {
+    // POST-DEPLOY REGRESSION GUARD: an earlier shape of this helper only
+    // cleared the profile's "official" grade — so when the student-app's
+    // mmr_grade had drifted to a different grade than profile.grade, the
+    // wrong wb_sc5_<grade> got cleared and Unit 2/3/etc. re-appeared
+    // unlocked on the student home. The fix is to sweep every grade
+    // cache when the device's active session belongs to the reset
+    // student.
     const keys = _dbProgressCacheKeysForReset('2', true);
     expect(keys).toEqual(expect.arrayContaining([
-      'wb_sc5_2', 'wb_done5_2', 'wb_mastery_2', 'mmr_mastery_v1_2',
+      'wb_sc5_K', 'wb_sc5_1', 'wb_sc5_2',
+      'wb_done5_K', 'wb_done5_1', 'wb_done5_2',
+      'wb_mastery_K', 'wb_mastery_1', 'wb_mastery_2',
+      'mmr_mastery_v1_K', 'mmr_mastery_v1_1', 'mmr_mastery_v1_2',
       'wb_streak', 'wb_act_dates', 'wb_apptime', 'wb_paused_quiz',
       'wb_sc5', 'wb_done5', 'wb_mastery',
     ]));
-    // And does NOT include other grades' score caches
-    expect(keys).not.toContain('wb_sc5_K');
-    expect(keys).not.toContain('wb_sc5_1');
+    // Dedup: no key appears twice
+    const counts = {};
+    keys.forEach(k => { counts[k] = (counts[k] || 0) + 1; });
+    Object.entries(counts).forEach(([k, n]) => {
+      expect(n).toBe(1);
+    });
   });
 
-  test('Grade 1 reset (active session): scoped to G1 keys only', () => {
+  test('Grade 1 reset (active session): also wipes K + G2 grade caches', () => {
     const keys = _dbProgressCacheKeysForReset('1', true);
     expect(keys).toEqual(expect.arrayContaining([
-      'wb_sc5_1', 'wb_done5_1', 'wb_mastery_1', 'mmr_mastery_v1_1',
+      'wb_sc5_K', 'wb_sc5_1', 'wb_sc5_2',
+      'wb_done5_K', 'wb_done5_1', 'wb_done5_2',
     ]));
-    expect(keys).not.toContain('wb_sc5_K');
-    expect(keys).not.toContain('wb_sc5_2');
   });
 
-  test('Kindergarten reset (active session): scoped to K keys only', () => {
+  test('Kindergarten reset (active session): also wipes G1 + G2 grade caches', () => {
     const keys = _dbProgressCacheKeysForReset('K', true);
     expect(keys).toEqual(expect.arrayContaining([
-      'wb_sc5_K', 'wb_done5_K', 'wb_mastery_K', 'mmr_mastery_v1_K',
+      'wb_sc5_K', 'wb_sc5_1', 'wb_sc5_2',
+      'wb_done5_K', 'wb_done5_1', 'wb_done5_2',
     ]));
-    expect(keys).not.toContain('wb_sc5_1');
-    expect(keys).not.toContain('wb_sc5_2');
   });
 
-  test('sessionMatches=false omits non-grade-scoped session keys (different student is active on this device)', () => {
+  test('sessionMatches=false: only clears profile-grade cache, no cross-grade sweep, no session keys', () => {
+    // Different student is active on this device — we MUST NOT corrupt
+    // their local session by touching cross-grade caches or session keys.
     const keys = _dbProgressCacheKeysForReset('2', false);
-    // Grade-scoped keys still get cleared (the cache is grade-keyed, not student-keyed)
     expect(keys).toEqual(expect.arrayContaining([
       'wb_sc5_2', 'wb_done5_2', 'wb_mastery_2', 'mmr_mastery_v1_2',
     ]));
-    // But the session-scoped keys belonging to a different active student are preserved
+    // Cross-grade keys are preserved (might belong to the active student's grade)
+    expect(keys).not.toContain('wb_sc5_K');
+    expect(keys).not.toContain('wb_sc5_1');
+    // Session-scoped keys are preserved (belong to the active student's session)
     expect(keys).not.toContain('wb_streak');
     expect(keys).not.toContain('wb_act_dates');
     expect(keys).not.toContain('wb_apptime');
@@ -2778,43 +2797,156 @@ describe('_dbProgressCacheKeysForReset', () => {
   test('unknown / invalid grade band returns empty grade-scoped keys; session keys still respect sessionMatches', () => {
     expect(_dbProgressCacheKeysForReset('garbage', false)).toEqual([]);
     expect(_dbProgressCacheKeysForReset(null, false)).toEqual([]);
-    expect(_dbProgressCacheKeysForReset('garbage', true)).toEqual([
+    // sessionMatches=true with invalid band still sweeps all grades + session
+    const allGradesKeys = _dbProgressCacheKeysForReset('garbage', true);
+    expect(allGradesKeys).toEqual(expect.arrayContaining([
+      'wb_sc5_K', 'wb_sc5_1', 'wb_sc5_2',
       'wb_streak', 'wb_act_dates', 'wb_apptime', 'wb_paused_quiz',
-      'wb_sc5', 'wb_done5', 'wb_mastery',
-    ]);
+    ]));
   });
 
   test('reset NEVER touches identity / auth / theme / dashboard-view-grade / unlock-settings keys', () => {
     const keys = _dbProgressCacheKeysForReset('2', true);
-    // Identity / auth — must survive a Reset All
     expect(keys).not.toContain('mmr_active_student_id');
     expect(keys).not.toContain('mmr_session_token');
     expect(keys).not.toContain('mmr_user_role');
     expect(keys).not.toContain('mmr_family_profiles');
     expect(keys).not.toContain('mmr_parent_unlock');
-    // Per-profile grade resolution — must survive (re-binding to a fresh profile)
     expect(keys.some(k => k.startsWith('mmr_profile_grade_'))).toBe(false);
-    // Theme / appearance / settings the parent has configured — must survive
     expect(keys).not.toContain('wb_theme');
     expect(keys).not.toContain('mmr_db_section_state');
-    // Dashboard view-grade — must survive
     expect(keys.some(k => k.startsWith('mmr_dash_view_grade_'))).toBe(false);
-    // Per-student unlock / timer / a11y — managed separately by Lock All
     expect(keys.some(k => k.startsWith('wb_unlock_'))).toBe(false);
     expect(keys.some(k => k.startsWith('wb_timer_'))).toBe(false);
     expect(keys.some(k => k.startsWith('wb_a11y_'))).toBe(false);
   });
 
+  test('SCENARIO: profile.grade=1 + student-app mmr_grade=2 → BOTH grade caches cleared (post-deploy bug)', () => {
+    // This is the EXACT scenario from the production bug report:
+    //   Student app: Grade 2 (mmr_grade=2)
+    //   Profile.grade: Grade 1 (per dashboard Access Controls saying "Grade 1")
+    //   Reset clicked
+    //   Previous shape: only wb_sc5_1 cleared, wb_sc5_2 left stale,
+    //     student-app reloaded Grade 2 progress and re-unlocked Unit 2+.
+    //   Current shape: when sessionMatches=true, ALL grades are wiped.
+    const keys = _dbProgressCacheKeysForReset('1', true);
+    expect(keys).toContain('wb_sc5_1'); // profile grade
+    expect(keys).toContain('wb_sc5_2'); // student-app's actual grade — must also clear
+    expect(keys).toContain('wb_sc5_K'); // and the third grade for completeness
+  });
+
   test('SCENARIO: stale Unit 1 quiz score in wb_sc5_2 no longer unlocks Unit 2 after reset', () => {
-    // Simulates the production bug: after server reset, wb_sc5_2 still
-    // contains a passing Unit 1 quiz score, which isUnitUnlocked(1) reads
-    // via SCORES.some(s => s.qid === 'u1_uq' && s.pct >= 80) to unlock
-    // Unit 2. The helper must include wb_sc5_2 in its removal set so the
-    // student-side render starts from an empty SCORES array.
     const keys = _dbProgressCacheKeysForReset('2', true);
     expect(keys).toContain('wb_sc5_2');
-    // And for the equivalent G1 / K paths (so this isn't a Grade 2-only fix)
     expect(_dbProgressCacheKeysForReset('1', true)).toContain('wb_sc5_1');
     expect(_dbProgressCacheKeysForReset('K', true)).toContain('wb_sc5_K');
+  });
+});
+
+// ── reset_epoch (cross-device cache invalidation) ───────────────────────
+// Pins the contract on the four pure helpers that drive the cross-device
+// Reset All flow: the local epoch storage layer (read/write/key) and the
+// "should I clear?" decision function. The end-to-end wiring
+// (_dbApplyServerResetEpoch, _dbFullReset capturing the RPC return) is
+// integration-only and exercised via Supabase + DOM in the real app.
+
+describe('_dbResetEpochKey + _dbRead/WriteLocalResetEpoch', () => {
+  beforeEach(() => { if (globalThis.localStorage && globalThis.localStorage._reset) globalThis.localStorage._reset(); });
+
+  test('key is namespaced per student', () => {
+    expect(_dbResetEpochKey('abc-123')).toBe('mmr_reset_epoch_abc-123');
+    expect(_dbResetEpochKey('def-456')).toBe('mmr_reset_epoch_def-456');
+  });
+
+  test('read returns 0 for absent / local / null', () => {
+    expect(_dbReadLocalResetEpoch('abc')).toBe(0);
+    expect(_dbReadLocalResetEpoch('local')).toBe(0);
+    expect(_dbReadLocalResetEpoch(null)).toBe(0);
+    expect(_dbReadLocalResetEpoch(undefined)).toBe(0);
+  });
+
+  test('write + read round-trip', () => {
+    _dbWriteLocalResetEpoch('abc-123', 1734567890123);
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(1734567890123);
+  });
+
+  test('write floors fractional epochs to integers', () => {
+    _dbWriteLocalResetEpoch('abc-123', 1734567890123.7);
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(1734567890123);
+  });
+
+  test('write rejects non-numeric / negative / NaN / null', () => {
+    _dbWriteLocalResetEpoch('abc-123', 'oops');
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(0);
+    _dbWriteLocalResetEpoch('abc-123', -1);
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(0);
+    _dbWriteLocalResetEpoch('abc-123', NaN);
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(0);
+    _dbWriteLocalResetEpoch('abc-123', null);
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(0);
+  });
+
+  test('write is a no-op for sid == "local" or missing', () => {
+    _dbWriteLocalResetEpoch('local', 12345);
+    _dbWriteLocalResetEpoch(null, 67890);
+    expect(_dbReadLocalResetEpoch('local')).toBe(0);
+  });
+
+  test('read returns 0 if the stored value got corrupted', () => {
+    globalThis.localStorage.setItem('mmr_reset_epoch_abc-123', 'not-a-number');
+    expect(_dbReadLocalResetEpoch('abc-123')).toBe(0);
+  });
+
+  test('per-student isolation', () => {
+    _dbWriteLocalResetEpoch('alice', 100);
+    _dbWriteLocalResetEpoch('bob',   200);
+    expect(_dbReadLocalResetEpoch('alice')).toBe(100);
+    expect(_dbReadLocalResetEpoch('bob')).toBe(200);
+  });
+});
+
+describe('_dbShouldClearForResetEpoch (the decision function)', () => {
+  test('server newer than local: TRUE', () => {
+    expect(_dbShouldClearForResetEpoch(100, 200)).toBe(true);
+    expect(_dbShouldClearForResetEpoch(0,   1)).toBe(true);
+  });
+
+  test('server equal to local: FALSE (already in sync)', () => {
+    expect(_dbShouldClearForResetEpoch(200, 200)).toBe(false);
+  });
+
+  test('server older than local: FALSE', () => {
+    expect(_dbShouldClearForResetEpoch(200, 100)).toBe(false);
+  });
+
+  test('server epoch of 0 NEVER triggers a clear (no reset has happened)', () => {
+    expect(_dbShouldClearForResetEpoch(0, 0)).toBe(false);
+    expect(_dbShouldClearForResetEpoch(100, 0)).toBe(false);
+    expect(_dbShouldClearForResetEpoch(0, -1)).toBe(false);
+  });
+
+  test('non-numeric / NaN server epoch: FALSE (defensive)', () => {
+    expect(_dbShouldClearForResetEpoch(0, 'bogus')).toBe(false);
+    expect(_dbShouldClearForResetEpoch(0, NaN)).toBe(false);
+    expect(_dbShouldClearForResetEpoch(0, null)).toBe(false);
+    expect(_dbShouldClearForResetEpoch(0, undefined)).toBe(false);
+  });
+
+  test('non-numeric / NaN local epoch coerces to 0 — server-newer test still wins', () => {
+    expect(_dbShouldClearForResetEpoch('bogus', 500)).toBe(true);
+    expect(_dbShouldClearForResetEpoch(NaN, 500)).toBe(true);
+    expect(_dbShouldClearForResetEpoch(null, 500)).toBe(true);
+  });
+
+  test('SCENARIO: Device A resets at t=1000; Device B (local=0) pulls and sees 1000', () => {
+    expect(_dbShouldClearForResetEpoch(0, 1000)).toBe(true);
+  });
+
+  test('SCENARIO: Device A and B both at t=1000; B re-pulls, server still 1000 — no second wipe', () => {
+    expect(_dbShouldClearForResetEpoch(1000, 1000)).toBe(false);
+  });
+
+  test('SCENARIO: Device A resets at t=2000; B (which last absorbed t=1000) sees 2000', () => {
+    expect(_dbShouldClearForResetEpoch(1000, 2000)).toBe(true);
   });
 });

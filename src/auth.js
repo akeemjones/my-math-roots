@@ -459,6 +459,19 @@ async function _hydrateStudentFromParentSession(studentId) {
     var data = result.data;
     var changed = false;
 
+    // Cross-device reset invalidation: if the server's reset_epoch is
+    // newer than what this device last saw, wipe the local grade-scoped
+    // progress caches and the in-memory const globals BEFORE merging
+    // anything from the pull. Without this, an additive merge against
+    // an empty server response would leave the local SCORES intact and
+    // re-unlock units that the reset on another device just cleared.
+    try {
+      if (typeof _dbApplyServerResetEpoch === 'function') {
+        var serverEpoch = (data && data.reset_epoch != null) ? Number(data.reset_epoch) : 0;
+        _dbApplyServerResetEpoch(studentId, serverEpoch);
+      }
+    } catch (_e) {}
+
     // SCORES — append by local_id (de-duped against existing globals).
     var remoteScores = data.scores;
     if (Array.isArray(remoteScores) && remoteScores.length) {
@@ -1551,6 +1564,19 @@ async function _pullStudentProgress(studentId) {
     var data = result.data;
     var changed = false;
 
+    // Cross-device reset invalidation. pull_student_progress now returns
+    // profile.reset_epoch — if the server has bumped past our local
+    // marker, clear every grade-scoped cache + the in-memory const
+    // globals before merging anything else from the pull.
+    try {
+      if (typeof _dbApplyServerResetEpoch === 'function') {
+        var _resetEpoch = (data.profile && data.profile.reset_epoch != null)
+          ? Number(data.profile.reset_epoch)
+          : 0;
+        _dbApplyServerResetEpoch(studentId, _resetEpoch);
+      }
+    } catch (_e) {}
+
     // Merge done_json
     var doneJson = data.profile && data.profile.done_json;
     if (doneJson && typeof doneJson === 'object' && !Array.isArray(doneJson)) {
@@ -1910,11 +1936,18 @@ async function _pushAll(){
   _pushInFlight = true;
   try{
     var studentId = localStorage.getItem('mmr_active_student_id');
+    // Cross-device reset guard: forward the last-known server reset
+    // epoch on every push. The server rejects with `stale_reset_epoch`
+    // if it has been bumped past this value, which we catch below.
+    var _localResetEpoch = (typeof _dbReadLocalResetEpoch === 'function')
+      ? _dbReadLocalResetEpoch(studentId)
+      : 0;
     var result = await Promise.race([
       _supa.rpc('push_student_progress', {
         p_student_id:       studentId,
         p_grade:            (typeof normalizeGrade === 'function') ? normalizeGrade(localStorage.getItem('mmr_grade')) : (localStorage.getItem('mmr_grade') || '2'),
         p_session_token:    _sessionToken,
+        p_reset_epoch:      _localResetEpoch,
         p_mastery_json:     (function(){
           try{
             var _g = (typeof normalizeGrade === 'function') ? normalizeGrade(localStorage.getItem('mmr_grade')) : (localStorage.getItem('mmr_grade') || '2');
@@ -1950,6 +1983,23 @@ async function _pushAll(){
     if(result.error){
       if(_handleSessionExpiry(result.error)) return;
       console.warn('[Supabase] pushAll error', result.error);
+    } else if (result.data && result.data.error === 'stale_reset_epoch') {
+      // Server says our payload predates the latest reset_student_data.
+      // Clear local progress + adopt the server's epoch so future pushes
+      // line up. The next pull will re-populate from the (empty) server
+      // state. Do NOT retry — the same stale data would just be
+      // rejected again.
+      var _serverEpoch = Number(result.data.server_reset_epoch) || 0;
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[Supabase] pushAll rejected as stale_reset_epoch — clearing local progress and adopting server epoch', _serverEpoch);
+      }
+      if (typeof _dbApplyServerResetEpoch === 'function') {
+        _dbApplyServerResetEpoch(studentId, _serverEpoch);
+      }
+      _pushPending = false; // Suppress the auto-retry; we just wiped local state.
+      if (typeof buildHome === 'function') {
+        try { buildHome(); } catch (_e) {}
+      }
     }
   } catch(e){
     if(!_handleSessionExpiry(e)) console.warn('[Supabase] pushAll error', e);

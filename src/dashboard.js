@@ -2832,6 +2832,66 @@ async function _dbRelockAll() {
   _reRenderUnlock();
 }
 
+// ── reset_epoch helpers ────────────────────────────────────────────────
+// Per-student "last seen server reset revision" stored in localStorage.
+// The student_profiles.reset_epoch column gets bumped every time
+// reset_student_data fires (server returns the new epoch). On any pull
+// or sync, the client compares server.reset_epoch with this local value
+// and if the server is newer, wipes every grade-scoped progress cache
+// before re-rendering. The push pipeline forwards this value as
+// p_reset_epoch; the server rejects pushes whose local epoch is behind.
+
+function _dbResetEpochKey(sid) { return 'mmr_reset_epoch_' + String(sid); }
+
+function _dbReadLocalResetEpoch(sid) {
+  if (!sid || sid === 'local') return 0;
+  try {
+    var raw = localStorage.getItem(_dbResetEpochKey(sid));
+    var n = raw ? parseInt(raw, 10) : 0;
+    return (Number.isFinite(n) && n >= 0) ? n : 0;
+  } catch (_e) { return 0; }
+}
+
+function _dbWriteLocalResetEpoch(sid, epoch) {
+  if (!sid || sid === 'local') return;
+  if (typeof epoch !== 'number' || !Number.isFinite(epoch) || epoch < 0) return;
+  try { localStorage.setItem(_dbResetEpochKey(sid), String(Math.floor(epoch))); } catch (_e) {}
+}
+
+// Pure decision helper: "should the client clear its local progress
+// caches based on this server epoch?" Returns true iff the server epoch
+// is a real, larger value than the local one.
+//
+//   serverEpoch > 0 AND serverEpoch > localEpoch → clear
+//   otherwise → don't clear
+//
+// (serverEpoch == 0 means the server hasn't recorded a reset yet; that
+// shouldn't trigger a wipe, even on a brand-new client with localEpoch=0.)
+function _dbShouldClearForResetEpoch(localEpoch, serverEpoch) {
+  if (typeof serverEpoch !== 'number' || !Number.isFinite(serverEpoch) || serverEpoch <= 0) return false;
+  var le = (typeof localEpoch === 'number' && Number.isFinite(localEpoch) && localEpoch >= 0) ? localEpoch : 0;
+  return serverEpoch > le;
+}
+
+// Apply the server's reset_epoch for a student: if it's newer than the
+// local-stored value, wipe every grade-scoped local cache + the in-memory
+// const globals (SCORES, DONE, MASTERY, STREAK, APP_TIME) when the
+// device's active session belongs to this student. Returns true if a
+// wipe ran. Always writes the new epoch on success.
+function _dbApplyServerResetEpoch(sid, serverEpoch) {
+  if (!sid || sid === 'local') return false;
+  var localEpoch = _dbReadLocalResetEpoch(sid);
+  if (!_dbShouldClearForResetEpoch(localEpoch, serverEpoch)) return false;
+  var sessionMatches = false;
+  try { sessionMatches = (localStorage.getItem('mmr_active_student_id') === sid); } catch (_e) {}
+  // sessionMatches=true triggers the broad sweep (all grades + session
+  // keys + in-memory consts) because this device's active student-app
+  // session belongs to the student being invalidated.
+  _dbWipeLocalProgressCaches('', sessionMatches);
+  _dbWriteLocalResetEpoch(sid, serverEpoch);
+  return true;
+}
+
 // Pure helper: returns the list of localStorage keys that Reset Student Data
 // must remove so the student-side render (boot.js, home.js, isUnitUnlocked
 // in nav.js) doesn't fall back to stale local progress after the server
@@ -2844,14 +2904,26 @@ async function _dbRelockAll() {
 // taps "Go to <Name>'s App" — isUnitUnlocked reads the stale prior-unit
 // quiz scores and unlocks Unit 2+ even though the server has been wiped.
 //
-// gradeBand: 'K' | '1' | '2' — the reset student's grade.
+// gradeBand: 'K' | '1' | '2' — the reset student's profile grade.
 // sessionMatches: true when localStorage.mmr_active_student_id ===
-//   _activeId. Only when it matches do we touch the non-grade-scoped
-//   session caches (wb_streak, wb_apptime, wb_act_dates, wb_paused_quiz)
-//   and the legacy un-namespaced keys — otherwise we'd wipe a different
-//   student's active local session.
+//   _activeId. When it matches, the reset student IS the device's active
+//   student-app session, so we wipe ALL grade caches — the student may
+//   have practiced multiple grades on this device, and the server-side
+//   reset_student_data RPC clears every quiz_scores row for them
+//   regardless of grade. The student-app's `mmr_grade` can also differ
+//   from the profile's official grade (the parent may have changed view
+//   modes), so a profile-grade-only wipe was leaving `wb_sc5_<other>`
+//   stale — which is exactly what reopened Unit 2/3 in the post-deploy
+//   bug report.
+//   We also clear the non-grade-scoped session caches (wb_streak,
+//   wb_apptime, wb_act_dates, wb_paused_quiz) and the legacy un-namespaced
+//   keys only when sessionMatches — otherwise we'd corrupt a different
+//   student's active session.
 function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
   var keys = [];
+  // Profile-grade caches always cleared (safe even when sessionMatches is
+  // false: the grade-scoped cache only holds the last practitioner's data,
+  // and the next sign-in pulls a fresh copy from Supabase).
   if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2') {
     keys.push('wb_sc5_'         + gradeBand);
     keys.push('wb_done5_'       + gradeBand);
@@ -2859,6 +2931,15 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('mmr_mastery_v1_' + gradeBand);
   }
   if (sessionMatches) {
+    // The reset student owns this device's active session — sweep every
+    // grade cache so a cross-grade student-app view can't fall back to
+    // pre-reset scores. Dedup against the profile-grade entries above.
+    ['K', '1', '2'].forEach(function(g) {
+      keys.push('wb_sc5_'         + g);
+      keys.push('wb_done5_'       + g);
+      keys.push('wb_mastery_'     + g);
+      keys.push('mmr_mastery_v1_' + g);
+    });
     keys.push('wb_streak');
     keys.push('wb_act_dates');
     keys.push('wb_apptime');
@@ -2870,7 +2951,14 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_done5');
     keys.push('wb_mastery');
   }
-  return keys;
+  // Dedup: when sessionMatches=true and gradeBand is one of K/1/2, the
+  // profile-grade key is also in the all-grades pass.
+  var seen = {};
+  var out = [];
+  for (var i = 0; i < keys.length; i++) {
+    if (!seen[keys[i]]) { seen[keys[i]] = true; out.push(keys[i]); }
+  }
+  return out;
 }
 
 // Imperative wipe: removes the local progress caches that survive the
@@ -2945,9 +3033,17 @@ async function _dbFullReset() {
 
   // ── Phase 1: main RPC — the ONLY place that may report "Reset failed" ───
   // If this throws, no server data was touched, so it is safe to bail out.
+  var _newResetEpoch = 0;
   try {
     var result = await _supa.rpc('reset_student_data', { p_student_id: _activeId });
     if (result.error) throw result.error;
+    // The RPC now returns the new BIGINT epoch. Older deployments
+    // returned void, in which case data is null — fall back to Date.now()
+    // so we at least record a non-zero local marker.
+    var _epochFromRpc = (result.data != null) ? Number(result.data) : 0;
+    _newResetEpoch = (Number.isFinite(_epochFromRpc) && _epochFromRpc > 0)
+      ? _epochFromRpc
+      : Date.now();
   } catch(e) {
     if (typeof console !== 'undefined' && console.error) {
       console.error('[Reset] reset_student_data RPC failed:', e);
@@ -2995,6 +3091,11 @@ async function _dbFullReset() {
         console.warn('[Reset] local progress cache wipe failed (non-fatal):', e);
       }
     }
+
+    // Record the new server reset epoch locally so the cross-device
+    // invalidation pipeline knows this device has already absorbed the
+    // reset and pushes can include the right p_reset_epoch going forward.
+    _dbWriteLocalResetEpoch(_activeId, _newResetEpoch);
 
     // The dashboard prefers _remoteInterventionEvents over the legacy local
     // cache; resetting both prevents a renderDashboard fall-through to the
@@ -5433,6 +5534,19 @@ function _loadManagedStudentScores(studentId) {
       var data = result.data;
       var student = _students[studentId];
       if (!student) return;
+
+      // Cross-device reset invalidation: if the server's reset_epoch is
+      // newer than what this device last absorbed, wipe the grade-scoped
+      // local progress caches before we merge anything from the pull.
+      // Otherwise stale local SCORES/DONE could survive a reset that
+      // happened on another device.
+      try {
+        var serverEpoch = (data.reset_epoch != null) ? Number(data.reset_epoch) : 0;
+        if (_dbApplyServerResetEpoch(studentId, serverEpoch)) {
+          // Also wipe this dashboard's in-memory view for the student
+          _dbResetStudentInMemory(student);
+        }
+      } catch (_e) {}
 
       // Merge quiz scores into the student object
       var remoteScores = data.scores;
