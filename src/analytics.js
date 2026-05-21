@@ -16,12 +16,41 @@ var _ANA_META_MAX       = 500;
 var _ANA_PII_KEYS       = ['email','name','password','phone','address'];
 
 var _ANA_VALID_EVENTS = new Set([
+  // ── Phase A whitelist ──
   'app_opened','session_started','session_ended','grade_selected',
   'unit_started','lesson_started','lesson_completed','quiz_started',
   'quiz_completed','unit_test_started','unit_test_completed',
   'intervention_shown','intervention_completed','report_generated',
   'parent_dashboard_opened','subscription_started',
+  // ── Phase B additions (2026-05-21) ──
+  // KEEP IN SYNC with netlify/functions/analytics-ingest.js ALLOWED_EVENT_NAMES
+  // and the app_events_event_name_whitelist CHECK constraint.
+  'student_app_opened',          // student session is active and home rendered
+  'unit_viewed',                 // student opened a unit page (deduped per session/unit)
+  'lesson_viewed',               // student opened a lesson page (deduped per session/lesson)
+  'score_history_opened',        // student tapped through to Score History
+  'hint_used',                   // student revealed a hint (fires once per question)
+  'student_reset',               // parent successfully reset a student's data
+  'free_mode_changed',           // parent toggled Free Mode in the unlock UI
+  'manual_unlock_changed',       // parent manually unlocked/relocked a unit or lesson
+  'quiz_abandoned',              // quiz quit/restarted before completion
+  'parent_dash_section_viewed',  // reserved — dashboard sections not yet collapsible
 ]);
+
+// ── View-event dedup (in-memory; clears on page reload or explicit reset) ──
+// Used to suppress repeat fires of `unit_viewed` / `lesson_viewed` /
+// `student_app_opened` etc. that would otherwise spam every time openUnit /
+// openLesson re-renders. Keys must include the active student id so a
+// profile-switcher swap legitimately re-fires for the new student. Pass the
+// sentinel '__reset__' to clear the set (used by profile-switcher flows).
+var _anaSeenKeys = Object.create(null);
+function _anaShouldFire(key) {
+  if (key === '__reset__') { _anaSeenKeys = Object.create(null); return false; }
+  if (typeof key !== 'string' || !key) return false;
+  if (_anaSeenKeys[key]) return false;
+  _anaSeenKeys[key] = 1;
+  return true;
+}
 
 var _anaQueue            = [];
 var _anaFlushTimer       = null;
@@ -241,5 +270,9 @@ function _trackEvent(event_name, metadata) {
 // pure decision function is exported — _trackEvent and _anaFlush touch DOM
 // + global timers that aren't relevant to unit tests.
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { _anaResolveAttribution: _anaResolveAttribution };
+  module.exports = {
+    _anaResolveAttribution: _anaResolveAttribution,
+    _ANA_VALID_EVENTS:      _ANA_VALID_EVENTS,
+    _anaShouldFire:         _anaShouldFire,
+  };
 }

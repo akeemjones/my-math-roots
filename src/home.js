@@ -405,6 +405,9 @@ function goHistory(){
     return;
   }
   playSwooshForward(); buildHistory(); show('history-screen');
+  try {
+    _trackEvent('score_history_opened', { grade: localStorage.getItem('mmr_grade') || null });
+  } catch (_) {}
 }
 
 

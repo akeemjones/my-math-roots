@@ -2128,6 +2128,16 @@ function _toggleHint(){
       qz._hintRevealed = true;
       qz.hintsUsed = (qz.hintsUsed || 0) + 1;
       playHintReveal();
+      try {
+        var _l = (CUR.unitIdx != null && UNITS_DATA[CUR.unitIdx] && CUR.lessonIdx != null)
+                  ? UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx] : null;
+        _trackEvent('hint_used', {
+          quiz_type: qz.type,
+          unit_id:   CUR.unitIdx != null ? ('u' + CUR.unitIdx) : null,
+          lesson_id: _l ? _l.id : null,
+          grade:     localStorage.getItem('mmr_grade') || null,
+        });
+      } catch (_) {}
     }
   }
 }
@@ -2644,6 +2654,14 @@ function confirmQuit(){
   SCORES.unshift(quitEntry);
   if(SCORES.length > 200) SCORES.pop();
   saveSc();
+  try {
+    _trackEvent('quiz_abandoned', {
+      quiz_type: quitEntry.type,
+      unit_id:   quitEntry.unitIdx != null ? ('u' + quitEntry.unitIdx) : null,
+      grade:     quitEntry.grade || null,
+      reason:    'quit',
+    });
+  } catch (_) {}
   // Clear pause, stop timer, navigate back — no pause saved
   _clearTimer();
   if(qz.id) _clearPausedQuiz(qz.id);
@@ -2685,6 +2703,14 @@ function confirmRestart(){
     SCORES.unshift(abandonedEntry);
     if(SCORES.length > 200) SCORES.pop();
     saveSc();
+    try {
+      _trackEvent('quiz_abandoned', {
+        quiz_type: abandonedEntry.type,
+        unit_id:   abandonedEntry.unitIdx != null ? ('u' + abandonedEntry.unitIdx) : null,
+        grade:     abandonedEntry.grade || null,
+        reason:    'restart',
+      });
+    } catch (_) {}
   }
   if(qz.id) _clearPausedQuiz(qz.id);
   let bank;

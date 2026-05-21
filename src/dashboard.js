@@ -2720,27 +2720,55 @@ function _activeUnlockSlot() {
 
 function _dbToggleFreeMode() {
   var slot = _activeUnlockSlot();
+  var _prev = !!slot.freeMode;
   slot.freeMode = !slot.freeMode;
   _unlockDirty = true;
   _reRenderUnlock();
+  try {
+    _trackEvent('free_mode_changed', {
+      grade: _getDashboardViewGrade() || null,
+      prev:  _prev,
+      next:  !!slot.freeMode,
+    });
+  } catch (_) {}
 }
 
 function _dbToggleUnitUnlock(unitIdx) {
   var slot = _activeUnlockSlot();
   var idx = slot.units.indexOf(unitIdx);
-  if (idx === -1) { slot.units.push(unitIdx); }
-  else { slot.units.splice(idx, 1); }
+  var _action;
+  if (idx === -1) { slot.units.push(unitIdx);     _action = 'unlock'; }
+  else            { slot.units.splice(idx, 1);    _action = 'relock'; }
   _unlockDirty = true;
   _reRenderUnlock();
+  try {
+    _trackEvent('manual_unlock_changed', {
+      grade:   _getDashboardViewGrade() || null,
+      scope:   'unit',
+      unit_id: 'u' + unitIdx,
+      action:  _action,
+    });
+  } catch (_) {}
 }
 
 function _dbToggleLessonUnlock(unitIdx, lessonIdx) {
   var slot = _activeUnlockSlot();
   var key = unitIdx + '_' + lessonIdx;
-  if (slot.lessons[key]) { delete slot.lessons[key]; }
-  else { slot.lessons[key] = true; }
+  var _action;
+  if (slot.lessons[key]) { delete slot.lessons[key]; _action = 'relock'; }
+  else                   { slot.lessons[key] = true;  _action = 'unlock'; }
   _unlockDirty = true;
   _reRenderUnlock();
+  try {
+    var _l2 = UNITS_DATA[unitIdx] && UNITS_DATA[unitIdx].lessons[lessonIdx];
+    _trackEvent('manual_unlock_changed', {
+      grade:     _getDashboardViewGrade() || null,
+      scope:     'lesson',
+      unit_id:   'u' + unitIdx,
+      lesson_id: _l2 ? _l2.id : null,
+      action:    _action,
+    });
+  } catch (_) {}
 }
 
 function _dbToggleLessonDrawer(unitIdx) {
@@ -3051,6 +3079,18 @@ async function _dbFullReset() {
     _setResetMsg('❌ Reset failed — try again.', '#c62828');
     return;
   }
+
+  // Phase B: record the successful reset for product analytics. Fires only
+  // after the server confirms the wipe, so failed resets aren't counted.
+  // No student name is included — attribution is server-stamped via parent
+  // ownership of _activeId / mmr_active_student_id.
+  try {
+    var _resetGradeForAna = null;
+    if (typeof _dbReadProfileGrade === 'function') {
+      _resetGradeForAna = _dbReadProfileGrade(_activeId) || null;
+    }
+    _trackEvent('student_reset', { grade: _resetGradeForAna });
+  } catch (_) {}
 
   // ── Phase 2: post-reset cleanup (server data is ALREADY cleared) ────────
   // Each step is independently best-effort. A failure here MUST NOT surface

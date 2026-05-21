@@ -16,11 +16,26 @@
 //   - DB trigger: 500 events/hour per parent_id (bill-risk protection, durable)
 
 const ALLOWED_EVENT_NAMES = new Set([
+  // ── Phase A whitelist ──
   'app_opened','session_started','session_ended','grade_selected',
   'unit_started','lesson_started','lesson_completed','quiz_started',
   'quiz_completed','unit_test_started','unit_test_completed',
   'intervention_shown','intervention_completed','report_generated',
   'parent_dashboard_opened','subscription_started',
+  // ── Phase B additions (2026-05-21) ──
+  // KEEP IN SYNC with src/analytics.js _ANA_VALID_EVENTS and the
+  // app_events_event_name_whitelist CHECK constraint (migration
+  // 20260521_app_events_phase_b_events.sql).
+  'student_app_opened',
+  'unit_viewed',
+  'lesson_viewed',
+  'score_history_opened',
+  'hint_used',
+  'student_reset',
+  'free_mode_changed',
+  'manual_unlock_changed',
+  'quiz_abandoned',
+  'parent_dash_section_viewed',
 ]);
 const VALID_GRADES         = new Set(['K','1','2','3','4','5']);
 const MAX_EVENTS_PER_BATCH = 50;

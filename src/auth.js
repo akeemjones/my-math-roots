@@ -399,8 +399,13 @@ async function enterStudentLearningSession(opts) {
   try {
     _anaSessionStartTs   = Date.now();
     _anaSessionEndedSent = false;
+    // Reset per-session dedup so unit_viewed/lesson_viewed fire fresh for the
+    // newly-active student (handles same-grade profile-switcher swaps that
+    // don't trigger a page reload).
+    if (typeof _anaShouldFire === 'function') _anaShouldFire('__reset__');
     var _g = localStorage.getItem('mmr_grade');
-    _trackEvent('session_started', { grade: _g || null });
+    _trackEvent('session_started',     { grade: _g || null });
+    _trackEvent('student_app_opened',  { grade: _g || null });
   } catch (_) {}
 
   if (sessionToken) {

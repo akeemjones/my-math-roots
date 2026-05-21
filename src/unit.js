@@ -77,6 +77,12 @@ function openUnit(idx){
   try {
     var _g = localStorage.getItem('mmr_grade');
     _trackEvent('unit_started', { unit_id: 'u' + idx, grade: _g || null });
+    // Deduped per (student, unit) — re-renders don't re-fire; navigating
+    // back to the same unit in the same session is a single view event.
+    var _sid = localStorage.getItem('mmr_active_student_id') || 'anon';
+    if (typeof _anaShouldFire === 'function' && _anaShouldFire('unit_viewed_' + _sid + '_u' + idx)) {
+      _trackEvent('unit_viewed', { unit_id: 'u' + idx, grade: _g || null });
+    }
   } catch (_) {}
   const u = UNITS_DATA[idx];
   document.getElementById('unit-back').style.color = u.color;
@@ -1930,6 +1936,19 @@ function openLesson(unitIdx, lessonIdx){
   CUR.unitIdx = unitIdx; CUR.lessonIdx = lessonIdx;
   const u = UNITS_DATA[unitIdx];
   const l = u.lessons[lessonIdx];
+  // Lesson view event — deduped per (student, lesson). Distinct from
+  // `lesson_started` which fires when the in-lesson quiz begins.
+  try {
+    var _sid = localStorage.getItem('mmr_active_student_id') || 'anon';
+    if (l && l.id && typeof _anaShouldFire === 'function'
+        && _anaShouldFire('lesson_viewed_' + _sid + '_' + l.id)) {
+      _trackEvent('lesson_viewed', {
+        unit_id:   'u' + unitIdx,
+        lesson_id: l.id,
+        grade:     localStorage.getItem('mmr_grade') || null,
+      });
+    }
+  } catch (_) {}
   // Render shell immediately (header uses metadata only)
   document.getElementById('les-back').style.color = u.color;
   document.getElementById('les-title').textContent = `${l.icon} ${l.title}`;
