@@ -2,11 +2,12 @@
 
 /**
  * _validateFamilyCode — pure, no DOM/Supabase dependencies
- * Accepts: MMR-XXXX where X is [A-Z0-9], case-insensitive.
+ * Accepts MMR-XXXX (legacy 4-char seed) or MMR-XXXXXXXX (current 8-char) where
+ * X is [A-Z0-9], case-insensitive.
  */
 function _validateFamilyCode(code) {
   if (code == null || code === '') return false;
-  return /^MMR-[A-Z0-9]{4}$/i.test(String(code));
+  return /^MMR-(?:[A-Z0-9]{4}|[A-Z0-9]{8})$/i.test(String(code));
 }
 
 /**
@@ -56,8 +57,8 @@ function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
     // State A — family code entry
     return '<div style="padding:4px 0">'
       + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:10px">Enter your family code</div>'
-      + '<input id="ls-family-code-inp" type="text" class="set-inp" placeholder="MMR-0000"'
-      + ' maxlength="8" style="width:100%;text-align:center;letter-spacing:.15em;text-transform:uppercase;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;margin-bottom:12px">'
+      + '<input id="ls-family-code-inp" type="text" class="set-inp" placeholder="MMR-00000000"'
+      + ' maxlength="12" style="width:100%;text-align:center;letter-spacing:.15em;text-transform:uppercase;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;margin-bottom:12px">'
       + '<div id="ls-family-code-msg" style="font-size:.78rem;color:#f87171;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
       + '<button data-action="_lsFamilyCodeSetup" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);cursor:pointer;letter-spacing:.3px;touch-action:manipulation">Link This Device</button>'
       + '</div>';

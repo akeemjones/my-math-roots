@@ -39,6 +39,37 @@ describe('_validateFamilyCode', () => {
     expect(_validateFamilyCode('')).toBe(false);
     expect(_validateFamilyCode(undefined)).toBe(false);
   });
+
+  // ── 8-char family codes (current backend output since
+  //    20260603_rpc_ownership_lockdown.sql) ────────────────────────────────
+  test('accepts MMR-XXXXXXXX format (uppercase, 8-char)', () => {
+    expect(_validateFamilyCode('MMR-A1B2C3D4')).toBe(true);
+    expect(_validateFamilyCode('MMR-00000000')).toBe(true);
+    expect(_validateFamilyCode('MMR-ZZZZ9999')).toBe(true);
+  });
+
+  test('normalizes lowercase 8-char input (case-insensitive)', () => {
+    expect(_validateFamilyCode('mmr-a1b2c3d4')).toBe(true);
+    expect(_validateFamilyCode('MmR-A1b2C3d4')).toBe(true);
+  });
+
+  test('rejects in-between suffix lengths (5, 6, 7 chars)', () => {
+    expect(_validateFamilyCode('MMR-12345')).toBe(false);
+    expect(_validateFamilyCode('MMR-123456')).toBe(false);
+    expect(_validateFamilyCode('MMR-1234567')).toBe(false);
+  });
+
+  test('rejects 9+ char suffix', () => {
+    expect(_validateFamilyCode('MMR-A1B2C3D4E')).toBe(false);
+    expect(_validateFamilyCode('MMR-123456789')).toBe(false);
+  });
+
+  // Production has 1 seed profile with a 4-char family_code. Keep this
+  // backwards-compat path until that row is rotated or confirmed absent.
+  test('retains backwards compat for legacy 4-char codes', () => {
+    expect(_validateFamilyCode('MMR-4829')).toBe(true);
+    expect(_validateFamilyCode('mmr-ab12')).toBe(true);
+  });
 });
 
 // ── _buildAvatarHtml ──────────────────────────────────────────────────────
