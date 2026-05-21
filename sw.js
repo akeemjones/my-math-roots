@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.6-reset-cache-fix';
+const CACHE = 'math-workbook-v6.0.7-analytics-attribution';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets

@@ -44,12 +44,57 @@ function _anaStripPii(metadata) {
   return out;
 }
 
-// ── Auth context for flush (credentials only, not raw IDs) ───────────────
-function _anaGetAuthContext() {
-  var supaJwt       = null;
-  var sessionToken  = null;
-  var claimedSid    = null;
+// ── Auth-context decision (pure; testable in Node) ───────────────────────
+//
+// Phase A fix (2026-05-21): the previous version gated student-id attribution
+// on (role==='student' AND mmr_session_token). Parent-launched student
+// sessions (enterStudentLearningSession with sessionToken=null — e.g.
+// dashboard "Go to App", in-session profile switcher parent-bypass) set
+// role='student' but no PIN token, so neither branch fired and student_id
+// stayed null on 99%+ of events. Now the PIN-session path and the
+// parent-JWT-ownership path are independent. Server-side trust is unchanged:
+// the Netlify ingest function still verifies every claimed student via
+// pin_sessions lookup OR student_profiles.parent_id ownership check before
+// stamping the row.
+//
+// Inputs (all values may be null/undefined):
+//   storage.supaJwt          — Supabase access_token from sb-auth-auth-token
+//   storage.role             — mmr_user_role  ('student' | 'parent' | null)
+//   storage.sessionToken     — mmr_session_token (UUID; only set on PIN flow)
+//   storage.activeStudentId  — mmr_active_student_id (UUID | 'local' | null)
+//
+// Output: { sessionToken, claimedSid } — both null when no valid attribution.
+function _anaResolveAttribution(storage) {
+  if (!storage || typeof storage !== 'object') {
+    return { sessionToken: null, claimedSid: null };
+  }
+  var sid = (typeof storage.activeStudentId === 'string'
+             && storage.activeStudentId
+             && storage.activeStudentId !== 'local')
+            ? storage.activeStudentId : null;
 
+  // Path 1 — PIN session: role==='student' AND PIN token AND non-local student.
+  // Server verifies via pin_sessions(student_id, session_token, expires_at).
+  if (storage.role === 'student' && storage.sessionToken && sid) {
+    return { sessionToken: storage.sessionToken, claimedSid: sid };
+  }
+
+  // Path 2 — Parent JWT ownership: supaJwt AND non-local student.
+  // Role is intentionally ignored — parent-launched student sessions set
+  // role='student' but supply no PIN token; parent on dashboard with an
+  // active student also flows through here. Server verifies via
+  // student_profiles(id, parent_id) ownership check.
+  if (storage.supaJwt && sid) {
+    return { sessionToken: null, claimedSid: sid };
+  }
+
+  // No reliable attribution — server stamps student_id = NULL.
+  return { sessionToken: null, claimedSid: null };
+}
+
+// ── Auth context for flush (reads localStorage, defers decision to pure fn) ─
+function _anaGetAuthContext() {
+  var supaJwt = null;
   try {
     var raw = localStorage.getItem('sb-auth-auth-token') || localStorage.getItem('supabase.auth.token');
     if (raw) {
@@ -59,22 +104,27 @@ function _anaGetAuthContext() {
     }
   } catch (_) {}
 
+  var role             = null;
+  var sessionToken     = null;
+  var activeStudentId  = null;
   try {
-    var role = localStorage.getItem('mmr_user_role');
-    if (role === 'student') {
-      var st  = localStorage.getItem('mmr_session_token');
-      var sid = localStorage.getItem('mmr_active_student_id');
-      if (st && sid && sid !== 'local') {
-        sessionToken = st;
-        claimedSid   = sid;
-      }
-    } else if (supaJwt) {
-      var parentSid = localStorage.getItem('mmr_active_student_id');
-      if (parentSid && parentSid !== 'local') claimedSid = parentSid;
-    }
+    role            = localStorage.getItem('mmr_user_role');
+    sessionToken    = localStorage.getItem('mmr_session_token');
+    activeStudentId = localStorage.getItem('mmr_active_student_id');
   } catch (_) {}
 
-  return { supaJwt: supaJwt, sessionToken: sessionToken, claimedSid: claimedSid };
+  var decided = _anaResolveAttribution({
+    supaJwt:         supaJwt,
+    role:            role,
+    sessionToken:    sessionToken,
+    activeStudentId: activeStudentId,
+  });
+
+  return {
+    supaJwt:      supaJwt,
+    sessionToken: decided.sessionToken,
+    claimedSid:   decided.claimedSid,
+  };
 }
 
 // ── Flush ─────────────────────────────────────────────────────────────────
@@ -184,4 +234,12 @@ function _trackEvent(event_name, metadata) {
   } catch (_) {
     if (typeof _isDev !== 'undefined' && _isDev) console.warn('[analytics] _trackEvent error', _);
   }
+}
+
+// ── Jest bridge ──────────────────────────────────────────────────────────────
+// Browser ignores `module`; Node test runners pick up the export. Only the
+// pure decision function is exported — _trackEvent and _anaFlush touch DOM
+// + global timers that aren't relevant to unit tests.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { _anaResolveAttribution: _anaResolveAttribution };
 }
