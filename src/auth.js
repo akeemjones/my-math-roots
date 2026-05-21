@@ -800,32 +800,82 @@ function _lsObDone() {
   show('dashboard-screen'); _dbInit(); _installHistoryGuard();
 }
 
-function _lsCarouselGo(idx) {
+// Apply state for a given card index. Moves the shared form, updates dots,
+// toggles .is-active on cards, sets role, renders the student PIN UI on idx=0,
+// and shows/hides the guest button. Does NOT animate the track translateX —
+// that's _lsSnapTrack's job, so the dot-click and touch-snap paths share state
+// logic without fighting over transform.
+function _lsApplyCardState(idx) {
   idx = parseInt(idx, 10) || 0;
-  var track = document.getElementById('ls-carousel-track');
-  if (track) track.style.transform = 'translateX(' + (-50 * idx) + '%)';
   // Move shared form to the active card's mount point
   var form = document.getElementById('ls-form-shared');
   var mount = document.getElementById('ls-mount-' + idx);
   if (form && mount) mount.appendChild(form);
   // Update dot indicators
-  document.querySelectorAll('.ls-dot').forEach(function(dot, i) {
+  document.querySelectorAll('.ls-dot').forEach(function (dot, i) {
     dot.classList.toggle('active', i === idx);
   });
+  // Toggle .is-active on cards (CSS drives scale/opacity steady states)
+  var c0 = document.getElementById('ls-card-0');
+  var c1 = document.getElementById('ls-card-1');
+  if (c0) c0.classList.toggle('is-active', idx === 0);
+  if (c1) c1.classList.toggle('is-active', idx === 1);
   _lsCardIdx = idx;
   _lsSetRole(idx === 0 ? 'student' : 'parent');
   if (idx === 0) _lsRenderStudentCard();
   // Hide guest button on Parent/Teacher card — dashboard requires an account
   var guestBtn = document.getElementById('ls-guest-btn');
   if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
-  // Adapt outer height to active card so the Student card doesn't show empty space
-  _lsAdaptHeight();
+  // Watch the new active card so post-render content growth (validation msgs,
+  // password strength, waitlist panel, etc.) keeps outer height in sync.
+  _lsObserveActiveCard();
 }
-function _lsAdaptHeight(){
+
+// Animate the track to the given card index. Uses CSS transition on transform.
+function _lsSnapTrack(idx, dur) {
+  var track = document.getElementById('ls-carousel-track');
+  if (!track) return;
+  track.style.transition = 'transform ' + (dur || 0.28) + 's cubic-bezier(.4,0,.2,1)';
+  track.style.transform  = 'translateX(' + (idx * -50) + '%)';
+}
+
+// Public entry — used by dot clicks (data-action="_lsCarouselGo") and any
+// other caller that wants to jump cards programmatically.
+function _lsCarouselGo(idx) {
+  idx = parseInt(idx, 10) || 0;
+  _lsApplyCardState(idx);
+  _lsAdaptHeight();
+  _lsSnapTrack(idx, 0.28);
+}
+
+// ResizeObserver lazily-attached to the active card. Re-runs the height
+// measurement whenever the active card's intrinsic size changes (form
+// validation msgs, password strength bar appearing, etc.).
+var _lsCardResizeObserver = null;
+function _lsObserveActiveCard() {
+  if (typeof ResizeObserver === 'undefined') return;
+  if (_lsCardResizeObserver) _lsCardResizeObserver.disconnect();
+  var active = document.getElementById('ls-card-' + _lsCardIdx);
+  if (!active) return;
+  _lsCardResizeObserver = new ResizeObserver(function () { _lsAdaptHeight(); });
+  _lsCardResizeObserver.observe(active);
+}
+
+// Measure the active card and size the outer to match. The active card always
+// reflects what the user sees — the inactive mount is either empty or holds
+// the parked form (when the student card is active). Defensive: re-measure on
+// the next animation frame in case layout was still settling (font load,
+// async-rendered content, etc.).
+function _lsAdaptHeight() {
   var outer = document.querySelector('.ls-carousel-outer');
-  var card0 = document.getElementById('ls-card-0');
-  var card1 = document.getElementById('ls-card-1');
-  if(outer && card0 && card1) outer.style.height = Math.max(card0.scrollHeight, card1.scrollHeight) + 'px';
+  var active = document.getElementById('ls-card-' + _lsCardIdx);
+  if (!outer || !active) return;
+  var h = active.scrollHeight;
+  outer.style.height = h + 'px';
+  requestAnimationFrame(function () {
+    var actual = active.scrollHeight;
+    if (actual > h + 1) outer.style.height = actual + 'px';
+  });
 }
 
 function _lsInitCarousel() {
@@ -895,6 +945,22 @@ function _lsInitCarousel() {
   track.addEventListener('touchcancel', function() {
     _snapTo(_lsCardIdx, 0.28);
   }, { passive: true });
+}
+
+// ── Phase C.3B: anonymous unique site visit tracker ──────────────────────────
+// Fires website_viewed once per calendar day for unauthenticated visitors.
+// Dedup key: mmr_website_viewed_YYYY_MM_DD. Anonymous visitor ID is a random
+// UUID stored in mmr_anon_visitor_id — no PII, no fingerprinting.
+function _trackWebsiteVisit() {
+  try {
+    var today    = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+    var dedupKey = 'mmr_website_viewed_' + today;
+    if (localStorage.getItem(dedupKey)) return;
+    var visitorId = (typeof _getAnonVisitorId === 'function') ? _getAnonVisitorId() : null;
+    if (!visitorId) return;
+    localStorage.setItem(dedupKey, '1');
+    if (typeof _trackEvent === 'function') _trackEvent('website_viewed', { anon_visitor_id: visitorId });
+  } catch (_) {}
 }
 
 function _dismissSplash(fadeInId){
@@ -1002,6 +1068,8 @@ function supabaseInit(){
     show('login-screen');
     _lsInitCarousel();
     _lsRenderStudentCard();
+    _trackWebsiteVisit();
+    // No Supabase = no launch status. UI stays in default open state.
     _dismissSplash('login-screen');
     return;
   }
@@ -1106,6 +1174,8 @@ function supabaseInit(){
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
           show('login-screen'); _initOneTap(); _lsInitCarousel();
           _lsRenderStudentCard();
+          _trackWebsiteVisit();
+          _loadLaunchStatus();
           _dismissSplash('login-screen');
           return;
         }
@@ -1148,6 +1218,7 @@ function supabaseInit(){
       _lsInitCarousel();
       _lsRenderStudentCard();
       _initOneTap();
+      _loadLaunchStatus();
       _dismissSplash('login-screen');
     }
   });
@@ -1269,6 +1340,11 @@ async function _lsOAuth(provider){
 }
 
 function _lsSwitchTab(tab){
+  // Launch Gate: if signup is closed, refuse the switch and reveal waitlist.
+  if (tab === 'signup' && _launchStatus && !_launchStatus.signup_open) {
+    _showWaitlistPanel('user_clicked_create');
+    return;
+  }
   const isSignup = tab === 'signup';
   document.getElementById('ls-tab-login').className  = 'auth-tab-btn ' + (isSignup?'idle':'active');
   document.getElementById('ls-tab-signup').className = 'auth-tab-btn ' + (isSignup?'active':'idle');
@@ -1287,6 +1363,121 @@ function _lsSwitchTab(tab){
   if(forgotRow) forgotRow.style.display = isSignup ? 'none' : 'block';
   // Update placeholder text for password field
   document.getElementById('ls-password').placeholder = isSignup ? 'Password (min 8 characters)' : 'Password';
+}
+
+// ── Launch Gate (controlled beta) ────────────────────────────────────────────
+// Server-enforced. The frontend just renders the right UI based on the
+// status RPC; even if hidden tabs are revealed via DevTools the server still
+// refuses signup (Supabase Auth has "Disable signups" ON, and signup-gate
+// independently checks the cap before creating the user).
+var _launchStatus = null;
+var _waitlistViewedFired = false;
+
+async function _loadLaunchStatus() {
+  if (!_supa) return;
+  try {
+    const { data, error } = await _supa.rpc('get_launch_status');
+    if (error || !Array.isArray(data) || !data.length) return;
+    _launchStatus = data[0];
+    _applyLaunchStatusUI();
+  } catch (_) {}
+}
+
+function _applyLaunchStatusUI() {
+  if (!_launchStatus) return;
+  const tabSignup = document.getElementById('ls-tab-signup');
+  const tabLogin  = document.getElementById('ls-tab-login');
+  const panel     = document.getElementById('ls-waitlist-panel');
+  if (!_launchStatus.signup_open) {
+    // Hide the Create Account tab; force user to Sign In tab.
+    if (tabSignup) tabSignup.style.display = 'none';
+    if (tabLogin)  tabLogin.style.flex     = '1 1 100%';
+    if (document.getElementById('login-screen').dataset.tab === 'signup') {
+      // If we were on signup tab, switch back to login first
+      _lsSwitchTab('login');
+    }
+    if (panel) {
+      panel.style.display = 'block';
+      _setWaitlistCopy();
+      if (!_waitlistViewedFired) {
+        _waitlistViewedFired = true;
+        if (typeof _trackEvent === 'function') {
+          _trackEvent('waitlist_viewed', { reason: _launchStatus.waitlist_open ? 'cap_reached' : 'closed' });
+          _trackEvent('signup_gate_viewed', {});
+        }
+      }
+    }
+  } else {
+    if (tabSignup) tabSignup.style.display = '';
+    if (tabLogin)  tabLogin.style.flex     = '';
+    if (panel)     panel.style.display     = 'none';
+  }
+}
+
+function _setWaitlistCopy() {
+  const head = document.getElementById('ls-waitlist-headline');
+  const sub  = document.getElementById('ls-waitlist-sub');
+  if (!_launchStatus) return;
+  if (!_launchStatus.waitlist_open) {
+    if (head) head.textContent = 'New signups are paused';
+    if (sub)  sub.textContent  = 'We’re not currently accepting new accounts. Please check back soon.';
+    // Hide the form when waitlist itself is disabled
+    const form = document.getElementById('ls-waitlist-form');
+    if (form) form.style.display = 'none';
+  } else {
+    if (head) head.textContent = 'My Math Roots is in limited beta';
+    if (sub)  sub.textContent  = 'All ' + (_launchStatus.accounts_cap || '') + ' spots are filled. Join the waitlist and we’ll email you when more open up.';
+  }
+}
+
+function _showWaitlistPanel(reason) {
+  const panel = document.getElementById('ls-waitlist-panel');
+  if (panel) {
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    _setWaitlistCopy();
+    if (typeof _trackEvent === 'function') _trackEvent('waitlist_viewed', { reason: reason || 'manual' });
+  }
+}
+
+async function _lsJoinWaitlist() {
+  if (!_supa) return;
+  const emailInp = document.getElementById('ls-waitlist-email');
+  const btn      = document.getElementById('ls-waitlist-btn');
+  const msgEl    = document.getElementById('ls-waitlist-msg');
+  if (!emailInp || !btn || !msgEl) return;
+
+  const email = (emailInp.value || '').trim();
+  msgEl.style.color = '#e74c3c';
+  if (!_rateLimit('waitlist', 3)) { msgEl.textContent = '⚠️ Too many attempts. Please wait a moment.'; return; }
+  if (!email || !_validEmail(email)) { msgEl.textContent = '⚠️ Please enter a valid email address.'; return; }
+
+  const origTxt = btn.textContent;
+  btn.disabled  = true;
+  btn.textContent = 'Joining…';
+
+  try {
+    const { data, error } = await _supa.rpc('join_waitlist', { p_email: email, p_source: 'login_screen' });
+    const row = Array.isArray(data) ? data[0] : data;
+    if (error || !row || !row.ok) {
+      msgEl.style.color = '#e74c3c';
+      msgEl.textContent = '⚠️ Couldn’t join the waitlist. Please try again.';
+    } else if (row.already_on_list) {
+      msgEl.style.color = '#27ae60';
+      msgEl.textContent = '✅ You’re already on the waitlist. We’ll be in touch.';
+    } else {
+      msgEl.style.color = '#27ae60';
+      msgEl.textContent = '✅ You’re on the waitlist. We’ll email you when more spots open.';
+      emailInp.value = '';
+      if (typeof _trackEvent === 'function') _trackEvent('waitlist_joined', { source: 'login_screen' });
+    }
+  } catch (e) {
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ Network error. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origTxt;
+  }
 }
 
 async function _lsForgotPassword(){
@@ -1406,21 +1597,46 @@ async function _lsSubmit(){
     let result;
     if(tab === 'signup'){
       const displayName = _sanitize(document.getElementById('ls-name').value, 30) || 'Student';
-      result = await _supa.auth.signUp({
-        email, password,
-        options: { data: { display_name:displayName }, captchaToken }
-      });
+      // Launch Gate: server-enforced signup. Direct supabase.auth.signUp() is
+      // blocked at the Auth layer ("Allow new users to sign up" OFF). The
+      // Netlify function checks the cap + Turnstile + creates via admin API.
+      let gateRes, gateJson;
+      try {
+        gateRes  = await fetch('/.netlify/functions/signup-gate', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, password, displayName, captchaToken }),
+        });
+        gateJson = await gateRes.json().catch(()=>({}));
+      } catch (e) {
+        result = { error: { message: 'Network error — please try again.' } };
+      }
+      _resetTurnstile();
+      if (gateRes && gateRes.ok && gateJson && gateJson.ok) {
+        // Signup accepted; Supabase will send a confirmation email.
+        result = { data: { session: null }, error: null };
+      } else if (gateRes && (gateJson.reason === 'cap_reached' || gateJson.reason === 'disabled' || gateJson.error === 'cap_reached' || gateJson.error === 'signup_disabled')) {
+        if (typeof _trackEvent === 'function') _trackEvent('signup_blocked_capacity', { reason: gateJson.reason || gateJson.error });
+        await _loadLaunchStatus();
+        _showWaitlistPanel('signup_blocked');
+        msgEl.style.color = '#e74c3c';
+        msgEl.textContent = '⚠️ Beta is full — see the waitlist below.';
+        return;
+      } else if (gateRes && (gateJson.error === 'email_in_use' || gateRes.status === 409)) {
+        result = { error: { message: 'An account with this email already exists.' } };
+      } else if (gateRes && gateJson.error === 'turnstile_failed') {
+        result = { error: { message: 'Security check failed. Please try again.' } };
+      } else if (gateRes && (gateJson.error === 'invalid_email' || gateJson.error === 'short_password' || gateJson.error === 'invalid_body')) {
+        result = { error: { message: 'Please check your details and try again.' } };
+      } else if (!result) {
+        result = { error: { message: 'Could not create account. Please try again.' } };
+      }
     } else {
       result = await _supa.auth.signInWithPassword({
         email, password,
         options: { captchaToken }
       });
-    }
-    _resetTurnstile(); // always reset after use — token is single-use
-    // Notify on new signup (fire-and-forget)
-    if(!result.error && tab === 'signup'){
-      const _dn = _sanitize(document.getElementById('ls-name')?.value||'', 30) || 'Student';
-      _supa.functions.invoke('notify-new-signup', { body: { email, display_name: _dn } }).catch(()=>{});
+      _resetTurnstile();
     }
     // Remember email preference — SEC-9: store encrypted, never plain text
     if(!result.error && tab === 'login'){
@@ -1434,7 +1650,7 @@ async function _lsSubmit(){
     if(result.error){
       msgEl.style.color = '#e74c3c';
       msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
-    } else if(tab==='signup' && !result.data.session){
+    } else if(tab==='signup'){
       msgEl.style.color = '#27ae60';
       msgEl.textContent = '✅ Check your email to confirm your account!';
       _lsLastSignupEmail = email;
@@ -2730,12 +2946,14 @@ async function submitAuth(){
   try{
     let result;
     if(tab === 'signup'){
-      const displayName = _sanitize(document.getElementById('auth-name').value, 30)
-        || loadSettings().studentName || 'Student';
-      result = await _supa.auth.signUp({
-        email, password,
-        options: { data: { display_name:displayName } }
-      });
+      // Signup is gated behind the main login screen (server-enforced cap +
+      // Turnstile via signup-gate.js). The auth-modal does not host a
+      // Turnstile widget, so we explicitly refuse signup here.
+      msgEl.style.color = '#e74c3c';
+      msgEl.textContent = '⚠️ Please create an account from the main sign-in screen.';
+      btn.textContent = origTxt;
+      _authLoading = false;
+      return;
     } else {
       result = await _supa.auth.signInWithPassword({ email, password });
     }
