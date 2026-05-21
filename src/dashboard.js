@@ -2210,7 +2210,7 @@ async function generateAIReport() {
       _mp2.report_last_generated = _nowIso;
       _mp2.report_last_text      = data.report;
     }
-    try { _trackEvent('report_generated', {}); } catch (_) {}
+    try { _trackEvent('report_generated', _dbAnaMeta({})); } catch (_) {}
     _renderAIReportView(data.report, name);
   } catch(e) {
     if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
@@ -2718,6 +2718,22 @@ function _activeUnlockSlot() {
   return _unlockDraft.byGrade[band];
 }
 
+// Phase C.1: attach the per-event student-id override for dashboard actions.
+// Dashboard targets the student selected in the UI (`_activeId`), which may
+// differ from `localStorage.mmr_active_student_id` (set by the last student
+// session). The server still verifies parent ownership of the override —
+// see analytics-ingest.js _perEventStudent. Local / mock placeholder ids
+// stay out of the claim (server would reject them anyway).
+function _dbAnaMeta(extra) {
+  var meta = extra || {};
+  if (_activeId && typeof _activeId === 'string'
+      && _activeId !== 'local'
+      && _activeId.indexOf('mock_') !== 0) {
+    meta._override_student_id = _activeId;
+  }
+  return meta;
+}
+
 function _dbToggleFreeMode() {
   var slot = _activeUnlockSlot();
   var _prev = !!slot.freeMode;
@@ -2725,11 +2741,11 @@ function _dbToggleFreeMode() {
   _unlockDirty = true;
   _reRenderUnlock();
   try {
-    _trackEvent('free_mode_changed', {
+    _trackEvent('free_mode_changed', _dbAnaMeta({
       grade: _getDashboardViewGrade() || null,
       prev:  _prev,
       next:  !!slot.freeMode,
-    });
+    }));
   } catch (_) {}
 }
 
@@ -2742,12 +2758,12 @@ function _dbToggleUnitUnlock(unitIdx) {
   _unlockDirty = true;
   _reRenderUnlock();
   try {
-    _trackEvent('manual_unlock_changed', {
+    _trackEvent('manual_unlock_changed', _dbAnaMeta({
       grade:   _getDashboardViewGrade() || null,
       scope:   'unit',
       unit_id: 'u' + unitIdx,
       action:  _action,
-    });
+    }));
   } catch (_) {}
 }
 
@@ -2761,13 +2777,13 @@ function _dbToggleLessonUnlock(unitIdx, lessonIdx) {
   _reRenderUnlock();
   try {
     var _l2 = UNITS_DATA[unitIdx] && UNITS_DATA[unitIdx].lessons[lessonIdx];
-    _trackEvent('manual_unlock_changed', {
+    _trackEvent('manual_unlock_changed', _dbAnaMeta({
       grade:     _getDashboardViewGrade() || null,
       scope:     'lesson',
       unit_id:   'u' + unitIdx,
       lesson_id: _l2 ? _l2.id : null,
       action:    _action,
-    });
+    }));
   } catch (_) {}
 }
 
@@ -3082,14 +3098,15 @@ async function _dbFullReset() {
 
   // Phase B: record the successful reset for product analytics. Fires only
   // after the server confirms the wipe, so failed resets aren't counted.
-  // No student name is included — attribution is server-stamped via parent
-  // ownership of _activeId / mmr_active_student_id.
+  // Phase C.1: attribute to _activeId (the student the parent actually
+  // reset), not whatever mmr_active_student_id happens to be — see
+  // _dbAnaMeta + analytics-ingest.js _perEventStudent.
   try {
     var _resetGradeForAna = null;
     if (typeof _dbReadProfileGrade === 'function') {
       _resetGradeForAna = _dbReadProfileGrade(_activeId) || null;
     }
-    _trackEvent('student_reset', { grade: _resetGradeForAna });
+    _trackEvent('student_reset', _dbAnaMeta({ grade: _resetGradeForAna }));
   } catch (_) {}
 
   // ── Phase 2: post-reset cleanup (server data is ALREADY cleared) ────────

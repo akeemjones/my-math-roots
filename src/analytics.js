@@ -37,6 +37,43 @@ var _ANA_VALID_EVENTS = new Set([
   'parent_dash_section_viewed',  // reserved — dashboard sections not yet collapsible
 ]);
 
+// ── Per-event student-id override (Phase C.1) ─────────────────────────────
+//
+// Pure helper: takes a metadata object that may contain a special key
+// `_override_student_id` and returns { claimed_student_id, metadata }.
+//
+// Use case: the parent dashboard knows which student each action targets
+// (`_activeId`), but `localStorage.mmr_active_student_id` may still point to
+// a different student from a prior PIN/launch session. By passing
+// `_override_student_id: <uuid>` in the event metadata, the dashboard tells
+// the tracker (and ultimately the server) which student this specific event
+// is about. The server still verifies parent ownership of the claimed
+// student before stamping `student_id` — an invalid or unowned override
+// resolves to NULL, never to the batch-level student.
+//
+// The key is stripped from metadata regardless of whether the value was a
+// valid UUID, so the special marker never leaks into the DB column.
+var _ANA_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function _anaExtractOverride(metadata) {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+    return { claimed_student_id: null, metadata: {} };
+  }
+  var out = {};
+  var override = null;
+  var keys = Object.keys(metadata);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    if (k === '_override_student_id') {
+      var v = metadata[k];
+      if (typeof v === 'string' && _ANA_UUID_RE.test(v)) override = v;
+      // else: drop silently — invalid override never reaches the server
+      continue;
+    }
+    out[k] = metadata[k];
+  }
+  return { claimed_student_id: override, metadata: out };
+}
+
 // ── View-event dedup (in-memory; clears on page reload or explicit reset) ──
 // Used to suppress repeat fires of `unit_viewed` / `lesson_viewed` /
 // `student_app_opened` etc. that would otherwise spam every time openUnit /
@@ -241,15 +278,21 @@ function _trackEvent(event_name, metadata) {
     if (typeof _rateLimit === 'function' && !_rateLimit(_ANA_RATE_KEY, _ANA_RATE_MAX)) return;
 
     var safeMeta = _anaStripPii(metadata || {});
+    // Extract the per-event student override BEFORE size + PII checks so the
+    // special key never counts toward metadata_json size and never lands
+    // in the DB column.
+    var _ext = _anaExtractOverride(safeMeta);
+    safeMeta = _ext.metadata;
     if (JSON.stringify(safeMeta).length > _ANA_META_MAX) safeMeta = {};
 
     var evt = {
-      client_event_id: event_name + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9),
-      event_name:      event_name,
-      metadata_json:   safeMeta,
-      grade:           safeMeta.grade || null,
-      unit_id:         null,
-      lesson_id:       null,
+      client_event_id:    event_name + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9),
+      event_name:         event_name,
+      metadata_json:      safeMeta,
+      grade:              safeMeta.grade || null,
+      unit_id:            null,
+      lesson_id:          null,
+      claimed_student_id: _ext.claimed_student_id,
     };
 
     if (safeMeta.unit_id)   { evt.unit_id   = safeMeta.unit_id;   delete safeMeta.unit_id;   }
@@ -274,5 +317,6 @@ if (typeof module !== 'undefined' && module.exports) {
     _anaResolveAttribution: _anaResolveAttribution,
     _ANA_VALID_EVENTS:      _ANA_VALID_EVENTS,
     _anaShouldFire:         _anaShouldFire,
+    _anaExtractOverride:    _anaExtractOverride,
   };
 }

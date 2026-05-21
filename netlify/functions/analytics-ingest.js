@@ -204,17 +204,42 @@ exports.handler = async function(event) {
   const validEvents = rawEvents.slice(0, MAX_EVENTS_PER_BATCH).map(_validateEvent).filter(Boolean);
   if (validEvents.length === 0) return OK(corsH);
 
+  // ── Per-event student_id override (Phase C.1) ─────────────────────────
+  // An event may carry its own `claimed_student_id` (e.g. parent-dashboard
+  // actions that target a student other than the one in the batch claim).
+  // For each such override, verify ownership against the verified parent
+  // JWT. Unowned overrides resolve to NULL — they NEVER fall back to the
+  // batch-level student. Ownership lookups are cached per-batch to avoid
+  // hitting student_profiles N times.
+  const ownershipCache = new Map();
+  async function _perEventStudent(eventClaimedSid) {
+    if (!eventClaimedSid) return verifiedStudentId; // no override → batch-level
+    // Fast path: claim matches the already-verified PIN-session student.
+    if (eventClaimedSid === verifiedStudentId) return verifiedStudentId;
+    // Per-event override requires a parent JWT to verify against. Without
+    // one we cannot trust the claim — null-stamp instead of guessing.
+    if (!verifiedParentId) return null;
+    if (ownershipCache.has(eventClaimedSid)) return ownershipCache.get(eventClaimedSid);
+    const verified = await _verifyStudentOwnership(eventClaimedSid, verifiedParentId, supaUrl, svcKey);
+    ownershipCache.set(eventClaimedSid, verified);
+    return verified;
+  }
+
   // ── Build DB rows (stamp server-verified IDs) ─────────────────────────
-  const rows = validEvents.map(e => ({
-    client_event_id: e.client_event_id,
-    event_name:      e.event_name,
-    parent_id:       verifiedParentId  || null,
-    student_id:      verifiedStudentId || null,
-    grade:           e.grade,
-    unit_id:         e.unit_id,
-    lesson_id:       e.lesson_id,
-    metadata_json:   e.metadata_json,
-  }));
+  const rows = [];
+  for (const e of validEvents) {
+    const stamped = await _perEventStudent(e.claimed_student_id);
+    rows.push({
+      client_event_id: e.client_event_id,
+      event_name:      e.event_name,
+      parent_id:       verifiedParentId || null,
+      student_id:      stamped          || null,
+      grade:           e.grade,
+      unit_id:         e.unit_id,
+      lesson_id:       e.lesson_id,
+      metadata_json:   e.metadata_json,
+    });
+  }
 
   try {
     const res = await fetch(`${supaUrl}/rest/v1/app_events`, {
