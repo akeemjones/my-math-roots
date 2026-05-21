@@ -3,7 +3,44 @@
 // Maps ?metric= to a named SECURITY DEFINER RPC (migration 20260502_analytics_rpcs.sql).
 // Rate limited: 10 req/min per IP.
 
+// ── Filter parsing (Phase C.2) ────────────────────────────────────────────
+// Admin page passes ?days=7|30|90 and ?grade=K|1|2|all (or the band tokens
+// k/g1/g2). Anything else falls back to safe defaults: 30 days, all grades.
+// Parameters are passed to RPCs as named arguments (p_days/p_grade), never
+// concatenated into SQL.
+const _ALLOWED_DAYS   = new Set([7, 30, 90]);
+const _ALLOWED_GRADES = new Set(['K', '1', '2', '3', '4', '5']);
+function _parseAnalyticsFilters(params) {
+  var p = params || {};
+  // Days — strict: only pure positive integers as strings or numbers; anything
+  // with extra characters ('7; DROP', '7d', '-7') is rejected.
+  var dRaw = p.days;
+  var d;
+  if (typeof dRaw === 'number' && Number.isInteger(dRaw) && dRaw > 0) {
+    d = dRaw;
+  } else if (typeof dRaw === 'string' && /^[1-9][0-9]*$/.test(dRaw)) {
+    d = parseInt(dRaw, 10);
+  } else {
+    d = null;
+  }
+  var p_days = (d !== null && _ALLOWED_DAYS.has(d)) ? d : 30;
+  // Grade — accept canonical + band tokens, treat 'all' / empty / unknown as no filter
+  var gRaw = p.grade;
+  var gStr = (gRaw == null) ? '' : String(gRaw).trim().toLowerCase();
+  var p_grade = null;
+  if (gStr === 'k' || gStr === 'kindergarten')              p_grade = 'K';
+  else if (gStr === '1' || gStr === 'g1' || gStr === 'grade1') p_grade = '1';
+  else if (gStr === '2' || gStr === 'g2' || gStr === 'grade2') p_grade = '2';
+  else if (gStr === '3' || gStr === 'g3' || gStr === 'grade3') p_grade = '3';
+  else if (gStr === '4' || gStr === 'g4' || gStr === 'grade4') p_grade = '4';
+  else if (gStr === '5' || gStr === 'g5' || gStr === 'grade5') p_grade = '5';
+  // 'all' / empty / unknown → null (no grade filter applied)
+  if (p_grade && !_ALLOWED_GRADES.has(p_grade)) p_grade = null;
+  return { p_days: p_days, p_grade: p_grade };
+}
+
 const METRIC_TO_RPC = {
+  // Phase A
   dau:              'analytics_dau',
   wau:              'analytics_wau',
   session_duration: 'analytics_session_duration',
@@ -18,6 +55,15 @@ const METRIC_TO_RPC = {
   report_usage:     'analytics_report_usage',
   bill_risk:        'analytics_bill_risk',
   parent_usage:     'analytics_parent_usage',
+  // Phase C.2
+  mau:              'analytics_mau',
+  total_students:   'analytics_total_students',
+  drop_off_funnel:  'analytics_drop_off_funnel',
+  top_lessons:      'analytics_top_lessons',
+  hint_usage:       'analytics_hint_usage',
+  free_mode_usage:  'analytics_free_mode_usage',
+  reset_usage:      'analytics_reset_usage',
+  unlock_usage:     'analytics_unlock_usage',
 };
 
 const _rateMap = new Map();
@@ -73,15 +119,20 @@ exports.handler = async function(event) {
   const isAdmin = await _verifyAdmin(authH, supaUrl, svcKey);
   if (!isAdmin) return { statusCode: 401, headers: corsH, body: JSON.stringify({ error: 'Unauthorized' }) };
 
-  const metric  = event.queryStringParameters && event.queryStringParameters.metric;
+  const qs      = event.queryStringParameters || {};
+  const metric  = qs.metric;
   const rpcName = METRIC_TO_RPC[metric];
   if (!rpcName) return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'Unknown metric' }) };
+
+  // Validated filter values — pass as named RPC args. RPCs declare matching
+  // p_days INTEGER DEFAULT 30 / p_grade TEXT DEFAULT NULL signatures.
+  const filters = _parseAnalyticsFilters(qs);
 
   try {
     const res = await fetch(`${supaUrl}/rest/v1/rpc/${rpcName}`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey },
-      body:    '{}',
+      body:    JSON.stringify(filters),
     });
     if (!res.ok) {
       const txt = await res.text().catch(() => '');
@@ -93,3 +144,8 @@ exports.handler = async function(event) {
     return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+// Jest bridge — exposes the pure helper for unit testing.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports._parseAnalyticsFilters = _parseAnalyticsFilters;
+}

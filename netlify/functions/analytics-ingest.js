@@ -15,6 +15,25 @@
 //   - In-memory: 30 events/min per IP (burst protection)
 //   - DB trigger: 500 events/hour per parent_id (bill-risk protection, durable)
 
+// ── Grade normalization (Phase C.2) ──────────────────────────────────────
+// C.1 dashboard emissions send grade='g1'|'g2' (the band tokens used by the
+// dashboard's view-grade picker), but pre-C.2 we hard-rejected anything not
+// in {K,1..5}, dropping the column to NULL. This helper maps every reasonable
+// input to the canonical token ('K' | '1'..'5') so dashboard events keep
+// their grade and existing K/1-5 events continue to work unchanged.
+function _normalizeGrade(raw) {
+  if (raw === null || raw === undefined) return null;
+  var s = String(raw).trim().toLowerCase();
+  if (s === '')                                                  return null;
+  if (s === 'k' || s === 'kindergarten' || s === '0')            return 'K';
+  if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return '1';
+  if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return '2';
+  if (s === '3' || s === 'g3' || s === 'grade3' || s === 'grade 3') return '3';
+  if (s === '4' || s === 'g4' || s === 'grade4' || s === 'grade 4') return '4';
+  if (s === '5' || s === 'g5' || s === 'grade5' || s === 'grade 5') return '5';
+  return null;
+}
+
 const ALLOWED_EVENT_NAMES = new Set([
   // ── Phase A whitelist ──
   'app_opened','session_started','session_ended','grade_selected',
@@ -131,7 +150,11 @@ function _validateEvent(raw) {
     ? raw.client_event_id.slice(0, 128) : null;
   if (!client_event_id) return null;
 
-  const grade     = VALID_GRADES.has(raw.grade) ? raw.grade : null;
+  // Normalize first (accept k/g1/g2/etc.), then verify against allow-list.
+  // _normalizeGrade already returns null for anything off-list, so the
+  // VALID_GRADES check is a defensive double-check.
+  const _g        = _normalizeGrade(raw.grade);
+  const grade     = (_g && VALID_GRADES.has(_g)) ? _g : null;
   const unit_id   = (typeof raw.unit_id   === 'string' && ID_RE.test(raw.unit_id))   ? raw.unit_id   : null;
   const lesson_id = (typeof raw.lesson_id === 'string' && ID_RE.test(raw.lesson_id)) ? raw.lesson_id : null;
 
@@ -264,3 +287,8 @@ exports.handler = async function(event) {
 
   return OK(corsH);
 };
+
+// Jest bridge — exposes the pure helpers for unit testing.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports._normalizeGrade = _normalizeGrade;
+}

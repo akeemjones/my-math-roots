@@ -59,6 +59,36 @@
     /* Auth / loading states */
     #auth-gate { padding: 3rem 1rem; color: #b91c1c; font-weight: 700; font-size: 1rem; }
     #loading { padding: 3rem 1rem; color: #888; }
+
+    /* Filters (Phase C.2) */
+    .filters { background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+    .filter-col { display: flex; flex-direction: column; gap: 0.35rem; }
+    .filter-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #888; }
+    .filter-col select { font: inherit; font-size: 0.92rem; padding: 0.55rem 0.7rem; border: 1px solid #ddd; border-radius: 8px; background: #f8f8f8; color: #1a1a2e; cursor: pointer; }
+    .filter-col select:hover  { border-color: #999; }
+    .filter-col select:focus  { outline: none; border-color: #2563eb; background: #fff; }
+
+    /* Funnel (Phase C.2) */
+    .funnel-row { display: grid; grid-template-columns: 200px 1fr 240px; gap: 1rem; align-items: center; padding: 0.65rem 0.25rem; border-bottom: 1px solid #f4f4f4; }
+    .funnel-row:last-child { border-bottom: none; }
+    .funnel-stage { font-size: 0.85rem; font-weight: 600; color: #1a1a2e; }
+    .funnel-bar { background: #f0f2f5; border-radius: 8px; height: 16px; overflow: hidden; }
+    .funnel-fill { background: linear-gradient(90deg, #3b82f6, #6366f1); height: 100%; transition: width 0.25s ease; }
+    .funnel-counts { font-size: 0.78rem; color: #555; display: flex; flex-direction: column; gap: 0.15rem; text-align: right; }
+    .funnel-students { font-weight: 700; color: #1a1a2e; }
+    .funnel-events   { color: #888; }
+    .funnel-drop     { color: #dc2626; font-weight: 600; }
+    @media (max-width: 700px) {
+      .funnel-row { grid-template-columns: 1fr; gap: 0.25rem; padding: 0.85rem 0.25rem; }
+      .funnel-counts { text-align: left; flex-direction: row; gap: 0.75rem; }
+    }
+
+    /* Refresh banner */
+    .refresh-status { position: fixed; top: 1rem; right: 1rem; background: #1a1a2e; color: #fff; font-size: 0.82rem; font-weight: 600; padding: 0.55rem 0.95rem; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 1000; }
+
+    /* Error banner */
+    .error-banner { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem 1.25rem; border-radius: 10px; font-weight: 600; }
   </style>
 </head>
 <body>

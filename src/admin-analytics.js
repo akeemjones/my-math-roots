@@ -2,6 +2,11 @@
 // Token-substituted by build.js: %%SUPA_URL%% / %%SUPA_KEY%%
 // Requires CDN Supabase SDK (loaded in admin-analytics.html).
 // XSS safety: all API data rendered via textContent/createElement — never innerHTML.
+//
+// Phase C.2: adds date-range + grade filters, MAU / total-students /
+// drop-off-funnel / top-lessons / hint-usage / parent-action metrics, and
+// reorganizes the layout into Overview / Active Users / Funnel / Engagement /
+// Quiz Performance / Learning Insights / Parent Actions / Retention / Bill Risk.
 
 (async function () {
   var SUPA_URL = '%%SUPA_URL%%';
@@ -24,6 +29,7 @@
 
   var authHdr = 'Bearer ' + session.access_token;
 
+  // Admin smoke check
   var testRes = await fetch('/.netlify/functions/analytics-query?metric=bill_risk',
     { headers: { 'Authorization': authHdr } }).catch(function () { return { status: 500 }; });
 
@@ -36,65 +42,62 @@
 
   elDash.style.display = 'block';
 
+  // ── Filter state ────────────────────────────────────────────────────────
+  var filters = { days: '30', grade: 'all' };
+
+  // Metric set — every RPC the admin page consumes.
   var METRICS = [
+    // Phase A
     'dau', 'wau', 'session_duration', 'quiz_completion',
     'retention_1d', 'retention_7d', 'retention_30d',
     'top_grades', 'top_units', 'hardest_lessons',
     'error_tags', 'report_usage', 'bill_risk', 'parent_usage',
+    // Phase C.2
+    'mau', 'total_students', 'drop_off_funnel', 'top_lessons',
+    'hint_usage', 'free_mode_usage', 'reset_usage', 'unlock_usage',
   ];
 
-  var results = await Promise.allSettled(METRICS.map(function (m) {
-    return fetch('/.netlify/functions/analytics-query?metric=' + m,
-      { headers: { 'Authorization': authHdr } })
-      .then(function (r) { return r.json(); })
-      .then(function (data) { return { metric: m, data: data }; });
-  }));
-
-  var d = {};
-  results.forEach(function (r) {
-    if (r.status === 'fulfilled') d[r.value.metric] = r.value.data;
-  });
-
-  // ── Data helpers ──────────────────────────────────────────────────────────
-
-  function _first(key) {
-    return (Array.isArray(d[key]) && d[key].length > 0) ? d[key][0] : null;
+  function _buildQuery(metric) {
+    var qs = '?metric=' + encodeURIComponent(metric)
+           + '&days='  + encodeURIComponent(filters.days);
+    if (filters.grade && filters.grade !== 'all') {
+      qs += '&grade=' + encodeURIComponent(filters.grade);
+    }
+    return '/.netlify/functions/analytics-query' + qs;
   }
-  function _last(key) {
-    var arr = d[key];
-    return (Array.isArray(arr) && arr.length > 0) ? arr[arr.length - 1] : null;
+
+  async function _loadMetrics() {
+    var results = await Promise.allSettled(METRICS.map(function (m) {
+      return fetch(_buildQuery(m), { headers: { 'Authorization': authHdr } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { return { metric: m, data: data }; });
+    }));
+    var d = {};
+    results.forEach(function (r) {
+      if (r.status === 'fulfilled') d[r.value.metric] = r.value.data;
+    });
+    return d;
   }
-  function _sumField(key, field) {
+
+  // ── Data helpers ────────────────────────────────────────────────────────
+  function _first(d, key) { return (Array.isArray(d[key]) && d[key].length > 0) ? d[key][0] : null; }
+  function _last (d, key) { var a = d[key]; return (Array.isArray(a) && a.length > 0) ? a[a.length - 1] : null; }
+  function _sumField(d, key, field) {
     if (!Array.isArray(d[key])) return 0;
     return d[key].reduce(function (acc, row) { return acc + (parseFloat(row[field]) || 0); }, 0);
   }
+  function _isArr(d, key) { return Array.isArray(d[key]); }
 
-  // ── Format helpers ────────────────────────────────────────────────────────
+  // ── Format helpers ──────────────────────────────────────────────────────
+  function _num(n)  { if (n == null) return '—'; var v = parseFloat(n); return isNaN(v) ? '—' : v.toLocaleString(); }
+  function _pct(n)  { if (n == null) return '—'; var v = parseFloat(n); return isNaN(v) ? '—' : Math.round(v) + '%'; }
+  function _mins(s) { if (s == null) return '—'; var v = Math.round(parseFloat(s) / 60); return isNaN(v) ? '—' : v + ' min'; }
+  function _grade(g) { return g === 'K' ? 'Kindergarten' : 'Grade ' + g; }
 
-  function _num(n) {
-    if (n == null) return '—';
-    var v = parseFloat(n);
-    return isNaN(v) ? '—' : v.toLocaleString();
-  }
-  function _pct(n) {
-    if (n == null) return '—';
-    var v = parseFloat(n);
-    return isNaN(v) ? '—' : Math.round(v) + '%';
-  }
-  function _mins(secs) {
-    if (secs == null) return '—';
-    var v = Math.round(parseFloat(secs) / 60);
-    return isNaN(v) ? '—' : v + ' min';
-  }
-  function _grade(g) {
-    return g === 'K' ? 'Kindergarten' : 'Grade ' + g;
-  }
-
-  // ── DOM helpers ───────────────────────────────────────────────────────────
-
+  // ── DOM helpers ─────────────────────────────────────────────────────────
   function _el(tag, cls, text) {
     var el = document.createElement(tag);
-    if (cls) el.className = cls;
+    if (cls)  el.className   = cls;
     if (text != null) el.textContent = text;
     return el;
   }
@@ -109,7 +112,7 @@
     var card = _el('div', 'stat-card');
     card.appendChild(_el('div', 'stat-label', label));
     card.appendChild(_el('div', 'stat-value', String(value)));
-    if (hint) card.appendChild(_el('div', 'stat-hint', hint));
+    if (hint)  card.appendChild(_el('div', 'stat-hint', hint));
     if (badge) card.appendChild(_el('div', badge.cls, badge.text));
     return card;
   }
@@ -158,250 +161,393 @@
     return card;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Section 1 — Overview
-  // ─────────────────────────────────────────────────────────────────────────
-
-  var sec1  = _section('Overview');
-  var grid1 = _el('div', 'stats-grid');
-
-  var dauRow  = _last('dau');
-  var wauRow  = _last('wau');
-  var sesRow  = _first('session_duration');
-  var parentTotal = _sumField('parent_usage', 'opens');
-  var reportTotal = _sumField('report_usage', 'report_count');
-
-  grid1.appendChild(_statCard(
-    'Students active today',
-    _num(dauRow && dauRow.dau),
-    'Students who started at least one session today'
-  ));
-  grid1.appendChild(_statCard(
-    'Students active this week',
-    _num(wauRow && wauRow.wau),
-    'Students who had at least one session in the last 7 days'
-  ));
-  grid1.appendChild(_statCard(
-    'Avg. session length',
-    sesRow ? _mins(sesRow.avg_duration_secs) : '—',
-    'Average time a student spends in a single learning session'
-  ));
-  grid1.appendChild(_statCard(
-    'Total sessions (30d)',
-    _num(sesRow && sesRow.session_count),
-    'Total student sessions started in the last 30 days'
-  ));
-  grid1.appendChild(_statCard(
-    'Parent dashboard opens',
-    _num(parentTotal),
-    'How many times parents opened the dashboard this month'
-  ));
-  grid1.appendChild(_statCard(
-    'AI reports generated',
-    _num(reportTotal),
-    'Total AI progress reports generated this month'
-  ));
-
-  sec1.appendChild(grid1);
-  elContent.appendChild(sec1);
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Section 2 — Student Engagement
-  // ─────────────────────────────────────────────────────────────────────────
-
-  var sec2  = _section('Student Engagement');
-  var grid2 = _el('div', 'stats-grid');
-
-  var quizRow = _first('quiz_completion');
-
-  grid2.appendChild(_statCard(
-    'Quiz completion rate',
-    quizRow ? _pct(quizRow.completion_pct) : '—',
-    'Students who finished a quiz without quitting (last 30 days)'
-  ));
-  grid2.appendChild(_statCard(
-    'Quiz abandonment rate',
-    quizRow ? _pct(quizRow.abandonment_pct) : '—',
-    'Students who quit or gave up before finishing a quiz'
-  ));
-  grid2.appendChild(_statCard(
-    'Quizzes started',
-    quizRow ? _num(quizRow.started) : '—',
-    'Total quizzes started in the last 30 days'
-  ));
-  grid2.appendChild(_statCard(
-    'Avg. session length',
-    sesRow ? _mins(sesRow.avg_duration_secs) : '—',
-    'Average minutes per learning session'
-  ));
-
-  sec2.appendChild(grid2);
-
-  var tablesRow2 = _el('div', 'tables-row');
-
-  var gradeRows = Array.isArray(d['top_grades'])
-    ? d['top_grades'].map(function (r) { return [_grade(r.grade), _num(r.student_count) + ' students']; })
-    : [];
-  tablesRow2.appendChild(_tableCard(
-    'Most active grades',
-    ['Grade', 'Active students'],
-    gradeRows,
-    'No grade data yet'
-  ));
-
-  var unitRows = Array.isArray(d['top_units'])
-    ? d['top_units'].slice(0, 10).map(function (r) {
-        return [r.unit_id, _num(r.start_count), _num(r.unique_students)];
-      })
-    : [];
-  tablesRow2.appendChild(_tableCard(
-    'Most used units',
-    ['Unit', 'Times started', 'Unique students'],
-    unitRows,
-    'No unit activity yet'
-  ));
-
-  sec2.appendChild(tablesRow2);
-  elContent.appendChild(sec2);
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Section 3 — Learning Insights
-  // ─────────────────────────────────────────────────────────────────────────
-
-  var sec3 = _section('Learning Insights');
-
-  var hardRows = Array.isArray(d['hardest_lessons'])
-    ? d['hardest_lessons'].slice(0, 10).map(function (r) {
-        var rate = parseFloat(r.interventions_per_start);
-        return [
-          r.lesson_id,
-          _num(r.starts),
-          _num(r.interventions),
-          isNaN(rate) ? '—' : rate.toFixed(2),
-          _pct(r.resolution_pct),
-        ];
-      })
-    : [];
-  sec3.appendChild(_tableCard(
-    'Hardest lessons — ranked by how often students need help',
-    ['Lesson', 'Starts', 'Help shown', 'Help per start', 'Resolved correctly'],
-    hardRows,
-    'No lesson data yet — start some lessons to see difficulty rankings'
-  ));
-
-  var tagRows = Array.isArray(d['error_tags'])
-    ? d['error_tags'].slice(0, 10).map(function (r) {
-        return [r.error_tag || '—', _num(r.occurrences), _num(r.affected_students)];
-      })
-    : [];
-  var tablesRow3 = _el('div', 'tables-row');
-  tablesRow3.appendChild(_tableCard(
-    'Most common mistakes',
-    ['Error type', 'Times seen', 'Students affected'],
-    tagRows,
-    'No errors logged yet — errors appear when interventions are triggered'
-  ));
-
-  // Intervention resolution rate summary
-  var totalInterventions = 0, totalResolved = 0;
-  if (Array.isArray(d['hardest_lessons'])) {
-    d['hardest_lessons'].forEach(function (r) {
-      totalInterventions += (parseInt(r.interventions) || 0);
-      totalResolved      += (parseInt(r.resolved)      || 0);
-    });
+  function _funnelRow(stage, label, students, events, prevStudents) {
+    var row = _el('div', 'funnel-row');
+    row.appendChild(_el('div', 'funnel-stage', label));
+    var bar = _el('div', 'funnel-bar');
+    var fill = _el('div', 'funnel-fill');
+    var pctOfFirst = prevStudents > 0 ? (students / prevStudents) * 100 : 0;
+    fill.style.width = Math.max(0, Math.min(100, pctOfFirst)) + '%';
+    bar.appendChild(fill);
+    row.appendChild(bar);
+    var counts = _el('div', 'funnel-counts');
+    counts.appendChild(_el('span', 'funnel-students', _num(students) + ' student' + (students === 1 ? '' : 's')));
+    counts.appendChild(_el('span', 'funnel-events',   _num(events)   + ' event'   + (events   === 1 ? '' : 's')));
+    if (prevStudents > 0 && students < prevStudents) {
+      var dropPct = Math.round((1 - students / prevStudents) * 100);
+      counts.appendChild(_el('span', 'funnel-drop', '-' + dropPct + '% drop'));
+    }
+    row.appendChild(counts);
+    return row;
   }
-  var resPct = totalInterventions > 0 ? Math.round(totalResolved / totalInterventions * 100) : null;
-  var resSummaryGrid = _el('div', 'stats-grid');
-  resSummaryGrid.appendChild(_statCard(
-    'Overall intervention resolution rate',
-    resPct != null ? resPct + '%' : '—',
-    'Percentage of help prompts that students answered correctly on the retry'
-  ));
-  resSummaryGrid.appendChild(_statCard(
-    'Total interventions triggered',
-    _num(totalInterventions || null),
-    'Total times the app showed a student a help prompt (last 30 days)'
-  ));
-  tablesRow3.appendChild(resSummaryGrid);
 
-  sec3.appendChild(tablesRow3);
-  elContent.appendChild(sec3);
+  // ── Filter controls ─────────────────────────────────────────────────────
+  function _buildFilters() {
+    var wrap = _el('div', 'filters');
+    wrap.appendChild(_el('h2', 'section-title', 'Filters'));
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Section 4 — Retention
-  // ─────────────────────────────────────────────────────────────────────────
+    var grid = _el('div', 'filter-grid');
 
-  var sec4  = _section('Retention');
-  var rGrid = _el('div', 'retention-grid');
+    // Days
+    var dCol = _el('div', 'filter-col');
+    dCol.appendChild(_el('label', 'filter-label', 'Date range'));
+    var dSel = document.createElement('select');
+    dSel.id = 'filter-days';
+    [['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days']].forEach(function(opt){
+      var o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if (opt[0] === filters.days) o.selected = true;
+      dSel.appendChild(o);
+    });
+    dSel.addEventListener('change', function(){ filters.days = dSel.value; _refresh(); });
+    dCol.appendChild(dSel);
+    grid.appendChild(dCol);
 
-  var r1  = _first('retention_1d');
-  var r7  = _first('retention_7d');
-  var r30 = _first('retention_30d');
+    // Grade
+    var gCol = _el('div', 'filter-col');
+    gCol.appendChild(_el('label', 'filter-label', 'Grade'));
+    var gSel = document.createElement('select');
+    gSel.id = 'filter-grade';
+    [['all','All grades'],['K','Kindergarten'],['1','Grade 1'],['2','Grade 2']].forEach(function(opt){
+      var o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if (opt[0] === filters.grade) o.selected = true;
+      gSel.appendChild(o);
+    });
+    gSel.addEventListener('change', function(){ filters.grade = gSel.value; _refresh(); });
+    gCol.appendChild(gSel);
+    grid.appendChild(gCol);
 
-  rGrid.appendChild(_retentionCard(
-    'Back the next day',
-    'Of students who used the app yesterday, how many returned today. Good apps see 30–50%.',
-    r1  ? r1.retention_pct  : null,
-    r1  ? parseInt(r1.cohort_size)  || 0 : 0,
-    r1  ? parseInt(r1.retained)     || 0 : 0
-  ));
-  rGrid.appendChild(_retentionCard(
-    'Back within 7 days',
-    'Of students active 7–14 days ago, how many came back in the last 7 days. Strong apps see 20–40%.',
-    r7  ? r7.retention_pct  : null,
-    r7  ? parseInt(r7.cohort_size)  || 0 : 0,
-    r7  ? parseInt(r7.retained)     || 0 : 0
-  ));
-  rGrid.appendChild(_retentionCard(
-    'Back within 30 days',
-    'Of students active 30–60 days ago, how many came back in the last 30 days. Strong apps see 15–30%.',
-    r30 ? r30.retention_pct : null,
-    r30 ? parseInt(r30.cohort_size) || 0 : 0,
-    r30 ? parseInt(r30.retained)    || 0 : 0
-  ));
+    wrap.appendChild(grid);
+    return wrap;
+  }
 
-  sec4.appendChild(rGrid);
-  elContent.appendChild(sec4);
+  function _windowLabel() {
+    return 'Last ' + filters.days + ' days'
+         + (filters.grade !== 'all' ? ' · ' + _grade(filters.grade) : '');
+  }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Section 5 — Bill Risk
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── Render ──────────────────────────────────────────────────────────────
+  function _renderAll(d) {
+    elContent.innerHTML = '';
 
-  var sec5  = _section('Bill Risk — Gemini API Usage');
-  var grid5 = _el('div', 'stats-grid');
+    var title = _el('h1', null, 'My Math Roots');
+    elContent.appendChild(title);
+    var subtitle = _el('p', 'subtitle', 'Internal Analytics — Admin only · ' + _windowLabel());
+    elContent.appendChild(subtitle);
 
-  var billRow   = _first('bill_risk');
-  var calls24h  = billRow ? (parseInt(billRow.gemini_calls_24h)  || 0) : 0;
-  var calls7d   = billRow ? (parseInt(billRow.gemini_calls_7d)   || 0) : 0;
-  var parents7d = billRow ? (parseInt(billRow.unique_parents_7d) || 0) : 0;
+    elContent.appendChild(_buildFilters());
 
-  grid5.appendChild(_statCard(
-    'Reports in last 24 hours',
-    _num(calls24h),
-    'Each AI report = 1 Gemini API call',
-    calls24h > 50
-      ? { cls: 'badge badge-high', text: 'Unusually high — check for abuse' }
-      : calls24h > 20
-        ? { cls: 'badge badge-warn', text: 'Elevated — monitor closely' }
-        : { cls: 'badge badge-ok',   text: 'Normal' }
-  ));
-  grid5.appendChild(_statCard(
-    'Reports in last 7 days',
-    _num(calls7d),
-    'Total AI progress reports generated this week',
-    calls7d > 200
-      ? { cls: 'badge badge-high', text: 'High — review Gemini costs' }
-      : calls7d > 100
-        ? { cls: 'badge badge-warn', text: 'Elevated — keep an eye on costs' }
-        : { cls: 'badge badge-ok',   text: 'Normal' }
-  ));
-  grid5.appendChild(_statCard(
-    'Unique parents using reports',
-    _num(parents7d),
-    'Parents who generated at least one AI report this week'
-  ));
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Active Users (DAU/WAU/MAU + total students)
+    // ──────────────────────────────────────────────────────────────────────
+    var secActive = _section('Active Users');
+    var gActive   = _el('div', 'stats-grid');
 
-  sec5.appendChild(grid5);
-  elContent.appendChild(sec5);
+    var dauRow = _last (d, 'dau');
+    var wauRow = _last (d, 'wau');
+    var mauRow = _first(d, 'mau');
+    var tsRow  = _first(d, 'total_students');
 
+    gActive.appendChild(_statCard('Daily active students',
+      _num(dauRow && dauRow.dau),
+      'Students who started at least one session today'));
+    gActive.appendChild(_statCard('Weekly active students',
+      _num(wauRow && wauRow.wau),
+      'Distinct students with a session this week'));
+    gActive.appendChild(_statCard('Monthly active students',
+      _num(mauRow && mauRow.mau),
+      'Distinct students with a session in the selected window'));
+    gActive.appendChild(_statCard('Total student profiles',
+      _num(tsRow && tsRow.total),
+      tsRow ? _num(tsRow.with_recent_activity) + ' active in last 30 days' : 'No data yet'));
+
+    secActive.appendChild(gActive);
+    elContent.appendChild(secActive);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Drop-off Funnel
+    // ──────────────────────────────────────────────────────────────────────
+    var secFunnel = _section('Drop-off Funnel');
+    var funnelData = _isArr(d, 'drop_off_funnel') ? d['drop_off_funnel'].slice() : [];
+    funnelData.sort(function(a, b){ return (a.step_idx||0) - (b.step_idx||0); });
+    if (funnelData.length === 0) {
+      secFunnel.appendChild(_el('div', 'empty', 'No funnel data yet'));
+    } else {
+      var labels = {
+        app_opened:         '1. App opened',
+        student_app_opened: '2. Student app opened',
+        unit_viewed:        '3. Unit viewed',
+        lesson_viewed:      '4. Lesson viewed',
+        quiz_started:       '5. Quiz started',
+        quiz_completed:     '6. Quiz completed',
+        quiz_abandoned:     '*  Quiz abandoned',
+      };
+      var first = funnelData.find(function(s){ return s.stage === 'app_opened'; });
+      var anchor = (first && parseInt(first.students)) || 0;
+      // app_opened → lesson_viewed → quiz_started/completed funnel
+      var orderedKeep = ['app_opened','student_app_opened','unit_viewed','lesson_viewed','quiz_started','quiz_completed'];
+      var prev = anchor;
+      orderedKeep.forEach(function(stage){
+        var row = funnelData.find(function(s){ return s.stage === stage; });
+        if (!row) return;
+        secFunnel.appendChild(_funnelRow(stage, labels[stage] || stage,
+          parseInt(row.students) || 0, parseInt(row.events) || 0, prev));
+        prev = parseInt(row.students) || 0;
+      });
+      // Quiz abandoned shown separately (off-funnel)
+      var abandonRow = funnelData.find(function(s){ return s.stage === 'quiz_abandoned'; });
+      if (abandonRow) {
+        var qsRow = funnelData.find(function(s){ return s.stage === 'quiz_started'; });
+        secFunnel.appendChild(_funnelRow('quiz_abandoned', labels.quiz_abandoned,
+          parseInt(abandonRow.students) || 0,
+          parseInt(abandonRow.events) || 0,
+          (qsRow ? parseInt(qsRow.students) : 0) || 0));
+      }
+    }
+    elContent.appendChild(secFunnel);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Engagement (sessions / avg duration / top grades + units)
+    // ──────────────────────────────────────────────────────────────────────
+    var secEng = _section('Engagement');
+    var gEng   = _el('div', 'stats-grid');
+
+    var sesRow = _first(d, 'session_duration');
+    var parentTotal = _sumField(d, 'parent_usage', 'opens');
+
+    gEng.appendChild(_statCard('Total sessions',
+      _num(sesRow && sesRow.session_count),
+      'Student sessions started in the selected window'));
+    gEng.appendChild(_statCard('Avg. session length',
+      sesRow ? _mins(sesRow.avg_duration_secs) : '—',
+      'Average time a student spends in a single session'));
+    gEng.appendChild(_statCard('Parent dashboard opens',
+      _num(parentTotal),
+      'Parent dashboard sessions in the selected window'));
+
+    secEng.appendChild(gEng);
+
+    var engTables = _el('div', 'tables-row');
+    var gradeRows = _isArr(d, 'top_grades')
+      ? d['top_grades'].map(function (r) { return [_grade(r.grade), _num(r.student_count) + ' students']; })
+      : [];
+    engTables.appendChild(_tableCard('Most active grades',
+      ['Grade', 'Active students'], gradeRows, 'No grade data yet'));
+
+    var unitRows = _isArr(d, 'top_units')
+      ? d['top_units'].slice(0, 10).map(function (r) {
+          return [r.unit_id, _num(r.start_count), _num(r.unique_students)];
+        }) : [];
+    engTables.appendChild(_tableCard('Most used units',
+      ['Unit', 'Times started', 'Unique students'], unitRows, 'No unit activity yet'));
+
+    secEng.appendChild(engTables);
+    elContent.appendChild(secEng);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Top Lessons
+    // ──────────────────────────────────────────────────────────────────────
+    var secTopL = _section('Top Lessons');
+    var topLessonRows = _isArr(d, 'top_lessons')
+      ? d['top_lessons'].slice(0, 15).map(function (r) {
+          return [r.lesson_id, _num(r.views), _num(r.starts), _num(r.completions), _num(r.unique_students)];
+        }) : [];
+    secTopL.appendChild(_tableCard('Most used lessons',
+      ['Lesson', 'Views', 'Quiz starts', 'Completions', 'Unique students'],
+      topLessonRows, 'No lesson activity yet'));
+    elContent.appendChild(secTopL);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Quiz Performance
+    // ──────────────────────────────────────────────────────────────────────
+    var secQuiz = _section('Quiz Performance');
+    var gQuiz   = _el('div', 'stats-grid');
+    var quizRow = _first(d, 'quiz_completion');
+
+    gQuiz.appendChild(_statCard('Quizzes started',
+      quizRow ? _num(quizRow.started) : '—',
+      'Total quizzes started in the window'));
+    gQuiz.appendChild(_statCard('Quiz completion rate',
+      quizRow ? _pct(quizRow.completion_pct) : '—',
+      'Students who finished a quiz without quitting'));
+    gQuiz.appendChild(_statCard('Quiz abandonment rate',
+      quizRow ? _pct(quizRow.abandonment_pct) : '—',
+      'Students who quit or gave up before finishing'));
+    gQuiz.appendChild(_statCard('Completed quizzes',
+      quizRow ? _num(quizRow.completed) : '—',
+      'Distinct from started — counted by quiz_completed events'));
+    secQuiz.appendChild(gQuiz);
+    elContent.appendChild(secQuiz);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Learning Insights (hardest lessons + error tags + hints)
+    // ──────────────────────────────────────────────────────────────────────
+    var secInsights = _section('Learning Insights');
+
+    var hardRows = _isArr(d, 'hardest_lessons')
+      ? d['hardest_lessons'].slice(0, 10).map(function (r) {
+          var rate = parseFloat(r.interventions_per_start);
+          return [
+            r.lesson_id, _num(r.starts), _num(r.interventions),
+            isNaN(rate) ? '—' : rate.toFixed(2),
+            _pct(r.resolution_pct),
+          ];
+        }) : [];
+    secInsights.appendChild(_tableCard(
+      'Hardest lessons — ranked by how often students need help',
+      ['Lesson', 'Starts', 'Help shown', 'Help per start', 'Resolved correctly'],
+      hardRows,
+      'No lesson data yet — start some lessons to see difficulty rankings'));
+
+    var insightsTables = _el('div', 'tables-row');
+    var tagRows = _isArr(d, 'error_tags')
+      ? d['error_tags'].slice(0, 10).map(function (r) {
+          return [r.error_tag || '—', _num(r.occurrences), _num(r.affected_students)];
+        }) : [];
+    insightsTables.appendChild(_tableCard('Most common mistakes',
+      ['Error type', 'Times seen', 'Students affected'], tagRows,
+      'No errors logged yet — errors appear when interventions are triggered'));
+
+    // Hint usage card
+    var hintRow = _first(d, 'hint_usage');
+    var hintsTotal = hintRow ? parseInt(hintRow.total_hints) || 0 : 0;
+    var hintsStudents = hintRow ? parseInt(hintRow.unique_students) || 0 : 0;
+    var hintsPerStudent = hintRow && hintRow.hints_per_student != null ? hintRow.hints_per_student : null;
+    var hintsGrid = _el('div', 'stats-grid');
+    hintsGrid.appendChild(_statCard('Hints revealed',
+      _num(hintsTotal),
+      'First-reveal count — one per question max'));
+    hintsGrid.appendChild(_statCard('Students using hints',
+      _num(hintsStudents),
+      'Pseudonymous students who tapped at least one hint'));
+    hintsGrid.appendChild(_statCard('Hints per student',
+      hintsPerStudent != null ? hintsPerStudent : '—',
+      'Average reveals per student over the window'));
+    insightsTables.appendChild(hintsGrid);
+
+    secInsights.appendChild(insightsTables);
+    elContent.appendChild(secInsights);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Parent Actions (free mode / reset / unlock)
+    // ──────────────────────────────────────────────────────────────────────
+    var secParent = _section('Parent Actions');
+    var gParent   = _el('div', 'stats-grid');
+
+    var fm     = _first(d, 'free_mode_usage');
+    var reset  = _first(d, 'reset_usage');
+    var unlock = _isArr(d, 'unlock_usage') ? d['unlock_usage'] : [];
+
+    gParent.appendChild(_statCard('Free Mode toggles',
+      fm ? _num(fm.total) : '—',
+      fm ? (_num(fm.turned_on) + ' on · ' + _num(fm.turned_off) + ' off · ' + _num(fm.unique_parents) + ' parent' + (fm.unique_parents === 1 ? '' : 's')) : 'No data yet'));
+
+    gParent.appendChild(_statCard('Student resets',
+      reset ? _num(reset.total) : '—',
+      reset ? (_num(reset.unique_parents) + ' parent' + (reset.unique_parents === 1 ? '' : 's') + ' · ' + _num(reset.unique_students) + ' student' + (reset.unique_students === 1 ? '' : 's')) : 'No data yet'));
+
+    var unlockTotal = unlock.reduce(function(a, r){ return a + (parseInt(r.total) || 0); }, 0);
+    gParent.appendChild(_statCard('Manual unlock changes',
+      _num(unlockTotal),
+      unlock.length ? unlock.length + ' scope/action breakdowns below' : 'No data yet'));
+
+    secParent.appendChild(gParent);
+
+    if (unlock.length > 0) {
+      var unlockRows = unlock.map(function(r){
+        return [r.scope || '—', r.action || '—', _num(r.total), _num(r.unique_parents)];
+      });
+      secParent.appendChild(_tableCard('Unlock breakdown',
+        ['Scope', 'Action', 'Total', 'Unique parents'], unlockRows, 'No data yet'));
+    }
+
+    elContent.appendChild(secParent);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Retention (1d / 7d / 30d)
+    // ──────────────────────────────────────────────────────────────────────
+    var secRet = _section('Retention');
+    var rGrid  = _el('div', 'retention-grid');
+
+    var r1  = _first(d, 'retention_1d');
+    var r7  = _first(d, 'retention_7d');
+    var r30 = _first(d, 'retention_30d');
+
+    rGrid.appendChild(_retentionCard('Back the next day',
+      'Of students who used the app yesterday, how many returned today. Good apps see 30–50%.',
+      r1 ? r1.retention_pct : null,
+      r1 ? parseInt(r1.cohort_size) || 0 : 0,
+      r1 ? parseInt(r1.retained)    || 0 : 0));
+    rGrid.appendChild(_retentionCard('Back within 7 days',
+      'Of students active 7–14 days ago, how many came back in the last 7 days. Strong apps see 20–40%.',
+      r7 ? r7.retention_pct : null,
+      r7 ? parseInt(r7.cohort_size) || 0 : 0,
+      r7 ? parseInt(r7.retained)    || 0 : 0));
+    rGrid.appendChild(_retentionCard('Back within 30 days',
+      'Of students active 30–60 days ago, how many came back in the last 30 days. Strong apps see 15–30%.',
+      r30 ? r30.retention_pct : null,
+      r30 ? parseInt(r30.cohort_size) || 0 : 0,
+      r30 ? parseInt(r30.retained)    || 0 : 0));
+
+    secRet.appendChild(rGrid);
+    elContent.appendChild(secRet);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: AI Reports & Bill Risk
+    // ──────────────────────────────────────────────────────────────────────
+    var secBill = _section('AI Reports — Bill Risk (Gemini API)');
+    var gBill   = _el('div', 'stats-grid');
+    var billRow   = _first(d, 'bill_risk');
+    var calls24h  = billRow ? (parseInt(billRow.gemini_calls_24h)  || 0) : 0;
+    var calls7d   = billRow ? (parseInt(billRow.gemini_calls_7d)   || 0) : 0;
+    var parents7d = billRow ? (parseInt(billRow.unique_parents_7d) || 0) : 0;
+    var reportTotal = _sumField(d, 'report_usage', 'report_count');
+
+    gBill.appendChild(_statCard('AI reports generated',
+      _num(reportTotal), 'In the selected window'));
+    gBill.appendChild(_statCard('Reports in last 24h',
+      _num(calls24h), 'Each AI report = 1 Gemini API call',
+      calls24h > 50 ? { cls: 'badge badge-high', text: 'High — check for abuse' }
+        : calls24h > 20 ? { cls: 'badge badge-warn', text: 'Elevated' }
+        : { cls: 'badge badge-ok', text: 'Normal' }));
+    gBill.appendChild(_statCard('Reports in last 7 days',
+      _num(calls7d), 'Total reports this week',
+      calls7d > 200 ? { cls: 'badge badge-high', text: 'High' }
+        : calls7d > 100 ? { cls: 'badge badge-warn', text: 'Elevated' }
+        : { cls: 'badge badge-ok', text: 'Normal' }));
+    gBill.appendChild(_statCard('Unique parents using AI reports',
+      _num(parents7d), 'Parents who generated at least one report (last 7 days)'));
+
+    secBill.appendChild(gBill);
+    elContent.appendChild(secBill);
+  }
+
+  // ── Refresh on filter change ────────────────────────────────────────────
+  async function _refresh() {
+    // Show a lightweight loading state on top of the existing render so the
+    // user sees feedback while metrics refetch.
+    var statusEl = document.getElementById('refresh-status');
+    if (!statusEl) {
+      statusEl = _el('div', 'refresh-status', 'Refreshing…');
+      statusEl.id = 'refresh-status';
+      document.body.appendChild(statusEl);
+    } else {
+      statusEl.textContent = 'Refreshing…';
+      statusEl.style.display = 'block';
+    }
+    try {
+      var d = await _loadMetrics();
+      _renderAll(d);
+    } catch (e) {
+      var err = _el('div', 'error-banner', 'Failed to load analytics: ' + (e && e.message || 'unknown error'));
+      elContent.innerHTML = '';
+      elContent.appendChild(err);
+    } finally {
+      if (statusEl) statusEl.style.display = 'none';
+    }
+  }
+
+  // Initial render
+  await _refresh();
 })();
