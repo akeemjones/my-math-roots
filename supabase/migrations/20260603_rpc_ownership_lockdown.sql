@@ -155,8 +155,9 @@ BEGIN
     PERFORM _validate_pin_session(p_student_id, p_session_token);
     RETURN (SELECT COALESCE(unlock_settings, '{}'::jsonb) FROM student_profiles WHERE id = p_student_id);
   END IF;
-  RAISE EXCEPTION 'not_authorized' USING ERRCODE = '42501'
-    USING HINT = 'Requires parent auth or valid session token';
+  RAISE EXCEPTION 'not_authorized'
+    USING ERRCODE = '42501',
+          HINT = 'Requires parent auth or valid session token';
 END;
 $$;
 REVOKE EXECUTE ON FUNCTION public.get_unlock_settings(UUID, UUID) FROM PUBLIC;
