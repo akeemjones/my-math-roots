@@ -73,6 +73,10 @@
     'hint_usage', 'free_mode_usage', 'reset_usage', 'unlock_usage',
     // Phase C.3A
     'new_signups', 'returning_students', 'sessions_per_student', 'avg_score',
+    // Phase C.3B
+    'unique_site_visits',
+    // Launch Gate (controlled beta)
+    'launch_dashboard',
   ];
 
   function _buildQuery(metric) {
@@ -225,6 +229,132 @@
     return row;
   }
 
+  // ── Launch Controls (controlled beta) ───────────────────────────────────
+  function _buildLaunchControls(d) {
+    var sec = _section('Launch Controls');
+    var lc  = (Array.isArray(d.launch_dashboard) && d.launch_dashboard.length > 0) ? d.launch_dashboard[0] : null;
+
+    if (!lc) {
+      sec.appendChild(_el('div', 'empty', 'Could not load launch settings.'));
+      return sec;
+    }
+
+    var wrap = _el('div', 'launch-controls');
+
+    // Status badges row
+    var statRow = _el('div', 'stats-grid');
+    var capUsed = lc.current_parent_accounts || 0;
+    var capMax  = lc.max_parent_accounts || 0;
+    var pct     = capMax > 0 ? Math.round((capUsed / capMax) * 100) : 0;
+    statRow.appendChild(_statCard('Parent accounts',
+      _num(capUsed) + ' / ' + _num(capMax),
+      'Currently ' + pct + '% of cap used'));
+    statRow.appendChild(_statCard('Student profiles',
+      _num(lc.current_student_profiles),
+      'Cap: ' + _num(lc.max_students_per_parent) + ' per parent'));
+    statRow.appendChild(_statCard('Waitlist',
+      _num(lc.waitlist_count),
+      'Pending entries'));
+    statRow.appendChild(_statCard('Signup state',
+      lc.signup_enabled ? (capUsed >= capMax ? 'Cap reached' : 'Open') : 'Closed',
+      lc.signup_enabled
+        ? (capUsed >= capMax ? 'Waitlist active' : 'Accepting new signups')
+        : 'Manually disabled'));
+    wrap.appendChild(statRow);
+
+    // Editor card
+    var card = _el('div', 'launch-editor');
+
+    function row(labelText, inputEl, hintText) {
+      var r = _el('div', 'launch-row');
+      var l = _el('label', 'launch-label', labelText);
+      r.appendChild(l);
+      r.appendChild(inputEl);
+      if (hintText) r.appendChild(_el('div', 'launch-hint', hintText));
+      return r;
+    }
+
+    var signupSel = document.createElement('select');
+    signupSel.id = 'lc-signup-enabled';
+    [['true','Open — accepting new signups'], ['false','Closed — waitlist only']].forEach(function(opt){
+      var o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if ((opt[0] === 'true') === !!lc.signup_enabled) o.selected = true;
+      signupSel.appendChild(o);
+    });
+    card.appendChild(row('Signup status', signupSel,
+      'Closed forces every visitor to the waitlist regardless of cap.'));
+
+    var waitSel = document.createElement('select');
+    waitSel.id = 'lc-waitlist-enabled';
+    [['true','Open — visitors can join'], ['false','Closed — hide form']].forEach(function(opt){
+      var o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if ((opt[0] === 'true') === !!lc.waitlist_enabled) o.selected = true;
+      waitSel.appendChild(o);
+    });
+    card.appendChild(row('Waitlist', waitSel,
+      'Set to Closed if you do not want to collect emails right now.'));
+
+    var capInp = document.createElement('input');
+    capInp.type = 'number'; capInp.min = '1'; capInp.max = '100000';
+    capInp.id = 'lc-max-parent'; capInp.value = String(lc.max_parent_accounts);
+    card.appendChild(row('Max parent accounts', capInp,
+      'When parent accounts reach this number, new signups are blocked.'));
+
+    var stuInp = document.createElement('input');
+    stuInp.type = 'number'; stuInp.min = '1'; stuInp.max = '50';
+    stuInp.id = 'lc-max-students'; stuInp.value = String(lc.max_students_per_parent);
+    card.appendChild(row('Max student profiles per parent', stuInp,
+      'Enforced server-side via a database trigger.'));
+
+    var msg = _el('div', 'launch-msg');
+    msg.id = 'lc-msg';
+    card.appendChild(msg);
+
+    var btn = document.createElement('button');
+    btn.className = 'apply-btn';
+    btn.textContent = 'Save Launch Settings';
+    btn.addEventListener('click', _saveLaunchSettings);
+    card.appendChild(btn);
+
+    wrap.appendChild(card);
+    sec.appendChild(wrap);
+    return sec;
+  }
+
+  async function _saveLaunchSettings() {
+    var msg = document.getElementById('lc-msg');
+    if (msg) { msg.textContent = 'Saving…'; msg.className = 'launch-msg pending'; }
+    var body = {
+      signup_enabled:          document.getElementById('lc-signup-enabled').value === 'true',
+      waitlist_enabled:        document.getElementById('lc-waitlist-enabled').value === 'true',
+      max_parent_accounts:     parseInt(document.getElementById('lc-max-parent').value, 10),
+      max_students_per_parent: parseInt(document.getElementById('lc-max-students').value, 10),
+    };
+    try {
+      var r = await fetch('/.netlify/functions/analytics-query?metric=update_launch_settings', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHdr },
+        body:    JSON.stringify(body),
+      });
+      var json = await r.json().catch(function(){ return {}; });
+      if (!r.ok) {
+        if (msg) { msg.textContent = '⚠️ ' + (json.error || 'Save failed.'); msg.className = 'launch-msg error'; }
+        return;
+      }
+      if (msg) { msg.textContent = '✅ Saved. Reloading dashboard…'; msg.className = 'launch-msg ok'; }
+      try {
+        // Best-effort fire-and-forget event so we can see who tweaks the gate.
+        if (window._supa) await window._supa.rpc('app_event_noop').catch(()=>{});
+      } catch (_) {}
+      // Reload to reflect new cap/status across all sections.
+      setTimeout(function(){ window.location.reload(); }, 600);
+    } catch (e) {
+      if (msg) { msg.textContent = '⚠️ Network error.'; msg.className = 'launch-msg error'; }
+    }
+  }
+
   // ── Filter controls ─────────────────────────────────────────────────────
   function _buildFilters() {
     var wrap = _el('div', 'filters');
@@ -356,6 +486,11 @@
     elContent.appendChild(_buildFilters());
 
     // ──────────────────────────────────────────────────────────────────────
+    // Section: Launch Controls (controlled beta)
+    // ──────────────────────────────────────────────────────────────────────
+    elContent.appendChild(_buildLaunchControls(d));
+
+    // ──────────────────────────────────────────────────────────────────────
     // Section: Active Users (DAU/WAU/MAU + total students)
     // ──────────────────────────────────────────────────────────────────────
     var secActive = _section('Active Users');
@@ -393,6 +528,8 @@
     var totalS    = signups.reduce(function(a, r){ return a + (parseInt(r.student_signups) || 0); }, 0);
     var ret       = _first(d, 'returning_students');
     var sps       = _first(d, 'sessions_per_student');
+    var visits    = _isArr(d, 'unique_site_visits') ? d['unique_site_visits'] : [];
+    var totalVisits = visits.reduce(function(a, r){ return a + (parseInt(r.unique_visitors) || 0); }, 0);
 
     gGrowth.appendChild(_statCard('New parent accounts',
       _num(totalP),
@@ -410,6 +547,11 @@
       sps && sps.active_students > 0
         ? 'Range: ' + _num(sps.min_sessions) + '–' + _num(sps.max_sessions) + ' across ' + _num(sps.active_students) + ' students'
         : 'Not enough data yet'));
+    gGrowth.appendChild(_statCard('Unique site visits',
+      visits.length > 0 ? _num(totalVisits) : '—',
+      visits.length > 0
+        ? 'Distinct anonymous browsers that loaded the login page in the selected window'
+        : 'No visit data yet — starts tracking from deploy'));
 
     secGrowth.appendChild(gGrowth);
     elContent.appendChild(secGrowth);

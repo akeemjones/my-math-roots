@@ -35,6 +35,14 @@ var _ANA_VALID_EVENTS = new Set([
   'manual_unlock_changed',       // parent manually unlocked/relocked a unit or lesson
   'quiz_abandoned',              // quiz quit/restarted before completion
   'parent_dash_section_viewed',  // reserved — dashboard sections not yet collapsible
+  // ── Phase C.3B (2026-05-21) ──
+  'website_viewed',              // public site visit, deduped once per calendar day
+  // ── Launch Gate (2026-05-21) ──
+  'waitlist_viewed',             // waitlist panel shown
+  'waitlist_joined',             // user submitted waitlist email
+  'signup_gate_viewed',          // signup gate panel shown (cap reached or signups disabled)
+  'signup_blocked_capacity',     // signup attempt rejected by cap
+  'launch_settings_updated',     // admin changed launch controls
 ]);
 
 // ── Per-event student-id override (Phase C.1) ─────────────────────────────
@@ -72,6 +80,25 @@ function _anaExtractOverride(metadata) {
     out[k] = metadata[k];
   }
   return { claimed_student_id: override, metadata: out };
+}
+
+// ── Anonymous visitor ID (Phase C.3B) ────────────────────────────────────────
+// Generates a random, persistent identifier stored in localStorage under
+// mmr_anon_visitor_id. Used only to dedup website_viewed events at the
+// aggregate level (count distinct IDs per day). Never tied to auth, student
+// data, IP, or any PII. Falls back to an opaque timestamp+random string when
+// crypto.randomUUID is unavailable. Returns null if localStorage is blocked.
+function _getAnonVisitorId() {
+  var KEY = 'mmr_anon_visitor_id';
+  try {
+    var id = localStorage.getItem(KEY);
+    if (id) return id;
+    var newId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : ('anon_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11));
+    localStorage.setItem(KEY, newId);
+    return newId;
+  } catch (_) { return null; }
 }
 
 // ── View-event dedup (in-memory; clears on page reload or explicit reset) ──
@@ -318,5 +345,6 @@ if (typeof module !== 'undefined' && module.exports) {
     _ANA_VALID_EVENTS:      _ANA_VALID_EVENTS,
     _anaShouldFire:         _anaShouldFire,
     _anaExtractOverride:    _anaExtractOverride,
+    _getAnonVisitorId:      _getAnonVisitorId,
   };
 }

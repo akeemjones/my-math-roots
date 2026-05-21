@@ -217,6 +217,23 @@
             Sign In
           </button>
           </form>
+          <!-- Waitlist panel (Launch Gate) — shown when signup_open=false -->
+          <div id="ls-waitlist-panel" style="display:none;margin-top:14px;padding:14px;border-radius:14px;background:rgba(59,130,246,0.08);border:1.5px solid rgba(59,130,246,0.25)">
+            <div id="ls-waitlist-headline" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);text-align:center;color:var(--txt);margin-bottom:6px">
+              We're in limited beta
+            </div>
+            <div id="ls-waitlist-sub" style="font-size:var(--fs-sm);text-align:center;color:var(--txt2);line-height:1.45;margin-bottom:12px">
+              All spots are currently filled. Join the waitlist and we'll let you know when more open up.
+            </div>
+            <div id="ls-waitlist-form" style="display:flex;flex-direction:column;gap:8px">
+              <input class="set-inp" id="ls-waitlist-email" type="email" placeholder="Email address" autocomplete="email" inputmode="email" style="font-size:var(--fs-base);width:100%;box-sizing:border-box">
+              <button type="button" id="ls-waitlist-btn" data-action="_lsJoinWaitlist"
+                style="width:100%;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);padding:12px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.12);touch-action:manipulation">
+                Join Waitlist
+              </button>
+            </div>
+            <div id="ls-waitlist-msg" style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);min-height:1.2rem;margin-top:8px;text-align:center"></div>
+          </div>
           </div><!-- #ls-form-shared -->
           </div><!-- #ls-mount-1 -->
         </div><!-- #ls-card-1 -->
@@ -779,8 +796,8 @@
     <p id="auth-modal-sub" style="text-align:center;font-size:var(--fs-sm);color:var(--txt2);margin:0 0 18px">Save your progress across devices</p>
     <!-- Tab switcher -->
     <div style="display:flex;border:2px solid var(--border2);border-radius:50px;margin-bottom:18px;overflow:hidden">
-      <button id="auth-tab-login" class="auth-tab-btn active" type="button" data-action="_switchAuthTab" data-arg="login">Sign In</button>
-      <button id="auth-tab-signup" class="auth-tab-btn idle" type="button" data-action="_switchAuthTab" data-arg="signup">Create Account</button>
+      <button id="auth-tab-login" class="auth-tab-btn active" type="button" data-action="_switchAuthTab" data-arg="login" style="flex:1 1 100%">Sign In</button>
+      <button id="auth-tab-signup" class="auth-tab-btn idle" type="button" data-action="_switchAuthTab" data-arg="signup" style="display:none">Create Account</button>
     </div>
     <!-- Display name (signup only) -->
     <div id="auth-name-row" style="display:none;margin-bottom:12px">

@@ -55,6 +55,16 @@ const ALLOWED_EVENT_NAMES = new Set([
   'manual_unlock_changed',
   'quiz_abandoned',
   'parent_dash_section_viewed',
+  // ── Phase C.3B (2026-05-21) ──
+  // KEEP IN SYNC with src/analytics.js _ANA_VALID_EVENTS and the
+  // app_events_event_name_whitelist CHECK constraint.
+  'website_viewed',
+  // ── Launch Gate (2026-05-21) ──
+  'waitlist_viewed',
+  'waitlist_joined',
+  'signup_gate_viewed',
+  'signup_blocked_capacity',
+  'launch_settings_updated',
 ]);
 const VALID_GRADES         = new Set(['K','1','2','3','4','5']);
 const MAX_EVENTS_PER_BATCH = 50;
