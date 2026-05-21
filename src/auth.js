@@ -885,9 +885,32 @@ function _lsInitCarousel() {
 
   var _startX = 0, _startY = 0, _startT = 0;
   var _intentSet = false, _isHoriz = false, _outerW = 0;
-  var _EASE = 'cubic-bezier(0.4,0,0.2,1)';
 
-  track.addEventListener('touchstart', function(e) {
+  // Lerp helpers — inactive cards rest at scale(.94) / opacity(.7).
+  // Progress is 0 (no drag) → 1 (full card width dragged).
+  function _lerpScale(progress)   { return 1 - 0.06 * progress; }   // 1 → 0.94
+  function _lerpOpacity(progress) { return 1 - 0.30 * progress; }   // 1 → 0.70
+
+  function _setCardStyle(el, scale, opacity) {
+    if (!el) return;
+    el.style.transform = 'scale(' + scale + ')';
+    el.style.opacity   = opacity;
+  }
+
+  function _clearCardInlineStyles() {
+    ['ls-card-0', 'ls-card-1'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      // Reverting these to '' lets the CSS rule + .is-active class take over.
+      // Order matters: transition first so the next paint animates,
+      // then transform + opacity so the change becomes a transition.
+      el.style.transition = '';
+      el.style.transform  = '';
+      el.style.opacity    = '';
+    });
+  }
+
+  track.addEventListener('touchstart', function (e) {
     _startX    = e.touches[0].clientX;
     _startY    = e.touches[0].clientY;
     _startT    = Date.now();
@@ -895,9 +918,14 @@ function _lsInitCarousel() {
     _isHoriz   = false;
     _outerW    = (track.parentElement || document.body).offsetWidth || window.innerWidth;
     track.style.transition = 'none';
+    // Pause card transitions so finger-following lerp is instant, not smoothed.
+    var c0 = document.getElementById('ls-card-0');
+    var c1 = document.getElementById('ls-card-1');
+    if (c0) c0.style.transition = 'none';
+    if (c1) c1.style.transition = 'none';
   }, { passive: true });
 
-  track.addEventListener('touchmove', function(e) {
+  track.addEventListener('touchmove', function (e) {
     var dx = e.touches[0].clientX - _startX;
     var dy = e.touches[0].clientY - _startY;
     if (!_intentSet && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
@@ -905,26 +933,34 @@ function _lsInitCarousel() {
       _isHoriz   = Math.abs(dx) > Math.abs(dy);
     }
     if (!_isHoriz) return;
-    // Follow finger in pixels, clamped so you can't over-drag past either card
+    // Follow finger in pixels, clamped so you can't over-drag past either card.
     var currentPx = _lsCardIdx * (-_outerW);
     var newPx     = Math.max(-_outerW, Math.min(0, currentPx + dx));
     track.style.transform = 'translateX(' + newPx + 'px)';
+    // Drag progress — 0 at rest, 1 at full card-width displacement.
+    var progress = Math.abs(newPx + (_lsCardIdx * _outerW)) / _outerW;
+    if (progress > 1) progress = 1;
+    var c0 = document.getElementById('ls-card-0');
+    var c1 = document.getElementById('ls-card-1');
+    if (_lsCardIdx === 0) {
+      _setCardStyle(c0, _lerpScale(progress),     _lerpOpacity(progress));
+      _setCardStyle(c1, _lerpScale(1 - progress), _lerpOpacity(1 - progress));
+    } else {
+      _setCardStyle(c1, _lerpScale(progress),     _lerpOpacity(progress));
+      _setCardStyle(c0, _lerpScale(1 - progress), _lerpOpacity(1 - progress));
+    }
   }, { passive: true });
 
-  function _snapTo(targetIdx, duration) {
-    track.style.transition = 'transform ' + (duration || 0.28) + 's ' + _EASE;
-    track.style.transform  = 'translateX(' + (targetIdx * -50) + '%)';
-  }
-
-  track.addEventListener('touchend', function(e) {
+  track.addEventListener('touchend', function (e) {
     if (!_intentSet || !_isHoriz) {
-      // Pure tap or vertical — restore position without animation quirks
-      _snapTo(_lsCardIdx, 0.28);
+      // Pure tap or vertical scroll attempt — bounce back, clear inline styles.
+      _lsSnapTrack(_lsCardIdx, 0.28);
+      _clearCardInlineStyles();
       return;
     }
     var dx        = e.changedTouches[0].clientX - _startX;
     var gestureMs = Math.max(1, Date.now() - _startT);
-    var velocity  = Math.abs(dx) / gestureMs;          // px/ms
+    var velocity  = Math.abs(dx) / gestureMs;
     var isFast    = velocity > 0.3 && Math.abs(dx) > 20;
     var committed = Math.abs(dx) >= _outerW * 0.5 || isFast;
 
@@ -934,16 +970,21 @@ function _lsInitCarousel() {
       else if (dx > 0 && _lsCardIdx > 0) targetIdx = 0;
     }
 
-    _snapTo(targetIdx, 0.28);
-
     if (targetIdx !== _lsCardIdx) {
-      var _t = targetIdx;
-      setTimeout(function() { _lsCarouselGo(_t); }, 280);
+      // Move the form + apply state immediately so the slide reveals a
+      // populated card instead of an empty ghost. _lsApplyCardState updates
+      // _lsCardIdx, toggles .is-active, mounts the form, and re-attaches the
+      // ResizeObserver. _lsAdaptHeight animates outer height to the new card.
+      _lsApplyCardState(targetIdx);
+      _lsAdaptHeight();
     }
+    _lsSnapTrack(targetIdx, 0.28);
+    _clearCardInlineStyles();
   }, { passive: true });
 
-  track.addEventListener('touchcancel', function() {
-    _snapTo(_lsCardIdx, 0.28);
+  track.addEventListener('touchcancel', function () {
+    _lsSnapTrack(_lsCardIdx, 0.28);
+    _clearCardInlineStyles();
   }, { passive: true });
 }
 
