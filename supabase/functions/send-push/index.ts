@@ -3,6 +3,7 @@ import webPush from 'npm:web-push';
 
 const SUPABASE_URL        = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const SEND_PUSH_SECRET    = Deno.env.get('SEND_PUSH_SECRET');
 const VAPID_PUBLIC_KEY    = Deno.env.get('VAPID_PUBLIC_KEY')!;
 const VAPID_PRIVATE_KEY   = Deno.env.get('VAPID_PRIVATE_KEY')!;
 const VAPID_SUBJECT       = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:support@mymathroots.com';
@@ -29,9 +30,18 @@ const STREAK_5_DAY = {
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
+  // Require an exact shared-secret Authorization header. The previous
+  // implementation accepted either `Bearer ${SERVICE_ROLE_KEY}` OR the
+  // header `x-supabase-cron: true`. The cron header is client-settable —
+  // anyone with the function URL could POST that header and trigger
+  // push notifications to every subscriber, burning WebPush + admin
+  // attention. Replaced with a dedicated SEND_PUSH_SECRET so the secret
+  // can be rotated independently of the service-role key.
+  if (!SEND_PUSH_SECRET) {
+    return new Response('Server misconfigured', { status: 500 });
+  }
   const authHeader = req.headers.get('Authorization');
-  const isCron     = req.headers.get('x-supabase-cron') === 'true';
-  if (!isCron && authHeader !== `Bearer ${SUPABASE_SERVICE_KEY}`) {
+  if (authHeader !== `Bearer ${SEND_PUSH_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -42,16 +52,27 @@ Deno.serve(async (req) => {
   const today     = now.toISOString().slice(0, 10);
   const yesterday = new Date(now.getTime() - 86_400_000).toISOString().slice(0, 10);
 
-  // Fetch every push subscription (include user_id for streak lookup)
-  const { data: subs, error } = await supa
-    .from('push_subscriptions')
-    .select('id, endpoint, p256dh, auth, user_id');
-
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  if (!subs || subs.length === 0) return new Response(JSON.stringify({ sent: 0 }), { status: 200 });
+  // Fetch push subscriptions in pages of 1000. With a small subscriber
+  // count this loop iterates once; defense-in-depth for future growth.
+  type Sub = { id: string; endpoint: string; p256dh: string; auth: string; user_id: string | null };
+  const PAGE_SIZE = 1000;
+  const subs: Sub[] = [];
+  let offset = 0;
+  while (true) {
+    const { data, error } = await supa
+      .from('push_subscriptions')
+      .select('id, endpoint, p256dh, auth, user_id')
+      .range(offset, offset + PAGE_SIZE - 1);
+    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    if (!data || data.length === 0) break;
+    subs.push(...(data as Sub[]));
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  if (subs.length === 0) return new Response(JSON.stringify({ sent: 0 }), { status: 200 });
 
   // Bulk-fetch streak profiles for every subscriber who has an account
-  const userIds = [...new Set(subs.map(s => s.user_id).filter(Boolean))];
+  const userIds = [...new Set(subs.map(s => s.user_id).filter(Boolean))] as string[];
   const profileMap: Record<string, { current_streak: number; last_activity_date: string | null }> = {};
   if (userIds.length > 0) {
     const { data: profiles } = await supa
@@ -65,7 +86,6 @@ Deno.serve(async (req) => {
 
   let sent = 0, failed = 0;
   const staleIds: string[] = [];
-  const results: unknown[] = [];
 
   await Promise.allSettled(subs.map(async (sub) => {
     const profile = sub.user_id ? profileMap[sub.user_id] : null;
@@ -93,13 +113,11 @@ Deno.serve(async (req) => {
     const subscription = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
 
     try {
-      const result = await webPush.sendNotification(subscription, payload);
+      await webPush.sendNotification(subscription, payload);
       sent++;
-      results.push({ id: sub.id, status: result.statusCode });
     } catch (e: any) {
-      if (e.statusCode === 404 || e.statusCode === 410) staleIds.push(sub.id);
+      if (e?.statusCode === 404 || e?.statusCode === 410) staleIds.push(sub.id);
       failed++;
-      results.push({ id: sub.id, status: e.statusCode, body: e.body, error: String(e.message ?? e) });
     }
   }));
 
@@ -107,8 +125,11 @@ Deno.serve(async (req) => {
     await supa.from('push_subscriptions').delete().in('id', staleIds);
   }
 
+  // Trimmed response: summary counts only. The previous version returned
+  // a per-subscriber `results` array with status codes and body text,
+  // which exposed which subscription ids exist and which failed.
   return new Response(
-    JSON.stringify({ sent, failed, stale_removed: staleIds.length, results }),
+    JSON.stringify({ sent, failed, stale_removed: staleIds.length }),
     { status: 200, headers: { 'Content-Type': 'application/json' } },
   );
 });
