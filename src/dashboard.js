@@ -5086,8 +5086,7 @@ function dbSignOut() {
   }
   // SPA navigation — no page reload needed; SIGNED_OUT event in auth.js shows login screen
   show('login-screen');
-  if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
-  if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+  if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
 }
 
 // ── Manage Profiles ───────────────────────────────────────────────────────
@@ -5563,7 +5562,20 @@ async function dbAddSave() {
     closeAddStudentSheet();
     _reRenderManageProfiles();
   } catch(e) {
-    if (msg) msg.textContent = e.message && e.message.includes('unique') ? 'A student with that name already exists.' : 'Error saving. Try again.';
+    if (msg) {
+      const errMsg = (e && e.message) ? String(e.message) : '';
+      if (errMsg.indexOf('profile_limit_reached') !== -1) {
+        // Launch Gate: BEFORE INSERT trigger enforces max_students_per_parent.
+        const cap = (errMsg.match(/max (\d+) students/) || [])[1];
+        msg.textContent = cap
+          ? 'During beta, accounts can have up to ' + cap + ' student profiles.'
+          : 'Maximum student profiles reached for this account.';
+      } else if (errMsg.includes('unique')) {
+        msg.textContent = 'A student with that name already exists.';
+      } else {
+        msg.textContent = 'Error saving. Try again.';
+      }
+    }
     if (btn) btn.textContent = 'Add Student';
   }
 }

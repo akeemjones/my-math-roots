@@ -1108,7 +1108,7 @@ function supabaseInit(){
     const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
     _lsInitCarousel();
-    _lsRenderStudentCard();
+    _lsCarouselGo(0);
     _trackWebsiteVisit();
     // No Supabase = no launch status. UI stays in default open state.
     _dismissSplash('login-screen');
@@ -1213,8 +1213,7 @@ function supabaseInit(){
           return;
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
-          show('login-screen'); _initOneTap(); _lsInitCarousel();
-          _lsRenderStudentCard();
+          show('login-screen'); _initOneTap(); _lsInitCarousel(); _lsCarouselGo(0);
           _trackWebsiteVisit();
           _loadLaunchStatus();
           _dismissSplash('login-screen');
@@ -1257,7 +1256,7 @@ function supabaseInit(){
       _clearUserData();
       show('login-screen');
       _lsInitCarousel();
-      _lsRenderStudentCard();
+      _lsCarouselGo(0);
       _initOneTap();
       _loadLaunchStatus();
       _dismissSplash('login-screen');
@@ -3269,8 +3268,7 @@ async function _signOut(){
   // (2) Show login immediately so UI matches the new state regardless of
   //     whether the async Supabase signOut completes.
   if (typeof show === 'function') show('login-screen');
-  if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
-  if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+  if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
 
   // (3) Student PIN session: no Supabase signOut needed.
   if (_soRole === 'student') return;
