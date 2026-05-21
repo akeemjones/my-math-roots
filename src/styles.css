@@ -685,7 +685,7 @@ body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 .uq-btn:hover{ box-shadow:0 14px 40px rgba(0,0,0,.2); }
 .uq-btn:active{ transform:translateY(1px); }
 .uq-btn-left{ text-align:left; flex:1; }
-.uq-btn-left h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg); color:var(--uc); margin-bottom:2px; }
+.uq-btn-left h2, .uq-btn-left h3{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg); font-weight:400; color:var(--uc); margin-bottom:2px; }
 .uq-btn-left p{ font-size:var(--fs-sm); color:var(--txt2); }
 .uq-btn-ico{ font-size:var(--fs-2xl); flex-shrink:0; }
 

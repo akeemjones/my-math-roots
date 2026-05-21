@@ -63,14 +63,15 @@ function openUnit(idx){
   if(idx !== CUR.unitIdx && !isUnitUnlocked(idx)){ showLockToast(`Finish Unit ${idx} with 80%+ first!`, true); return; }
   CUR.unitIdx = idx;
   // After unit data loads, patch the quiz question count label with the
-  // actual attempt size (unitTest.totalQuestions if present, else testBank length).
+  // actual attempt size. _unitQuizSize() mirrors the sampler's output across
+  // all three grade paths (K quizBlueprint sum / G1 unitTest.totalQuestions /
+  // G2 default 25) — never the raw testBank pool length.
   if(typeof _loadUnit === 'function') _loadUnit(idx).then(function(){
     if(CUR.unitIdx !== idx) return; // user navigated away
     const _u = UNITS_DATA[idx];
     const _h3 = document.getElementById('uq-h3');
     if(_u && _h3 && _h3.textContent.startsWith('Unit Quiz —')){
-      const _n = (_u.unitTest && _u.unitTest.totalQuestions) || (_u.testBank && _u.testBank.length);
-      if(_n) _h3.textContent = 'Unit Quiz — ' + _n + ' Questions';
+      _h3.textContent = 'Unit Quiz — ' + _unitQuizSize(_u) + ' Questions';
     }
   });
   try {
@@ -174,10 +175,9 @@ function openUnit(idx){
     } else {
       uqResumeArea.innerHTML = '';
       document.getElementById('uq-ico').textContent = uqPct>=80 ? '✅' : '▶️';
-      // Prefer unitTest.totalQuestions (G1 attempt size, e.g., 25) over the
-      // raw testBank length (which for G1 is the full 530-q pool).
-      const uqCount = (u.unitTest && u.unitTest.totalQuestions) || (u.testBank && u.testBank.length) || (u.quizBank && u.quizBank.length) || 25;
-      document.getElementById('uq-h3').textContent = `Unit Quiz — ${uqCount} Questions`;
+      // Attempt-size mirrors the sampler — never the raw testBank pool length.
+      // See src/quiz-helpers.js → _unitQuizSize().
+      document.getElementById('uq-h3').textContent = `Unit Quiz — ${_unitQuizSize(u)} Questions`;
       document.getElementById('uq-h3').style.color = u.color;
       document.getElementById('uq-p').textContent = uqPct>0 ? `Best score: ${uqPct}% — need 80%+ to unlock next unit` : 'Test everything you learned in this unit!';
       uqBtn.onclick = () => startUnitQuiz(idx);
