@@ -85,23 +85,43 @@ async function _readLaunchSettings(supaUrl, svcKey) {
   return Array.isArray(rows) && rows.length ? rows[0] : null;
 }
 
-async function _countParentAccounts(supaUrl, svcKey) {
-  // Count rows in public.profiles (1:1 with auth.users via on-signup trigger).
-  // HEAD with Prefer: count=exact returns the total in Content-Range.
-  const r = await fetch(`${supaUrl}/rest/v1/profiles?select=id`, {
-    method:  'HEAD',
-    headers: {
-      'apikey':        svcKey,
-      'Authorization': 'Bearer ' + svcKey,
-      'Prefer':        'count=exact',
-      'Range-Unit':    'items',
-      'Range':         '0-0',
-    },
-  });
-  if (!r.ok) return null;
-  const cr = r.headers.get('content-range') || '';
-  const m  = /\/(\d+)$/.exec(cr);
-  return m ? parseInt(m[1], 10) : null;
+// Atomically reserve one signup slot via the SECURITY DEFINER RPC. Returns
+// true on success, false if the cap is reached, or null on RPC error
+// (surfaced upstream as 500 reserve_unavailable). The counter is the
+// single source of truth — see migration 20260604_signup_cap_atomic.sql.
+async function _tryReserveSignupSlot(supaUrl, svcKey) {
+  try {
+    const r = await fetch(`${supaUrl}/rest/v1/rpc/try_reserve_signup_slot`, {
+      method:  'POST',
+      headers: {
+        'apikey':        svcKey,
+        'Authorization': 'Bearer ' + svcKey,
+        'Content-Type':  'application/json',
+      },
+      body: '{}',
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j === true;
+  } catch { return null; }
+}
+
+// Decrement the signup counter. Called when _adminCreateUser fails AFTER
+// _tryReserveSignupSlot has already incremented it. Best-effort: errors
+// are swallowed (drift is acceptable and is monitored separately by
+// public.reconcile_signup_counter()).
+async function _releaseSignupSlot(supaUrl, svcKey) {
+  try {
+    await fetch(`${supaUrl}/rest/v1/rpc/release_signup_slot`, {
+      method:  'POST',
+      headers: {
+        'apikey':        svcKey,
+        'Authorization': 'Bearer ' + svcKey,
+        'Content-Type':  'application/json',
+      },
+      body: '{}',
+    });
+  } catch (_) {}
 }
 
 async function _adminCreateUser(supaUrl, svcKey, email, password, displayName) {
@@ -179,15 +199,25 @@ exports.handler = async function(event) {
     return { statusCode: 403, headers: corsH, body: JSON.stringify({ error: 'signup_disabled', reason: 'disabled' }) };
   }
 
-  const currentCount = await _countParentAccounts(supaUrl, svcKey);
-  if (currentCount === null) return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: 'count_unavailable' }) };
-  if (currentCount >= settings.max_parent_accounts) {
+  // Race-safe slot reservation. Counts both create-succeeds and
+  // create-fails paths against the cap to prevent N parallel requests at
+  // count=cap-1 all passing a stale check. See migration
+  // 20260604_signup_cap_atomic.sql for the atomic UPDATE.
+  const reserved = await _tryReserveSignupSlot(supaUrl, svcKey);
+  if (reserved === null) {
+    return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: 'reserve_unavailable' }) };
+  }
+  if (!reserved) {
     return { statusCode: 403, headers: corsH, body: JSON.stringify({ error: 'cap_reached', reason: 'cap_reached' }) };
   }
 
   const created = await _adminCreateUser(supaUrl, svcKey, v.email, v.password, v.displayName);
   if (!created.ok) {
-    // Most likely: email already exists (Supabase returns 422)
+    // Reservation is now leaked from the perspective of this attempt — give
+    // the slot back so future signups can use it. Best-effort; drift is
+    // monitored via public.reconcile_signup_counter().
+    await _releaseSignupSlot(supaUrl, svcKey);
+    // Most likely: email already exists (Supabase returns 422).
     if (created.status === 422 || /already/i.test(created.error || '')) {
       return { statusCode: 409, headers: corsH, body: JSON.stringify({ error: 'email_in_use' }) };
     }
@@ -211,6 +241,9 @@ exports.handler = async function(event) {
 };
 
 // ── Jest bridge ──────────────────────────────────────────────────────────────
-exports._normalizeEmail        = _normalizeEmail;
-exports._validateSignupRequest = _validateSignupRequest;
+exports._normalizeEmail         = _normalizeEmail;
+exports._validateSignupRequest  = _validateSignupRequest;
 exports._parseTurnstileResponse = _parseTurnstileResponse;
+exports._tryReserveSignupSlot   = _tryReserveSignupSlot;
+exports._releaseSignupSlot      = _releaseSignupSlot;
+exports.handler                 = exports.handler;
