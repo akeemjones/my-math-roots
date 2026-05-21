@@ -224,14 +224,27 @@ exports.handler = async function(event) {
     return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: 'create_failed' }) };
   }
 
-  // Fire-and-forget: existing notify-new-signup Supabase Edge Function
-  try {
-    fetch(`${supaUrl}/functions/v1/notify-new-signup`, {
-      method:  'POST',
-      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey, 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ email: v.email, display_name: v.displayName }),
-    }).catch(() => {});
-  } catch (_) {}
+  // Fire-and-forget: existing notify-new-signup Supabase Edge Function.
+  // The edge function now requires an exact `Bearer ${NOTIFY_NEW_SIGNUP_SECRET}`
+  // (see supabase/functions/notify-new-signup/index.ts) — passing the full
+  // service-role key was overkill and forced any compromised Bearer
+  // checker to also have service-role capabilities. We use a dedicated
+  // shared secret instead. If the env var is unset, skip the call
+  // silently rather than firing an unauthorized POST.
+  const notifySecret = process.env.NOTIFY_NEW_SIGNUP_SECRET;
+  if (notifySecret) {
+    try {
+      fetch(`${supaUrl}/functions/v1/notify-new-signup`, {
+        method:  'POST',
+        headers: {
+          'apikey':        svcKey,
+          'Authorization': 'Bearer ' + notifySecret,
+          'Content-Type':  'application/json',
+        },
+        body: JSON.stringify({ email: v.email, display_name: v.displayName }),
+      }).catch(() => {});
+    } catch (_) {}
+  }
 
   return {
     statusCode: 200,
