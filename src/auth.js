@@ -863,17 +863,25 @@ function _lsObserveActiveCard() {
 
 // Measure the active card and size the outer to match. The active card always
 // reflects what the user sees — the inactive mount is either empty or holds
-// the parked form (when the student card is active). Defensive: re-measure on
-// the next animation frame in case layout was still settling (font load,
-// async-rendered content, etc.).
+// the parked form (when the student card is active).
+//
+// Border-box accounting: the project applies `box-sizing: border-box` globally,
+// so the outer's `style.height` includes its border (1.5px × 2 = ~2px). The
+// card's content needs to fit inside `clientHeight` (which excludes border),
+// so we add the border delta (offsetHeight - clientHeight) to compensate.
+//
+// Defensive: re-measure on the next animation frame in case layout was still
+// settling (font load, async-rendered content, etc.).
 function _lsAdaptHeight() {
   var outer = document.querySelector('.ls-carousel-outer');
   var active = document.getElementById('ls-card-' + _lsCardIdx);
   if (!outer || !active) return;
-  var h = active.scrollHeight;
+  var borderDelta = outer.offsetHeight - outer.clientHeight;
+  var h = active.scrollHeight + borderDelta;
   outer.style.height = h + 'px';
   requestAnimationFrame(function () {
-    var actual = active.scrollHeight;
+    var actualDelta = outer.offsetHeight - outer.clientHeight;
+    var actual = active.scrollHeight + actualDelta;
     if (actual > h + 1) outer.style.height = actual + 'px';
   });
 }
