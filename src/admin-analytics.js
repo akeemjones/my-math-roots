@@ -231,10 +231,11 @@
   function _renderAll(d) {
     elContent.innerHTML = '';
 
-    var title = _el('h1', null, 'My Math Roots');
-    elContent.appendChild(title);
-    var subtitle = _el('p', 'subtitle', 'Internal Analytics — Admin only · ' + _windowLabel());
-    elContent.appendChild(subtitle);
+    // The static <h1>/<p class="subtitle"> already exist in admin-analytics.html;
+    // update the subtitle text to reflect the active filter window instead of
+    // appending a duplicate.
+    var staticSub = document.querySelector('#dashboard > .subtitle');
+    if (staticSub) staticSub.textContent = 'Internal Analytics — Admin only · ' + _windowLabel();
 
     elContent.appendChild(_buildFilters());
 
