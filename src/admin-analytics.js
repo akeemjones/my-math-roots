@@ -43,7 +43,8 @@
   elDash.style.display = 'block';
 
   // ── Filter state ────────────────────────────────────────────────────────
-  var filters = { days: '30', grade: 'all' };
+  // `breakdown` only applies to the Average Scores section (single RPC).
+  var filters = { days: '30', grade: 'all', breakdown: 'lesson' };
 
   // Metric set — every RPC the admin page consumes.
   var METRICS = [
@@ -55,6 +56,8 @@
     // Phase C.2
     'mau', 'total_students', 'drop_off_funnel', 'top_lessons',
     'hint_usage', 'free_mode_usage', 'reset_usage', 'unlock_usage',
+    // Phase C.3A
+    'new_signups', 'returning_students', 'sessions_per_student', 'avg_score',
   ];
 
   function _buildQuery(metric) {
@@ -62,6 +65,11 @@
            + '&days='  + encodeURIComponent(filters.days);
     if (filters.grade && filters.grade !== 'all') {
       qs += '&grade=' + encodeURIComponent(filters.grade);
+    }
+    // avg_score is the only RPC that honors breakdown; always send it so the
+    // server doesn't have to guess. Other RPCs ignore the unknown param.
+    if (metric === 'avg_score') {
+      qs += '&breakdown=' + encodeURIComponent(filters.breakdown);
     }
     return '/.netlify/functions/analytics-query' + qs;
   }
@@ -267,6 +275,38 @@
     elContent.appendChild(secActive);
 
     // ──────────────────────────────────────────────────────────────────────
+    // Section: Growth & Engagement (Phase C.3A)
+    // ──────────────────────────────────────────────────────────────────────
+    var secGrowth = _section('Growth & Engagement');
+    var gGrowth   = _el('div', 'stats-grid');
+
+    var signups   = _isArr(d, 'new_signups') ? d['new_signups'] : [];
+    var totalP    = signups.reduce(function(a, r){ return a + (parseInt(r.parent_signups)  || 0); }, 0);
+    var totalS    = signups.reduce(function(a, r){ return a + (parseInt(r.student_signups) || 0); }, 0);
+    var ret       = _first(d, 'returning_students');
+    var sps       = _first(d, 'sessions_per_student');
+
+    gGrowth.appendChild(_statCard('New parent accounts',
+      _num(totalP),
+      'Parent accounts created in the selected window'));
+    gGrowth.appendChild(_statCard('New student profiles',
+      _num(totalS),
+      'Student profiles added in the selected window'));
+    gGrowth.appendChild(_statCard('Returning students',
+      ret && ret.active_students > 0 ? _pct(ret.returning_pct) : '—',
+      ret && ret.active_students > 0
+        ? _num(ret.returning_count) + ' of ' + _num(ret.active_students) + ' active students returned on a 2nd day'
+        : 'Not enough data yet'));
+    gGrowth.appendChild(_statCard('Avg sessions per student',
+      sps && sps.active_students > 0 ? _num(sps.avg_sessions) : '—',
+      sps && sps.active_students > 0
+        ? 'Range: ' + _num(sps.min_sessions) + '–' + _num(sps.max_sessions) + ' across ' + _num(sps.active_students) + ' students'
+        : 'Not enough data yet'));
+
+    secGrowth.appendChild(gGrowth);
+    elContent.appendChild(secGrowth);
+
+    // ──────────────────────────────────────────────────────────────────────
     // Section: Drop-off Funnel
     // ──────────────────────────────────────────────────────────────────────
     var secFunnel = _section('Drop-off Funnel');
@@ -358,6 +398,43 @@
       ['Lesson', 'Views', 'Quiz starts', 'Completions', 'Unique students'],
       topLessonRows, 'No lesson activity yet'));
     elContent.appendChild(secTopL);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Section: Average Scores (Phase C.3A) — breakdown by grade/unit/lesson
+    // ──────────────────────────────────────────────────────────────────────
+    var secAvg = _section('Average Scores');
+
+    var tabBar  = _el('div', 'tab-bar');
+    [['lesson','By lesson'],['unit','By unit'],['grade','By grade']].forEach(function(opt){
+      var btn = _el('button', 'tab-btn' + (filters.breakdown === opt[0] ? ' tab-active' : ''), opt[1]);
+      btn.type = 'button';
+      btn.addEventListener('click', function(){
+        if (filters.breakdown === opt[0]) return;
+        filters.breakdown = opt[0];
+        _refresh();
+      });
+      tabBar.appendChild(btn);
+    });
+    secAvg.appendChild(tabBar);
+
+    var avgRows = _isArr(d, 'avg_score')
+      ? d['avg_score'].slice(0, 30).map(function(r){
+          return [r.key || '—', _pct(r.avg_pct), _num(r.attempts), _num(r.unique_students)];
+        }) : [];
+    var bdHeader = filters.breakdown.charAt(0).toUpperCase() + filters.breakdown.slice(1);
+    var avgTable = _tableCard('Avg score by ' + filters.breakdown,
+      [bdHeader, 'Avg score', 'Attempts', 'Unique students'],
+      avgRows,
+      avgRows.length === 0
+        ? 'No completed attempts with score data in this slice yet.'
+        : 'No data');
+    secAvg.appendChild(avgTable);
+
+    var note = _el('p', 'section-note',
+      'Based on quiz_completed and lesson_completed events that include a score percentage. Quit and abandoned attempts are excluded.');
+    secAvg.appendChild(note);
+
+    elContent.appendChild(secAvg);
 
     // ──────────────────────────────────────────────────────────────────────
     // Section: Quiz Performance

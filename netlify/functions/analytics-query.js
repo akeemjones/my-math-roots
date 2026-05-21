@@ -39,32 +39,53 @@ function _parseAnalyticsFilters(params) {
   return { p_days: p_days, p_grade: p_grade };
 }
 
+// ── Breakdown parsing (Phase C.3A) ────────────────────────────────────────
+// analytics_avg_score is the only RPC that takes a third parameter the
+// admin can vary at request time. Validated against a strict allow-list
+// both here and in the RPC body itself (defense in depth). Unknown input
+// defaults to 'lesson' — the most-specific, most-useful breakdown.
+const _ALLOWED_BREAKDOWNS = new Set(['grade', 'unit', 'lesson']);
+function _parseBreakdown(raw) {
+  if (typeof raw !== 'string') return 'lesson';
+  var s = raw.trim().toLowerCase();
+  if (_ALLOWED_BREAKDOWNS.has(s)) return s;
+  return 'lesson';
+}
+
 const METRIC_TO_RPC = {
   // Phase A
-  dau:              'analytics_dau',
-  wau:              'analytics_wau',
-  session_duration: 'analytics_session_duration',
-  quiz_completion:  'analytics_quiz_completion',
-  retention_1d:     'analytics_retention_1d',
-  retention_7d:     'analytics_retention_7d',
-  retention_30d:    'analytics_retention_30d',
-  top_grades:       'analytics_top_grades',
-  top_units:        'analytics_top_units',
-  hardest_lessons:  'analytics_hardest_lessons',
-  error_tags:       'analytics_error_tags',
-  report_usage:     'analytics_report_usage',
-  bill_risk:        'analytics_bill_risk',
-  parent_usage:     'analytics_parent_usage',
+  dau:                  'analytics_dau',
+  wau:                  'analytics_wau',
+  session_duration:     'analytics_session_duration',
+  quiz_completion:      'analytics_quiz_completion',
+  retention_1d:         'analytics_retention_1d',
+  retention_7d:         'analytics_retention_7d',
+  retention_30d:        'analytics_retention_30d',
+  top_grades:           'analytics_top_grades',
+  top_units:            'analytics_top_units',
+  hardest_lessons:      'analytics_hardest_lessons',
+  error_tags:           'analytics_error_tags',
+  report_usage:         'analytics_report_usage',
+  bill_risk:            'analytics_bill_risk',
+  parent_usage:         'analytics_parent_usage',
   // Phase C.2
-  mau:              'analytics_mau',
-  total_students:   'analytics_total_students',
-  drop_off_funnel:  'analytics_drop_off_funnel',
-  top_lessons:      'analytics_top_lessons',
-  hint_usage:       'analytics_hint_usage',
-  free_mode_usage:  'analytics_free_mode_usage',
-  reset_usage:      'analytics_reset_usage',
-  unlock_usage:     'analytics_unlock_usage',
+  mau:                  'analytics_mau',
+  total_students:       'analytics_total_students',
+  drop_off_funnel:      'analytics_drop_off_funnel',
+  top_lessons:          'analytics_top_lessons',
+  hint_usage:           'analytics_hint_usage',
+  free_mode_usage:      'analytics_free_mode_usage',
+  reset_usage:          'analytics_reset_usage',
+  unlock_usage:         'analytics_unlock_usage',
+  // Phase C.3A
+  new_signups:          'analytics_new_signups',
+  returning_students:   'analytics_returning_students',
+  sessions_per_student: 'analytics_sessions_per_student',
+  avg_score:            'analytics_avg_score',
 };
+
+// Metrics that accept p_breakdown in addition to p_days/p_grade.
+const _METRICS_WITH_BREAKDOWN = new Set(['avg_score']);
 
 const _rateMap = new Map();
 function _checkRateLimit(ip) {
@@ -127,12 +148,16 @@ exports.handler = async function(event) {
   // Validated filter values — pass as named RPC args. RPCs declare matching
   // p_days INTEGER DEFAULT 30 / p_grade TEXT DEFAULT NULL signatures.
   const filters = _parseAnalyticsFilters(qs);
+  // Phase C.3A: a small set of RPCs also accept p_breakdown. Attach when relevant.
+  const rpcArgs = _METRICS_WITH_BREAKDOWN.has(metric)
+    ? Object.assign({}, filters, { p_breakdown: _parseBreakdown(qs.breakdown) })
+    : filters;
 
   try {
     const res = await fetch(`${supaUrl}/rest/v1/rpc/${rpcName}`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey },
-      body:    JSON.stringify(filters),
+      body:    JSON.stringify(rpcArgs),
     });
     if (!res.ok) {
       const txt = await res.text().catch(() => '');
@@ -145,7 +170,8 @@ exports.handler = async function(event) {
   }
 };
 
-// Jest bridge — exposes the pure helper for unit testing.
+// Jest bridge — exposes the pure helpers for unit testing.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports._parseAnalyticsFilters = _parseAnalyticsFilters;
+  module.exports._parseBreakdown        = _parseBreakdown;
 }
