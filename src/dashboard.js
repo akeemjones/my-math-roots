@@ -5122,6 +5122,31 @@ function dbSignOut() {
   if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
 }
 
+// ── Managed-profile helpers ──────────────────────────────────────────────
+// Pure mappers from a `student_profiles` row (as returned by
+// _fetchManagedProfiles' .select(…)) into the STREAK and ACT_DATES shapes
+// the parent dashboard's per-student _students[id] cache expects. Before
+// this, _fetchManagedProfiles omitted the streak/act-dates columns and
+// _students[id].STREAK was hard-coded to {0,0,null} forever, so the
+// parent Activity Snapshot always showed "0 days" current streak for
+// every managed student regardless of real progress.
+function _dbBuildStudentStreak(profile) {
+  var p = (profile && typeof profile === 'object') ? profile : {};
+  return {
+    current:  (typeof p.streak_current === 'number' && p.streak_current >= 0) ? p.streak_current : 0,
+    longest:  (typeof p.streak_longest === 'number' && p.streak_longest >= 0) ? p.streak_longest : 0,
+    lastDate: (typeof p.streak_last_date === 'string' && p.streak_last_date !== '') ? p.streak_last_date : null,
+  };
+}
+
+function _dbBuildStudentActDates(profile) {
+  var p = (profile && typeof profile === 'object') ? profile : {};
+  if (!Array.isArray(p.act_dates_json)) return [];
+  return p.act_dates_json.filter(function(d) {
+    return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+  });
+}
+
 // ── Manage Profiles ───────────────────────────────────────────────────────
 
 async function _fetchManagedProfiles() {
@@ -5130,7 +5155,7 @@ async function _fetchManagedProfiles() {
     var result = await Promise.race([
       _supa
         .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade, streak_current, streak_longest, streak_last_date, act_dates_json')
         .order('created_at', { ascending: true }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
@@ -5865,7 +5890,8 @@ function _dbInit() {
               name: p.display_name,
               MASTERY: {},
               SCORES: [],
-              STREAK: { current: 0, longest: 0, lastDate: null },
+              STREAK: _dbBuildStudentStreak(p),
+              ACT_DATES: _dbBuildStudentActDates(p),
               APP_TIME: { totalSecs: 0, sessions: 0, dailySecs: {} },
               _scoresLoaded: false
             };
@@ -6046,6 +6072,9 @@ if (typeof module !== 'undefined') {
     _last7DaysCutoffMs,
     _getLast7DaysLessonQuizScores,
     _renderSnapLessons,
+    _dbBuildStudentStreak,
+    _dbBuildStudentActDates,
+    _renderActivitySnapshotInner,
   };
 }
 
