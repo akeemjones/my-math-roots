@@ -311,6 +311,23 @@ function _getLast7DaysTimeBreakdown(scores, appTime) {
   };
 }
 
+// Shared "last 7 days lesson-quiz scores" filter — single source of truth
+// for both the Activity Snapshot card count ("Lessons Last 7 Days") and
+// the clicked detail view (_renderSnapLessons). Keeps the two consistent
+// so the card never promises N lessons that the detail can't show.
+function _getLast7DaysLessonQuizScores(scores) {
+  if (!Array.isArray(scores)) return [];
+  var cutoffMs = _last7DaysCutoffMs();
+  return scores.filter(function(s) {
+    return s
+      && s.type === 'lesson'
+      && s.pct != null
+      && s.total > 0
+      && typeof s.id === 'number'
+      && s.id >= cutoffMs;
+  });
+}
+
 function _getLast7DaysLessonActivity(activityEvents) {
   var cutoffMs = _last7DaysCutoffMs();
   var byLesson = {};
@@ -761,11 +778,7 @@ function _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, 
     ? Math.floor(weekMins / 60) + 'h ' + String(weekMins % 60).padStart(2, '0') + 'm'
     : weekMins + 'm';
 
-  var cutoffMs = _last7DaysCutoffMs();
-  var weekLessons = scores.filter(function(s) {
-    return s.type === 'lesson' && s.pct != null && s.total > 0
-      && typeof s.id === 'number' && s.id >= cutoffMs;
-  }).length;
+  var weekLessons = _getLast7DaysLessonQuizScores(scores).length;
 
   // Streak dots
   var cur = (streak && streak.current) || 0;
@@ -956,22 +969,37 @@ function _renderSnapTime(scores, appTime) {
   return html;
 }
 
-function _renderSnapLessons(scores, activityEvents) {
-  var rows = _getLast7DaysLessonActivity(activityEvents);
+// Detail view for the "Lessons Last 7 Days" snapshot card. Reads the same
+// quiz_scores stream the card counts, via the shared
+// _getLast7DaysLessonQuizScores helper, so detail row count always equals
+// card count. The legacy activityEvents-based view drifted from the count
+// (events stream is page-views, count is quiz completions) — see git
+// history for the "show lesson-score details" fix.
+//
+// The _activityEvents arg is retained so _renderSnapDetailBody's dispatch
+// table can stay uniform with the other detail renderers; it is unused.
+function _renderSnapLessons(scores, _activityEvents) {
+  var rows = _getLast7DaysLessonQuizScores(scores)
+    .slice()
+    .sort(function(a, b) { return b.id - a.id; });
   if (!rows.length) {
-    var hadLessonQuiz = scores.some(function(s) {
-      return s.type === 'lesson' && s.pct != null && s.total > 0
-        && typeof s.id === 'number' && s.id >= _last7DaysCutoffMs();
-    });
-    if (hadLessonQuiz) {
-      return '<p class="db-snap-detail-empty">No lesson reading recorded in the last 7 days. Quiz activity was recorded — see Quizzes for details.</p>';
-    }
-    return '<p class="db-snap-detail-empty">No lesson activity in the last 7 days.</p>';
+    return '<p class="db-snap-detail-empty">No lessons completed in the last 7 days.</p>';
   }
-  return rows.map(function(r) {
+  return rows.map(function(s) {
+    var pct      = (s.pct == null) ? 0 : s.pct;
+    var pctColor = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
+    var label    = s.label || s.qid || 'Lesson Quiz';
+    var dateStr  = s.date || '';
+    var fraction = (s.score || 0) + '/' + (s.total || 0);
     return '<div class="db-snap-detail-row">'
-      + '<span>' + (r.unit ? _esc(r.unit) + ' &middot; ' : '') + _esc(r.lesson) + '</span>'
-      + '<span style="color:var(--neutral-500);font-size:.78rem">' + r.lastDate + ' &middot; ' + r.count + ' event' + (r.count !== 1 ? 's' : '') + '</span>'
+      + '<span>' + _esc(label)
+      + (dateStr
+          ? ' <span style="color:var(--neutral-500);font-size:.78rem">&middot; ' + _esc(dateStr) + '</span>'
+          : '')
+      + '</span>'
+      + '<span style="color:' + pctColor + ';font-weight:700">' + pct + '% '
+      + '<span style="color:var(--neutral-500);font-weight:500">(' + fraction + ')</span>'
+      + '</span>'
       + '</div>';
   }).join('');
 }
@@ -6015,6 +6043,9 @@ if (typeof module !== 'undefined') {
     _deriveReportDiagnostics,
     _gradeBand,
     _inferScoreGrade,
+    _last7DaysCutoffMs,
+    _getLast7DaysLessonQuizScores,
+    _renderSnapLessons,
   };
 }
 
