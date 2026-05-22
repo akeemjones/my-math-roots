@@ -1,8 +1,45 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import webPush from 'npm:web-push';
 
-const SUPABASE_URL        = Deno.env.get('SUPABASE_URL')!;
-const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+// ── Service-key resolver ──────────────────────────────────────────────────
+// Prefers the new SUPABASE_SECRET_KEYS (JSON array, auto-injected by the
+// Supabase Edge Functions runtime alongside the deprecated
+// SUPABASE_SERVICE_ROLE_KEY). Falls back to the legacy var so this code
+// is safe to deploy BEFORE the dashboard "Disable legacy keys" step.
+// Throws if neither source resolves. The error message never includes
+// secret values; nothing is logged from this function.
+//
+// envGet is parameterized so this helper can be unit-tested without the
+// Deno runtime (see tests/send-push-key-resolver.test.js).
+function _resolveSupabaseServiceKey(envGet: (name: string) => string | undefined): string {
+  const secretKeysRaw = envGet('SUPABASE_SECRET_KEYS');
+  if (secretKeysRaw) {
+    try {
+      const parsed = JSON.parse(secretKeysRaw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const first = parsed[0];
+        if (first && typeof first === 'object') {
+          const candidate = first.key || first.api_key;
+          if (typeof candidate === 'string' && candidate.length > 0) {
+            return candidate;
+          }
+        }
+      }
+    } catch {
+      // Malformed SUPABASE_SECRET_KEYS — fall through to legacy fallback.
+      // Intentionally swallowed; do not log (the source might contain
+      // partial secret material).
+    }
+  }
+  const legacy = envGet('SUPABASE_SERVICE_ROLE_KEY');
+  if (typeof legacy === 'string' && legacy.length > 0) {
+    return legacy;
+  }
+  throw new Error('Neither SUPABASE_SECRET_KEYS nor SUPABASE_SERVICE_ROLE_KEY is set');
+}
+
+const SUPABASE_URL         = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_KEY = _resolveSupabaseServiceKey((n) => Deno.env.get(n));
 const SEND_PUSH_SECRET    = Deno.env.get('SEND_PUSH_SECRET');
 const VAPID_PUBLIC_KEY    = Deno.env.get('VAPID_PUBLIC_KEY')!;
 const VAPID_PRIVATE_KEY   = Deno.env.get('VAPID_PRIVATE_KEY')!;
