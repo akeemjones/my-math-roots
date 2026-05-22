@@ -2974,6 +2974,12 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_mastery_'     + gradeBand);
     keys.push('mmr_mastery_v1_' + gradeBand);
   }
+  // Tier 1 cross-device sync: paused-quiz state must always be wiped on
+  // student/profile switch — even when sessionMatches is false. The key
+  // is a single global JSON map keyed by qid, so leaving it intact lets
+  // a paused entry from Student A or another device's session surface
+  // on the new student's first dashboard render.
+  keys.push('wb_paused_quiz');
   if (sessionMatches) {
     // The reset student owns this device's active session — sweep every
     // grade cache so a cross-grade student-app view can't fall back to
@@ -2987,7 +2993,6 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_streak');
     keys.push('wb_act_dates');
     keys.push('wb_apptime');
-    keys.push('wb_paused_quiz');
     // Legacy un-namespaced keys (pre-grade-scoping). The Grade-2 migration
     // in state.js copies these into the namespaced slot on next boot, so
     // clearing them prevents a stale repopulation cycle.

@@ -1900,6 +1900,27 @@ async function _pullStudentProgress(studentId) {
       changed = true;
     }
 
+    // Tier 1 cross-device sync: reconcile paused-quiz state against the
+    // merged DONE map. If another device completed a quiz that this device
+    // had locally paused, the paused entry must be cleared so the dashboard
+    // stops offering "Resume". Completion beats stale pause. The map is
+    // qid-keyed (e.g. 'lq_u1l4'); DONE uses the same qid as the done flag.
+    try {
+      if (typeof _getPausedAll === 'function' && typeof _clearPausedQuiz === 'function') {
+        var _pausedAll = _getPausedAll();
+        if (_pausedAll && typeof _pausedAll === 'object') {
+          var _pausedKeys = Object.keys(_pausedAll);
+          for (var _pi = 0; _pi < _pausedKeys.length; _pi++) {
+            var _pqid = _pausedKeys[_pi];
+            if (DONE && DONE[_pqid] === true) {
+              _clearPausedQuiz(_pqid);
+              changed = true;
+            }
+          }
+        }
+      }
+    } catch (_pe) {}
+
     // Merge mastery_json → mmr_mastery_v1_<grade> (per-grade canonical key;
     // per-tag higher-attempts wins). The RPC was called with p_grade scope,
     // so the row's mastery_json is already grade-isolated; we simply hydrate
@@ -2315,6 +2336,69 @@ async function _pushAll(){
     if(_pushPending){ _pushPending = false; triggerCloudSync(); }
   }
 }
+
+// ── Tier 1 cross-device resume sync ────────────────────────────────────
+// Refresh linked-student state when the device wakes up. The dashboard
+// previously read only the local cache populated at login, so a second
+// device kept showing stale lesson counts and a "resume" prompt for
+// quizzes that the first device had already finished.
+//
+// Triggered on visibilitychange→visible, focus, online, pageshow. Only
+// runs for valid family-code student sessions (not parents, not guest
+// mode). Throttled to one full push→pull every 10 s so a flurry of
+// foreground events doesn't hammer the RPC.
+var _lastResumeSyncAt = 0;
+var _RESUME_SYNC_THROTTLE_MS = 10000;
+
+// Pure helper — exported on window for tests.
+function _shouldRunResumeSync(now, lastTime, throttleMs) {
+  if (typeof now !== 'number' || typeof throttleMs !== 'number') return false;
+  if (!lastTime) return true;
+  return (now - lastTime) >= throttleMs;
+}
+
+async function _resumeSyncIfStudent(reason) {
+  try {
+    if (!_supa || !_isStudentSession()) return;
+    var studentId = localStorage.getItem('mmr_active_student_id');
+    if (!studentId || studentId === 'local' || !_sessionToken) return;
+    var _now = Date.now();
+    if (!_shouldRunResumeSync(_now, _lastResumeSyncAt, _RESUME_SYNC_THROTTLE_MS)) return;
+    _lastResumeSyncAt = _now;
+    // Push first so any unflushed local writes land on the server before
+    // we overwrite local with the pull result. _pushAll coalesces if a
+    // push is already in flight.
+    try { await _pushAll(); } catch (_pe) {}
+    try { await _pullStudentProgress(studentId); } catch (_pe) {}
+    // Refresh visible UI so unit cards / paused indicator pick up the
+    // freshly-pulled state. Guarded — buildHome lives in home.js.
+    try { if (typeof buildHome === 'function') buildHome(); } catch (_be) {}
+  } catch (_e) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('[sync] resume sync failed', reason, _e);
+    }
+  }
+}
+
+// Expose for testability + manual debugging.
+if (typeof window !== 'undefined') {
+  window._resumeSyncIfStudent = _resumeSyncIfStudent;
+  window._shouldRunResumeSync = _shouldRunResumeSync;
+}
+
+(function _attachResumeSyncListeners() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') _resumeSyncIfStudent('visibilitychange');
+  });
+  window.addEventListener('focus', function () { _resumeSyncIfStudent('focus'); });
+  window.addEventListener('online', function () { _resumeSyncIfStudent('online'); });
+  window.addEventListener('pageshow', function (e) {
+    // pageshow fires on initial load too; only sync on BFCache restore or
+    // when we're already past the login screen (a student session exists).
+    if (e && e.persisted) _resumeSyncIfStudent('pageshow-bfcache');
+  });
+})();
 
 // ── Parent-path push functions (authenticated via Supabase Auth, no session token) ──
 async function _pushDoneParent(){
