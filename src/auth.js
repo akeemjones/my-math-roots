@@ -3005,16 +3005,11 @@ async function _submitSoftGate(){
     localStorage.setItem('wb_lead', JSON.stringify({ grade, referral, date: _leadDate }));
   }
   localStorage.setItem('wb_gate_done', '1');
-  if(_supa){
-    try{
-      await _supa.from('leads').insert({
-        email,
-        grade: grade || null,
-        referral_source: referral || null
-        // device_id intentionally omitted — no persistent identifiers before consent (COPPA)
-      });
-    } catch(e){ console.warn('[leads]', e); }
-  }
+  // Direct anon insert into `leads` was the SS-4 attack surface (audit
+  // 2026-05-22). Migration 20260612_leads_lockdown.sql revokes anon
+  // INSERT on the table. Re-enabling lead capture post-launch requires
+  // a Turnstile-gated Netlify function — see the migration's table
+  // COMMENT for the re-enablement contract.
   const modal = document.getElementById('soft-gate-modal');
   if(modal){
     modal.querySelector('div').innerHTML = `<div style="text-align:center;padding:24px 8px">
