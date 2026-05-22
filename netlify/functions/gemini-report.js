@@ -6,6 +6,18 @@
 //   - Rate limiting: persistent via Supabase RPC, in-memory fallback
 //   - Server-side 14-day cooldown: reads student_profiles via service role
 //   - Input sanitization: strips control chars, limits field lengths
+//
+// AUTH (added 2026-05-22 — audit SS-3):
+// Previously this function gated auth + ownership ONLY when `studentId`
+// was a real UUID. Omitting studentId (or sending 'local'/non-UUID) made
+// the function callable without any credential — only an IP rate-limit
+// stood between an attacker and ~2,000-token Gemini calls. Botnet abuse
+// could reach ~$300-1,200/hr.
+//
+// The function now requires a verified parent JWT for EVERY call. Ownership
+// of `studentId` is still enforced when it's provided as a real UUID;
+// non-UUID `studentId` values are rejected outright unless explicitly
+// allowed by the ALLOW_LOCAL_REPORT env flag (default off in production).
 
 const https = require('https');
 
@@ -16,14 +28,18 @@ const REPORT_COOL_MS   = 14 * 24 * 60 * 60 * 1000; // 14 days
 // ── Rate limiting ─────────────────────────────────────────────────────────
 // Primary: persistent Supabase table (survives cold starts, shared across containers)
 // Fallback: in-memory map (used if SUPABASE_SERVICE_ROLE_KEY is not set)
+//
+// rateKey is now the verified parent UUID — not the caller IP. Attackers
+// rotating IPs cannot scale up past per-account cap. The legacy IP fallback
+// is preserved as a defensive secondary backstop only if Supabase is down.
 const _rateMapFallback = new Map();
 
-async function _checkRateLimit(ip) {
+async function _checkRateLimit(rateKey) {
   const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supaUrl = process.env.SUPABASE_URL;
 
   if (svcKey && supaUrl) {
-    const key       = 'report:' + ip;
+    const key       = 'report:' + rateKey;
     const windowMs  = 60000;
     const maxPerMin = 10;
 
@@ -46,56 +62,54 @@ async function _checkRateLimit(ip) {
 
   // In-memory fallback
   const now   = Date.now();
-  const entry = _rateMapFallback.get(ip) || { count: 0, reset: now + 60000 };
+  const entry = _rateMapFallback.get(rateKey) || { count: 0, reset: now + 60000 };
   if (now > entry.reset) { entry.count = 0; entry.reset = now + 60000; }
   entry.count++;
-  _rateMapFallback.set(ip, entry);
+  _rateMapFallback.set(rateKey, entry);
   return entry.count > 10;
 }
 
-// ── Ownership verification ────────────────────────────────────────────────
-// Confirms the caller's Supabase JWT belongs to the parent who owns studentId.
-// Without this check a parent could spoof another family's studentId to view
-// their saved report, burn their 14-day cooldown, or trigger Gemini calls
-// against another child's profile id.
-// Returns the verified parent user.id on success, or null on any failure.
+// ── JWT + ownership verification ──────────────────────────────────────────
+// SS-3 (2026-05-22): split the prior single-shot verify-and-own helper so
+// the handler can require a verified parent JWT for every request and run
+// the ownership check only when a studentId is supplied. Without this
+// split the function fell back to "no auth" when studentId was missing,
+// turning the endpoint into a free Gemini proxy.
 function _isUuid(s) {
   return typeof s === 'string' &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
-async function _verifyParentOwnsStudent(authHeader, studentId) {
-  const supaUrl = process.env.SUPABASE_URL;
-  const svcKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supaUrl || !svcKey || !authHeader || !studentId) return null;
-
+// Returns the verified parent UUID, or null on any failure.
+async function _verifyParentJwt(authHeader, supaUrl, svcKey) {
+  if (!supaUrl || !svcKey || !authHeader) return null;
   const m = /^Bearer\s+([^\s]+)$/.exec(authHeader);
   if (!m) return null;
-  const userJwt = m[1];
-
-  // 1. Verify JWT by asking Supabase Auth for the user it identifies.
-  let userId;
   try {
     const res = await fetch(`${supaUrl}/auth/v1/user`, {
-      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + userJwt },
+      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + m[1] },
     });
     if (!res.ok) return null;
     const user = await res.json();
-    if (!user || !user.id) return null;
-    userId = user.id;
+    if (!user || typeof user.id !== 'string' || !_isUuid(user.id)) return null;
+    return user.id;
   } catch (e) { return null; }
+}
 
-  // 2. Confirm parent_id on the student_profiles row matches that user.
+// Returns true if `parentId` owns `studentId`. Caller must have already
+// verified the JWT and obtained `parentId` via _verifyParentJwt above.
+async function _verifyParentOwnsStudent(parentId, studentId, supaUrl, svcKey) {
+  if (!parentId || !studentId || !supaUrl || !svcKey) return false;
   try {
     const res = await fetch(
       `${supaUrl}/rest/v1/student_profiles?id=eq.${encodeURIComponent(studentId)}&select=parent_id`,
       { headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey } }
     );
-    if (!res.ok) return null;
+    if (!res.ok) return false;
     const rows = await res.json();
-    if (!Array.isArray(rows) || rows.length === 0) return null;
-    return rows[0].parent_id === userId ? userId : null;
-  } catch (e) { return null; }
+    if (!Array.isArray(rows) || rows.length === 0) return false;
+    return rows[0].parent_id === parentId;
+  } catch (e) { return false; }
 }
 
 // ── Server-side cooldown check ────────────────────────────────────────────
@@ -451,19 +465,34 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  // Rate limit by IP
-  const ip = (event.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
-  if (await _checkRateLimit(ip)) {
+  let body;
+  try { body = JSON.parse(event.body); } catch {
+    return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'Invalid JSON' }) };
+  }
+
+  // ── AUTH GATE (mandatory) ──────────────────────────────────────────────
+  // SS-3 fix: require a verified parent JWT for EVERY call. Previously
+  // missing/non-UUID studentId skipped auth entirely.
+  const supaUrl  = process.env.SUPABASE_URL;
+  const svcKey   = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const authHdr  = event.headers.authorization || event.headers.Authorization || '';
+  const parentId = await _verifyParentJwt(authHdr, supaUrl, svcKey);
+  if (!parentId) {
+    return {
+      statusCode: 401,
+      headers: { 'Content-Type': 'application/json', ...corsH },
+      body: JSON.stringify({ error: 'auth_required' }),
+    };
+  }
+
+  // Rate-limit keyed on the verified parent UUID. IP-based limits let
+  // attackers scale by rotating IPs; per-account caps don't.
+  if (await _checkRateLimit(parentId)) {
     return {
       statusCode: 429,
       headers: corsH,
       body: JSON.stringify({ error: 'Too many requests' }),
     };
-  }
-
-  let body;
-  try { body = JSON.parse(event.body); } catch {
-    return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
   const { studentName, reportData, studentId } = body;
@@ -476,42 +505,60 @@ exports.handler = async function(event) {
     return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'studentName too long' }) };
   }
 
-  // Server-side 14-day cooldown check (not bypassable by the client).
-  // Returns the saved report text if cooldown is active so the client can show "View Last Report".
-  // For real student profile UUIDs we require the caller to prove ownership via
-  // their Supabase JWT — otherwise studentId would be client-trusted and a
-  // parent could pull another family's saved report or burn their cooldown.
-  // Non-UUID studentIds (e.g. 'local' preview mode) skip both verification and
-  // DB persistence — the lookup would fail anyway and there's nothing to leak.
+  // ── studentId handling ─────────────────────────────────────────────────
+  // Three valid shapes:
+  //   - Real UUID: verify ownership; enable server-side cooldown + persistence.
+  //   - Missing / undefined: allowed (parent JWT is the gate). Local-preview
+  //     mode — no DB persistence, no cooldown, but still subject to parent
+  //     rate limit.
+  //   - Non-UUID string (e.g. legacy 'local'): rejected unless the env flag
+  //     ALLOW_LOCAL_REPORT === 'true' (default off in prod) to avoid the
+  //     pre-fix "send anything weird and skip auth" behavior.
   let _verifiedStudentId = null;
-  if (studentId && typeof studentId === 'string' && studentId.length <= 64 && _isUuid(studentId)) {
-    const authHdr = event.headers.authorization || event.headers.Authorization || '';
-    const ownerId = await _verifyParentOwnsStudent(authHdr, studentId);
-    if (!ownerId) {
-      return {
-        statusCode: 403,
-        headers: { 'Content-Type': 'application/json', ...corsH },
-        body: JSON.stringify({ error: 'Not authorized for this student' }),
-      };
+  const _allowLocal = process.env.ALLOW_LOCAL_REPORT === 'true';
+  if (studentId !== undefined && studentId !== null && studentId !== '') {
+    if (typeof studentId !== 'string' || studentId.length > 64) {
+      return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'invalid_studentId' }) };
     }
-    _verifiedStudentId = studentId;
+    if (_isUuid(studentId)) {
+      const owns = await _verifyParentOwnsStudent(parentId, studentId, supaUrl, svcKey);
+      if (!owns) {
+        return {
+          statusCode: 403,
+          headers: { 'Content-Type': 'application/json', ...corsH },
+          body: JSON.stringify({ error: 'Not authorized for this student' }),
+        };
+      }
+      _verifiedStudentId = studentId;
 
-    const cooldown = await _checkServerCooldown(studentId);
-    if (cooldown) {
-      const nextDate = new Date(cooldown.nextAvailMs).toLocaleDateString('en-US', {
-        month: 'long', day: 'numeric', year: 'numeric',
-      });
+      // Server-side 14-day cooldown — only for real owned students.
+      const cooldown = await _checkServerCooldown(studentId);
+      if (cooldown) {
+        const nextDate = new Date(cooldown.nextAvailMs).toLocaleDateString('en-US', {
+          month: 'long', day: 'numeric', year: 'numeric',
+        });
+        return {
+          statusCode: 429,
+          headers: { 'Content-Type': 'application/json', ...corsH },
+          body: JSON.stringify({
+            error: 'cooldown',
+            nextAvailable: cooldown.nextAvailMs,
+            nextDate: nextDate,
+            report: cooldown.savedText,
+          }),
+        };
+      }
+    } else if (!_allowLocal) {
+      // Non-UUID studentId in production — reject. Previously this was the
+      // auth-bypass vector.
       return {
-        statusCode: 429,
-        headers: { 'Content-Type': 'application/json', ...corsH },
-        body: JSON.stringify({
-          error: 'cooldown',
-          nextAvailable: cooldown.nextAvailMs,
-          nextDate: nextDate,
-          report: cooldown.savedText,
-        }),
+        statusCode: 400,
+        headers: corsH,
+        body: JSON.stringify({ error: 'invalid_studentId' }),
       };
     }
+    // else: non-UUID but ALLOW_LOCAL_REPORT=true (dev/staging only) — fall
+    // through to generation without persistence.
   }
 
   const sysInstr = _buildSystemInstruction();
@@ -540,3 +587,8 @@ exports.handler = async function(event) {
     };
   }
 };
+
+// Jest bridge — expose pure helpers for unit testing.
+exports._isUuid                  = _isUuid;
+exports._verifyParentJwt         = _verifyParentJwt;
+exports._verifyParentOwnsStudent = _verifyParentOwnsStudent;

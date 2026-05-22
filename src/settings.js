@@ -562,9 +562,18 @@ async function generateAIReport(){
   var payload = _buildReportPayload(30);
 
   try{
+    // gemini-report now requires a verified parent JWT for every call
+    // (audit SS-3, 2026-05-22). Attach it if the parent is signed in.
+    var _hdrs = { 'Content-Type': 'application/json' };
+    try {
+      var _sess = (typeof _supa !== 'undefined' && _supa)
+        ? (await _supa.auth.getSession()).data.session
+        : null;
+      if (_sess && _sess.access_token) _hdrs['Authorization'] = 'Bearer ' + _sess.access_token;
+    } catch (_e) {}
     var resp = await fetch('/.netlify/functions/gemini-report', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: _hdrs,
       body: JSON.stringify({ studentName: _prStudentName, reportData: payload })
     });
     if(!resp.ok) throw new Error('Server error '+resp.status);
