@@ -5157,9 +5157,11 @@ function _renderManageProfiles() {
   }).join('');
 
   var familyCodeHtml = _parentFamilyCode
-    ? '<div style="margin-bottom:10px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:.8rem;color:#2e7d32">'
-      + '&#x1F511; <strong>Family Code:</strong> <span style="font-family:monospace;letter-spacing:1px">' + _esc(_parentFamilyCode) + '</span>'
-      + '<span style="color:#66bb6a;margin-left:8px">— share this with your child\'s device to link profiles</span>'
+    ? '<div style="margin-bottom:10px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:.8rem;color:#2e7d32;display:flex;flex-wrap:wrap;align-items:center;gap:8px">'
+      + '<span>&#x1F511; <strong>Family Code:</strong> <span id="db-family-code-display" style="font-family:monospace;letter-spacing:1px">' + _esc(_parentFamilyCode) + '</span></span>'
+      + '<button type="button" data-action="_dbCopyFamilyCode" aria-label="Copy family code digits" style="background:#43a047;color:#fff;border:0;border-radius:6px;padding:4px 10px;font-size:.75rem;cursor:pointer;font-weight:600">Copy Code</button>'
+      + '<span id="db-family-code-copied" role="status" aria-live="polite" style="color:#2e7d32;font-size:.75rem;display:none">Copied&nbsp;&#x2713;</span>'
+      + '<span style="color:#66bb6a;flex-basis:100%">— share this with your child\'s device to link profiles</span>'
       + '</div>'
     : '';
 
@@ -5171,6 +5173,35 @@ function _renderManageProfiles() {
     + familyCodeHtml
     + '<div class="db-profiles-list">' + rows + '</div>'
     + '</section>';
+}
+
+// Copy the 8-digit suffix of the parent's family code to the clipboard.
+// Strips the "MMR-" prefix so the parent can paste just the digits into
+// the child device's family-code input (which now shows "MMR-" as a
+// fixed visual prefix). Uses navigator.clipboard with a textarea
+// fallback for older browsers / restricted contexts.
+function _dbCopyFamilyCode() {
+  if (!_parentFamilyCode) return;
+  var suffix = String(_parentFamilyCode).replace(/^MMR-/i, '');
+  var notify = document.getElementById('db-family-code-copied');
+  function _ok() {
+    if (!notify) return;
+    notify.style.display = '';
+    setTimeout(function() {
+      if (notify) notify.style.display = 'none';
+    }, 2000);
+  }
+  try {
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(suffix).then(_ok).catch(function() {
+        if (typeof _copyFallback === 'function') _copyFallback(suffix);
+        _ok();
+      });
+      return;
+    }
+  } catch (_e) {}
+  if (typeof _copyFallback === 'function') _copyFallback(suffix);
+  _ok();
 }
 
 function openPinResetSheet(studentId) {
@@ -5900,6 +5931,7 @@ if (typeof document !== 'undefined') {
     _dbSetFbCat:             function(a)    { _dbSetFbCat(a); },
     _dbSubmitFeedback:       function()     { _dbSubmitFeedback(); },
     openAddStudentSheet:     function()     { openAddStudentSheet(); },
+    _dbCopyFamilyCode:       function()     { _dbCopyFamilyCode(); },
     openEditProfileSheet:    function(a)    { openEditProfileSheet(a); },
     openPinResetSheet:       function(a)    { openPinResetSheet(a); },
     closePinResetSheet:      function()     { closePinResetSheet(); },

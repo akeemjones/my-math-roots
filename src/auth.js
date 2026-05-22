@@ -64,11 +64,30 @@ var _AVATAR_COLORS = {
 
 function _validateFamilyCode(code) {
   if (code == null || code === '') return false;
-  // Accepts MMR-XXXX (legacy 4-char seed) or MMR-XXXXXXXX (current 8-char).
-  // Backend (ensure_family_code, create_student_profile) generates 8-char codes
-  // since 20260603_rpc_ownership_lockdown.sql. Legacy support stays until
-  // pre-Phase-0 seed rows are rotated or confirmed absent.
-  return /^MMR-(?:[A-Z0-9]{4}|[A-Z0-9]{8})$/i.test(String(code));
+  // Canonical family code is MMR- followed by exactly 8 numeric digits.
+  // Backend mints this format via _generate_family_code (20260610). The
+  // /i flag tolerates "mmr-" prefix; the digits part is unaffected.
+  return /^MMR-[0-9]{8}$/i.test(String(code));
+}
+
+// Normalize any of the accepted user inputs to the canonical MMR-12345678.
+// Accepts:
+//   "12345678"            → "MMR-12345678"
+//   "MMR-12345678"        → "MMR-12345678"
+//   "mmr-12345678"        → "MMR-12345678"
+//   "  12 345 678  "      → "MMR-12345678"   (trims + strips spaces)
+//   "MMR-12-34-56-78"     → "MMR-12345678"   (strips internal dashes)
+// Returns null for any input that does not yield exactly 8 digits after
+// stripping. Callers should treat null as "show validation error".
+function _normalizeFamilyCode(input) {
+  if (input == null) return null;
+  var raw = String(input).trim().toUpperCase();
+  // Strip the MMR- prefix if user pasted the full canonical form.
+  if (raw.indexOf('MMR-') === 0) raw = raw.slice(4);
+  // Strip whitespace and dashes anywhere (paste-tolerance for "12-34-56-78").
+  raw = raw.replace(/[\s\-]/g, '');
+  if (!/^[0-9]{8}$/.test(raw)) return null;
+  return 'MMR-' + raw;
 }
 
 function _lsEsc(s) {
@@ -107,8 +126,11 @@ function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
   if (!profiles || !profiles.length) {
     return '<div style="padding:4px 0">'
       + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:10px">Enter your family code</div>'
-      + '<input id="ls-family-code-inp" type="text" class="set-inp" placeholder="MMR-00000000"'
-      + ' maxlength="12" style="width:100%;text-align:center;letter-spacing:.15em;text-transform:uppercase;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:stretch;justify-content:center;margin-bottom:12px;gap:0">'
+      + '<span id="ls-family-code-prefix" aria-hidden="true" style="display:flex;align-items:center;padding:0 14px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-right:none;border-radius:8px 0 0 8px;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);letter-spacing:.12em;color:rgba(255,255,255,0.92)">MMR-</span>'
+      + '<input id="ls-family-code-inp" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="set-inp" placeholder="12345678"'
+      + ' maxlength="8" style="flex:1;text-align:center;letter-spacing:.15em;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;border-radius:0 8px 8px 0">'
+      + '</div>'
       + '<div id="ls-family-code-msg" style="font-size:.78rem;color:#f87171;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
       + '<button data-action="_lsFamilyCodeSetup" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#2c1a00;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);cursor:pointer;letter-spacing:.3px;touch-action:manipulation">Link This Device</button>'
       + '</div>';
@@ -160,17 +182,17 @@ function _lsRenderStudentCard() {
   var _fcInp = document.getElementById('ls-family-code-inp');
   if (_fcInp) {
     _fcInp.addEventListener('input', function() {
-      var pos = this.selectionStart;
-      // Strip everything except alphanumeric, uppercase
-      var raw = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      // Auto-insert dash after position 3 (MMR|XXXXXXXX → MMR-XXXXXXXX).
-      // Allow up to 8 hex chars after the dash; legacy 4-char codes also fit.
-      var formatted = raw.length > 3 ? raw.slice(0, 3) + '-' + raw.slice(3, 11) : raw;
-      if (this.value !== formatted) {
-        var diff = formatted.length - this.value.length;
-        this.value = formatted;
-        // Keep cursor in sensible position (jump over the auto-inserted dash)
-        this.setSelectionRange(pos + diff, pos + diff);
+      // Suffix-only input: digits only, max 8. If the user pastes
+      // "MMR-12345678" (or "mmr-12345678"), strip the prefix first.
+      var raw = String(this.value || '').trim();
+      var up  = raw.toUpperCase();
+      if (up.indexOf('MMR-') === 0) raw = raw.slice(4);
+      // Strip everything except digits, then cap at 8.
+      var digits = raw.replace(/\D/g, '').slice(0, 8);
+      if (this.value !== digits) {
+        this.value = digits;
+        // Cursor sits at the end after auto-strip — acceptable UX for
+        // an 8-digit numeric field with a fixed visible prefix.
       }
     });
   }
@@ -187,9 +209,12 @@ async function _lsFamilyCodeSetup() {
   var inp = document.getElementById('ls-family-code-inp');
   var msg = document.getElementById('ls-family-code-msg');
   if (!inp || !msg) return;
-  var code = inp.value.trim().toUpperCase();
-  if (!_validateFamilyCode(code)) {
-    msg.textContent = 'Enter a valid family code (e.g. MMR-A1B2C3D4)';
+  // Normalize: accepts suffix-only ("12345678"), pasted canonical
+  // ("MMR-12345678"), and case/space variants. Always returns the
+  // canonical "MMR-XXXXXXXX" or null.
+  var code = _normalizeFamilyCode(inp.value);
+  if (!code) {
+    msg.textContent = 'Enter your 8-digit family code (e.g. 12345678)';
     return;
   }
   msg.textContent = '';
@@ -785,7 +810,7 @@ async function _lsObSave() {
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
     if (createResult.error) throw createResult.error;
-    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????';
+    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????????';
 
     var step1 = document.getElementById('ls-onboard-step1');
     var step2 = document.getElementById('ls-onboard-step2');
