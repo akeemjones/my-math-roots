@@ -103,13 +103,18 @@ async function _verifyJwt(authHeader, supaUrl, svcKey) {
 }
 
 // ── PIN session verification → student_id ────────────────────────────────
-// Returns the student UUID if the session_token is valid, or null otherwise.
+// Returns the student UUID if the session token is valid, or null otherwise.
+//
+// Audit A5-F3 (2026-05-22): the filter was previously `session_token=eq.`,
+// but the actual column in public.pin_sessions is `token` (UUID PRIMARY KEY).
+// PostgREST returned 400 on every call, and every PIN-mode event was
+// silently null-stamped. Renamed to `token=eq.` to match the schema.
 async function _verifyPinSession(sessionToken, claimedStudentId, supaUrl, svcKey) {
   if (!sessionToken || !claimedStudentId) return null;
   if (!UUID_RE.test(sessionToken) || !UUID_RE.test(claimedStudentId)) return null;
   try {
     const res = await fetch(
-      `${supaUrl}/rest/v1/pin_sessions?student_id=eq.${encodeURIComponent(claimedStudentId)}&session_token=eq.${encodeURIComponent(sessionToken)}&expires_at=gte.${encodeURIComponent(new Date().toISOString())}&select=student_id&limit=1`,
+      `${supaUrl}/rest/v1/pin_sessions?student_id=eq.${encodeURIComponent(claimedStudentId)}&token=eq.${encodeURIComponent(sessionToken)}&expires_at=gte.${encodeURIComponent(new Date().toISOString())}&select=student_id&limit=1`,
       { headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey } }
     );
     if (!res.ok) return null;
@@ -300,5 +305,6 @@ exports.handler = async function(event) {
 
 // Jest bridge — exposes the pure helpers for unit testing.
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports._normalizeGrade = _normalizeGrade;
+  module.exports._normalizeGrade   = _normalizeGrade;
+  module.exports._verifyPinSession = _verifyPinSession;
 }
