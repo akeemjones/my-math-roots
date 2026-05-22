@@ -585,6 +585,53 @@ async function _hydrateStudentFromParentSession(studentId) {
       } catch (_ae) {}
     }
 
+    // STREAK + ACT_DATES — fetched directly from student_profiles because
+    // get_student_progress_by_pin doesn't return them. Without this hop,
+    // the parent-launched "Go to App" path leaves wb_streak / wb_act_dates
+    // at the {0,0,null}/[] values written by enterStudentLearningSession's
+    // reset, so the student-side learning calendar shows no active days
+    // even though the server has them. _fetchManagedProfiles already proves
+    // this read works under the parent's Supabase session + existing RLS.
+    try {
+      var _streakRes = await Promise.race([
+        _supa.from('student_profiles')
+          .select('streak_current, streak_longest, streak_last_date, act_dates_json')
+          .eq('id', studentId)
+          .maybeSingle(),
+        new Promise(function(_, rej) { setTimeout(function() { rej(new Error('streak timeout')); }, 8000); })
+      ]);
+      if (_streakRes && !_streakRes.error && _streakRes.data) {
+        var _sp = _streakRes.data;
+        // Defensive coercion. Mirrors _dbBuildStudentStreak /
+        // _dbBuildStudentActDates in dashboard.js (commit 4d8156d).
+        STREAK.current  = (typeof _sp.streak_current  === 'number' && _sp.streak_current  >= 0)
+          ? _sp.streak_current  : 0;
+        STREAK.longest  = (typeof _sp.streak_longest  === 'number' && _sp.streak_longest  >= 0)
+          ? _sp.streak_longest  : 0;
+        STREAK.lastDate = (typeof _sp.streak_last_date === 'string' && _sp.streak_last_date !== '')
+          ? _sp.streak_last_date : null;
+        localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+        var _safeActDates = Array.isArray(_sp.act_dates_json)
+          ? _sp.act_dates_json.filter(function(d) {
+              return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+            })
+          : [];
+        localStorage.setItem('wb_act_dates', JSON.stringify(_safeActDates));
+        // Refresh the cal-btn dot now that wb_act_dates is populated. The
+        // grid popup itself rebuilds on each open and will read the fresh
+        // state on next tap.
+        if (typeof _renderCalBtn === 'function') _renderCalBtn();
+        changed = true;
+      }
+    } catch (_streakE) {
+      // offline / RPC failed — leave the wiped {0,0,null}/[] values from
+      // enterStudentLearningSession step 3. Calendar shows empty (matches
+      // pre-fix behavior); does NOT block _pullSucceeded below.
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[Supabase] parent-session streak/act_dates hydration failed', _streakE);
+      }
+    }
+
     // Mark cloud as authoritative — gates parent push pipeline so subsequent
     // quiz writes can sync back to Supabase as this student.
     _pullSucceeded = true;
