@@ -51,7 +51,10 @@ DECLARE
   v_attempts INT := 0;
 BEGIN
   LOOP
-    v_bytes := gen_random_bytes(4);
+    -- pgcrypto's gen_random_bytes lives in the `extensions` schema on
+    -- Supabase. Explicit-schema reference avoids needing a wider
+    -- search_path on this SECURITY DEFINER function.
+    v_bytes := extensions.gen_random_bytes(4);
     v_num := ((get_byte(v_bytes, 0)::bigint) << 24)
            | ((get_byte(v_bytes, 1)::bigint) << 16)
            | ((get_byte(v_bytes, 2)::bigint) << 8)
