@@ -2073,14 +2073,6 @@ function switchInstallTab(device){
 
 function closeInstall(){
   _animateModalClose('install-modal', ()=>{ document.getElementById('install-modal').style.display='none'; });
-  const firstTime = !localStorage.getItem('install_seen');
   localStorage.setItem('install_seen','1');
-  // If first-open onboarding: fire tutorial immediately after install prompt closes
-  if(firstTime && !_hasSeenSpotlightTour()){
-    setTimeout(_startTutorial, 400);
-  } else {
-    _onboardingActive = false;
-    document.body.classList.remove('tut-active');
-  }
 }
 // Install hint removed — available via Settings > How to Install button only

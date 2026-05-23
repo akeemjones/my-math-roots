@@ -15,9 +15,6 @@
   --z-confetti: 999;
   --z-install: 1000;
   --z-scratch: 3000;
-  --z-spot-bg: 5000;
-  --z-spot-card: 5001;
-  --z-tutorial: 6000;
   --z-forgot-pin: 6050;
   --z-restart: 9000;
   --z-lightbox: 9500;
@@ -266,12 +263,6 @@ body.dark .scratch-box{
   -webkit-backdrop-filter:none;
   border-color:rgba(255,255,255,0.14);
   box-shadow:0 8px 40px rgba(0,0,0,.55); }
-body.dark .tut-card{
-  background:var(--card-bg) !important;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-  border-color:rgba(255,255,255,0.14);
-  box-shadow:0 8px 40px rgba(0,0,0,.55); }
 body.dark .install-box,
 body.dark .pin-box{
   background:var(--card-bg);
@@ -377,13 +368,6 @@ button{ -webkit-appearance:none; font-family:inherit;
 body.dark #login-screen{
   background-image:var(--app-bg-svg), linear-gradient(155deg,#0d2a5a 0%,#0a1e3a 100%);
 }
-/* Lock all interaction on screens while tutorial/onboarding overlay is up */
-body.tut-active .sc,
-body.tut-active .carousel-wrap{ pointer-events:none !important; overflow:hidden !important; }
-/* Lock scroll and interaction on all screen containers during spotlight tour */
-body.spot-scroll-lock .sc.on,
-body.spot-scroll-lock .lesson-glass-wrap,
-body.spot-scroll-lock .carousel-wrap{ overflow:hidden !important; touch-action:none !important; pointer-events:none !important; }
 /* During swipe, stamp the full background onto curEl so backdrop-filter
    children can't see prevEl bleeding through */
 .sc.swipe-active{ background-image:var(--app-bg-svg), var(--home-grad) !important;
@@ -2053,134 +2037,6 @@ body.dark #upm-pin-inp.set-inp:focus, body.dark #new-pin-inp.set-inp:focus {
   background:var(--accent);color:var(--accent-ink);
   box-shadow:0 5px 0 rgba(0,0,0,.15);margin-top:16px; }
 
-/* ── Tutorial overlay ── */
-.tut-overlay{
-  position:fixed;inset:0;z-index:var(--z-tutorial);
-  display:flex;align-items:center;justify-content:center;
-  padding:20px;box-sizing:border-box;
-  pointer-events:all;
-  touch-action:none;
-  overflow:hidden;
-  background:transparent !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
-}
-.tut-card{
-  background:#fff;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-  border:1.5px solid rgba(0,0,0,0.09);
-  border-radius:var(--rad-xl);
-  width:100%;max-width:380px;
-  padding:32px 28px 24px;
-  box-shadow:0 4px 28px rgba(0,0,0,0.10),0 1px 6px rgba(0,0,0,0.06);
-  position:relative;
-  text-align:center;
-}
-.tut-emoji{ font-size:var(--fs-4xl);margin-bottom:12px;display:block;line-height:1; }
-.tut-title{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-xl);
-  color:var(--txt,#222);margin:0 0 10px;line-height:1.2;
-}
-.tut-body{
-  font-size:var(--fs-base);color:var(--txt2,#666);
-  line-height:1.65;margin:0 0 24px;
-}
-.tut-body strong{ color:var(--txt,#222); }
-.tut-dots{
-  display:flex;justify-content:center;gap:7px;margin-bottom:20px;
-}
-.tut-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--border2,#ccc);transition:background .2s,transform .2s;
-}
-.tut-dot.active{ background:var(--accent);transform:scale(1.3); }
-.tut-btns{ display:flex;gap:10px;justify-content:center; }
-.tut-btn-next{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);
-  padding:13px 32px;border-radius:50px;
-  background:#fff;color:var(--accent);border:2px solid var(--accent);
-  cursor:pointer;touch-action:manipulation;box-shadow:none;flex:1;
-}
-.tut-btn-skip{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);
-  padding:13px 18px;border-radius:50px;
-  border:2px solid var(--border2,#ccc);
-  background:transparent;color:var(--txt2,#888);
-  cursor:pointer;touch-action:manipulation;
-}
-.tut-skip-top{
-  position:absolute;top:14px;right:18px;
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);
-  color:var(--txt2,#aaa);background:none;border:none;
-  cursor:pointer;touch-action:manipulation;padding:4px 8px;
-}
-.tut-feature-row{
-  display:flex;align-items:flex-start;gap:12px;
-  text-align:left;background:var(--bg3,#f5f5f5);
-  border-radius:14px;padding:12px 14px;margin-bottom:10px;
-}
-.tut-feature-ico{ font-size:var(--fs-xl);flex-shrink:0;line-height:1; }
-.tut-feature-txt{ font-size:var(--fs-sm);color:var(--txt2,#666);line-height:1.5; }
-.tut-feature-txt strong{ color:var(--txt,#222);font-size:var(--fs-base); }
-
-/* ── Screen Spotlight Tour ── */
-#spot-overlay{
-  position:fixed;inset:0;z-index:var(--z-spot-bg);
-  display:none;
-  pointer-events:all;
-  touch-action:none;
-}
-#spot-svg{
-  position:absolute;inset:0;
-  pointer-events:all;
-  cursor:pointer;
-}
-#spot-card{
-  position:absolute;
-  pointer-events:all;
-  background:var(--neutral-50);
-  border:1.5px solid rgba(255,255,255,0.9);
-  border-radius:20px;
-  padding:16px 18px 14px;
-  box-shadow:0 8px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,1);
-  max-width:300px;
-  z-index:var(--z-spot-card);
-}
-body.dark #spot-card{
-  background:rgba(18,34,54,0.88);
-}
-.spot-card-emoji{ font-size:var(--fs-2xl);display:block;margin-bottom:4px;line-height:1; }
-.spot-card-title{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-md);
-  color:var(--txt,#222);margin:0 0 4px;
-}
-.spot-card-tip{
-  font-size:var(--fs-sm);color:var(--txt2,#666);
-  line-height:1.55;margin:0 0 12px;
-}
-.spot-card-row{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:8px;
-}
-.spot-count{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);color:var(--txt2,#aaa);
-}
-.spot-next-btn{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);
-  padding:9px 20px;border-radius:50px;
-  background:#fff;color:var(--accent);border:2px solid var(--accent);
-  cursor:pointer;touch-action:manipulation;box-shadow:none;
-}
-.spot-skip-btn{
-  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-sm);
-  padding:6px 12px;border-radius:50px;
-  border:1.5px solid var(--border2,#ccc);
-  background:transparent;color:var(--txt2,#999);
-  cursor:pointer;touch-action:manipulation;
-}
-#spot-card{ transition: top .25s cubic-bezier(0.4,0,0.2,1), left .25s cubic-bezier(0.4,0,0.2,1), opacity .18s ease; }
-
 /* ── AUTH MODAL ── */
 .auth-role-btn{ flex:1;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);
   padding:11px;border-radius:50px;cursor:pointer;transition:all .2s;
@@ -2256,9 +2112,7 @@ body.dark #spot-card{
   /* ── Login screen ── */
   #login-screen .sc-in{ padding:10px 16px; }
 
-  /* ── Modals / tutorial ── */
-  .tut-card{ padding:18px 20px 16px; }
-  .tut-emoji{ font-size:var(--fs-2xl); margin-bottom:6px; }
+  /* ── Modals ── */
   .coin-lightbox img{ width:min(40vw,200px); height:min(40vw,200px); }
 }
 

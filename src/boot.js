@@ -91,12 +91,6 @@ const _APP_GLOBALS = [
   'histFilter','buildHistory','tile','setFilt','_scFiltered','renderScList',
   '_buildScReviewHtml','openScLightbox','closeScLightbox','delScore','clearAll',
   'makeVis','togglePQ','revealPQ','openCoinLightbox','closeCoinLightbox',
-  // tour.js
-  'TUT_SLIDES','_tutIdx','_tutShowing','_onboardingActive','_startTutorial',
-  'tutCheckAndShow','_tutSpot','_tutClearSpot','_tutRender','tutNext','tutBack','tutSkip',
-  'SPOT_TOURS','_spotScreen','_spotStepIdx','_spotActive','_pendingTimerSecs',
-  '_pendingTimerColor','_spotCheckScreen','_spotShowStep','_spotRender',
-  '_spotAdvance','_spotDone',
   // events.js
   // (all exports are block-scoped inside the IIFE — no globals registered)
   // boot.js

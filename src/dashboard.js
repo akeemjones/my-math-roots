@@ -3755,7 +3755,6 @@ function _changelogHtml() {
     + '</ul></div>'
     + '<div class="mb-14"><div class="cl-version">v5.22 — v5.13</div><ul class="list-body">'
     + '<li><strong>Google Sign-In</strong> — Sign in with your Google account in one tap.</li>'
-    + '<li><strong>Spotlight Tutorial</strong> — Interactive guided tour on first launch walks through every feature.</li>'
     + '<li><strong>Cloudflare CAPTCHA</strong> — Protects sign-up from bots.</li>'
     + '<li><strong>Session Splash Screen</strong> — Animated app intro on launch.</li>'
     + '<li><strong>Feedback</strong> — Send a star rating and message directly from settings.</li>'

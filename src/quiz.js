@@ -632,13 +632,7 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
 
   // Timer: 60 min for final, configurable for unit/lesson
   const secs = type === 'final' ? getFinalTimerSecs() : type === 'unit' ? getUnitTimerSecs() : getLessonTimerSecs();
-  // Defer timer start if quiz spotlight tour hasn't run yet (tour will start it when done)
-  if(!localStorage.getItem('wb_spot_quiz-screen')){
-    _pendingTimerSecs  = secs;
-    _pendingTimerColor = color;
-  } else {
-    _startTimer(secs, color);
-  }
+  _startTimer(secs, color);
 
   _renderQ();
   show('quiz-screen');

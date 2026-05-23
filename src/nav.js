@@ -52,8 +52,6 @@ function show(id){
       }).catch(()=>{});
     }
   }
-  // Trigger per-screen spotlight tour on first visit
-  _spotCheckScreen(id);
 }
 
 // ════════════════════════════════════════
@@ -191,8 +189,8 @@ function isUnitQuizUnlocked(unitIdx){
   document.addEventListener('touchstart', e=>{
     // Don't intercept slider inputs or explicitly excluded containers
     if(e.target.type === 'range' || e.target.closest('[data-no-swipe]')) return;
-    // Block all swipe gestures during install prompt / tutorial onboarding / spotlight tour / open modals
-    if(locked || _isModalOpen() || (typeof _onboardingActive!=='undefined' && _onboardingActive) || document.body.classList.contains('spot-scroll-lock')){
+    // Block all swipe gestures during install prompt / open modals
+    if(locked || _isModalOpen()){
       if(e.touches[0].clientX < 30) e.preventDefault();
       return;
     }
@@ -212,7 +210,7 @@ function isUnitQuizUnlocked(unitIdx){
   }, {passive:false}); // non-passive so we can preventDefault on edge touches
 
   document.addEventListener('touchmove', e=>{
-    if(locked || !curEl || _isModalOpen() || document.body.classList.contains('spot-scroll-lock')){ if(swiping) _snapBack(); curEl=null; return; }
+    if(locked || !curEl || _isModalOpen()){ if(swiping) _snapBack(); curEl=null; return; }
     const t  = e.touches[0];
     const dx = t.clientX - sx;
     const dy = Math.abs(t.clientY - sy);
@@ -259,7 +257,7 @@ function isUnitQuizUnlocked(unitIdx){
 
   document.addEventListener('touchend', e=>{
     if(swipeAbsorbed){ cleanup(); return; }
-    if(locked || !swiping || _isModalOpen() || document.body.classList.contains('spot-scroll-lock')){ cleanup(); return; }
+    if(locked || !swiping || _isModalOpen()){ cleanup(); return; }
     const t  = e.changedTouches[0];
     const dx = t.clientX - sx;
     const v  = dx / (Date.now()-t0);
