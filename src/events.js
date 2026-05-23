@@ -170,13 +170,6 @@
     _backToProgressStats:   ()    => typeof _backToProgressStats === 'function' && _backToProgressStats(),
     windowPrint:            ()    => window.print(),
 
-    // ── Tour / onboarding ────────────────────────────────────────────────────
-    tutNext:                ()    => tutNext(),
-    tutBack:                ()    => tutBack(),
-    tutSkip:                ()    => tutSkip(),
-    _spotAdvance:           ()    => typeof _spotAdvance === 'function' && _spotAdvance(),
-    _spotDone:              ()    => typeof _spotDone === 'function' && _spotDone(),
-
     // ── Streak calendar ──────────────────────────────────────────────────────
     openCalendar:           ()    => _openStreakCal(),
     _openStreakCal:         ()    => _openStreakCal(),

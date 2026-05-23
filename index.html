@@ -853,59 +853,6 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     FIRST-TIME TUTORIAL
-════════════════════════════════════════ -->
-<div class="tut-overlay" id="tut-overlay" style="display:none">
-  <div class="tut-card" id="tut-card">
-    <button class="tut-skip-top" data-action="tutSkip">Skip</button>
-
-    <!-- Dots -->
-    <div class="tut-dots" id="tut-dots"></div>
-
-    <!-- Slide content injected by JS -->
-    <span class="tut-emoji" id="tut-emoji"></span>
-    <h2 class="tut-title" id="tut-title"></h2>
-    <div class="tut-body" id="tut-body"></div>
-
-    <!-- Buttons -->
-    <div class="tut-btns">
-      <button class="tut-btn-skip" id="tut-skip-btn" data-action="tutSkip">Skip</button>
-      <button class="tut-btn-next" id="tut-next-btn" data-action="tutNext">Next →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     SCREEN SPOTLIGHT TOUR
-════════════════════════════════════════ -->
-<div id="spot-overlay">
-  <svg id="spot-svg">
-    <defs>
-      <mask id="spot-mask">
-        <rect id="spot-bg-rect" fill="white"/>
-        <rect id="spot-hole" fill="black" x="100" y="250" width="200" height="80" rx="16"/>
-      </mask>
-    </defs>
-    <rect id="spot-dim-rect" fill="rgba(0,0,0,0.68)" mask="url(#spot-mask)"/>
-    <!-- Glowing outline around spotlight -->
-    <rect id="spot-ring" x="98" y="248" width="204" height="84" rx="18"
-      fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3"/>
-  </svg>
-  <div id="spot-card">
-    <span class="spot-card-emoji" id="spot-emoji"></span>
-    <h3 class="spot-card-title" id="spot-title"></h3>
-    <p class="spot-card-tip" id="spot-tip"></p>
-    <div class="spot-card-row">
-      <span class="spot-count" id="spot-count"></span>
-      <div style="display:flex;gap:8px">
-        <button class="spot-skip-btn" data-action="_spotDone">Skip</button>
-        <button class="spot-next-btn" id="spot-next-btn" data-action="_spotAdvance">Next →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Access Controls lightbox -->
 <div id="access-modal" style="display:none;position:fixed;inset:0;z-index:var(--z-modal);align-items:center;justify-content:center;padding:20px" data-action="closeAccessModal" data-self-only>
   <div class="modal-card" style="border:1.5px solid rgba(255,255,255,0.75);border-radius:24px;padding:24px 22px 20px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(60,120,200,0.14),0 2px 10px rgba(0,0,0,0.08)">

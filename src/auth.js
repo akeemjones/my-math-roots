@@ -412,7 +412,6 @@ async function enterStudentLearningSession(opts) {
   buildHome();
   if (typeof _psUpdateProfileBtn === 'function') _psUpdateProfileBtn();
   if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
-  if (typeof tutCheckAndShow === 'function') setTimeout(tutCheckAndShow, 1500);
   _devLog('[MMR STORAGE]', {
     role: localStorage.getItem('mmr_user_role'),
     activeStudent: localStorage.getItem('mmr_active_student_id'),
@@ -1390,13 +1389,6 @@ function _proceedAsGuest() {
   localStorage.setItem('wb_guest_mode', '1');
   buildHome();
   show('home');
-  // Lock the screen immediately if install/tutorial hasn't been shown yet,
-  // so the user can't scroll or tap unit cards during the delay.
-  if(!localStorage.getItem('install_seen') || !_hasSeenSpotlightTour()){
-    _onboardingActive = true;
-    document.body.classList.add('tut-active');
-  }
-  setTimeout(tutCheckAndShow, 1500);
 }
 
 // ── LOGIN SCREEN functions ────────────────
