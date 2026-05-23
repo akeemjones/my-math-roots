@@ -8,7 +8,16 @@ on:
 
 jobs:
   # ───────────────────────────────────────────────────────────────
-  # Job 1: Tests — runs on every push and every PR
+  # Tests + build + audit for the vanilla V1 app.
+  #
+  # V2 SvelteKit was moved to a separate repo (mymathroots-v2-sveltekit)
+  # earlier in the project. The previous "Install SvelteKit dependencies",
+  # "Run Vitest (SvelteKit app)", and the entire "Deploy to Staging" job
+  # referenced an `app/` directory that no longer exists in this repo —
+  # they were removed 2026-05-23.
+  #
+  # V1 production is deployed manually via `netlify deploy --prod` from
+  # a locally-verified build artifact — never auto-deployed.
   # ───────────────────────────────────────────────────────────────
   test:
     name: Run Tests
@@ -22,50 +31,14 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install root dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Jest (legacy vanilla app)
+      - name: Run Jest test suite
         run: npm test
 
-      - name: Install SvelteKit dependencies
-        run: npm ci
-        working-directory: app
-
-      - name: Run Vitest (SvelteKit app)
-        run: npx vitest run --reporter=verbose
-        working-directory: app
-
-  # ───────────────────────────────────────────────────────────────
-  # Job 2: Deploy to Staging — staging branch push OR PRs
-  # Production is deployed manually via Netlify UI (never auto-deployed)
-  # ───────────────────────────────────────────────────────────────
-  deploy-staging:
-    name: Deploy to Staging
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/staging'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install SvelteKit dependencies
-        run: npm ci
-        working-directory: app
-
-      - name: Build SvelteKit app
+      - name: Build production bundle
         run: npm run build
-        working-directory: app
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Deploy PR preview to Netlify Staging
-        run: npx netlify-cli deploy --prod --dir=app/build --site=${{ secrets.NETLIFY_SITE_ID_STAGING }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
