@@ -64,7 +64,30 @@ var _AVATAR_COLORS = {
 
 function _validateFamilyCode(code) {
   if (code == null || code === '') return false;
-  return /^MMR-[A-Z0-9]{4}$/i.test(String(code));
+  // Canonical family code is MMR- followed by exactly 8 numeric digits.
+  // Backend mints this format via _generate_family_code (20260610). The
+  // /i flag tolerates "mmr-" prefix; the digits part is unaffected.
+  return /^MMR-[0-9]{8}$/i.test(String(code));
+}
+
+// Normalize any of the accepted user inputs to the canonical MMR-12345678.
+// Accepts:
+//   "12345678"            → "MMR-12345678"
+//   "MMR-12345678"        → "MMR-12345678"
+//   "mmr-12345678"        → "MMR-12345678"
+//   "  12 345 678  "      → "MMR-12345678"   (trims + strips spaces)
+//   "MMR-12-34-56-78"     → "MMR-12345678"   (strips internal dashes)
+// Returns null for any input that does not yield exactly 8 digits after
+// stripping. Callers should treat null as "show validation error".
+function _normalizeFamilyCode(input) {
+  if (input == null) return null;
+  var raw = String(input).trim().toUpperCase();
+  // Strip the MMR- prefix if user pasted the full canonical form.
+  if (raw.indexOf('MMR-') === 0) raw = raw.slice(4);
+  // Strip whitespace and dashes anywhere (paste-tolerance for "12-34-56-78").
+  raw = raw.replace(/[\s\-]/g, '');
+  if (!/^[0-9]{8}$/.test(raw)) return null;
+  return 'MMR-' + raw;
 }
 
 function _lsEsc(s) {
@@ -103,8 +126,11 @@ function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
   if (!profiles || !profiles.length) {
     return '<div style="padding:4px 0">'
       + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:10px">Enter your family code</div>'
-      + '<input id="ls-family-code-inp" type="text" class="set-inp" placeholder="MMR-0000"'
-      + ' maxlength="8" style="width:100%;text-align:center;letter-spacing:.15em;text-transform:uppercase;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:stretch;justify-content:center;margin-bottom:12px;gap:0">'
+      + '<span id="ls-family-code-prefix" aria-hidden="true" style="display:flex;align-items:center;padding:0 14px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-right:none;border-radius:8px 0 0 8px;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);letter-spacing:.12em;color:rgba(255,255,255,0.92)">MMR-</span>'
+      + '<input id="ls-family-code-inp" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="set-inp" placeholder="12345678"'
+      + ' maxlength="8" style="flex:1;text-align:center;letter-spacing:.15em;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;border-radius:0 8px 8px 0">'
+      + '</div>'
       + '<div id="ls-family-code-msg" style="font-size:.78rem;color:#f87171;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
       + '<button data-action="_lsFamilyCodeSetup" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#2c1a00;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);cursor:pointer;letter-spacing:.3px;touch-action:manipulation">Link This Device</button>'
       + '</div>';
@@ -156,16 +182,17 @@ function _lsRenderStudentCard() {
   var _fcInp = document.getElementById('ls-family-code-inp');
   if (_fcInp) {
     _fcInp.addEventListener('input', function() {
-      var pos = this.selectionStart;
-      // Strip everything except alphanumeric, uppercase
-      var raw = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      // Auto-insert dash after position 3 (MMR|XXXX → MMR-XXXX)
-      var formatted = raw.length > 3 ? raw.slice(0, 3) + '-' + raw.slice(3, 7) : raw;
-      if (this.value !== formatted) {
-        var diff = formatted.length - this.value.length;
-        this.value = formatted;
-        // Keep cursor in sensible position (jump over the auto-inserted dash)
-        this.setSelectionRange(pos + diff, pos + diff);
+      // Suffix-only input: digits only, max 8. If the user pastes
+      // "MMR-12345678" (or "mmr-12345678"), strip the prefix first.
+      var raw = String(this.value || '').trim();
+      var up  = raw.toUpperCase();
+      if (up.indexOf('MMR-') === 0) raw = raw.slice(4);
+      // Strip everything except digits, then cap at 8.
+      var digits = raw.replace(/\D/g, '').slice(0, 8);
+      if (this.value !== digits) {
+        this.value = digits;
+        // Cursor sits at the end after auto-strip — acceptable UX for
+        // an 8-digit numeric field with a fixed visible prefix.
       }
     });
   }
@@ -182,9 +209,12 @@ async function _lsFamilyCodeSetup() {
   var inp = document.getElementById('ls-family-code-inp');
   var msg = document.getElementById('ls-family-code-msg');
   if (!inp || !msg) return;
-  var code = inp.value.trim().toUpperCase();
-  if (!_validateFamilyCode(code)) {
-    msg.textContent = 'Enter a valid family code (e.g. MMR-4829)';
+  // Normalize: accepts suffix-only ("12345678"), pasted canonical
+  // ("MMR-12345678"), and case/space variants. Always returns the
+  // canonical "MMR-XXXXXXXX" or null.
+  var code = _normalizeFamilyCode(inp.value);
+  if (!code) {
+    msg.textContent = 'Enter your 8-digit family code (e.g. 12345678)';
     return;
   }
   msg.textContent = '';
@@ -555,6 +585,53 @@ async function _hydrateStudentFromParentSession(studentId) {
       } catch (_ae) {}
     }
 
+    // STREAK + ACT_DATES — fetched directly from student_profiles because
+    // get_student_progress_by_pin doesn't return them. Without this hop,
+    // the parent-launched "Go to App" path leaves wb_streak / wb_act_dates
+    // at the {0,0,null}/[] values written by enterStudentLearningSession's
+    // reset, so the student-side learning calendar shows no active days
+    // even though the server has them. _fetchManagedProfiles already proves
+    // this read works under the parent's Supabase session + existing RLS.
+    try {
+      var _streakRes = await Promise.race([
+        _supa.from('student_profiles')
+          .select('streak_current, streak_longest, streak_last_date, act_dates_json')
+          .eq('id', studentId)
+          .maybeSingle(),
+        new Promise(function(_, rej) { setTimeout(function() { rej(new Error('streak timeout')); }, 8000); })
+      ]);
+      if (_streakRes && !_streakRes.error && _streakRes.data) {
+        var _sp = _streakRes.data;
+        // Defensive coercion. Mirrors _dbBuildStudentStreak /
+        // _dbBuildStudentActDates in dashboard.js (commit 4d8156d).
+        STREAK.current  = (typeof _sp.streak_current  === 'number' && _sp.streak_current  >= 0)
+          ? _sp.streak_current  : 0;
+        STREAK.longest  = (typeof _sp.streak_longest  === 'number' && _sp.streak_longest  >= 0)
+          ? _sp.streak_longest  : 0;
+        STREAK.lastDate = (typeof _sp.streak_last_date === 'string' && _sp.streak_last_date !== '')
+          ? _sp.streak_last_date : null;
+        localStorage.setItem('wb_streak', JSON.stringify(STREAK));
+        var _safeActDates = Array.isArray(_sp.act_dates_json)
+          ? _sp.act_dates_json.filter(function(d) {
+              return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+            })
+          : [];
+        localStorage.setItem('wb_act_dates', JSON.stringify(_safeActDates));
+        // Refresh the cal-btn dot now that wb_act_dates is populated. The
+        // grid popup itself rebuilds on each open and will read the fresh
+        // state on next tap.
+        if (typeof _renderCalBtn === 'function') _renderCalBtn();
+        changed = true;
+      }
+    } catch (_streakE) {
+      // offline / RPC failed — leave the wiped {0,0,null}/[] values from
+      // enterStudentLearningSession step 3. Calendar shows empty (matches
+      // pre-fix behavior); does NOT block _pullSucceeded below.
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[Supabase] parent-session streak/act_dates hydration failed', _streakE);
+      }
+    }
+
     // Mark cloud as authoritative — gates parent push pipeline so subsequent
     // quiz writes can sync back to Supabase as this student.
     _pullSucceeded = true;
@@ -780,7 +857,7 @@ async function _lsObSave() {
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);
     if (createResult.error) throw createResult.error;
-    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????';
+    var familyCode = (createResult.data && createResult.data.family_code) ? createResult.data.family_code : 'MMR-????????';
 
     var step1 = document.getElementById('ls-onboard-step1');
     var step2 = document.getElementById('ls-onboard-step2');
@@ -800,32 +877,90 @@ function _lsObDone() {
   show('dashboard-screen'); _dbInit(); _installHistoryGuard();
 }
 
-function _lsCarouselGo(idx) {
+// Apply state for a given card index. Moves the shared form, updates dots,
+// toggles .is-active on cards, sets role, renders the student PIN UI on idx=0,
+// and shows/hides the guest button. Does NOT animate the track translateX —
+// that's _lsSnapTrack's job, so the dot-click and touch-snap paths share state
+// logic without fighting over transform.
+function _lsApplyCardState(idx) {
   idx = parseInt(idx, 10) || 0;
-  var track = document.getElementById('ls-carousel-track');
-  if (track) track.style.transform = 'translateX(' + (-50 * idx) + '%)';
   // Move shared form to the active card's mount point
   var form = document.getElementById('ls-form-shared');
   var mount = document.getElementById('ls-mount-' + idx);
   if (form && mount) mount.appendChild(form);
   // Update dot indicators
-  document.querySelectorAll('.ls-dot').forEach(function(dot, i) {
+  document.querySelectorAll('.ls-dot').forEach(function (dot, i) {
     dot.classList.toggle('active', i === idx);
   });
+  // Toggle .is-active on cards (CSS drives scale/opacity steady states)
+  var c0 = document.getElementById('ls-card-0');
+  var c1 = document.getElementById('ls-card-1');
+  if (c0) c0.classList.toggle('is-active', idx === 0);
+  if (c1) c1.classList.toggle('is-active', idx === 1);
   _lsCardIdx = idx;
   _lsSetRole(idx === 0 ? 'student' : 'parent');
   if (idx === 0) _lsRenderStudentCard();
   // Hide guest button on Parent/Teacher card — dashboard requires an account
   var guestBtn = document.getElementById('ls-guest-btn');
   if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
-  // Adapt outer height to active card so the Student card doesn't show empty space
-  _lsAdaptHeight();
+  // Watch the new active card so post-render content growth (validation msgs,
+  // password strength, waitlist panel, etc.) keeps outer height in sync.
+  _lsObserveActiveCard();
 }
-function _lsAdaptHeight(){
+
+// Animate the track to the given card index. Uses CSS transition on transform.
+function _lsSnapTrack(idx, dur) {
+  var track = document.getElementById('ls-carousel-track');
+  if (!track) return;
+  track.style.transition = 'transform ' + (dur || 0.28) + 's cubic-bezier(.4,0,.2,1)';
+  track.style.transform  = 'translateX(' + (idx * -50) + '%)';
+}
+
+// Public entry — used by dot clicks (data-action="_lsCarouselGo") and any
+// other caller that wants to jump cards programmatically.
+function _lsCarouselGo(idx) {
+  idx = parseInt(idx, 10) || 0;
+  _lsApplyCardState(idx);
+  _lsAdaptHeight();
+  _lsSnapTrack(idx, 0.28);
+}
+
+// ResizeObserver lazily-attached to the active card. Re-runs the height
+// measurement whenever the active card's intrinsic size changes (form
+// validation msgs, password strength bar appearing, etc.).
+var _lsCardResizeObserver = null;
+function _lsObserveActiveCard() {
+  if (typeof ResizeObserver === 'undefined') return;
+  if (_lsCardResizeObserver) _lsCardResizeObserver.disconnect();
+  var active = document.getElementById('ls-card-' + _lsCardIdx);
+  if (!active) return;
+  _lsCardResizeObserver = new ResizeObserver(function () { _lsAdaptHeight(); });
+  _lsCardResizeObserver.observe(active);
+}
+
+// Measure the active card and size the outer to match. The active card always
+// reflects what the user sees — the inactive mount is either empty or holds
+// the parked form (when the student card is active).
+//
+// Border-box accounting: the project applies `box-sizing: border-box` globally,
+// so the outer's `style.height` includes its border (1.5px × 2 = ~2px). The
+// card's content needs to fit inside `clientHeight` (which excludes border),
+// so we add the border delta (offsetHeight - clientHeight) to compensate.
+//
+// Defensive: re-measure on the next animation frame in case layout was still
+// settling (font load, async-rendered content, etc.).
+function _lsAdaptHeight() {
   var outer = document.querySelector('.ls-carousel-outer');
-  var card0 = document.getElementById('ls-card-0');
-  var card1 = document.getElementById('ls-card-1');
-  if(outer && card0 && card1) outer.style.height = Math.max(card0.scrollHeight, card1.scrollHeight) + 'px';
+  var active = document.getElementById('ls-card-' + _lsCardIdx);
+  if (!outer || !active) return;
+  var borderDelta = outer.offsetHeight - outer.clientHeight;
+  var h = active.scrollHeight + borderDelta;
+  outer.style.height = h + 'px';
+  requestAnimationFrame(function () {
+    var actualDelta = outer.offsetHeight - outer.clientHeight;
+    var actual = active.scrollHeight + actualDelta;
+    if (actual > h + 1) outer.style.height = actual + 'px';
+  });
 }
 
 function _lsInitCarousel() {
@@ -835,9 +970,32 @@ function _lsInitCarousel() {
 
   var _startX = 0, _startY = 0, _startT = 0;
   var _intentSet = false, _isHoriz = false, _outerW = 0;
-  var _EASE = 'cubic-bezier(0.4,0,0.2,1)';
 
-  track.addEventListener('touchstart', function(e) {
+  // Lerp helpers — inactive cards rest at scale(.94) / opacity(.7).
+  // Progress is 0 (no drag) → 1 (full card width dragged).
+  function _lerpScale(progress)   { return 1 - 0.06 * progress; }   // 1 → 0.94
+  function _lerpOpacity(progress) { return 1 - 0.30 * progress; }   // 1 → 0.70
+
+  function _setCardStyle(el, scale, opacity) {
+    if (!el) return;
+    el.style.transform = 'scale(' + scale + ')';
+    el.style.opacity   = opacity;
+  }
+
+  function _clearCardInlineStyles() {
+    ['ls-card-0', 'ls-card-1'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      // Reverting these to '' lets the CSS rule + .is-active class take over.
+      // Order matters: transition first so the next paint animates,
+      // then transform + opacity so the change becomes a transition.
+      el.style.transition = '';
+      el.style.transform  = '';
+      el.style.opacity    = '';
+    });
+  }
+
+  track.addEventListener('touchstart', function (e) {
     _startX    = e.touches[0].clientX;
     _startY    = e.touches[0].clientY;
     _startT    = Date.now();
@@ -845,9 +1003,14 @@ function _lsInitCarousel() {
     _isHoriz   = false;
     _outerW    = (track.parentElement || document.body).offsetWidth || window.innerWidth;
     track.style.transition = 'none';
+    // Pause card transitions so finger-following lerp is instant, not smoothed.
+    var c0 = document.getElementById('ls-card-0');
+    var c1 = document.getElementById('ls-card-1');
+    if (c0) c0.style.transition = 'none';
+    if (c1) c1.style.transition = 'none';
   }, { passive: true });
 
-  track.addEventListener('touchmove', function(e) {
+  track.addEventListener('touchmove', function (e) {
     var dx = e.touches[0].clientX - _startX;
     var dy = e.touches[0].clientY - _startY;
     if (!_intentSet && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
@@ -855,26 +1018,34 @@ function _lsInitCarousel() {
       _isHoriz   = Math.abs(dx) > Math.abs(dy);
     }
     if (!_isHoriz) return;
-    // Follow finger in pixels, clamped so you can't over-drag past either card
+    // Follow finger in pixels, clamped so you can't over-drag past either card.
     var currentPx = _lsCardIdx * (-_outerW);
     var newPx     = Math.max(-_outerW, Math.min(0, currentPx + dx));
     track.style.transform = 'translateX(' + newPx + 'px)';
+    // Drag progress — 0 at rest, 1 at full card-width displacement.
+    var progress = Math.abs(newPx + (_lsCardIdx * _outerW)) / _outerW;
+    if (progress > 1) progress = 1;
+    var c0 = document.getElementById('ls-card-0');
+    var c1 = document.getElementById('ls-card-1');
+    if (_lsCardIdx === 0) {
+      _setCardStyle(c0, _lerpScale(progress),     _lerpOpacity(progress));
+      _setCardStyle(c1, _lerpScale(1 - progress), _lerpOpacity(1 - progress));
+    } else {
+      _setCardStyle(c1, _lerpScale(progress),     _lerpOpacity(progress));
+      _setCardStyle(c0, _lerpScale(1 - progress), _lerpOpacity(1 - progress));
+    }
   }, { passive: true });
 
-  function _snapTo(targetIdx, duration) {
-    track.style.transition = 'transform ' + (duration || 0.28) + 's ' + _EASE;
-    track.style.transform  = 'translateX(' + (targetIdx * -50) + '%)';
-  }
-
-  track.addEventListener('touchend', function(e) {
+  track.addEventListener('touchend', function (e) {
     if (!_intentSet || !_isHoriz) {
-      // Pure tap or vertical — restore position without animation quirks
-      _snapTo(_lsCardIdx, 0.28);
+      // Pure tap or vertical scroll attempt — bounce back, clear inline styles.
+      _lsSnapTrack(_lsCardIdx, 0.28);
+      _clearCardInlineStyles();
       return;
     }
     var dx        = e.changedTouches[0].clientX - _startX;
     var gestureMs = Math.max(1, Date.now() - _startT);
-    var velocity  = Math.abs(dx) / gestureMs;          // px/ms
+    var velocity  = Math.abs(dx) / gestureMs;
     var isFast    = velocity > 0.3 && Math.abs(dx) > 20;
     var committed = Math.abs(dx) >= _outerW * 0.5 || isFast;
 
@@ -884,17 +1055,38 @@ function _lsInitCarousel() {
       else if (dx > 0 && _lsCardIdx > 0) targetIdx = 0;
     }
 
-    _snapTo(targetIdx, 0.28);
-
     if (targetIdx !== _lsCardIdx) {
-      var _t = targetIdx;
-      setTimeout(function() { _lsCarouselGo(_t); }, 280);
+      // Move the form + apply state immediately so the slide reveals a
+      // populated card instead of an empty ghost. _lsApplyCardState updates
+      // _lsCardIdx, toggles .is-active, mounts the form, and re-attaches the
+      // ResizeObserver. _lsAdaptHeight animates outer height to the new card.
+      _lsApplyCardState(targetIdx);
+      _lsAdaptHeight();
     }
+    _lsSnapTrack(targetIdx, 0.28);
+    _clearCardInlineStyles();
   }, { passive: true });
 
-  track.addEventListener('touchcancel', function() {
-    _snapTo(_lsCardIdx, 0.28);
+  track.addEventListener('touchcancel', function () {
+    _lsSnapTrack(_lsCardIdx, 0.28);
+    _clearCardInlineStyles();
   }, { passive: true });
+}
+
+// ── Phase C.3B: anonymous unique site visit tracker ──────────────────────────
+// Fires website_viewed once per calendar day for unauthenticated visitors.
+// Dedup key: mmr_website_viewed_YYYY_MM_DD. Anonymous visitor ID is a random
+// UUID stored in mmr_anon_visitor_id — no PII, no fingerprinting.
+function _trackWebsiteVisit() {
+  try {
+    var today    = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+    var dedupKey = 'mmr_website_viewed_' + today;
+    if (localStorage.getItem(dedupKey)) return;
+    var visitorId = (typeof _getAnonVisitorId === 'function') ? _getAnonVisitorId() : null;
+    if (!visitorId) return;
+    localStorage.setItem(dedupKey, '1');
+    if (typeof _trackEvent === 'function') _trackEvent('website_viewed', { anon_visitor_id: visitorId });
+  } catch (_) {}
 }
 
 function _dismissSplash(fadeInId){
@@ -1001,7 +1193,9 @@ function supabaseInit(){
     const _lscrCdn = document.getElementById('login-screen'); if(_lscrCdn) _lscrCdn.style.opacity='0';
     show('login-screen');
     _lsInitCarousel();
-    _lsRenderStudentCard();
+    _lsCarouselGo(0);
+    _trackWebsiteVisit();
+    // No Supabase = no launch status. UI stays in default open state.
     _dismissSplash('login-screen');
     return;
   }
@@ -1104,8 +1298,9 @@ function supabaseInit(){
           return;
         } else {
           const _lscr = document.getElementById('login-screen'); if(_lscr) _lscr.style.opacity='0';
-          show('login-screen'); _initOneTap(); _lsInitCarousel();
-          _lsRenderStudentCard();
+          show('login-screen'); _initOneTap(); _lsInitCarousel(); _lsCarouselGo(0);
+          _trackWebsiteVisit();
+          _loadLaunchStatus();
           _dismissSplash('login-screen');
           return;
         }
@@ -1146,8 +1341,9 @@ function supabaseInit(){
       _clearUserData();
       show('login-screen');
       _lsInitCarousel();
-      _lsRenderStudentCard();
+      _lsCarouselGo(0);
       _initOneTap();
+      _loadLaunchStatus();
       _dismissSplash('login-screen');
     }
   });
@@ -1269,6 +1465,11 @@ async function _lsOAuth(provider){
 }
 
 function _lsSwitchTab(tab){
+  // Launch Gate: if signup is closed, refuse the switch and reveal waitlist.
+  if (tab === 'signup' && _launchStatus && !_launchStatus.signup_open) {
+    _showWaitlistPanel('user_clicked_create');
+    return;
+  }
   const isSignup = tab === 'signup';
   document.getElementById('ls-tab-login').className  = 'auth-tab-btn ' + (isSignup?'idle':'active');
   document.getElementById('ls-tab-signup').className = 'auth-tab-btn ' + (isSignup?'active':'idle');
@@ -1287,6 +1488,151 @@ function _lsSwitchTab(tab){
   if(forgotRow) forgotRow.style.display = isSignup ? 'none' : 'block';
   // Update placeholder text for password field
   document.getElementById('ls-password').placeholder = isSignup ? 'Password (min 8 characters)' : 'Password';
+  // Tab visibility changes the form's natural height. Wait two frames so the
+  // display:none/block toggles have laid out, then re-measure. The CSS
+  // transition on .ls-carousel-outer's height animates the change.
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { _lsAdaptHeight(); });
+  });
+}
+
+// ── Launch Gate (controlled beta) ────────────────────────────────────────────
+// Server-enforced. The frontend just renders the right UI based on the
+// status RPC; even if hidden tabs are revealed via DevTools the server still
+// refuses signup (Supabase Auth has "Disable signups" ON, and signup-gate
+// independently checks the cap before creating the user).
+var _launchStatus = null;
+var _waitlistViewedFired = false;
+
+async function _loadLaunchStatus() {
+  if (!_supa) return;
+  try {
+    const { data, error } = await _supa.rpc('get_launch_status');
+    if (error || !Array.isArray(data) || !data.length) return;
+    _launchStatus = data[0];
+    _applyLaunchStatusUI();
+  } catch (_) {}
+}
+
+function _applyLaunchStatusUI() {
+  if (!_launchStatus) return;
+  const tabSignup = document.getElementById('ls-tab-signup');
+  const tabLogin  = document.getElementById('ls-tab-login');
+  const panel     = document.getElementById('ls-waitlist-panel');
+  if (!_launchStatus.signup_open) {
+    // Hide the Create Account tab; force user to Sign In tab.
+    if (tabSignup) tabSignup.style.display = 'none';
+    if (tabLogin)  tabLogin.style.flex     = '1 1 100%';
+    if (document.getElementById('login-screen').dataset.tab === 'signup') {
+      // If we were on signup tab, switch back to login first
+      _lsSwitchTab('login');
+    }
+    if (panel) {
+      panel.style.display = 'block';
+      _setWaitlistCopy();
+      if (!_waitlistViewedFired) {
+        _waitlistViewedFired = true;
+        if (typeof _trackEvent === 'function') {
+          _trackEvent('waitlist_viewed', { reason: _launchStatus.waitlist_open ? 'cap_reached' : 'closed' });
+          _trackEvent('signup_gate_viewed', {});
+        }
+      }
+    }
+  } else {
+    if (tabSignup) tabSignup.style.display = '';
+    if (tabLogin)  tabLogin.style.flex     = '';
+    if (panel)     panel.style.display     = 'none';
+  }
+}
+
+function _setWaitlistCopy() {
+  const head = document.getElementById('ls-waitlist-headline');
+  const sub  = document.getElementById('ls-waitlist-sub');
+  if (!_launchStatus) return;
+  if (!_launchStatus.waitlist_open) {
+    if (head) head.textContent = 'New signups are paused';
+    if (sub)  sub.textContent  = 'We’re not currently accepting new accounts. Please check back soon.';
+    // Hide the form when waitlist itself is disabled
+    const form = document.getElementById('ls-waitlist-form');
+    if (form) form.style.display = 'none';
+  } else {
+    if (head) head.textContent = 'My Math Roots is in limited beta';
+    if (sub)  sub.textContent  = 'All ' + (_launchStatus.accounts_cap || '') + ' spots are filled. Join the waitlist and we’ll email you when more open up.';
+  }
+}
+
+function _showWaitlistPanel(reason) {
+  const panel = document.getElementById('ls-waitlist-panel');
+  if (panel) {
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    _setWaitlistCopy();
+    if (typeof _trackEvent === 'function') _trackEvent('waitlist_viewed', { reason: reason || 'manual' });
+  }
+}
+
+async function _lsJoinWaitlist() {
+  const emailInp = document.getElementById('ls-waitlist-email');
+  const btn      = document.getElementById('ls-waitlist-btn');
+  const msgEl    = document.getElementById('ls-waitlist-msg');
+  if (!emailInp || !btn || !msgEl) return;
+
+  const email = (emailInp.value || '').trim();
+  msgEl.style.color = '#e74c3c';
+  if (!_rateLimit('waitlist', 3)) { msgEl.textContent = '⚠️ Too many attempts. Please wait a moment.'; return; }
+  if (!email || !_validEmail(email)) { msgEl.textContent = '⚠️ Please enter a valid email address.'; return; }
+
+  // Reuse the login-screen Turnstile widget. Silent-pass mode means the
+  // callback may not fire even when a token exists, so fall back to
+  // getResponse the same way the signup-gate caller does.
+  let captchaToken = _turnstileToken;
+  if (!captchaToken && window.turnstile && typeof window.turnstile.getResponse === 'function') {
+    try { captchaToken = window.turnstile.getResponse('#ls-turnstile .cf-turnstile') || null; } catch (_) {}
+  }
+  if (!captchaToken) {
+    msgEl.textContent = _turnstileFailed
+      ? _TURNSTILE_FAIL_MSG
+      : '⚠️ Please complete the security check above.';
+    return;
+  }
+
+  const origTxt = btn.textContent;
+  btn.disabled  = true;
+  btn.textContent = 'Joining…';
+
+  try {
+    const res = await fetch('/.netlify/functions/waitlist-join', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, source: 'login_screen', captchaToken }),
+    });
+    let json = {};
+    try { json = await res.json(); } catch (_) {}
+    _resetTurnstile();
+
+    if (res.ok && json && json.ok) {
+      // Non-enumerating: identical message whether the email is new or
+      // already on the list. The server stores both shapes silently.
+      msgEl.style.color = '#27ae60';
+      msgEl.textContent = '✅ You’re on the waitlist. We’ll email you when more spots open.';
+      emailInp.value = '';
+      if (typeof _trackEvent === 'function') _trackEvent('waitlist_joined', { source: 'login_screen' });
+    } else if (res.status === 403 && json && json.error === 'turnstile_failed') {
+      msgEl.textContent = '⚠️ Security check failed. Please try again.';
+    } else if (res.status === 429) {
+      msgEl.textContent = '⚠️ Too many attempts. Please wait a few minutes and try again.';
+    } else if (res.status === 400 && json && json.error === 'invalid_email') {
+      msgEl.textContent = '⚠️ Please enter a valid email address.';
+    } else {
+      msgEl.textContent = '⚠️ Couldn’t join the waitlist. Please try again.';
+    }
+  } catch (e) {
+    msgEl.style.color = '#e74c3c';
+    msgEl.textContent = '⚠️ Network error. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origTxt;
+  }
 }
 
 async function _lsForgotPassword(){
@@ -1406,21 +1752,44 @@ async function _lsSubmit(){
     let result;
     if(tab === 'signup'){
       const displayName = _sanitize(document.getElementById('ls-name').value, 30) || 'Student';
-      result = await _supa.auth.signUp({
-        email, password,
-        options: { data: { display_name:displayName }, captchaToken }
-      });
+      // Launch Gate: server-enforced signup. Direct supabase.auth.signUp() is
+      // blocked at the Auth layer ("Allow new users to sign up" OFF). The
+      // Netlify function checks the cap + Turnstile + creates via admin API.
+      let gateRes, gateJson;
+      try {
+        gateRes  = await fetch('/.netlify/functions/signup-gate', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, password, displayName, captchaToken }),
+        });
+        gateJson = await gateRes.json().catch(()=>({}));
+      } catch (e) {
+        result = { error: { message: 'Network error — please try again.' } };
+      }
+      _resetTurnstile();
+      if (gateRes && gateRes.ok && gateJson && gateJson.ok) {
+        // Signup accepted; Supabase will send a confirmation email.
+        result = { data: { session: null }, error: null };
+      } else if (gateRes && (gateJson.reason === 'cap_reached' || gateJson.reason === 'disabled' || gateJson.error === 'cap_reached' || gateJson.error === 'signup_disabled')) {
+        if (typeof _trackEvent === 'function') _trackEvent('signup_blocked_capacity', { reason: gateJson.reason || gateJson.error });
+        await _loadLaunchStatus();
+        _showWaitlistPanel('signup_blocked');
+        msgEl.style.color = '#e74c3c';
+        msgEl.textContent = '⚠️ Beta is full — see the waitlist below.';
+        return;
+      } else if (gateRes && gateJson.error === 'turnstile_failed') {
+        result = { error: { message: 'Security check failed. Please try again.' } };
+      } else if (gateRes && (gateJson.error === 'invalid_email' || gateJson.error === 'short_password' || gateJson.error === 'invalid_body')) {
+        result = { error: { message: 'Please check your details and try again.' } };
+      } else if (!result) {
+        result = { error: { message: 'Could not create account. Please try again.' } };
+      }
     } else {
       result = await _supa.auth.signInWithPassword({
         email, password,
         options: { captchaToken }
       });
-    }
-    _resetTurnstile(); // always reset after use — token is single-use
-    // Notify on new signup (fire-and-forget)
-    if(!result.error && tab === 'signup'){
-      const _dn = _sanitize(document.getElementById('ls-name')?.value||'', 30) || 'Student';
-      _supa.functions.invoke('notify-new-signup', { body: { email, display_name: _dn } }).catch(()=>{});
+      _resetTurnstile();
     }
     // Remember email preference — SEC-9: store encrypted, never plain text
     if(!result.error && tab === 'login'){
@@ -1434,9 +1803,14 @@ async function _lsSubmit(){
     if(result.error){
       msgEl.style.color = '#e74c3c';
       msgEl.textContent = '⚠️ ' + _friendlyError(result.error);
-    } else if(tab==='signup' && !result.data.session){
+    } else if(tab==='signup'){
+      // Non-enumerating success: signup-gate now returns 200 ok=true even
+      // when the email is already registered (the original holder owns
+      // the account and gets no new confirmation email). Phrase the
+      // message so it's correct in both cases — new sign-up sees an
+      // email arrive; duplicate sees "sign in" path applicable.
       msgEl.style.color = '#27ae60';
-      msgEl.textContent = '✅ Check your email to confirm your account!';
+      msgEl.textContent = '✅ If this email is new to us, check your inbox to confirm. Already have an account? Try signing in below.';
       _lsLastSignupEmail = email;
       document.getElementById('ls-resend-row').style.display = 'block';
     }
@@ -1597,6 +1971,27 @@ async function _pullStudentProgress(studentId) {
       saveDone();
       changed = true;
     }
+
+    // Tier 1 cross-device sync: reconcile paused-quiz state against the
+    // merged DONE map. If another device completed a quiz that this device
+    // had locally paused, the paused entry must be cleared so the dashboard
+    // stops offering "Resume". Completion beats stale pause. The map is
+    // qid-keyed (e.g. 'lq_u1l4'); DONE uses the same qid as the done flag.
+    try {
+      if (typeof _getPausedAll === 'function' && typeof _clearPausedQuiz === 'function') {
+        var _pausedAll = _getPausedAll();
+        if (_pausedAll && typeof _pausedAll === 'object') {
+          var _pausedKeys = Object.keys(_pausedAll);
+          for (var _pi = 0; _pi < _pausedKeys.length; _pi++) {
+            var _pqid = _pausedKeys[_pi];
+            if (DONE && DONE[_pqid] === true) {
+              _clearPausedQuiz(_pqid);
+              changed = true;
+            }
+          }
+        }
+      }
+    } catch (_pe) {}
 
     // Merge mastery_json → mmr_mastery_v1_<grade> (per-grade canonical key;
     // per-tag higher-attempts wins). The RPC was called with p_grade scope,
@@ -2013,6 +2408,69 @@ async function _pushAll(){
     if(_pushPending){ _pushPending = false; triggerCloudSync(); }
   }
 }
+
+// ── Tier 1 cross-device resume sync ────────────────────────────────────
+// Refresh linked-student state when the device wakes up. The dashboard
+// previously read only the local cache populated at login, so a second
+// device kept showing stale lesson counts and a "resume" prompt for
+// quizzes that the first device had already finished.
+//
+// Triggered on visibilitychange→visible, focus, online, pageshow. Only
+// runs for valid family-code student sessions (not parents, not guest
+// mode). Throttled to one full push→pull every 10 s so a flurry of
+// foreground events doesn't hammer the RPC.
+var _lastResumeSyncAt = 0;
+var _RESUME_SYNC_THROTTLE_MS = 10000;
+
+// Pure helper — exported on window for tests.
+function _shouldRunResumeSync(now, lastTime, throttleMs) {
+  if (typeof now !== 'number' || typeof throttleMs !== 'number') return false;
+  if (!lastTime) return true;
+  return (now - lastTime) >= throttleMs;
+}
+
+async function _resumeSyncIfStudent(reason) {
+  try {
+    if (!_supa || !_isStudentSession()) return;
+    var studentId = localStorage.getItem('mmr_active_student_id');
+    if (!studentId || studentId === 'local' || !_sessionToken) return;
+    var _now = Date.now();
+    if (!_shouldRunResumeSync(_now, _lastResumeSyncAt, _RESUME_SYNC_THROTTLE_MS)) return;
+    _lastResumeSyncAt = _now;
+    // Push first so any unflushed local writes land on the server before
+    // we overwrite local with the pull result. _pushAll coalesces if a
+    // push is already in flight.
+    try { await _pushAll(); } catch (_pe) {}
+    try { await _pullStudentProgress(studentId); } catch (_pe) {}
+    // Refresh visible UI so unit cards / paused indicator pick up the
+    // freshly-pulled state. Guarded — buildHome lives in home.js.
+    try { if (typeof buildHome === 'function') buildHome(); } catch (_be) {}
+  } catch (_e) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('[sync] resume sync failed', reason, _e);
+    }
+  }
+}
+
+// Expose for testability + manual debugging.
+if (typeof window !== 'undefined') {
+  window._resumeSyncIfStudent = _resumeSyncIfStudent;
+  window._shouldRunResumeSync = _shouldRunResumeSync;
+}
+
+(function _attachResumeSyncListeners() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') _resumeSyncIfStudent('visibilitychange');
+  });
+  window.addEventListener('focus', function () { _resumeSyncIfStudent('focus'); });
+  window.addEventListener('online', function () { _resumeSyncIfStudent('online'); });
+  window.addEventListener('pageshow', function (e) {
+    // pageshow fires on initial load too; only sync on BFCache restore or
+    // when we're already past the login screen (a student session exists).
+    if (e && e.persisted) _resumeSyncIfStudent('pageshow-bfcache');
+  });
+})();
 
 // ── Parent-path push functions (authenticated via Supabase Auth, no session token) ──
 async function _pushDoneParent(){
@@ -2547,16 +3005,11 @@ async function _submitSoftGate(){
     localStorage.setItem('wb_lead', JSON.stringify({ grade, referral, date: _leadDate }));
   }
   localStorage.setItem('wb_gate_done', '1');
-  if(_supa){
-    try{
-      await _supa.from('leads').insert({
-        email,
-        grade: grade || null,
-        referral_source: referral || null
-        // device_id intentionally omitted — no persistent identifiers before consent (COPPA)
-      });
-    } catch(e){ console.warn('[leads]', e); }
-  }
+  // Direct anon insert into `leads` was the SS-4 attack surface (audit
+  // 2026-05-22). Migration 20260612_leads_lockdown.sql revokes anon
+  // INSERT on the table. Re-enabling lead capture post-launch requires
+  // a Turnstile-gated Netlify function — see the migration's table
+  // COMMENT for the re-enablement contract.
   const modal = document.getElementById('soft-gate-modal');
   if(modal){
     modal.querySelector('div').innerHTML = `<div style="text-align:center;padding:24px 8px">
@@ -2730,12 +3183,14 @@ async function submitAuth(){
   try{
     let result;
     if(tab === 'signup'){
-      const displayName = _sanitize(document.getElementById('auth-name').value, 30)
-        || loadSettings().studentName || 'Student';
-      result = await _supa.auth.signUp({
-        email, password,
-        options: { data: { display_name:displayName } }
-      });
+      // Signup is gated behind the main login screen (server-enforced cap +
+      // Turnstile via signup-gate.js). The auth-modal does not host a
+      // Turnstile widget, so we explicitly refuse signup here.
+      msgEl.style.color = '#e74c3c';
+      msgEl.textContent = '⚠️ Please create an account from the main sign-in screen.';
+      btn.textContent = origTxt;
+      _authLoading = false;
+      return;
     } else {
       result = await _supa.auth.signInWithPassword({ email, password });
     }
@@ -3004,8 +3459,7 @@ async function _signOut(){
   // (2) Show login immediately so UI matches the new state regardless of
   //     whether the async Supabase signOut completes.
   if (typeof show === 'function') show('login-screen');
-  if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
-  if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+  if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
 
   // (3) Student PIN session: no Supabase signOut needed.
   if (_soRole === 'student') return;

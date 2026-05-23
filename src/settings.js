@@ -512,10 +512,14 @@ function _renderAIReportView(text){
     var header = nl > -1 ? part.slice(0, nl).trim() : part.trim();
     var body   = nl > -1 ? part.slice(nl+1).trim()  : '';
     var col    = colours[idx % colours.length];
+    // _escHtml first (defined in src/util.js:30 — same global bundle), THEN
+    // \n -> <br>. Doing it in the other order would lose the <br> tags to
+    // entity escaping. Gemini model output is sanitized server-side but
+    // can still contain markup; treat every interpolation as untrusted.
     html +=
       '<div class="ai-report-section" style="border-left:3px solid '+col+'">'
-      + '<div class="ai-report-section-title" style="color:'+col+'">'+header+'</div>'
-      + '<div class="ai-report-section-body">'+body.replace(/\n/g,'<br>')+'</div>'
+      + '<div class="ai-report-section-title" style="color:'+col+'">'+_escHtml(header)+'</div>'
+      + '<div class="ai-report-section-body">'+_escHtml(body).replace(/\n/g,'<br>')+'</div>'
       + '</div>';
   });
   html += '</div>';
@@ -558,9 +562,18 @@ async function generateAIReport(){
   var payload = _buildReportPayload(30);
 
   try{
+    // gemini-report now requires a verified parent JWT for every call
+    // (audit SS-3, 2026-05-22). Attach it if the parent is signed in.
+    var _hdrs = { 'Content-Type': 'application/json' };
+    try {
+      var _sess = (typeof _supa !== 'undefined' && _supa)
+        ? (await _supa.auth.getSession()).data.session
+        : null;
+      if (_sess && _sess.access_token) _hdrs['Authorization'] = 'Bearer ' + _sess.access_token;
+    } catch (_e) {}
     var resp = await fetch('/.netlify/functions/gemini-report', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: _hdrs,
       body: JSON.stringify({ studentName: _prStudentName, reportData: payload })
     });
     if(!resp.ok) throw new Error('Server error '+resp.status);
@@ -587,10 +600,13 @@ function downloadReportPDF(){
     var header = nl > -1 ? part.slice(0,nl).trim()  : part.trim();
     var body   = nl > -1 ? part.slice(nl+1).trim()  : '';
     var col    = colours[idx % colours.length];
+    // Escape both fields before they are written into the PDF source HTML.
+    // PDFs do not execute JS but unescaped markup can still break the
+    // page layout or render misleading content via the AI report.
     sectionsHtml +=
       '<div style="margin-bottom:22px;page-break-inside:avoid;padding-left:14px;border-left:4px solid '+col+'">'
-      + '<div style="font-size:var(--fs-base);font-weight:700;color:'+col+';margin-bottom:8px;font-family:Georgia,serif">'+header+'</div>'
-      + '<div style="font-size:var(--fs-sm);line-height:1.9;color:#333">'+body.replace(/\n/g,'<br>')+'</div>'
+      + '<div style="font-size:var(--fs-base);font-weight:700;color:'+col+';margin-bottom:8px;font-family:Georgia,serif">'+_escHtml(header)+'</div>'
+      + '<div style="font-size:var(--fs-sm);line-height:1.9;color:#333">'+_escHtml(body).replace(/\n/g,'<br>')+'</div>'
       + '</div>';
   });
 
@@ -599,7 +615,7 @@ function downloadReportPDF(){
 
   var doc = '<!DOCTYPE html>\n<html lang="en">\n<head>\n'
     + '<meta charset="utf-8">\n'
-    + '<title>My Math Roots \u2014 Progress Report: '+name+'</title>\n'
+    + '<title>My Math Roots \u2014 Progress Report: '+_escHtml(name)+'</title>\n'
     + '<style>\n'
     + '*{box-sizing:border-box;margin:0;padding:0}\n'
     + 'body{font-family:Georgia,serif;max-width:780px;margin:0 auto;padding:40px 32px;color:#222}\n'
@@ -623,7 +639,7 @@ function downloadReportPDF(){
     + '</div>\n'
     + '<div class="rpt-header">\n'
     + '  <div class="rpt-app">\uD83C\uDF31 My Math Roots</div>\n'
-    + '  <div class="rpt-sub">Progress Report &mdash; '+name+'</div>\n'
+    + '  <div class="rpt-sub">Progress Report &mdash; '+_escHtml(name)+'</div>\n'
     + '  <div class="rpt-date">Generated '+date+' &nbsp;&middot;&nbsp; '+payload.period+'</div>\n'
     + '</div>\n'
     + '<div class="rpt-stats">\n'

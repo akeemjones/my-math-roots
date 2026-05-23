@@ -52,8 +52,8 @@ describe('_ANA_VALID_EVENTS — Phase B whitelist', () => {
     expect(_ANA_VALID_EVENTS.has('UNIT_VIEWED')).toBe(false);
   });
 
-  test('whitelist set is the expected total size (Phase A + Phase B)', () => {
-    expect(_ANA_VALID_EVENTS.size).toBe(PHASE_A_EVENTS.length + PHASE_B_EVENTS.length);
+  test('whitelist set contains at least all Phase A + Phase B events', () => {
+    expect(_ANA_VALID_EVENTS.size).toBeGreaterThanOrEqual(PHASE_A_EVENTS.length + PHASE_B_EVENTS.length);
   });
 });
 

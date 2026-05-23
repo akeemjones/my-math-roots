@@ -311,6 +311,23 @@ function _getLast7DaysTimeBreakdown(scores, appTime) {
   };
 }
 
+// Shared "last 7 days lesson-quiz scores" filter — single source of truth
+// for both the Activity Snapshot card count ("Lessons Last 7 Days") and
+// the clicked detail view (_renderSnapLessons). Keeps the two consistent
+// so the card never promises N lessons that the detail can't show.
+function _getLast7DaysLessonQuizScores(scores) {
+  if (!Array.isArray(scores)) return [];
+  var cutoffMs = _last7DaysCutoffMs();
+  return scores.filter(function(s) {
+    return s
+      && s.type === 'lesson'
+      && s.pct != null
+      && s.total > 0
+      && typeof s.id === 'number'
+      && s.id >= cutoffMs;
+  });
+}
+
 function _getLast7DaysLessonActivity(activityEvents) {
   var cutoffMs = _last7DaysCutoffMs();
   var byLesson = {};
@@ -761,11 +778,7 @@ function _renderActivitySnapshotInner(stats, scores, appTime, activity, streak, 
     ? Math.floor(weekMins / 60) + 'h ' + String(weekMins % 60).padStart(2, '0') + 'm'
     : weekMins + 'm';
 
-  var cutoffMs = _last7DaysCutoffMs();
-  var weekLessons = scores.filter(function(s) {
-    return s.type === 'lesson' && s.pct != null && s.total > 0
-      && typeof s.id === 'number' && s.id >= cutoffMs;
-  }).length;
+  var weekLessons = _getLast7DaysLessonQuizScores(scores).length;
 
   // Streak dots
   var cur = (streak && streak.current) || 0;
@@ -956,22 +969,37 @@ function _renderSnapTime(scores, appTime) {
   return html;
 }
 
-function _renderSnapLessons(scores, activityEvents) {
-  var rows = _getLast7DaysLessonActivity(activityEvents);
+// Detail view for the "Lessons Last 7 Days" snapshot card. Reads the same
+// quiz_scores stream the card counts, via the shared
+// _getLast7DaysLessonQuizScores helper, so detail row count always equals
+// card count. The legacy activityEvents-based view drifted from the count
+// (events stream is page-views, count is quiz completions) — see git
+// history for the "show lesson-score details" fix.
+//
+// The _activityEvents arg is retained so _renderSnapDetailBody's dispatch
+// table can stay uniform with the other detail renderers; it is unused.
+function _renderSnapLessons(scores, _activityEvents) {
+  var rows = _getLast7DaysLessonQuizScores(scores)
+    .slice()
+    .sort(function(a, b) { return b.id - a.id; });
   if (!rows.length) {
-    var hadLessonQuiz = scores.some(function(s) {
-      return s.type === 'lesson' && s.pct != null && s.total > 0
-        && typeof s.id === 'number' && s.id >= _last7DaysCutoffMs();
-    });
-    if (hadLessonQuiz) {
-      return '<p class="db-snap-detail-empty">No lesson reading recorded in the last 7 days. Quiz activity was recorded — see Quizzes for details.</p>';
-    }
-    return '<p class="db-snap-detail-empty">No lesson activity in the last 7 days.</p>';
+    return '<p class="db-snap-detail-empty">No lessons completed in the last 7 days.</p>';
   }
-  return rows.map(function(r) {
+  return rows.map(function(s) {
+    var pct      = (s.pct == null) ? 0 : s.pct;
+    var pctColor = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
+    var label    = s.label || s.qid || 'Lesson Quiz';
+    var dateStr  = s.date || '';
+    var fraction = (s.score || 0) + '/' + (s.total || 0);
     return '<div class="db-snap-detail-row">'
-      + '<span>' + (r.unit ? _esc(r.unit) + ' &middot; ' : '') + _esc(r.lesson) + '</span>'
-      + '<span style="color:var(--neutral-500);font-size:.78rem">' + r.lastDate + ' &middot; ' + r.count + ' event' + (r.count !== 1 ? 's' : '') + '</span>'
+      + '<span>' + _esc(label)
+      + (dateStr
+          ? ' <span style="color:var(--neutral-500);font-size:.78rem">&middot; ' + _esc(dateStr) + '</span>'
+          : '')
+      + '</span>'
+      + '<span style="color:' + pctColor + ';font-weight:700">' + pct + '% '
+      + '<span style="color:var(--neutral-500);font-weight:500">(' + fraction + ')</span>'
+      + '</span>'
       + '</div>';
   }).join('');
 }
@@ -2974,6 +3002,12 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_mastery_'     + gradeBand);
     keys.push('mmr_mastery_v1_' + gradeBand);
   }
+  // Tier 1 cross-device sync: paused-quiz state must always be wiped on
+  // student/profile switch — even when sessionMatches is false. The key
+  // is a single global JSON map keyed by qid, so leaving it intact lets
+  // a paused entry from Student A or another device's session surface
+  // on the new student's first dashboard render.
+  keys.push('wb_paused_quiz');
   if (sessionMatches) {
     // The reset student owns this device's active session — sweep every
     // grade cache so a cross-grade student-app view can't fall back to
@@ -2987,7 +3021,6 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
     keys.push('wb_streak');
     keys.push('wb_act_dates');
     keys.push('wb_apptime');
-    keys.push('wb_paused_quiz');
     // Legacy un-namespaced keys (pre-grade-scoping). The Grade-2 migration
     // in state.js copies these into the namespaced slot on next boot, so
     // clearing them prevents a stale repopulation cycle.
@@ -5086,8 +5119,32 @@ function dbSignOut() {
   }
   // SPA navigation — no page reload needed; SIGNED_OUT event in auth.js shows login screen
   show('login-screen');
-  if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
-  if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+  if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
+}
+
+// ── Managed-profile helpers ──────────────────────────────────────────────
+// Pure mappers from a `student_profiles` row (as returned by
+// _fetchManagedProfiles' .select(…)) into the STREAK and ACT_DATES shapes
+// the parent dashboard's per-student _students[id] cache expects. Before
+// this, _fetchManagedProfiles omitted the streak/act-dates columns and
+// _students[id].STREAK was hard-coded to {0,0,null} forever, so the
+// parent Activity Snapshot always showed "0 days" current streak for
+// every managed student regardless of real progress.
+function _dbBuildStudentStreak(profile) {
+  var p = (profile && typeof profile === 'object') ? profile : {};
+  return {
+    current:  (typeof p.streak_current === 'number' && p.streak_current >= 0) ? p.streak_current : 0,
+    longest:  (typeof p.streak_longest === 'number' && p.streak_longest >= 0) ? p.streak_longest : 0,
+    lastDate: (typeof p.streak_last_date === 'string' && p.streak_last_date !== '') ? p.streak_last_date : null,
+  };
+}
+
+function _dbBuildStudentActDates(profile) {
+  var p = (profile && typeof profile === 'object') ? profile : {};
+  if (!Array.isArray(p.act_dates_json)) return [];
+  return p.act_dates_json.filter(function(d) {
+    return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+  });
 }
 
 // ── Manage Profiles ───────────────────────────────────────────────────────
@@ -5098,7 +5155,7 @@ async function _fetchManagedProfiles() {
     var result = await Promise.race([
       _supa
         .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade')
+        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade, streak_current, streak_longest, streak_last_date, act_dates_json')
         .order('created_at', { ascending: true }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
@@ -5153,9 +5210,11 @@ function _renderManageProfiles() {
   }).join('');
 
   var familyCodeHtml = _parentFamilyCode
-    ? '<div style="margin-bottom:10px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:.8rem;color:#2e7d32">'
-      + '&#x1F511; <strong>Family Code:</strong> <span style="font-family:monospace;letter-spacing:1px">' + _esc(_parentFamilyCode) + '</span>'
-      + '<span style="color:#66bb6a;margin-left:8px">— share this with your child\'s device to link profiles</span>'
+    ? '<div style="margin-bottom:10px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:.8rem;color:#2e7d32;display:flex;flex-wrap:wrap;align-items:center;gap:8px">'
+      + '<span>&#x1F511; <strong>Family Code:</strong> <span id="db-family-code-display" style="font-family:monospace;letter-spacing:1px">' + _esc(_parentFamilyCode) + '</span></span>'
+      + '<button type="button" data-action="_dbCopyFamilyCode" aria-label="Copy family code digits" style="background:#43a047;color:#fff;border:0;border-radius:6px;padding:4px 10px;font-size:.75rem;cursor:pointer;font-weight:600">Copy Code</button>'
+      + '<span id="db-family-code-copied" role="status" aria-live="polite" style="color:#2e7d32;font-size:.75rem;display:none">Copied&nbsp;&#x2713;</span>'
+      + '<span style="color:#66bb6a;flex-basis:100%">— share this with your child\'s device to link profiles</span>'
       + '</div>'
     : '';
 
@@ -5167,6 +5226,35 @@ function _renderManageProfiles() {
     + familyCodeHtml
     + '<div class="db-profiles-list">' + rows + '</div>'
     + '</section>';
+}
+
+// Copy the 8-digit suffix of the parent's family code to the clipboard.
+// Strips the "MMR-" prefix so the parent can paste just the digits into
+// the child device's family-code input (which now shows "MMR-" as a
+// fixed visual prefix). Uses navigator.clipboard with a textarea
+// fallback for older browsers / restricted contexts.
+function _dbCopyFamilyCode() {
+  if (!_parentFamilyCode) return;
+  var suffix = String(_parentFamilyCode).replace(/^MMR-/i, '');
+  var notify = document.getElementById('db-family-code-copied');
+  function _ok() {
+    if (!notify) return;
+    notify.style.display = '';
+    setTimeout(function() {
+      if (notify) notify.style.display = 'none';
+    }, 2000);
+  }
+  try {
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(suffix).then(_ok).catch(function() {
+        if (typeof _copyFallback === 'function') _copyFallback(suffix);
+        _ok();
+      });
+      return;
+    }
+  } catch (_e) {}
+  if (typeof _copyFallback === 'function') _copyFallback(suffix);
+  _ok();
 }
 
 function openPinResetSheet(studentId) {
@@ -5563,7 +5651,20 @@ async function dbAddSave() {
     closeAddStudentSheet();
     _reRenderManageProfiles();
   } catch(e) {
-    if (msg) msg.textContent = e.message && e.message.includes('unique') ? 'A student with that name already exists.' : 'Error saving. Try again.';
+    if (msg) {
+      const errMsg = (e && e.message) ? String(e.message) : '';
+      if (errMsg.indexOf('profile_limit_reached') !== -1) {
+        // Launch Gate: BEFORE INSERT trigger enforces max_students_per_parent.
+        const cap = (errMsg.match(/max (\d+) students/) || [])[1];
+        msg.textContent = cap
+          ? 'During beta, accounts can have up to ' + cap + ' student profiles.'
+          : 'Maximum student profiles reached for this account.';
+      } else if (errMsg.includes('unique')) {
+        msg.textContent = 'A student with that name already exists.';
+      } else {
+        msg.textContent = 'Error saving. Try again.';
+      }
+    }
     if (btn) btn.textContent = 'Add Student';
   }
 }
@@ -5789,7 +5890,8 @@ function _dbInit() {
               name: p.display_name,
               MASTERY: {},
               SCORES: [],
-              STREAK: { current: 0, longest: 0, lastDate: null },
+              STREAK: _dbBuildStudentStreak(p),
+              ACT_DATES: _dbBuildStudentActDates(p),
               APP_TIME: { totalSecs: 0, sessions: 0, dailySecs: {} },
               _scoresLoaded: false
             };
@@ -5883,6 +5985,7 @@ if (typeof document !== 'undefined') {
     _dbSetFbCat:             function(a)    { _dbSetFbCat(a); },
     _dbSubmitFeedback:       function()     { _dbSubmitFeedback(); },
     openAddStudentSheet:     function()     { openAddStudentSheet(); },
+    _dbCopyFamilyCode:       function()     { _dbCopyFamilyCode(); },
     openEditProfileSheet:    function(a)    { openEditProfileSheet(a); },
     openPinResetSheet:       function(a)    { openPinResetSheet(a); },
     closePinResetSheet:      function()     { closePinResetSheet(); },
@@ -5966,6 +6069,12 @@ if (typeof module !== 'undefined') {
     _deriveReportDiagnostics,
     _gradeBand,
     _inferScoreGrade,
+    _last7DaysCutoffMs,
+    _getLast7DaysLessonQuizScores,
+    _renderSnapLessons,
+    _dbBuildStudentStreak,
+    _dbBuildStudentActDates,
+    _renderActivitySnapshotInner,
   };
 }
 

@@ -29,6 +29,10 @@ const _APP_GLOBALS = [
   '_lsForgotPassword','_lsTogglePw','_turnstileToken','_turnstileFailed',
   '_TURNSTILE_FAIL_MSG','_onTurnstileSuccess','_onTurnstileExpired','_onTurnstileError',
   '_resetTurnstile','_lsSubmit','_pullOnLogin','_pushDone',
+  // Launch Gate
+  '_launchStatus','_loadLaunchStatus','_applyLaunchStatusUI','_setWaitlistCopy',
+  '_showWaitlistPanel','_lsJoinWaitlist','_waitlistViewedFired',
+  '_trackWebsiteVisit',
   '_fireSvg','_showDayDetail','_renderCalBtn','_updateCalDot','_getMilestone','_toggleDayExpand','_scDate','_scalSwipeX','_openStreakCal',
   '_closeStreakCal','_streakCalNav','_buildStreakCal','_checkSoftGate','_showSoftGate',
   '_submitSoftGate','_skipSoftGate','_proceedAsGuest','_guestConsentContinue','_showSignupNudge',
@@ -601,7 +605,7 @@ setTimeout(() => {
     } else {
       show('login-screen');
       _lsInitCarousel();
-      _lsRenderStudentCard();
+      _lsCarouselGo(0);   // Apply state so .is-active is on card 0 at first paint
     }
   }
 }, 8000);

@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.12-analytics-custom-range';
+const CACHE = 'math-workbook-v6.0.15-auth-carousel';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets

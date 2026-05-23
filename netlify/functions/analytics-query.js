@@ -120,10 +120,70 @@ const METRIC_TO_RPC = {
   returning_students:   'analytics_returning_students',
   sessions_per_student: 'analytics_sessions_per_student',
   avg_score:            'analytics_avg_score',
+  // Phase C.3B
+  unique_site_visits:   'analytics_unique_site_visits',
+  // Launch Gate (2026-05-21) — controlled beta signup
+  launch_status:           'get_launch_status',           // anon-callable
+  launch_dashboard:        'admin_get_launch_dashboard',  // admin-only
+  update_launch_settings:  'admin_update_launch_settings',// admin-only POST
 };
 
 // Metrics that accept p_breakdown in addition to p_days/p_grade.
 const _METRICS_WITH_BREAKDOWN = new Set(['avg_score']);
+
+// Public metrics — skip the admin JWT check. Used for read-only RPCs that
+// expose safe aggregates (launch_status returns just two booleans).
+const _PUBLIC_METRICS = new Set(['launch_status']);
+
+// Metrics that are write operations (admin only, POST body validated).
+const _WRITE_METRICS  = new Set(['update_launch_settings']);
+
+// ── Launch-settings admin update (input validation) ─────────────────────────
+// Admin sends {signup_enabled, max_parent_accounts, max_students_per_parent,
+// waitlist_enabled}. Caps keep an admin from accidentally setting a million-
+// student-per-parent limit. The DB has its own NOT NULL + CHECK constraints
+// as a second line of defense.
+const _MAX_PARENT_CAP_HARD          = 100000;  // soft cap on the admin input
+const _MAX_STUDENT_PER_PARENT_HARD  = 50;
+function _coerceBool(v) {
+  if (typeof v === 'boolean') return v;
+  if (v === 'true'  || v === 1 || v === '1') return true;
+  if (v === 'false' || v === 0 || v === '0') return false;
+  return null;
+}
+function _coerceInt(v) {
+  if (typeof v === 'number' && Number.isInteger(v)) return v;
+  if (typeof v === 'string' && /^-?[0-9]+$/.test(v)) return parseInt(v, 10);
+  return null;
+}
+function _parseLaunchSettingsUpdate(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, reason: 'invalid_body' };
+
+  const out = {};
+  if ('signup_enabled'   in body) {
+    const b = _coerceBool(body.signup_enabled);
+    if (b === null) return { ok: false, reason: 'invalid_signup_enabled' };
+    out.signup_enabled = b;
+  }
+  if ('waitlist_enabled' in body) {
+    const b = _coerceBool(body.waitlist_enabled);
+    if (b === null) return { ok: false, reason: 'invalid_waitlist_enabled' };
+    out.waitlist_enabled = b;
+  }
+  if ('max_parent_accounts' in body) {
+    const n = _coerceInt(body.max_parent_accounts);
+    if (n === null || n < 1 || n > _MAX_PARENT_CAP_HARD) return { ok: false, reason: 'invalid_max_parent_accounts' };
+    out.max_parent_accounts = n;
+  }
+  if ('max_students_per_parent' in body) {
+    const n = _coerceInt(body.max_students_per_parent);
+    if (n === null || n < 1 || n > _MAX_STUDENT_PER_PARENT_HARD) return { ok: false, reason: 'invalid_max_students_per_parent' };
+    out.max_students_per_parent = n;
+  }
+
+  if (Object.keys(out).length === 0) return { ok: false, reason: 'no_changes' };
+  return { ok: true, value: out };
+}
 
 const _rateMap = new Map();
 function _checkRateLimit(ip) {
@@ -135,6 +195,11 @@ function _checkRateLimit(ip) {
   return e.count > 10;
 }
 
+// Verifies the bearer JWT belongs to an admin. Admin source of truth is the
+// service-role-only `admin_users` table (see migration
+// 20260601_admin_source_of_truth.sql). The previous implementation looked up
+// `profiles.role = 'admin'`, which was exploitable because the profiles
+// UPDATE RLS policy is row-only and lets users self-promote.
 async function _verifyAdmin(authHeader, supaUrl, svcKey) {
   if (!authHeader) return false;
   const m = /^Bearer\s+([^\s]+)$/.exec(authHeader);
@@ -146,13 +211,15 @@ async function _verifyAdmin(authHeader, supaUrl, svcKey) {
     if (!r1.ok) return false;
     const user = await r1.json();
     if (!user || !user.id) return false;
+    // admin_users has RLS enabled with no policies; the service-role key
+    // bypasses RLS so this lookup returns the row iff the user is admin.
     const r2 = await fetch(
-      `${supaUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
+      `${supaUrl}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(user.id)}&select=user_id&limit=1`,
       { headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey } }
     );
     if (!r2.ok) return false;
     const rows = await r2.json();
-    return Array.isArray(rows) && rows.length > 0 && rows[0].role === 'admin';
+    return Array.isArray(rows) && rows.length > 0;
   } catch { return false; }
 }
 
@@ -174,22 +241,52 @@ exports.handler = async function(event) {
   const svcKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supaUrl || !svcKey) return { statusCode: 500, headers: corsH, body: JSON.stringify({ error: 'Misconfigured' }) };
 
-  const authH   = (event.headers && (event.headers.authorization || event.headers.Authorization)) || '';
-  const isAdmin = await _verifyAdmin(authH, supaUrl, svcKey);
-  if (!isAdmin) return { statusCode: 401, headers: corsH, body: JSON.stringify({ error: 'Unauthorized' }) };
-
   const qs      = event.queryStringParameters || {};
   const metric  = qs.metric;
   const rpcName = METRIC_TO_RPC[metric];
   if (!rpcName) return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'Unknown metric' }) };
 
-  // Validated filter values — pass as named RPC args. RPCs declare matching
-  // p_days INTEGER DEFAULT 30 / p_grade TEXT DEFAULT NULL signatures.
-  const filters = _parseAnalyticsFilters(qs);
-  // Phase C.3A: a small set of RPCs also accept p_breakdown. Attach when relevant.
-  const rpcArgs = _METRICS_WITH_BREAKDOWN.has(metric)
-    ? Object.assign({}, filters, { p_breakdown: _parseBreakdown(qs.breakdown) })
-    : filters;
+  const isPublic = _PUBLIC_METRICS.has(metric);
+  const isWrite  = _WRITE_METRICS.has(metric);
+
+  // Method gating: write metrics require POST; read metrics require GET.
+  if (isWrite && event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers: corsH, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+  if (!isWrite && event.httpMethod !== 'GET') {
+    return { statusCode: 405, headers: corsH, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
+  // Admin gating: every metric except those in _PUBLIC_METRICS requires admin.
+  const authH = (event.headers && (event.headers.authorization || event.headers.Authorization)) || '';
+  if (!isPublic) {
+    const isAdmin = await _verifyAdmin(authH, supaUrl, svcKey);
+    if (!isAdmin) return { statusCode: 401, headers: corsH, body: JSON.stringify({ error: 'Unauthorized' }) };
+  }
+
+  // Build RPC args.
+  let rpcArgs;
+  if (isWrite) {
+    let body;
+    try { body = JSON.parse(event.body || '{}'); }
+    catch { return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: 'Bad JSON' }) }; }
+    const v = _parseLaunchSettingsUpdate(body);
+    if (!v.ok) return { statusCode: 400, headers: corsH, body: JSON.stringify({ error: v.reason }) };
+    // Map JS shape to RPC param names.
+    rpcArgs = {
+      p_signup_enabled:          v.value.signup_enabled          ?? null,
+      p_max_parent_accounts:     v.value.max_parent_accounts     ?? null,
+      p_max_students_per_parent: v.value.max_students_per_parent ?? null,
+      p_waitlist_enabled:        v.value.waitlist_enabled        ?? null,
+    };
+  } else if (metric === 'launch_status' || metric === 'launch_dashboard') {
+    rpcArgs = {};                                                    // no filter args needed
+  } else {
+    const filters = _parseAnalyticsFilters(qs);
+    rpcArgs = _METRICS_WITH_BREAKDOWN.has(metric)
+      ? Object.assign({}, filters, { p_breakdown: _parseBreakdown(qs.breakdown) })
+      : filters;
+  }
 
   try {
     const res = await fetch(`${supaUrl}/rest/v1/rpc/${rpcName}`, {
@@ -210,6 +307,8 @@ exports.handler = async function(event) {
 
 // Jest bridge — exposes the pure helpers for unit testing.
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports._parseAnalyticsFilters = _parseAnalyticsFilters;
-  module.exports._parseBreakdown        = _parseBreakdown;
+  module.exports._parseAnalyticsFilters     = _parseAnalyticsFilters;
+  module.exports._parseBreakdown            = _parseBreakdown;
+  module.exports._parseLaunchSettingsUpdate = _parseLaunchSettingsUpdate;
+  module.exports._verifyAdmin               = _verifyAdmin;
 }

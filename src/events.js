@@ -55,6 +55,7 @@
     _lsTogglePw:            ()    => _lsTogglePw(),
     _lsResend:              ()    => _lsResend(),
     _lsForgotPassword:      ()    => _lsForgotPassword(),
+    _lsJoinWaitlist:        ()    => _lsJoinWaitlist(),
     _continueAsGuest:       ()    => _continueAsGuest(),
     supaSignOut:            ()    => supaSignOut(),
     openAuthModal:          ()    => openAuthModal(),
@@ -226,8 +227,7 @@
         if (typeof updateAccountUI === 'function') updateAccountUI();
       }
       show('login-screen');
-      if (typeof _lsInitCarousel === 'function') _lsInitCarousel();
-      if (typeof _lsRenderStudentCard === 'function') _lsRenderStudentCard();
+      if (typeof _lsInitCarousel === 'function') { _lsInitCarousel(); _lsCarouselGo(0); }
       if (typeof _initOneTap === 'function') _initOneTap();
       if (typeof _lsSwitchTab === 'function') _lsSwitchTab('login');
     },
