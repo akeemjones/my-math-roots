@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.15-auth-carousel';
+const CACHE = 'math-workbook-v6.0.16-no-tour';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
