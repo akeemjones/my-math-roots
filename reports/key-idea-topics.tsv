@@ -1,0 +1,115 @@
+grade	unitId	lessonId	title	status	bulletCount	stepCount	alignment
+G2	u1	u1l1	Count Up & Count Back	topic:count-on	3	3	MATCHES
+G2	u1	u1l2	Doubles!	topic:doubles	3	3	MATCHES
+G2	u1	u1l3	Make a 10	topic:make-ten	3	3	MATCHES
+G2	u1	u1l4	Number Families	topic:number-bond	3	3	MATCHES
+G2	u2	u2l1	Big Numbers	topic:place-value	3	3	MATCHES
+G2	u2	u2l2	Different Ways to Write Numbers	topic:place-value	3	3	MATCHES
+G2	u2	u2l3	Bigger or Smaller?	topic:compare	3	3	MATCHES
+G2	u2	u2l4	Skip Counting	topic:skip-count	5	5	MATCHES
+G2	u3	u3l1	Adding Bigger Numbers	topic:regroup-add	3	3	MATCHES
+G2	u3	u3l2	Taking Away Bigger Numbers	topic:regroup-sub	3	3	MATCHES
+G2	u3	u3l3	Add Three Numbers	topic:three-addends	3	3	MATCHES
+G2	u3	u3l4	Math Stories	topic:story-problem	6	6	MATCHES
+G2	u4	u4l1	Adding Really Big Numbers	topic:regroup-add	3	3	MATCHES
+G2	u4	u4l2	Taking Away Really Big Numbers	topic:regroup-sub	3	3	MATCHES
+G2	u4	u4l3	Close Enough Counts!	topic:rounding	4	4	MATCHES
+G2	u5	u5l1	All About Coins	topic:money	5	5	MATCHES
+G2	u5	u5l2	Count Your Coins	topic:money	3	3	MATCHES
+G2	u5	u5l3	Dollars and Cents	topic:money	4	4	MATCHES
+G2	u5	u5l4	Save, Spend and Give	topic:financial-literacy	5	5	MATCHES
+G2	u6	u6l1	Tally Marks	topic:tally	4	4	MATCHES
+G2	u6	u6l2	Bar Graphs	topic:bar-graph	4	4	MATCHES
+G2	u6	u6l3	Picture Graphs	topic:pictograph	3	3	MATCHES
+G2	u6	u6l4	Line Plots	topic:line-plot	4	4	MATCHES
+G2	u7	u7l1	How Long Is It?	topic:measure	5	5	MATCHES
+G2	u7	u7l2	What Time Is It?	topic:time	4	4	MATCHES
+G2	u7	u7l3	Hot, Cold and Full	topic:measure	4	4	MATCHES
+G2	u8	u8l1	What is a Fraction?	topic:fraction	5	5	MATCHES
+G2	u8	u8l2	Halves, Fourths and Eighths	topic:fraction	5	5	MATCHES
+G2	u8	u8l3	Which Piece is Bigger?	topic:fraction	3	3	MATCHES
+G2	u9	u9l1	Flat Shapes	topic:shape	6	6	MATCHES
+G2	u9	u9l2	Solid Shapes	topic:shape	5	5	MATCHES
+G2	u9	u9l3	Mirror Shapes	topic:symmetry	6	6	MATCHES
+G2	u10	u10l1	Equal Groups	topic:array	4	4	MATCHES
+G2	u10	u10l2	Adding the Same Number	topic:array	4	4	MATCHES
+G2	u10	u10l3	Sharing Equally	topic:equal-sharing	4	4	MATCHES
+G1	g1u1	g1-u1-l1	Quick Looks	topic:subitize	5	5	MATCHES
+G1	g1u1	g1-u1-l2	Count Forward	topic:count-on	5	5	MATCHES
+G1	g1u1	g1-u1-l3	Count Backward	topic:count-on	6	6	MATCHES
+G1	g1u1	g1-u1-l4	Skip Count by 2s, 5s, and 10s	topic:skip-count	6	6	MATCHES
+G1	g1u1	g1-u1-l5	One More and One Less	topic:count-on	6	6	MATCHES
+G1	g1u1	g1-u1-l6	Ten More and Ten Less	topic:number-line-add	6	6	MATCHES
+G1	g1u1	g1-u1-l7	Order Numbers	topic:count-on	6	6	MATCHES
+G1	g1u1	g1-u1-l8	Compare Numbers	topic:compare	6	6	MATCHES
+G1	g1u2	g1-u2-l1	Groups of Ten	topic:place-value	5	5	MATCHES
+G1	g1u2	g1-u2-l2	Tens and Ones	topic:place-value	4	4	MATCHES
+G1	g1u2	g1-u2-l3	Numbers to 120	topic:place-value	6	6	MATCHES
+G1	g1u2	g1-u2-l4	Represent Numbers	topic:place-value	6	6	MATCHES
+G1	g1u3	g1-u3-l1	Add Within 20	topic:count-on	6	6	MATCHES
+G1	g1u3	g1-u3-l2	Subtract Within 20	topic:count-back	6	6	MATCHES
+G1	g1u3	g1-u3-l3	Doubles and Near Doubles	topic:doubles	6	6	MATCHES
+G1	g1u3	g1-u3-l4	Make 10	topic:make-ten	6	6	MATCHES
+G1	g1u3	g1-u3-l5	Fact Families and Word Problems	topic:number-bond	6	6	MATCHES
+G1	g1u4	g1-u4-l1	Add Tens and Ones	topic:tens-addition	6	6	MATCHES
+G1	g1u4	g1-u4-l2	10 More and 10 Less	topic:tens-addition	5	5	MATCHES
+G1	g1u4	g1-u4-l3	Add Multiples of 10	topic:tens-addition	6	6	MATCHES
+G1	g1u4	g1-u4-l4	Add Tens to Two-Digit Numbers	topic:tens-addition	6	6	MATCHES
+G1	g1u4	g1-u4-l5	Tens and Ones Word Problems	topic:tens-addition	6	6	MATCHES
+G1	g1u5	g1-u5-l1	2D Shapes — Identify and Describe	topic:shape	6	6	MATCHES
+G1	g1u5	g1-u5-l2	3D Shapes — Identify and Describe	topic:shape	6	6	MATCHES
+G1	g1u5	g1-u5-l3	Shape Attributes and Sorting	topic:sort-groups	6	6	MATCHES
+G1	g1u5	g1-u5-l4	Compose and Recognize 2D Shapes	topic:equal-sharing	6	6	MATCHES
+G1	g1u5	g1-u5-l5	Equal Parts — Halves and Fourths	topic:fraction	6	6	MATCHES
+G1	g1u6	g1-u6-l1	Measuring with Non-Standard Units	topic:measure	6	6	MATCHES
+G1	g1u6	g1-u6-l2	Understanding Units of Length	topic:measure	6	6	MATCHES
+G1	g1u6	g1-u6-l3	Comparing Measurements	topic:measure	6	6	MATCHES
+G1	g1u6	g1-u6-l4	Describing Length	topic:measure	6	6	MATCHES
+G1	g1u6	g1-u6-l5	Telling Time	topic:time	6	6	MATCHES
+G1	g1u7	g1-u7-l1	Sorting and Organizing Data	topic:tally	6	6	MATCHES
+G1	g1u7	g1-u7-l2	Picture Graphs	topic:pictograph	6	6	MATCHES
+G1	g1u7	g1-u7-l3	Bar-Type Graphs	topic:bar-graph	6	6	MATCHES
+G1	g1u7	g1-u7-l4	Drawing Conclusions from Data	topic:data-conclusion	6	6	MATCHES
+G1	g1u8	g1-u8-l1	Earning Income	topic:financial-literacy	6	6	MATCHES
+G1	g1u8	g1-u8-l2	Goods and Services	topic:financial-literacy	6	6	MATCHES
+G1	g1u8	g1-u8-l3	Spending and Saving	topic:financial-literacy	6	6	MATCHES
+G1	g1u8	g1-u8-l4	Charitable Giving	topic:financial-literacy	6	6	MATCHES
+K	ku1	ku1l1	Counting to 10	topic:counting	3	3	MATCHES
+K	ku1	ku1l2	Quick Look	topic:subitize	3	3	MATCHES
+K	ku1	ku1l3	Counting to 20	topic:counting	3	3	MATCHES
+K	ku1	ku1l4	Count to 20 — Review	topic:count-on	3	3	MATCHES
+K	ku1	ku1l5	Read and Represent 11–20	topic:counting	3	3	MATCHES
+K	ku1	ku1l6	Counting Strategies	topic:count-on	3	3	MATCHES
+K	ku1	ku1l7	Quick Look: Subitize	topic:subitize	3	3	MATCHES
+K	ku2	ku2l1	One More, One Less	topic:count-on	3	3	MATCHES
+K	ku2	ku2l2	Compare Sets	topic:compare	3	3	MATCHES
+K	ku2	ku2l3	Compare Numbers	topic:compare	3	3	MATCHES
+K	ku2	ku2l4	Compose & Decompose	topic:number-bond	3	3	MATCHES
+K	ku2	ku2l5	More, Less, and Equal	topic:compare	3	3	MATCHES
+K	ku2	ku2l6	One More / One Less — Review	topic:count-on	3	3	MATCHES
+K	ku3	ku3l1	Adding Numbers	topic:count-on	3	3	MATCHES
+K	ku3	ku3l2	Subtracting Numbers	topic:count-back	3	3	MATCHES
+K	ku3	ku3l3	Word Problems	topic:story-problem	3	3	MATCHES
+K	ku3	ku3l4	Explain Thinking	topic:story-problem	3	3	MATCHES
+K	ku3	ku3l5	Story Problems: Join & Separate	topic:story-problem	3	3	MATCHES
+K	ku3	ku3l6	Explain Your Math	topic:story-problem	3	3	MATCHES
+K	ku4	ku4l1	Count Forward by Ones	topic:count-on	3	3	MATCHES
+K	ku4	ku4l2	Count by Tens	topic:skip-count	3	3	MATCHES
+K	ku4	ku4l3	Count from Any Number	topic:counting	3	3	MATCHES
+K	ku4	ku4l4	Missing Numbers in Patterns	topic:next-number	3	3	MATCHES
+K	ku5	ku5l1	Flat Shapes (2D)	topic:shape	3	3	MATCHES
+K	ku5	ku5l2	Solid Shapes (3D)	topic:shape	3	3	MATCHES
+K	ku5	ku5l3	Sides & Corners	topic:shape	3	3	MATCHES
+K	ku5	ku5l4	Sort & Create Shapes	topic:shape	3	3	MATCHES
+K	ku6	ku6l1	Comparing Length & Height	topic:measure	3	3	MATCHES
+K	ku6	ku6l2	Comparing Weight & Capacity	topic:measure	3	3	MATCHES
+K	ku6	ku6l3	Ordering by Size	topic:measure	3	3	MATCHES
+K	ku6	ku6l4	Measurable Attributes	topic:measure	3	3	MATCHES
+K	ku7	ku7l1	Sort Into Groups	topic:sort-groups	3	3	MATCHES
+K	ku7	ku7l2	Build and Read Picture Graphs	topic:pictograph	3	3	MATCHES
+K	ku7	ku7l3	Read Picture Graphs	topic:pictograph	3	3	MATCHES
+K	ku7	ku7l4	Compare Data	topic:compare-data	3	3	MATCHES
+K	ku8	ku8l1	Earning Money & Jobs	topic:financial-literacy	3	3	MATCHES
+K	ku8	ku8l2	Wants vs Needs	topic:financial-literacy	3	3	MATCHES
+K	ku8	ku8l3	Identify Coins	topic:money	5	5	MATCHES
+K	ku8	ku8l4	Compare Coins	topic:money	4	4	MATCHES

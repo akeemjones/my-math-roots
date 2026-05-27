@@ -1610,13 +1610,20 @@ function _renderQuizHistoryControls(scores) {
     var ui = parseInt(f.unit, 10);
     var u = unitsMeta[ui];
     if (u && Array.isArray(u.lessons)) {
-      // Build lesson keys matching _quizLessonKey output. Grade-K uses "ku{n}l{m}", others "u{n}l{m}".
-      var grade = (function() {
-        try { return String(localStorage.getItem('mmr_grade') || '').toLowerCase(); } catch (_e) { return ''; }
-      })();
-      var prefix = (grade === 'k' || grade === 'kindergarten' || grade === '0') ? 'k' : '';
+      // Build lesson keys matching _quizLessonKey output. Per-grade key shapes:
+      //   K  → "ku{n}l{m}"
+      //   G1 → "g1-u{n}-l{m}"  (matches _lessonDisplayName's canonical form)
+      //   G2 → "u{n}l{m}"
+      // Drive this from the dashboard view-band (not mmr_grade) so the lesson
+      // dropdown matches whatever grade the parent is currently filtering.
+      var band = (typeof _getDashboardViewGrade === 'function')
+        ? _getDashboardViewGrade()
+        : 'g2';
       u.lessons.forEach(function(lName, li) {
-        var key = prefix + 'u' + (ui + 1) + 'l' + (li + 1);
+        var key;
+        if (band === 'k')        key = 'ku' + (ui + 1) + 'l' + (li + 1);
+        else if (band === 'g1')  key = 'g1-u' + (ui + 1) + '-l' + (li + 1);
+        else                     key = 'u'  + (ui + 1) + 'l' + (li + 1);
         var sel = (f.lesson === key) ? ' selected' : '';
         lessonOpts += '<option value="' + key + '"' + sel + '>Lesson ' + (li + 1) + ': ' + _esc(lName) + '</option>';
       });
@@ -1754,8 +1761,8 @@ function openQuizReview(scoreId) {
       bodyHtml += wrong.map(function(a) {
         return '<div class="db-rev-item db-rev-wrong">'
           + '<div class="db-rev-q">' + _esc(a.t || '') + '</div>'
-          + '<div class="db-rev-your">Your answer: <span style="color:#c62828">' + _esc(a.chosen || '') + '</span></div>'
-          + '<div class="db-rev-correct">&#x2705; Correct: <span style="color:#2e7d32">' + _esc(a.correct || '') + '</span></div>'
+          + '<div class="db-rev-your">Your answer: <span style="color:#c62828">' + _esc(_formatAnswerForReview(a.chosen)) + '</span></div>'
+          + '<div class="db-rev-correct">&#x2705; Correct: <span style="color:#2e7d32">' + _esc(_formatAnswerForReview(a.correct)) + '</span></div>'
           + (a.timeSecs != null ? '<div class="db-rev-time">&#x23F1; ' + a.timeSecs + 's</div>' : '')
           + '</div>';
       }).join('');
@@ -1765,7 +1772,7 @@ function openQuizReview(scoreId) {
       bodyHtml += right.map(function(a) {
         return '<div class="db-rev-item db-rev-right">'
           + '<div class="db-rev-q">' + _esc(a.t || '') + '</div>'
-          + '<div class="db-rev-correct" style="color:#2e7d32">&#x2705; ' + _esc(a.correct || '') + '</div>'
+          + '<div class="db-rev-correct" style="color:#2e7d32">&#x2705; ' + _esc(_formatAnswerForReview(a.correct)) + '</div>'
           + (a.timeSecs != null ? '<div class="db-rev-time">&#x23F1; ' + a.timeSecs + 's</div>' : '')
           + '</div>';
       }).join('');
@@ -2442,15 +2449,35 @@ var _K_UNITS_META = [
   { name: 'Financial Literacy & Money',        lessons: ['Earning Money & Jobs','Wants vs Needs','Identify Coins','Compare Coins'] },
 ];
 
-// Pick the unit metadata array for the currently active grade. Used by the
-// parent dashboard to render Unit Progress / Root System with the right names.
-// Accepts both 'K'/'k'/'kindergarten'/'0' for Kindergarten; everything else
-// (including the unset default '2') falls through to Grade 2.
+// Pure helper: pick the unit metadata array for a given grade band
+// ('k' | 'g1' | 'g2'). Defaults to Grade 2 for any unrecognized input so the
+// dashboard never renders an empty unit grid. Exposed (and re-exported by the
+// dashboard test mirror) so a single source of truth governs which unit names
+// the parent sees in every view: unlock controls, quiz history, unit insights,
+// and last-7-day accuracy.
+function _unitsMetaForBand(band) {
+  var b = _gradeBand(band);
+  if (b === 'k')  return _K_UNITS_META;
+  if (b === 'g1') return _G1_UNITS_META;
+  return _UNITS_META; // 'g2' or unknown
+}
+
+// Pick the unit metadata array for the parent dashboard's CURRENT view-band.
+// This previously read localStorage.mmr_grade (the student-side active grade)
+// and ignored Grade 1 entirely — when the parent switched the dashboard view
+// to G1, the unlock UI rendered the G2 unit list, and unlocks for indices
+// 8–9 (which only exist in G2) silently dropped on the floor. The new
+// implementation routes through the dashboard view-band so the rendered unit
+// names always match the grade the parent is managing, and adds the missing
+// G1 case.
 function _activeDashboardUnitsMeta() {
-  var g;
-  try { g = String(localStorage.getItem('mmr_grade') || '').toLowerCase(); }
-  catch (_e) { g = ''; }
-  return (g === 'k' || g === 'kindergarten' || g === '0') ? _K_UNITS_META : _UNITS_META;
+  // The dashboard view-band is the source of truth for which grade the parent
+  // is managing. _getDashboardViewGrade() handles the local/mock fallback to
+  // mmr_grade for the unauthenticated case.
+  var band = (typeof _getDashboardViewGrade === 'function')
+    ? _getDashboardViewGrade()
+    : _gradeBand(localStorage.getItem('mmr_grade')) || 'g2';
+  return _unitsMetaForBand(band);
 }
 
 // Resolve a lessonId string to { lesson, unit } name objects.
@@ -4944,25 +4971,18 @@ function renderDashboard() {
   }
 
   // ── View-grade resolution ────────────────────────────────────────────────
-  // The dashboard's view grade is a PURE FILTER, independent of the student's
-  // profile.grade and the student-app's mmr_grade. Stored per active student
-  // in localStorage as mmr_dash_view_grade_<sid>. Initialized from the
-  // student's profile.grade on first view of that student.
+  // The dashboard's view grade is a PURE FILTER. It is INDEPENDENT of the
+  // student's profile.grade and the student-app's `mmr_grade` (the
+  // learning-side active grade). Stored per active student in localStorage as
+  // `mmr_dash_view_grade_<sid>`; initialized from `_dbResolveProfileGrade`
+  // (profile.grade → local cache → mmr_grade → '2') on first view.
   //
-  // NOTE: We deliberately do NOT mirror back to localStorage.mmr_grade here.
-  // Doing so would leak the parent's view choice into the student-app's
-  // active grade. Helpers that need to know the current viewed grade should
-  // read _getDashboardViewGrade() / _activeDashboardUnitsMeta() (which has
-  // been wired to consult the view-grade as well).
+  // Hard rule: this function MUST NOT write `mmr_grade`. Doing so would
+  // overwrite the student's learning-side grade selection just by opening the
+  // dashboard — exactly the bug v6.0.30 fixed. Helpers that need the current
+  // view grade must read `_getDashboardViewGrade()` / `_activeDashboardUnitsMeta()`
+  // directly (both already wired to consult the view-band, never `mmr_grade`).
   var viewBand = _getDashboardViewGrade();                       // 'k'|'g1'|'g2'
-  var activeGrade = viewBand === 'k' ? 'K' : (viewBand === 'g1' ? '1' : '2');
-  // Mirror the viewed grade into mmr_grade for the duration of this render so
-  // the long tail of helpers that still read it (_activeDashboardUnitsMeta,
-  // _masteryKeyFor, etc.) consistently target the viewed grade. This DOES
-  // mean the parent's view choice cascades into mmr_grade — accept that
-  // trade-off; the student app is only revisited on full navigation and
-  // re-reads its own state then.
-  try { localStorage.setItem('mmr_grade', activeGrade); } catch(_e) {}
 
   // ── Score & activity filtering — grade-specific ─────────────────────────
   // Filter every grade-specific section by inferring each score's grade from
@@ -5003,10 +5023,14 @@ function renderDashboard() {
     });
   });
 
-  // Grade-appropriate unit names for skill labelling (K vs Grade 2).
-  var _activeUnitNames = activeGrade === 'K'
+  // Grade-appropriate unit names for skill labelling. Driven by the dashboard
+  // view-band (not mmr_grade) so the labels match the grade the parent is
+  // managing without depending on the student-app's active grade.
+  var _activeUnitNames = (viewBand === 'k')
     ? (_K_UNITS_META || []).map(function(u) { return u.name; })
-    : _unitNames();
+    : (viewBand === 'g1')
+      ? (_G1_UNITS_META || []).map(function(u) { return u.name; })
+      : _unitNames();
 
   var stats    = _computeOverallStats(scores, streak, appTime);
   var skills   = _computeSkillBreakdown(scores, _activeUnitNames);

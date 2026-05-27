@@ -396,7 +396,7 @@ function resumeQuiz(qid){
   const u = !isFinal && p.unitIdx != null ? UNITS_DATA[p.unitIdx] : null;
   const color = u ? u.color : '#6c5ce7';
   CUR.quiz = { questions:p.questions, idx:p.idx, viewIdx:p.idx, score:p.score, answers:p.answers,
-               id:p.id, label:p.label, type:p.type };
+               id:p.id, label:p.label, type:p.type, mode: p.mode || null, hintsUsed: p.hintsUsed || 0 };
   document.getElementById('quiz-title').innerHTML = p.label;
   document.getElementById('quiz-back').style.color = color;
   document.getElementById('qscore').style.background = color+'22';
@@ -603,15 +603,19 @@ function _buildLessonAttempt(bank, lqa) {
   return selected;
 }
 
-function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs){
+function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode){
   if(!_prebuiltQs && (!bank || bank.length === 0)){ alert('No questions found for this quiz.'); return; }
   CUR.unitIdx = unitIdx != null ? unitIdx : null;
   const u = unitIdx != null ? UNITS_DATA[unitIdx] : null;
   const color = u ? u.color : '#6c5ce7';
-  const n = type==='final' ? 50 : type==='unit' ? 25 : 8;
-  const qs = _prebuiltQs || _weightedSample(bank, n, type);
+  // Practice mode pulls from a smaller, focused pool — always respect the bank length
+  // and never trigger the 8/25/50 default sample size that's intended for official quizzes.
+  const isPractice = mode === 'practice';
+  const n = isPractice ? (bank ? bank.length : 0)
+                       : (type==='final' ? 50 : type==='unit' ? 25 : 8);
+  const qs = _prebuiltQs || (isPractice ? bank.slice() : _weightedSample(bank, n, type));
 
-  CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0 };
+  CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0, mode: mode || null };
   _quizStartedAt = Date.now();
   errorProfile = {};
   _totalWrong = 0;
@@ -710,7 +714,7 @@ function _renderQ(){
         '<div style="font-size:var(--fs-sm);color:var(--txt2);margin-bottom:10px">' + _ICO.eyeOn + ' Review — answer locked</div>'+
         '<div class="tap-group">'+_tgRevItems.join('')+'</div>'+
         (past ? '<div class="reveal show '+(past.ok?'ok':'no')+'">'+
-          '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
+          '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'Correct! Great job.':'Not quite — here\'s why.')+'</div>'+
           '<div class="rev-exp">' + _ICO.lightbulb + ' '+_escHtml(past.exp || q.explanation || q.e || '')+'</div>'+
           (past.timeSecs != null ? '<div class="rev-time">⏱ '+past.timeSecs+'s on this question</div>' : '')+
         '</div>' : '');
@@ -734,7 +738,7 @@ function _renderQ(){
         }).join('')+
       '</div>'+
       (past ? '<div class="reveal show '+(past.ok?'ok':'no')+'">'+
-        '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>'+
+        '<div class="rev-h '+(past.ok?'ok':'no')+'">'+(past.ok?'Correct! Great job.':'Not quite — here\'s why.')+'</div>'+
         (!past.ok ? '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>' : '')+
         '<div class="rev-exp">' + _ICO.lightbulb + ' '+_escHtml(past.exp)+'</div>'+
         (past.timeSecs != null ? '<div class="rev-time">⏱ '+past.timeSecs+'s on this question</div>' : '')+
@@ -946,17 +950,17 @@ function _pickAnswer(btnIdx){
     if(rev){
       // Pick a short formative nudge for wrong answers (cycles through a few phrases)
       const _nudges = [
-        "Take a deep breath — you\'ve got this! Read the tip and try the next one. 💪",
-        "Mistakes help us learn! Check the tip above and keep going. 🌟",
-        "Almost! Read the explanation and you\'ll get the next one. 🚀",
-        "Don\'t give up — every wrong answer makes you smarter! 🧠",
-        "You\'re still doing great! Read the tip and move on. ⭐"
+        "Take a deep breath — you've got this. Read the tip and try the next one.",
+        "Mistakes help us learn. Check the tip above and keep going.",
+        "Almost. Read the explanation and you'll get the next one.",
+        "Don't give up — every wrong answer makes you smarter.",
+        "You're still doing great. Read the tip and move on."
       ];
       const nudge = _nudges[(qz.idx || 0) % _nudges.length];
       const revId = 'rev-'+Date.now();
       rev.className = 'reveal show '+(isOk?'ok':'no');
       const _intv = q.i || null;
-      let _revHtml = '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'🎉 Correct! Great job!':'😊 Not quite...')+'</div>';
+      let _revHtml = '<div class="rev-h '+(isOk?'ok':'no')+'">'+(isOk?'Correct! Great job.':'Not quite — here\'s why.')+'</div>';
       if (!isOk) {
         _revHtml += '<div class="rev-correct">✅ Correct answer: '+_escHtml(correct)+'</div>';
         _revHtml += '<div class="rev-exp" id="'+revId+'-exp">'+_ICO.lightbulb+' '+_escHtml(q.e)+'</div>';
@@ -1298,7 +1302,7 @@ function _tapGroupSubmit() {
     if (rev) {
       rev.className = 'reveal show ' + (isOk ? 'ok' : 'no');
       rev.innerHTML =
-        '<div class="rev-h ' + (isOk ? 'ok' : 'no') + '">' + (isOk ? '🎉 Correct! Great job!' : '😊 Not quite...') + '</div>' +
+        '<div class="rev-h ' + (isOk ? 'ok' : 'no') + '">' + (isOk ? 'Correct! Great job.' : 'Not quite — here\'s why.') + '</div>' +
         (exp ? '<div class="rev-exp">' + _ICO.lightbulb + ' ' + _escHtml(exp) + '</div>' : '');
     }
 
@@ -1354,8 +1358,11 @@ function _tapGroupSubmit() {
 }
 
 function _pauseForInterventionTapGroup(errorTag, q) {
-  isPaused = true;
   var content    = _buildInterventionContent(errorTag, q, null, null);
+  // Skip cleanly when no good teaching card can be built — better than
+  // showing a misleading visual.
+  if (!content) return;
+  isPaused = true;
   var title      = content.title;
   var text       = content.text;
   var visualHTML = content.visualHTML;
@@ -1444,7 +1451,7 @@ function _pauseForInterventionTapGroup(errorTag, q) {
           'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;' +
           'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);' +
           'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">' +
-          'Try a new one \u2192' +
+          'Got it \u2014 continue \u2192' +
         '</button>' +
       '</div>' +
     '</div>';
@@ -1456,12 +1463,731 @@ function _pauseForInterventionTapGroup(errorTag, q) {
   });
 }
 
+// ── Topic-aware intervention dispatcher ──────────────────────────────────
+// Maps (lesson topic, error tag) → teaching card with the matching visual.
+// Reuses _KI_BUILDERS from key-ideas.js so fraction questions get fraction
+// visuals, array questions get array visuals, etc. Returns null when no
+// good intervention can be made for the (topic, tag) combo — the caller
+// then skips the intervention entirely instead of showing a misleading one
+// (e.g., a number-line visual for a fraction mistake).
+//
+// Number-line visuals stay reserved for: count-on, count-back, skip-count,
+// number-line-add. Everything else routes to a topic-specific builder OR
+// falls through to a null (skip).
+function _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal){
+  // ── Detect the topic from the live lesson ─────────────────────────────────
+  var topic = null;
+  try {
+    if (typeof _detectLessonTopic === 'function'
+        && CUR.unitIdx != null && CUR.lessonIdx != null) {
+      var _u = UNITS_DATA[CUR.unitIdx];
+      var _l = _u && _u.lessons[CUR.lessonIdx];
+      if (_l) topic = _detectLessonTopic(_l);
+    }
+  } catch (_e) { topic = null; }
+  if (!topic) return null;
+
+  var color = (CUR.unitIdx != null && UNITS_DATA[CUR.unitIdx])
+    ? UNITS_DATA[CUR.unitIdx].color : '#3949ab';
+
+  // ── Helpers for visual reuse from _KI_BUILDERS ────────────────────────────
+  function safeBuilder(name, cfg) {
+    try {
+      if (typeof _KI_BUILDERS !== 'undefined' && typeof _KI_BUILDERS[name] === 'function') {
+        return _KI_BUILDERS[name](cfg, q, { color: color });
+      }
+    } catch (_e) {}
+    return '';
+  }
+  function parseFraction(s) {
+    var m = /^(\d+)\s*\/\s*(\d+)$/.exec(String(s == null ? '' : s));
+    return m ? { n: +m[1], d: +m[2] } : null;
+  }
+  function parseRowsCols(text) {
+    var t = String(text || '');
+    var m = t.match(/(\d+)\s*rows?\s+(?:of|with|by|×|x)\s+(\d+)/i);
+    if (m) return { rows: +m[1], cols: +m[2] };
+    m = t.match(/(\d+)\s*[x×]\s*(\d+)/i);
+    if (m) return { rows: +m[1], cols: +m[2] };
+    return null;
+  }
+  function parseDigits(s) {
+    var v = parseInt(s, 10);
+    if (isNaN(v) || v < 0) return null;
+    return {
+      v: v,
+      h: Math.floor(v / 100),
+      t: Math.floor((v % 100) / 10),
+      o: v % 10
+    };
+  }
+
+  // ── Per-topic builders ────────────────────────────────────────────────────
+  // Each returns {title, text, visualHTML} or null (skip).
+
+  function _intFraction() {
+    var cf = parseFraction(correctVal);
+    var ch = parseFraction(chosenVal);
+    var title, text;
+    switch (errorTag) {
+      case 'err_numerator_confusion':
+        title = 'Top number = shaded parts';
+        text  = 'The top number (numerator) tells how many parts are colored. Count the shaded pieces only.';
+        break;
+      case 'err_denominator_confusion':
+        title = 'Bottom number = total parts';
+        text  = 'The bottom number (denominator) tells how many equal parts the whole was split into. Count ALL the parts, shaded or not.';
+        break;
+      case 'err_counted_shaded_wrong':
+        title = 'Count just the colored pieces';
+        text  = 'Recount only the colored parts for the top number. The correct fraction is ' + correctVal + '.';
+        break;
+      case 'err_fraction_size_confusion':
+        title = 'Same amount, different name';
+        text  = 'Different fractions can name the same amount. 1/2 = 2/4 = 4/8 — all the same.';
+        break;
+      case 'err_fraction_equal_parts_confusion':
+        title = 'Parts must be EQUAL';
+        text  = 'A fraction only works when every piece is the same size. Uneven pieces are not halves, fourths, or eighths.';
+        break;
+      case 'err_more_pieces_bigger_confusion':
+        title = 'More pieces = smaller pieces';
+        text  = 'When a whole is cut into more pieces, each piece gets smaller. 1/8 is smaller than 1/4.';
+        break;
+      case 'err_wrong_fraction_name':
+        title = 'Colored on top, total on bottom';
+        text  = 'Shaded count goes on TOP, total equal parts go on BOTTOM. The answer is ' + correctVal + '.';
+        break;
+      case 'err_unit_fraction_confusion':
+        title = 'Unit fractions = one piece';
+        text  = '1/2, 1/4, 1/8 — these name just one of the equal pieces. The top is always 1.';
+        break;
+      default:
+        title = 'Look at the shaded parts';
+        text  = 'You picked ' + (chosenVal || 'an answer') + ', but the correct fraction is ' + correctVal + '. Look at the visual and count again.';
+    }
+    var visualHTML = '';
+    if (cf && cf.d >= 2 && cf.d <= 12 && cf.n >= 0 && cf.n <= cf.d) {
+      visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('fractionShaded', { color: color, denom: cf.d, shaded: cf.n }) + '</div>'
+                 + '<div class="ki-row-meta-center" style="font-size:1.3em"><strong>' + _escHtml(correctVal) + '</strong></div>';
+    }
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intArray() {
+    var rc = parseRowsCols(q && q.t);
+    if (!rc && q && q.v && q.v.type === 'array' && q.v.config) {
+      rc = { rows: +q.v.config.rows, cols: +q.v.config.cols };
+    }
+    var title, text;
+    switch (errorTag) {
+      case 'err_rows_columns_confusion':
+        title = 'Rows go ACROSS, columns go DOWN';
+        text  = 'Rows are horizontal lines of objects. Pick one row and count it — that\'s how many in each row.';
+        break;
+      case 'err_equal_groups_confusion':
+        title = 'Equal groups have the same count';
+        text  = 'In an array, every row has the SAME number. Count one row, then count how many rows.';
+        break;
+      case 'err_repeated_addition_confusion':
+        title = 'Add the row total for each row';
+        text  = 'If each row has 4 dots and there are 5 rows: 4 + 4 + 4 + 4 + 4. One row total per row.';
+        break;
+      case 'err_groups_items_confusion':
+        title = 'Groups vs. items per group';
+        text  = 'First: how many groups? Then: how many in each group? Multiply for the total.';
+        break;
+      case 'err_counting_total_error':
+        title = 'Touch each dot exactly once';
+        text  = 'Don\'t skip and don\'t double-count. The total is ' + correctVal + '.';
+        break;
+      default:
+        title = 'Look at the equal rows';
+        text  = 'Count one row, multiply by the number of rows. The total is ' + correctVal + '.';
+    }
+    var visualHTML = '';
+    if (rc && rc.rows >= 1 && rc.rows <= 8 && rc.cols >= 1 && rc.cols <= 8) {
+      var expr = new Array(rc.rows).fill(rc.cols).join(' + ');
+      visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('arrayRepeatedAdd', {
+        color: color, rows: rc.rows, cols: rc.cols, expr: expr, total: rc.rows * rc.cols
+      }) + '</div>';
+    }
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intEqualSharing() {
+    var title = 'Share equally — same amount each';
+    var text  = 'When sharing, each group must get the same number. ' +
+      (correctVal != null ? 'The correct amount per group is ' + correctVal + '.' : '');
+    var visualHTML = '';
+    // Try to infer total/groups from question text
+    var t = (q && q.t) || '';
+    var m = t.match(/(\d+).{0,40}(?:among|between|share|split).{0,20}(\d+)/i);
+    if (m) {
+      var total = +m[1], groups = +m[2];
+      if (total > 0 && groups > 0 && total % groups === 0) {
+        visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('shareEquation', {
+          color: color, total: total, groups: groups, per: total / groups
+        }) + '</div>';
+      }
+    }
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intPictograph() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_picture_key_confusion':
+      case 'err_counted_symbols_not_key_value':
+        title = 'Use the KEY';
+        text  = 'Each picture is worth what the key says. Count the pictures, then multiply by the key value.';
+        break;
+      case 'err_total_category_confusion':
+        title = 'Count one row at a time';
+        text  = 'Each row is one category. Pick the row that matches the question.';
+        break;
+      case 'err_wrong_category':
+        title = 'Read the row labels';
+        text  = 'Find the row label that matches what the question is asking about.';
+        break;
+      case 'err_more_less_confusion':
+        title = 'Compare the row totals';
+        text  = 'Multiply each row by the key value. Then subtract: bigger total − smaller total.';
+        break;
+      default:
+        title = 'Use the key, count the row';
+        text  = 'Count the pictures in the row, then multiply by the value of one picture.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('pictographRowTotal', {
+      color: color, symbol: '★', key: 2,
+      rows: [{ label: 'Red', count: 3, total: 6 }, { label: 'Blue', count: 5, total: 10 }]
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intBarGraph() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_graph_reading_confusion':
+        title = 'Read the top of the bar';
+        text  = 'The top of each bar lines up with a number on the side. That number is the bar\'s value.';
+        break;
+      case 'err_more_less_confusion':
+        title = 'Tallest = most, shortest = fewest';
+        text  = 'Compare the heights of the bars to see which group has more or fewer.';
+        break;
+      default:
+        title = 'Read each bar carefully';
+        text  = 'Match the top of each bar to its number, then compare.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('barReadBar', {
+      color: color,
+      bars: [{ label: 'Dogs', value: 8 }, { label: 'Cats', value: 5 }, { label: 'Fish', value: 3 }]
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intTally() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_tally_group_confusion':
+        title = '5 marks = 1 bundle';
+        text  = 'Four upright marks and one diagonal across them make a bundle of 5. Count bundles by 5s, then add the leftovers.';
+        break;
+      default:
+        title = 'Count tally marks in bundles';
+        text  = 'Each bundle is 5. Count bundles first, then count leftover single marks.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('tallyLeftovers', {
+      color: color, bundles: 3, leftover: 2, total: 17
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intLinePlot() {
+    var title = 'Count the Xs above each number';
+    var text  = 'Each X stands for 1. Find the number on the bottom line, count the Xs stacked above it.';
+    if (errorTag === 'err_line_plot_confusion') {
+      title = 'Read the X stacks';
+      text  = 'Each X is one count. The tallest stack is the most popular value.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('lpCompare', {
+      color: color, plot: { labels: [3,4,5,6,7], counts: [2,4,3,1,2] }
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intPlaceValue() {
+    var d = parseDigits(correctVal);
+    var title, text;
+    switch (errorTag) {
+      case 'err_digit_value_confusion':
+        title = 'A digit\'s value depends on its place';
+        text  = 'The 5 in 352 is 5 tens = 50, not just 5. The place tells you how much.';
+        break;
+      case 'err_hundreds_tens_swap':
+      case 'err_tens_ones_swap':
+      case 'err_reversed_digits':
+        title = 'Place matters';
+        text  = 'Hundreds, tens, ones — each column has a different value. Read left to right.';
+        break;
+      case 'err_place_value_confusion':
+        title = 'Tens and ones are different';
+        text  = 'Tens are groups of 10. Ones are singles. Read each column on its own.';
+        break;
+      case 'err_expanded_form_confusion':
+        title = 'Add the place values';
+        text  = '352 = 300 + 50 + 2. Each digit\'s value is digit × place.';
+        break;
+      case 'err_compare_place_value':
+        title = 'Compare biggest place first';
+        text  = 'Start with hundreds. If hundreds match, compare tens. Then ones.';
+        break;
+      default:
+        title = 'Look at each place';
+        text  = (d ? 'The number has ' + d.h + ' hundreds, ' + d.t + ' tens, and ' + d.o + ' ones.' : 'Read each digit\'s place value.');
+    }
+    var visualHTML = '';
+    if (d && d.v >= 1 && d.v <= 999 && typeof drawBase10 === 'function') {
+      try {
+        visualHTML = '<div class="ki-vis-wrap">' + drawBase10({ hundreds: d.h, tens: d.t, ones: d.o }) + '</div>'
+                   + '<div class="ki-row-meta-center" style="font-size:1.2em"><strong>' + d.v + '</strong> = ' + (d.h*100) + ' + ' + (d.t*10) + ' + ' + d.o + '</div>';
+      } catch (_e) {}
+    }
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intRegroupAdd() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_no_regroup':
+        title = 'Regroup when ones hit 10+';
+        text  = 'If ones add to 10 or more, write the ones digit and carry 1 ten to the next column.';
+        break;
+      case 'err_extra_regroup':
+        title = 'Only regroup when needed';
+        text  = 'Don\'t carry a ten unless the ones add to 10 or more. Smaller sums stay as-is.';
+        break;
+      case 'err_borrow_error':
+      case 'err_forgot_carry':
+        title = 'Don\'t forget the carried ten';
+        text  = 'When you carry, ADD that 1 ten to the tens column too. Don\'t leave it out.';
+        break;
+      case 'err_add_instead':
+      case 'err_sub_instead':
+        title = 'Watch the + and − signs';
+        text  = 'Plus joins groups, minus takes a group away. Find the sign first.';
+        break;
+      default:
+        title = 'Add ones first, then tens';
+        text  = 'Stack the digits, add ones, regroup if needed, then add tens.';
+    }
+    // Reuse the regroup add column visual from key-ideas.js
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('regroupAddRead', {
+      color: color, a: 47, b: 36, onesSum: 13, onesDigit: 3, carry: 1, tensSum: 8, sum: 83, phase: 'read'
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intRegroupSub() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_no_regroup':
+      case 'err_borrow_error':
+      case 'err_forgot_borrow':
+        title = 'Borrow when ones aren\'t enough';
+        text  = 'If the top ones are less than the bottom ones, trade 1 ten for 10 ones. Cross out and rewrite.';
+        break;
+      case 'err_extra_regroup':
+        title = 'Only borrow when needed';
+        text  = 'Don\'t borrow if the top ones are already big enough. Subtract straight away.';
+        break;
+      case 'err_left_only':
+      case 'err_right_only':
+        title = 'Both columns matter';
+        text  = 'Subtract ones, then subtract tens. Don\'t forget either column.';
+        break;
+      default:
+        title = 'Subtract ones first, then tens';
+        text  = 'Stack the digits, subtract ones (borrow if needed), then subtract tens.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('regroupSubRead', {
+      color: color, a: 91, b: 47, aTens: 9, aOnes: 1, bTens: 4, bOnes: 7,
+      newOnes: 11, newTens: 8, onesDiff: 4, tensDiff: 4, diff: 44, phase: 'read'
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intShape() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_side_count_confusion':
+        title = 'Count straight sides';
+        text  = 'A side is a straight line on the edge of the shape. Count carefully.';
+        break;
+      case 'err_vertex_count_confusion':
+      case 'err_face_edge_vertex_confusion':
+        title = 'Corners (vertices) are where sides meet';
+        text  = 'A corner is where two sides meet at a point. Count the corner points.';
+        break;
+      case 'err_shape_name_confusion':
+        title = 'Name by sides and corners';
+        text  = '3 sides + 3 corners = triangle. 4 equal sides + 4 corners = square.';
+        break;
+      case 'err_attribute_confusion':
+        title = 'Look at the attributes';
+        text  = 'Compare the number of sides, the number of corners, and whether all sides are equal.';
+        break;
+      default:
+        title = 'Look at the shape';
+        text  = 'Count sides and corners carefully.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('shapeCorners', {
+      color: color, shape: 'triangle', corners: 3
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intSymmetry() {
+    var title = 'Symmetry = matching halves';
+    var text  = 'A line of symmetry splits a shape so both halves match exactly when folded.';
+    if (errorTag === 'err_symmetry_confusion') {
+      title = 'Test the fold';
+      text  = 'If you can fold along the line and both sides land on top of each other, it\'s a line of symmetry.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('symLine', {
+      color: color, shape: 'square', lines: 1
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intMoney() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_coin_name_confusion':
+        title = 'Know your coin names';
+        text  = 'Penny = 1¢, Nickel = 5¢, Dime = 10¢, Quarter = 25¢.';
+        break;
+      case 'err_coin_value_confusion':
+      case 'err_counted_coins_not_value':
+        title = 'Use the value, not the count';
+        text  = 'Count the value of each coin, not just how many coins there are.';
+        break;
+      case 'err_counting_coins_error':
+        title = 'Add from biggest to smallest';
+        text  = 'Start with quarters, then dimes, then nickels, then pennies. Add as you go.';
+        break;
+      case 'err_dollars_cents_confusion':
+        title = 'Dollars and cents';
+        text  = '100 cents = 1 dollar. Keep dollars and cents separate when you write the amount.';
+        break;
+      default:
+        title = 'Count the coin values';
+        text  = 'Add the value of each coin. Total = ' + (correctVal != null ? correctVal : '');
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('moneyTotal', {
+      color: color,
+      coins: [{ name: 'quarter', value: 25 }, { name: 'dime', value: 10 }, { name: 'nickel', value: 5 }, { name: 'penny', value: 1 }],
+      total: 41
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intTime() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_clock_hour_hand_confusion':
+        title = 'Short hand = hour';
+        text  = 'The shorter hand points to the hour. Find which number it\'s closest to (or just past).';
+        break;
+      case 'err_clock_minute_hand_confusion':
+        title = 'Long hand = minutes';
+        text  = 'The longer hand counts minutes. Multiply the number it points to by 5.';
+        break;
+      default:
+        title = 'Read hour then minutes';
+        text  = 'Short hand for hour, long hand for minutes (count by 5s).';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('timeRead', {
+      color: color, h: 3, m: 30
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intMeasure() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_length_confusion':
+        title = 'Line up at zero';
+        text  = 'Put one end of the object at 0, then read the number at the other end.';
+        break;
+      case 'err_measurement_reading_error':
+        title = 'Read the end carefully';
+        text  = 'The length is the number that lines up with the FAR end of the object.';
+        break;
+      case 'err_longer_shorter':
+      case 'err_more_less_confusion':
+        title = 'Compare the lengths';
+        text  = 'Bigger number = longer. Smaller number = shorter.';
+        break;
+      case 'err_capacity_confusion':
+        title = 'Capacity = how much it holds';
+        text  = 'Bigger container = more capacity. Compare the size of each.';
+        break;
+      case 'err_heavier_lighter':
+        title = 'Heavier vs. lighter';
+        text  = 'Heavier objects weigh more. Compare carefully.';
+        break;
+      default:
+        title = 'Measure carefully';
+        text  = 'Line up at 0, count the units to the end.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('measureRead', {
+      color: color, units: 6
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intCompare() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_more_less_confusion':
+        title = 'Bigger number = MORE';
+        text  = '> means "bigger than" — the open side faces the bigger number.';
+        break;
+      case 'err_compare_place_value':
+        title = 'Compare biggest place first';
+        text  = 'Tens first. If tens are equal, compare ones.';
+        break;
+      default:
+        title = 'Compare carefully';
+        text  = 'Look at the tens, then the ones, then write <, >, or =.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('compareSymbol', {
+      left: 47, right: 52, symbol: '<', color: color
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intCompareData() {
+    var title = 'Compare the group counts';
+    var text  = 'Count each group, then compare. The bigger count has more.';
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('cdCompare', {
+      left: { label: 'A', count: 5, color: color },
+      right: { label: 'B', count: 8, color: color },
+      diff: 3
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intRounding() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_rounding_error':
+      case 'err_rounds_wrong_place':
+        title = 'Look at the next digit';
+        text  = 'To round to the nearest 10, check the ONES digit. 5 or more → round up. Less than 5 → round down.';
+        break;
+      case 'err_estimate_exact_answer':
+      case 'err_reasonableness_confusion':
+        title = 'Estimate ≠ exact';
+        text  = 'Round both numbers first, then add or subtract. The estimate is close, not exact.';
+        break;
+      default:
+        title = 'Round to the nearest 10';
+        text  = 'Look at the ones digit to decide UP or DOWN.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('roundNearest10', {
+      color: color, target: 47, low: 40, high: 50, halfway: 45, rounded: 50,
+      digit: 7, place: 'ones', direction: 'UP'
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intCountBack() {
+    var title = 'Count BACK for subtraction';
+    var text  = 'Start at the bigger number, then jump backward one at a time.';
+    var visualHTML = '';
+    var a = parseInt(correctVal, 10);
+    // Can't show without numbers — fall back to a simple message-only card.
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intDoubles() {
+    return {
+      title: 'Doubles = same number twice',
+      text:  'A double adds a number to itself. 6 + 6 = 12. For 6 + 7, take 6 + 6 = 12, then add 1 more = 13.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('doublesSum', {
+        color: color, n: 6, sum: 12
+      }) + '</div>'
+    };
+  }
+
+  function _intMakeTen() {
+    return {
+      title: 'Make a 10 first',
+      text:  'Break the smaller number so part of it makes 10 with the bigger number, then add the rest.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('makeTenAnswer', {
+        color: color, a: 8, b: 5, sum: 13
+      }) + '</div>'
+    };
+  }
+
+  function _intThreeAddends() {
+    return {
+      title: 'Add the easy pair first',
+      text:  'Look for doubles or make-a-ten pairs. Add those two first, then add the third number.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('threeAddLast', {
+        color: color, a: 10, b: 3, sum: 13
+      }) + '</div>'
+    };
+  }
+
+  function _intStoryProblem() {
+    var title, text;
+    switch (errorTag) {
+      case 'err_word_problem_operation':
+        title = 'Find the action word';
+        text  = '"More" / "joined" → ADD. "Left" / "took away" → SUBTRACT. Find the action, then pick the sign.';
+        break;
+      default:
+        title = 'Read the story carefully';
+        text  = 'Find what you know, decide add or subtract, write the equation.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('storySolve', {
+      color: color, a: 6, op: '+', b: 2, result: 8, unit: ''
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intFinancialLit() {
+    var title = 'Wants vs. needs';
+    var text  = 'A NEED is something we must have to live (food, water, home). A WANT is something nice but not required (toy, candy).';
+    if (errorTag === 'err_save_spend_give_confusion') {
+      title = 'Save, spend, or give';
+      text  = 'Saving keeps money for later. Spending uses it now. Giving shares with others.';
+    }
+    var visualHTML = '<div class="ki-vis-wrap">' + safeBuilder('flESS', {
+      color: color, focus: 'all'
+    }) + '</div>';
+    return { title: title, text: text, visualHTML: visualHTML };
+  }
+
+  function _intNextNumber() {
+    return {
+      title: 'Look before and after the blank',
+      text:  'The missing number is ONE MORE than the number before, and ONE LESS than the number after.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('nnFill', {
+        color: color, seq: [3, 4, null, 6, 7], blankIdx: 2, answer: 5
+      }) + '</div>'
+    };
+  }
+
+  function _intSortGroups() {
+    return {
+      title: 'Sort by attribute',
+      text:  'Pick a rule (color, shape, size). Put matching items together. Count each group.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('sortCount', {
+        color: color,
+        groups: [{ label: 'Red', count: 3 }, { label: 'Blue', count: 2 }]
+      }) + '</div>'
+    };
+  }
+
+  function _intDataConclusion() {
+    return {
+      title: 'Compare to draw a conclusion',
+      text:  'Look at the bars. The tallest has the most. Compare to answer the question.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('dcCompare', {
+        color: color,
+        bars: [{ label: 'A', value: 6 }, { label: 'B', value: 9 }, { label: 'C', value: 3 }],
+        diff: 6, biggestIdx: 1, smallestIdx: 2
+      }) + '</div>'
+    };
+  }
+
+  function _intSubitize() {
+    return {
+      title: 'Look for the pattern',
+      text:  'Don\'t count one by one. Look for groups you know (like 5) and add the extras.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('subitizeSplit', {
+        color: color, parts: [5, 2], total: 7
+      }) + '</div>'
+    };
+  }
+
+  function _intNumberBond() {
+    return {
+      title: 'Whole = part + part',
+      text:  'A number bond shows how a whole breaks into two parts. If you know the whole and one part, you can find the other.',
+      visualHTML: '<div class="ki-vis-wrap">' + safeBuilder('bondFactFamily', {
+        color: color, whole: 8, p1: 3, p2: 5
+      }) + '</div>'
+    };
+  }
+
+  // ── Dispatch on topic ─────────────────────────────────────────────────────
+  switch (topic) {
+    case 'fraction':            return _intFraction();
+    case 'array':               return _intArray();
+    case 'equal-sharing':       return _intEqualSharing();
+    case 'pictograph':          return _intPictograph();
+    case 'bar-graph':           return _intBarGraph();
+    case 'tally':               return _intTally();
+    case 'line-plot':           return _intLinePlot();
+    case 'place-value':         return _intPlaceValue();
+    case 'regroup-add':         return _intRegroupAdd();
+    case 'regroup-sub':         return _intRegroupSub();
+    case 'shape':               return _intShape();
+    case 'symmetry':            return _intSymmetry();
+    case 'money':               return _intMoney();
+    case 'time':                return _intTime();
+    case 'measure':             return _intMeasure();
+    case 'compare':             return _intCompare();
+    case 'compare-data':        return _intCompareData();
+    case 'rounding':            return _intRounding();
+    case 'count-back':          return _intCountBack();
+    case 'doubles':             return _intDoubles();
+    case 'make-ten':            return _intMakeTen();
+    case 'three-addends':       return _intThreeAddends();
+    case 'story-problem':       return _intStoryProblem();
+    case 'financial-literacy':  return _intFinancialLit();
+    case 'next-number':         return _intNextNumber();
+    case 'sort-groups':         return _intSortGroups();
+    case 'data-conclusion':     return _intDataConclusion();
+    case 'subitize':            return _intSubitize();
+    case 'number-bond':         return _intNumberBond();
+    // count-on / skip-count / number-line-add / counting / ten-frame:
+    // legacy K-dynamic + MINI_LESSONS handlers are appropriate here because
+    // their number-line / counting visuals match the topic. Return null to
+    // let those legacy paths run.
+    default: return null;
+  }
+}
+
 // ── Dynamic intervention content builder ─────────────────────────────────
 // Returns {title, text, visualHTML} based on error tag + live question data.
-// K-specific tags (err_off_by_one, err_same, err_over_count, err_less, err_more)
-// are handled dynamically using actual values. All other tags fall back to
-// the static MINI_LESSONS table (Grade 2 content).
+// First tries the topic-aware dispatcher above. Falls through to the K-only
+// dynamic branches + MINI_LESSONS for counting / number-line topics where
+// those visuals fit. Returns null when no good intervention can be made —
+// the caller (`_pauseForIntervention`) then skips the intervention modal
+// entirely instead of showing a generic "Let's Review" card with no visual.
 function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
+  // v0.2.0 author override path runs FIRST (further below) so per-question
+  // rich teachingSteps still win. Topic-aware dispatch runs SECOND, before
+  // any K-dynamic / MINI_LESSONS handlers, so fraction/array/graph/place-value/
+  // regroup/shape/symmetry/money/time/measure/compare/etc. get the right
+  // teaching visual instead of a misleading number-line emoji-row.
+  try {
+    var topicContent = _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal);
+    if (topicContent && (topicContent.text || topicContent.visualHTML)) {
+      return topicContent;
+    }
+  } catch (_topicErr) {
+    // Topic dispatcher threw — fall through to legacy paths so the modal
+    // can still attempt a sensible card.
+  }
+
   var vc       = (q && q.v && q.v.config) ? q.v.config : null;
   var startCount = vc ? (vc.count || null) : null;
   var emoji    = (vc && vc.emoji) ? vc.emoji : null;
@@ -1848,21 +2574,31 @@ function _buildInterventionContent(errorTag, q, correctVal, chosenVal){
     }
 
   } else {
-    // Fall back to static MINI_LESSONS for Grade 2 error tags
+    // Fall back to static MINI_LESSONS for the small set of error tags that
+    // have a hand-authored G2 teaching card with a sensible visual.
     var lesson = MINI_LESSONS[errorTag];
-    title = lesson ? lesson.title : 'Let\'s Review';
-    text  = lesson ? lesson.text  : 'Take a moment to review this concept before trying again.';
-    if(lesson){
-      try{ visualHTML = _buildVisualHTML(lesson.visual); }catch(e){ console.warn('Visual render failed:', errorTag); }
+    if (lesson) {
+      title = lesson.title;
+      text  = lesson.text;
+      try { visualHTML = _buildVisualHTML(lesson.visual); }
+      catch (e) { console.warn('Visual render failed:', errorTag); }
+    } else {
+      // No topic-aware match, no K-dynamic match, no MINI_LESSONS entry —
+      // do NOT show a generic "Let's Review" card with no visual. The caller
+      // (_pauseForIntervention) treats a null return as "skip this
+      // intervention" so the student just sees the normal feedback and
+      // moves on. A bad intervention is worse than no intervention.
+      return null;
     }
   }
 
+  // If we got here with a title/text but no visual, that's a partial card.
+  // Return it only when we actually have content to show.
+  if (!title && !text && !visualHTML) return null;
   return {title:title, text:text, visualHTML:visualHTML};
 }
 
 function _pauseForIntervention(errorTag, selectedIndex){
-  isPaused = true;
-
   var qz = CUR.quiz;
   var q = qz ? qz.questions[qz.idx] : null;
   var _ov = function(item){ return (item && typeof item === 'object') ? item.val : item; };
@@ -1870,6 +2606,15 @@ function _pauseForIntervention(errorTag, selectedIndex){
   var correctVal = q ? _ov(q.o[q.a]) : null;
   var chosenVal  = (q && selectedIndex != null) ? _ov(q.o[selectedIndex]) : null;
   var content    = _buildInterventionContent(errorTag, q, correctVal, chosenVal);
+
+  // Quality gate: skip the intervention modal entirely when the dispatcher
+  // returned null (no topic-appropriate teaching card available). The student
+  // sees the normal in-line feedback and Next button instead of a misleading
+  // intervention (e.g., a number-line visual for a fraction mistake). A bad
+  // intervention is worse than no intervention.
+  if (!content) return;
+
+  isPaused = true;
   var title      = content.title;
   var text       = content.text;
   var visualHTML = content.visualHTML;
@@ -2009,7 +2754,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
           'border-radius:var(--rad-md,14px);padding:13px 32px;font-size:1rem;font-weight:700;'+
           'cursor:pointer;font-family:var(--ff,\'Boogaloo\',sans-serif);'+
           'box-shadow:0 4px 14px rgba(79,70,229,0.35);transition:transform .15s,box-shadow .15s">'+
-          'Try a new one \u2192'+
+          'Got it \u2014 continue \u2192'+
         '</button>'+
       '</div>'+
     '</div>';
@@ -2024,55 +2769,24 @@ function _pauseForIntervention(errorTag, selectedIndex){
 }
 
 function _resumeQuiz(){
-  isPaused = false;
-  var qz = CUR.quiz;
-  if(!qz) return;
-  qz._answered = false;
-
-  // After any intervention the answer has been revealed, so showing the same question
-  // again only tests memory. Always replace with a skill-matched follow-up question.
+  // QUESTION STABILITY RULE
+  // Once a quiz question is displayed to the student, that exact question
+  // stays frozen for the entire question lifecycle. After an intervention,
+  // we DO NOT swap to a "skill-matched follow-up" question — doing that
+  // silently replaced the on-screen stem / options / explanation and let
+  // students see a mashup where the displayed correct answer + explanation
+  // belonged to a different question than the one they had been answering.
   //
-  // Scoring: remediation-only (Option A). The original question stays marked wrong in
-  // the quiz score. The follow-up result is tracked in qz._followUp but does not affect
-  // the score — it exists only to measure recovery.
-  if(qz.type === 'lesson' && CUR.unitIdx != null && CUR.lessonIdx != null
-      && typeof QE !== 'undefined'){
-    var curQ = qz.questions[qz.idx];
-    try {
-      var l    = UNITS_DATA[CUR.unitIdx].lessons[CUR.lessonIdx];
-      var bank = (l.qBank || l.quiz || []);
-
-      // For K tapGroup, normalize first so QE.selectRetry sees type:'tapGroup'
-      var qForRetry = (_ACTIVE_GRADE === 'K' && typeof _lessonContextFor === 'function')
-        ? QE.normalize(curQ, _lessonContextFor(curQ))
-        : curQ;
-
-      // Pass the triggered errorTag so Tier-1 can prefer same-misconception questions
-      var triggeredTag = activeIntervention ? activeIntervention.errorTag : null;
-
-      var pick = QE.selectRetry(qForRetry, bank, triggeredTag);
-
-      // Confirm the pick is genuinely different before swapping
-      var pickText = pick && (pick.t || pick.prompt);
-      var curText  = curQ  && (curQ.t  || curQ.prompt);
-      if(pick && pickText !== curText){
-        // Track recovery: originalQuestionId, followUpQuestionId, errorTag, result
-        qz._followUp = {
-          originalQuestionId: curQ.id  || curText,
-          followUpQuestionId: pick.id  || pickText,
-          originalErrorTag:   triggeredTag,
-          followUpCorrect:    null,   // set in _handleAnswer when the follow-up is graded
-          recovered:          null
-        };
-        qz.questions[qz.idx] = pick;
-        qz._opts = null;
-      } else if(pick) {
-        console.warn('[_resumeQuiz] selectRetry returned same question — pool may be size 1');
-      }
-    } catch(e){ console.warn('[_resumeQuiz] follow-up selection error:', e); }
-  }
-
-  _renderQ();
+  // After the intervention overlay is dismissed (caller does the removal),
+  // the original answered question card is still on screen with its feedback
+  // visible. The student clicks Next to advance to the next quiz question.
+  // The original wrong answer is already recorded in qz.answers; the score
+  // for this question position is locked.
+  isPaused = false;
+  activeIntervention = null;
+  // Note: we intentionally do NOT reset qz._answered, do NOT call _renderQ,
+  // and do NOT touch qz.questions or qz._opts. The frozen question + its
+  // feedback row + the Next button are all already in the DOM.
 }
 
 function nextQ(){
@@ -2088,7 +2802,14 @@ function nextQ(){
     qz.viewIdx = qz.idx;
     qz._opts = null; // clear so next question gets fresh shuffled options
     if(qz.idx >= qz.questions.length) _finishQuiz();
-    else _renderQ();
+    else {
+      _renderQ();
+      // Persist progress on every advance so refresh/close doesn't lose state.
+      // Resume bug: students who closed the tab between questions had no saved
+      // snapshot and were forced to start over. Saving after each advance keeps
+      // the snapshot fresh; quitQuiz still saves on Back; pagehide is a backstop.
+      _pauseCurrentQuiz();
+    }
   }
 }
 
@@ -2139,27 +2860,45 @@ function _toggleHint(){
 function quitQuiz(){
   playSwooshBack();
   _clearTimer();
-  // Save quiz state so student can resume
-  if(CUR.quiz && CUR.quiz.idx < CUR.quiz.questions.length){
-    const paused = {
-      questions: CUR.quiz.questions,
-      idx: CUR.quiz.idx,
-      score: CUR.quiz.score,
-      answers: CUR.quiz.answers,
-      id: CUR.quiz.id,
-      label: CUR.quiz.label,
-      type: CUR.quiz.type,
-      unitIdx: CUR.unitIdx,
-      lessonIdx: CUR.lessonIdx,
-      startedAt: _quizStartedAt,
-      pausedAt: Date.now()
-    };
-    _savePausedQuiz(CUR.quiz.id, paused);
+  // Practice-mode attempts are not resumable — they're remediation that re-derives
+  // its question pool from the student's current mistakes. Saving a paused snapshot
+  // would also overwrite no key (qid is `practice_lq_*`) but we explicitly skip the
+  // save so practice never shows a "Resume" banner alongside the official quiz.
+  if(CUR.quiz && CUR.quiz.mode !== 'practice' && CUR.quiz.idx < CUR.quiz.questions.length){
+    _pauseCurrentQuiz();
   }
   if(CUR.quiz && CUR.quiz.type==='lesson' && CUR.lessonIdx != null) openLesson(CUR.unitIdx, CUR.lessonIdx);
   else if(CUR.quiz && CUR.quiz.type==='lesson') goUnit();
   else if(CUR.quiz && CUR.quiz.type==='final') goHome();
   else goUnit();
+}
+
+// Snapshot the current in-progress quiz into the paused-quizzes store keyed by qid.
+// Used by quitQuiz, by the per-answer auto-save, and by pagehide/visibilitychange
+// so a tab refresh / navigate-away never loses official quiz progress (resume bug).
+function _pauseCurrentQuiz(){
+  const qz = CUR.quiz;
+  if(!qz || !qz.id) return;
+  if(qz.mode === 'practice') return;          // practice attempts are non-resumable
+  if(qz.idx >= qz.questions.length) return;   // already complete — nothing to resume
+  try {
+    const paused = {
+      questions: qz.questions,
+      idx: qz.idx,
+      score: qz.score,
+      answers: qz.answers,
+      hintsUsed: qz.hintsUsed || 0,
+      id: qz.id,
+      label: qz.label,
+      type: qz.type,
+      mode: qz.mode || null,
+      unitIdx: CUR.unitIdx,
+      lessonIdx: CUR.lessonIdx,
+      startedAt: _quizStartedAt,
+      pausedAt: Date.now()
+    };
+    _savePausedQuiz(qz.id, paused);
+  } catch(_){ /* localStorage full or unavailable — silent fail, resume just won't work */ }
 }
 
 function retryQuiz(){
@@ -2191,7 +2930,13 @@ function _practiceWeak(){
     }
   }
   if(!weakBank.length) return;
-  _runQuiz(weakBank, qz.id, qz.label + ' — Practice', qz.type, CUR.unitIdx);
+  // Weak-topic practice is REMEDIATION, never an official attempt.
+  // Distinct qid prefix ensures SCORES filters (e.g. SCORES.filter(s=>s.qid==='lq_'+l.id))
+  // never match practice attempts, so a high practice score cannot satisfy lesson/unit
+  // pass criteria, mark DONE, or unlock the next lesson. mode='practice' suppresses the
+  // completion/unlock side-effects in _finishQuiz.
+  const practiceQid = 'practice_' + qz.id;
+  _runQuiz(weakBank, practiceQid, qz.label + ' — Practice', qz.type, CUR.unitIdx, null, 'practice');
 }
 //  RESULTS
 
@@ -2206,7 +2951,7 @@ function _guidedRemediation(qz, pct, u){
   if(qz.type === 'lesson'){
     // Recommend reviewing the current lesson content
     const l = u.lessons[CUR.lessonIdx];
-    heading = `📖 Recommended Review`;
+    heading = `Recommended Review`;
     body = `Re-read <strong>${l ? l.icon+' '+l.title : 'this lesson'}</strong> — focus on the Key Ideas and Worked Examples, then try again.`;
     btnHtml = l ? `<button class="rem-btn" data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${CUR.lessonIdx}">Go Back to ${_escHtml(l.title)}</button>` : '';
 
@@ -2219,7 +2964,7 @@ function _guidedRemediation(qz, pct, u){
       if(lPct < weakPct){ weakPct = lPct; weakLesson = {l, li, lPct}; }
     });
     if(weakLesson){
-      heading = `📖 Focus Area`;
+      heading = `Focus Area`;
       const label = weakLesson.lPct > 0 ? `(your best: ${weakLesson.lPct}%)` : '(not yet passed)';
       body = `Your weakest lesson is <strong>${weakLesson.l.icon} ${weakLesson.l.title}</strong> ${label}. Review it before retrying the unit quiz.`;
       btnHtml = `<button class="rem-btn" data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${weakLesson.li}">Review ${_escHtml(weakLesson.l.title)}</button>`;
@@ -2234,7 +2979,7 @@ function _guidedRemediation(qz, pct, u){
       if(uPct < weakPct){ weakPct = uPct; weakUnit = {uu, ui, uPct}; }
     });
     if(weakUnit){
-      heading = `📖 Focus Area`;
+      heading = `Focus Area`;
       const label = weakUnit.uPct > 0 ? `(your best: ${weakUnit.uPct}%)` : '(not yet passed)';
       body = `Your weakest unit is <strong>${weakUnit.uu.name}</strong> ${label}. Review it to boost your Final Test score.`;
       btnHtml = `<button class="rem-btn" data-action="openUnit" data-arg="${weakUnit.ui}">Review ${_escHtml(weakUnit.uu.name)}</button>`;
@@ -2285,6 +3030,7 @@ function _finishQuiz(){
     unitIdx: CUR.unitIdx, color: u.color,
     name: studentName, id: Date.now(),
     timeTaken,
+    mode: qz.mode || null,
     grade: (typeof _gradeBand === 'function') ? (_gradeBand(localStorage.getItem('mmr_grade')) || 'g2') : null,
     answers: qz.answers ? qz.answers.map(a=>({t:a.t,chosen:a.chosen,correct:a.correct,ok:a.ok,exp:a.exp,opts:a.opts,timeSecs:a.timeSecs,hintUsed:a.hintUsed||false,errTag:a.errTag||null,difficulty:a.difficulty||null})) : [],
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
@@ -2312,7 +3058,21 @@ function _finishQuiz(){
   }
 
   // ── Mark lesson done automatically when quiz is completed ──
-  if(qz.type==='lesson'){
+  // Weak-topic practice is remediation only — it must NEVER mark a lesson passed,
+  // update DONE, trigger Soft Gate prompts, or count toward the daily streak.
+  const _isPracticeMode = qz.mode === 'practice';
+  if(_isPracticeMode){
+    try {
+      _trackEvent('practice_completed', {
+        unit_id:   CUR.unitIdx != null ? 'u' + CUR.unitIdx : null,
+        source_qid: qz.id.replace(/^practice_/, ''),
+        score:     qz.score,
+        pct:       pct,
+        quit:      !!(qz.quit),
+        abandoned: !!(qz.abandoned),
+      });
+    } catch (_) {}
+  } else if(qz.type==='lesson'){
     // Extract lesson id from qid (format: lq_u1l1)
     const lid = qz.id.replace('lq_','');
     DONE[lid] = true;
@@ -2355,7 +3115,13 @@ function _finishQuiz(){
 
   // ── Unlock message ──
   let unlockMsg = '';
-  if(qz.type==='lesson'){
+  if(_isPracticeMode){
+    // Practice is remediation — explicitly tell the student it does NOT change
+    // their official lesson score or unlock the next lesson.
+    unlockMsg = `<div class="practice-banner" style="background:#fff4e6;border:2px solid #f39c12;border-radius:10px;padding:10px 14px;margin:10px 0;color:#7a4d00;font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif">
+      Practice complete — this is review only. Your official lesson score is unchanged. Retake the lesson quiz when you're ready.
+    </div>`;
+  } else if(qz.type==='lesson'){
     if(pct>=80){
       const nextIdx = CUR.lessonIdx + 1;
       if(nextIdx < u.lessons.length)
@@ -2379,7 +3145,7 @@ function _finishQuiz(){
     if(pct>=80)
       unlockMsg = `<div class="unlock-banner">${_ICO.graduation} Congratulations! You passed the Final Test with ${pct}%! You are a Math Master!</div>`;
     else
-      unlockMsg = `<div class="lock-banner">📚 Need 80%+ to pass the Final Test. You got ${pct}% — keep reviewing and try again!</div>`;
+      unlockMsg = `<div class="lock-banner">${_ICO.lock} Need 80%+ to pass the Final Test. You got ${pct}% — keep reviewing and try again!</div>`;
   }
 
   const elTitle = document.getElementById('res-title');
@@ -2421,7 +3187,13 @@ function _finishQuiz(){
 
   // ── Results action buttons ──
   let nextBtn = '';
-  if(qz.type==='lesson'){
+  if(_isPracticeMode){
+    // Practice never unlocks the next lesson; offer a clear path back to the official quiz.
+    nextBtn = `<button class="rbtn rbtn-next" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
+      data-action="openLesson" data-arg="${CUR.unitIdx}" data-arg2="${CUR.lessonIdx}">
+      Back to Lesson — Retake Quiz
+    </button>`;
+  } else if(qz.type==='lesson'){
     const nextIdx = CUR.lessonIdx + 1;
     if(pct>=80 && nextIdx < u.lessons.length){
       const nl = u.lessons[nextIdx];
@@ -2432,7 +3204,7 @@ function _finishQuiz(){
     } else if(pct>=80 && nextIdx >= u.lessons.length){
       nextBtn = `<button class="rbtn rbtn-next" style="background:linear-gradient(135deg,${u.color},${u.color}aa)"
         data-action="goUnit">
-        📝 Go to Unit Quiz →
+        Go to Unit Quiz →
       </button>`;
     }
   } else if(qz.type==='unit' && pct>=80){
@@ -2446,7 +3218,9 @@ function _finishQuiz(){
   }
 
   const backLabel = qz.type === 'final' ? 'Back to Home' : 'Back to Unit';
-  const weakBtn = (pct < 80 && wrong.length > 0)
+  // Don't offer "Practice Weak Topics" when already in practice mode — it would
+  // just loop the student on a remediation track. Send them back to the lesson instead.
+  const weakBtn = (!_isPracticeMode && pct < 80 && wrong.length > 0)
     ? `<button class="rbtn" style="background:linear-gradient(135deg,#e67e22,#d35400)" data-action="_practiceWeak">Practice Weak Topics (${wrong.length} question${wrong.length===1?'':'s'}) →</button>`
     : '';
   elBtns.innerHTML = `
@@ -2482,9 +3256,9 @@ function buildRevSection(title, items, color, collapsed){
         <div class="ribody">
           <div class="ri-q">${_qText(a.t)}</div>
           ${a.ok
-            ? `<div class="ri-a" style="color:#27ae60">Your answer: ${_escHtml(a.chosen)} ✅</div>`
-            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#546e7a">${_escHtml(a.chosen)}</span></div>
-               <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> ${_escHtml(a.correct)} ✅</div>`}
+            ? `<div class="ri-a" style="color:#27ae60">Your answer: ${_escHtml(_formatAnswerForReview(a.chosen))} ✅</div>`
+            : `<div class="ri-a"><strong style="color:#e74c3c">Your answer:</strong> <span style="color:#546e7a">${_escHtml(_formatAnswerForReview(a.chosen)) || '(no answer)'}</span></div>
+               <div class="ri-a"><strong style="color:#27ae60">Correct:</strong> ${_escHtml(_formatAnswerForReview(a.correct))} ✅</div>`}
           <div class="ri-e">${_ICO.lightbulb} ${_escHtml(a.exp)}</div>
         </div>
       </div>`).join('')}

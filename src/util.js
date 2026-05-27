@@ -36,6 +36,32 @@ function _escHtml(str){
     .replace(/'/g, '&#39;');
 }
 
+// Normalize a stored answer value into a human-readable string for the review
+// screens (results screen + parent-dashboard review modal). SCORES entries can
+// contain answer values in several shapes due to migrations and visual-question
+// payloads: plain strings, numbers, option objects `{val,tag}`, arrays of
+// selected ids (tapGroup), or undefined when the student timed out / never
+// picked. Without this guard the dashboard renders `[object Object]` for any
+// non-string `correct`/`chosen`.
+function _formatAnswerForReview(val){
+  if (val == null) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+  if (Array.isArray(val)) {
+    return val.map(_formatAnswerForReview).filter(Boolean).join(', ');
+  }
+  if (typeof val === 'object') {
+    // Canonical option shape: { val, tag } — unwrap to val
+    if ('val' in val && val.val != null) return _formatAnswerForReview(val.val);
+    // tapGroup-style { selectedIds: [...] } payloads
+    if (Array.isArray(val.selectedIds)) return _formatAnswerForReview(val.selectedIds);
+    // Last-resort: if the object has a text field (legacy), use it
+    if (typeof val.text === 'string') return val.text;
+    return '';
+  }
+  return String(val);
+}
+
 // Validate email format
 function _validEmail(email){
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());

@@ -12,7 +12,7 @@ const _APP_GLOBALS = [
   '_UNITS_DATA_G1','_g1UnitLoadPromises','_mergeG1UnitData','_loadG1Unit','_applyGrade1Grade',
   // util.js
 
-  '_sr','_shuffle','_sanitize','_escHtml','_validEmail','_friendlyError','_rateLimit',
+  '_sr','_shuffle','_sanitize','_escHtml','_formatAnswerForReview','_validEmail','_friendlyError','_rateLimit',
   '_appErrors','_logError','_pwStrength','_updatePwStrength','_lsLastSignupEmail','_lsResend',
   'PARENT_SESSION_MINS','_parentTimerInterval','_parentSessionTs',
   '_startParentSession','_updateParentTimerDisplay','_hashPin','_savePin','_verifyPin',
@@ -49,14 +49,20 @@ const _APP_GLOBALS = [
   // unit.js
   'openUnit','goUnit','playCarryAnim','play3dCarry','playBorrowAnim','renderEx',
   'refreshExamples','generateExamples','buildPQItem','morePractice','steps',
-  'generatePractice','openLesson','_renderLesson','_quizTimer','_quizSecsLeft','_quizStartedAt',
+  'generatePractice','openLesson','_renderLesson','openKeyIdeaVisual','closeKeyIdeaVisual','_quizTimer','_quizSecsLeft','_quizStartedAt',
+  // key-ideas.js
+  '_resolveKeyIdeaSteps','_detectLessonTopic','_keyIdeaStepsFromPoints','_stepHeadingFromPoint','_sanitizeKeyIdeaPoint',
+  '_normalizeStep','_extractFirstOpFromLesson','_KI_TOPIC_RULES','_KI_TOPIC_STEPS','_KI_BUILDERS',
+  '_renderKeyIdeaModal','_renderStepVisual','_showKeyIdeaStep',
+  '_KI_CURRENT_STEPS','_KI_CURRENT_IDX','_KI_CURRENT_LESSON','_KI_CURRENT_UNIT',
+  '_makeUnitJumps','_makeSkipJumps',
   '_pausedSecsLeft','_startTimer','_clearTimer','_updateTimerDisplay','_timeUp',
   // quiz.js
   '_audioCtx','_getAudio','playSwooshBack','playSwooshForward','playTap',
   'playCorrect','playWrong','playPassQuiz','playConfettiBurst',
   'startLessonQuiz','startUnitQuiz','_getPausedAll','getPausedQuiz',
   '_savePausedQuiz','_clearPausedQuiz','resumeQuiz','_weightedSample','_runQuiz','_renderQ',
-  '_pickAnswer','nextQ','prevQ','quitQuiz','retryQuiz','_finishQuiz',
+  '_pickAnswer','nextQ','prevQ','quitQuiz','retryQuiz','_finishQuiz','_pauseCurrentQuiz',
   'buildRevSection','toggleRS','restartQuiz','cancelRestart','showQuitConfirm',
   'cancelQuit','_scratchCtx','_scratchDrawing','_scratchColor','_scratchTool',
   '_scratchLastX','_scratchLastY','openScratchPad','closeScratchPad',
@@ -512,6 +518,25 @@ window.addEventListener('focus', function(){
   window.addEventListener('pagehide', _endSeg);
 
   _startSeg(); // begin tracking immediately on load
+})();
+
+// ── Resume-quiz reliability: snapshot in-progress quizzes on tab hide/refresh.
+// quitQuiz already saves when the student presses Back; this catches the cases
+// where the student closes the tab, refreshes, or backgrounds the app without
+// ever pressing Back. Without it, "sometimes resume works, sometimes it doesn't"
+// because saving only happened on the Back path.
+(function _wireQuizPauseOnHide(){
+  function _safePauseInFlightQuiz(){
+    try {
+      if (typeof CUR === 'undefined' || !CUR || !CUR.quiz) return;
+      if (typeof _pauseCurrentQuiz === 'function') _pauseCurrentQuiz();
+    } catch(_) { /* never throw out of an unload handler */ }
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'hidden') _safePauseInFlightQuiz();
+  });
+  window.addEventListener('pagehide', _safePauseInFlightQuiz);
+  window.addEventListener('beforeunload', _safePauseInFlightQuiz);
 })();
 
 applyStoredTheme();

@@ -1,0 +1,34 @@
+
+══ Key Idea Audit ══════════════════════════════════════════════════
+Total lessons audited: 114
+
+Status                       Count   Percent
+────────────────────────────  ─────  ───────
+topic:array                       2     1.8%
+topic:bar-graph                   2     1.8%
+topic:compare                     6     5.3%
+topic:count-on                   16    14.0%
+topic:fraction                    4     3.5%
+topic:measure                    10     8.8%
+topic:money                       6     5.3%
+topic:number-bond                 4     3.5%
+topic:number-line-add             1     0.9%
+topic:pictograph                  4     3.5%
+topic:place-value                 8     7.0%
+topic:regroup-add                 3     2.6%
+topic:regroup-sub                 2     1.8%
+topic:shape                      10     8.8%
+topic:skip-count                  3     2.6%
+topic:tally                       2     1.8%
+topic:ten-frame                   2     1.8%
+topic:time                        2     1.8%
+fallback-points                  27    23.7%
+
+Per-grade fallback rates:
+────────────────────────────  ─────  ───────
+K                                14/39  fallback 35.9%
+G1                                7/40  fallback 17.5%
+G2                                6/35  fallback 17.1%
+
+No lessons flagged.
+═══════════════════════════════════════════════════════════════════

@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.16-no-tour';
+const CACHE = 'math-workbook-v6.0.30-preserve-learning-grade';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets

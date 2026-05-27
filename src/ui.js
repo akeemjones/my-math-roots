@@ -79,8 +79,8 @@ function _buildScReviewHtml(s){
       reviewHtml += wrong.map(a=>`
         <div class="sc-rev-item sc-rev-wrong">
           <div class="sc-rev-q">${_escHtml(a.t)}</div>
-          <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${_escHtml(a.chosen)}</span></div>
-          <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${_escHtml(a.correct)}</span></div>
+          <div class="sc-rev-your">Your answer: <span style="color:#e74c3c">${_escHtml(_formatAnswerForReview(a.chosen)) || '(no answer)'}</span></div>
+          <div class="sc-rev-correct">✅ Correct: <span style="color:#27ae60">${_escHtml(_formatAnswerForReview(a.correct))}</span></div>
           ${a.timeSecs != null ? `<div class="sc-rev-time">⏱ ${a.timeSecs}s</div>` : ''}
         </div>`).join('');
     }
@@ -89,7 +89,7 @@ function _buildScReviewHtml(s){
       reviewHtml += right.map(a=>`
         <div class="sc-rev-item sc-rev-right">
           <div class="sc-rev-q">${_escHtml(a.t)}</div>
-          <div class="sc-rev-correct" style="color:#27ae60">✅ ${_escHtml(a.correct)}</div>
+          <div class="sc-rev-correct" style="color:#27ae60">✅ ${_escHtml(_formatAnswerForReview(a.correct))}</div>
           ${a.timeSecs != null ? `<div class="sc-rev-time">⏱ ${a.timeSecs}s</div>` : ''}
         </div>`).join('');
     }

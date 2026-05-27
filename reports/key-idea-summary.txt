@@ -1,0 +1,49 @@
+
+══ Key Idea Audit ══════════════════════════════════════════════════
+Total lessons audited: 114
+
+Status                       Count   Percent
+────────────────────────────  ─────  ───────
+topic:array                       2     1.8%
+topic:bar-graph                   2     1.8%
+topic:compare                     5     4.4%
+topic:compare-data                1     0.9%
+topic:count-back                  2     1.8%
+topic:count-on                   12    10.5%
+topic:counting                    4     3.5%
+topic:data-conclusion             1     0.9%
+topic:doubles                     2     1.8%
+topic:equal-sharing               2     1.8%
+topic:financial-literacy          7     6.1%
+topic:fraction                    4     3.5%
+topic:line-plot                   1     0.9%
+topic:make-ten                    2     1.8%
+topic:measure                    10     8.8%
+topic:money                       5     4.4%
+topic:next-number                 1     0.9%
+topic:number-bond                 3     2.6%
+topic:number-line-add             1     0.9%
+topic:pictograph                  4     3.5%
+topic:place-value                 6     5.3%
+topic:regroup-add                 2     1.8%
+topic:regroup-sub                 2     1.8%
+topic:rounding                    1     0.9%
+topic:shape                       8     7.0%
+topic:skip-count                  3     2.6%
+topic:sort-groups                 2     1.8%
+topic:story-problem               5     4.4%
+topic:subitize                    3     2.6%
+topic:symmetry                    1     0.9%
+topic:tally                       2     1.8%
+topic:tens-addition               5     4.4%
+topic:three-addends               1     0.9%
+topic:time                        2     1.8%
+
+Per-grade fallback rates:
+────────────────────────────  ─────  ───────
+K                                 0/39  fallback 0.0%
+G1                                0/40  fallback 0.0%
+G2                                0/35  fallback 0.0%
+
+No lessons flagged.
+═══════════════════════════════════════════════════════════════════

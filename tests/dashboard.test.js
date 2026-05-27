@@ -26,6 +26,10 @@ const {
   _isUnitUnlockedInDraft,
   _isLessonUnlockedInDraft,
   _gradeBand,
+  _unitsMetaForBand,
+  _K_UNITS_META,
+  _G1_UNITS_META,
+  _UNITS_META,
   _inferScoreGrade,
   buildParentInsight,
   _computeUnitInsights,
@@ -2950,3 +2954,269 @@ describe('_dbShouldClearForResetEpoch (the decision function)', () => {
     expect(_dbShouldClearForResetEpoch(1000, 2000)).toBe(true);
   });
 });
+
+
+// =============================================================================
+//  _unitsMetaForBand — guards the parent-dashboard view-band → unit-meta map
+//  (previously '_activeDashboardUnitsMeta' silently routed Grade 1 to the
+//  G2 metadata, so unlocks for indices 8-9 had no matching G1 unit on the
+//  student side).
+// =============================================================================
+describe('_unitsMetaForBand returns the right unit list per grade', () => {
+  test('K band returns _K_UNITS_META (8 units)', () => {
+    const meta = _unitsMetaForBand('k');
+    expect(meta).toBe(_K_UNITS_META);
+    expect(meta).toHaveLength(8);
+    expect(meta[7].name).toMatch(/financial|money/i);
+  });
+
+  test('G1 band returns _G1_UNITS_META (8 units) — not G2 fallthrough', () => {
+    const meta = _unitsMetaForBand('g1');
+    expect(meta).toBe(_G1_UNITS_META);
+    expect(meta).toHaveLength(8);
+    // Specifically NOT the G2 unit list, which has 10 units
+    expect(meta).not.toBe(_UNITS_META);
+  });
+
+  test('G2 band returns _UNITS_META (10 units)', () => {
+    const meta = _unitsMetaForBand('g2');
+    expect(meta).toBe(_UNITS_META);
+    expect(meta).toHaveLength(10);
+  });
+
+  test('accepts raw grade aliases — "1" / "grade1" / "Grade 1" all map to G1', () => {
+    expect(_unitsMetaForBand('1')).toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('grade1')).toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('Grade 1')).toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('Kindergarten')).toBe(_K_UNITS_META);
+    expect(_unitsMetaForBand('K')).toBe(_K_UNITS_META);
+    expect(_unitsMetaForBand('2')).toBe(_UNITS_META);
+  });
+
+  test('unknown / nullish band falls back to G2 (so dashboard never shows an empty grid)', () => {
+    expect(_unitsMetaForBand(null)).toBe(_UNITS_META);
+    expect(_unitsMetaForBand(undefined)).toBe(_UNITS_META);
+    expect(_unitsMetaForBand('zzz')).toBe(_UNITS_META);
+  });
+
+  test('regression: parent toggling unlock on G1 unit 3 maps to a real G1 unit name (not a G2 unit)', () => {
+    // Unit index 2 in the G1 meta should be the Grade 1 addition/subtraction unit.
+    const g1Meta = _unitsMetaForBand('g1');
+    expect(g1Meta[2].name).toMatch(/addition|subtraction|add|subtract/i);
+    expect(g1Meta[2].name).not.toMatch(/200|1,000|fractions|geometry/i);
+  });
+});
+
+
+
+// =============================================================================
+//  Kindergarten — explicit alias + isolation coverage. The G1 fix lands the
+//  full _unitsMetaForBand routing, but K has the broadest alias surface
+//  ('k' / 'K' / 'kindergarten' / 'Kindergarten' / '0') — these tests pin all
+//  of them and guard the K↔G1↔G2 isolation invariant.
+// =============================================================================
+describe('Kindergarten Free Mode unit-meta — every alias routes to the K list', () => {
+  test('alias "k" returns _K_UNITS_META', () => {
+    expect(_unitsMetaForBand('k')).toBe(_K_UNITS_META);
+  });
+  test('alias "K" returns _K_UNITS_META', () => {
+    expect(_unitsMetaForBand('K')).toBe(_K_UNITS_META);
+  });
+  test('alias "kindergarten" returns _K_UNITS_META', () => {
+    expect(_unitsMetaForBand('kindergarten')).toBe(_K_UNITS_META);
+  });
+  test('alias "Kindergarten" returns _K_UNITS_META', () => {
+    expect(_unitsMetaForBand('Kindergarten')).toBe(_K_UNITS_META);
+  });
+  test('alias "0" returns _K_UNITS_META (school-system numeric variant)', () => {
+    expect(_unitsMetaForBand('0')).toBe(_K_UNITS_META);
+  });
+
+  test('K returns the correct unit count (8) — matches the K curriculum', () => {
+    const meta = _unitsMetaForBand('k');
+    expect(meta).toHaveLength(8);
+  });
+
+  test('K unit names match the K curriculum (not G1 or G2 unit names)', () => {
+    const kMeta = _unitsMetaForBand('k');
+    // K unit 1 is Counting & Cardinality, not G1's "Counting and Number Relationships to 120"
+    // or G2's "Basic Fact Strategies"
+    expect(kMeta[0].name).toMatch(/counting.*cardinality/i);
+    expect(kMeta[0].name).not.toMatch(/basic fact strategies/i);
+    expect(kMeta[0].name).not.toMatch(/relationships to 120/i);
+    // K unit 8 is Financial Literacy & Money
+    expect(kMeta[7].name).toMatch(/financial.*money/i);
+  });
+
+  test('K does not return G1 metadata', () => {
+    expect(_unitsMetaForBand('k')).not.toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('K')).not.toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('kindergarten')).not.toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('Kindergarten')).not.toBe(_G1_UNITS_META);
+    expect(_unitsMetaForBand('0')).not.toBe(_G1_UNITS_META);
+  });
+
+  test('K does not return G2 metadata', () => {
+    expect(_unitsMetaForBand('k')).not.toBe(_UNITS_META);
+    expect(_unitsMetaForBand('K')).not.toBe(_UNITS_META);
+    expect(_unitsMetaForBand('kindergarten')).not.toBe(_UNITS_META);
+    expect(_unitsMetaForBand('Kindergarten')).not.toBe(_UNITS_META);
+    expect(_unitsMetaForBand('0')).not.toBe(_UNITS_META);
+  });
+
+  test('regression: K unit index 2 is a real K unit (Addition & Subtraction), not a G1 or G2 unit name', () => {
+    const kMeta = _unitsMetaForBand('k');
+    expect(kMeta[2].name).toMatch(/addition|subtract/i);
+    // Distinct from G1 unit 2 ("Addition and Subtraction to 20") — K's wording
+    // omits the "to 20" suffix.
+    expect(kMeta[2].name).not.toMatch(/to 20/i);
+    // Distinct from G2 unit 2 ("Add & Subtract to 200")
+    expect(kMeta[2].name).not.toMatch(/200/i);
+  });
+});
+
+// =============================================================================
+//  Kindergarten — _parseUnlockSettings / _isUnitUnlockedInDraft / by-grade
+//  slot isolation. The save layer is grade-scoped via byGrade.<band>.units;
+//  these tests pin that K unlocks live in byGrade.k and do NOT leak into
+//  byGrade.g1 or byGrade.g2.
+// =============================================================================
+describe('Kindergarten unlock state isolation in the by-grade slot', () => {
+  test('_parseUnlockSettings creates a K slot when initialBand="k"', () => {
+    const draft = _parseUnlockSettings({}, 'k');
+    expect(draft.byGrade).toBeDefined();
+    expect(draft.byGrade.k).toBeDefined();
+    expect(draft.byGrade.k.freeMode).toBe(false);
+    expect(Array.isArray(draft.byGrade.k.units)).toBe(true);
+  });
+
+  test('_isUnitUnlockedInDraft reads the K slot when band="k"', () => {
+    const draft = { byGrade: { k: { freeMode: false, units: [2], lessons: {} } } };
+    expect(_isUnitUnlockedInDraft(draft, 2, 'k')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draft, 1, 'k')).toBe(false);
+    expect(_isUnitUnlockedInDraft(draft, 3, 'k')).toBe(false);
+  });
+
+  test('K unlock does NOT leak into G1 — _isUnitUnlockedInDraft for band="g1" returns false', () => {
+    const draft = { byGrade: { k: { freeMode: false, units: [2], lessons: {} } } };
+    expect(_isUnitUnlockedInDraft(draft, 2, 'g1')).toBe(false);
+  });
+
+  test('K unlock does NOT leak into G2 — _isUnitUnlockedInDraft for band="g2" returns false', () => {
+    const draft = { byGrade: { k: { freeMode: false, units: [2], lessons: {} } } };
+    expect(_isUnitUnlockedInDraft(draft, 2, 'g2')).toBe(false);
+  });
+
+  test('K freeMode=true unlocks ALL K units but does NOT unlock G1 or G2 units', () => {
+    const draft = { byGrade: { k: { freeMode: true, units: [], lessons: {} } } };
+    // Every K index returns true under freeMode
+    expect(_isUnitUnlockedInDraft(draft, 0, 'k')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draft, 7, 'k')).toBe(true);
+    // G1 / G2 unaffected
+    expect(_isUnitUnlockedInDraft(draft, 0, 'g1')).toBe(false);
+    expect(_isUnitUnlockedInDraft(draft, 0, 'g2')).toBe(false);
+  });
+
+  test('K and G1 unlocks coexist independently in byGrade — neither overwrites the other', () => {
+    const draft = {
+      byGrade: {
+        k:  { freeMode: false, units: [3], lessons: {} },
+        g1: { freeMode: false, units: [5], lessons: {} }
+      }
+    };
+    // K side: index 3 unlocked, index 5 NOT unlocked
+    expect(_isUnitUnlockedInDraft(draft, 3, 'k')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draft, 5, 'k')).toBe(false);
+    // G1 side: index 5 unlocked, index 3 NOT unlocked
+    expect(_isUnitUnlockedInDraft(draft, 5, 'g1')).toBe(true);
+    expect(_isUnitUnlockedInDraft(draft, 3, 'g1')).toBe(false);
+  });
+});
+
+
+
+// =============================================================================
+//  Grade persistence — the dashboard MUST NOT overwrite the student's active
+//  learning grade (`localStorage.mmr_grade`). The previous v6.0.29 build had
+//  `renderDashboard` mirror its view-band into mmr_grade on every paint —
+//  opening the dashboard with profile.grade='2' would clobber a K/G1
+//  selection. This source-level guard pins the policy so a future refactor
+//  cannot re-introduce the regression. (The dashboard's view-band still lives
+//  in mmr_dash_view_grade_<sid> and is independent.)
+// =============================================================================
+describe('renderDashboard must not write to localStorage.mmr_grade', () => {
+  const fs   = require('fs');
+  const path = require('path');
+  const dashSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'dashboard.js'), 'utf8');
+
+  // Brace-count the body of a function so we only inspect its own scope.
+  function _bodyOf(fnName) {
+    const re = new RegExp('function\\s+' + fnName + '\\s*\\([^)]*\\)\\s*\\{', 'g');
+    const m = re.exec(dashSrc);
+    if (!m) return null;
+    const start = m.index;
+    let i = start + m[0].length - 1; // at the '{'
+    let depth = 0;
+    for (; i < dashSrc.length; i++) {
+      const c = dashSrc[i];
+      if (c === '{') depth++;
+      else if (c === '}') { depth--; if (depth === 0) return dashSrc.slice(start, i + 1); }
+    }
+    return null;
+  }
+
+  test('renderDashboard body does NOT call setItem("mmr_grade", ...)', () => {
+    const body = _bodyOf('renderDashboard');
+    expect(body).not.toBeNull();
+    expect(body).not.toMatch(/setItem\s*\(\s*['"]mmr_grade['"]/);
+  });
+
+  test('renderDashboard body still reads the view-band (the function still cares about grade scope)', () => {
+    const body = _bodyOf('renderDashboard');
+    expect(body).toMatch(/_getDashboardViewGrade\s*\(/);
+  });
+
+  test('the intentional mmr_grade writers (profile-grade save) survive — only the renderDashboard mirror was removed', () => {
+    // _dbSaveEditProfile mirrors mmr_grade ONLY when the parent saves a
+    // profile-grade change — keep that path so changing a profile's enrolled
+    // grade does cascade into the learning side after a reload.
+    expect(dashSrc).toMatch(/setItem\s*\(\s*['"]mmr_grade['"][\s\S]{0,400}location\.reload/);
+  });
+});
+
+// =============================================================================
+//  Dashboard view-band reads do NOT route through mmr_grade for the lesson
+//  dropdown filter. Confirms the lesson-key prefix is derived from the
+//  dashboard view-band (not the learning-side mmr_grade) and handles G1.
+// =============================================================================
+describe('Quiz history lesson dropdown — prefix derived from view-band, not mmr_grade', () => {
+  const fs   = require('fs');
+  const path = require('path');
+  const dashSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'dashboard.js'), 'utf8');
+
+  function _fnBody(fnName) {
+    const re = new RegExp('function\\s+' + fnName + '\\s*\\([^)]*\\)\\s*\\{');
+    const m = re.exec(dashSrc);
+    if (!m) return null;
+    const start = m.index;
+    let i = start + m[0].length - 1, depth = 0;
+    for (; i < dashSrc.length; i++) {
+      const c = dashSrc[i];
+      if (c === '{') depth++;
+      else if (c === '}') { depth--; if (depth === 0) return dashSrc.slice(start, i + 1); }
+    }
+    return null;
+  }
+
+  test('_renderQuizHistoryControls reads _getDashboardViewGrade()', () => {
+    const body = _fnBody('_renderQuizHistoryControls');
+    expect(body).not.toBeNull();
+    expect(body).toMatch(/_getDashboardViewGrade/);
+  });
+
+  test('_renderQuizHistoryControls produces a g1-u{n}-l{m} key for the G1 band', () => {
+    const body = _fnBody('_renderQuizHistoryControls');
+    expect(body).toMatch(/g1-u/);
+  });
+});
+

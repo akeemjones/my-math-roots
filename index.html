@@ -398,6 +398,18 @@
   </div>
 </div>
 
+<!-- Key Idea step-based visual explanation modal -->
+<div class="key-idea-modal" id="key-idea-modal" data-action="closeKeyIdeaVisual" data-self-only role="dialog" aria-labelledby="ki-modal-title" aria-modal="true">
+  <div class="key-idea-box" role="document">
+    <button type="button" class="key-idea-close" data-action="closeKeyIdeaVisual" aria-label="Close visual explanation">✕</button>
+    <h3 id="ki-modal-title" class="key-idea-title">Key Idea</h3>
+    <div class="ki-twopane" id="ki-twopane">
+      <ol id="ki-steplist" class="ki-steplist" role="tablist" aria-label="Steps"></ol>
+      <div id="ki-visual" class="ki-visual" role="tabpanel" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Restart confirmation modal -->
 <div class="restart-modal" id="restart-confirm-modal">
   <div class="restart-modal-box">

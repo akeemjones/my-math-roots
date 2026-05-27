@@ -11,7 +11,6 @@
   --z-fixed-btn: 80;
   --z-sticky: 90;
   --z-toast: 997;
-  --z-coin: 998;
   --z-confetti: 999;
   --z-install: 1000;
   --z-scratch: 3000;
@@ -19,6 +18,9 @@
   --z-restart: 9000;
   --z-lightbox: 9500;
   --z-modal: 9600;
+  /* coin lightbox must layer ABOVE the Key Idea modal (--z-modal) so that
+     tapping a coin photo inside the modal pops it forward, not behind */
+  --z-coin: 9650;
   --z-update: 9700;
   --z-soft-gate: 9800;
   --z-auth-modal: 9900;
@@ -1186,6 +1188,286 @@ body.a11y-focus #qhint-btn:focus{
 .restart-confirm-yes:active{ transform:translateY(2px);box-shadow:0 2px 0 #922b21; }
 .restart-modal .restart-confirm-no{ background:var(--bg3);color:var(--txt);border:2px solid var(--border2); }
 
+/* Key Idea card — each visible bullet is its own clickable button. The card
+   itself is just a layout container; bullets are the real tap targets. */
+.key-idea-card{ background:#fff;border-radius:var(--rad-lg);padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.06); margin-bottom:14px; }
+.key-idea-card-head{ display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px; }
+.key-idea-hint{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;letter-spacing:.02em;font-size:var(--fs-sm);opacity:.85;white-space:nowrap; }
+
+.kp-list{ display:flex; flex-direction:column; gap:8px; }
+
+/* Per-bullet button — full-width, accessible target, hover/active feedback */
+.kp-button{
+  width:100%; text-align:left;
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; border-radius:12px;
+  border:1.5px solid rgba(0,0,0,0.08); background:#fff;
+  cursor:pointer; font:inherit; color:var(--txt);
+  transition:transform .12s var(--ease-out-quint), box-shadow .15s, background .15s, border-color .15s;
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+}
+.kp-button:hover{ background:#f8fafc; border-color:rgba(0,0,0,0.16); box-shadow:0 2px 8px rgba(0,0,0,0.06); transform:translateY(-1px); }
+.kp-button:active{ transform:translateY(0); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.kp-button:focus-visible{ outline:3px solid #6c5ce7; outline-offset:2px; }
+
+.kp-bullet-num{
+  flex:0 0 28px; height:28px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700; font-size:.95em;
+}
+.kp-text{ flex:1 1 auto; line-height:1.4; }
+.kp-arrow{ flex:0 0 auto; font-size:1.4em; line-height:1; font-weight:bold; opacity:.6; transition:transform .15s, opacity .15s; }
+.kp-button:hover .kp-arrow{ transform:translateX(2px); opacity:1; }
+
+/* Key Idea visual explanation modal — centered teaching card.
+   IMPORTANT: this is a CENTERED dialog, not a bottom sheet. Previous styles
+   anchored the card to the bottom of the screen on mobile with `align-items:
+   flex-end`, top-only border radius, and a `slideUp` animation. Those have been
+   removed so the modal opens centered on every viewport. Backdrop tap-to-close
+   is handled by the existing `data-action="closeKeyIdeaVisual" data-self-only`
+   pattern on the overlay element — the events.js dispatcher only fires when
+   the click target IS the overlay, so clicks inside the card don't bubble out.*/
+.key-idea-modal{
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:var(--z-restart);
+  display:none;
+  align-items:center;        /* CENTERED vertically */
+  justify-content:center;    /* CENTERED horizontally */
+  padding:20px;              /* breathing room around the card on small screens */
+  -webkit-overflow-scrolling:touch;
+}
+.key-idea-modal.show{ display:flex; }
+.key-idea-box{
+  background:#fff; color:#1a2438;
+  border-radius:20px;        /* ALL corners rounded (no bottom-sheet look) */
+  padding:22px 20px 28px;
+  max-width:560px;
+  width:100%;                /* fills available space inside the 20px overlay padding */
+  max-height:calc(100vh - 40px);  /* never taller than viewport minus overlay padding */
+  overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.20), 0 2px 8px rgba(0,0,0,0.08);
+  animation:kiPopIn .22s var(--ease-out-quint) both;
+  position:relative;
+}
+@keyframes kiPopIn{
+  from{ opacity:0; transform:scale(.96); }
+  to  { opacity:1; transform:scale(1);   }
+}
+/* Force readable text on the light modal background — the app uses
+   --txt: white in dark mode, which would otherwise make the body text
+   invisible against the modal's white card. Restrict to plain text nodes
+   so styled accents (.ki-num color, .key-idea-title color set via inline
+   style or class) keep their own colors. */
+.key-idea-body, .key-idea-body p, .key-idea-body div:not([style*="color"]):not(.ki-num),
+.key-idea-body li, .key-idea-body span:not([style*="color"]) { color:#1a2438; }
+.key-idea-close{ position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;
+  border:none;background:#f1f3f5;color:#333;font-size:18px;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent; }
+.key-idea-close:hover{ background:#e3e6e8; }
+.key-idea-title{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-xl);
+  margin:0 0 14px;padding-right:36px; }
+.key-idea-body strong{ color:#0f172a; }
+
+/* ── Two-pane layout: step list + active step visual ── */
+.key-idea-box .ki-twopane{
+  display:grid;
+  grid-template-columns: 1fr;          /* mobile: stacked */
+  gap:14px;
+  margin-top:4px;
+}
+@media (min-width: 560px){
+  .key-idea-box .ki-twopane{
+    grid-template-columns: 220px 1fr;  /* desktop: side-by-side */
+    align-items: start;
+    gap:18px;
+  }
+}
+
+/* Step list (left/top) */
+.key-idea-box .ki-steplist{
+  list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:6px;
+  border-bottom:1px dashed rgba(0,0,0,.08); padding-bottom:10px;
+}
+@media (min-width: 560px){
+  .key-idea-box .ki-steplist{
+    border-bottom:0; border-right:1px dashed rgba(0,0,0,.08);
+    padding-bottom:0; padding-right:12px;
+  }
+}
+.key-idea-box .ki-steplist > li{ margin:0; padding:0; }
+.key-idea-box .ki-steplist button{
+  width:100%; text-align:left;
+  display:flex; align-items:center; gap:10px;
+  border:1.5px solid transparent; background:transparent; color:#1a2438;
+  padding:8px 10px; border-radius:10px; cursor:pointer;
+  font:inherit; font-size:var(--fs-base);
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+}
+.key-idea-box .ki-steplist button:hover{ background:#f1f5f9; }
+.key-idea-box .ki-steplist button:focus-visible{ outline:3px solid #6c5ce7; outline-offset:2px; }
+.key-idea-box .ki-steplist button.is-active{
+  background:#eef2ff; border-color:#3949ab; color:#1e3a8a; font-weight:700;
+}
+.key-idea-box .ki-stepnum{
+  flex:0 0 26px; height:26px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#eef2ff; color:#3949ab;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700;
+}
+.key-idea-box .ki-steplist button.is-active .ki-stepnum{
+  background:#3949ab; color:#fff;
+}
+.key-idea-box .ki-steptitle{ flex:1 1 auto; line-height:1.2; }
+
+/* Visual pane (right/bottom) */
+.key-idea-box .ki-visual{ min-height:160px; color:#1a2438; }
+.key-idea-box .ki-visual svg{ max-width:100%; height:auto; }
+.key-idea-box .ki-step-caption{ margin:0 0 10px; color:#475569; font-size:var(--fs-base); line-height:1.45; }
+.key-idea-box .ki-step-error{ color:#b91c1c; padding:10px; background:#fee2e2; border-radius:8px; }
+
+/* Generic point card (fallback step visual) */
+.key-idea-box .ki-card{
+  display:flex; gap:12px; align-items:flex-start;
+  padding:14px; border-radius:12px; background:#f8fafc;
+  border:2px solid #cbd5e1;
+}
+.key-idea-box .ki-card-num{
+  flex:0 0 34px; height:34px; border-radius:50%; color:#fff;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700; font-size:1.05em;
+}
+.key-idea-box .ki-card-text{ font-size:var(--fs-base); line-height:1.5; color:#1a2438; }
+.key-idea-box .ki-card-ex{ margin-top:12px; padding:10px 12px; background:#f1f5f9; border-radius:10px; }
+.key-idea-box .ki-card-ex-head{ font-size:.85em; color:#64748b; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.key-idea-box .ki-card-ex-q{ font-weight:600; margin-bottom:6px; color:#1a2438; }
+.key-idea-box .ki-card-ex-svg{ margin:6px 0; text-align:center; }
+.key-idea-box .ki-card-ex-svg svg{ max-width:100%; height:auto; }
+.key-idea-box .ki-card-ex-a{ margin-top:6px; color:#1b5e20; }
+
+/* Pictograph step visuals */
+.key-idea-box .ki-pic-key{ padding:14px; border-radius:12px; background:#fff; border:2px solid #e2e8f0; text-align:center; }
+.key-idea-box .ki-pic-key-label{ font-size:.85em; color:#64748b; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.key-idea-box .ki-pic-key-row{ display:inline-flex; align-items:center; gap:12px; }
+.key-idea-box .ki-pic-key-eq{ font-size:1.4em; font-weight:700; color:#1a2438; }
+.key-idea-box .ki-pic-rows{ display:flex; flex-direction:column; gap:10px; }
+.key-idea-box .ki-pic-line{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8fafc; border-radius:8px; flex-wrap:wrap; }
+.key-idea-box .ki-pic-lbl{ font-weight:700; min-width:48px; color:#1a2438; }
+.key-idea-box .ki-pic-syms{ font-size:1.5em; line-height:1; flex:1 1 auto; }
+.key-idea-box .ki-pic-meta{ font-size:.92em; color:#475569; }
+
+/* Compare step visuals */
+.key-idea-box .ki-cmp{ display:flex; flex-direction:column; gap:8px; }
+.key-idea-box .ki-cmp-row{ padding:10px 14px; background:#f8fafc; border-radius:8px; color:#1a2438; }
+.key-idea-box .ki-cmp-row.big{ background:#dcfce7; border:1px solid #86efac; }
+.key-idea-box .ki-cmp-eq{ margin-top:6px; font-size:1.05em; }
+.key-idea-box .ki-cmp-side{ display:inline-block; margin:0 12px; text-align:center; }
+.key-idea-box .ki-cmp-num{ font-size:2em; font-weight:700; }
+.key-idea-box .ki-cmp-op{ font-size:2.2em; margin:0 14px; font-weight:700; }
+.key-idea-box .ki-cmp-sym{ display:flex; align-items:center; justify-content:center; gap:6px; }
+
+/* Number-line wrapper */
+.key-idea-box .ki-nl{ text-align:center; }
+.key-idea-box .ki-nl-caption{ margin-top:6px; color:#475569; font-size:.92em; }
+
+/* Row metadata centered under a visual */
+.key-idea-box .ki-row-meta-center{ text-align:center; color:#1a2438; margin-top:6px; }
+.key-idea-box .ki-row-meta{ color:#475569; font-size:.92em; }
+.key-idea-box .ki-row{ display:flex; align-items:center; gap:6px; padding:6px 0; }
+.key-idea-box .ki-row-stars{ font-size:1.5em; line-height:1; }
+.key-idea-box .ki-points-list{ display:flex; flex-direction:column; gap:4px; margin-top:8px; padding:10px 12px; background:#f8fafc; border-radius:8px; color:#1a2438; }
+.key-idea-box .ki-vis-wrap{ text-align:center; }
+.key-idea-box .ki-coin-embed{ display:flex; justify-content:center; align-items:center; padding:8px; }
+.key-idea-box .ki-coin-embed img{ width:160px; height:160px; max-width:80%; object-fit:contain; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.18); margin:0; }
+.key-idea-box .ki-svg-embed{ display:flex; justify-content:center; align-items:center; padding:8px; }
+.key-idea-box .ki-svg-embed svg{ max-width:100%; height:auto; }
+
+/* ── Story-problem visuals ─────────────────────────────────────────────── */
+.key-idea-box .ki-story-known{ display:flex; gap:10px; flex-wrap:wrap; margin:4px 0; }
+.key-idea-box .ki-story-known-chip{
+  display:inline-flex; flex-direction:column; align-items:center; gap:2px;
+  padding:10px 14px; border-radius:12px; border:2px solid;
+}
+.key-idea-box .ki-story-known-val{ font-size:1.6em; font-weight:700; line-height:1; }
+.key-idea-box .ki-story-known-lbl{ font-size:.78em; color:#475569; text-align:center; }
+.key-idea-box .ki-story-op{ display:flex; align-items:center; justify-content:center; gap:14px; padding:18px; background:#f8fafc; border-radius:12px; }
+.key-idea-box .ki-story-op-symbol{ font-size:3em; font-weight:700; line-height:1; }
+.key-idea-box .ki-story-op-reason{ color:#475569; }
+.key-idea-box .ki-story-solve{ text-align:center; padding:14px; background:#ecfdf5; border-radius:12px; }
+.key-idea-box .ki-story-eq{ font-size:1.4em; font-weight:700; }
+
+/* ── Financial-literacy visuals ────────────────────────────────────────── */
+.key-idea-box .ki-fl-row{ display:flex; gap:12px; justify-content:center; }
+.key-idea-box .ki-fl-row-3{ flex-wrap:wrap; }
+.key-idea-box .ki-fl-card{
+  flex:1 1 0; min-width:90px;
+  padding:12px; border-radius:12px; border:2px solid #cbd5e1;
+  text-align:center; opacity:.55;
+}
+.key-idea-box .ki-fl-card.is-active{ opacity:1; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.key-idea-box .ki-fl-icon{ font-size:1.6em; line-height:1; margin-bottom:4px; }
+.key-idea-box .ki-fl-lbl{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700; font-size:1.05em; letter-spacing:.04em; }
+.key-idea-box .ki-fl-ex{ font-size:.82em; color:#64748b; margin-top:4px; }
+
+/* ── Sort-groups visuals ───────────────────────────────────────────────── */
+.key-idea-box .ki-sort-groups{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.key-idea-box .ki-sort-group{ flex:0 1 auto; min-width:120px; padding:10px; background:#f8fafc; border-radius:12px; text-align:center; }
+.key-idea-box .ki-sort-group-lbl{ font-weight:700; color:#1a2438; margin-bottom:4px; }
+.key-idea-box .ki-sort-count{ font-size:2em; font-weight:700; line-height:1; }
+
+/* ── Rounding step visuals (lesson-tuned for G2 u4l3) ──────────────────── */
+.key-idea-box .ki-round-first{ display:flex; flex-direction:column; gap:12px; align-items:center; }
+.key-idea-box .ki-round-eq-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+.key-idea-box .ki-round-eq{
+  padding:10px 16px; border-radius:12px;
+  border:2px solid #cbd5e1; background:#f8fafc; min-width:110px; text-align:center;
+}
+.key-idea-box .ki-round-eq-lbl{ font-size:.78em; color:#64748b; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+.key-idea-box .ki-round-eq-val{ font-size:1.5em; font-weight:700; line-height:1; }
+.key-idea-box .ki-round-arrow{ font-size:2em; font-weight:700; line-height:1; }
+.key-idea-box .ki-round-sum{
+  padding:10px 18px; border-radius:10px; background:#ecfdf5; color:#1b5e20;
+  font-size:1.25em; font-weight:700; text-align:center;
+}
+
+.key-idea-box .ki-round-rule{
+  display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+  margin:10px 0 4px; padding:10px 12px;
+  background:#f8fafc; border-radius:10px;
+}
+.key-idea-box .ki-round-rule-row{ display:flex; align-items:center; gap:8px; }
+.key-idea-box .ki-round-rule-key{
+  display:inline-block; padding:3px 8px; border-radius:6px;
+  background:#fff; border:1px solid #cbd5e1;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700; font-size:.9em;
+}
+.key-idea-box .ki-round-rule-act{ color:#475569; font-size:.92em; }
+.key-idea-box .ki-round-rule-act.ki-round-rule-up{ color:#1b5e20; font-weight:700; }
+
+.key-idea-box .ki-round-compare{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; }
+.key-idea-box .ki-round-cmp-card{
+  flex:1 1 130px; max-width:200px;
+  padding:14px 14px 16px; border-radius:12px;
+  border:2px solid #cbd5e1; background:#fff; text-align:center;
+}
+.key-idea-box .ki-round-cmp-card.estimate{ background:#fff7ed; }
+.key-idea-box .ki-round-cmp-lbl{
+  font-size:.85em; text-transform:uppercase; letter-spacing:.05em;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-weight:700;
+  color:#475569; margin-bottom:6px;
+}
+.key-idea-box .ki-round-cmp-val{ font-size:1.1em; color:#1a2438; }
+
+/* ── Compare-data visuals ──────────────────────────────────────────────── */
+.key-idea-box .ki-cmp-data{ display:flex; align-items:center; justify-content:center; gap:14px; }
+.key-idea-box .ki-cmp-data-col{ flex:0 1 auto; text-align:center; padding:8px; border-radius:10px; }
+.key-idea-box .ki-cmp-data-col.is-bigger{ background:#ecfdf5; }
+.key-idea-box .ki-cmp-data-col.is-dim   { opacity:.7; }
+.key-idea-box .ki-cmp-data-lbl{ font-weight:700; margin-bottom:4px; }
+.key-idea-box .ki-cmp-data-n{ font-weight:700; color:#1a2438; }
+.key-idea-box .ki-cmp-data-op{ font-size:2.4em; font-weight:700; color:#3949ab; }
+
 /* ── Shared frosted-glass lightbox card (access / timer / a11y modals) ── */
 /* Strip the dark container backdrop so the card doesn't inherit darkness */
 #access-modal, #timer-modal, #a11y-modal {
@@ -1536,8 +1818,7 @@ img[data-coin]:active{ transform:scale(.95); }
   margin-bottom:12px; border:2.5px solid rgba(0,0,0,.07); transition:border-color .2s; }
 .pq-item.revealed{ border-color:#27ae60; background:#eafaf1; }
 .pq-q{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg); color:var(--txt);
-  margin-bottom:14px; display:flex; align-items:flex-start; gap:10px; line-height:1.35; }
-.pq-emo{ font-size:var(--fs-2xl); flex-shrink:0; line-height:1.1; }
+  margin-bottom:14px; line-height:1.35; }
 .pq-reveal-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base); padding:10px 22px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
   box-shadow:0 3px 0 rgba(0,0,0,.18); transition:transform .15s; }

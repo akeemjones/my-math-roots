@@ -117,6 +117,16 @@
     revealPQ:               (a)   => revealPQ(Number(a)),
     togglePQ:               (a)   => togglePQ(Number(a)),
     refreshExamples:        ()    => refreshExamples(),
+    // openKeyIdeaVisual accepts an optional 3rd arg via data-arg3 (initialStepIndex)
+    // so per-bullet buttons on the lesson page can open the modal directly to
+    // that bullet's matching step. Falls back to step 0 (Key Ideas card-level click).
+    openKeyIdeaVisual:      (a,b,el) => {
+      const step = (el && el.dataset && el.dataset.arg3 != null && el.dataset.arg3 !== '')
+        ? Number(el.dataset.arg3) : 0;
+      openKeyIdeaVisual(Number(a), Number(b), step);
+    },
+    closeKeyIdeaVisual:     ()    => closeKeyIdeaVisual(),
+    _kiPickStep:            (a)   => _showKeyIdeaStep(Number(a)),
 
     // ── Results ─────────────────────────────────────────────────────────────
     buildRevSection:        ()    => typeof buildRevSection === 'function' && buildRevSection(),

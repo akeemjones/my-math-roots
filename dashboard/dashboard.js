@@ -3390,6 +3390,18 @@ var _G1_UNITS_META = [
     lessons: ['Earning Income','Goods and Services','Spending and Saving','Charitable Giving'] },
 ];
 
+// Pure helper: pick the unit metadata array for a given grade band
+// ('k' | 'g1' | 'g2'). Defaults to G2 for any unrecognized input. Mirrored
+// from src/dashboard.js so a single source of truth governs which unit names
+// the parent sees in every grade-view path: unlock controls, quiz history,
+// unit insights, and last-7-day accuracy.
+function _unitsMetaForBand(band) {
+  var b = _gradeBand(band);
+  if (b === 'k')  return _K_UNITS_META;
+  if (b === 'g1') return _G1_UNITS_META;
+  return _UNITS_META; // 'g2' or unknown
+}
+
 // Resolve a lessonId string to { lesson, unit }. Supported formats:
 //   - K:  'ku<n>l<m>'      e.g. 'ku3l2'
 //   - G1: 'g1-u<n>-l<m>'   e.g. 'g1-u8-l3' (also accepts 'g1u<n>-l<m>' / 'g1u<n>l<m>')
@@ -4045,6 +4057,10 @@ if (typeof module !== 'undefined') {
     _dbReadProfileGrade,
     _dbWriteProfileGrade,
     _gradeBand,
+    _unitsMetaForBand,
+    _K_UNITS_META,
+    _G1_UNITS_META,
+    _UNITS_META,
     _inferScoreGrade,
     _filterInterventionsByGrade,
     _deriveMasteryFromActivity,

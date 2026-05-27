@@ -1,4 +1,48 @@
 // ════════════════════════════════════════
+//  KEY IDEA — Step-based Visual Explanation Modal
+// ════════════════════════════════════════
+// Resolves the lesson into an array of clickable steps and renders the
+// two-pane modal (step list + active step visual). The resolver, topic
+// detector, and per-step visual builders live in `src/key-ideas.js`.
+//
+// initialStepIndex: when the student taps a SPECIFIC visible Key Idea bullet
+// on the lesson page (not the card header), the modal opens directly to that
+// bullet's matching step. Defaults to 0 (first step).
+function openKeyIdeaVisual(unitIdx, lessonIdx, initialStepIndex){
+  const u = UNITS_DATA[unitIdx];
+  if(!u) return;
+  const l = u.lessons[lessonIdx];
+  if(!l) return;
+  const modal  = document.getElementById('key-idea-modal');
+  const titleEl = document.getElementById('ki-modal-title');
+  if(!modal) return;
+
+  if(titleEl) titleEl.textContent = (l.icon ? l.icon + ' ' : '') + l.title;
+
+  // Resolve the step array — always non-empty (author override → topic → fallback)
+  const steps = _resolveKeyIdeaSteps(l, u);
+  _renderKeyIdeaModal(steps, l, u);
+
+  // Open at the requested step if provided + within range.
+  const stepIdx = (typeof initialStepIndex === 'number' && initialStepIndex >= 0 && initialStepIndex < steps.length)
+    ? initialStepIndex : 0;
+  if (stepIdx > 0 && typeof _showKeyIdeaStep === 'function') _showKeyIdeaStep(stepIdx);
+
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  // Focus the close button for keyboard users
+  const btn = modal.querySelector('.key-idea-close');
+  if(btn) setTimeout(function(){ try{ btn.focus(); }catch(_){} }, 50);
+}
+
+function closeKeyIdeaVisual(){
+  const modal = document.getElementById('key-idea-modal');
+  if(!modal) return;
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+}
+
+// ════════════════════════════════════════
 //  LOCKED LESSON ACTION SHEET
 // ════════════════════════════════════════
 function _showLockedSheet(unitIdx, lockedIdx){
@@ -1458,13 +1502,10 @@ function generateExamples(lessonId, color){
 // ════════════════════════════════════════
 //  INTERACTIVE PRACTICE DRILLS (MC, no score, no timer)
 // ════════════════════════════════════════
-const _PQ_EMOJIS = ['🍎','🌟','🎈','🐸','🍪','🦋','🍓','🎮','🐶','🌈','🍦','🚀','🎯','🏆','💡','🐝'];
-
 function buildPracticeQ(pid, q){
   const _ov = item => (item && typeof item === 'object') ? item.val : item;
   const opts = _shuffle([...q.o].map(_ov));
   const correctText = _ov(q.o[q.a]);
-  const emoji = _PQ_EMOJIS[Math.floor(Math.random() * _PQ_EMOJIS.length)];
   // q.t and q.o may contain SVG/HTML (e.g. clock diagrams) — render as-is; these are authored data, not user input
   const qText = q.t && q.t.includes('<') ? q.t : _escHtml(q.t);
 
@@ -1493,7 +1534,7 @@ function buildPracticeQ(pid, q){
         return `<button class="vchoice pq-vgroup-btn" type="button" data-value="${_escHtml(shape)}" onclick="_pickPracticeVisualAns('${pid}','${_escHtml(shape)}')">${svg}<span class="vchoice-label">${_escHtml(shape)}</span></button>`;
       }).join('');
       return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="pq-q">${qText}</div>
         <div class="${gridClass}">${shapeBtns}</div>
         <div class="pq-drill-fb" id="${pid}-fb"></div>
       </div>`;
@@ -1509,7 +1550,7 @@ function buildPracticeQ(pid, q){
       const lEmoji = (cfg.leftObj  || '●').repeat(lCount);
       const rEmoji = (cfg.rightObj || '●').repeat(rCount);
       return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="pq-q">${qText}</div>
         <div class="q-visual two-groups-visual two-groups-compare">
           <button class="vchoice pq-vgroup-btn" type="button" data-value="${lCount}" onclick="_pickPracticeVisualAns('${pid}','${lCount}')">
             <div class="tg-group">${lEmoji}</div>
@@ -1534,7 +1575,7 @@ function buildPracticeQ(pid, q){
       `<button class="vchoice pq-vgroup-btn" type="button" data-value="${name}" onclick="_pickPracticeVisualAns('${pid}','${name}')" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;padding:0">${window.coinSVG(name, 90)}</button>`
     ).join('');
     return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-      <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+      <div class="pq-q">${qText}</div>
       <div style="display:grid;grid-template-columns:repeat(2,120px);gap:16px;justify-content:center;padding:8px">${coinBtns}</div>
       <div class="pq-drill-fb" id="${pid}-fb"></div>
     </div>`;
@@ -1569,7 +1610,7 @@ function buildPracticeQ(pid, q){
         `</button>`;
       }).join('');
       return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-        <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>
+        <div class="pq-q">${qText}</div>
         <div class="q-visual"><div class="vimg-grid" role="group" aria-label="Picture choices">${cards}</div></div>
         <div class="pq-drill-fb" id="${pid}-fb"></div>
       </div>`;
@@ -1577,7 +1618,7 @@ function buildPracticeQ(pid, q){
   }
 
   return `<div class="pq-drill" id="${pid}" data-correct="${_escHtml(correctText)}" data-exp="${_escHtml(q.e)}">
-    <div class="pq-q"><span class="pq-emo">${emoji}</span>${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
+    <div class="pq-q">${qText}</div>${q.v?_buildVisualHTML(q.v):(q.s?`<div class="q-visual">${q.s}</div>`:'')}
     <div class="pq-choices">
       ${opts.map((text, i) =>
         `<button class="pq-choice" type="button" id="${pid}-c${i}" onclick="_pickPracticeAns('${pid}',${i})">${_escHtml(text)}</button>`
@@ -1663,8 +1704,9 @@ function steps(...arr){ return arr.map((s,i)=>`<div class="step"><div class="ste
 
 function generatePractice(lessonId, color){
   const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-  const emojis=['🍎','🌟','🎈','🐸','🍪','🦋','🍓','🎮','🐶','🌈','🍦','🚀'];
-  const e=()=>emojis[r(0,emojis.length-1)];
+  // Decorative emoji prefix was removed from practice cards — return empty string
+  // to keep the `{e:e(),...}` data shape valid until this dead helper is retired.
+  const e=()=>'';
 
   if(lessonId==='u1l1'){
     const a=r(1,15),b=r(1,9),sum=a+b;
@@ -1985,19 +2027,34 @@ function _renderLesson(unitIdx, lessonIdx){
 
   let html = '';
 
-  // Key points card
-  html += `<p class="sec-tip">👇 <strong>Step 1:</strong> Read these key ideas first — they are the most important things to learn in this lesson.</p>`;
-  html += `<div class="learn-card"><h3 style="color:${u.color}">${_ICO.lightbulb} Key Ideas</h3><div class="kp-list">`;
-  l.points.forEach(p => { html += `<div class="kp"><span class="kp-ico">⭐</span><span>${p}</span></div>`; });
+  // Key points card — each bullet is its own button. Tapping a bullet opens
+  // the modal directly on that bullet's matching visual step (initialStepIndex).
+  html += `<p class="sec-tip"><strong>Step 1:</strong> Tap any Key Idea below to see it explained.</p>`;
+  html += `<div class="learn-card key-idea-card" aria-labelledby="ki-card-head-${l.id}">
+    <div class="key-idea-card-head" id="ki-card-head-${l.id}">
+      <h3 style="color:${u.color};margin:0">${_ICO.lightbulb} Key Ideas</h3>
+      <span class="key-idea-hint" style="color:${u.color}">Tap a bullet to see it</span>
+    </div>
+    <div class="kp-list" role="list">`;
+  (l.points || []).forEach((p, idx) => {
+    html += `<button type="button" class="kp kp-button" role="listitem"
+        data-action="openKeyIdeaVisual"
+        data-arg="${unitIdx}" data-arg2="${lessonIdx}" data-arg3="${idx}"
+        aria-label="Show visual for: ${_escHtml(p)}">
+      <span class="kp-bullet-num" style="background:${u.color}22;color:${u.color}">${idx + 1}</span>
+      <span class="kp-text">${p}</span>
+      <span class="kp-arrow" style="color:${u.color}">›</span>
+    </button>`;
+  });
   html += `</div></div>`;
 
   // Examples card
-  html += `<p class="sec-tip">👇 <strong>Step 2:</strong> Study these worked examples carefully — they show you exactly how to solve problems step by step. Tap <em>✨ New Examples</em> to see fresh ones!</p>`;
+  html += `<p class="sec-tip"><strong>Step 2:</strong> Study these worked examples carefully — they show you exactly how to solve problems step by step. Tap <em>New Examples</em> to see fresh ones.</p>`;
   html += `<div class="learn-card" id="ex-card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <h3 style="color:${u.color};margin:0">📖 Worked Examples</h3>
+      <h3 style="color:${u.color};margin:0">Worked Examples</h3>
       <button class="new-ex-btn" style="background:${u.color}" type="button"
-        onclick="refreshExamples(${unitIdx},${lessonIdx})">✨ New Examples</button>
+        onclick="refreshExamples(${unitIdx},${lessonIdx})">New Examples</button>
     </div>
     <div class="ex-list" id="ex-list" data-ex-idx="1">`;
   // Prefer dynamic generator for fresh examples on every lesson open
@@ -2012,12 +2069,12 @@ function _renderLesson(unitIdx, lessonIdx){
   const _practiceBank = l.qBank && l.qBank.length ? l.qBank : [];
   if(_practiceBank.length){
     const _initBatch = _shuffle([..._practiceBank]).slice(0, 3);
-    html += `<p class="sec-tip">👇 <strong>Step 3:</strong> Try these practice problems! Pick your answer and get instant feedback — no score, no timer, just learning. Tap <em>➕ More</em> for fresh questions!</p>`;
+    html += `<p class="sec-tip"><strong>Step 3:</strong> Try these practice problems. Pick your answer and get instant feedback — no score, no timer, just learning. Tap <em>More</em> for fresh questions.</p>`;
     html += `<div class="practice-card" id="practice-card-${l.id}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <h3 style="color:${u.color};margin:0">✏️ Practice Drills</h3>
+        <h3 style="color:${u.color};margin:0">Practice Drills</h3>
         <button class="more-practice-btn" style="background:${u.color}" type="button"
-          onclick="morePractice(${unitIdx},${lessonIdx})">➕ More</button>
+          onclick="morePractice(${unitIdx},${lessonIdx})">More</button>
       </div>
       <div id="pq-list-${l.id}">`;
     _initBatch.forEach((q, i) => {
@@ -2031,7 +2088,7 @@ function _renderLesson(unitIdx, lessonIdx){
   // Check for a paused quiz for this exact lesson
   const pausedQ = getPausedQuiz('lq_'+l.id);
   const hasPausedQuiz = !!pausedQ;
-  html += `<p class="sec-tip">👇 <strong>Step 4 — Quiz Time!</strong> Answer 8 questions. You need <strong>80%</strong> to ${isLastLessonInUnit ? 'unlock the <strong>Unit Quiz</strong>' : 'unlock the next lesson'}. Take your time — you can try again as many times as you need!</p>`;
+  html += `<p class="sec-tip"><strong>Step 4 — Quiz Time.</strong> Answer 8 questions. You need <strong>80%</strong> to ${isLastLessonInUnit ? 'unlock the <strong>Unit Quiz</strong>' : 'unlock the next lesson'}. Take your time — you can try again as many times as you need.</p>`;
   const lqDone = DONE['lq_'+l.id];
   if(hasPausedQuiz){
     // Quiz in progress — show resume banner, hide Start Quiz button
