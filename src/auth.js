@@ -369,15 +369,32 @@ async function enterStudentLearningSession(opts) {
   localStorage.setItem('mmr_user_role',         'student');
   localStorage.removeItem('wb_guest_mode');
 
-  // 2. Per-profile grade resolution. If grade differs from current mmr_grade,
-  //    state.js / boot.js have baked grade-derived constants — reload so they
-  //    re-init under the right grade. Set the one-shot resume flag so the
-  //    post-reload INITIAL_SESSION handler restores the learning view rather
-  //    than routing back to the parent dashboard.
+  // 2. Per-profile grade resolution.
+  //
+  //    HARD RULE: localStorage.mmr_grade is the student's last-selected
+  //    learning grade and MUST NOT be overwritten by this function just
+  //    because the parent returned from the dashboard. The three legitimate
+  //    writers of mmr_grade are:
+  //      (a) switchGrade()         — student uses the learning-side selector
+  //      (b) _dbSaveEditProfile()  — parent explicitly re-enrolls the student
+  //      (c) this function, ONLY when no valid mmr_grade exists yet
+  //
+  //    The dashboard's view-band selection lives in mmr_dash_view_grade_<sid>
+  //    and is independent. profile.grade (Supabase) is the enrolled-grade
+  //    metadata, also separate. If profile.grade and mmr_grade disagree, the
+  //    student's selection wins until path (a) or (b) explicitly changes it.
+  //
+  //    Why this matters: profile.grade can be stale (Supabase fire-and-forget
+  //    writes, parent-dashboard _fetchManagedProfiles mirroring older server
+  //    data, accounts that never had grade synced). Before this guard, every
+  //    return-from-dashboard call overwrote a fresh K/G1 selection with the
+  //    stale '2'.
   var _norm = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
     if (v == null) return '2';
     var s = String(v).trim().toLowerCase();
-    return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+    if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+    if (s === '1') return '1';
+    return '2';
   };
   var _profileGrade;
   if (typeof _dbResolveProfileGrade === 'function') {
@@ -389,9 +406,32 @@ async function enterStudentLearningSession(opts) {
       try { localStorage.setItem('mmr_profile_grade_' + profile.id, _profileGrade); } catch (_e) {}
     }
   }
-  var _currentGrade = _norm(localStorage.getItem('mmr_grade'));
-  localStorage.setItem('mmr_grade', _profileGrade);
-  if (_profileGrade !== _currentGrade) {
+  var _existingRaw      = localStorage.getItem('mmr_grade');
+  var _existingValid    = (_existingRaw === 'K' || _existingRaw === '1' || _existingRaw === '2')
+                          ? _existingRaw : null;
+  // The grade we'll actually run the session under. Existing learning-side
+  // selection wins; profileGrade is only used when nothing is saved yet.
+  var _resolvedGrade    = _existingValid || _profileGrade;
+  var _currentGrade     = _norm(_existingRaw);
+  _devLog('[MMR SESSION] grade resolve', {
+    existing:      _existingRaw,
+    profileGrade:  _profileGrade,
+    resolved:      _resolvedGrade,
+    willPersist:   _existingValid == null,
+    source:        source
+  });
+  if (_existingValid == null) {
+    // First-time entry — no saved learning grade. Persist the profile grade
+    // so the rest of the app has something to read.
+    localStorage.setItem('mmr_grade', _resolvedGrade);
+  }
+  // Else: leave mmr_grade alone. Student's selection is the source of truth.
+
+  if (_resolvedGrade !== _currentGrade) {
+    // boot.js/state.js bake grade-derived constants at load time, so a true
+    // grade change needs a reload. This branch fires only when (1) we just
+    // wrote a first-time mmr_grade that differs from the prior empty/default
+    // value, or (2) the saved value was already the new grade (no-op).
     try { localStorage.setItem('mmr_resume_student_session', '1'); } catch (_e) {}
     try { location.reload(); return; } catch (_e) {}
   }

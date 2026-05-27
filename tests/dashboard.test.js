@@ -3220,3 +3220,131 @@ describe('Quiz history lesson dropdown — prefix derived from view-band, not mm
   });
 });
 
+// =============================================================================
+//  enterStudentLearningSession — must NOT clobber the student's mmr_grade
+//  when returning from the parent dashboard. Pre-v6.0.31, the function
+//  unconditionally wrote profile.grade → mmr_grade on every return, which
+//  reset a fresh K/G1 student selection back to whatever stale '2' the
+//  Supabase profile carried. v6.0.31 makes it prefer existing mmr_grade and
+//  only write when no valid saved value exists.
+//
+//  These are source-level guards: the bundle isn't loadable into Node without
+//  a full DOM, but the regression patterns are precise enough to pin in
+//  src/auth.js.
+// =============================================================================
+describe('enterStudentLearningSession respects existing mmr_grade', () => {
+  const fs   = require('fs');
+  const path = require('path');
+  const authSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'auth.js'), 'utf8');
+
+  function _enterBody() {
+    const re = /async\s+function\s+enterStudentLearningSession\s*\([^)]*\)\s*\{/;
+    const m = authSrc.match(re);
+    if (!m) return null;
+    const start = authSrc.indexOf(m[0]);
+    let i = start + m[0].length - 1, depth = 0;
+    for (; i < authSrc.length; i++) {
+      const c = authSrc[i];
+      if (c === '{') depth++;
+      else if (c === '}') { depth--; if (depth === 0) return authSrc.slice(start, i + 1); }
+    }
+    return null;
+  }
+
+  test('enterStudentLearningSession does NOT unconditionally setItem mmr_grade with _profileGrade', () => {
+    const body = _enterBody();
+    expect(body).not.toBeNull();
+    // The old line was: localStorage.setItem('mmr_grade', _profileGrade);  (no surrounding guard).
+    // After v6.0.31, any write to mmr_grade in this function must be guarded
+    // by a check that mmr_grade is missing/invalid.
+    expect(body).not.toMatch(/^\s*localStorage\.setItem\(\s*['"]mmr_grade['"]\s*,\s*_profileGrade\s*\)\s*;\s*$/m);
+  });
+
+  test('enterStudentLearningSession reads the existing mmr_grade as the source of truth', () => {
+    const body = _enterBody();
+    expect(body).toMatch(/_existingRaw\s*=\s*localStorage\.getItem\(\s*['"]mmr_grade['"]/);
+    expect(body).toMatch(/_existingValid/);
+  });
+
+  test('enterStudentLearningSession writes mmr_grade ONLY when no valid existing value', () => {
+    const body = _enterBody();
+    // Find the setItem call and check it sits inside an `if (_existingValid == null)` guard.
+    const setRe = /if\s*\(\s*_existingValid\s*==\s*null\s*\)\s*\{[\s\S]{0,400}localStorage\.setItem\(\s*['"]mmr_grade['"]/;
+    expect(body).toMatch(setRe);
+  });
+
+  test('the dev-log breadcrumb captures the grade resolution for production debugging', () => {
+    const body = _enterBody();
+    expect(body).toMatch(/_devLog\(\s*['"]\[MMR SESSION\] grade resolve['"]/);
+  });
+
+  test('_norm in enterStudentLearningSession handles Grade 1 (returns "1"), not just K/G2', () => {
+    const body = _enterBody();
+    // The fallback _norm must understand '1' so a Grade 1 student isn't normalized to '2'.
+    expect(body).toMatch(/if\s*\(\s*s\s*===\s*['"]1['"]\s*\)\s*return\s*['"]1['"]/);
+  });
+});
+
+// =============================================================================
+//  Exhaustive audit of mmr_grade writers — locks down the legitimate writers
+//  so a future refactor cannot accidentally add another rogue overwrite.
+//  Expected total: 3 setItem('mmr_grade', ...) calls across the entire src/
+//  tree, in src/auth.js (switchGrade, enterStudentLearningSession first-time)
+//  and src/dashboard.js (_dbSaveEditProfile when parent edits profile.grade).
+// =============================================================================
+describe('mmr_grade writer audit — exactly the three legitimate writers exist', () => {
+  const fs   = require('fs');
+  const path = require('path');
+
+  const SOURCES = [
+    'src/auth.js',
+    'src/dashboard.js',
+    'src/boot.js',
+    'src/settings.js',
+    'src/unit.js',
+    'src/ui.js',
+    'src/quiz.js',
+    'src/util.js',
+    'src/events.js',
+    'src/home.js',
+    'src/state.js',
+    'src/nav.js',
+    'src/key-ideas.js',
+  ];
+
+  function readAll() {
+    return SOURCES.map(rel => ({
+      file: rel,
+      body: fs.readFileSync(path.join(__dirname, '..', rel), 'utf8'),
+    }));
+  }
+
+  test('exactly 3 setItem("mmr_grade", ...) calls across src/', () => {
+    const hits = [];
+    for (const { file, body } of readAll()) {
+      const matches = body.match(/localStorage\.setItem\(\s*['"]mmr_grade['"]/g) || [];
+      if (matches.length) hits.push({ file, count: matches.length });
+    }
+    const total = hits.reduce((s, h) => s + h.count, 0);
+    expect({ total, hits }).toEqual({
+      total: 3,
+      hits: [
+        { file: 'src/auth.js',      count: 2 },  // enterStudentLearningSession (guarded) + switchGrade
+        { file: 'src/dashboard.js', count: 1 },  // _dbSaveEditProfile (parent profile-grade edit)
+      ],
+    });
+  });
+
+  test('switchGrade still writes mmr_grade unconditionally (the legit student-selector path)', () => {
+    const auth = fs.readFileSync(path.join(__dirname, '..', 'src', 'auth.js'), 'utf8');
+    const m = auth.match(/async\s+function\s+switchGrade\s*\([^)]*\)\s*\{[\s\S]+?\n\}/);
+    expect(m).not.toBeNull();
+    expect(m[0]).toMatch(/localStorage\.setItem\(\s*['"]mmr_grade['"]\s*,\s*newGrade\s*\)/);
+  });
+
+  test('_dbSaveEditProfile still writes mmr_grade behind the location.reload path (the legit parent-edit path)', () => {
+    const dash = fs.readFileSync(path.join(__dirname, '..', 'src', 'dashboard.js'), 'utf8');
+    expect(dash).toMatch(/setItem\s*\(\s*['"]mmr_grade['"][\s\S]{0,400}location\.reload/);
+  });
+});
+
