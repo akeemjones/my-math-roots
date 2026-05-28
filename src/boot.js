@@ -12,6 +12,8 @@ const _APP_GLOBALS = [
   '_UNITS_DATA_G1','_g1UnitLoadPromises','_mergeG1UnitData','_loadG1Unit','_applyGrade1Grade',
   // data/shared_g3.js
   '_UNITS_DATA_G3','_g3UnitLoadPromises','_mergeG3UnitData','_loadG3Unit','_applyGrade3Grade',
+  // data/g3/cbe.js
+  '_G3_CBE_BANK','_g3CbeGateOpen',
   // util.js
 
   '_sr','_shuffle','_sanitize','_escHtml','_formatAnswerForReview','_validEmail','_friendlyError','_rateLimit',

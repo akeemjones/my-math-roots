@@ -41,6 +41,7 @@ function loadG3() {
   src += '\nthis._UNITS_DATA_G3 = _UNITS_DATA_G3;';
   src += '\nthis._sampleG3UnitTestAttempt = _sampleG3UnitTestAttempt;';
   src += '\nthis._G3_CBE_BANK = (typeof _G3_CBE_BANK !== "undefined") ? _G3_CBE_BANK : null;';
+  src += '\nthis._g3CbeGateOpen = (typeof _g3CbeGateOpen !== "undefined") ? _g3CbeGateOpen : null;';
   src += '\nthis._G3_UNIT0_DIAGNOSTIC = (typeof _G3_UNIT0_DIAGNOSTIC !== "undefined") ? _G3_UNIT0_DIAGNOSTIC : null;';
   const ctx = {
     window: {}, console,
@@ -215,5 +216,52 @@ describe('G3 Unit 1 full content (proven template)', () => {
     expect(u1.testBank[0].sourceLessonId).toMatch(/^g3-u1-l\d+$/);
     const attempt = ctx._sampleG3UnitTestAttempt(u1.testBank, 25);
     expect(attempt).toHaveLength(25);
+  });
+});
+
+describe('G3 CBE final (62 questions, multiple choice, gated)', () => {
+  const ctx = loadG3();
+
+  test('CBE bank has exactly 62 questions', () => {
+    expect(Array.isArray(ctx._G3_CBE_BANK)).toBe(true);
+    expect(ctx._G3_CBE_BANK).toHaveLength(62);
+  });
+
+  test('CBE category distribution matches the TTU spec', () => {
+    const want = {
+      place_value: 7, add_sub_money: 7, mult_foundations: 8, division: 6,
+      word_problems: 8, fractions: 8, frac_equiv: 6, geometry: 6,
+      measurement: 4, financial: 2
+    };
+    const got = ctx._G3_CBE_BANK.reduce((m, q) => { m[q.cat] = (m[q.cat] || 0) + 1; return m; }, {});
+    expect(got).toEqual(want);
+  });
+
+  test('every CBE question is multiple choice with exactly one correct answer + TEKS', () => {
+    ctx._G3_CBE_BANK.forEach(q => {
+      expect(typeof q.t).toBe('string');
+      expect(Array.isArray(q.o)).toBe(true);
+      expect(q.o.length).toBeGreaterThanOrEqual(2);
+      expect(typeof q.a).toBe('number');
+      expect(q.o[q.a]).toBeDefined();
+      expect(q.o[q.a].tag).toBeUndefined();
+      expect(q.o.filter(o => !o.tag)).toHaveLength(1);
+      expect(q.teks).toMatch(/TEKS 3\./);
+    });
+  });
+
+  test('CBE distractors use err_-prefixed tags spanning many families', () => {
+    const tags = new Set();
+    ctx._G3_CBE_BANK.forEach(q => q.o.forEach(o => { if (o.tag) tags.add(o.tag); }));
+    expect([...tags].every(t => t.startsWith('err_'))).toBe(true);
+    expect(tags.size).toBeGreaterThanOrEqual(10);
+  });
+
+  test('CBE gate blocks a Unit-1-only student; opens when all units unlocked / paused / dev', () => {
+    expect(typeof ctx._g3CbeGateOpen).toBe('function');
+    expect(ctx._g3CbeGateOpen(false, false, false)).toBe(false); // only Unit 1 done → blocked
+    expect(ctx._g3CbeGateOpen(true, false, false)).toBe(true);    // all G3 units unlocked
+    expect(ctx._g3CbeGateOpen(false, true, false)).toBe(true);    // resume a paused final
+    expect(ctx._g3CbeGateOpen(false, false, true)).toBe(true);    // dev/admin flag
   });
 });

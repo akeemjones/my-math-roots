@@ -3502,6 +3502,23 @@ function afterResults(){
   else goUnit();
 }
 function startFinalTest(){
+  // Grade 3: serve the fixed 62-question CBE-style final through this routing,
+  // GATED so it is not freely student-facing until the normal final unlock
+  // condition is met (all G3 units complete), a paused final exists to resume,
+  // or an explicit dev/admin flag (mmr_g3_cbe_dev=1) is set. Defensive — this
+  // runs even when the function is invoked directly, not just via the UI button.
+  if ((localStorage.getItem('mmr_grade') || '2') === '3'){
+    var _dev3 = false; try { _dev3 = localStorage.getItem('mmr_g3_cbe_dev') === '1'; } catch (_) {}
+    var _allUnlocked3 = UNITS_DATA.every(function(u, i){ return isUnitUnlocked(i); });
+    var _pf3 = getPausedQuiz('final_test'); _pf3 = !!(_pf3 && _pf3.type === 'final');
+    var _gateOpen3 = (typeof _g3CbeGateOpen === 'function') ? _g3CbeGateOpen(_allUnlocked3, _pf3, _dev3) : (_dev3 || _allUnlocked3 || _pf3);
+    if (!_gateOpen3){ alert('The Grade 3 final review unlocks after all Grade 3 units are complete.'); return; }
+    if (typeof _G3_CBE_BANK === 'undefined' || !_G3_CBE_BANK.length){ alert('Grade 3 CBE is not available yet.'); return; }
+    playSwooshForward();
+    try { _trackEvent('quiz_started', { quiz_type: 'final', grade: '3' }); } catch (_) {}
+    _runQuiz([], 'final_test', `${_ICO.graduation} Grade 3 CBE — All Units`, 'final', null, _G3_CBE_BANK.slice());
+    return;
+  }
   const btn = document.querySelector('[data-action="startFinalTest"]');
   if(btn) btn.textContent = 'Loading…';
   Promise.all(UNITS_DATA.map(function(_, i){ return _loadUnit(i); }))
@@ -3520,6 +3537,9 @@ function startFinalTest(){
 }
 
 function startFinalTestBalanced(){
+  // Grade 3 has a single fixed CBE-style final — route Balanced through the same
+  // gated CBE path (startFinalTest) so it cannot bypass the unlock gate.
+  if ((localStorage.getItem('mmr_grade') || '2') === '3'){ startFinalTest(); return; }
   const btn = document.querySelector('[data-action="startFinalTestBalanced"]');
   if(btn) btn.textContent = 'Loading…';
   Promise.all(UNITS_DATA.map(function(_, i){ return _loadUnit(i); }))
