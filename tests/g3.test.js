@@ -265,3 +265,26 @@ describe('G3 CBE final (62 questions, multiple choice, gated)', () => {
     expect(ctx._g3CbeGateOpen(false, false, true)).toBe(true);    // dev/admin flag
   });
 });
+
+describe('G3 Unit 0 readiness diagnostic', () => {
+  const ctx = loadG3();
+
+  test('diagnostic exists and is NOT in the instructional unit grid', () => {
+    expect(ctx._G3_UNIT0_DIAGNOSTIC).toBeTruthy();
+    expect(ctx._G3_UNIT0_DIAGNOSTIC.id).toBe('g3-u0-diagnostic');
+    expect(ctx._UNITS_DATA_G3.some(u => u.id === 'g3-u0-diagnostic')).toBe(false);
+  });
+
+  test('diagnostic covers all seven readiness areas with MC items', () => {
+    const items = ctx._G3_UNIT0_DIAGNOSTIC.items;
+    expect(Array.isArray(items)).toBe(true);
+    const areas = new Set(items.map(i => i.area));
+    ['add_sub_1000', 'skip_count', 'equal_groups', 'graphs', 'fractions', 'money', 'time']
+      .forEach(a => expect(areas.has(a)).toBe(true));
+    items.forEach(i => {
+      expect(Array.isArray(i.o)).toBe(true);
+      expect(i.o.length).toBeGreaterThanOrEqual(2);
+      expect(i.o[i.a]).toBeDefined();
+    });
+  });
+});

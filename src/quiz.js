@@ -1721,6 +1721,7 @@ function _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal){
     var d = parseDigits(correctVal);
     var title, text;
     switch (errorTag) {
+      case 'err_place_value_digit_confusion':
       case 'err_digit_value_confusion':
         title = 'A digit\'s value depends on its place';
         text  = 'The 5 in 352 is 5 tens = 50, not just 5. The place tells you how much.';
@@ -1735,6 +1736,7 @@ function _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal){
         title = 'Tens and ones are different';
         text  = 'Tens are groups of 10. Ones are singles. Read each column on its own.';
         break;
+      case 'err_expanded_form_missing_zero':
       case 'err_expanded_form_confusion':
         title = 'Add the place values';
         text  = '352 = 300 + 50 + 2. Each digit\'s value is digit × place.';
@@ -1955,6 +1957,7 @@ function _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal){
         title = 'Bigger number = MORE';
         text  = '> means "bigger than" — the open side faces the bigger number.';
         break;
+      case 'err_compare_by_length_only':
       case 'err_compare_place_value':
         title = 'Compare biggest place first';
         text  = 'Tens first. If tens are equal, compare ones.';
@@ -1983,6 +1986,7 @@ function _buildTopicAwareIntervention(q, errorTag, correctVal, chosenVal){
   function _intRounding() {
     var title, text;
     switch (errorTag) {
+      case 'err_rounding_wrong_benchmark':
       case 'err_rounding_error':
       case 'err_rounds_wrong_place':
         title = 'Look at the next digit';
