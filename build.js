@@ -319,6 +319,19 @@ async function build(){
     }
   }
 
+  // ── Copy G3 unit data files to dist/data/g3/ ──────────────────────────────
+  // Grade 3 files are plain JS (legacy compact schema, same as Grade 2 / K) —
+  // no ES-module stripping needed; copy them as-is.
+  const G3_DATA_DIR = path.join(DIST, 'data', 'g3');
+  if (!fs.existsSync(G3_DATA_DIR)) fs.mkdirSync(G3_DATA_DIR, { recursive: true });
+  for (let n = 1; n <= 10; n++) {
+    const g3Src = path.join(ROOT, 'src', 'data', 'g3', 'u' + n + '.js');
+    if (fs.existsSync(g3Src)) {
+      fs.copyFileSync(g3Src, path.join(G3_DATA_DIR, 'u' + n + '.js'));
+      console.log(`📋 Copied:  data/g3/u${n}.js`);
+    }
+  }
+
   // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed
 
   // ── Tag-to-lesson static index (Phase 2B) ─────────────────────────────────
