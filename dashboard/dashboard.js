@@ -1340,7 +1340,7 @@ async function _dbSaveUnlock() {
 
 async function _dbRelockAll() {
   var viewBand = _getDashboardViewGrade();
-  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : (viewBand === 'g3' ? 'Grade 3' : 'Grade 2'));
   if (!confirm('Remove all unit and lesson unlocks for ' + label + '?')) return;
   if (!_unlockDraft || !_unlockDraft.byGrade) {
     _unlockDraft = _parseUnlockSettings({}, viewBand);
@@ -1491,7 +1491,7 @@ function _renderUnlockInner() {
     return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
   }
   var viewBand = _getDashboardViewGrade();
-  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : (viewBand === 'g3' ? 'Grade 3' : 'Grade 2'));
   var slot = _draftSlot(_unlockDraft, viewBand);
   var fm = slot.freeMode;
   var html = '';
@@ -2012,7 +2012,7 @@ function renderDashboard() {
   var hdrTitle = document.querySelector('.db-header-title');
   if (hdrTitle) hdrTitle.textContent = '📊 Parent Dashboard';
 
-  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : (viewBand === 'g3' ? 'Grade 3' : 'Grade 2'));
   var gradeDropdown = ''
     + '<div class="db-grade-context" style="margin:2px 0 16px;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#37474f">'
     +   '<label for="db-view-grade-select" style="margin:0">Viewing:</label>'

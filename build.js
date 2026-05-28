@@ -440,7 +440,8 @@ function buildTagLessonIndex(DIST) {
     let m;
     // K files use JS object literals: lessonId: 'ku1l1'
     // G2 files use JSON: "lessonId":"u1l1". Allow either form.
-    const lessonIdRe = /['"]?lessonId['"]?\s*:\s*['"]((?:ku|u)\d+l\d+)['"]/g;
+    // K: 'ku1l1'  G2: 'u1l1'  G3: 'g3-u1-l1' (hyphenated). All proximity-scanned.
+    const lessonIdRe = /['"]?lessonId['"]?\s*:\s*['"]((?:ku|u)\d+l\d+|g3-u\d+-l\d+)['"]/g;
     while ((m = lessonIdRe.exec(text)) !== null) tokens.push({ type: 'lesson', value: m[1], pos: m.index });
     const tagRe = /['"]?tag['"]?\s*:\s*['"](err_[^'"]+)['"]/g;
     while ((m = tagRe.exec(text)) !== null) tokens.push({ type: 'tag', value: m[1], pos: m.index });
@@ -479,6 +480,13 @@ function buildTagLessonIndex(DIST) {
   if (fs.existsSync(g2Dir)) {
     fs.readdirSync(g2Dir).filter(f => /^u\d+\.js$/.test(f)).forEach(f => {
       scanKOrG2(path.join(g2Dir, f));
+    });
+  }
+  // G3 lives at dist/data/g3/u*.js (plain JS, hyphenated lessonId g3-u<n>-l<m>)
+  const g3Dir = path.join(DIST, 'data', 'g3');
+  if (fs.existsSync(g3Dir)) {
+    fs.readdirSync(g3Dir).filter(f => /^u\d+\.js$/.test(f)).forEach(f => {
+      scanKOrG2(path.join(g3Dir, f));
     });
   }
 

@@ -2950,7 +2950,7 @@ async function _dbSaveUnlock() {
 
 async function _dbRelockAll() {
   var viewBand = _getDashboardViewGrade();
-  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var label = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : (viewBand === 'g3' ? 'Grade 3' : 'Grade 2'));
   if (!confirm('Remove all unit and lesson unlocks for ' + label + '?')) return;
   // Clear ONLY the current view-grade slot; other grades' settings stay.
   if (!_unlockDraft || !_unlockDraft.byGrade) {
@@ -3291,7 +3291,7 @@ function _renderUnlockInner() {
     return '<p class="db-empty">Unlock settings require a student profile connected to a parent account.</p>';
   }
   var viewBand = _getDashboardViewGrade();
-  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : 'Grade 2');
+  var gradeLabel = viewBand === 'k' ? 'Kindergarten' : (viewBand === 'g1' ? 'Grade 1' : (viewBand === 'g3' ? 'Grade 3' : 'Grade 2'));
   var slot = _draftSlot(_unlockDraft, viewBand);
   var fm = slot.freeMode;
   var passedLessons = _computePassedLessonQuizzes(_unlockScores);
