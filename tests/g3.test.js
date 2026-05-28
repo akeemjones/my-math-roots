@@ -163,3 +163,57 @@ describe('G3 data layer (10 units / 97 lesson shells / unit-test wiring)', () =>
     expect(tags.has('err_area_perimeter_confusion')).toBe(true);
   });
 });
+
+describe('G3 Unit 1 full content (proven template)', () => {
+  const ctx = loadG3();
+  const u1 = ctx._UNITS_DATA_G3[0];
+
+  test('Unit 1 has 8 lessons, each with a qBank of >= 10 questions', () => {
+    expect(u1.lessons).toHaveLength(8);
+    u1.lessons.forEach(l => {
+      expect(Array.isArray(l.qBank)).toBe(true);
+      expect(l.qBank.length).toBeGreaterThanOrEqual(10);
+    });
+  });
+
+  test('every Unit 1 question is well-formed (4 options, exactly one correct, TEKS, lessonId, difficulty)', () => {
+    u1.lessons.forEach(l => l.qBank.forEach(q => {
+      expect(typeof q.t).toBe('string');
+      expect(Array.isArray(q.o)).toBe(true);
+      expect(q.o.length).toBe(4);
+      expect(typeof q.a).toBe('number');
+      expect(q.o[q.a]).toBeDefined();
+      expect(q.o[q.a].tag).toBeUndefined();           // correct option is untagged
+      expect(q.o.filter(o => !o.tag)).toHaveLength(1); // exactly one correct
+      expect(q.teks).toMatch(/TEKS 3\./);
+      expect(q.lessonId).toMatch(/^g3-u1-l\d+$/);
+      expect(['e', 'm', 'h']).toContain(q.d);
+    }));
+  });
+
+  test('Unit 1 distractors all use err_-prefixed tags incl. the four place-value families', () => {
+    const tags = new Set();
+    u1.lessons.forEach(l => l.qBank.forEach(q => q.o.forEach(o => { if (o.tag) tags.add(o.tag); })));
+    expect([...tags].every(t => t.startsWith('err_'))).toBe(true);
+    ['err_place_value_digit_confusion', 'err_expanded_form_missing_zero',
+     'err_rounding_wrong_benchmark', 'err_compare_by_length_only']
+      .forEach(fam => expect(tags.has(fam)).toBe(true));
+  });
+
+  test('each Unit 1 lesson has an easy/medium/hard spread', () => {
+    u1.lessons.forEach(l => {
+      const ds = new Set(l.qBank.map(q => q.d));
+      expect(ds.has('e')).toBe(true);
+      expect(ds.has('m')).toBe(true);
+      expect(ds.has('h')).toBe(true);
+    });
+  });
+
+  test('Unit 1 testBank assembles from lesson qBanks and samples 25', () => {
+    expect(u1.unitTest.sourceRule).toBe('all_lesson_quizbanks');
+    expect(u1.testBank.length).toBeGreaterThanOrEqual(25);
+    expect(u1.testBank[0].sourceLessonId).toMatch(/^g3-u1-l\d+$/);
+    const attempt = ctx._sampleG3UnitTestAttempt(u1.testBank, 25);
+    expect(attempt).toHaveLength(25);
+  });
+});
