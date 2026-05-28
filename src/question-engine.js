@@ -271,7 +271,10 @@ QE.logResult = function(q, result) {
       var _gFn = (typeof normalizeGrade === 'function') ? normalizeGrade : function(v){
         if (v === null || v === undefined) return '2';
         var s = String(v).trim().toLowerCase();
-        return (s === 'k' || s === 'kindergarten' || s === '0') ? 'K' : '2';
+        if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
+        if (s === '1') return '1';
+        if (s === '3') return '3';
+        return '2';
       };
       var _gradeForKey = _gFn(q && q._grade ? q._grade : (function(){
         try { return localStorage.getItem('mmr_grade'); } catch(_){ return null; }

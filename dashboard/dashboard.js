@@ -39,6 +39,7 @@ function _gradeBand(v) {
   if (s === 'k' || s === 'kindergarten' || s === '0') return 'k';
   if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return 'g1';
   if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return 'g2';
+  if (s === '3' || s === 'g3' || s === 'grade3' || s === 'grade 3') return 'g3';
   return null;
 }
 
@@ -54,6 +55,7 @@ function _inferScoreGrade(s) {
   for (var i = 0; i < probes.length; i++) {
     var t = String(probes[i]).toLowerCase();
     if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?g3/.test(t)) return 'g3';
     if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
     if (/^(lq_)?u\d/.test(t)) return 'g2';
   }
@@ -65,7 +67,7 @@ function _emptyUnlockSlot() {
 }
 
 function _emptyByGrade() {
-  return { k: _emptyUnlockSlot(), g1: _emptyUnlockSlot(), g2: _emptyUnlockSlot() };
+  return { k: _emptyUnlockSlot(), g1: _emptyUnlockSlot(), g2: _emptyUnlockSlot(), g3: _emptyUnlockSlot() };
 }
 
 // Parse unlock settings into the canonical schema-v2 byGrade shape. Legacy
@@ -76,7 +78,7 @@ function _parseUnlockSettings(raw, activeBand) {
   var out = { schemaVersion: 2, byGrade: _emptyByGrade() };
 
   if (raw.byGrade && typeof raw.byGrade === 'object') {
-    ['k','g1','g2'].forEach(function(band){
+    ['k','g1','g2','g3'].forEach(function(band){
       var src = raw.byGrade[band];
       if (src && typeof src === 'object') {
         out.byGrade[band] = {
@@ -1418,14 +1420,14 @@ function _dbShouldClearForResetEpoch(localEpoch, serverEpoch) {
 // this student, so the local cache must match.
 function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
   var keys = [];
-  if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2') {
+  if (gradeBand === 'K' || gradeBand === '1' || gradeBand === '2' || gradeBand === '3') {
     keys.push('wb_sc5_'         + gradeBand);
     keys.push('wb_done5_'       + gradeBand);
     keys.push('wb_mastery_'     + gradeBand);
     keys.push('mmr_mastery_v1_' + gradeBand);
   }
   if (sessionMatches) {
-    ['K', '1', '2'].forEach(function(g) {
+    ['K', '1', '2', '3'].forEach(function(g) {
       keys.push('wb_sc5_'         + g);
       keys.push('wb_done5_'       + g);
       keys.push('wb_mastery_'     + g);
@@ -3130,6 +3132,7 @@ function normalizeGrade(value) {
   var s = String(value).trim().toLowerCase();
   if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
   if (s === '1') return '1';
+  if (s === '3') return '3';
   return '2';
 }
 
@@ -3395,10 +3398,37 @@ var _G1_UNITS_META = [
 // from src/dashboard.js so a single source of truth governs which unit names
 // the parent sees in every grade-view path: unlock controls, quiz history,
 // unit insights, and last-7-day accuracy.
+// ── G3 lesson-name lookup table ───────────────────────────────────────────
+// Mirrors src/data/shared_g3.js and src/dashboard.js. Index 0 = g3u1, …
+// Update both dashboards together when content changes.
+var _G3_UNITS_META = [
+  { name: 'Place Value to 100,000',
+    lessons: ['Understand Numbers to 100,000','Ten Thousands to Ones','Compose From Place-Value Parts','Decompose Into Expanded Form','Base-10 Relationships','Benchmark Number Lines','Round Whole Numbers','Compare and Order Numbers'] },
+  { name: 'Addition, Subtraction, and Money',
+    lessons: ['Add Within 1,000','Subtract With Regrouping','Addition/Subtraction Relationships','Estimate Sums and Differences','Compatible Numbers','One-Step Word Problems','Two-Step Word Problems','Count Coins and Bills'] },
+  { name: 'Multiplication Foundations',
+    lessons: ['Equal Groups','Repeated Addition','Arrays','Skip Counting','Equal Jumps on a Number Line','Area Models','Facts: 0, 1, 2, 5, 10','Facts: 3, 4, 6','Facts: 7, 8, 9','Multiplication as Comparison'] },
+  { name: 'Division Foundations',
+    lessons: ['Equal Sharing','Equal Groups Division','Division With Arrays','Division as the Opposite of Multiplication','Fact Families','Quotients Using Multiplication','Missing Factors','Missing Products and Quotients'] },
+  { name: 'Multiplication and Division Problem Solving',
+    lessons: ['One-Step Multiplication','One-Step Division','Choose Multiplication or Division','Strip Diagrams','Write Equations','Two-Step Mult/Div Problems','Mixed Two-Step Problems','2-Digit × 1-Digit: Area Models','2-Digit × 1-Digit: Partial Products','2-Digit × 1-Digit: Standard Algorithm','Even and Odd Numbers'] },
+  { name: 'Fractions as Numbers',
+    lessons: ['Equal Parts of a Whole','Unit Fractions','Denominators 2, 3, 4, 6, 8','Fractions With Strip Diagrams','Fractions With Area Models','Fractions on a Number Line','Identify a Fraction From a Point','Fractions of a Set','Compose From Unit Fractions','Decompose Into Unit Fractions'] },
+  { name: 'Equivalent and Comparing Fractions',
+    lessons: ['Equivalent: Area Models','Equivalent: Strip Diagrams','Equivalent: Number Lines','Same Point, Same Value','Compare: Same Denominator','Compare: Same Numerator','Use >, <, and = With Fractions','Equal Shares, Different Shapes'] },
+  { name: 'Geometry, Area, and Perimeter',
+    lessons: ['Classify 2D Figures','Classify 3D Figures','Attributes of Shapes','Quadrilaterals','Special Quadrilaterals','Draw Other Quadrilaterals','Area With Unit Squares','Area: Rows and Columns','Area Using Multiplication','Composite Area','Perimeter','Missing Side With Perimeter'] },
+  { name: 'Measurement, Time, and Data',
+    lessons: ['Time Intervals in Minutes','Add Time Intervals','Subtract Time Intervals','Elapsed Time on Clocks & Number Lines','Choose Volume or Weight','Measure Liquid Volume','Measure Weight','Frequency Tables','Dot Plots','Pictographs','Scaled Bar Graphs','One- and Two-Step Data Problems'] },
+  { name: 'Personal Financial Literacy and CBE Final Review',
+    lessons: ['Labor, Human Capital, and Income','Scarcity and Cost','Planned Spending','Unplanned Spending','Credit and Borrowing','Interest and Paying Back','Reasons to Save','Savings Plans','Spending, Saving, Credit, Giving','Final Grade 3 CBE Review'] }
+];
+
 function _unitsMetaForBand(band) {
   var b = _gradeBand(band);
   if (b === 'k')  return _K_UNITS_META;
   if (b === 'g1') return _G1_UNITS_META;
+  if (b === 'g3') return _G3_UNITS_META;
   return _UNITS_META; // 'g2' or unknown
 }
 
@@ -3424,6 +3454,13 @@ function _lessonDisplayName(lessonId) {
     var g1l = g1u.lessons[parseInt(g1Match[2], 10) - 1];
     return g1l ? { lesson: g1l, unit: g1u.name } : null;
   }
+  var g3Match = s.match(/^g3[-]?u(\d+)[-]?l(\d+)$/i);
+  if (g3Match) {
+    var g3u = _G3_UNITS_META[parseInt(g3Match[1], 10) - 1];
+    if (!g3u) return null;
+    var g3l = g3u.lessons[parseInt(g3Match[2], 10) - 1];
+    return g3l ? { lesson: g3l, unit: g3u.name } : null;
+  }
   var g2Match = s.match(/^u(\d+)l(\d+)$/i);
   if (g2Match) {
     var g2u = _UNITS_META[parseInt(g2Match[1], 10) - 1];
@@ -3440,6 +3477,7 @@ function _lessonIdBand(lessonId) {
   if (!lessonId) return null;
   var s = String(lessonId).toLowerCase();
   if (/^g1[-]?u\d+[-]?l\d+$/.test(s)) return 'g1';
+  if (/^g3[-]?u\d+[-]?l\d+$/.test(s)) return 'g3';
   if (/^ku\d+l\d+$/.test(s))          return 'k';
   if (/^u\d+l\d+$/.test(s))           return 'g2';
   return null;
@@ -3464,6 +3502,7 @@ function _inferInterventionGrade(e) {
   for (var i = 0; i < probes.length; i++) {
     var t = String(probes[i]).toLowerCase();
     if (/^(lq_)?g1/.test(t)) return 'g1';
+    if (/^(lq_)?g3/.test(t)) return 'g3';
     if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
     if (/^(lq_)?u\d/.test(t)) return 'g2';
   }
@@ -4060,6 +4099,7 @@ if (typeof module !== 'undefined') {
     _unitsMetaForBand,
     _K_UNITS_META,
     _G1_UNITS_META,
+    _G3_UNITS_META,
     _UNITS_META,
     _inferScoreGrade,
     _filterInterventionsByGrade,

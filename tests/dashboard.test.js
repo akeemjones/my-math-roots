@@ -871,15 +871,18 @@ describe('normalizeGrade', () => {
     expect(normalizeGrade('')).toBe('2');
   });
   test('any unknown input falls through to "2" (safe default)', () => {
-    expect(normalizeGrade('3')).toBe('2');
     expect(normalizeGrade('foo')).toBe('2');
     expect(normalizeGrade({})).toBe('2');
+  });
+  test('Grade 3 normalizes to "3" (selectable grade)', () => {
+    expect(normalizeGrade('3')).toBe('3');
+    expect(normalizeGrade(3)).toBe('3');
   });
   test('result only ever uses a canonical value — never lowercase k or extended strings', () => {
     var inputs = ['k','K','Kindergarten','kindergarten','0',0,'1',1,'2',2,null,undefined,'','3','foo'];
     inputs.forEach(function(v) {
       var out = normalizeGrade(v);
-      expect(['K','1','2']).toContain(out);
+      expect(['K','1','2','3']).toContain(out);
     });
   });
 });

@@ -394,6 +394,7 @@ async function enterStudentLearningSession(opts) {
     var s = String(v).trim().toLowerCase();
     if (s === 'k' || s === 'kindergarten' || s === '0') return 'K';
     if (s === '1') return '1';
+    if (s === '3') return '3';
     return '2';
   };
   var _profileGrade;
@@ -407,7 +408,7 @@ async function enterStudentLearningSession(opts) {
     }
   }
   var _existingRaw      = localStorage.getItem('mmr_grade');
-  var _existingValid    = (_existingRaw === 'K' || _existingRaw === '1' || _existingRaw === '2')
+  var _existingValid    = (_existingRaw === 'K' || _existingRaw === '1' || _existingRaw === '2' || _existingRaw === '3')
                           ? _existingRaw : null;
   // The grade we'll actually run the session under. Existing learning-side
   // selection wins; profileGrade is only used when nothing is saved yet.

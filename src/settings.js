@@ -895,6 +895,7 @@ function _gradeBand(v) {
   if (s === 'k' || s === 'kindergarten' || s === '0') return 'k';
   if (s === '1' || s === 'g1' || s === 'grade1' || s === 'grade 1') return 'g1';
   if (s === '2' || s === 'g2' || s === 'grade2' || s === 'grade 2') return 'g2';
+  if (s === '3' || s === 'g3' || s === 'grade3' || s === 'grade 3') return 'g3';
   return null;
 }
 
@@ -914,6 +915,8 @@ function _inferScoreGrade(s) {
     var t = String(probes[i]).toLowerCase();
     // Grade 1: ids carry an explicit g1 prefix (e.g. lq_g1u1-l1-..., g1u8_uq)
     if (/^(lq_)?g1/.test(t)) return 'g1';
+    // Grade 3: ids carry an explicit g3 prefix (e.g. lq_g3-u1-l1-..., g3u1_uq)
+    if (/^(lq_)?g3/.test(t)) return 'g3';
     // Kindergarten: ids carry an explicit k prefix (e.g. lq_ku2-..., ku4_uq)
     if (/^(lq_)?(ku|k\d)/.test(t)) return 'k';
     // Legacy Grade 2 default: no grade prefix, just u<N>... or lq_u<N>...
