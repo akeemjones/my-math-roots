@@ -1219,6 +1219,21 @@ body.a11y-focus #qhint-btn:focus{
 .kp-text{ flex:1 1 auto; line-height:1.4; }
 .kp-arrow{ flex:0 0 auto; font-size:1.4em; line-height:1; font-weight:bold; opacity:.6; transition:transform .15s, opacity .15s; }
 .kp-button:hover .kp-arrow{ transform:translateX(2px); opacity:1; }
+/* Dark mode: .kp-button hardcodes a #fff background, but --txt flips to white
+   in dark mode — which would leave white text on a white card (unreadable).
+   Give the card a dark surface so the existing var(--txt) text is legible. The
+   number badge (.kp-bullet-num) and arrow (.kp-arrow) keep their inline accent
+   colors and remain visible. Scoped to .kp-button so no other dark panel changes. */
+body.dark .kp-button{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.14);
+  color:var(--txt);
+}
+body.dark .kp-button:hover{
+  background:rgba(255,255,255,.11);
+  border-color:rgba(255,255,255,.22);
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
 
 /* Key Idea visual explanation modal — centered teaching card.
    IMPORTANT: this is a CENTERED dialog, not a bottom sheet. Previous styles
