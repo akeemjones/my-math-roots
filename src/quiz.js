@@ -891,6 +891,11 @@ function _renderQ(){
   qz._answered = false;
   // Per-question timer — captures how long student spends on this question
   qz._qStartedAt = Date.now();
+
+  // Keep the note pad's read-only problem preview in sync when the student
+  // moves to the next question while the pad is open.
+  var _scOv = document.getElementById('scratch-overlay');
+  if(_scOv && _scOv.style.display === 'flex'){ _renderScratchProblem(); }
 }
 
 function _pickAnswer(btnIdx){
@@ -3306,7 +3311,25 @@ function openScratchPad(){
   const overlay = document.getElementById('scratch-overlay');
   if(!overlay) return;
   overlay.style.display = 'flex';
+  _renderScratchProblem();
   setTimeout(_initScratchCanvas, 50);
+}
+
+// Read-only preview of the current quiz problem inside the note pad, so the
+// problem stays visible while the student writes. Renders the stem + the
+// problem visual only — no answer choices, no buttons, no interaction.
+function _renderScratchProblem(){
+  const box  = document.getElementById('scratch-problem');
+  const body = document.getElementById('scratch-problem-body');
+  if(!box || !body) return;
+  const qz = (typeof CUR !== 'undefined') ? CUR.quiz : null;
+  const q  = (qz && qz.questions && qz.idx != null) ? qz.questions[qz.idx] : null;
+  if(!q || (q.t == null && q.prompt == null)){ box.hidden = true; body.innerHTML = ''; return; }
+  let visual = '';
+  try { visual = q.v ? _buildVisualHTML(q.v) : (q.s ? '<div class="q-visual">'+q.s+'</div>' : ''); }
+  catch(e){ visual = ''; }
+  body.innerHTML = '<div class="q-text">'+_qText(q.t || q.prompt)+'</div>' + visual;
+  box.hidden = false;
 }
 
 function closeScratchPad(){

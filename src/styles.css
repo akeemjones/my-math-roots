@@ -1563,6 +1563,29 @@ body.a11y-focus #qhint-btn:focus{
 .scratch-canvas-wrap canvas{
   display:block;width:100%;height:100%;touch-action:none;
 }
+/* Read-only problem preview at the top of the note pad (writing area stays below) */
+.scratch-problem{
+  flex-shrink:0;
+  max-height:34vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:10px 16px;
+  border-bottom:1.5px solid var(--border,#e0e0e0);
+  background:var(--neutral-50);
+}
+.scratch-problem[hidden]{ display:none; }
+.scratch-problem-label{
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+  font-size:var(--fs-sm);color:var(--txt2);
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;
+}
+.scratch-problem-body .q-text{
+  font-size:var(--fs-base);color:var(--txt,#222);line-height:1.45;
+  margin:0;word-break:break-word;overflow-wrap:anywhere;
+}
+.scratch-problem-body .q-visual,.scratch-problem-body svg{ max-width:100%;height:auto; }
+body.dark .scratch-problem{ background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12); }
+@media (max-width:600px){
+  .scratch-problem{ max-height:26vh;padding:8px 12px; }
+}
 
 .more-practice-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base); padding:8px 16px;
   border-radius:50px; border:none; cursor:pointer; color:#fff;
