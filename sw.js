@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.32-g2-cleanup';
+const CACHE = 'math-workbook-v6.0.33-g2-pooldrift';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
