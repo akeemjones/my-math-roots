@@ -3058,6 +3058,20 @@ body.dark #dashboard-screen { background:#0d1626; }
 #dashboard-screen .db-ctrl-save { flex:1; background:var(--accent); color:var(--accent-ink); border:none; border-radius:12px; padding:10px 16px; font-size:.9rem; font-weight:700; cursor:pointer; box-shadow:0 3px 0 var(--accent-700); min-width:120px; }
 #dashboard-screen .db-ctrl-relock { background:var(--accent-100); color:var(--accent-800); border:none; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
 #dashboard-screen .db-ctrl-reset { background:#fce4ec; color:#c62828; border:none; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600; cursor:pointer; }
+/* ── Quiz length controls ── */
+#dashboard-screen .db-qlen-group { padding:8px 0; border-bottom:1px solid var(--border); }
+#dashboard-screen .db-qlen-group:last-of-type { border-bottom:none; }
+#dashboard-screen .db-qlen-title { font-size:.82rem; font-weight:700; color:var(--neutral-700); margin-bottom:8px; }
+#dashboard-screen .db-qlen-chips { display:flex; flex-wrap:wrap; gap:6px; }
+#dashboard-screen .db-qlen-chip { background:var(--neutral-100); color:var(--neutral-700); border:1.5px solid var(--border2); border-radius:20px; padding:6px 14px; font-size:.8rem; font-weight:600; cursor:pointer; font-family:inherit; transition:background .15s,border-color .15s,color .15s; }
+#dashboard-screen .db-qlen-chip:hover { border-color:var(--accent); }
+#dashboard-screen .db-qlen-chip.is-active { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+#dashboard-screen .db-qlen-custom { margin-top:10px; display:flex; flex-direction:column; gap:4px; }
+#dashboard-screen .db-qlen-custom-lbl { font-size:.72rem; color:var(--neutral-500); font-weight:600; }
+#dashboard-screen .db-qlen-input { width:120px; max-width:100%; padding:8px 10px; border:1.5px solid var(--border2); border-radius:10px; font-size:.9rem; font-family:inherit; background:var(--neutral-50); color:var(--neutral-900); }
+#dashboard-screen .db-qlen-input:focus { outline:none; border-color:var(--accent); }
+#dashboard-screen .db-qlen-msg { text-align:left; }
+#dashboard-screen .db-qlen-help { font-size:.74rem; color:var(--neutral-500); margin:10px 0 4px; line-height:1.4; }
 #dashboard-screen .db-toggle-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
 #dashboard-screen .db-toggle-row:last-of-type { border-bottom:none; }
 #dashboard-screen .db-toggle-row strong { font-size:.82rem; }

@@ -57,8 +57,13 @@ const _APP_GLOBALS = [
   '_KI_CURRENT_STEPS','_KI_CURRENT_IDX','_KI_CURRENT_LESSON','_KI_CURRENT_UNIT',
   '_makeUnitJumps','_makeSkipJumps',
   '_pausedSecsLeft','_startTimer','_clearTimer','_updateTimerDisplay','_timeUp',
+  // quiz-config.js
+  'LESSON_QUIZ_DEFAULT','UNIT_QUIZ_DEFAULT','resolveLessonCount','resolveUnitDecision',
+  'isValidCustom','quizLengthsKey','loadQuizLengths','saveQuizLengths',
+  'unitEligibleBank','unitEligiblePoolSize',
   // quiz.js
   '_audioCtx','_getAudio','playSwooshBack','playSwooshForward','playTap',
+  '_activeStudentIdForQuiz','_quizLengthCfg','_resolveLessonQuizCount',
   'playCorrect','playWrong','playPassQuiz','playConfettiBurst',
   'startLessonQuiz','startUnitQuiz','_getPausedAll','getPausedQuiz',
   '_savePausedQuiz','_clearPausedQuiz','resumeQuiz','_weightedSample','_runQuiz','_renderQ',
