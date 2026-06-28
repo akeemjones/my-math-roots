@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.34-notepad-preview';
+const CACHE = 'math-workbook-v6.0.35-quiz-length-sync-fix';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets
