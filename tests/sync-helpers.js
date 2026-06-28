@@ -106,6 +106,65 @@ function _dbProgressCacheKeysForReset(gradeBand, sessionMatches) {
   return out;
 }
 
+// Classify a Supabase rpc() push result so failures are never silently
+// swallowed. Mirrors src/auth.js _classifyPushResult.
+//   transport_error  — null result or a PostgREST/network error (result.error)
+//   stale_reset_epoch — server's reset_epoch is ahead of ours
+//   validation_failed — a monotonic guard or per-score guard rejected the push
+//   rejected          — any other server-side {error: ...} return
+//   ok                — the push succeeded
+function _classifyPushResult(result) {
+  if (!result || result.error) return 'transport_error';
+  var d = result.data;
+  if (d && d.error === 'stale_reset_epoch') return 'stale_reset_epoch';
+  if (d && d.error === 'validation_failed') return 'validation_failed';
+  if (d && d.error) return 'rejected';
+  return 'ok';
+}
+
+// Map an in-memory score to the cloud (quiz_scores) payload. Preserves the
+// stored pct, INCLUDING a hint penalty — it must NOT be recomputed, or the
+// lenient score RPC would store a value that disagrees with local display.
+// Mirrors the payload mapping in src/auth.js _pushStudentScores / _pushScores.
+function _normalizeScoreForCloud(s) {
+  return {
+    local_id:     s.id,
+    qid:          s.qid || '',
+    label:        s.label || '',
+    type:         s.type || '',
+    score:        s.score || 0,
+    total:        s.total || 0,
+    pct:          (typeof s.pct === 'number') ? s.pct : 0,
+    stars:        s.stars || '',
+    unit_idx:     (s.unitIdx == null ? 0 : s.unitIdx),
+    color:        s.color || '',
+    student_name: s.name || '',
+    time_taken:   s.timeTaken || 0,
+    grade:        s.grade || null,
+    answers:      s.answers || [],
+    date_str:     s.date || '',
+    time_str:     s.time || '',
+    quit:         !!s.quit,
+    abandoned:    !!s.abandoned,
+  };
+}
+
+// Decide which sync calls a save event should run. Scores ALWAYS travel on
+// their own path, independent of the monotonic-guarded profile push, so a
+// rejected profile payload never blocks a completed quiz score from saving.
+// Mirrors the routing in src/auth.js (_pushAll + the saveSc monkey-patch).
+function _planScoreSync(opts) {
+  opts = opts || {};
+  var plan = { profilePush: false, scorePush: null };
+  if (opts.isStudentSession) {
+    plan.profilePush = true;                       // mastery/done/apptime (may be guard-rejected)
+    if (opts.hasScores) plan.scorePush = 'push_quiz_scores';   // decoupled, lenient RPC
+  } else if (opts.hasParentSession) {
+    if (opts.hasScores) plan.scorePush = 'quiz_scores_upsert'; // parent direct upsert (guard-free)
+  }
+  return plan;
+}
+
 // Unit-lessons-complete counter mirror — matches src/unit.js logic
 // ("lessons whose lq_uXlY best pct >= 80").
 function _computeUnitLessonsComplete(scores, unitIdx, totalLessons) {
@@ -127,4 +186,7 @@ module.exports = {
   _mergeRemoteScoresIntoLocal,
   _dbProgressCacheKeysForReset,
   _computeUnitLessonsComplete,
+  _classifyPushResult,
+  _normalizeScoreForCloud,
+  _planScoreSync,
 };
