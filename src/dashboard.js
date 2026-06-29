@@ -2745,6 +2745,17 @@ var _timerDraft        = _parseTimerSettings({});
 var _a11yDraft        = _parseA11ySettings({});
 var _dbFbRating       = 0;
 var _dbFbCategory     = '';
+// Configurable quiz length — per active student. Draft holds the working
+// selection; custom-mode tracks whether the Custom number input is showing for
+// each scope. Loaded from localStorage (mmr_quiz_lengths_<sid>) on student
+// switch. Preset chip values per scope drive the active-state highlight.
+var _QLEN_PRESETS      = { lesson: [10, 15, 20], unit: [10, 15, 40] };
+var _quizLenDraft      = { lesson: 'default', unit: 'default' };
+var _quizLenCustomMode = { lesson: false, unit: false };
+// Live text in each Custom input, preserved across in-place re-renders so a
+// typed-but-unsaved custom number isn't wiped when the parent clicks a chip in
+// the other group.
+var _quizLenCustomText = { lesson: '', unit: '' };
 
 // ── Settings load functions ───────────────────────────────────────────────
 
@@ -3485,6 +3496,172 @@ function _renderTimerSection() {
   return '<section class="db-section">'
     + '<h2 class="db-sec-h">⏱ Quiz Timer</h2>'
     + inner + '</section>';
+}
+
+// ── Quiz length section (configurable lesson/unit quiz lengths) ─────────────
+
+function _qlIsCustom(scope, val) {
+  return (typeof val === 'number') && _QLEN_PRESETS[scope].indexOf(val) === -1;
+}
+
+// Loads the active student's saved quiz lengths into the working draft.
+// Synchronous (localStorage only) — no Supabase, per the v1 scope.
+function _loadQuizLenSettings(studentId) {
+  var cfg = (typeof loadQuizLengths === 'function')
+    ? loadQuizLengths(studentId)
+    : { lesson: 'default', unit: 'default' };
+  _quizLenDraft = { lesson: cfg.lesson, unit: cfg.unit };
+  _quizLenCustomMode = {
+    lesson: _qlIsCustom('lesson', cfg.lesson),
+    unit:   _qlIsCustom('unit',   cfg.unit),
+  };
+  _quizLenCustomText = {
+    lesson: _quizLenCustomMode.lesson ? String(cfg.lesson) : '',
+    unit:   _quizLenCustomMode.unit   ? String(cfg.unit)   : '',
+  };
+}
+
+function _qlChip(scope, label, value, active) {
+  return '<button type="button" class="db-qlen-chip' + (active ? ' is-active' : '')
+    + '" data-action="_dbSetQuizLen" data-arg="' + scope + '" data-arg2="' + value + '"'
+    + (active ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + label + '</button>';
+}
+
+function _qlGroup(scope, title, defaultLabel, presets) {
+  var draft = _quizLenDraft[scope];
+  var custom = _quizLenCustomMode[scope];
+  var chips = ''
+    + _qlChip(scope, defaultLabel, 'default', !custom && draft === 'default');
+  presets.forEach(function(p) {
+    chips += _qlChip(scope, String(p), String(p), !custom && draft === p);
+  });
+  chips += _qlChip(scope, 'All', 'all', !custom && draft === 'all');
+  chips += _qlChip(scope, 'Custom', 'custom', custom);
+
+  var customVal = _quizLenCustomText[scope];
+  var customBox = '<div class="db-qlen-custom" id="db-qlen-custombox-' + scope + '" style="'
+    + (custom ? '' : 'display:none') + '">'
+    + '<label class="db-qlen-custom-lbl" for="db-qlen-custom-' + scope + '">Custom amount</label>'
+    + '<input type="number" min="1" step="1" inputmode="numeric" class="db-qlen-input" '
+    + 'id="db-qlen-custom-' + scope + '" value="' + customVal + '" '
+    + 'aria-describedby="db-qlen-msg-' + scope + '">'
+    + '</div>';
+
+  return '<div class="db-qlen-group">'
+    + '<div class="db-qlen-title">' + title + '</div>'
+    + '<div class="db-qlen-chips" role="group" aria-label="' + title + ' length">' + chips + '</div>'
+    + customBox
+    + '<div id="db-qlen-msg-' + scope + '" class="db-ctrl-msg db-qlen-msg"></div>'
+    + '</div>';
+}
+
+// Inner body, re-rendered in place when a chip is clicked.
+function _qlenInner() {
+  return ''
+    + _qlGroup('lesson', 'Lesson Quiz', 'Default (8)', _QLEN_PRESETS.lesson)
+    + _qlGroup('unit',   'Unit Quiz',   'Default',     _QLEN_PRESETS.unit)
+    + '<p class="db-qlen-help">Each quiz uses up to the selected amount. If that '
+    + 'lesson or unit has fewer questions, it will use the available questions.</p>'
+    + '<div class="db-ctrl-btns">'
+    + '<button class="db-ctrl-save" data-action="_dbSaveQuizLen">Save Quiz Length</button>'
+    + '</div>'
+    + '<div id="db-qlen-save-msg" class="db-ctrl-msg"></div>';
+}
+
+function _renderQuizLengthSection() {
+  return '<section class="db-section">'
+    + '<h2 class="db-sec-h">Quiz Length</h2>'
+    + '<div id="db-qlen-root">' + _qlenInner() + '</div>'
+    + '</section>';
+}
+
+function _reRenderQuizLengthSection() {
+  var root = document.getElementById('db-qlen-root');
+  if (root) root.innerHTML = _qlenInner();
+}
+
+function _setQlenMsg(scope, text, ok) {
+  var el = document.getElementById('db-qlen-msg-' + scope);
+  if (!el) return;
+  el.style.color = ok ? '#2e7d32' : '#c62828';
+  el.textContent = text || '';
+}
+
+// Chip click: update the draft / custom-mode for a scope, then re-render.
+function _dbSetQuizLen(scope, value) {
+  if (scope !== 'lesson' && scope !== 'unit') return;
+  // Snapshot any live custom-input text first so an unsaved number in either
+  // group survives the in-place re-render below.
+  ['lesson', 'unit'].forEach(function(s) {
+    var el = document.getElementById('db-qlen-custom-' + s);
+    if (el) _quizLenCustomText[s] = el.value;
+  });
+  if (value === 'custom') {
+    _quizLenCustomMode[scope] = true;
+    if (_quizLenCustomText[scope] === '' && typeof _quizLenDraft[scope] === 'number') {
+      _quizLenCustomText[scope] = String(_quizLenDraft[scope]);
+    }
+  } else if (value === 'default') {
+    _quizLenCustomMode[scope] = false;
+    _quizLenDraft[scope] = 'default';
+  } else if (value === 'all') {
+    _quizLenCustomMode[scope] = false;
+    _quizLenDraft[scope] = 'all';
+  } else {
+    var n = parseInt(value, 10);
+    _quizLenCustomMode[scope] = false;
+    _quizLenDraft[scope] = (n >= 1) ? n : 'default';
+  }
+  _reRenderQuizLengthSection();
+  if (_quizLenCustomMode[scope]) {
+    var inp = document.getElementById('db-qlen-custom-' + scope);
+    if (inp) inp.focus();
+  }
+}
+
+// Live validation on blur of a custom input (does not save).
+function _dbQuizLenCustomChanged(inp) {
+  if (!inp || !inp.id) return;
+  var scope = inp.id.replace('db-qlen-custom-', '');
+  var raw = inp.value;
+  _quizLenCustomText[scope] = raw;
+  if (String(raw).trim() === '') { _setQlenMsg(scope, ''); return; }
+  if (typeof isValidCustom === 'function' && !isValidCustom(raw)) {
+    _setQlenMsg(scope, 'Enter a whole number of at least 1.');
+  } else {
+    _setQlenMsg(scope, '');
+  }
+}
+
+// Save: validate any custom inputs, then persist per-student. Never stores
+// "default" in place of an invalid custom number — it blocks the save instead.
+function _dbSaveQuizLen() {
+  var draft = { lesson: _quizLenDraft.lesson, unit: _quizLenDraft.unit };
+  var ok = true;
+  ['lesson', 'unit'].forEach(function(scope) {
+    if (!_quizLenCustomMode[scope]) return;
+    var inp = document.getElementById('db-qlen-custom-' + scope);
+    var raw = inp ? inp.value : '';
+    if (typeof isValidCustom === 'function' && isValidCustom(raw)) {
+      draft[scope] = parseInt(String(raw).trim(), 10);
+      _setQlenMsg(scope, '');
+    } else {
+      ok = false;
+      _setQlenMsg(scope, 'Enter a whole number of at least 1.');
+    }
+  });
+  var saveMsg = document.getElementById('db-qlen-save-msg');
+  if (!ok) {
+    if (saveMsg) { saveMsg.style.color = '#c62828'; saveMsg.textContent = 'Fix the custom amount above to save.'; }
+    return;
+  }
+  if (typeof saveQuizLengths === 'function') saveQuizLengths(_activeId, draft);
+  _quizLenDraft = draft;
+  if (saveMsg) {
+    saveMsg.style.color = '#2e7d32';
+    saveMsg.textContent = 'Saved.';
+    setTimeout(function() { if (saveMsg) saveMsg.textContent = ''; }, 2000);
+  }
 }
 
 // ── Accessibility section ─────────────────────────────────────────────────
@@ -4999,6 +5176,7 @@ function _renderProfilesSection() {
 function _renderSettingsSection() {
   var body = _renderThemeSection()
     + _renderTimerSection()
+    + _renderQuizLengthSection()
     + _renderA11ySection()
     + _renderRemindersSection()
     + _renderFeedbackSection()
@@ -5169,6 +5347,7 @@ function switchStudent(id) {
   if (id !== 'local' && _students[id] && !_students[id]._scoresLoaded) {
     _loadManagedStudentScores(id);
   }
+  _loadQuizLenSettings(id);
   Promise.all([
     _loadUnlockSettings(id),
     _loadTimerSettings(id),
@@ -5992,6 +6171,7 @@ function _dbInit() {
 }
 
 function _renderDashboardOnly() {
+  _loadQuizLenSettings(_activeId);
   Promise.all([
     _loadUnlockSettings(_activeId),
     _loadTimerSettings(_activeId),
@@ -6047,6 +6227,8 @@ if (typeof document !== 'undefined') {
     _dbSaveTimer:            function()     { _dbSaveTimer(); },
     _dbToggleA11y:           function(a)    { _dbToggleA11y(a); },
     _dbSaveA11y:             function()     { _dbSaveA11y(); },
+    _dbSetQuizLen:           function(a, b) { _dbSetQuizLen(a, b); },
+    _dbSaveQuizLen:          function()     { _dbSaveQuizLen(); },
     _dbSavePin:              function()     { _dbSavePin(); },
     _dbTogglePush:           function()     { _dbTogglePush(); },
     _dbSaveReminderTime:     function()     { _dbSaveReminderTime(); },
@@ -6116,6 +6298,7 @@ if (typeof document !== 'undefined') {
     var t = e.target;
     if (!t) return;
     if (t.id === 'db-student-select') { switchStudent(t.value); return; }
+    if (t.id && t.id.indexOf('db-qlen-custom-') === 0) { _dbQuizLenCustomChanged(t); return; }
     if (t.tagName === 'SELECT' && t.dataset && t.dataset.action) {
       var fn = _DB_ACTIONS[t.dataset.action];
       if (fn) fn(t.dataset.arg !== undefined ? t.dataset.arg : null, t.value, t);

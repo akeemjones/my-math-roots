@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.32-grade3-scaffold';
+const CACHE = 'math-workbook-v6.0.36-g2-u4l1-addition-scope';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets

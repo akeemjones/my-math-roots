@@ -2362,6 +2362,76 @@ async function _pushAllParent(){
   ]);
 }
 
+// Classify a Supabase rpc() push result so a rejection is never silently
+// swallowed. Mirrors tests/sync-helpers.js _classifyPushResult.
+function _classifyPushResult(result){
+  if(!result || result.error) return 'transport_error';
+  var d = result.data;
+  if(d && d.error === 'stale_reset_epoch') return 'stale_reset_epoch';
+  if(d && d.error === 'validation_failed') return 'validation_failed';
+  if(d && d.error) return 'rejected';
+  return 'ok';
+}
+
+// Map an in-memory score to the quiz_scores payload. Preserves the stored pct
+// INCLUDING any hint penalty — it must NOT be recomputed, or the cloud copy
+// would disagree with what the student saw.
+function _scoreToCloudRow(s){
+  return {
+    local_id: s.id, qid: s.qid || '', label: s.label || '', type: s.type || '',
+    score: s.score || 0, total: s.total || 0,
+    pct: (typeof s.pct === 'number') ? s.pct : 0,
+    stars: s.stars || '', unit_idx: (s.unitIdx == null ? 0 : s.unitIdx), color: s.color || '',
+    student_name: s.name || '', time_taken: s.timeTaken || 0,
+    grade: s.grade || null,
+    answers: s.answers || [], date_str: s.date || '', time_str: s.time || '',
+    quit: !!s.quit, abandoned: !!s.abandoned
+  };
+}
+
+// One-shot retry for transient score-push failures (network / timeout / a
+// not-yet-applied migration). Coalesces so repeated failures don't pile up.
+var _scoreRetryTimer = null;
+function _scheduleScoreRetry(){
+  if(_scoreRetryTimer) return;
+  _scoreRetryTimer = setTimeout(function(){ _scoreRetryTimer = null; _pushStudentScores(); }, 5000);
+}
+
+// Decoupled score sync for student (PIN) sessions. Uses the lenient
+// push_quiz_scores RPC — no monotonic profile guards, no pct==score/total
+// check — so a completed quiz score saves even when the profile-progress push
+// is rejected, and a hint-penalized score still reaches quiz_scores (the table
+// the parent dashboard reads). Idempotent server-side (by student_id+local_id).
+async function _pushStudentScores(){
+  if(!_supa || !_isStudentSession() || !SCORES.length) return;
+  var studentId = localStorage.getItem('mmr_active_student_id');
+  if(!studentId || !_sessionToken) return;
+  try{
+    var result = await Promise.race([
+      _supa.rpc('push_quiz_scores', {
+        p_student_id:    studentId,
+        p_session_token: _sessionToken,
+        p_scores:        SCORES.map(_scoreToCloudRow)
+      }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('push_quiz_scores timeout')); }, 10000); })
+    ]);
+    var cat = _classifyPushResult(result);
+    if(cat === 'transport_error'){
+      if(result && result.error && _handleSessionExpiry(result.error)) return;
+      // Also covers "function not found" if the migration is not applied yet:
+      // log + retry, never crash, never lose the score (it stays in localStorage).
+      console.error('[Supabase] push_quiz_scores transport error — will retry', result && result.error);
+      _scheduleScoreRetry();
+    } else if(cat !== 'ok'){
+      console.error('[Supabase] push_quiz_scores rejected:', result.data && result.data.error, result.data && result.data.details);
+    }
+  } catch(e){
+    if(_handleSessionExpiry(e)) return;
+    console.error('[Supabase] push_quiz_scores error — will retry', e);
+    _scheduleScoreRetry();
+  }
+}
+
 async function _pushAll(){
   _pushTimer = null;
   if(!_supa || !_isStudentSession()) return;
@@ -2396,36 +2466,30 @@ async function _pushAll(){
         p_act_dates_json:   safeLoad('wb_act_dates', []),
         p_settings_json:    safeLoad('wb_settings', {}),
         p_a11y_json:        safeLoad('wb_a11y', {}),
-        p_scores:           SCORES.map(function(s){
-          return {
-            local_id: s.id, qid: s.qid || '', label: s.label || '', type: s.type || '',
-            score: s.score || 0, total: s.total || 0, pct: s.pct || 0,
-            stars: s.stars || '', unit_idx: s.unitIdx ?? 0, color: s.color || '',
-            student_name: s.name || '', time_taken: s.timeTaken || 0,
-            // F5: include grade band so the parent dashboard can grade-filter
-            // round-tripped scores. Legacy scores without grade push as NULL;
-            // dashboard falls back to qid-pattern inference on read.
-            grade: s.grade || null,
-            answers: s.answers || [], date_str: s.date || '', time_str: s.time || '',
-            quit: !!s.quit, abandoned: !!s.abandoned
-          };
-        })
+        // Quiz scores are DECOUPLED: they sync via the dedicated, lenient
+        // push_quiz_scores RPC (see _pushStudentScores). Bundling them here
+        // made the push atomic — one guard-rejected score (e.g. a legitimate
+        // hint-penalized pct) or a regressed profile field rejected the WHOLE
+        // payload, so scores never reached quiz_scores. Sending [] keeps this
+        // RPC focused on mastery/done/apptime/streak.
+        p_scores:           []
       }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('pushAll timeout')); }, 12000); })
     ]);
-    if(result.error){
-      if(_handleSessionExpiry(result.error)) return;
-      console.warn('[Supabase] pushAll error', result.error);
-    } else if (result.data && result.data.error === 'stale_reset_epoch') {
+    // Classify the profile-progress push result. NEVER silently swallow a
+    // rejection — every non-ok outcome is logged. Quiz scores are unaffected by
+    // a profile rejection because they sync separately via _pushStudentScores().
+    var _cat = _classifyPushResult(result);
+    if (_cat === 'transport_error') {
+      if (_handleSessionExpiry(result.error)) return; // token dead — skip score push too
+      console.error('[Supabase] pushAll (profile progress) transport error', result.error);
+    } else if (_cat === 'stale_reset_epoch') {
       // Server says our payload predates the latest reset_student_data.
       // Clear local progress + adopt the server's epoch so future pushes
       // line up. The next pull will re-populate from the (empty) server
-      // state. Do NOT retry — the same stale data would just be
-      // rejected again.
+      // state. Do NOT retry — the same stale data would just be rejected again.
       var _serverEpoch = Number(result.data.server_reset_epoch) || 0;
-      if (typeof console !== 'undefined' && console.warn) {
-        console.warn('[Supabase] pushAll rejected as stale_reset_epoch — clearing local progress and adopting server epoch', _serverEpoch);
-      }
+      console.warn('[Supabase] pushAll rejected as stale_reset_epoch — clearing local progress and adopting server epoch', _serverEpoch);
       if (typeof _dbApplyServerResetEpoch === 'function') {
         _dbApplyServerResetEpoch(studentId, _serverEpoch);
       }
@@ -2433,9 +2497,18 @@ async function _pushAll(){
       if (typeof buildHome === 'function') {
         try { buildHome(); } catch (_e) {}
       }
+    } else if (_cat === 'validation_failed' || _cat === 'rejected') {
+      // A monotonic guard rejected the profile payload (e.g. local apptime/
+      // mastery/done regressed below the server baseline after a cache clear).
+      // Surface it — do not swallow. Scores still sync below, decoupled.
+      console.error('[Supabase] pushAll (profile progress) rejected — quiz scores sync separately via push_quiz_scores:',
+        result.data && result.data.error, result.data && result.data.details);
     }
+    // Always sync quiz scores on their own decoupled, lenient path so a
+    // rejected profile push never blocks a completed quiz score from saving.
+    await _pushStudentScores();
   } catch(e){
-    if(!_handleSessionExpiry(e)) console.warn('[Supabase] pushAll error', e);
+    if(!_handleSessionExpiry(e)) console.error('[Supabase] pushAll error', e);
   } finally {
     _pushInFlight = false;
     if(_pushPending){ _pushPending = false; triggerCloudSync(); }

@@ -322,6 +322,30 @@ const MINI_LESSONS = {
 //  QUIZ ENGINE
 // ════════════════════════════════════════
 // ── Quiz helpers ─────────────────────────────────
+// Configurable quiz length — read the active student's saved setting. The
+// active student id is shared with the dashboard via `mmr_active_student_id`;
+// guest/free/local mode falls back to the local key inside quiz-config.js.
+function _activeStudentIdForQuiz(){
+  try { return localStorage.getItem('mmr_active_student_id') || 'local'; }
+  catch (_e) { return 'local'; }
+}
+function _quizLengthCfg(){
+  try {
+    if (typeof loadQuizLengths === 'function') return loadQuizLengths(_activeStudentIdForQuiz());
+  } catch (_e) {}
+  return { lesson: 'default', unit: 'default' };
+}
+// Resolve the lesson-quiz count for a given bank; clamps to the bank, never
+// below the available count. Falls back to today's default-8 behavior if the
+// quiz-config helper is somehow unavailable.
+function _resolveLessonQuizCount(bank){
+  var size = (bank && bank.length) ? bank.length : 0;
+  try {
+    if (typeof resolveLessonCount === 'function') return resolveLessonCount(_quizLengthCfg().lesson, size);
+  } catch (_e) {}
+  return Math.min(8, size);
+}
+
 // Called by inline onclick — avoids post-innerHTML assignment issues
 function startLessonQuiz(unitIdx, lessonIdx){
   CUR.lessonIdx = lessonIdx;
@@ -334,11 +358,13 @@ function startLessonQuiz(unitIdx, lessonIdx){
       var _g = localStorage.getItem('mmr_grade');
       _trackEvent('lesson_started', { unit_id: 'u' + unitIdx, lesson_id: l.id, grade: _g || null });
     } catch (_) {}
+    var bank = l.qBank || l.quiz;
+    var _lessonN = _resolveLessonQuizCount(bank);
     var lqa = l.lessonQuizAttempt;
-    var prebuilt = (lqa && lqa.balanceBySubSkill && (l.qBank||l.quiz))
-      ? _buildLessonAttempt(l.qBank || l.quiz, lqa)
+    var prebuilt = (lqa && lqa.balanceBySubSkill && bank)
+      ? _buildLessonAttempt(bank, lqa, _lessonN)
       : null;
-    _runQuiz(l.qBank||l.quiz, 'lq_'+l.id, l.icon+' '+l.title, 'lesson', unitIdx, prebuilt);
+    _runQuiz(bank, 'lq_'+l.id, l.icon+' '+l.title, 'lesson', unitIdx, prebuilt, null, _lessonN);
   }).catch(function(){ alert('Could not load quiz. Check your connection.'); });
 }
 
@@ -350,6 +376,22 @@ function startUnitQuiz(unitIdx){
       _trackEvent('quiz_started',      { unit_id: 'u' + unitIdx, quiz_type: 'unit', grade: _g || null });
       _trackEvent('unit_test_started', { unit_id: 'u' + unitIdx });
     } catch (_) {}
+    // ── Configurable unit length ──────────────────────────────────────────
+    // "default" (or a number equal to this unit's native size) keeps the native
+    // path below exactly as today (K blueprint / G1 sampler / G2-3 25). "All" or
+    // a different custom number samples from the pooled eligible bank instead,
+    // serving exactly the resolved count without duplicates (never > pool size).
+    try {
+      if (typeof resolveUnitDecision === 'function' && typeof unitEligibleBank === 'function'){
+        var _nativeSize = (typeof _unitQuizSize === 'function') ? _unitQuizSize(u) : 25;
+        var _pooled     = unitEligibleBank(u);
+        var _decision   = resolveUnitDecision(_quizLengthCfg().unit, _nativeSize, _pooled.length);
+        if (_decision.mode === 'pooled' && _pooled.length > 0){
+          _runQuiz(_pooled, u.id+'_uq', u.name+' — Unit Test', 'unit', unitIdx, null, null, _decision.count);
+          return;
+        }
+      }
+    } catch (_e) { /* fall through to native path */ }
     if(u.quizBlueprint && typeof _buildKUnitQuiz === 'function'){
       // Blueprint sampler enforces per-lesson counts — bypass _runQuiz's
       // _weightedSample by passing the bank as _prebuiltQs.
@@ -443,7 +485,12 @@ function _masteryWeightedSample(bank, n){
   });
   const result = [];
   const remaining = [...pool];
-  for(let i = 0; i < Math.min(n, remaining.length); i++){
+  // Compute the draw count ONCE — `remaining` shrinks as we splice, so
+  // re-evaluating Math.min(n, remaining.length) inside the condition would
+  // stop at roughly half the pool when n approaches the pool size (breaking
+  // "All" / large custom lengths). Cap once, then draw exactly that many.
+  const draw = Math.min(n, remaining.length);
+  for(let i = 0; i < draw; i++){
     const total = remaining.reduce(function(s, x){ return s + x.w; }, 0);
     let r = Math.random() * total;
     let pick = remaining.length - 1;
@@ -528,8 +575,11 @@ function _weightedSample(bank, n, quizType){
 
 // Builds an 8-question attempt from the full quizBank using lessonQuizAttempt rules.
 // Only used when lqa.balanceBySubSkill === true.
-function _buildLessonAttempt(bank, lqa) {
-  const n          = lqa.questionCount || 8;
+function _buildLessonAttempt(bank, lqa, overrideN) {
+  // overrideN (when a positive number) is the configurable lesson-quiz length,
+  // already clamped to the bank by resolveLessonCount. Falls back to the
+  // lesson's own questionCount, then 8.
+  const n          = (typeof overrideN === 'number' && overrideN > 0) ? overrideN : (lqa.questionCount || 8);
   const mix        = lqa.difficultyMix || { easy: 3, medium: 4, hard: 1 };
   const required   = lqa.requiredSubSkills || [];
   const maxNL      = lqa.maxNumberLineQuestions   != null ? lqa.maxNumberLineQuestions   : 99;
@@ -603,7 +653,7 @@ function _buildLessonAttempt(bank, lqa) {
   return selected;
 }
 
-function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode){
+function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode, count){
   if(!_prebuiltQs && (!bank || bank.length === 0)){ alert('No questions found for this quiz.'); return; }
   CUR.unitIdx = unitIdx != null ? unitIdx : null;
   const u = unitIdx != null ? UNITS_DATA[unitIdx] : null;
@@ -611,9 +661,20 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode){
   // Practice mode pulls from a smaller, focused pool — always respect the bank length
   // and never trigger the 8/25/50 default sample size that's intended for official quizzes.
   const isPractice = mode === 'practice';
+  // Native attempt size when no custom `count` is threaded in (final test never
+  // receives a count, so its 50-question behavior is untouched).
+  const _nativeN = type==='final' ? 50 : type==='unit' ? 25 : 8;
+  const _hasCount = (typeof count === 'number' && isFinite(count) && count > 0);
   const n = isPractice ? (bank ? bank.length : 0)
-                       : (type==='final' ? 50 : type==='unit' ? 25 : 8);
-  const qs = _prebuiltQs || (isPractice ? bank.slice() : _weightedSample(bank, n, type));
+                       : (_hasCount ? Math.min(count, bank.length) : _nativeN);
+  // _weightedSample is locked to the per-type difficulty targets (sum = _nativeN)
+  // and only clamps DOWN — it cannot serve a larger custom count. For any count
+  // that differs from the native total, sample exactly `n` via the flat mastery
+  // sampler (without replacement → no duplicate questions in one attempt).
+  const _useBalanced = !_hasCount || n === _nativeN;
+  const qs = _prebuiltQs
+    || (isPractice ? bank.slice()
+        : (_useBalanced ? _weightedSample(bank, n, type) : _masteryWeightedSample(bank, n)));
 
   CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0, mode: mode || null };
   _quizStartedAt = Date.now();
@@ -891,6 +952,11 @@ function _renderQ(){
   qz._answered = false;
   // Per-question timer — captures how long student spends on this question
   qz._qStartedAt = Date.now();
+
+  // Keep the note pad's read-only problem preview in sync when the student
+  // moves to the next question while the pad is open.
+  var _scOv = document.getElementById('scratch-overlay');
+  if(_scOv && _scOv.style.display === 'flex'){ _renderScratchProblem(); }
 }
 
 function _pickAnswer(btnIdx){
@@ -3310,7 +3376,25 @@ function openScratchPad(){
   const overlay = document.getElementById('scratch-overlay');
   if(!overlay) return;
   overlay.style.display = 'flex';
+  _renderScratchProblem();
   setTimeout(_initScratchCanvas, 50);
+}
+
+// Read-only preview of the current quiz problem inside the note pad, so the
+// problem stays visible while the student writes. Renders the stem + the
+// problem visual only — no answer choices, no buttons, no interaction.
+function _renderScratchProblem(){
+  const box  = document.getElementById('scratch-problem');
+  const body = document.getElementById('scratch-problem-body');
+  if(!box || !body) return;
+  const qz = (typeof CUR !== 'undefined') ? CUR.quiz : null;
+  const q  = (qz && qz.questions && qz.idx != null) ? qz.questions[qz.idx] : null;
+  if(!q || (q.t == null && q.prompt == null)){ box.hidden = true; body.innerHTML = ''; return; }
+  let visual = '';
+  try { visual = q.v ? _buildVisualHTML(q.v) : (q.s ? '<div class="q-visual">'+q.s+'</div>' : ''); }
+  catch(e){ visual = ''; }
+  body.innerHTML = '<div class="q-text">'+_qText(q.t || q.prompt)+'</div>' + visual;
+  box.hidden = false;
 }
 
 function closeScratchPad(){
@@ -3486,18 +3570,33 @@ function confirmRestart(){
   }
   if(qz.id) _clearPausedQuiz(qz.id);
   let bank;
+  let restartCount;  // undefined → _runQuiz uses native sizing (final unchanged)
   if(qz.type === 'lesson'){
     const u = UNITS_DATA[CUR.unitIdx];
     const l = u.lessons[CUR.lessonIdx];
     bank = l.qBank || l.quiz;
+    restartCount = _resolveLessonQuizCount(bank);
   } else if(qz.type === 'final'){
     if(qz.id === 'final_test_balanced'){ startFinalTestBalanced(); return; }
     bank = UNITS_DATA.flatMap(u => u.unitQuiz || u.testBank || []);
   } else {
     const u = UNITS_DATA[CUR.unitIdx];
-    bank = u.testBank || u.unitQuiz;
+    // Mirror startUnitQuiz: honor a pooled (All/custom) length on restart; a
+    // default/native length keeps the existing native sampling below.
+    try {
+      if(typeof resolveUnitDecision === 'function' && typeof unitEligibleBank === 'function'){
+        const _nativeSize = (typeof _unitQuizSize === 'function') ? _unitQuizSize(u) : 25;
+        const _pooled = unitEligibleBank(u);
+        const _decision = resolveUnitDecision(_quizLengthCfg().unit, _nativeSize, _pooled.length);
+        if(_decision.mode === 'pooled' && _pooled.length > 0){
+          bank = _pooled;
+          restartCount = _decision.count;
+        }
+      }
+    } catch(_e) {}
+    if(!bank){ bank = u.testBank || u.unitQuiz; }
   }
-  _runQuiz(bank, qz.id, qz.label, qz.type, CUR.unitIdx);
+  _runQuiz(bank, qz.id, qz.label, qz.type, CUR.unitIdx, null, null, restartCount);
 }
 
 function afterResults(){
