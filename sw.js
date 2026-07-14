@@ -1,4 +1,4 @@
-const CACHE = 'math-workbook-v6.0.36-g2-u4l1-addition-scope';
+const CACHE = 'math-workbook-v6.0.37-g2-u4l1-regroup-rebuild';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 // Install — cache core assets

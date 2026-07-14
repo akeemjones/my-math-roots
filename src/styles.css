@@ -1144,7 +1144,7 @@ body.a11y-focus #qhint-btn:focus{
 .rev-h.ok{ color:#1a6e3c; }
 .rev-h.no{ color:#a93226; }
 .rev-correct{ font-size:var(--fs-base); font-weight:900; color:#27ae60; margin-bottom:3px; }
-.rev-exp{ font-size:var(--fs-base); line-height:1.5; color:var(--txt); }
+.rev-exp{ font-size:var(--fs-base); line-height:1.5; color:var(--txt); white-space:pre-line; } /* pre-line: step-by-step regrouping explanations separate steps with \n */
 .rev-tip{ margin-top:6px; font-size:var(--fs-sm); color:#7b4f12; background:rgba(255,193,7,.18); border-radius:8px; padding:6px 10px; }
 .rev-time{ margin-top:4px; font-size:var(--fs-sm); color:var(--txt2); }
 .rev-misconception{ font-size:var(--fs-sm); color:#7b4f12; background:rgba(255,193,7,.18); border-radius:8px; padding:5px 10px; margin:4px 0; }

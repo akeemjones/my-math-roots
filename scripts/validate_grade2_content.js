@@ -54,7 +54,12 @@ const OP = {
   u4l1: 'add', u4l2: 'sub',
   u10l2: 'add',
 };
-const RANGE = { u1l2: 24, u1l3: 20, u3l1: 200, u3l2: 200, u3l3: 200, u4l1: 1000, u4l2: 1000, u10l2: 50 };
+// u4l1 sums intentionally cross 1,000 (three-digit + three-digit with a
+// regrouped thousands place, per the lesson objective and CBE expectations).
+// The ceiling covers the largest correct sum (~1,464) plus the highest
+// over-count misconception distractor (~1,564) without relying on the check's
+// 10% tolerance band.
+const RANGE = { u1l2: 24, u1l3: 20, u3l1: 200, u3l2: 200, u3l3: 200, u4l1: 1600, u4l2: 1000, u10l2: 50 };
 
 // ---- known Grade-2 tag vocabulary ----
 const KNOWN_ERR = new Set(('err_over_count err_off_by_one err_under_count err_confused err_skip_count_error ' +
