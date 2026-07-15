@@ -4,7 +4,9 @@
     "serve": "npx serve dist --no-clipboard",
     "test": "jest",
     "audit": "npm audit --omit=dev",
-    "audit:full": "npm audit"
+    "audit:full": "npm audit",
+    "predeploy": "node build.js",
+    "deploy": "netlify deploy --prod --dir=dist"
   },
   "devDependencies": {
     "html-minifier-terser": "^7.2.0",
