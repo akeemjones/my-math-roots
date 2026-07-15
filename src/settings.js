@@ -1719,6 +1719,26 @@ function _closeParentAuth(){
 }
 
 
+// Hide grade options the product does not currently offer. Both the hero picker
+// and the settings picker mark their options with [data-grade], so one pass
+// covers both. Driven by app-config, so a grade can be re-exposed by editing
+// LAUNCH_GRADES or, on localhost, the mmr_flag_GRADE_<n> dev override.
+//
+// The grade the student is CURRENTLY on is never hidden: hiding it would leave
+// the picker showing a grade the student cannot see or switch away from. An
+// existing Grade 3 student keeps a visible, working picker; they simply cannot
+// switch INTO an unlaunched grade, and their parent gets an explicit prompt in
+// the dashboard to move them to a supported one.
+function _applyLaunchGradeVisibility(){
+  if(typeof isGradeLaunched !== 'function') return;
+  var active = localStorage.getItem('mmr_grade') || '2';
+  document.querySelectorAll('.grade-picker-opt[data-grade]').forEach(function(btn){
+    var g = btn.dataset.grade;
+    var show = isGradeLaunched(g) || g === active;
+    btn.style.display = show ? '' : 'none';
+  });
+}
+
 function _refreshGradeList(){
   var active = localStorage.getItem('mmr_grade') || '2';
   var lbl = document.getElementById('grade-picker-label');
@@ -1726,6 +1746,7 @@ function _refreshGradeList(){
   document.querySelectorAll('.grade-picker-opt[data-grade]').forEach(function(btn){
     btn.classList.toggle('grade-picker-active', btn.dataset.grade === active);
   });
+  _applyLaunchGradeVisibility();
 }
 
 function toggleGradePicker(){
@@ -1746,6 +1767,14 @@ function pickGrade(val){
   if(picker) picker.classList.remove('open');
   var heroPicker = document.getElementById('hero-grade-picker');
   if(heroPicker) heroPicker.classList.remove('open');
+  // index.html still calls pickGrade() through inline onclick attributes, so
+  // this is reachable independently of _applyLaunchGradeVisibility hiding the
+  // button. Refuse unlaunched grades here too; switchGrade() guards the write
+  // itself as the last line of defense.
+  if(typeof isGradeLaunched === 'function' && !isGradeLaunched(val)){
+    console.warn('[grade] refused: grade ' + val + ' is not available.');
+    return;
+  }
   switchGradeUI(val);
 }
 

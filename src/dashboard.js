@@ -2714,6 +2714,90 @@ function _getDashboardViewGrade() {
   return 'g2';
 }
 
+// ── Launch-grade gating helpers ───────────────────────────────────────────
+//
+// Grade availability is decided by app-config (LAUNCH_GRADES). Grade 3 ships
+// hidden: 89 of its 97 lessons are empty shells, and the dashboard has never
+// supported it — _gradeBand has no 'g3' branch, so a Grade 3 view silently
+// degraded to Grade 2 and Grade 3 scores were dropped as 'legacy_unknown'.
+// See tests/g3.test.js for the characterization of that defect.
+//
+// The unfinished content is NOT deleted; only its customer-facing entry points
+// are closed, and a localhost dev override (mmr_flag_GRADE_3=1) reopens them.
+
+// Grade tokens ('K'|'1'|'2'|'3') mapped to dashboard view bands.
+var _DB_GRADE_TO_BAND = { 'K': 'k', '1': 'g1', '2': 'g2', '3': 'g3' };
+var _DB_GRADE_LABEL   = { 'K': 'Kindergarten', '1': 'Grade 1', '2': 'Grade 2',
+                          '3': 'Grade 3', '4': 'Grade 4', '5': 'Grade 5' };
+
+// Is this profile sitting on a grade the product no longer offers?
+function _dbIsUnsupportedGrade(grade) {
+  if (grade === null || grade === undefined || grade === '') return false;
+  if (typeof isGradeLaunched !== 'function') return false;
+  return !isGradeLaunched(grade);
+}
+
+// Options for the "Viewing:" filter — launched grades only, plus the currently
+// selected band if it is somehow unlaunched (so the control never lies about
+// what it is showing).
+function _dbViewGradeOptions(viewBand) {
+  var grades = (typeof launchGrades === 'function') ? launchGrades() : ['K', '1', '2'];
+  var out = '';
+  grades.forEach(function(g) {
+    var band = _DB_GRADE_TO_BAND[g];
+    if (!band) return;
+    out += '<option value="' + band + '"' + (viewBand === band ? ' selected' : '') + '>'
+        +  _DB_GRADE_LABEL[g] + '</option>';
+  });
+  return out;
+}
+
+// Options for the Edit Student grade picker.
+//
+// Fixes a reversal that shipped on master: Grade 1 was marked "(coming soon)"
+// despite being complete (40 lessons, 6,331 questions), while Grade 3 — 8%
+// built — was selectable. Launch grades are now driven by config.
+//
+// A profile already on an unlaunched grade keeps a visible, SELECTED but
+// DISABLED entry for it. Silently dropping the option would make the select
+// default to Kindergarten, so a parent who opened the sheet to change the
+// child's name and pressed Save would unknowingly move them to a different
+// grade. The disabled entry states the situation and forces a deliberate
+// choice; dbEditSave() refuses to persist an unlaunched grade regardless.
+function _dbEditGradeOptions(currentGrade) {
+  var grades = (typeof launchGrades === 'function') ? launchGrades() : ['K', '1', '2'];
+  var out = '';
+  if (_dbIsUnsupportedGrade(currentGrade)) {
+    out += '<option value="' + _esc(String(currentGrade)) + '" selected disabled>'
+        +  _esc(_DB_GRADE_LABEL[currentGrade] || ('Grade ' + currentGrade))
+        +  ' — no longer available</option>';
+  }
+  grades.forEach(function(g) {
+    out += '<option value="' + g + '"' + (currentGrade === g ? ' selected' : '') + '>'
+        +  _DB_GRADE_LABEL[g] + '</option>';
+  });
+  ['4', '5'].forEach(function(g) {
+    if (grades.indexOf(g) !== -1) return;
+    out += '<option value="' + g + '" disabled>' + _DB_GRADE_LABEL[g] + ' (coming soon)</option>';
+  });
+  return out;
+}
+
+// Parent-facing explanation shown beside the grade picker when a child is on a
+// withdrawn grade. States plainly that their work is kept, so nobody assumes
+// changing grade discards it.
+function _dbUnsupportedGradeNotice(currentGrade) {
+  if (!_dbIsUnsupportedGrade(currentGrade)) return '';
+  var label = _DB_GRADE_LABEL[currentGrade] || ('Grade ' + currentGrade);
+  return '<div style="margin:6px 0 12px;padding:10px 12px;border-radius:8px;'
+    + 'background:#fff8e1;border:1px solid #ffe082;font-size:.78rem;color:#5d4037;line-height:1.45">'
+    + '<strong>' + _esc(label) + ' is not available right now.</strong> '
+    + 'We are still finishing its lessons, so it is no longer offered. '
+    + 'This student’s ' + _esc(label) + ' work is saved and is not deleted — '
+    + 'choose a supported grade above to keep learning.'
+    + '</div>';
+}
+
 function _setDashboardViewGrade(band) {
   var b = _gradeBand(band);
   if (!b) return;
@@ -5315,10 +5399,7 @@ function renderDashboard() {
     + '<label for="db-view-grade-select" style="margin:0">Viewing:</label>'
     + '<select id="db-view-grade-select" class="db-view-grade-select" data-action="_setDashboardViewGrade"'
     + ' style="font-family:inherit;font-size:.9rem;padding:4px 8px;border:1px solid #cfd8dc;border-radius:6px;background:#fff;cursor:pointer">'
-    +   '<option value="k"'  + (viewBand === 'k'  ? ' selected' : '') + '>Kindergarten</option>'
-    +   '<option value="g1"' + (viewBand === 'g1' ? ' selected' : '') + '>Grade 1</option>'
-    +   '<option value="g2"' + (viewBand === 'g2' ? ' selected' : '') + '>Grade 2</option>'
-    +   '<option value="g3"' + (viewBand === 'g3' ? ' selected' : '') + '>Grade 3</option>'
+    +   _dbViewGradeOptions(viewBand)
     + '</select>'
     + '<span style="color:#90a4ae;font-size:.75rem">(view filter only &mdash; does not change student\'s enrollment)</span>'
     + '</div>' +
@@ -5649,13 +5730,9 @@ function openEditProfileSheet(studentId) {
     + '<input id="db-edit-age" type="number" min="4" max="18" value="' + _esc(String(profile.age || '')) + '" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Grade level</label>'
     + '<select id="db-edit-grade" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:4px;background:#fff">'
-    +   '<option value="K"' + (currentGrade === 'K' ? ' selected' : '') + '>Kindergarten</option>'
-    +   '<option value="2"' + (currentGrade === '2' ? ' selected' : '') + '>Grade 2</option>'
-    +   '<option value="1" disabled>Grade 1 (coming soon)</option>'
-    +   '<option value="3"' + (currentGrade === '3' ? ' selected' : '') + '>Grade 3</option>'
-    +   '<option value="4" disabled>Grade 4 (coming soon)</option>'
-    +   '<option value="5" disabled>Grade 5 (coming soon)</option>'
+    +   _dbEditGradeOptions(currentGrade)
     + '</select>'
+    + _dbUnsupportedGradeNotice(currentGrade)
     + '<div style="font-size:.72rem;color:#90a4ae;margin-bottom:12px">What level of math is this student working on?</div>'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Avatar</label>'
     + '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">'
@@ -5701,6 +5778,17 @@ async function dbEditSave(studentId) {
   var newGrade = gradeInp ? gradeInp.value : null;
   var oldGrade = _dbResolveProfileGrade(profile, studentId);
   var nNew = (typeof normalizeGrade === 'function') ? normalizeGrade(newGrade) : newGrade;
+
+  // Refuse to persist a grade the product does not offer. Guards the write
+  // itself, so no UI path (or a stale sheet left open across a config change)
+  // can put a child back onto a withdrawn grade. A child already on one keeps
+  // that grade until the parent actively picks a supported one — this rejects
+  // the save rather than silently rewriting their enrollment.
+  if (_dbIsUnsupportedGrade(nNew)) {
+    msg.textContent = (_DB_GRADE_LABEL[nNew] || ('Grade ' + nNew))
+      + ' is not available. Please choose a supported grade.';
+    return;
+  }
 
   try {
     var result = await Promise.race([

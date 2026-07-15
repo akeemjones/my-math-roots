@@ -3607,6 +3607,14 @@ async function switchGrade(newGrade){
   if(_gradeSwitching) return;
   var current = localStorage.getItem('mmr_grade') || '2';
   if(newGrade === current) return;
+  // Last line of defense. This is the only writer of mmr_grade that a student
+  // action can reach, so an unlaunched grade must not get past it even if a UI
+  // guard is bypassed. Switching AWAY from an unlaunched grade stays allowed —
+  // that is the recovery path off Grade 3.
+  if(typeof isGradeLaunched === 'function' && !isGradeLaunched(newGrade)){
+    console.warn('[grade] refused switch to unavailable grade:', newGrade);
+    return;
+  }
   _gradeSwitching = true;
   if(typeof _pushAll === 'function'){
     try{

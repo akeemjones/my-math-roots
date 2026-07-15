@@ -39,6 +39,9 @@ function _updateHeroSummary(){
   if(tag) tag.textContent = unitCount + ' Units \u00b7 ' + lessonCount + ' Lessons \u00b7 Lesson Quizzes \u00b7 Unit Tests';
   var hint = document.getElementById('carousel-hint');
   if(hint) hint.textContent = '\uD83D\uDCDC Scroll to browse all ' + unitCount + ' units';
+  // buildHome() runs on every boot, so this is the reliable place to gate the
+  // hero grade picker to the grades the product actually offers.
+  if(typeof _applyLaunchGradeVisibility === 'function') _applyLaunchGradeVisibility();
 }
 
 function buildHome(instant){
