@@ -3158,8 +3158,8 @@ function _dbWipeLocalProgressCaches(gradeBand, sessionMatches) {
 
 // Pure helper: clear every in-memory field on a student object that the
 // server-side reset_student_data RPC clears server-side. Kept pure (no DOM,
-// no Supabase, no globals) so it can be unit-tested directly via the
-// dashboard/dashboard.js mirror.
+// no Supabase, no globals) so it can be unit-tested directly through the
+// production bundle harness (tests/dashboard-harness.js).
 //
 // Fields cleared mirror the SQL function exactly: quiz_scores + user_mastery
 // + the seven progress columns on student_profiles (mastery_json,
@@ -4210,9 +4210,10 @@ function _summarizeInterventions(events) {
 }
 
 // ── Phase 1 Learning Insights: grade-filter helpers + builder ────────────
-// Mirrors dashboard/dashboard.js. The standalone copy is the test surface
-// (tests/dashboard.test.js imports from dashboard/dashboard.js); this copy
-// must stay logic-identical so the in-app dashboard renders the same cards.
+// This file IS the test surface: tests/dashboard.test.js loads it through
+// tests/dashboard-harness.js, which evaluates the real bundle slice. The
+// standalone dashboard/dashboard.js copy is not deployed and no longer backs
+// any test; it is pending removal and must not be treated as authoritative.
 
 // Infer the grade band of a single intervention event.
 function _inferInterventionGrade(e) {

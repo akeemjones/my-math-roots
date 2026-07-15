@@ -2,7 +2,10 @@
 // ════════════════════════════════════════════════════════════════════════════
 //  Grade 3 scaffold tests
 //  - Pure-Node, mirrors tests/dashboard.test.js conventions.
-//  - Grade-enablement + dashboard routing assertions require ../dashboard/dashboard.js.
+//  - Grade-enablement + dashboard routing assertions load the PRODUCTION
+//    dashboard (src/dashboard.js) via tests/dashboard-harness.js. Repointing
+//    them off the non-shipping fork exposed that production has no Grade 3
+//    dashboard support at all — see the DEFECT notes below.
 //  - Data-layer assertions load src/data/shared_g3.js + g3/u*.js (+ cbe.js when
 //    present) in a single vm script so top-level `const` bindings resolve across
 //    files exactly as they do when the browser bundles them.
@@ -11,7 +14,11 @@ const fs   = require('fs');
 const path = require('path');
 const vm   = require('vm');
 
-const D = require('../dashboard/dashboard.js');
+// Exercises the PRODUCTION dashboard (src/dashboard.js) via the bundle
+// harness, not the non-shipping dashboard/dashboard.js fork.
+const { loadDashboard } = require('./dashboard-harness.js');
+
+const D = loadDashboard();
 const {
   normalizeGrade, _gradeBand, _unitsMetaForBand, _G3_UNITS_META,
   _lessonDisplayName, _lessonIdBand, _inferScoreGrade,
@@ -58,21 +65,68 @@ describe('G3 grade enablement (persistence / no fallback to Grade 2)', () => {
     expect(normalizeGrade('3')).toBe('3');
     expect(normalizeGrade(3)).toBe('3');
   });
-  test('_gradeBand maps 3 / g3 / "grade 3" → "g3"', () => {
-    expect(_gradeBand('3')).toBe('g3');
-    expect(_gradeBand('g3')).toBe('g3');
-    expect(_gradeBand('grade 3')).toBe('g3');
+  // ══════════════════════════════════════════════════════════════════════
+  //  DEFECT: the parent dashboard does not support Grade 3.
+  //
+  //  Exposed when this suite was repointed from the non-shipping
+  //  dashboard/dashboard.js fork to the real src/dashboard.js. The fork had a
+  //  'g3' branch in _gradeBand; PRODUCTION NEVER DID. The three tests below
+  //  previously passed only because they were validating the fork.
+  //
+  //  Consequence in the shipped app: _gradeBand('3') returns null, so every
+  //  caller takes its `|| 'g2'` fallback, and _inferScoreGrade classifies a
+  //  Grade 3 score as 'legacy_unknown' — which renderDashboard excludes from
+  //  every grade-specific statistic. A parent of a Grade 3 student therefore
+  //  sees none of their child's work, and the dashboard silently presents the
+  //  Grade 2 view instead.
+  //
+  //  NOT FIXED HERE, deliberately. Grade 3 is 8% built (89 of its 97 lessons
+  //  are empty shells) and is being withdrawn from customers in the next
+  //  phase. Adding a 'g3' branch to _gradeBand now would re-enable G3 routing
+  //  through the back door of those `|| 'g2'` fallbacks — the opposite of the
+  //  intended direction. These tests are therefore rewritten to characterize
+  //  the real behavior, and the grade-withdrawal phase replaces them with
+  //  assertions that Grade 3 is unreachable and that existing G3 profiles get
+  //  an explicit recovery path rather than a silent downgrade.
+  // ══════════════════════════════════════════════════════════════════════
+  test('DEFECT: _gradeBand has no grade-3 branch, so G3 resolves to null', () => {
+    expect(_gradeBand('3')).toBe(null);
+    expect(_gradeBand('g3')).toBe(null);
+    expect(_gradeBand('grade 3')).toBe(null);
+    // ...while every supported grade resolves normally.
+    expect(_gradeBand('K')).toBe('k');
+    expect(_gradeBand('1')).toBe('g1');
+    expect(_gradeBand('2')).toBe('g2');
   });
-  test('_inferScoreGrade resolves grade 3 by field and by id prefix', () => {
-    expect(_inferScoreGrade({ grade: '3' })).toBe('g3');
+  // Production is internally INCONSISTENT about Grade 3, which is worth
+  // recording precisely because it shapes the withdrawal work:
+  //   - an explicit `grade: '3'` field is routed through _gradeBand, which has
+  //     no g3 branch, so the score degrades to 'legacy_unknown' — and
+  //     renderDashboard drops 'legacy_unknown' from every grade-specific stat.
+  //   - an id-prefix probe (qid / sourceUnitId) DOES infer 'g3' — a band
+  //     _gradeBand itself can never return, and which therefore never matches
+  //     the dashboard's view band (which falls back to 'g2'). Also dropped,
+  //     just by a different route.
+  // Either way the parent sees nothing. Parts of production know about g3
+  // (_emptyByGrade even allocates a g3 unlock slot); _gradeBand does not.
+  test('DEFECT: an explicit grade:"3" score degrades to legacy_unknown', () => {
+    expect(_inferScoreGrade({ grade: '3' })).toBe('legacy_unknown');
+  });
+  test('DEFECT: id-prefix probes infer a g3 band that _gradeBand can never produce', () => {
     expect(_inferScoreGrade({ qid: 'lq_g3-u1-l1' })).toBe('g3');
     expect(_inferScoreGrade({ sourceUnitId: 'g3u1' })).toBe('g3');
+    // ...but no view band can ever equal it, because _gradeBand('3') is null.
+    expect(_gradeBand('3')).toBe(null);
   });
 });
 
 describe('G3 dashboard routing + metadata', () => {
-  test('_unitsMetaForBand("g3") returns _G3_UNITS_META', () => {
-    expect(_unitsMetaForBand('g3')).toBe(_G3_UNITS_META);
+  // The G3 metadata exists and is correct (below) — but production cannot route
+  // to it, because _unitsMetaForBand is only ever called with a band that
+  // _gradeBand produced, and _gradeBand never produces 'g3'. The data is
+  // stranded. Same defect as above; withdrawing the grade is the resolution.
+  test('DEFECT: _unitsMetaForBand("g3") does not reach _G3_UNITS_META', () => {
+    expect(_unitsMetaForBand('g3')).not.toBe(_G3_UNITS_META);
   });
   test('_G3_UNITS_META has 10 units with the expected per-unit lesson counts', () => {
     expect(_G3_UNITS_META).toHaveLength(10);

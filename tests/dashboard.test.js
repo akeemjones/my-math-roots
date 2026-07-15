@@ -14,6 +14,13 @@ if (typeof globalThis.localStorage === 'undefined') {
   };
 }
 
+// Exercises the PRODUCTION dashboard (src/dashboard.js — the file build.js
+// bundles into dist/app.js), loaded through the bundle harness so the globals
+// it depends on (normalizeGrade from state.js) are present exactly as they are
+// in the shipped app. Previously this suite imported dashboard/dashboard.js, a
+// fork that is not deployed and had drifted behind production.
+const { loadDashboard } = require('./dashboard-harness.js');
+
 const {
   getCategoryFromId,
   _computeOverallStats,
@@ -35,8 +42,6 @@ const {
   _computeUnitInsights,
   _unitIndexFromId,
   normalizeGrade,
-  _filterActivityByGrade,
-  _masteryKeyFor,
   _summarizeInterventions,
   _dbResolveProfileGrade,
   _dbProfileGradeKey,
@@ -59,7 +64,7 @@ const {
   _dbReadLocalResetEpoch,
   _dbWriteLocalResetEpoch,
   _dbShouldClearForResetEpoch,
-} = require('../dashboard/dashboard.js');
+} = loadDashboard(globalThis.localStorage);
 
 function makeScore(overrides) {
   return Object.assign({
@@ -71,6 +76,18 @@ function makeScore(overrides) {
 
 const TODAY     = new Date().toISOString().slice(0, 10);
 const YESTERDAY = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+// Production buckets activity by LOCAL day (src/dashboard.js _localDayKey), not
+// UTC, so day-bucketing assertions must compare against local keys or they fail
+// for anyone west of UTC late in the day. Mirrors _localDayKey exactly.
+function localDayKey(d) {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  return dt.getFullYear() + '-' +
+    String(dt.getMonth() + 1).padStart(2, '0') + '-' +
+    String(dt.getDate()).padStart(2, '0');
+}
+const TODAY_LOCAL     = localDayKey(new Date());
+const YESTERDAY_LOCAL = localDayKey(new Date(Date.now() - 86400000));
 
 // ── getCategoryFromId ─────────────────────────────────────────────────────
 describe('getCategoryFromId', () => {
@@ -232,11 +249,33 @@ describe('_computeActivityData', () => {
     expect(_computeActivityData([], 7)[0].date).toBe(TODAY);
   });
 
+  // Production buckets a score by _scoreDayKey(), which trusts `s.id` (the
+  // epoch ms stamped at _finishQuiz) and derives a LOCAL day key; it only falls
+  // back to parsing `s.date` when `id` is absent. The fork instead grouped on
+  // the raw `s.date` string in UTC and had no _scoreDayKey at all — production
+  // gained it as a timezone-correctness fix the fork never received.
+  //
+  // So the fixture must be internally consistent: a score dated yesterday also
+  // carries yesterday's id, exactly as real data does. (The previous fixture
+  // set `date: YESTERDAY` while makeScore defaulted `id: Date.now()`, which no
+  // real score can be, and which production correctly buckets as today.)
   test('counts completed quizzes per day', () => {
-    const scores = [makeScore({ date: TODAY }), makeScore({ date: TODAY }), makeScore({ date: YESTERDAY })];
+    const scores = [
+      makeScore({ date: TODAY, id: Date.now() }),
+      makeScore({ date: TODAY, id: Date.now() - 1 }),
+      makeScore({ date: YESTERDAY, id: Date.now() - 86400000 }),
+    ];
     const r = _computeActivityData(scores, 7);
-    expect(r.find(d => d.date === TODAY).quizCount).toBe(2);
-    expect(r.find(d => d.date === YESTERDAY).quizCount).toBe(1);
+    expect(r.find(d => d.date === TODAY_LOCAL).quizCount).toBe(2);
+    expect(r.find(d => d.date === YESTERDAY_LOCAL).quizCount).toBe(1);
+  });
+
+  test('buckets by the score timestamp, not the display date string', () => {
+    // A score whose display string disagrees with its timestamp follows the
+    // timestamp — the canonical value that survives sync.
+    const r = _computeActivityData([makeScore({ date: YESTERDAY, id: Date.now() })], 7);
+    expect(r.find(d => d.date === TODAY_LOCAL).quizCount).toBe(1);
+    expect(r.find(d => d.date === YESTERDAY_LOCAL).quizCount).toBe(0);
   });
 
   test('skips scores with null pct or zero total', () => {
@@ -887,52 +926,53 @@ describe('normalizeGrade', () => {
   });
 });
 
-// ── _filterActivityByGrade ────────────────────────────────────────────────
+// ── Grade-scoped mastery key format ───────────────────────────────────────
+//
+//  This replaces a suite that tested `_masteryKeyFor()`, a helper that exists
+//  ONLY in the non-shipping dashboard/dashboard.js fork — nothing in src/ ever
+//  defined or called it, so those assertions proved nothing about the product.
+//
+//  The key FORMAT it described is real and load-bearing: src/auth.js builds it
+//  inline as 'mmr_mastery_v1_' + normalizeGrade(grade) on the push and pull
+//  paths. Getting it wrong silently detaches a student's mastery from their
+//  grade. Since production inlines the formula rather than exposing a function,
+//  pin it as a source contract (the convention tests/learning-calendar-hydrate
+//  .test.js already uses) plus the normalizer that feeds it.
+describe('grade-scoped mastery key (production formula in src/auth.js)', () => {
+  const _fs = require('fs');
+  const _path = require('path');
+  const authSrc = _fs.readFileSync(_path.join(__dirname, '..', 'src', 'auth.js'), 'utf8');
 
-describe('_filterActivityByGrade', () => {
-  const events = [
-    { ts: 1, grade: 'K', tags: ['counting'],    correct: true  },
-    { ts: 2, grade: '2', tags: ['regrouping'],  correct: false },
-    { ts: 3, grade: 'k', tags: ['shapes'],      correct: true  }, // lowercase legacy
-    { ts: 4, grade: 'K', tags: ['subtraction'], correct: false },
-    { ts: 5, grade: '2', tags: ['addition'],    correct: true  },
-    { ts: 6,             tags: ['legacy'],      correct: true  }, // missing grade — kept
-  ];
-  test('K active grade returns only K events plus untagged', () => {
-    const out = _filterActivityByGrade(events, 'K');
-    expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 4, 6]);
+  test('auth.js builds the mastery key from the normalized grade', () => {
+    expect(authSrc).toMatch(/'mmr_mastery_v1_'\s*\+\s*_g\b/);
+    expect(authSrc).toMatch(/'mmr_mastery_v1_'\s*\+\s*_gPull\b/);
   });
-  test('Grade 2 active grade returns only G2 events plus untagged', () => {
-    const out = _filterActivityByGrade(events, '2');
-    expect(out.map(function(e){ return e.ts; })).toEqual([2, 5, 6]);
+
+  test('the normalizer feeding the key canonicalizes every K alias', () => {
+    expect('mmr_mastery_v1_' + normalizeGrade('K')).toBe('mmr_mastery_v1_K');
+    expect('mmr_mastery_v1_' + normalizeGrade('k')).toBe('mmr_mastery_v1_K');
+    expect('mmr_mastery_v1_' + normalizeGrade('kindergarten')).toBe('mmr_mastery_v1_K');
+    expect('mmr_mastery_v1_' + normalizeGrade('0')).toBe('mmr_mastery_v1_K');
   });
-  test('lowercase active grade still works (caller may pass raw value)', () => {
-    const out = _filterActivityByGrade(events, 'k');
-    expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 4, 6]);
-  });
-  test('handles null events list', () => {
-    expect(_filterActivityByGrade(null, 'K')).toEqual([]);
-    expect(_filterActivityByGrade(undefined, '2')).toEqual([]);
+
+  test('grades resolve to their own key; unknown falls back to Grade 2', () => {
+    expect('mmr_mastery_v1_' + normalizeGrade('1')).toBe('mmr_mastery_v1_1');
+    expect('mmr_mastery_v1_' + normalizeGrade('2')).toBe('mmr_mastery_v1_2');
+    expect('mmr_mastery_v1_' + normalizeGrade(null)).toBe('mmr_mastery_v1_2');
+    expect('mmr_mastery_v1_' + normalizeGrade('')).toBe('mmr_mastery_v1_2');
   });
 });
 
-// ── _masteryKeyFor ────────────────────────────────────────────────────────
-
-describe('_masteryKeyFor', () => {
-  test('produces canonical grade-scoped keys', () => {
-    expect(_masteryKeyFor('K')).toBe('mmr_mastery_v1_K');
-    expect(_masteryKeyFor('2')).toBe('mmr_mastery_v1_2');
-  });
-  test('K-aliases all resolve to mmr_mastery_v1_K', () => {
-    expect(_masteryKeyFor('k')).toBe('mmr_mastery_v1_K');
-    expect(_masteryKeyFor('kindergarten')).toBe('mmr_mastery_v1_K');
-    expect(_masteryKeyFor('0')).toBe('mmr_mastery_v1_K');
-  });
-  test('null/empty falls through to mmr_mastery_v1_2', () => {
-    expect(_masteryKeyFor(null)).toBe('mmr_mastery_v1_2');
-    expect(_masteryKeyFor('')).toBe('mmr_mastery_v1_2');
-  });
-});
+// NOTE — coverage gap recorded during the production-test migration.
+// The removed `_filterActivityByGrade` suite tested another fork-only phantom.
+// Production filters activity events INLINE inside renderDashboard
+// (src/dashboard.js, the `activityEvents` filter), and with different
+// semantics: it compares _gradeBand() bands ('k'|'g1'|'g2'), not normalizeGrade
+// tokens ('K'|'1'|'2'). That inline path has no unit coverage and cannot get
+// any without extracting it, which is out of scope for a test-migration commit
+// that must preserve production behavior. Close this when Phase 9 restructures
+// renderDashboard. `_filterInterventionsByGrade` — the real, shipped sibling —
+// remains covered below.
 
 // ── _dbResolveProfileGrade ────────────────────────────────────────────────
 
@@ -1035,29 +1075,21 @@ describe('grade split-brain isolation', () => {
     { ts: 5,                            lessonId: 'legacy',                      correct: true  },
   ];
 
-  describe('activity event isolation (_filterActivityByGrade)', () => {
-    test('K view contains only K events plus untagged — no Grade 2 events', () => {
-      const out = _filterActivityByGrade(mixedActivity, 'K');
-      expect(out.map(function(e){ return e.ts; })).toEqual([1, 3, 5]);
-      expect(out.find(function(e){ return e.unitId === 'u3'; })).toBeUndefined();
-    });
-
-    test('Grade 2 view contains only G2 events plus untagged — no K events', () => {
-      const out = _filterActivityByGrade(mixedActivity, '2');
-      expect(out.map(function(e){ return e.ts; })).toEqual([2, 4, 5]);
-      expect(out.find(function(e){ return e.unitId === 'ku3'; })).toBeUndefined();
-    });
-
-    test('K view does not contain Grade 2 weak-skill events', () => {
-      const out = _filterActivityByGrade(mixedActivity, 'K');
-      expect(out.some(function(e){ return e.tags && e.tags.includes('regrouping'); })).toBe(false);
-    });
-
-    test('Grade 2 view does not contain K weak-skill events', () => {
-      const out = _filterActivityByGrade(mixedActivity, '2');
-      expect(out.some(function(e){ return e.tags && e.tags.includes('counting'); })).toBe(false);
-    });
-  });
+  // COVERAGE GAP (recorded during the production-test migration).
+  //
+  // This sub-suite called `_filterActivityByGrade(events, grade)`, which exists
+  // only in the non-shipping dashboard/dashboard.js fork. Production has no
+  // such function: renderDashboard filters activity events inline, and against
+  // _gradeBand() bands ('k'|'g1'|'g2') rather than normalizeGrade() tokens
+  // ('K'|'1'|'2'). The assertions therefore described a function the product
+  // does not contain, and are removed rather than rewritten against a mirror
+  // that could drift the same way the fork did.
+  //
+  // The grade-isolation property they guarded is still covered here by
+  // `_filterInterventionsByGrade` (a real, shipped sibling), the skill-breakdown
+  // and unit-name sub-suites, and the mastery-key isolation suite below. The
+  // inline activity filter itself stays uncovered until Phase 9 restructures
+  // renderDashboard and the filter can be extracted without changing behavior.
 
   describe('skill breakdown isolation (_computeSkillBreakdown)', () => {
     // Build 5+ scores at each unitIdx so _computeWeakAreas can fire
@@ -1106,19 +1138,27 @@ describe('grade split-brain isolation', () => {
     });
   });
 
-  describe('mastery key isolation (_masteryKeyFor)', () => {
-    test('K profile reads K mastery key exclusively', () => {
-      expect(_masteryKeyFor('K')).toBe('mmr_mastery_v1_K');
-      expect(_masteryKeyFor('K')).not.toBe('mmr_mastery_v1_2');
+  // Rebuilt on the production formula. `_masteryKeyFor()` was a fork-only
+  // helper; production (src/auth.js) inlines 'mmr_mastery_v1_' + the
+  // normalized grade. The format itself is pinned by the source-contract suite
+  // above; here we assert the isolation property that matters — two grades can
+  // never collide on one key.
+  describe('mastery key isolation (production formula)', () => {
+    const masteryKey = (g) => 'mmr_mastery_v1_' + normalizeGrade(g);
+
+    test('K profile reads the K mastery key exclusively', () => {
+      expect(masteryKey('K')).toBe('mmr_mastery_v1_K');
+      expect(masteryKey('K')).not.toBe('mmr_mastery_v1_2');
     });
 
-    test('Grade 2 profile reads G2 mastery key exclusively', () => {
-      expect(_masteryKeyFor('2')).toBe('mmr_mastery_v1_2');
-      expect(_masteryKeyFor('2')).not.toBe('mmr_mastery_v1_K');
+    test('Grade 2 profile reads the G2 mastery key exclusively', () => {
+      expect(masteryKey('2')).toBe('mmr_mastery_v1_2');
+      expect(masteryKey('2')).not.toBe('mmr_mastery_v1_K');
     });
 
-    test('K mastery key and G2 mastery key are distinct', () => {
-      expect(_masteryKeyFor('K')).not.toBe(_masteryKeyFor('2'));
+    test('every supported grade gets a distinct key', () => {
+      const keys = ['K', '1', '2'].map(masteryKey);
+      expect(new Set(keys).size).toBe(3);
     });
   });
 });
@@ -2795,15 +2835,24 @@ describe('_dbProgressCacheKeysForReset', () => {
     expect(keys).not.toContain('wb_streak');
     expect(keys).not.toContain('wb_act_dates');
     expect(keys).not.toContain('wb_apptime');
-    expect(keys).not.toContain('wb_paused_quiz');
     expect(keys).not.toContain('wb_sc5');
     expect(keys).not.toContain('wb_done5');
     expect(keys).not.toContain('wb_mastery');
+    // ...with ONE deliberate exception. Production always wipes the paused-quiz
+    // key regardless of sessionMatches (src/dashboard.js
+    // _dbProgressCacheKeysForReset): it is a single global JSON map keyed by
+    // qid, so leaving it intact lets a paused entry from another student — or
+    // another device, under Tier 1 cross-device sync — surface on the reset
+    // student's next render. The fork predates that change and the previous
+    // assertion here encoded its stale behavior.
+    expect(keys).toContain('wb_paused_quiz');
   });
 
   test('unknown / invalid grade band returns empty grade-scoped keys; session keys still respect sessionMatches', () => {
-    expect(_dbProgressCacheKeysForReset('garbage', false)).toEqual([]);
-    expect(_dbProgressCacheKeysForReset(null, false)).toEqual([]);
+    // No grade-scoped keys for an unrecognized band — but the always-wiped
+    // paused-quiz key is still present (see the note above).
+    expect(_dbProgressCacheKeysForReset('garbage', false)).toEqual(['wb_paused_quiz']);
+    expect(_dbProgressCacheKeysForReset(null, false)).toEqual(['wb_paused_quiz']);
     // sessionMatches=true with invalid band still sweeps all grades + session
     const allGradesKeys = _dbProgressCacheKeysForReset('garbage', true);
     expect(allGradesKeys).toEqual(expect.arrayContaining([
