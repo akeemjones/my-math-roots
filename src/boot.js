@@ -4,6 +4,9 @@
 
 // All intentional global function/variable names declared across src/ files
 const _APP_GLOBALS = [
+  // app-config.js
+  'APP_CONFIG','_LEGACY_DEFAULTS','_configDevOverride','isFeatureOn','isGradeLaunched',
+  'normalizeGradeToken','launchGrades',
   // data/shared.js
   'q','_ICO','UNITS_DATA','_unitLoadPromises','_mergeUnitData','_loadUnit',
   // data/shared_k.js
