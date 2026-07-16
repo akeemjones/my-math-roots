@@ -266,6 +266,32 @@
 ════════════════════════════════════════
      HOME
 ════════════════════════════════════════ -->
+<!-- ── Unsupported-grade recovery ──────────────────────────────────────────────
+     Shown when the active grade points at curriculum the product no longer
+     offers (Grade 3). Blocks all learning navigation until a PARENT chooses a
+     supported grade — the app never picks one automatically. The student's
+     existing progress on the old grade is untouched. -->
+<div id="grade-recovery-screen" class="sc">
+  <div class="gr-wrap">
+    <h2 class="gr-title">Choose a grade to continue</h2>
+    <p class="gr-body" id="gr-intro">
+      This student&rsquo;s previous grade is not currently available.
+      Their Grade&nbsp;3 progress has been preserved.
+      Choose a supported grade to continue.
+    </p>
+    <p class="gr-note">A parent or guardian needs to make this choice.</p>
+    <div class="gr-choices">
+      <button class="gr-choice" type="button" data-action="chooseRecoveryGrade" data-arg="K">Kindergarten</button>
+      <button class="gr-choice" type="button" data-action="chooseRecoveryGrade" data-arg="1">Grade 1</button>
+      <button class="gr-choice" type="button" data-action="chooseRecoveryGrade" data-arg="2">Grade 2</button>
+    </div>
+    <p class="gr-msg" id="gr-msg" role="status" aria-live="polite"></p>
+    <p class="gr-fine">
+      Nothing is deleted. If Grade&nbsp;3 becomes available again, that work will still be there.
+    </p>
+  </div>
+</div>
+
 <div id="home" class="sc">
   <main aria-label="Home">
   <div class="home-in">

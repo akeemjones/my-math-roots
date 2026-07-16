@@ -339,6 +339,65 @@ describe('unfinished content is withdrawn, not destroyed', () => {
   });
 });
 
+// The client guard is defense in depth, not enforcement. Profile creation is a
+// direct table insert, so the database — not dbAddSave — is the real boundary.
+describe('server-side grade enforcement (draft, not applied)', () => {
+  const draft = 'supabase/migrations/DRAFT_20260716_launch_grade_enforcement.sql';
+
+  test('a reviewed draft exists and is clearly marked not-applied', () => {
+    expect(fs.existsSync(path.join(ROOT, draft))).toBe(true);
+    const sql = read(draft);
+    expect(sql).toMatch(/DRAFT — DO NOT APPLY/);
+    expect(sql).toMatch(/NOT applied to any environment/);
+  });
+
+  test('the draft filename cannot be picked up by the migration runner', () => {
+    // Tracked migrations are date-prefixed (20260xxx_*). DRAFT_* sorts outside
+    // that scheme and is not applied.
+    expect(draft).toMatch(/migrations\/DRAFT_/);
+    const applied = fs.readdirSync(path.join(ROOT, 'supabase', 'migrations'))
+      .filter((f) => /^\d{8}_/.test(f));
+    expect(applied).not.toContain('DRAFT_20260716_launch_grade_enforcement.sql');
+  });
+
+  test('it constrains only NEW assignments, so existing Grade 3 rows survive', () => {
+    const sql = read(draft);
+    // An UPDATE that leaves grade unchanged must always pass.
+    expect(sql).toMatch(/NEW\.grade IS NOT DISTINCT FROM OLD\.grade[\s\S]*?RETURN NEW/);
+    expect(sql).toMatch(/BEFORE INSERT OR UPDATE OF grade ON public\.student_profiles/);
+    // It must NOT tighten the existing CHECK, which would invalidate those rows.
+    expect(sql).not.toMatch(/ALTER TABLE[\s\S]*?student_profiles_grade_check[\s\S]*?CHECK \(grade IN \('K','1','2'\)\)/);
+  });
+
+  test('it closes the NULL-grade hole the existing CHECK leaves open', () => {
+    expect(read(draft)).toMatch(/NEW\.grade IS NULL[\s\S]*?grade_required/);
+  });
+
+  test('it fails closed if launch_settings is unreadable', () => {
+    expect(read(draft)).toMatch(/v_allowed IS NULL[\s\S]*?launch_settings_missing/);
+  });
+
+  test('it reads the allowed set from launch_settings, mirroring the client', () => {
+    const sql = read(draft);
+    expect(sql).toMatch(/launch_grades TEXT\[\] NOT NULL DEFAULT ARRAY\['K','1','2'\]/);
+    expect(sql).toMatch(/SELECT launch_grades INTO v_allowed FROM launch_settings WHERE id = 1/);
+    expect(launchGrades()).toEqual(['K', '1', '2']); // client and draft agree
+  });
+
+  test('it documents the required production action and a rollback', () => {
+    const sql = read(draft);
+    expect(sql).toMatch(/PRODUCTION ACTION REQUIRED/);
+    expect(sql).toMatch(/Rollback:/);
+    expect(sql).toMatch(/DROP TRIGGER IF EXISTS trg_enforce_launch_grade/);
+  });
+
+  // Until the draft is applied, the client guard is all there is — it stays.
+  test('the client guard remains in place as defense in depth', () => {
+    const fn = read('src/dashboard.js').match(/async function dbAddSave[\s\S]*?\n}/)[0];
+    expect(fn).toMatch(/isGradeLaunched\(addGrade\)/);
+  });
+});
+
 describe('production bundle excludes the unfinished Grade 3 curriculum', () => {
   const build = read('build.js');
 

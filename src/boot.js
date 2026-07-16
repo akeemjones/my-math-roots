@@ -5,8 +5,8 @@
 // All intentional global function/variable names declared across src/ files
 const _APP_GLOBALS = [
   // app-config.js
-  'APP_CONFIG','_LEGACY_DEFAULTS','_configDevOverride','isFeatureOn','isGradeLaunched',
-  'normalizeGradeToken','launchGrades',
+  'APP_CONFIG','_LEGACY_DEFAULTS','BUILD_MODE','isDevBuild','_configDevOverride','isFeatureOn',
+  'isGradeLaunched','normalizeGradeToken','launchGrades','needsGradeRecovery',
   // data/shared.js
   'q','_ICO','UNITS_DATA','_unitLoadPromises','_mergeUnitData','_loadUnit',
   // data/shared_k.js
@@ -100,7 +100,9 @@ const _APP_GLOBALS = [
   'getPin','isParentUnlocked','_setParentSession','_clearParentSession',
   '_PIN_FAIL_KEY','_PIN_FAIL_COUNT_KEY','_PIN_LOCKOUT_SIG_KEY','_PIN_MAX_ATTEMPTS',
   '_authClosing','_authPinBlurHandler','_openParentAuth','_closeParentAuth',
-  'goSettings','goSettingsBack','toggleGradePicker','pickGrade','_applyLaunchGradeVisibility','_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
+  'goSettings','goSettingsBack','toggleGradePicker','pickGrade','_applyLaunchGradeVisibility',
+  'chooseRecoveryGrade','_applyRecoveryGrade','_applyPendingRecoveryGrade','_pendingRecoveryGrade',
+  '_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
   'openForgotPin','closeForgotPin','refreshForgotProblem','checkForgotAnswer',
   'showInstall','_upmUnitIdx','_upmMode','_upmCheck','_upmPoll','_startUpmPoll',
   '_stopUpmPoll','_upmBind','_lpmUnitIdx','_lpmLessonIdx',

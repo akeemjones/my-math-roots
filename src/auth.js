@@ -3615,6 +3615,18 @@ async function switchGrade(newGrade){
     console.warn('[grade] refused switch to unavailable grade:', newGrade);
     return;
   }
+  // While an unsupported grade is awaiting recovery, only a parent may resolve
+  // it. This guards the WRITE, not a screen, because the grade picker in the
+  // settings screen reaches switchGrade through pickGrade() — and index.html
+  // still calls pickGrade from inline onclick handlers. Without this, a child
+  // could open settings and pick a grade themselves, bypassing the recovery
+  // screen's parent gate entirely.
+  if(typeof needsGradeRecovery === 'function' && needsGradeRecovery(localStorage)
+     && typeof isParentUnlocked === 'function' && !isParentUnlocked()){
+    console.warn('[grade] recovery choice requires a parent.');
+    if(typeof show === 'function') show('grade-recovery-screen');
+    return;
+  }
   _gradeSwitching = true;
   if(typeof _pushAll === 'function'){
     try{

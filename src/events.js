@@ -181,6 +181,8 @@
     windowPrint:            ()    => window.print(),
 
     // ── Streak calendar ──────────────────────────────────────────────────────
+    // Unsupported-grade recovery — parent picks a supported grade
+    chooseRecoveryGrade:    (a)   => chooseRecoveryGrade(a),
     openCalendar:           ()    => _openStreakCal(),
     _openStreakCal:         ()    => _openStreakCal(),
     _closeStreakCal:        ()    => _closeStreakCal(),

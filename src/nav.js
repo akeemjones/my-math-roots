@@ -1,8 +1,26 @@
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
-const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen'];
+const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen','grade-recovery-screen'];
+
+// Screens that put a student in front of curriculum. None of them may open
+// while the active grade is unsupported: the grade decides which content loads
+// AND which grade-namespaced storage keys progress is written to, so showing
+// any of them before a parent picks a grade would either display the wrong
+// curriculum or write it into the old grade's progress.
+const _LEARNING_SCREENS = ['home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen'];
+
 function show(id){
+  // Guard: an unsupported active grade must be resolved by a parent first.
+  // Redirect rather than return, so every caller — boot fast-paths, resume
+  // banners, deep state restoration — lands on recovery instead of silently
+  // doing nothing. This is the single choke point for all learning navigation.
+  if(_LEARNING_SCREENS.indexOf(id) !== -1
+     && typeof needsGradeRecovery === 'function'
+     && needsGradeRecovery(localStorage)){
+    console.warn('[grade] "' + id + '" blocked — unsupported grade needs a parent to choose.');
+    id = 'grade-recovery-screen';
+  }
   // Guard: parent-screen requires a valid parent session
   if(id === 'parent-screen' && !isParentUnlocked()){
     console.warn('[Security] Blocked unauthorized access to parent-screen');

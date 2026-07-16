@@ -1102,6 +1102,9 @@ async function checkParentPin(){
       if(_settingsEl) _settingsEl._savedScrollTop = _settingsEl.scrollTop;
       // Stamp session start time
       _setParentSession();
+      // If the parent was authenticating to confirm an unsupported-grade
+      // recovery choice, apply it now instead of opening parent controls.
+      if(_applyPendingRecoveryGrade()) return;
       show('parent-screen');
       document.getElementById('parent-panel').style.display = 'block';
       updateAccountUI();
@@ -1718,6 +1721,64 @@ function _closeParentAuth(){
   _unlockScroll();
 }
 
+
+// ── Unsupported-grade recovery ──────────────────────────────────────────────
+//
+// The parent's pending choice, held while the parent access control is being
+// satisfied. Only ever set to a launched grade.
+var _pendingRecoveryGrade = null;
+
+// A parent chose a supported grade on the recovery screen.
+//
+// The choice is protected by the SAME parent access control that guards
+// parent-screen (isParentUnlocked / the parent PIN). A child cannot move
+// themselves onto a different grade. This applies to guests too: the parent PIN
+// exists for local/guest use as well, so there is one adult-confirmation path,
+// not two.
+function chooseRecoveryGrade(g){
+  var msg = document.getElementById('gr-msg');
+  if(typeof isGradeLaunched !== 'function' || !isGradeLaunched(g)){
+    if(msg) msg.textContent = 'That grade is not available.';
+    return;
+  }
+  if(!isParentUnlocked()){
+    // Remember the choice and ask for the parent PIN. Nothing is written until
+    // an adult confirms — the child's grade is not theirs to change.
+    _pendingRecoveryGrade = g;
+    if(msg) msg.textContent = 'A parent needs to confirm this choice.';
+    _openParentAuth();
+    return;
+  }
+  _applyRecoveryGrade(g);
+}
+
+// Commit a confirmed choice. switchGrade() reloads, so the app comes back with
+// a supported grade, needsGradeRecovery() false, and normal navigation.
+function _applyRecoveryGrade(g){
+  _pendingRecoveryGrade = null;
+  try {
+    // Record what they came from. This is the only thing recovery writes
+    // besides the new grade — no progress is touched. wb_done5_3 / wb_sc5_3 /
+    // wb_mastery_3 / mmr_mastery_v1_3 all survive, and switchGrade pushes them
+    // to Supabase before switching.
+    var prev = localStorage.getItem('mmr_grade');
+    if(prev) localStorage.setItem('mmr_grade_prev', prev);
+  } catch(_e){}
+  if(typeof switchGrade === 'function') switchGrade(g);
+}
+
+// Called from the parent-auth success path. Returns true when it consumed a
+// pending recovery choice, so the caller skips its normal navigation.
+function _applyPendingRecoveryGrade(){
+  if(!_pendingRecoveryGrade) return false;
+  var g = _pendingRecoveryGrade;
+  if(typeof isGradeLaunched !== 'function' || !isGradeLaunched(g)){
+    _pendingRecoveryGrade = null;
+    return false;
+  }
+  _applyRecoveryGrade(g);
+  return true;
+}
 
 // Hide grade options the product does not currently offer. Both the hero picker
 // and the settings picker mark their options with [data-grade], so one pass

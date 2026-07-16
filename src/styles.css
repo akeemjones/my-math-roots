@@ -358,6 +358,44 @@ button{ -webkit-appearance:none; font-family:inherit;
      background-size:480px 480px, 100% 100%; background-repeat:repeat, no-repeat;
      z-index:var(--z-screen); overscroll-behavior:contain;
      min-height:100dvh; min-height:100lvh; }
+/* ── Unsupported-grade recovery ───────────────────────────────────────────
+   Shown when the active grade is no longer offered. Deliberately plain: it is
+   a decision point for a parent, not a place to keep a child engaged. Uses the
+   existing type/colour tokens and honours safe areas so the choices are never
+   under a notch or home indicator. */
+.gr-wrap{
+  max-width:520px; margin:0 auto; box-sizing:border-box;
+  padding:calc(var(--safe-top) + 48px) calc(var(--safe-right) + 24px)
+          calc(var(--safe-bottom) + 32px) calc(var(--safe-left) + 24px);
+  text-align:center; }
+.gr-title{
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-xxl);
+  color:var(--txt); margin:0 0 14px; }
+.gr-body{
+  font-family:'Nunito',sans-serif; font-size:var(--fs-md); font-weight:600;
+  color:var(--txt); line-height:1.6; margin:0 0 10px; }
+.gr-note{
+  font-family:'Nunito',sans-serif; font-size:var(--fs-sm); font-weight:700;
+  color:var(--txt2); margin:0 0 22px; }
+.gr-choices{ display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+.gr-choice{
+  width:100%; padding:16px; border-radius:14px; cursor:pointer;
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-lg);
+  color:#fff; background:var(--accent); border:none;
+  transition:transform .12s, filter .12s; }
+.gr-choice:hover{ filter:brightness(1.08); }
+.gr-choice:active{ transform:scale(.98); }
+.gr-msg{
+  font-family:'Nunito',sans-serif; font-size:var(--fs-sm); font-weight:700;
+  color:var(--accent); min-height:1.2em; margin:0 0 14px; }
+.gr-fine{
+  font-family:'Nunito',sans-serif; font-size:var(--fs-xs); font-weight:600;
+  color:var(--txt2); line-height:1.5; margin:0; }
+@media (prefers-reduced-motion: reduce){
+  .gr-choice{ transition:none; }
+  .gr-choice:active{ transform:none; }
+}
+
 /* Login screen: vibrant gradient so white card/title have proper contrast */
 #login-screen{
   background-image:var(--app-bg-svg), linear-gradient(155deg,#2563b0 0%,#1a4a7a 100%);

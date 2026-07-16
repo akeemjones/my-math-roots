@@ -20,10 +20,10 @@
 //  this file straight from source -- is production.
 //
 //  RULES
-//  1. Pure to require(). No DOM or localStorage access at parse time except the
-//     single browser-only repair step at the bottom of this file, which is
-//     guarded so `require()` from Jest stays clean. Every environment probe
-//     lives inside a function behind a typeof guard.
+//  1. Pure. No DOM, no localStorage, no side effects at parse time. Every
+//     environment probe lives inside a function behind a typeof guard, so
+//     `require()` from Jest stays clean. This file never changes a student's
+//     grade -- it only reports what the product offers.
 //  2. Consumers call isFeatureOn('FLAG') — never read APP_CONFIG directly.
 //     The accessor is where the legacy fallback and the dev override live.
 //  3. Flags govern UI surfaces ONLY. A flag must never change what
@@ -164,47 +164,34 @@ function launchGrades() {
     : _LEGACY_DEFAULTS.LAUNCH_GRADES;
 }
 
-// The grade a student falls back to when their active grade is withdrawn.
-var _FALLBACK_GRADE = '2';
-
-// ── Active-grade repair ─────────────────────────────────────────────────────
+// ── Unsupported-grade recovery ──────────────────────────────────────────────
 //
-// Moves the ACTIVE VIEW off a withdrawn grade. Needed because a production
-// build does not ship the Grade 3 curriculum at all: leaving mmr_grade at '3'
-// would leave the student pointed at content that is not in the bundle.
+// Does this device's active grade point at curriculum the product no longer
+// offers? If so the app must NOT guess a replacement: a grade is a real
+// decision about a child's learning, and only a parent may make it. The app
+// enters a recovery state (grade-recovery-screen) that blocks all learning
+// navigation until a parent picks a supported grade.
 //
-// What this does NOT do, and must never do:
-//   - delete or rewrite any progress. wb_done5_3 / wb_sc5_3 / wb_mastery_3 /
-//     mmr_mastery_v1_3 are untouched, and so is student_profiles.grade in
-//     Supabase. Only the pointer moves; every byte of Grade 3 work survives and
-//     comes back if the grade is ever relaunched.
-//   - hide what happened. The previous grade is recorded in mmr_grade_prev, and
-//     the parent dashboard shows an explicit notice (see
-//     _dbUnsupportedGradeNotice) telling them the work is saved and asking them
-//     to choose a supported grade.
+// This function only ASKS. It writes nothing, changes no grade, and touches no
+// progress. mmr_grade stays exactly as it was -- which is also why no Grade 2
+// content can start by accident: state.js still derives Grade 3 keys, and the
+// nav guard refuses every learning screen while this returns true.
 //
-// Runs at parse time from slot 0 of the bundle because state.js derives
-// _ACTIVE_GRADE -- and every grade-namespaced storage key -- once, at parse
-// time. Repairing after that point would leave Grade 2 content writing into
-// Grade 3 progress keys, which would genuinely corrupt data.
+// Deliberately NOT an auto-repair. An earlier revision silently rewrote
+// mmr_grade '3' -> '2' so the app could boot. That preserved the data but still
+// made the choice for the parent, and dropped a Grade 3 child into Grade 2
+// content unannounced.
 //
-// Pure: takes the storage, returns what it did, so it is directly testable.
-function repairUnsupportedActiveGrade(storage) {
-  var result = { repaired: false, from: null, to: null };
+// Pure: takes the storage, returns a boolean, so it is directly testable.
+function needsGradeRecovery(storage) {
   try {
-    if (!storage) return result;
+    if (!storage) return false;
     var active = storage.getItem('mmr_grade');
-    if (!active) return result;                  // no grade set yet — nothing to repair
-    if (isGradeLaunched(active)) return result;  // supported (or dev-enabled) — leave alone
-    result.repaired = true;
-    result.from = active;
-    result.to = _FALLBACK_GRADE;
-    storage.setItem('mmr_grade_prev', String(active));
-    storage.setItem('mmr_grade', _FALLBACK_GRADE);
+    if (!active) return false;            // no grade chosen yet — normal first run
+    return !isGradeLaunched(active);      // supported (or dev-enabled) => no recovery
   } catch (_e) {
-    return result;
+    return false;                          // never trap a student behind a storage error
   }
-  return result;
 }
 
 // Node/Jest bridge — same pattern as quiz-config.js. Guarded so the browser
@@ -219,21 +206,6 @@ if (typeof module !== 'undefined' && module.exports) {
     isGradeLaunched,
     normalizeGradeToken,
     launchGrades,
-    repairUnsupportedActiveGrade,
-    _FALLBACK_GRADE,
+    needsGradeRecovery,
   };
-}
-
-// Browser-only: repair before state.js parses. Guarded so `require()` from Node
-// (where there is no localStorage) is a clean no-op and this file stays safe to
-// import in tests.
-if (typeof localStorage !== 'undefined') {
-  (function _repairActiveGradeOnBoot() {
-    var r = repairUnsupportedActiveGrade(localStorage);
-    if (r.repaired && typeof console !== 'undefined') {
-      console.warn('[grade] Grade ' + r.from + ' is not available in this build; '
-        + 'active grade moved to ' + r.to + '. Grade ' + r.from
-        + ' progress is preserved and untouched.');
-    }
-  })();
 }

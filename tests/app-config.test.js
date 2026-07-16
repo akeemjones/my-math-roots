@@ -26,7 +26,7 @@ const {
   isGradeLaunched,
   normalizeGradeToken,
   launchGrades,
-  repairUnsupportedActiveGrade,
+  needsGradeRecovery,
 } = require('../src/app-config.js');
 
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'src', 'app-config.js'), 'utf8');
@@ -344,7 +344,7 @@ describe('dev override', () => {
   });
 });
 
-describe('active-grade repair', () => {
+describe('unsupported-grade recovery detection', () => {
   const store = (init) => {
     const map = new Map(Object.entries(init || {}));
     return {
@@ -354,21 +354,23 @@ describe('active-grade repair', () => {
     };
   };
 
-  test('moves an active Grade 3 off the withdrawn grade', () => {
-    const s = store({ mmr_grade: '3' });
-    const r = repairUnsupportedActiveGrade(s);
-    expect(r).toEqual({ repaired: true, from: '3', to: '2' });
-    expect(s.getItem('mmr_grade')).toBe('2');
+  test('a Grade 3 device needs recovery', () => {
+    expect(needsGradeRecovery(store({ mmr_grade: '3' }))).toBe(true);
   });
 
-  test('records the previous grade so the move is auditable, not silent', () => {
+  // The core correction: the app asks, it does not decide. An earlier revision
+  // silently rewrote mmr_grade '3' -> '2' so the app could boot, which made a
+  // parent's decision for them.
+  test('detection writes nothing at all — no silent grade change', () => {
     const s = store({ mmr_grade: '3' });
-    repairUnsupportedActiveGrade(s);
-    expect(s.getItem('mmr_grade_prev')).toBe('3');
+    const before = JSON.stringify(s._all());
+    needsGradeRecovery(s);
+    expect(JSON.stringify(s._all())).toBe(before);
+    expect(s.getItem('mmr_grade')).toBe('3');   // NOT rewritten to '2'
+    expect(s.getItem('mmr_grade_prev')).toBe(null);
   });
 
-  // The load-bearing guarantee: only the pointer moves.
-  test('never touches stored Grade 3 progress', () => {
+  test('Grade 3 progress is untouched by detection', () => {
     const s = store({
       mmr_grade: '3',
       wb_done5_3: '{"g3-u1-l1":1}',
@@ -376,42 +378,55 @@ describe('active-grade repair', () => {
       wb_mastery_3: '{"x":1}',
       mmr_mastery_v1_3: '{"tag":{"attempts":4}}',
     });
-    repairUnsupportedActiveGrade(s);
+    needsGradeRecovery(s);
     expect(s.getItem('wb_done5_3')).toBe('{"g3-u1-l1":1}');
     expect(s.getItem('wb_sc5_3')).toBe('[{"pct":90}]');
     expect(s.getItem('wb_mastery_3')).toBe('{"x":1}');
     expect(s.getItem('mmr_mastery_v1_3')).toBe('{"tag":{"attempts":4}}');
   });
 
-  test.each(['K', '1', '2'])('leaves supported grade %s alone', (g) => {
-    const s = store({ mmr_grade: g });
-    expect(repairUnsupportedActiveGrade(s).repaired).toBe(false);
-    expect(s.getItem('mmr_grade')).toBe(g);
-    expect(s.getItem('mmr_grade_prev')).toBe(null);
+  test.each(['K', '1', '2'])('supported grade %s needs no recovery', (g) => {
+    expect(needsGradeRecovery(store({ mmr_grade: g }))).toBe(false);
   });
 
-  test('no-ops when no grade is set yet', () => {
-    const s = store({});
-    expect(repairUnsupportedActiveGrade(s).repaired).toBe(false);
-    expect(s.getItem('mmr_grade')).toBe(null);
+  test.each(['4', '5'])('withdrawn grade %s also needs recovery', (g) => {
+    expect(needsGradeRecovery(store({ mmr_grade: g }))).toBe(true);
   });
 
-  test('a dev build with Grade 3 enabled does not repair it away', () => {
+  test('a first run with no grade set is not recovery', () => {
+    expect(needsGradeRecovery(store({}))).toBe(false);
+  });
+
+  // Recovery is sticky: it stays until a parent actually chooses.
+  test('returning to the same Grade 3 device reopens recovery', () => {
+    const s = store({ mmr_grade: '3' });
+    expect(needsGradeRecovery(s)).toBe(true);
+    expect(needsGradeRecovery(s)).toBe(true);
+    expect(needsGradeRecovery(s)).toBe(true);
+  });
+
+  test('recovery ends once a supported grade is chosen', () => {
+    const s = store({ mmr_grade: '3' });
+    expect(needsGradeRecovery(s)).toBe(true);
+    s.setItem('mmr_grade', 'K');           // what _applyRecoveryGrade -> switchGrade does
+    expect(needsGradeRecovery(s)).toBe(false);
+  });
+
+  test('a dev build with Grade 3 enabled does not enter recovery', () => {
     const cfg = loadConfig({
       patch: (s) => s.replace("'%%BUILD_MODE%%'", "'dev'"),
       location: { hostname: 'localhost' },
       localStorage: fakeStorage({ mmr_flag_GRADE_3: '1' }),
     });
-    const s = store({ mmr_grade: '3' });
-    expect(cfg.repairUnsupportedActiveGrade(s).repaired).toBe(false);
-    expect(s.getItem('mmr_grade')).toBe('3');
+    expect(cfg.needsGradeRecovery(store({ mmr_grade: '3' }))).toBe(false);
   });
 
-  test('survives a hostile storage without throwing', () => {
-    const hostile = { getItem() { throw new Error('nope'); }, setItem() {} };
-    expect(() => repairUnsupportedActiveGrade(hostile)).not.toThrow();
-    expect(repairUnsupportedActiveGrade(hostile).repaired).toBe(false);
-    expect(repairUnsupportedActiveGrade(null).repaired).toBe(false);
+  // Never trap a student behind a storage failure.
+  test('fails open on a hostile storage', () => {
+    const hostile = { getItem() { throw new Error('nope'); } };
+    expect(() => needsGradeRecovery(hostile)).not.toThrow();
+    expect(needsGradeRecovery(hostile)).toBe(false);
+    expect(needsGradeRecovery(null)).toBe(false);
   });
 });
 
