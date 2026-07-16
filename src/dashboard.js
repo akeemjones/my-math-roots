@@ -2143,7 +2143,120 @@ function _hasEnoughDataForReport(scores, mastery, events) {
   return false;
 }
 
-async function generateAIReport() {
+// ── Deterministic parent summary ───────────────────────────────────────────
+//
+// Replaces the Gemini-generated report. Computed entirely on-device from data
+// the app already aggregates, so NO CHILD DATA LEAVES THE TRUST BOUNDARY: the
+// old report sent the child's display_name plus a detailed academic profile
+// (unit scores, error tags, misconception patterns, recovery rates, streaks,
+// session timing) to Google. That was the single largest child-data exposure
+// in the product. This sends nothing, costs nothing, has no 14-day cooldown to
+// ration, and cannot hallucinate.
+//
+// SOURCES, and one deliberate omission. Built from quiz scores (accuracy, unit
+// performance, recent results) and misconception codes carried on
+// score.answers[].errTag -- both correctly student-scoped. It does NOT use the
+// mastery percentages: get_student_progress_by_pin reads mastery from a legacy
+// table filtered by parent with no student filter (PIVOT_AUDIT.md S1), so for
+// managed students it is empty or belongs to a sibling. Stating a mastery
+// figure a parent could act on, from a source known to be wrong, would be worse
+// than saying nothing. Mastery returns here once its data source is fixed and
+// verified.
+//
+// Pure: takes data, returns { headline, lines[], nextStep }. No DOM, no network.
+function buildParentSummary(payload, mistakeCounts, name) {
+  var who = (name && String(name).trim()) || 'This student';
+  var out = { headline: '', lines: [], nextStep: null };
+  var p = payload || {};
+  var attempts = p.totalAttempts || 0;
+
+  if (!attempts) {
+    out.headline = who + ' has not completed any quizzes in this period yet.';
+    out.nextStep = 'Start with the recommended lesson on the home screen.';
+    return out;
+  }
+
+  // ── Headline: what actually happened ──
+  var avg = p.overallAvg || 0;
+  out.headline = who + ' completed ' + attempts + ' '
+    + (attempts === 1 ? 'quiz' : 'quizzes') + ' with ' + avg + '% accuracy.';
+
+  var days = p.activeDaysInPeriod || 0;
+  if (days) {
+    out.lines.push('Practised on ' + days + ' ' + (days === 1 ? 'day' : 'days') + ' in ' +
+      String(p.period || 'this period').toLowerCase() + '.');
+  }
+
+  // ── Strengths and gaps, from unit accuracy ──
+  var units = Array.isArray(p.units) ? p.units.slice() : [];
+  var scored = units.filter(function(u) { return typeof u.avgPct === 'number'; });
+  if (scored.length) {
+    var ranked = scored.slice().sort(function(a, b) { return b.avgPct - a.avgPct; });
+    var best = ranked[0];
+    var worst = ranked[ranked.length - 1];
+    if (best && best.avgPct >= 80) {
+      out.lines.push('Strongest in ' + best.name + ' (' + best.avgPct + '%).');
+    }
+    // Only call something a gap when it genuinely is one, and when it is not
+    // simply the same unit as the strength.
+    if (worst && worst.avgPct < 70 && worst.name !== (best && best.name)) {
+      out.lines.push('Needs more practice in ' + worst.name + ' (' + worst.avgPct + '%).');
+      out.nextStep = 'Review ' + worst.name + ' together, then retry that unit\'s lessons.';
+    }
+  }
+
+  // ── The main mistake pattern, from misconception codes on real answers ──
+  var top = _topMistake(mistakeCounts);
+  if (top) {
+    out.lines.push('Most common mistake: ' + top.label + ' (' + top.count + ' '
+      + (top.count === 1 ? 'time' : 'times') + ').');
+    if (!out.nextStep && top.help) out.nextStep = top.help;
+  }
+
+  if (!out.nextStep) {
+    out.nextStep = avg >= 80
+      ? 'Keep going — continue with the next recommended lesson.'
+      : 'Retry the most recent lesson to build accuracy before moving on.';
+  }
+  return out;
+}
+
+// Highest-frequency misconception, with its parent-facing label and tip.
+// Takes the { errTag: count } map _aggregateMistakesFromScoreAnswers produces.
+function _topMistake(mistakeCounts) {
+  if (!mistakeCounts || typeof mistakeCounts !== 'object') return null;
+  var keys = Object.keys(mistakeCounts);
+  if (!keys.length) return null;
+  keys.sort(function(a, b) { return mistakeCounts[b] - mistakeCounts[a]; });
+  var tag = keys[0];
+  if (!mistakeCounts[tag]) return null;
+  return {
+    tag: tag,
+    count: mistakeCounts[tag],
+    label: _friendlyInterventionTagSafe(tag),
+    help: _interventionHelpSafe(tag),
+  };
+}
+
+// Render the deterministic summary. Reuses the report view's shell so the
+// parent-facing surface is unchanged apart from where the text comes from.
+function _renderParentSummaryText(summary) {
+  var html = '<p style="font-weight:700;margin:0 0 12px">' + _esc(summary.headline) + '</p>';
+  if (summary.lines.length) {
+    html += '<ul style="margin:0 0 14px;padding-left:18px;line-height:1.7">'
+      + summary.lines.map(function(l) { return '<li>' + _esc(l) + '</li>'; }).join('')
+      + '</ul>';
+  }
+  if (summary.nextStep) {
+    html += '<p style="margin:0"><strong>Next step:</strong> ' + _esc(summary.nextStep) + '</p>';
+  }
+  return html;
+}
+
+// Build and show the parent summary. Deterministic and local: no network call,
+// no external AI, no child data leaving the device, and therefore no cooldown
+// to ration a paid API and no failure path to handle.
+function generateAIReport() {
   var footerEl = document.getElementById('db-ai-footer');
   var bodyEl   = document.getElementById('db-root');
   if (!footerEl) return;
@@ -2151,119 +2264,57 @@ async function generateAIReport() {
   if (!student) return;
   var name      = student.name || 'Student';
 
-  // Don't burn the 14-day cooldown if there's not enough data to write a useful report.
   var rawEvents = (typeof _remoteInterventionEvents !== 'undefined' && _remoteInterventionEvents && _remoteInterventionEvents.length)
     ? _remoteInterventionEvents
     : _getInterventionEvents();
+
+  // Say nothing rather than something hollow.
   if (!_hasEnoughDataForReport(student.SCORES || [], student.MASTERY || {}, rawEvents)) {
     if (bodyEl) {
       _prStatsHtml = bodyEl.innerHTML;
       bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
-        + '<div style="font-size:2rem;margin-bottom:14px">📚</div>'
         + '<div style="color:#37474f;font-weight:600;margin-bottom:8px">Not enough activity yet</div>'
         + '<div style="font-size:.9rem;color:#607d8b;max-width:320px;margin:0 auto">'
-        + 'Complete a few lessons or quizzes first. Reports become useful after more activity is recorded.'
+        + 'Complete a few lessons or quizzes first. Summaries become useful after more activity is recorded.'
         + '</div></div>';
     }
     if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
-      + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button></div>';
+      + '<button class="db-ai-back-btn" data-action="backToStats">&#8592; Back to Stats</button></div>';
     return;
   }
 
-  // Enforce 2-week cooldown
-  var nextAvail = _reportNextAvailable();
-  if (nextAvail && Date.now() < nextAvail) {
-    if (footerEl) footerEl.innerHTML = _genReportFooter();
-    return;
+  _prStatsHtml = bodyEl ? bodyEl.innerHTML : '';
+
+  var payload = _buildDashboardPayload(
+    student.SCORES || [],
+    student.APP_TIME || { totalSecs: 0, sessions: 0, dailySecs: {} },
+    student.STREAK || { current: 0, longest: 0 },
+    student.MASTERY || {},
+    30
+  );
+  // Misconception codes come off score.answers[].errTag, which is correctly
+  // scoped per student -- unlike the mastery percentages (PIVOT_AUDIT.md S1).
+  var mistakes = _aggregateMistakesFromScoreAnswers(_unlockScores || student.SCORES || []);
+  var summary  = buildParentSummary(payload, mistakes, name);
+
+  _prReportText = summary.headline;
+  try { _trackEvent('report_generated', _dbAnaMeta({})); } catch (_) {}
+  _renderParentSummaryView(summary, name);
+}
+
+// Renders into the existing report shell, so the surface a parent sees is
+// unchanged apart from where the words come from.
+function _renderParentSummaryView(summary, name) {
+  var bodyEl   = document.getElementById('db-root');
+  var footerEl = document.getElementById('db-ai-footer');
+  if (bodyEl) {
+    bodyEl.innerHTML = '<div class="db-ai-report">'
+      + '<h2 style="margin:0 0 14px">' + _esc(name) + '’s Progress Summary</h2>'
+      + _renderParentSummaryText(summary)
+      + '</div>';
   }
-
-  _prStatsHtml  = bodyEl ? bodyEl.innerHTML : '';
-
-  // Show loading
-  if (bodyEl) bodyEl.innerHTML = '<div class="db-ai-loading"><div class="db-ai-spinner"></div>'
-    + '<div class="db-ai-loading-txt">Analysing ' + _esc(name) + '\'s progress…</div>'
-    + '<div class="db-ai-loading-sub">This takes about 5 seconds</div></div>';
-  footerEl.innerHTML = '';
-
-  var payload = _buildDashboardPayload(student.SCORES||[], student.APP_TIME||{totalSecs:0,sessions:0,dailySecs:{}}, student.STREAK||{current:0,longest:0}, student.MASTERY||{}, 30);
-
-  try {
-    var _hdrs = { 'Content-Type': 'application/json' };
-    try {
-      var _sess = (typeof _supa !== 'undefined' && _supa)
-        ? (await _supa.auth.getSession()).data.session
-        : null;
-      if (_sess && _sess.access_token) _hdrs['Authorization'] = 'Bearer ' + _sess.access_token;
-    } catch (_e) {}
-    var resp = await fetch('/.netlify/functions/gemini-report', {
-      method: 'POST',
-      headers: _hdrs,
-      body: JSON.stringify({ studentName: name, reportData: payload, studentId: _activeId })
-    });
-
-    // Read body once, even on non-OK, so we can branch on the server's error type.
-    var data = null;
-    try { data = await resp.json(); } catch (e) { data = null; }
-
-    // ── Cooldown 429: render the saved report (if any) and update the footer ──
-    if (resp.status === 429 && data && data.error === 'cooldown') {
-      // Mirror the server cooldown into local state so the footer renders correctly
-      // without waiting for the next profile fetch.
-      if (typeof data.nextAvailable === 'number') {
-        var lastMs = data.nextAvailable - _REPORT_COOL_MS;
-        localStorage.setItem(_reportCooldownKey(), String(lastMs));
-        var _mp1 = _managedProfiles.find(function(p){ return p.id === _activeId; });
-        if (_mp1) {
-          _mp1.report_last_generated = new Date(lastMs).toISOString();
-          if (data.report) _mp1.report_last_text = data.report;
-        }
-      }
-      if (data.report) {
-        _prReportText = data.report;
-        _renderAIReportView(data.report, name);
-      } else {
-        // Cooldown active but no saved text — restore stats and show cooldown footer.
-        if (bodyEl && _prStatsHtml) bodyEl.innerHTML = _prStatsHtml;
-        if (footerEl) footerEl.innerHTML = _genReportFooter();
-      }
-      return;
-    }
-
-    // ── Rate-limit 429: friendly message, no cooldown burned ──
-    if (resp.status === 429) {
-      if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
-        + '<div style="font-size:2rem;margin-bottom:14px">⏱️</div>'
-        + '<div style="color:#37474f">Too many report requests. Please try again soon.</div></div>';
-      if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
-        + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button>'
-        + '<button class="db-ai-pdf-btn" data-action="generateAIReport">↺ Try Again</button></div>';
-      return;
-    }
-
-    if (!resp.ok) throw new Error('Server error ' + resp.status);
-    if (!data || data.error) throw new Error((data && data.error) || 'Empty response');
-
-    _prReportText = data.report;
-    // Record successful generation locally too — server already wrote it,
-    // but localStorage gives instant cooldown feedback before next profile fetch.
-    var _nowIso = new Date().toISOString();
-    localStorage.setItem(_reportCooldownKey(), String(Date.now()));
-    var _mp2 = _managedProfiles.find(function(p){ return p.id === _activeId; });
-    if (_mp2) {
-      _mp2.report_last_generated = _nowIso;
-      _mp2.report_last_text      = data.report;
-    }
-    try { _trackEvent('report_generated', _dbAnaMeta({})); } catch (_) {}
-    _renderAIReportView(data.report, name);
-  } catch(e) {
-    if (bodyEl) bodyEl.innerHTML = '<div style="text-align:center;padding:44px 20px">'
-      + '<div style="font-size:2rem;margin-bottom:14px">⚠️</div>'
-      + '<div style="color:#37474f">Couldn\'t generate the report.</div>'
-      + '<div style="font-size:.85rem;color:#90a4ae;margin-top:6px">' + _esc(e.message||'Check your connection.') + '</div></div>';
-    if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
-      + '<button class="db-ai-back-btn" data-action="backToStats">← Back to Stats</button>'
-      + '<button class="db-ai-pdf-btn" data-action="generateAIReport">↺ Try Again</button></div>';
-  }
+  if (footerEl) footerEl.innerHTML = '<div class="db-ai-footer-btns">'
+    + '<button class="db-ai-back-btn" data-action="backToStats">&#8592; Back to Stats</button></div>';
 }
 
 function _renderAIReportView(text, name) {
@@ -6462,6 +6513,8 @@ if (typeof module !== 'undefined') {
     _isUnitUnlockedInDraft,
     _isLessonUnlockedInDraft,
     _deriveReportDiagnostics,
+    buildParentSummary,
+    _topMistake,
     _gradeBand,
     _inferScoreGrade,
     _last7DaysCutoffMs,

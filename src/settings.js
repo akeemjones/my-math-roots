@@ -365,10 +365,11 @@ function closeProgressReport(){
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  AI PARENT REPORT
-//  Builds a structured payload from localStorage data, sends to
-//  the gemini-report Netlify function, and renders a formatted
-//  narrative report inside the progress report modal.
+//  PARENT PROGRESS REPORT (legacy shell)
+//  Formerly built a payload from localStorage and sent it to the gemini-report
+//  Netlify function. That call is removed -- no child data goes to an external
+//  AI service. What remains here is shadowed by dashboard.js (loaded last) and
+//  is pending removal in the cleanup phase.
 // ═══════════════════════════════════════════════════════════════════
 
 var _prStatsHtml   = '';   // cached stats view HTML
@@ -547,44 +548,21 @@ function _backToProgressStats(){
 }
 
 // ── Main entry point ─────────────────────────────────────────────
-async function generateAIReport(){
-  var bodyEl = document.getElementById('progress-report-body');
-  if(!bodyEl) return;
-
-  var cfg = (typeof loadSettings === 'function') ? loadSettings() : {};
-  _prStudentName = cfg.studentName || 'Student';
-
-  // Cache stats HTML so we can go back
-  _prStatsHtml = bodyEl.innerHTML;
-
-  _showPRLoading();
-
-  var payload = _buildReportPayload(30);
-
-  try{
-    // gemini-report now requires a verified parent JWT for every call
-    // (audit SS-3, 2026-05-22). Attach it if the parent is signed in.
-    var _hdrs = { 'Content-Type': 'application/json' };
-    try {
-      var _sess = (typeof _supa !== 'undefined' && _supa)
-        ? (await _supa.auth.getSession()).data.session
-        : null;
-      if (_sess && _sess.access_token) _hdrs['Authorization'] = 'Bearer ' + _sess.access_token;
-    } catch (_e) {}
-    var resp = await fetch('/.netlify/functions/gemini-report', {
-      method: 'POST',
-      headers: _hdrs,
-      body: JSON.stringify({ studentName: _prStudentName, reportData: payload })
-    });
-    if(!resp.ok) throw new Error('Server error '+resp.status);
-    var data = await resp.json();
-    if(data.error) throw new Error(data.error);
-    _prReportText = data.report;
-    _renderAIReportView(data.report);
-  } catch(e){
-    _showPRError(e.message);
-  }
-}
+// REMOVED: this function used to POST the student's name and full academic
+// profile to /.netlify/functions/gemini-report (Google Gemini).
+//
+// It was ALSO already dead. generateAIReport is defined in both settings.js
+// and dashboard.js, and build.js concatenates dashboard.js last, so
+// dashboard.js's definition shadowed this one -- the parent-screen modal's
+// "Generate Report" button has been dispatching to the dashboard
+// implementation, which targets #db-root / #db-ai-footer rather than this
+// modal's #progress-report-body. That mismatch predates this branch.
+//
+// The surviving implementation (dashboard.js) is now a deterministic,
+// on-device summary that sends nothing to any external service.
+// _renderAIReportView / _prStatsHtml / _prReportText are likewise duplicated
+// here and shadowed by dashboard.js; they go in the cleanup phase, together
+// with this modal's remaining report shell, once its fate is decided.
 
 // ── PDF download ─────────────────────────────────────────────────
 function downloadReportPDF(){
