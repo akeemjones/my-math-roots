@@ -81,7 +81,6 @@
     _pickAnswer:            (a)   => _pickAnswer(Number(a)),
     _toggleHint:            ()    => _toggleHint(),
     _practiceWeak:          ()    => _practiceWeak(),
-    fetchAIHint:            (revId, dataJson) => { const {q,chosen,correct} = JSON.parse(dataJson); _fetchAIHint(revId, q, chosen, correct); },
     restartQuiz:            ()    => restartQuiz(),
     cancelRestart:          ()    => cancelRestart(),
     confirmRestart:         ()    => confirmRestart(),
