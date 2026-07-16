@@ -3885,6 +3885,20 @@ function _saveReminders(obj) {
 }
 
 function _renderRemindersSection() {
+  // Removed from the product: this control never worked. It requested
+  // notification permission, wrote wb_reminders, and told the parent
+  // "will show at 15:30 when browser is open" -- but NOTHING anywhere reads
+  // wb_reminders and no scheduler exists. It promised a daily reminder that
+  // could never arrive.
+  //
+  // Returning '' unmounts the whole section, which also removes the permission
+  // prompt and every write to the unused key, since _dbTogglePush is now
+  // unreachable (and guards itself anyway). The dead code below goes in the
+  // cleanup phase, once nothing references it.
+  //
+  // Reminders stay gone until a real notification system is deliberately built
+  // -- natively, per the pivot's App Store direction.
+  if (typeof isFeatureOn === 'function' && !isFeatureOn('REMINDERS')) return '';
   var r   = _loadReminders();
   var on  = r.enabled === true;
   var t   = r.time || '15:30';
@@ -3929,6 +3943,10 @@ function _dbInitPushBtn() {
 }
 
 async function _dbTogglePush() {
+  // Unreachable: _renderRemindersSection no longer mounts the toggle. Guarded
+  // so the still-registered _dbTogglePush action cannot fire a notification
+  // permission prompt for a feature that does not exist.
+  if (typeof isFeatureOn === 'function' && !isFeatureOn('REMINDERS')) return;
   var btn = document.getElementById('db-push-btn');
   var msg = document.getElementById('db-push-msg');
   var tr  = document.getElementById('db-push-time-row');
@@ -4081,7 +4099,6 @@ function _changelogHtml() {
   return '<div class="mb-14"><div class="cl-version-brand">v6.0 — Current</div><ul class="list-body">'
     + '<li><strong>Student Profiles & PIN Login</strong> — Each child gets their own profile with a custom avatar and 4-digit PIN. Switch between students instantly from any screen. Parents share a Family Code so kids can log in without needing the parent\'s email or password.</li>'
     + '<li><strong>Parent Dashboard</strong> — A complete progress hub for parents. See weekly quiz scores, accuracy trends, streak data, and time spent by unit — all in one place. Manage access, timers, and accessibility settings remotely from any device.</li>'
-    + '<li><strong>AI Hints</strong> — When a student gets a question wrong, a friendly AI tutor (powered by Gemini) gives a short, personalised explanation in plain English. Students can also tap a Hint button mid-quiz for an extra nudge without revealing the answer.</li>'
     + '<li><strong>AI Progress Reports</strong> — Generate a detailed, personalised progress report for parents with one tap. The report covers overall accuracy, strengths, areas to work on, study habits, home activity suggestions, and a priority goal for the week. Available every 14 days.</li>'
     + '<li><strong>Balanced Final Test</strong> — A new final test mode that guarantees 5 questions from every unit, so no topic is skipped. Choose between the original Mastery test or the new Balanced test from the home screen.</li>'
     + '<li><strong>Premium Swipe Login</strong> — The login screen now has a smooth, finger-following swipe carousel to choose between Student and Parent sign-in — no more tap-only switching.</li>'
@@ -4090,7 +4107,6 @@ function _changelogHtml() {
     + '<div class="mb-14"><div class="cl-version">v5.34 — v5.27</div><ul class="list-body">'
     + '<li><strong>Glass UI</strong> — Complete visual overhaul with frosted-glass cards, transparent header, gradient buttons, and a new app icon across all screens.</li>'
     + '<li><strong>Dark Mode</strong> — Full dark mode support with auto-detection from system settings. Toggle manually in Settings → Appearance.</li>'
-    + '<li><strong>Push Notifications</strong> — Opt-in daily practice reminders and streak celebration alerts ("5-day streak! 🔥").</li>'
     + '<li><strong>Faster Loading</strong> — JavaScript split into a separate cacheable file — the main page loads 67% faster on repeat visits.</li>'
     + '<li><strong>Content Quality</strong> — 500+ answer-choice improvements across Units 2–8. "Carry/borrow" replaced with the correct term "regrouping" throughout. 19 spiral review questions added to connect earlier units to later ones.</li>'
     + '<li><strong>Pass Threshold</strong> — Unit quiz pass requirement lowered from 100% to 80% — more encouraging, still rigorous.</li>'
