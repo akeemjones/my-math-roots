@@ -9,10 +9,21 @@
 //  consumer, including data/shared*.js and state.js (which derives its
 //  localStorage keys at parse time). Nothing may be added above it.
 //
+//  BUILD MODE — the production/development boundary
+//
+//  build.js substitutes %%BUILD_MODE%% with 'dev' for `node build.js --dev` and
+//  'prod' for a normal `node build.js`. That is the ONLY thing that authorizes
+//  the dev flag overrides below, and it is baked into the artifact at build
+//  time, so no client-controlled state (localStorage, query param, console) can
+//  reach it. Fails closed: any value other than the literal 'dev' -- including
+//  an unsubstituted placeholder, which is what Node sees when a test requires
+//  this file straight from source -- is production.
+//
 //  RULES
-//  1. Pure. No DOM, no localStorage, no side effects at parse time. Every
-//     environment probe lives inside a function behind a typeof guard, so
-//     `require()` from Jest stays clean.
+//  1. Pure to require(). No DOM or localStorage access at parse time except the
+//     single browser-only repair step at the bottom of this file, which is
+//     guarded so `require()` from Jest stays clean. Every environment probe
+//     lives inside a function behind a typeof guard.
 //  2. Consumers call isFeatureOn('FLAG') — never read APP_CONFIG directly.
 //     The accessor is where the legacy fallback and the dev override live.
 //  3. Flags govern UI surfaces ONLY. A flag must never change what
@@ -24,6 +35,14 @@
 //  SIMPLIFIED_PRODUCT_MODE=false restores current-master behavior exactly via
 //  _LEGACY_DEFAULTS. That is the escape hatch, and it is tested.
 // ════════════════════════════════════════
+
+// Substituted by build.js. 'dev' only for `node build.js --dev`.
+var BUILD_MODE = '%%BUILD_MODE%%';
+
+// Is this artifact an authorized development build? Fails closed.
+function isDevBuild() {
+  return BUILD_MODE === 'dev';
+}
 
 // ── Simplified product (the shipping configuration) ─────────────────────────
 var APP_CONFIG = Object.freeze({
@@ -78,12 +97,22 @@ var _LEGACY_DEFAULTS = Object.freeze({
   LEGACY_DASHBOARD_SECTIONS: true
 });
 
-// Dev-only per-flag override. localhost only, mirroring the convention already
-// used by the global-collision check (boot.js) and ?preview=1. Returns
-// true/false to force, or null when no override applies.
-// Fails closed: any error, any non-localhost host => null (production wins).
+// Dev-only per-flag override. Returns true/false to force, or null when no
+// override applies.
+//
+// Gated on the BUILD-TIME mode first, and only then on localhost. The build
+// gate is the real boundary: a production artifact ignores these overrides
+// wherever it runs, so a customer cannot unlock withdrawn content (e.g.
+// unfinished Grade 3) by writing localStorage, and a production build proxied
+// through a localhost hostname stays locked. The localhost check is a second,
+// weaker convenience gate only -- it is not the security boundary, and UI
+// hiding never is either: the write guards in switchGrade() and dbEditSave()
+// enforce grade availability independently.
+//
+// Fails closed on every error path.
 function _configDevOverride(name) {
   try {
+    if (!isDevBuild()) return null;
     if (typeof location === 'undefined' || location.hostname !== 'localhost') return null;
     if (typeof localStorage === 'undefined' || !localStorage) return null;
     var v = localStorage.getItem('mmr_flag_' + name);
@@ -135,15 +164,76 @@ function launchGrades() {
     : _LEGACY_DEFAULTS.LAUNCH_GRADES;
 }
 
+// The grade a student falls back to when their active grade is withdrawn.
+var _FALLBACK_GRADE = '2';
+
+// ── Active-grade repair ─────────────────────────────────────────────────────
+//
+// Moves the ACTIVE VIEW off a withdrawn grade. Needed because a production
+// build does not ship the Grade 3 curriculum at all: leaving mmr_grade at '3'
+// would leave the student pointed at content that is not in the bundle.
+//
+// What this does NOT do, and must never do:
+//   - delete or rewrite any progress. wb_done5_3 / wb_sc5_3 / wb_mastery_3 /
+//     mmr_mastery_v1_3 are untouched, and so is student_profiles.grade in
+//     Supabase. Only the pointer moves; every byte of Grade 3 work survives and
+//     comes back if the grade is ever relaunched.
+//   - hide what happened. The previous grade is recorded in mmr_grade_prev, and
+//     the parent dashboard shows an explicit notice (see
+//     _dbUnsupportedGradeNotice) telling them the work is saved and asking them
+//     to choose a supported grade.
+//
+// Runs at parse time from slot 0 of the bundle because state.js derives
+// _ACTIVE_GRADE -- and every grade-namespaced storage key -- once, at parse
+// time. Repairing after that point would leave Grade 2 content writing into
+// Grade 3 progress keys, which would genuinely corrupt data.
+//
+// Pure: takes the storage, returns what it did, so it is directly testable.
+function repairUnsupportedActiveGrade(storage) {
+  var result = { repaired: false, from: null, to: null };
+  try {
+    if (!storage) return result;
+    var active = storage.getItem('mmr_grade');
+    if (!active) return result;                  // no grade set yet — nothing to repair
+    if (isGradeLaunched(active)) return result;  // supported (or dev-enabled) — leave alone
+    result.repaired = true;
+    result.from = active;
+    result.to = _FALLBACK_GRADE;
+    storage.setItem('mmr_grade_prev', String(active));
+    storage.setItem('mmr_grade', _FALLBACK_GRADE);
+  } catch (_e) {
+    return result;
+  }
+  return result;
+}
+
 // Node/Jest bridge — same pattern as quiz-config.js. Guarded so the browser
 // bundle (no module object) is unaffected.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     APP_CONFIG,
     _LEGACY_DEFAULTS,
+    BUILD_MODE,
+    isDevBuild,
     isFeatureOn,
     isGradeLaunched,
     normalizeGradeToken,
     launchGrades,
+    repairUnsupportedActiveGrade,
+    _FALLBACK_GRADE,
   };
+}
+
+// Browser-only: repair before state.js parses. Guarded so `require()` from Node
+// (where there is no localStorage) is a clean no-op and this file stays safe to
+// import in tests.
+if (typeof localStorage !== 'undefined') {
+  (function _repairActiveGradeOnBoot() {
+    var r = repairUnsupportedActiveGrade(localStorage);
+    if (r.repaired && typeof console !== 'undefined') {
+      console.warn('[grade] Grade ' + r.from + ' is not available in this build; '
+        + 'active grade moved to ' + r.to + '. Grade ' + r.from
+        + ' progress is preserved and untouched.');
+    }
+  })();
 }

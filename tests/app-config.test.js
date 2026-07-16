@@ -21,10 +21,12 @@ const vm = require('vm');
 const {
   APP_CONFIG,
   _LEGACY_DEFAULTS,
+  isDevBuild,
   isFeatureOn,
   isGradeLaunched,
   normalizeGradeToken,
   launchGrades,
+  repairUnsupportedActiveGrade,
 } = require('../src/app-config.js');
 
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'src', 'app-config.js'), 'utf8');
@@ -213,8 +215,17 @@ describe('legacy escape hatch', () => {
 });
 
 describe('dev override', () => {
+  // The override is authorized by the BUILD, not by the browser. Simulate an
+  // authorized dev build by substituting the build-mode token exactly as
+  // `node build.js --dev` does.
+  const asDevBuild = (s) => s.replace("'%%BUILD_MODE%%'", "'dev'");
+
   const onLocalhost = (store) =>
-    loadConfig({ location: { hostname: 'localhost' }, localStorage: fakeStorage(store) });
+    loadConfig({
+      patch: asDevBuild,
+      location: { hostname: 'localhost' },
+      localStorage: fakeStorage(store),
+    });
 
   test('localhost can force a disabled flag on', () => {
     const cfg = onLocalhost({ mmr_flag_STREAK_CALENDAR: '1' });
@@ -238,7 +249,77 @@ describe('dev override', () => {
     expect(onLocalhost({}).isFeatureOn('DEMO_MODE')).toBe(true);
   });
 
-  // The override must never reach customers.
+  // ══════════════════════════════════════════════════════════════════════
+  //  The build gate is the real boundary.
+  //
+  //  A customer must not be able to unlock withdrawn content — above all the
+  //  unfinished Grade 3 curriculum — from client-controlled state. localStorage,
+  //  query params and console variables are all attacker-controlled; the build
+  //  mode is not, because it is substituted into the artifact at build time.
+  //  UI hiding is never the boundary either: the write guards in switchGrade()
+  //  and dbAddSave()/dbEditSave() enforce grade availability independently.
+  // ══════════════════════════════════════════════════════════════════════
+  describe('production builds ignore overrides', () => {
+    const prodOnLocalhost = (store) =>
+      loadConfig({
+        // No patch: the shipped source carries the raw token, and a real prod
+        // build substitutes 'prod'. Both must fail closed.
+        location: { hostname: 'localhost' },
+        localStorage: fakeStorage(store),
+      });
+
+    test('a production build served from localhost still refuses Grade 3', () => {
+      const cfg = prodOnLocalhost({ mmr_flag_GRADE_3: '1' });
+      expect(cfg.isDevBuild()).toBe(false);
+      expect(cfg.isGradeLaunched('3')).toBe(false);
+    });
+
+    test('an explicit prod build ignores every flag override', () => {
+      const cfg = loadConfig({
+        patch: (s) => s.replace("'%%BUILD_MODE%%'", "'prod'"),
+        location: { hostname: 'localhost' },
+        localStorage: fakeStorage({ mmr_flag_GRADE_3: '1', mmr_flag_STREAK_CALENDAR: '1' }),
+      });
+      expect(cfg.isDevBuild()).toBe(false);
+      expect(cfg.isGradeLaunched('3')).toBe(false);
+      expect(cfg.isFeatureOn('STREAK_CALENDAR')).toBe(false);
+    });
+
+    // Fail closed: an unsubstituted or tampered token is not a dev build.
+    test.each([['%%BUILD_MODE%%'], ['development'], ['DEV'], [''], ['prod']])(
+      'build mode %p is not treated as dev',
+      (mode) => {
+        const cfg = loadConfig({
+          patch: (s) => s.replace("'%%BUILD_MODE%%'", JSON.stringify(mode)),
+          location: { hostname: 'localhost' },
+          localStorage: fakeStorage({ mmr_flag_GRADE_3: '1' }),
+        });
+        expect(cfg.isDevBuild()).toBe(false);
+        expect(cfg.isGradeLaunched('3')).toBe(false);
+      }
+    );
+
+    test('only the exact token "dev" authorizes an override', () => {
+      const cfg = loadConfig({
+        patch: (s) => s.replace("'%%BUILD_MODE%%'", "'dev'"),
+        location: { hostname: 'localhost' },
+        localStorage: fakeStorage({ mmr_flag_GRADE_3: '1' }),
+      });
+      expect(cfg.isDevBuild()).toBe(true);
+      expect(cfg.isGradeLaunched('3')).toBe(true);
+    });
+
+    // Even an authorized dev build does not leak overrides to a real host.
+    test('a dev build served from a production host ignores overrides', () => {
+      const cfg = loadConfig({
+        patch: asDevBuild,
+        location: { hostname: 'mymathroots.com' },
+        localStorage: fakeStorage({ mmr_flag_GRADE_3: '1' }),
+      });
+      expect(cfg.isGradeLaunched('3')).toBe(false);
+    });
+  });
+
   test('production hosts ignore overrides entirely', () => {
     const cfg = loadConfig({
       location: { hostname: 'mymathroots.com' },
@@ -250,6 +331,7 @@ describe('dev override', () => {
 
   test('a hostile localStorage cannot break flag reads', () => {
     const cfg = loadConfig({
+      patch: asDevBuild,
       location: { hostname: 'localhost' },
       localStorage: {
         getItem() {
@@ -259,6 +341,77 @@ describe('dev override', () => {
     });
     expect(cfg.isFeatureOn('STREAK_CALENDAR')).toBe(false);
     expect(cfg.isGradeLaunched('2')).toBe(true);
+  });
+});
+
+describe('active-grade repair', () => {
+  const store = (init) => {
+    const map = new Map(Object.entries(init || {}));
+    return {
+      getItem: (k) => (map.has(k) ? map.get(k) : null),
+      setItem: (k, v) => map.set(String(k), String(v)),
+      _all: () => Object.fromEntries(map),
+    };
+  };
+
+  test('moves an active Grade 3 off the withdrawn grade', () => {
+    const s = store({ mmr_grade: '3' });
+    const r = repairUnsupportedActiveGrade(s);
+    expect(r).toEqual({ repaired: true, from: '3', to: '2' });
+    expect(s.getItem('mmr_grade')).toBe('2');
+  });
+
+  test('records the previous grade so the move is auditable, not silent', () => {
+    const s = store({ mmr_grade: '3' });
+    repairUnsupportedActiveGrade(s);
+    expect(s.getItem('mmr_grade_prev')).toBe('3');
+  });
+
+  // The load-bearing guarantee: only the pointer moves.
+  test('never touches stored Grade 3 progress', () => {
+    const s = store({
+      mmr_grade: '3',
+      wb_done5_3: '{"g3-u1-l1":1}',
+      wb_sc5_3: '[{"pct":90}]',
+      wb_mastery_3: '{"x":1}',
+      mmr_mastery_v1_3: '{"tag":{"attempts":4}}',
+    });
+    repairUnsupportedActiveGrade(s);
+    expect(s.getItem('wb_done5_3')).toBe('{"g3-u1-l1":1}');
+    expect(s.getItem('wb_sc5_3')).toBe('[{"pct":90}]');
+    expect(s.getItem('wb_mastery_3')).toBe('{"x":1}');
+    expect(s.getItem('mmr_mastery_v1_3')).toBe('{"tag":{"attempts":4}}');
+  });
+
+  test.each(['K', '1', '2'])('leaves supported grade %s alone', (g) => {
+    const s = store({ mmr_grade: g });
+    expect(repairUnsupportedActiveGrade(s).repaired).toBe(false);
+    expect(s.getItem('mmr_grade')).toBe(g);
+    expect(s.getItem('mmr_grade_prev')).toBe(null);
+  });
+
+  test('no-ops when no grade is set yet', () => {
+    const s = store({});
+    expect(repairUnsupportedActiveGrade(s).repaired).toBe(false);
+    expect(s.getItem('mmr_grade')).toBe(null);
+  });
+
+  test('a dev build with Grade 3 enabled does not repair it away', () => {
+    const cfg = loadConfig({
+      patch: (s) => s.replace("'%%BUILD_MODE%%'", "'dev'"),
+      location: { hostname: 'localhost' },
+      localStorage: fakeStorage({ mmr_flag_GRADE_3: '1' }),
+    });
+    const s = store({ mmr_grade: '3' });
+    expect(cfg.repairUnsupportedActiveGrade(s).repaired).toBe(false);
+    expect(s.getItem('mmr_grade')).toBe('3');
+  });
+
+  test('survives a hostile storage without throwing', () => {
+    const hostile = { getItem() { throw new Error('nope'); }, setItem() {} };
+    expect(() => repairUnsupportedActiveGrade(hostile)).not.toThrow();
+    expect(repairUnsupportedActiveGrade(hostile).repaired).toBe(false);
+    expect(repairUnsupportedActiveGrade(null).repaired).toBe(false);
   });
 });
 

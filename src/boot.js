@@ -119,10 +119,21 @@ const _APP_GLOBALS = [
   '_recoverVisibleScreen',
 ];
 
+// Globals that only exist when the dev-only Grade 3 curriculum is bundled.
+// A production build deliberately omits data/shared_g3.js, data/g3/cbe.js and
+// data/g3/unit0_diagnostic.js, so these being absent is correct, not a
+// collision — don't report them as missing.
+const _G3_ONLY_GLOBALS = [
+  '_UNITS_DATA_G3','_g3UnitLoadPromises','_mergeG3UnitData','_loadG3Unit','_applyGrade3Grade',
+  '_G3_CBE_BANK','_g3CbeGateOpen','_G3_UNIT0_DIAGNOSTIC',
+];
+
 if (location.hostname === 'localhost') {
   (function _checkGlobalCollisions() {
     const missing = [];
+    const g3Bundled = typeof _UNITS_DATA_G3 !== 'undefined';
     for (const name of _APP_GLOBALS) {
+      if (!g3Bundled && _G3_ONLY_GLOBALS.indexOf(name) !== -1) continue;
       if (!(name in window)) missing.push(name);
     }
     if (missing.length) {
@@ -561,7 +572,12 @@ applyA11y();
   console.log('BOOT GRADE:', _g);
   if(_g === 'K'){ console.log('APPLYING GRADE:', 'K'); _applyKindergartenGrade(); }
   else if(_g === '1'){ console.log('APPLYING GRADE:', '1'); _applyGrade1Grade(); }
-  else if(_g === '3'){ console.log('APPLYING GRADE:', '3'); _applyGrade3Grade(); }
+  // Grade 3 is not bundled in production builds, so _applyGrade3Grade may not
+  // exist. app-config's repair step already moves an unsupported active grade
+  // off '3' before state.js parses, so this branch should be unreachable in
+  // prod; the typeof guard means a hand-set mmr_grade cannot throw here and
+  // take the whole app down with it.
+  else if(_g === '3' && typeof _applyGrade3Grade === 'function'){ console.log('APPLYING GRADE:', '3'); _applyGrade3Grade(); }
 })();
 buildHome();
 // Set version display
@@ -761,7 +777,7 @@ if(sessionStorage.getItem('app-just-updated')){
       // Subtitle
       ctx.font = `700 ${Math.round(fs*0.52)}px 'Boogaloo',sans-serif`;
       ctx.fillStyle = '#4a7060';
-      ctx.fillText('K-5 REVIEW', w/2, sy + sz + fs * 1.1 + fs * 0.62);
+      ctx.fillText('K-2 PRACTICE', w/2, sy + sz + fs * 1.1 + fs * 0.62);
       const link = document.createElement('link');
       link.rel = 'apple-touch-startup-image';
       link.href = canvas.toDataURL('image/png');

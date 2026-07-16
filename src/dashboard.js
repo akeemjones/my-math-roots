@@ -2783,6 +2783,16 @@ function _dbEditGradeOptions(currentGrade) {
   return out;
 }
 
+// Options for the Add Student grade picker: supported grades only, nothing
+// pre-selected. Withdrawn and unbuilt grades are absent entirely — a new
+// profile can never start on one.
+function _dbAddGradeOptions() {
+  var grades = (typeof launchGrades === 'function') ? launchGrades() : ['K', '1', '2'];
+  return grades.map(function(g) {
+    return '<option value="' + g + '">' + _DB_GRADE_LABEL[g] + '</option>';
+  }).join('');
+}
+
 // Parent-facing explanation shown beside the grade picker when a child is on a
 // withdrawn grade. States plainly that their work is kept, so nobody assumes
 // changing grade discards it.
@@ -5864,6 +5874,17 @@ function openAddStudentSheet() {
     + '<input id="db-add-name" type="text" maxlength="20" placeholder="e.g. Maya" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Age (optional)</label>'
     + '<input id="db-add-age" type="number" min="4" max="18" placeholder="e.g. 9" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:12px">'
+    // Grade is an explicit, required choice. It used to be hardcoded to Grade 2
+    // for every new profile, silently, with the parent only discovering it by
+    // opening the Edit sheet afterwards. The placeholder option below is
+    // selected and disabled so nothing is pre-chosen and the parent has to
+    // decide; dbAddSave() refuses to submit until they do.
+    + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:6px">Grade level *</label>'
+    + '<select id="db-add-grade" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid #cfd8dc;border-radius:10px;font-size:.95rem;margin-bottom:4px;background:#fff">'
+    +   '<option value="" selected disabled>Choose a grade…</option>'
+    +   _dbAddGradeOptions()
+    + '</select>'
+    + '<div style="font-size:.72rem;color:#90a4ae;margin-bottom:12px">What level of math is this student working on? You can change this later.</div>'
     + '<label style="font-size:.8rem;font-weight:700;color:#546e7a;display:block;margin-bottom:8px">Avatar</label>'
     + '<div id="db-add-avatars" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">'
     + AVATAR_EMOJIS.map(function(e) {
@@ -5936,9 +5957,25 @@ async function dbAddSave() {
   var msg = document.getElementById('db-add-msg');
   var nameInp = document.getElementById('db-add-name');
   var ageInp  = document.getElementById('db-add-age');
+  var gradeInp = document.getElementById('db-add-grade');
   if (!nameInp || !msg) return;
   var name = nameInp.value.trim();
   if (!name) { msg.textContent = 'Name is required.'; return; }
+
+  // Grade: an explicit parent choice, validated against launchGrades(). This is
+  // the write path, so it rejects unsupported values on its own — a tampered
+  // <option>, a stale sheet, or a direct call cannot create a profile on
+  // withdrawn or nonexistent curriculum.
+  var addGrade = gradeInp ? String(gradeInp.value || '').trim() : '';
+  if (!addGrade) { msg.textContent = 'Choose a grade level.'; return; }
+  if (typeof isGradeLaunched === 'function' && !isGradeLaunched(addGrade)) {
+    msg.textContent = 'That grade is not available. Choose Kindergarten, Grade 1 or Grade 2.';
+    return;
+  }
+  var addGradeNorm = (typeof normalizeGradeToken === 'function')
+    ? normalizeGradeToken(addGrade) : addGrade;
+  if (!addGradeNorm) { msg.textContent = 'Choose a grade level.'; return; }
+
   if ((window._dbAddPinBuffer || []).length < 4) { msg.textContent = 'Enter a 4-digit PIN.'; return; }
   if (!_supa) { msg.textContent = 'Not connected.'; return; }
 
@@ -5972,7 +6009,7 @@ async function dbAddSave() {
         username: username, display_name: name, age: ageVal,
         avatar_emoji: emoji, avatar_color_from: colors[0], avatar_color_to: colors[1],
         pin_hash: pinHash,
-        grade: '2',                                // default; parent edits via Edit sheet
+        grade: addGradeNorm,                       // explicit parent choice, validated above
       }).select(),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
     ]);

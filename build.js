@@ -79,10 +79,30 @@ async function build(){
   const skeleton   = fs.readFileSync(path.join(ROOT,         'index.html'),             'utf8');
   const mainCss    = fs.readFileSync(path.join(ROOT, 'src',  'styles.css'),             'utf8');
   const fontsCss   = fs.readFileSync(path.join(ROOT, 'src',  'styles-fonts.css'),       'utf8');
+  // ── Grade 3: dev-only curriculum ──────────────────────────────────────────
+  // Grade 3 is unfinished (81 questions across 8 of 97 lessons; the other 89 are
+  // empty shells) and is not offered to customers. Its source stays in the repo
+  // and dev builds still carry it, but a production build must not ship
+  // unfinished curriculum: leaving it in means a manipulated client state could
+  // reach it, and it is dead weight for every K-2 family.
+  //
+  // Excluding these three drops the globals _UNITS_DATA_G3 / _mergeG3UnitData /
+  // _loadG3Unit / _applyGrade3Grade / _G3_CBE_BANK / _g3CbeGateOpen /
+  // _G3_UNIT0_DIAGNOSTIC from the prod bundle. Every consumer outside the G3
+  // data files already typeof-guards them, except boot.js's grade dispatch,
+  // which is guarded alongside this change. _G3_UNITS_META (dashboard.js) is
+  // defined locally and is unaffected.
+  const G3_FILES = DEV_MODE
+    ? ['data/shared_g3.js', 'data/g3/cbe.js', 'data/g3/unit0_diagnostic.js']
+    : [];
+
   // JS source files — concatenated in dependency order (all share one global scope)
   const SRC_FILES = [
     'app-config.js',
-    'data/shared.js','data/shared_k.js','data/shared_g1.js','data/shared_g3.js','data/g3/cbe.js','data/g3/unit0_diagnostic.js','util.js','quiz-helpers.js','quiz-config.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
+    'data/shared.js','data/shared_k.js','data/shared_g1.js',
+    // Grade 3 — DEV BUILDS ONLY (see G3_FILES below).
+    ...G3_FILES,
+    'util.js','quiz-helpers.js','quiz-config.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
     'visuals.js','key-ideas.js','question-engine.js','quiz.js','settings.js','ui.js','profile-switcher.js','events.js','boot.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
@@ -109,7 +129,13 @@ async function build(){
   combinedJs = combinedJs
     .replace(/%%SUPA_URL%%/g, process.env.SUPA_URL || '')
     .replace(/%%SUPA_KEY%%/g, process.env.SUPA_KEY || '')
-    .replace(/%%GOOGLE_CLIENT_ID%%/g, process.env.GOOGLE_CLIENT_ID || '');
+    .replace(/%%GOOGLE_CLIENT_ID%%/g, process.env.GOOGLE_CLIENT_ID || '')
+    // Build mode: the production/development boundary. This is what authorizes
+    // app-config's dev flag overrides, so it must be decided HERE, at build
+    // time, and never from client-controlled state. `node build.js` => 'prod';
+    // `node build.js --dev` => 'dev'. app-config fails closed on any other
+    // value, including an unsubstituted placeholder.
+    .replace(/%%BUILD_MODE%%/g, DEV_MODE ? 'dev' : 'prod');
 
   // Post-replacement check: warn if any %%...%% placeholders remain
   const remainingPlaceholders = combinedJs.match(/%%[A-Z_]+%%/g);
@@ -320,9 +346,23 @@ async function build(){
     }
   }
 
-  // ── Copy G3 unit data files to dist/data/g3/ ──────────────────────────────
+  // ── Copy G3 unit data files to dist/data/g3/ — DEV BUILDS ONLY ────────────
   // Grade 3 files are plain JS (legacy compact schema, same as Grade 2 / K) —
   // no ES-module stripping needed; copy them as-is.
+  //
+  // A production build ships no Grade 3 curriculum at all: the loader
+  // (_loadG3Unit) is not in the prod bundle, and these files are not served, so
+  // there is nothing to fetch even with a hand-crafted request. The source
+  // stays in src/data/g3/.
+  if (!DEV_MODE) {
+    // Remove any G3 data left behind by a previous dev build, so a prod build
+    // never publishes stale unfinished curriculum from a dirty dist/.
+    const staleG3 = path.join(DIST, 'data', 'g3');
+    if (fs.existsSync(staleG3)) {
+      fs.rmSync(staleG3, { recursive: true, force: true });
+      console.log('🚫 Excluded: data/g3/ (unfinished — prod build)');
+    }
+  } else {
   const G3_DATA_DIR = path.join(DIST, 'data', 'g3');
   if (!fs.existsSync(G3_DATA_DIR)) fs.mkdirSync(G3_DATA_DIR, { recursive: true });
   for (let n = 1; n <= 10; n++) {
@@ -331,6 +371,7 @@ async function build(){
       fs.copyFileSync(g3Src, path.join(G3_DATA_DIR, 'u' + n + '.js'));
       console.log(`📋 Copied:  data/g3/u${n}.js`);
     }
+  }
   }
 
   // dashboard/ is now bundled into app.js as src/dashboard.js — no separate copy needed

@@ -246,7 +246,7 @@ describe('_computeActivityData', () => {
   });
 
   test('first entry is today', () => {
-    expect(_computeActivityData([], 7)[0].date).toBe(TODAY);
+    expect(_computeActivityData([], 7)[0].date).toBe(TODAY_LOCAL);
   });
 
   // Production buckets a score by _scoreDayKey(), which trusts `s.id` (the
@@ -280,7 +280,7 @@ describe('_computeActivityData', () => {
 
   test('skips scores with null pct or zero total', () => {
     const scores = [makeScore({ date: TODAY, pct: null }), makeScore({ date: TODAY, total: 0 })];
-    expect(_computeActivityData(scores, 7).find(d => d.date === TODAY).quizCount).toBe(0);
+    expect(_computeActivityData(scores, 7).find(d => d.date === TODAY_LOCAL).quizCount).toBe(0);
   });
 
   test('dayLabel is a valid abbreviated weekday', () => {

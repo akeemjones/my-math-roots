@@ -195,20 +195,193 @@ describe('write-path guards (source contracts)', () => {
   });
 });
 
+describe('Add Student grade selection', () => {
+  const D = loadDashboard(makeStorage());
+
+  // Before: every new profile was created as Grade 2, silently, with no picker.
+  // The parent only found out by opening the Edit sheet afterwards.
+  test('offers all three launch grades', () => {
+    const html = D._dbAddGradeOptions();
+    expect(html).toContain('<option value="K">Kindergarten</option>');
+    expect(html).toContain('<option value="1">Grade 1</option>');
+    expect(html).toContain('<option value="2">Grade 2</option>');
+  });
+
+  test('offers no withdrawn or unbuilt grade', () => {
+    const html = D._dbAddGradeOptions();
+    expect(html).not.toContain('value="3"');
+    expect(html).not.toContain('value="4"');
+    expect(html).not.toContain('value="5"');
+  });
+
+  test('nothing is pre-selected — the parent must choose', () => {
+    expect(D._dbAddGradeOptions()).not.toContain('selected');
+    const src = read('src/dashboard.js');
+    // The placeholder is what makes the choice deliberate.
+    expect(src).toContain('<option value="" selected disabled>Choose a grade…</option>');
+  });
+
+  test.each([['K'], ['1'], ['2']])('grade %s is accepted by the validator', (g) => {
+    expect(isGradeLaunched(g)).toBe(true);
+  });
+
+  test.each([['3'], ['4'], ['5']])('grade %s is rejected', (g) => {
+    expect(isGradeLaunched(g)).toBe(false);
+  });
+
+  test.each([[''], ['banana'], ['2x'], ['０'], ['K3'], ['-1'], ['3.0'], [' 3 ']])(
+    'malformed grade value %p is rejected',
+    (v) => {
+      // ' 3 ' normalizes to the real, withdrawn grade 3 — still rejected.
+      expect(isGradeLaunched(v)).toBe(false);
+    }
+  );
+
+  describe('write path (source contract)', () => {
+    const fn = read('src/dashboard.js').match(/async function dbAddSave[\s\S]*?\n}/)[0];
+
+    test('reads the parent selection instead of hardcoding Grade 2', () => {
+      expect(fn).toMatch(/getElementById\('db-add-grade'\)/);
+      expect(fn).toContain('grade: addGradeNorm');
+      expect(fn).not.toMatch(/grade:\s*'2',\s*\/\/ default/);
+    });
+
+    test('requires a grade before saving', () => {
+      expect(fn).toMatch(/if \(!addGrade\)/);
+    });
+
+    test('validates against launchGrades and rejects unsupported values', () => {
+      expect(fn).toMatch(/isGradeLaunched\(addGrade\)/);
+    });
+
+    test('the guard runs before the Supabase insert, so a bypassed UI cannot persist', () => {
+      const guardAt = fn.indexOf('isGradeLaunched(addGrade)');
+      const insertAt = fn.indexOf("from('student_profiles')");
+      expect(guardAt).toBeGreaterThan(-1);
+      expect(insertAt).toBeGreaterThan(guardAt);
+    });
+
+    test('the student cap and profile-creation behavior are preserved', () => {
+      // The cap is enforced server-side by a fail-closed Postgres trigger; the
+      // client path must still go through the same insert + PIN + avatar flow.
+      expect(fn).toMatch(/_dbAddPinBuffer/);
+      expect(fn).toMatch(/pin_hash/);
+      expect(fn).toMatch(/parent_id/);
+    });
+
+    test('the saved grade is mirrored to the per-profile cache so it survives reload', () => {
+      expect(fn).toMatch(/_dbWriteProfileGrade\(newRows\[0\]\.id/);
+    });
+  });
+
+  // Siblings are independent rows; nothing in the resolver couples them.
+  test('sibling profiles may hold different supported grades', () => {
+    const s = makeStorage();
+    const D2 = loadDashboard(s);
+    D2._dbWriteProfileGrade('kid-a', 'K');
+    D2._dbWriteProfileGrade('kid-b', '1');
+    D2._dbWriteProfileGrade('kid-c', '2');
+    expect(D2._dbReadProfileGrade('kid-a')).toBe('K');
+    expect(D2._dbReadProfileGrade('kid-b')).toBe('1');
+    expect(D2._dbReadProfileGrade('kid-c')).toBe('2');
+  });
+
+  test('a profile grade persists across a reload (separate storage read)', () => {
+    const s = makeStorage();
+    loadDashboard(s)._dbWriteProfileGrade('kid-a', 'K');
+    // Fresh bundle evaluation against the same storage == a page reload.
+    expect(loadDashboard(s)._dbReadProfileGrade('kid-a')).toBe('K');
+  });
+});
+
+describe('no customer-facing grade advertises an unsupported grade', () => {
+  const html = read('index.html');
+
+  test('Grade 4 and Grade 5 "Soon" entries are gone from both pickers', () => {
+    expect(html).not.toContain('grade-picker-soon');
+    expect(html).not.toContain('grade-soon-tag');
+    expect(html).not.toMatch(/Grade 4\s*<span/);
+    expect(html).not.toMatch(/Grade 5\s*<span/);
+  });
+
+  test('in-app copy no longer markets K-5', () => {
+    expect(html).not.toContain('K-5');
+    expect(read('manifest.json')).not.toContain('K-5');
+    expect(read('src/boot.js')).not.toContain('K-5 REVIEW');
+  });
+
+  test('both pickers still offer exactly the launch grades', () => {
+    const opts = html.match(/data-grade="[^"]+"/g) || [];
+    const grades = [...new Set(opts.map((o) => o.split('"')[1]))];
+    // Grade 3 remains in markup solely so an existing G3 student is not trapped;
+    // it is hidden at runtime by _applyLaunchGradeVisibility.
+    expect(grades.sort()).toEqual(['1', '2', '3', 'K']);
+    expect(grades).not.toContain('4');
+    expect(grades).not.toContain('5');
+  });
+});
+
 describe('unfinished content is withdrawn, not destroyed', () => {
   test('Grade 3 data files are still in the repo', () => {
     expect(fs.existsSync(path.join(ROOT, 'src/data/g3/u1.js'))).toBe(true);
     expect(fs.existsSync(path.join(ROOT, 'src/data/shared_g3.js'))).toBe(true);
   });
 
-  test('Grade 3 is still built into the bundle for dev use', () => {
+  test('Grade 3 is still built into DEV bundles', () => {
     const build = read('build.js');
-    expect(build).toContain('data/shared_g3.js');
+    expect(build).toMatch(/const G3_FILES = DEV_MODE[\s\S]*?data\/shared_g3\.js/);
   });
 
-  test('Grade 3 can be reopened on localhost with a dev flag', () => {
+  test('Grade 3 can be reopened in an authorized dev build', () => {
     const cfgSrc = read('src/app-config.js');
     // isGradeLaunched consults the per-grade dev override before LAUNCH_GRADES.
     expect(cfgSrc).toMatch(/_configDevOverride\('GRADE_' \+ tok\)/);
+  });
+});
+
+describe('production bundle excludes the unfinished Grade 3 curriculum', () => {
+  const build = read('build.js');
+
+  test('the G3 source files are dev-only in the concat order', () => {
+    expect(build).toMatch(/const G3_FILES = DEV_MODE\s*\?\s*\[[^\]]*'data\/shared_g3\.js'[^\]]*\]\s*:\s*\[\]/);
+    // ...and are no longer unconditionally listed.
+    expect(build).not.toMatch(/'data\/shared_g1\.js','data\/shared_g3\.js'/);
+  });
+
+  test('the G3 lazy data files are not copied for production', () => {
+    expect(build).toMatch(/if \(!DEV_MODE\) \{[\s\S]*?data\/g3[\s\S]*?rmSync/);
+  });
+
+  test('a prod build sweeps G3 data left behind by a previous dev build', () => {
+    expect(build).toMatch(/rmSync\(staleG3, \{ recursive: true, force: true \}\)/);
+  });
+
+  test('the build-mode token is substituted at build time', () => {
+    expect(build).toMatch(/%%BUILD_MODE%%\/g, DEV_MODE \? 'dev' : 'prod'/);
+  });
+
+  // Every G3 global consumer outside the G3 data files must tolerate absence.
+  test('boot.js guards its Grade 3 dispatch', () => {
+    const boot = read('src/boot.js');
+    expect(boot).toMatch(/_g === '3' && typeof _applyGrade3Grade === 'function'/);
+  });
+
+  test('quiz.js already guards the G3 CBE bank', () => {
+    const quiz = read('src/quiz.js');
+    expect(quiz).toMatch(/typeof _g3CbeGateOpen === 'function'/);
+    expect(quiz).toMatch(/typeof _G3_CBE_BANK === 'undefined'/);
+  });
+
+  test('the dev-only global check does not report absent G3 globals as missing', () => {
+    const boot = read('src/boot.js');
+    expect(boot).toMatch(/_G3_ONLY_GLOBALS/);
+    expect(boot).toMatch(/if \(!g3Bundled && _G3_ONLY_GLOBALS\.indexOf\(name\) !== -1\) continue;/);
+  });
+
+  // _G3_UNITS_META lives in dashboard.js, not the G3 data files, so the
+  // dashboard's G3 lesson-name resolution is unaffected by the exclusion.
+  test('dashboard G3 metadata is self-contained and unaffected', () => {
+    const dash = read('src/dashboard.js');
+    expect(dash).toMatch(/var _G3_UNITS_META = \[/);
   });
 });
