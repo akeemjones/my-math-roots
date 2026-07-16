@@ -75,7 +75,7 @@ The milestone badges are the only reward mechanic in the entire product. There a
 |---|---|---|
 | Dark mode | `settings.js:806-822` | Live — follows OS via matchMedia |
 | Accessibility (reduce motion, etc.) | `settings.js:52-60` | Partial — opt-in only, **no `prefers-reduced-motion` bridge** |
-| Sound toggle | `index.html:558` | **Inert** — no playback code exists |
+| Sound effects | toggle `index.html:558`; engine `src/quiz.js:25-100` | **Live** — see the audio entry below |
 | Install / PWA prompt | `boot.js:702-769` | Live — iOS splash + touch icons |
 | Offline | `sw.js` | Partial — a unit works offline **only after being opened once** |
 | App update | `boot.js:667-691` | Live — auto-applies, reloads. **This reload triggers the student→dashboard bug** |
@@ -84,7 +84,49 @@ The milestone badges are the only reward mechanic in the entire product. There a
 | Avatars | `auth.js:112-118, 796-893` | Live — emoji + gradient |
 | Rooty mascot | — | **Absent** — no implementation anywhere |
 | Rewards / badges / confetti | — | **Absent** — except calendar milestones |
-| Audio | — | **Absent** |
+| Audio | `src/quiz.js:25-100` | **Live** — see below |
+
+### Audio — corrected entry
+
+**Status: Live.** A complete, working sound-effects system. Synthesized with the
+Web Audio API (`new (window.AudioContext || window.webkitAudioContext)()`,
+`quiz.js:29`) — it generates every sound from oscillators at runtime, so there
+are **no external sound assets and no dependencies**.
+
+| Sound | Where | Fires on |
+|---|---|---|
+| Correct answer | `playCorrect()` `quiz.js:73` | Two-tone C5→E5 ding — `quiz.js:1001`, `1362` |
+| Incorrect answer | `playWrong()` `quiz.js:92` | Descending sawtooth buzz — `quiz.js:1002`, `1363`, `3314` |
+| Tap | `playTap()` `quiz.js:61` | 880 Hz blip |
+| Navigation | `playSwooshForward/Back()` `quiz.js:33,47` | Screen transitions — `nav.js:119-124`, `home.js:395,410`, `quiz.js:462,2931` |
+| Quiz completion | `playPassQuiz()`, `playConfettiBurst()` | Passing a quiz |
+
+**The toggle correctly mutes the system.** Every sound routes through
+`_getAudio()` (`quiz.js:27`), which returns `null` when `isSoundEnabled()` is
+false; each play function is wrapped in try/catch, so muting is total and
+silent. Preference key: `wb_sound` (`SOUND_KEY`). Verified in the running app:
+sound on yields a real `AudioContext` in state `running`; sound off yields
+`null` and no audio.
+
+**Product placement:** the control is "Sound Effects" and belongs in the
+simplified parent Account / Accessibility area, not as a student destination.
+Immediate correct/incorrect feedback supports the core K-2 learning loop and is
+not bloat. Decorative sounds (navigation swooshes, completion) are retained for
+now and reviewed in the smoothness pass, not cut for being less instructional.
+
+> **Audit correction (2026-07-16).** Earlier revisions of this document recorded
+> "Sound toggle — Inert — no playback code exists" and "Audio — Absent". Both
+> were wrong, and the error nearly cost a working feature: the simplification
+> plan called for removing the toggle on the strength of them.
+>
+> **Cause:** the original source search looked for audio *files* and
+> conventional playback APIs — `new Audio`, `.mp3`, `.wav`, `playSound` — and
+> found nothing, because this system has no files and no `<audio>` element. It
+> synthesizes sound from oscillators, so the only tell is `AudioContext` /
+> `createOscillator`, which the search never covered. A grep that proves a
+> feature *absent* has to search for the implementation strategy actually in
+> use, not just the most common one; absence of the usual markers is not
+> evidence of absence.
 
 ---
 

@@ -115,7 +115,7 @@ The single most consequential architectural fact for this pivot: **the parent da
 | Dark mode | `settings.js:806-822` | Yes | Yes | Yes | Follows OS via matchMedia |
 | Profile switcher | `profile-switcher.js` | Yes | Yes | Yes | PIN via RPC with server lockout, or parent bypass |
 | Avatars | `auth.js:112-118, 796-893` | Yes | Yes | Yes | Emoji + gradient, set at signup |
-| Audio | `#sound-toggle`, `index.html:558` | Toggle only | — | **No** | No playback code found in quiz/lesson files |
+| Audio | toggle `index.html:558`; engine `src/quiz.js:25-100` | Yes | Yes | **Yes** | CORRECTED 2026-07-16 — this row previously read "Toggle only / No / No playback code found". Wrong. A live Web Audio system synthesizes correct, incorrect, tap, navigation and completion sounds from oscillators; the toggle mutes it correctly. The original search looked for audio files and `new Audio`, which this implementation does not use. See FEATURE_INVENTORY.md. |
 | Rewards / badges / confetti | — | — | — | **Absent** | Zero matches. Not dead code — never built |
 | Rooty mascot | — | — | — | **Absent** | No implementation found. Branding only |
 | Reduced motion | `styles.css:2442-2450` | Opt-in | Yes | Partial | No `@media (prefers-reduced-motion)` bridge |
@@ -431,7 +431,7 @@ There is currently **no feature-flag mechanism in the client** — building a mi
 `preview.html`; all `src/data/*.js.bak`/`.bak2`/`.compressed` (~2.5 MB); `src/visuals.js.bak`; root `transform-*.js` (4); root `My_Math_Roots_*.pdf` (1.1 MB); `dist/manifest-v5.1.json`; `notify-new-visitor` edge function + trigger; `mock_1`/`mock_2` branches; the inert Reminders toggle **or** its real backend (pick one — do not ship both); `_fetchAIHint` dispatch **or** the unused `gemini-hint.js` backend; the hardcoded changelog claims for push and AI hints; `dashboard/dashboard.js` — but **only after** repointing `tests/dashboard.test.js` and `tests/g3.test.js` at `src/dashboard.js`; the `/dashboard/*` header block in `netlify.toml` (dead config); `scripts/migrate_u*_phase2.js` and the other one-off scripts (archive rather than delete — they are the provenance record for the content).
 
 ### Reconsider after launch
-Grades 3-5; assignments; rewards/gamification/badges; Rooty mascot; audio; in-quiz AI hints; push notifications; spaced repetition as a real SRS; realtime dashboard updates; the G3 CBE final.
+Grades 3-5; assignments; rewards/gamification/badges; Rooty mascot; in-quiz AI hints; push notifications; spaced repetition as a real SRS; realtime dashboard updates; the G3 CBE final. (Audio was listed here in error — it already exists and ships; see the corrected row above.)
 
 **Do not remove**, despite complexity: the question engine, mastery tracking, content validators, the u4l1 misconception generator, progress sync, parent reporting, the signup gate, RLS/RPC security model. These are the product's moat.
 
