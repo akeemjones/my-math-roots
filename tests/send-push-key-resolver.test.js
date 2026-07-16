@@ -235,6 +235,16 @@ describe('send-push key resolver — behavioral', () => {
 });
 
 describe('send-push key resolver — source contract', () => {
+  // The .ts source is checked out with CRLF on Windows (172 CRLF / 0 bare LF),
+  // so the previous /\n\}\n/ anchor never matched and each caller then threw on
+  // fnBody[0] -- three failures that looked like a push defect but were a
+  // line-ending-brittle regex. Match either ending, and fail readably.
+  function _resolverBody() {
+    const m = src.match(/function\s+_resolveSupabaseServiceKey[\s\S]+?\r?\n\}\r?\n/);
+    if (!m) throw new Error('_resolveSupabaseServiceKey not found in ' + FN_PATH);
+    return m;
+  }
+
   let src;
   beforeAll(() => { src = fs.readFileSync(FN_PATH, 'utf8'); });
 
@@ -259,7 +269,7 @@ describe('send-push key resolver — source contract', () => {
   });
 
   test('resolver checks SECRET_KEYS BEFORE the legacy fallback', () => {
-    const fnBody = src.match(/function\s+_resolveSupabaseServiceKey[\s\S]+?\n\}\n/);
+    const fnBody = _resolverBody();
     expect(fnBody).toBeTruthy();
     const secretIdx = fnBody[0].indexOf('SUPABASE_SECRET_KEYS');
     const legacyIdx = fnBody[0].indexOf('SUPABASE_SERVICE_ROLE_KEY');
@@ -269,13 +279,13 @@ describe('send-push key resolver — source contract', () => {
   });
 
   test('resolver supports both .key and .api_key fields', () => {
-    const fnBody = src.match(/function\s+_resolveSupabaseServiceKey[\s\S]+?\n\}\n/);
+    const fnBody = _resolverBody();
     expect(fnBody[0]).toMatch(/\.key\b/);
     expect(fnBody[0]).toMatch(/\.api_key\b/);
   });
 
   test('resolver throws when neither source resolves', () => {
-    const fnBody = src.match(/function\s+_resolveSupabaseServiceKey[\s\S]+?\n\}\n/);
+    const fnBody = _resolverBody();
     expect(fnBody[0]).toMatch(/throw\s+new\s+Error\([\s\S]*Neither\s+SUPABASE_SECRET_KEYS\s+nor\s+SUPABASE_SERVICE_ROLE_KEY/i);
   });
 

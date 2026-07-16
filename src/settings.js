@@ -1416,6 +1416,10 @@ async function disablePushNotifications(){
 }
 
 async function togglePushNotifications(){
+  // Unreachable: no UI renders push-toggle-btn. Guarded anyway, because
+  // events.js still registers the action and this would otherwise create a real
+  // push subscription for a feature the product does not offer.
+  if(typeof isFeatureOn === 'function' && !isFeatureOn('PUSH_NOTIFICATIONS')) return;
   const reg = await navigator.serviceWorker.ready;
   const sub = await reg.pushManager.getSubscription();
   if(sub && localStorage.getItem(PUSH_PREF_KEY) === 'enabled'){
@@ -1437,6 +1441,18 @@ function _updatePushToggleUI(){
 
 // Auto-prompt after 3rd visit if not yet decided
 function _maybePushPrompt(){
+  // Removed from the product. On a student's third visit this told them
+  // "Want daily math reminders? Enable in Settings -> Notifications!" -- a
+  // section that does not exist and never did. The push client below is real
+  // and backend-wired, but nothing renders push-toggle-btn / push-notif-section,
+  // so there was no way to act on the prompt.
+  //
+  // Push stays off until notifications are deliberately built, natively. The
+  // client code is flag-gated rather than deleted because the Supabase
+  // send-push function and its daily cron are LIVE in production; removing the
+  // client half here is safe (it is unreachable), but retiring the deployed
+  // function and cron is a production action, documented in the commit.
+  if(typeof isFeatureOn === 'function' && !isFeatureOn('PUSH_NOTIFICATIONS')) return;
   if(!('PushManager' in window)) return;
   if(localStorage.getItem(PUSH_PREF_KEY)) return;
   const visits = parseInt(localStorage.getItem('wb_visit_count') || '0') + 1;
