@@ -2723,6 +2723,21 @@ function _toggleDayExpand(){
 function _renderCalBtn(){
   const btn = document.getElementById('cal-btn');
   if(!btn) return;
+  // The streak calendar is a reward surface, not a learning one. Hiding the
+  // button removes the ONLY entry point to the modal, the activity dot, the
+  // best-streak header and the milestone badges in one place.
+  //
+  // This is a UI gate ONLY. _updateStreak() keeps computing STREAK, wb_act_dates
+  // keeps recording activity, and _pushAll keeps sending p_streak_* /
+  // p_act_dates_json byte-identically. That is deliberate: those fields are
+  // wholesale last-write-wins server-side (no anti-regression guard), so a
+  // client that stopped computing them while still pushing would silently
+  // destroy a student's real streak history on every sync. The data also still
+  // feeds the parent dashboard's activity reporting.
+  if(typeof isFeatureOn === 'function' && !isFeatureOn('STREAK_CALENDAR')){
+    btn.style.display = 'none';
+    return;
+  }
   var _calIsLoggedIn = !!_supaUser || localStorage.getItem('mmr_user_role') === 'student' || localStorage.getItem('mmr_user_role') === 'parent';
   if(!_calIsLoggedIn){ btn.style.display = 'none'; return; }
   // Only show calendar button on home screen
@@ -2764,6 +2779,10 @@ let _scDate = new Date();
 
 let _scalSwipeX = 0, _scalSwipeY = 0, _scalDragging = false, _scalPeeked = false, _scalDir = 0, _scalSwipeT = 0;
 function _openStreakCal(){
+  // Defense in depth: the button is hidden, but events.js still registers
+  // openCalendar / _openStreakCal actions and the modal must not be openable
+  // by a direct call while the reward surface is off.
+  if(typeof isFeatureOn === 'function' && !isFeatureOn('STREAK_CALENDAR')) return;
   _scDate = new Date();
   let modal = document.getElementById('scal-modal');
   if(!modal){
