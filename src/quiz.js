@@ -444,24 +444,42 @@ function resumeQuiz(qid){
   document.getElementById('qscore').style.background = color+'22';
   document.getElementById('qscore').style.color = color;
   document.getElementById('qpbf').style.background = color;
+  // Restore the wall-clock start so timeTaken keeps counting the time already
+  // spent before the pause — regardless of whether the timer is enabled.
+  // startedAt and pausedAt were both wall-clock while the attempt was active,
+  // so (pausedAt - startedAt) is the accumulated active time; anchoring
+  // _quizStartedAt that far in the past makes (now - _quizStartedAt) resume
+  // from there. Previously this only happened inside the timer branch, so an
+  // untimed resumed quiz lost or fabricated its elapsed time.
+  const _accumMs = Math.max(0, (typeof p.pausedAt === 'number' ? p.pausedAt : Date.now())
+                              - (typeof p.startedAt === 'number' ? p.startedAt : Date.now()));
+  _quizStartedAt = Date.now() - _accumMs;
+
   // Resume timer from where it was paused (uses timestamps to prevent manipulation)
   if(isTimerEnabled()){
     const secsLeft = _pausedSecsLeft(p);
     if(secsLeft > 0){
-      const totalDuration = isFinal ? getFinalTimerSecs() : p.type==='unit' ? getUnitTimerSecs() : getLessonTimerSecs();
-      const elapsed = totalDuration - secsLeft;
-      _quizStartedAt = Date.now() - (elapsed * 1000);
       _quizSecsLeft = secsLeft;
       _startTimer(secsLeft, color);
     } else {
       const secs = isFinal ? getFinalTimerSecs() : p.type==='unit' ? getUnitTimerSecs() : getLessonTimerSecs();
-      _quizStartedAt = Date.now();
       _startTimer(secs, color);
     }
   }
   playSwooshForward();
   _renderQ();
   show('quiz-screen');
+}
+
+// Wall-clock elapsed seconds for a quiz attempt. Pure and total: given the
+// start timestamp (_quizStartedAt) and "now", returns whole seconds, never
+// negative, always finite, and 0 when there is no start time. Independent of
+// the timer and of the question count — the single source of truth for
+// timeTaken, valid for timed and untimed quizzes alike.
+function _quizElapsedSecs(startedAt, nowMs){
+  if(typeof startedAt !== 'number' || !isFinite(startedAt) || startedAt <= 0) return 0;
+  var now = (typeof nowMs === 'number' && isFinite(nowMs)) ? nowMs : Date.now();
+  return Math.max(0, Math.round((now - startedAt) / 1000));
 }
 
 // ── Adaptive weighted question sampler ──────────────────────────────────────
@@ -3072,8 +3090,13 @@ function _finishQuiz(){
   // ── AUTO-SAVE score immediately so lock system can see it ──
   const cfg = loadSettings();
   const studentName = cfg.studentName || 'Student';
-  const totalSecs = qz.type === 'final' ? getFinalTimerSecs() : qz.type === 'unit' ? getUnitTimerSecs() : getLessonTimerSecs();
-  const elapsedSecs = Math.max(0, totalSecs - Math.max(0, _quizSecsLeft));
+  // Elapsed is measured from the wall-clock start (_quizStartedAt), which is
+  // maintained across pause/resume. It is therefore correct whether or not the
+  // timer is enabled, and independent of the question count and the configured
+  // duration. The old formula (totalSecs - _quizSecsLeft) fabricated a full-
+  // duration time whenever the timer was disabled, because _startTimer returns
+  // early without setting _quizSecsLeft in that case.
+  const elapsedSecs = _quizElapsedSecs(_quizStartedAt, Date.now());
   const elapsedMin = Math.floor(elapsedSecs / 60);
   const elapsedSec = elapsedSecs % 60;
   const timeTaken = elapsedMin + ':' + String(elapsedSec).padStart(2,'0');

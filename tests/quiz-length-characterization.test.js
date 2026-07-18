@@ -158,17 +158,19 @@ describe('difficulty balancing now applies at every length (DEFECT A fixed)', ()
   });
 });
 
-describe('DEFECT B — elapsed time is derived from the timer, not the clock', () => {
+describe('elapsed time is measured by wall clock (DEFECT B fixed)', () => {
   const quiz = read('src/quiz.js');
 
-  test('_finishQuiz currently computes elapsed from totalSecs - _quizSecsLeft', () => {
-    // When the timer is disabled, _startTimer returns early without setting
-    // _quizSecsLeft, so this yields a fabricated full-duration timeTaken. The
-    // fix measures elapsed from _quizStartedAt (wall clock).
-    expect(quiz).toMatch(/const elapsedSecs = Math\.max\(0, totalSecs - Math\.max\(0, _quizSecsLeft\)\);/);
+  test('_finishQuiz no longer derives elapsed from the timer', () => {
+    expect(quiz).not.toMatch(/totalSecs - Math\.max\(0, _quizSecsLeft\)/);
+    expect(quiz).toMatch(/const elapsedSecs = _quizElapsedSecs\(_quizStartedAt, Date\.now\(\)\);/);
   });
 
-  test('_quizStartedAt is set at quiz start (the correct basis for the fix)', () => {
-    expect(quiz).toMatch(/_quizStartedAt = Date\.now\(\);/);
+  test('resume reconstructs _quizStartedAt regardless of the timer', () => {
+    // The accumulated-active-time restore is OUTSIDE the isTimerEnabled branch.
+    const resumeStart = quiz.indexOf('const _accumMs = Math.max(0');
+    const timerBranch = quiz.indexOf('if(isTimerEnabled()){', resumeStart);
+    expect(resumeStart).toBeGreaterThan(-1);
+    expect(timerBranch).toBeGreaterThan(resumeStart); // reconstruct first, then timer
   });
 });

@@ -77,7 +77,7 @@ const _APP_GLOBALS = [
   '_activeStudentIdForQuiz','_quizLengthCfg','_resolveLessonQuizCount',
   'playCorrect','playWrong','playPassQuiz','playConfettiBurst',
   'startLessonQuiz','startUnitQuiz','_getPausedAll','getPausedQuiz',
-  '_savePausedQuiz','_clearPausedQuiz','resumeQuiz','_weightedSample','_runQuiz','_renderQ',
+  '_savePausedQuiz','_clearPausedQuiz','resumeQuiz','_weightedSample','_quizElapsedSecs','_runQuiz','_renderQ',
   '_pickAnswer','nextQ','prevQ','quitQuiz','retryQuiz','_finishQuiz','_pauseCurrentQuiz',
   'buildRevSection','toggleRS','restartQuiz','cancelRestart','showQuitConfirm',
   'cancelQuit','_scratchCtx','_scratchDrawing','_scratchColor','_scratchTool',
