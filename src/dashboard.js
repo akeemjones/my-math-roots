@@ -3649,9 +3649,29 @@ function _qlIsCustom(scope, val) {
   return (typeof val === 'number') && _QLEN_PRESETS[scope].indexOf(val) === -1;
 }
 
+// True when this student's settings should sync through Supabase (a real
+// managed profile, not the local/guest/demo/mock student).
+function _quizLenIsManaged(studentId) {
+  return !!(_supa && studentId && studentId !== 'local'
+            && studentId !== 'mock_1' && studentId !== 'mock_2');
+}
+
 // Loads the active student's saved quiz lengths into the working draft.
-// Synchronous (localStorage only) — no Supabase, per the v1 scope.
-function _loadQuizLenSettings(studentId) {
+// For managed students it first pulls the remote setting and reconciles it with
+// the local record (newer ts wins), then reads the reconciled value. If the RPC
+// is unavailable (pre-migration PGRST202) or the device is offline, it silently
+// falls back to localStorage — the setting still works locally and a pending
+// local edit is pushed on the next successful load.
+async function _loadQuizLenSettings(studentId) {
+  if (_quizLenIsManaged(studentId) && typeof reconcileQuizLengths === 'function') {
+    try {
+      var result = await _supa.rpc('get_quiz_settings', { p_student_id: studentId });
+      if (!result.error) {
+        var rec = reconcileQuizLengths(studentId, result.data || {});
+        if (rec.pushLocal) _pushQuizLenRemote(studentId, null); // flush a pending local edit
+      }
+    } catch (_e) { /* offline / RPC missing — local-only, retry later */ }
+  }
   var cfg = (typeof loadQuizLengths === 'function')
     ? loadQuizLengths(studentId)
     : { lesson: 'default', unit: 'default' };
@@ -3664,6 +3684,39 @@ function _loadQuizLenSettings(studentId) {
     lesson: _quizLenCustomMode.lesson ? String(cfg.lesson) : '',
     unit:   _quizLenCustomMode.unit   ? String(cfg.unit)   : '',
   };
+}
+
+// Push the active student's local quiz-length record to Supabase. Honest about
+// state: never claims a synced setting until the write succeeds or is safely
+// queued (the pending flag stays set on failure so the next load retries).
+// If the server rejects our write as stale (a newer edit exists on another
+// device), it returns that newer row; we adopt it locally and re-render.
+async function _pushQuizLenRemote(studentId, saveMsg) {
+  if (!_quizLenIsManaged(studentId) || typeof loadQuizLengthsRaw !== 'function') return;
+  var raw = loadQuizLengthsRaw(studentId);
+  if (saveMsg) { saveMsg.style.color = '#607d8b'; saveMsg.textContent = 'Saving…'; }
+  try {
+    var result = await _supa.rpc('update_quiz_settings', {
+      p_student_id: studentId,
+      p_settings:   { lesson: raw.lesson, unit: raw.unit, ts: raw.ts },
+    });
+    if (result.error) throw result.error;
+    var rec = reconcileQuizLengths(studentId, result.data || {});
+    if (rec.adopt === 'remote') {
+      // Our write lost to a newer edit from another device — reflect the winner.
+      _loadQuizLenSettings(studentId).then(function () { renderDashboard(); });
+      if (saveMsg) { saveMsg.style.color = '#e67e22'; saveMsg.textContent = 'A newer setting from another device was kept.'; }
+      return;
+    }
+    if (typeof markQuizLengthsSynced === 'function') markQuizLengthsSynced(studentId);
+    if (saveMsg) { saveMsg.style.color = '#2e7d32'; saveMsg.textContent = 'Saved.'; }
+  } catch (e) {
+    // Keep the pending flag; it retries on next load. Be honest about state.
+    if (saveMsg) {
+      if (e && e.code === 'PGRST202') { saveMsg.style.color = '#2e7d32'; saveMsg.textContent = 'Saved on this device.'; }
+      else { saveMsg.style.color = '#e67e22'; saveMsg.textContent = 'Saved — will sync when online.'; }
+    }
+  }
 }
 
 function _qlChip(scope, label, value, active) {
@@ -3800,9 +3853,18 @@ function _dbSaveQuizLen() {
     if (saveMsg) { saveMsg.style.color = '#c62828'; saveMsg.textContent = 'Fix the custom amount above to save.'; }
     return;
   }
-  if (typeof saveQuizLengths === 'function') saveQuizLengths(_activeId, draft);
+  // Save locally FIRST (immediate, offline-safe), stamping a revision ts and
+  // marking the edit pending. Then push to Supabase for managed students; the
+  // pending flag guarantees the edit is not lost if the push fails.
   _quizLenDraft = draft;
-  if (saveMsg) {
+  if (typeof saveQuizLengthsLocalEdit === 'function') {
+    saveQuizLengthsLocalEdit(_activeId, draft, Date.now());
+  } else if (typeof saveQuizLengths === 'function') {
+    saveQuizLengths(_activeId, draft);   // fallback: plain local save
+  }
+  if (_quizLenIsManaged(_activeId)) {
+    _pushQuizLenRemote(_activeId, saveMsg);   // shows Saving… / Saved / will-sync
+  } else if (saveMsg) {
     saveMsg.style.color = '#2e7d32';
     saveMsg.textContent = 'Saved.';
     setTimeout(function() { if (saveMsg) saveMsg.textContent = ''; }, 2000);
@@ -5506,8 +5568,8 @@ function switchStudent(id) {
   if (id !== 'local' && _students[id] && !_students[id]._scoresLoaded) {
     _loadManagedStudentScores(id);
   }
-  _loadQuizLenSettings(id);
   Promise.all([
+    _loadQuizLenSettings(id),
     _loadUnlockSettings(id),
     _loadTimerSettings(id),
     _loadA11ySettings(id),
@@ -6364,8 +6426,8 @@ function _dbInit() {
 }
 
 function _renderDashboardOnly() {
-  _loadQuizLenSettings(_activeId);
   Promise.all([
+    _loadQuizLenSettings(_activeId),
     _loadUnlockSettings(_activeId),
     _loadTimerSettings(_activeId),
     _loadA11ySettings(_activeId),

@@ -71,6 +71,7 @@ const _APP_GLOBALS = [
   'LESSON_QUIZ_DEFAULT','UNIT_QUIZ_DEFAULT','LESSON_DIFFICULTY_RATIO','UNIT_DIFFICULTY_RATIO',
   'allocateDifficulty','resolveLessonCount','resolveUnitDecision',
   'isValidCustom','quizLengthsKey','loadQuizLengths','saveQuizLengths',
+  'loadQuizLengthsRaw','saveQuizLengthsLocalEdit','markQuizLengthsSynced','reconcileQuizLengths',
   'unitEligibleBank','unitEligiblePoolSize',
   // quiz.js
   '_audioCtx','_getAudio','playSwooshBack','playSwooshForward','playTap',

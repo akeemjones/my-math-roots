@@ -215,6 +215,98 @@ function saveQuizLengths(sid, cfg, storage) {
   try { store.setItem(quizLengthsKey(sid), JSON.stringify(safe)); } catch (_e) {}
 }
 
+// ════════════════════════════════════════
+//  CROSS-DEVICE SYNC (per student)
+//
+//  The engine keeps reading/writing via loadQuizLengths/saveQuizLengths above —
+//  those stay a plain {lesson, unit} contract and are untouched. The dashboard
+//  uses the sync-aware helpers below, which store two extra fields in the SAME
+//  localStorage record so the engine ignores them transparently:
+//    { lesson, unit, ts, pending }
+//      ts      : revision timestamp of the last local edit (0 if never edited)
+//      pending : a local edit not yet confirmed pushed to Supabase
+//
+//  Conflict rule (documented): the record with the higher `ts` wins. On pull, a
+//  newer remote is adopted; otherwise the local value is kept, and a pending
+//  local edit is never overwritten by an older-or-equal remote. The server RPC
+//  applies the same ts guard, so a stale device's push is rejected there too.
+//  Quiz-length settings live in their own student_profiles.quiz_settings column,
+//  so a quiz-length write can never touch unrelated settings (timer, a11y,
+//  unlock, grade, progress, mastery, streak).
+// ════════════════════════════════════════
+
+function _qcTs(v) {
+  return (typeof v === 'number' && isFinite(v) && v >= 0) ? Math.floor(v) : 0;
+}
+
+// Read the full sync-aware record: normalized lesson/unit plus ts/pending.
+// Missing ts -> 0, missing pending -> false, so pre-sync {lesson,unit} records
+// load correctly (backward compatible).
+function loadQuizLengthsRaw(sid, storage) {
+  var store = storage || _qcDefaultStorage();
+  var out = { lesson: 'default', unit: 'default', ts: 0, pending: false };
+  if (!store) return out;
+  var raw;
+  try { raw = store.getItem(quizLengthsKey(sid)); } catch (_e) { return out; }
+  if (!raw) return out;
+  var obj;
+  try { obj = JSON.parse(raw); } catch (_e) { return out; }
+  if (!obj || typeof obj !== 'object') return out;
+  return {
+    lesson:  _qcNormValue(obj.lesson),
+    unit:    _qcNormValue(obj.unit),
+    ts:      _qcTs(obj.ts),
+    pending: obj.pending === true,
+  };
+}
+
+// Save a local edit, stamping ts and marking it pending (awaiting push).
+// `nowMs` is injected so this stays pure/testable (Date.now() in production).
+function saveQuizLengthsLocalEdit(sid, cfg, nowMs, storage) {
+  var store = storage || _qcDefaultStorage();
+  if (!store) return;
+  var rec = {
+    lesson:  _qcNormValue(cfg && cfg.lesson),
+    unit:    _qcNormValue(cfg && cfg.unit),
+    ts:      _qcTs(nowMs),
+    pending: true,
+  };
+  try { store.setItem(quizLengthsKey(sid), JSON.stringify(rec)); } catch (_e) {}
+  return rec;
+}
+
+// Clear the pending flag once a push has confirmed (keeps lesson/unit/ts).
+function markQuizLengthsSynced(sid, storage) {
+  var store = storage || _qcDefaultStorage();
+  if (!store) return;
+  var rec = loadQuizLengthsRaw(sid, store);
+  rec.pending = false;
+  try { store.setItem(quizLengthsKey(sid), JSON.stringify(rec)); } catch (_e) {}
+}
+
+// Adopt a remote record pulled from Supabase into local storage, applying the
+// conflict rule. Returns { adopt: 'remote'|'local', pushLocal: boolean, rec }.
+//   adopt='remote' : remote is newer -> stored locally, not pending
+//   adopt='local'  : local is newer/equal -> kept; pushLocal true if it is a
+//                    pending edit that still needs to reach the server
+function reconcileQuizLengths(sid, remote, storage) {
+  var store = storage || _qcDefaultStorage();
+  var localRec = loadQuizLengthsRaw(sid, store);
+  var remoteRec = {
+    lesson:  _qcNormValue(remote && remote.lesson),
+    unit:    _qcNormValue(remote && remote.unit),
+    ts:      _qcTs(remote && remote.ts),
+  };
+  var hasRemote = !!(remote && typeof remote === 'object');
+  if (hasRemote && remoteRec.ts > localRec.ts) {
+    var adopted = { lesson: remoteRec.lesson, unit: remoteRec.unit, ts: remoteRec.ts, pending: false };
+    if (store) { try { store.setItem(quizLengthsKey(sid), JSON.stringify(adopted)); } catch (_e) {} }
+    return { adopt: 'remote', pushLocal: false, rec: adopted };
+  }
+  // Local is newer or equal (or there is no remote). Keep it; push if pending.
+  return { adopt: 'local', pushLocal: localRec.pending === true, rec: localRec };
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     LESSON_QUIZ_DEFAULT,
@@ -228,6 +320,10 @@ if (typeof module !== 'undefined' && module.exports) {
     quizLengthsKey,
     loadQuizLengths,
     saveQuizLengths,
+    loadQuizLengthsRaw,
+    saveQuizLengthsLocalEdit,
+    markQuizLengthsSynced,
+    reconcileQuizLengths,
     unitEligibleBank,
     unitEligiblePoolSize,
   };
