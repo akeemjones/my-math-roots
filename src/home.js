@@ -77,6 +77,39 @@ function _renderContinueCard(){
   card.style.display = '';
 }
 
+// Which unit is the student's "current" one on the home carousel. Shared by
+// buildHome and refreshHomeState so the two never drift.
+//   Legacy (hard locks on): the last *unlocked* unit, advanced past it once its
+//     lessons and unit quiz are all passed.
+//   Simplified (locks off): lock state no longer defines "where I am", so the
+//     current unit is the one holding the next lesson to work on.
+function _homeCurrentUnitIdx(){
+  const units = (typeof UNITS_DATA !== 'undefined' && Array.isArray(UNITS_DATA)) ? UNITS_DATA : [];
+  if(!units.length) return 0;
+  const locksOn = (typeof isFeatureOn === 'function') && isFeatureOn('HARD_PROGRESSION_LOCKS');
+  if(locksOn){
+    let idx = 0;
+    units.forEach((u,i) => { if(isUnitUnlocked(i)) idx = i; });
+    const uDone = units[idx].lessons.every(l=>SCORES.some(s=>s.qid==='lq_'+l.id&&s.pct>=80)) &&
+                  SCORES.some(s=>s.qid===units[idx].id+'_uq'&&s.pct>=80);
+    if(uDone && idx < units.length-1) idx++;
+    return idx;
+  }
+  const t = (typeof nextLearningTarget === 'function') ? nextLearningTarget() : { unitIdx:0, allDone:false };
+  return t.allDone ? units.length-1 : t.unitIdx;
+}
+
+// Is the Final Test surfaced at all? Withdrawn entirely when FINAL_TESTS is off
+// (the simplified product hides the 50-question, eager-loading final test).
+// When on, it becomes available once every unit is unlocked, or if one is
+// already mid-flight.
+function _homeFinalTestAvailable(){
+  if(!((typeof isFeatureOn === 'function') && isFeatureOn('FINAL_TESTS'))) return false;
+  const allUnlocked = UNITS_DATA.every((u,i) => isUnitUnlocked(i));
+  const pausedFT = getPausedQuiz('final_test');
+  return allUnlocked || (pausedFT && pausedFT.type === 'final');
+}
+
 function buildHome(instant){
   _renderCalBtn();
   _renderContinueCard();
@@ -91,18 +124,12 @@ function buildHome(instant){
   var _histLink = document.getElementById('history-link');
   if(_histLink) _histLink.style.display = (_supaUser || _isStudentSession()) ? '' : 'none';
 
-  const allUnlockedEarly = UNITS_DATA.every((u,i) => isUnitUnlocked(i));
+  const finalOn = (typeof isFeatureOn === 'function') && isFeatureOn('FINAL_TESTS');
   const pausedFTEarly = getPausedQuiz('final_test');
-  const finalTestAvailable = allUnlockedEarly || (pausedFTEarly && pausedFTEarly.type === 'final');
+  const finalTestAvailable = _homeFinalTestAvailable();
 
-  let currentIdx = 0;
-  UNITS_DATA.forEach((u,i) => { if(isUnitUnlocked(i)) currentIdx = i; });
-  const uDone = UNITS_DATA[currentIdx].lessons.every(l=>
-    SCORES.some(s=>s.qid==='lq_'+l.id&&s.pct>=80)) &&
-    SCORES.some(s=>s.qid===UNITS_DATA[currentIdx].id+'_uq'&&s.pct>=80);
-  if(uDone && currentIdx < UNITS_DATA.length-1) currentIdx++;
   // When the Final Test is available all units are "done" — no active card
-  if(finalTestAvailable) currentIdx = -1;
+  let currentIdx = finalTestAvailable ? -1 : _homeCurrentUnitIdx();
   CAR.idx = Math.max(currentIdx, 0);
 
   const track = document.getElementById('ugrid');
@@ -158,7 +185,9 @@ function buildHome(instant){
     track.appendChild(slide);
   });
 
-  // Final Test card — always visible; unlocked when all units are unlocked (by progress or parent)
+  // Final Test card — rendered only when FINAL_TESTS is on. Visible then;
+  // unlocked when all units are unlocked (by progress or parent).
+  if(finalOn){
   const ftSlide = document.createElement('div');
   const pausedFT = pausedFTEarly;
   const hasPausedFT = pausedFT && pausedFT.type === 'final';
@@ -210,6 +239,7 @@ function buildHome(instant){
   }
   ftSlide.dataset.idx = 'final';
   track.appendChild(ftSlide);
+  }
 
   // Scroll to current unit and init focus engine
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -238,17 +268,11 @@ function refreshHomeState(){
   document.getElementById('op-fill').style.width = pct+'%';
   document.getElementById('op-lbl').textContent = `${doneL} of ${allL} lessons completed — ${pct}%`;
 
-  const allUnlockedEarly = UNITS_DATA.every((u,i) => isUnitUnlocked(i));
+  const finalOn = (typeof isFeatureOn === 'function') && isFeatureOn('FINAL_TESTS');
   const pausedFTEarly = getPausedQuiz('final_test');
-  const finalTestAvailable = allUnlockedEarly || (pausedFTEarly && pausedFTEarly.type === 'final');
+  const finalTestAvailable = _homeFinalTestAvailable();
 
-  let currentIdx = 0;
-  UNITS_DATA.forEach((u,i) => { if(isUnitUnlocked(i)) currentIdx = i; });
-  const uDone = UNITS_DATA[currentIdx].lessons.every(l=>
-    SCORES.some(s=>s.qid==='lq_'+l.id&&s.pct>=80)) &&
-    SCORES.some(s=>s.qid===UNITS_DATA[currentIdx].id+'_uq'&&s.pct>=80);
-  if(uDone && currentIdx < UNITS_DATA.length-1) currentIdx++;
-  if(finalTestAvailable) currentIdx = -1;
+  let currentIdx = finalTestAvailable ? -1 : _homeCurrentUnitIdx();
   CAR.idx = Math.max(currentIdx, 0);
 
   // 2. Guard: fall back to full rebuild if track is not yet populated
@@ -321,7 +345,9 @@ function refreshHomeState(){
     // locked → nothing dynamic
   });
 
-  // 4. Final Test card diff
+  // 4. Final Test card diff (only when the final test is surfaced at all;
+  //    when FINAL_TESTS is off no final slide exists and there is nothing to diff)
+  if(finalOn){
   const ftSlide = track.querySelector('[data-idx="final"]');
   if(!ftSlide){ buildHome(); return; }
 
@@ -378,6 +404,7 @@ function refreshHomeState(){
     const ftScoreLine = ftBestScore ? `Best score: ${ftBestScore.pct}% · ${ftBestScore.stars}` : '50 questions · All units';
     const stat = ftSlide.querySelector('.cs-stat');
     if(stat) stat.textContent = ftScoreLine;
+  }
   }
 
   // 5. Scroll to current card + reinit carousel

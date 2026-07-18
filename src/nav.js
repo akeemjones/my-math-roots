@@ -75,7 +75,18 @@ function show(id){
 // ════════════════════════════════════════
 //  PROGRESS LOCK HELPERS
 // ════════════════════════════════════════
+// Hard progression locks are governed by the HARD_PROGRESSION_LOCKS flag. In the
+// simplified product the flag is off: every unit, lesson and unit quiz is open
+// from the start, and lesson cards carry a Recommended/Ready/Review/Done status
+// instead (see lessonStatus). When the flag is on (legacy/master fidelity) the
+// original 80%-gate below applies unchanged. Returning true early is safe — the
+// render paths that draw locked cards simply never run.
+function _hardLocksOn(){
+  return typeof isFeatureOn === 'function' && isFeatureOn('HARD_PROGRESSION_LOCKS');
+}
+
 function isUnitUnlocked(unitIdx){
+  if(!_hardLocksOn()) return true;
   if(isParentUnlocked()) return true;
   if(unitIdx === 0) return true;
   if(isUnitIndividuallyUnlocked(unitIdx)) return true;
@@ -85,6 +96,7 @@ function isUnitUnlocked(unitIdx){
 }
 
 function isLessonUnlocked(unitIdx, lessonIdx){
+  if(!_hardLocksOn()) return true;
   if(isParentUnlocked()) return true;
   if(lessonIdx === 0) return true;
   if(isLessonIndividuallyUnlocked(unitIdx, lessonIdx)) return true;
@@ -94,6 +106,7 @@ function isLessonUnlocked(unitIdx, lessonIdx){
 }
 
 function isUnitQuizUnlocked(unitIdx){
+  if(!_hardLocksOn()) return true;
   if(isParentUnlocked()) return true;
   // Need 80%+ on all lesson quizzes in this unit
   const u = UNITS_DATA[unitIdx];
@@ -138,6 +151,50 @@ function nextLearningTarget(){
 function continueLearning(){
   const t = nextLearningTarget();
   if(typeof openLesson === 'function') openLesson(t.unitIdx, t.lessonIdx);
+}
+
+// ════════════════════════════════════════
+//  LESSON STATUS — Recommended / Ready / Review / Done
+// ════════════════════════════════════════
+// The simplified product replaces hard locks with a per-lesson status label.
+// The single "Recommended" lesson is the earliest lesson the student has never
+// attempted — the natural fresh next step. It is deliberately distinct from
+// nextLearningTarget() (the first not-*passed* lesson, which the Continue card
+// uses): a lesson with a low score shows as "Review" and is picked up by the
+// Continue card, while the Recommended pill points a student who is caught up
+// toward new material. Returns {unitIdx, lessonIdx} or null when every lesson
+// has at least one attempt.
+function _recommendedLessonTarget(){
+  const units = (typeof UNITS_DATA !== 'undefined' && Array.isArray(UNITS_DATA)) ? UNITS_DATA : [];
+  for(let u = 0; u < units.length; u++){
+    const lessons = (units[u] && Array.isArray(units[u].lessons)) ? units[u].lessons : [];
+    for(let l = 0; l < lessons.length; l++){
+      if(!SCORES.some(s => s.qid === 'lq_'+lessons[l].id)) return { unitIdx: u, lessonIdx: l };
+    }
+  }
+  return null; // every lesson attempted at least once
+}
+
+// Status of a single lesson, pure over UNITS_DATA + SCORES + the recommended
+// target. One of:
+//   'locked'      — hard locks on AND this lesson is gated (legacy path only)
+//   'done'        — lesson quiz passed at >=80% (best attempt)
+//   'review'      — attempted but best attempt <80%
+//   'recommended' — the earliest never-attempted lesson (see _recommendedLessonTarget)
+//   'ready'       — available, not yet attempted, not the recommended one
+function lessonStatus(unitIdx, lessonIdx){
+  if(_hardLocksOn() && typeof isLessonUnlocked === 'function' && !isLessonUnlocked(unitIdx, lessonIdx)) return 'locked';
+  const units = (typeof UNITS_DATA !== 'undefined' && Array.isArray(UNITS_DATA)) ? UNITS_DATA : [];
+  const lesson = units[unitIdx] && units[unitIdx].lessons && units[unitIdx].lessons[lessonIdx];
+  if(!lesson) return 'ready';
+  const history = SCORES.filter(s => s.qid === 'lq_'+lesson.id);
+  if(history.length){
+    const best = history.reduce((m, s) => Math.max(m, s.pct), 0);
+    return best >= 80 ? 'done' : 'review';
+  }
+  const rec = _recommendedLessonTarget();
+  if(rec && rec.unitIdx === unitIdx && rec.lessonIdx === lessonIdx) return 'recommended';
+  return 'ready';
 }
 
 

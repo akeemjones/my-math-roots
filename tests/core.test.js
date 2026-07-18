@@ -67,8 +67,16 @@ function calcStars(pct) {
 }
 
 // -- From src/nav.js (unlock logic) -------------------------------------------
+//  Faithful mirror of production src/nav.js: the gate is an 80% threshold on the
+//  previous lesson/unit quiz, and the whole gate is governed by the
+//  HARD_PROGRESSION_LOCKS flag — when hard locks are OFF (the simplified
+//  product) every unit, lesson and unit quiz is open. `locksOn` mirrors that
+//  flag (default true = legacy/master behaviour).
+//  NOTE: earlier copies here asserted a `=== 100` gate that never matched
+//  production (`>= 80`); they are corrected below.
 
-function isUnitUnlocked(unitIdx, SCORES, UNITS_DATA, parentUnlocked = false, individuallyUnlocked = false) {
+function isUnitUnlocked(unitIdx, SCORES, UNITS_DATA, parentUnlocked = false, individuallyUnlocked = false, locksOn = true) {
+  if (!locksOn) return true;
   if (parentUnlocked) return true;
   if (unitIdx === 0) return true;
   if (individuallyUnlocked) return true;
@@ -76,18 +84,20 @@ function isUnitUnlocked(unitIdx, SCORES, UNITS_DATA, parentUnlocked = false, ind
   return SCORES.some(s => s.qid === prevUnit.id + '_uq' && s.pct >= 80);
 }
 
-function isLessonUnlocked(unitIdx, lessonIdx, SCORES, UNITS_DATA, parentUnlocked = false, individuallyUnlocked = false) {
+function isLessonUnlocked(unitIdx, lessonIdx, SCORES, UNITS_DATA, parentUnlocked = false, individuallyUnlocked = false, locksOn = true) {
+  if (!locksOn) return true;
   if (parentUnlocked) return true;
   if (lessonIdx === 0) return true;
   if (individuallyUnlocked) return true;
   const prevLesson = UNITS_DATA[unitIdx].lessons[lessonIdx - 1];
-  return SCORES.some(s => s.qid === 'lq_' + prevLesson.id && s.pct === 100);
+  return SCORES.some(s => s.qid === 'lq_' + prevLesson.id && s.pct >= 80);
 }
 
-function isUnitQuizUnlocked(unitIdx, SCORES, UNITS_DATA, parentUnlocked = false) {
+function isUnitQuizUnlocked(unitIdx, SCORES, UNITS_DATA, parentUnlocked = false, locksOn = true) {
+  if (!locksOn) return true;
   if (parentUnlocked) return true;
   const u = UNITS_DATA[unitIdx];
-  return u.lessons.every(l => SCORES.some(s => s.qid === 'lq_' + l.id && s.pct === 100));
+  return u.lessons.every(l => SCORES.some(s => s.qid === 'lq_' + l.id && s.pct >= 80));
 }
 
 
@@ -382,6 +392,10 @@ describe('isUnitUnlocked', () => {
   it('individually unlocked bypasses score check', () => {
     assert.strictEqual(isUnitUnlocked(1, [], UNITS_DATA, false, true), true);
   });
+
+  it('every unit is unlocked when hard locks are off (simplified product)', () => {
+    assert.strictEqual(isUnitUnlocked(2, [], UNITS_DATA, false, false, false), true);
+  });
 });
 
 // -- Lesson unlock logic ------------------------------------------------------
@@ -406,34 +420,44 @@ describe('isLessonUnlocked', () => {
     assert.strictEqual(isLessonUnlocked(0, 1, [], UNITS_DATA), false);
   });
 
-  it('lesson 1 unlocked when previous lesson quiz is 100%', () => {
-    const scores = [{ qid: 'lq_u1l1', pct: 100 }];
+  it('lesson 1 unlocked when previous lesson quiz is 80%', () => {
+    const scores = [{ qid: 'lq_u1l1', pct: 80 }];
     assert.strictEqual(isLessonUnlocked(0, 1, scores, UNITS_DATA), true);
   });
 
-  it('lesson 1 LOCKED when previous lesson quiz is 99% (must be exactly 100)', () => {
-    const scores = [{ qid: 'lq_u1l1', pct: 99 }];
+  it('lesson 1 unlocked when previous lesson quiz is above 80% (not exactly 100)', () => {
+    const scores = [{ qid: 'lq_u1l1', pct: 85 }];
+    assert.strictEqual(isLessonUnlocked(0, 1, scores, UNITS_DATA), true);
+  });
+
+  it('lesson 1 LOCKED when previous lesson quiz is 79%', () => {
+    const scores = [{ qid: 'lq_u1l1', pct: 79 }];
     assert.strictEqual(isLessonUnlocked(0, 1, scores, UNITS_DATA), false);
   });
 
-  it('lesson 2 requires lesson 1 quiz at 100%', () => {
+  it('lesson 2 requires lesson 1 quiz at 80%+', () => {
     const scores = [
       { qid: 'lq_u1l1', pct: 100 },
-      { qid: 'lq_u1l2', pct: 100 },
+      { qid: 'lq_u1l2', pct: 82 },
     ];
     assert.strictEqual(isLessonUnlocked(0, 2, scores, UNITS_DATA), true);
   });
 
-  it('lesson 2 locked if lesson 1 quiz not 100%', () => {
+  it('lesson 2 locked if lesson 1 quiz below 80%', () => {
     const scores = [
       { qid: 'lq_u1l1', pct: 100 },
-      { qid: 'lq_u1l2', pct: 90 },
+      { qid: 'lq_u1l2', pct: 70 },
     ];
     assert.strictEqual(isLessonUnlocked(0, 2, scores, UNITS_DATA), false);
   });
 
   it('parent unlock bypasses all checks', () => {
     assert.strictEqual(isLessonUnlocked(0, 2, [], UNITS_DATA, true), true);
+  });
+
+  it('everything is unlocked when hard locks are off (simplified product)', () => {
+    // locksOn=false — no scores, deep lesson: still open.
+    assert.strictEqual(isLessonUnlocked(0, 2, [], UNITS_DATA, false, false, false), true);
   });
 });
 
@@ -455,34 +479,38 @@ describe('isUnitQuizUnlocked', () => {
     assert.strictEqual(isUnitQuizUnlocked(0, [], UNITS_DATA), false);
   });
 
-  it('locked when only some lesson quizzes at 100%', () => {
+  it('locked when only some lesson quizzes passed', () => {
     const scores = [
       { qid: 'lq_u1l1', pct: 100 },
-      { qid: 'lq_u1l2', pct: 100 },
+      { qid: 'lq_u1l2', pct: 90 },
       // u1l3 missing
     ];
     assert.strictEqual(isUnitQuizUnlocked(0, scores, UNITS_DATA), false);
   });
 
-  it('locked when all lessons attempted but one below 100%', () => {
+  it('locked when all lessons attempted but one below 80%', () => {
     const scores = [
       { qid: 'lq_u1l1', pct: 100 },
-      { qid: 'lq_u1l2', pct: 90 },
+      { qid: 'lq_u1l2', pct: 70 },
       { qid: 'lq_u1l3', pct: 100 },
     ];
     assert.strictEqual(isUnitQuizUnlocked(0, scores, UNITS_DATA), false);
   });
 
-  it('unlocked when ALL lesson quizzes at 100%', () => {
+  it('unlocked when ALL lesson quizzes at 80%+', () => {
     const scores = [
-      { qid: 'lq_u1l1', pct: 100 },
-      { qid: 'lq_u1l2', pct: 100 },
-      { qid: 'lq_u1l3', pct: 100 },
+      { qid: 'lq_u1l1', pct: 88 },
+      { qid: 'lq_u1l2', pct: 80 },
+      { qid: 'lq_u1l3', pct: 95 },
     ];
     assert.strictEqual(isUnitQuizUnlocked(0, scores, UNITS_DATA), true);
   });
 
   it('parent unlock bypasses all checks', () => {
     assert.strictEqual(isUnitQuizUnlocked(0, [], UNITS_DATA, true), true);
+  });
+
+  it('unlocked with no scores when hard locks are off (simplified product)', () => {
+    assert.strictEqual(isUnitQuizUnlocked(0, [], UNITS_DATA, false, false), true);
   });
 });

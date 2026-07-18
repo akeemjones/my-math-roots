@@ -98,6 +98,26 @@ function _closeLockedSheet(){
   setTimeout(()=> ov.remove(), 280);
 }
 
+// Status pill markup for a lesson card in the simplified (locks-off) product.
+// Mirrors lessonStatus() in nav.js. Review carries the best score so a parent or
+// student sees how close they are. A plain-text form is used for aria labels.
+function _lessonStatusPill(status, pct){
+  switch(status){
+    case 'done':        return '<span class="lstatus lstatus-done">✓ Done</span>';
+    case 'review':      return '<span class="lstatus lstatus-review">↺ Review'+(pct>0?' ('+pct+'%)':'')+'</span>';
+    case 'recommended': return '<span class="lstatus lstatus-recommended">★ Recommended</span>';
+    default:            return '<span class="lstatus lstatus-ready">Ready</span>';
+  }
+}
+function _lessonStatusLabel(status, pct){
+  switch(status){
+    case 'done':        return 'done';
+    case 'review':      return 'review'+(pct>0?', best score '+pct+'%':'');
+    case 'recommended': return 'recommended next';
+    default:            return 'ready';
+  }
+}
+
 // ════════════════════════════════════════
 //  UNIT SCREEN
 // ════════════════════════════════════════
@@ -139,6 +159,7 @@ function openUnit(idx){
 
   const lc = document.getElementById('lesson-cards');
   lc.innerHTML = '';
+  const locksOn = (typeof isFeatureOn === 'function') && isFeatureOn('HARD_PROGRESSION_LOCKS');
   u.lessons.forEach((l, i) => {
     const unlocked = isLessonUnlocked(idx, i);
     const lqBest = SCORES.filter(s=>s.qid==='lq_'+l.id).sort((a,b)=>b.pct-a.pct)[0];
@@ -147,12 +168,20 @@ function openUnit(idx){
     const lqHistory = SCORES.filter(s=>s.qid==='lq_'+l.id);
     const avgPct = lqHistory.length ? Math.round(lqHistory.reduce((s,x)=>s+x.pct,0)/lqHistory.length) : null;
     const masteryBadge = avgPct!==null ? `<span class="badge" style="background:${avgPct>=80?'#eafaf1':avgPct>=50?'#fef6ec':'#fef0f0'};color:${avgPct>=80?'#1e8449':avgPct>=50?'#d35400':'#c0392b'}">${avgPct}% avg</span>` : '';
+    // Simplified product: per-lesson status label replaces the passed/best badge.
+    const st = locksOn ? null : lessonStatus(idx, i);
     const card = document.createElement('div');
 
     if(unlocked){
-      card.className = 'lcard';
+      card.className = 'lcard' + (st === 'recommended' ? ' lcard-recommended' : '');
       card.setAttribute('role', document.body.classList.contains('a11y-screenreader') ? 'button' : '');
-      if(document.body.classList.contains('a11y-screenreader')) card.setAttribute('aria-label', 'Lesson '+(i+1)+', '+l.title+(lqDone?', completed':lqPct>0?', best score '+lqPct+'%':''));
+      if(document.body.classList.contains('a11y-screenreader')){
+        const _ariaState = locksOn ? (lqDone?', completed':lqPct>0?', best score '+lqPct+'%':'') : ', '+_lessonStatusLabel(st, lqPct);
+        card.setAttribute('aria-label', 'Lesson '+(i+1)+', '+l.title+_ariaState);
+      }
+      const _statusBadge = locksOn
+        ? (lqDone ? '<span class="badge badge-done">Passed ✅</span>' : lqPct>0 ? `<span class="badge" style="background:#fef9e7;color:#d4ac0d">Best: ${lqPct}%</span>` : '')
+        : _lessonStatusPill(st, lqPct);
       card.innerHTML = `
         <div class="lcard-num" style="background:${u.color}"${_sr('aria-hidden="true"')}>${i+1}</div>
         <div class="lcard-info">
@@ -160,7 +189,7 @@ function openUnit(idx){
           <div class="lcard-desc">${l.desc}</div>
         </div>
         <div class="lcard-badges">
-          ${lqDone ? '<span class="badge badge-done">Passed ✅</span>' : lqPct>0 ? `<span class="badge" style="background:#fef9e7;color:#d4ac0d">Best: ${lqPct}%</span>` : ''}
+          ${_statusBadge}
           ${masteryBadge}
         </div>`;
       card.onclick = () => openLesson(idx, i);

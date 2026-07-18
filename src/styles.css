@@ -717,6 +717,22 @@ body.dark .cdot{ background:rgba(255,255,255,.22); }
 .badge-quiz{ background:#eafaf1; color:#27ae60; }
 body.dark .badge-done, body.dark .badge-quiz{ background:rgba(39,174,96,.2); }
 
+/* Lesson status pills (simplified product: replace hard locks with
+   Recommended / Ready / Review / Done). */
+.lstatus{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-xs);
+          padding:4px 10px; border-radius:50px; white-space:nowrap; }
+.lstatus-done{ background:#eafaf1; color:#1e8449; }
+.lstatus-review{ background:#fef6ec; color:#d35400; }
+.lstatus-recommended{ background:linear-gradient(135deg,#fff4d6,#ffe6a8); color:#b7791f; }
+.lstatus-ready{ background:#eef1f5; color:#5b6b7c; }
+body.dark .lstatus-done{ background:rgba(39,174,96,.2); color:#7bd1a0; }
+body.dark .lstatus-review{ background:rgba(211,84,0,.22); color:#f0a868; }
+body.dark .lstatus-recommended{ background:rgba(183,121,31,.28); color:#f2cf7e; }
+body.dark .lstatus-ready{ background:rgba(255,255,255,.1); color:#aab6c2; }
+/* Accent the single recommended lesson card. */
+.lcard-recommended{ border-color:#f2cf7e; box-shadow:0 4px 16px rgba(183,121,31,.18); }
+body.dark .lcard-recommended{ border-color:rgba(242,207,126,.5); }
+
 .uq-btn{ background:rgba(255,255,255,0.95);
   border-radius:var(--rad); padding:12px 20px;
   font-family:inherit; font-size:inherit; -webkit-appearance:none;
