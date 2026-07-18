@@ -1,5 +1,11 @@
 # Assessment-Model Simplification — Implementation Plan
 
+> **Status: complete (2026-07-18).** All three workstreams landed on
+> `feature/simplified-product` — commits `21613f3` (B), `268f471` (A),
+> `93c6051` (C). jest 1345/1345, node --test 174/174, prod+dev builds pass,
+> each verified in the running app. Nothing merged or deployed.
+
+
 Branch: `feature/simplified-product`. Scope: three UI-flag-gated workstreams.
 All changes governed by flags already declared in `src/app-config.js:80-83`, so
 `SIMPLIFIED_PRODUCT_MODE=false` restores current-master behavior exactly (tested
