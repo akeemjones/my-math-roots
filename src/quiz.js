@@ -527,38 +527,25 @@ function _weightedSample(bank, n, quizType){
     return _masteryWeightedSample(bank, n);
   }
 
-  const targets = _DIFF_TARGETS[quizType] || _DIFF_TARGETS.lesson;
   const tiers = {
     e: bank.filter(function(q){ return q.d === 'e'; }),
     m: bank.filter(function(q){ return q.d === 'm' || !q.d; }), // untagged → medium
     h: bank.filter(function(q){ return q.d === 'h'; }),
   };
 
-  // Copy targets and redistribute shortfall from under-sized tiers
-  const draws = { e: targets.e, m: targets.m, h: targets.h };
-  ['e','m','h'].forEach(function(d){
-    const shortage = Math.max(0, draws[d] - tiers[d].length);
-    if(shortage > 0){
-      draws[d] = tiers[d].length;
-      const others = ['e','m','h'].filter(function(x){ return x !== d; });
-      const otherTotal = others.reduce(function(s,x){ return s + draws[x]; }, 0);
-      if(otherTotal > 0){
-        others.forEach(function(x){
-          draws[x] += Math.round(shortage * draws[x] / otherTotal);
-        });
-      } else {
-        others.forEach(function(x){ draws[x] += Math.ceil(shortage / 2); });
-      }
-    }
-  });
-
-  // Clamp total to n (rounding can push it slightly over)
-  let drawTotal = draws.e + draws.m + draws.h;
-  while(drawTotal > n){
-    const biggest = ['e','m','h'].reduce(function(a,b){ return draws[a] >= draws[b] ? a : b; });
-    draws[biggest]--;
-    drawTotal--;
-  }
+  // Scale the type's difficulty ratio to the requested count `n`. Unit quizzes
+  // keep their own 8/10/7 mix; everything else uses the lesson 3/3/2 mix
+  // (final keeps its own historical distribution below). allocateDifficulty is
+  // the single, deterministic, proportional allocator: it hits exactly `n`
+  // whenever the tiers hold enough questions, never over-draws a tier, and
+  // redistributes any shortfall — so a custom length is balanced, not flat.
+  const _ratio = quizType === 'unit'  ? UNIT_DIFFICULTY_RATIO
+              : quizType === 'final'  ? _DIFF_TARGETS.final
+              : quizType === 'balanced' ? _DIFF_TARGETS.balanced
+              : LESSON_DIFFICULTY_RATIO;
+  const draws = (typeof allocateDifficulty === 'function')
+    ? allocateDifficulty(n, { e: tiers.e.length, m: tiers.m.length, h: tiers.h.length }, _ratio)
+    : { e: Math.min(n, tiers.e.length), m: 0, h: 0 };
 
   // Sample from each tier using mastery weighting, then shuffle result
   const result = [
@@ -667,14 +654,13 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode, count){
   const _hasCount = (typeof count === 'number' && isFinite(count) && count > 0);
   const n = isPractice ? (bank ? bank.length : 0)
                        : (_hasCount ? Math.min(count, bank.length) : _nativeN);
-  // _weightedSample is locked to the per-type difficulty targets (sum = _nativeN)
-  // and only clamps DOWN — it cannot serve a larger custom count. For any count
-  // that differs from the native total, sample exactly `n` via the flat mastery
-  // sampler (without replacement → no duplicate questions in one attempt).
-  const _useBalanced = !_hasCount || n === _nativeN;
+  // _weightedSample now scales the type's difficulty mix to any requested `n`
+  // (via allocateDifficulty), so EVERY non-practice quiz — default, smaller
+  // custom, larger custom, or "all" — gets a balanced easy/medium/hard sample
+  // without replacement (no duplicate questions in one attempt). The old
+  // count===native gate that dropped custom lengths to a flat sampler is gone.
   const qs = _prebuiltQs
-    || (isPractice ? bank.slice()
-        : (_useBalanced ? _weightedSample(bank, n, type) : _masteryWeightedSample(bank, n)));
+    || (isPractice ? bank.slice() : _weightedSample(bank, n, type));
 
   CUR.quiz = { questions:qs, idx:0, viewIdx:0, score:0, answers:[], id:qid, label, type, hintsUsed:0, mode: mode || null };
   _quizStartedAt = Date.now();

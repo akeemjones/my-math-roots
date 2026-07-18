@@ -68,8 +68,11 @@ describe('_runQuiz wiring', () => {
   test('native attempt size still falls back to final=50 / unit=25 / lesson=8', () => {
     expect(QUIZ_SRC).toMatch(/type===['"]final['"]\s*\?\s*50\s*:\s*type===['"]unit['"]\s*\?\s*25\s*:\s*8/);
   });
-  test('a non-native count routes to the without-replacement sampler', () => {
-    expect(QUIZ_SRC).toMatch(/_useBalanced\s*\?\s*_weightedSample\([^)]*\)\s*:\s*_masteryWeightedSample\(/);
+  test('every non-practice count now routes through the stratified sampler', () => {
+    // The old count===native gate (which dropped custom lengths to a flat
+    // sampler) is gone; _weightedSample scales the difficulty mix to any n.
+    expect(QUIZ_SRC).not.toMatch(/_useBalanced/);
+    expect(QUIZ_SRC).toMatch(/isPractice \? bank\.slice\(\) : _weightedSample\(bank, n, type\)/);
   });
 });
 

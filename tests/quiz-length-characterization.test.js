@@ -141,22 +141,20 @@ describe('score-record shape (source contract on _finishQuiz)', () => {
 });
 
 // ── Defects documented here, fixed next ─────────────────────────────────────
-describe('DEFECT A — non-default lengths currently bypass difficulty balancing', () => {
+describe('difficulty balancing now applies at every length (DEFECT A fixed)', () => {
   const quiz = read('src/quiz.js');
 
-  test('_runQuiz gates the stratified sampler on count === native', () => {
-    // The current code only balances when the requested count equals the native
-    // total; any other length falls back to the flat _masteryWeightedSample.
-    // The difficulty-balance fix removes this gate.
-    expect(quiz).toMatch(/_useBalanced\s*=\s*!_hasCount \|\| n === _nativeN/);
-    expect(quiz).toMatch(/_useBalanced\s*\?\s*_weightedSample\([\s\S]*?:\s*_masteryWeightedSample/);
+  test('_runQuiz always uses the stratified sampler for non-practice quizzes', () => {
+    // The count===native gate is gone; every non-practice quiz goes through
+    // _weightedSample, which scales the mix to the requested count.
+    expect(quiz).not.toMatch(/_useBalanced/);
+    expect(quiz).toMatch(/isPractice \? bank\.slice\(\) : _weightedSample\(bank, n, type\)/);
   });
 
-  test('_weightedSample uses fixed per-type targets that do not scale to n', () => {
-    // _DIFF_TARGETS are absolute counts summing to the native size; a custom n
-    // cannot be honored proportionally. The fix scales a ratio to n.
-    expect(quiz).toMatch(/const _DIFF_TARGETS = \{/);
-    expect(quiz).toMatch(/lesson:\s*\{ e:3, m:3, h:2 \}/);
+  test('_weightedSample scales a ratio to n via allocateDifficulty', () => {
+    expect(quiz).toMatch(/allocateDifficulty\(n, \{ e: tiers\.e\.length/);
+    // Unit quizzes keep their own mix rather than borrowing the lesson ratio.
+    expect(quiz).toMatch(/quizType === 'unit'\s*\?\s*UNIT_DIFFICULTY_RATIO/);
   });
 });
 

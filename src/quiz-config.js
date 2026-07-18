@@ -17,6 +17,77 @@
 var LESSON_QUIZ_DEFAULT = 8;
 var UNIT_QUIZ_DEFAULT    = 25;
 
+// Base difficulty ratios. Expressed as the native draw counts so the default
+// length reproduces exactly today's mix, and any other length scales the same
+// proportions:
+//   lesson (8): 3 easy / 3 medium / 2 hard  = 37.5% / 37.5% / 25%
+//   unit  (25): 8 easy / 10 medium / 7 hard = 32%   / 40%   / 28%
+// Unit mastery checks keep their own ratio rather than borrowing the lesson mix.
+var LESSON_DIFFICULTY_RATIO = { e: 3, m: 3, h: 2 };
+var UNIT_DIFFICULTY_RATIO   = { e: 8, m: 10, h: 7 };
+
+// Allocate `requested` questions across easy/medium/hard, scaling `ratio` to
+// the requested size with a deterministic largest-remainder method, never
+// exceeding what each tier has available, and redistributing any tier's
+// shortfall to tiers that still have room.
+//
+//   requested : desired total (caller clamps to a sane count first)
+//   available : { e, m, h } — questions on hand in each tier
+//   ratio     : { e, m, h } — relative weights (defaults to the lesson mix)
+//
+// Guarantees:
+//   - the returned counts sum to min(requested, e+m+h available)
+//   - no tier is asked for more than it has
+//   - the mix tracks `ratio`; leftover slots go to the largest fractional
+//     remainders (ties broken e > m > h, matching the documented examples)
+//   - fully deterministic and pure — no randomness, no globals
+function allocateDifficulty(requested, available, ratio) {
+  var avail = {
+    e: _qcSize(available && available.e),
+    m: _qcSize(available && available.m),
+    h: _qcSize(available && available.h),
+  };
+  var availTotal = avail.e + avail.m + avail.h;
+  var want = _qcSize(requested);
+  var cap = Math.min(want, availTotal);
+  if (cap <= 0) return { e: 0, m: 0, h: 0 };
+
+  var r = ratio || LESSON_DIFFICULTY_RATIO;
+  var rw = { e: Math.max(0, r.e || 0), m: Math.max(0, r.m || 0), h: Math.max(0, r.h || 0) };
+  var rTotal = rw.e + rw.m + rw.h;
+  if (rTotal <= 0) { rw = { e: 1, m: 1, h: 1 }; rTotal = 3; }
+
+  var TIERS = ['e', 'm', 'h'];  // fixed order = e>m>h tie-break
+  var exact = {}, draw = {}, frac = {};
+  TIERS.forEach(function (t) {
+    var ideal = cap * rw[t] / rTotal;
+    var floored = Math.min(Math.floor(ideal), avail[t]);
+    exact[t] = ideal;
+    draw[t] = floored;
+    frac[t] = ideal - Math.floor(ideal);
+  });
+
+  var assigned = draw.e + draw.m + draw.h;
+  var remaining = cap - assigned;
+
+  // Hand out leftover slots by largest fractional remainder, only to tiers with
+  // spare capacity. Loop until placed or nobody can take more.
+  while (remaining > 0) {
+    var best = null;
+    for (var i = 0; i < TIERS.length; i++) {
+      var t = TIERS[i];
+      if (draw[t] >= avail[t]) continue;            // tier is full
+      if (best === null || frac[t] > frac[best]) best = t;  // strict > keeps e>m>h on ties
+    }
+    if (best === null) break;                        // no capacity anywhere
+    draw[best]++;
+    frac[best] = -1;                                 // spent this tier's remainder
+    remaining--;
+  }
+
+  return { e: draw.e, m: draw.m, h: draw.h };
+}
+
 // Returns the value as a positive integer, or null if it isn't one.
 // Accepts a number or a digits-only string ("15"); rejects 0, negatives,
 // decimals ("10.5"), blanks, and non-numeric strings.
@@ -148,6 +219,9 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     LESSON_QUIZ_DEFAULT,
     UNIT_QUIZ_DEFAULT,
+    LESSON_DIFFICULTY_RATIO,
+    UNIT_DIFFICULTY_RATIO,
+    allocateDifficulty,
     resolveLessonCount,
     resolveUnitDecision,
     isValidCustom,

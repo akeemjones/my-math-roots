@@ -68,7 +68,8 @@ const _APP_GLOBALS = [
   '_makeUnitJumps','_makeSkipJumps',
   '_pausedSecsLeft','_startTimer','_clearTimer','_updateTimerDisplay','_timeUp',
   // quiz-config.js
-  'LESSON_QUIZ_DEFAULT','UNIT_QUIZ_DEFAULT','resolveLessonCount','resolveUnitDecision',
+  'LESSON_QUIZ_DEFAULT','UNIT_QUIZ_DEFAULT','LESSON_DIFFICULTY_RATIO','UNIT_DIFFICULTY_RATIO',
+  'allocateDifficulty','resolveLessonCount','resolveUnitDecision',
   'isValidCustom','quizLengthsKey','loadQuizLengths','saveQuizLengths',
   'unitEligibleBank','unitEligiblePoolSize',
   // quiz.js
