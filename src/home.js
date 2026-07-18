@@ -44,8 +44,42 @@ function _updateHeroSummary(){
   if(typeof _applyLaunchGradeVisibility === 'function') _applyLaunchGradeVisibility();
 }
 
+// Populate the "Continue Learning" card with the next lesson to work on. The
+// card is the home screen's primary action under simplified nav: it answers
+// "what should I work on next?" before the unit carousel. Safe to call on every
+// home render; hides itself when the flag is off or data is missing.
+function _renderContinueCard(){
+  const card = document.getElementById('continue-card');
+  if(!card) return;
+  const on = (typeof isFeatureOn === 'function') && isFeatureOn('SIMPLIFIED_NAV');
+  if(!on){ card.style.display = 'none'; return; }
+
+  const t = (typeof nextLearningTarget === 'function') ? nextLearningTarget() : null;
+  const units = (typeof UNITS_DATA !== 'undefined' && Array.isArray(UNITS_DATA)) ? UNITS_DATA : [];
+  const unit = t && units[t.unitIdx];
+  const lesson = unit && unit.lessons && unit.lessons[t.lessonIdx];
+  if(!lesson){ card.style.display = 'none'; return; }
+
+  const kicker = t.allDone ? 'All lessons complete — review'
+              : t.started ? 'Continue learning'
+              : 'Start learning';
+  const action = t.allDone ? 'Review' : (t.started ? 'Continue' : 'Start');
+  const icoPart = lesson.icon ? _escHtml(lesson.icon) + ' ' : '';
+
+  card.innerHTML =
+      '<button class="continue-btn" data-action="continueLearning"'
+    +   ' aria-label="' + _sanitize(action + ' ' + lesson.title + ', ' + unit.name) + '">'
+    +   '<span class="continue-kicker">' + _escHtml(kicker) + '</span>'
+    +   '<span class="continue-lesson">' + icoPart + _escHtml(lesson.title) + '</span>'
+    +   '<span class="continue-unit">' + _escHtml(unit.name) + '</span>'
+    +   '<span class="continue-cta">' + _escHtml(action) + '</span>'
+    + '</button>';
+  card.style.display = '';
+}
+
 function buildHome(instant){
   _renderCalBtn();
+  _renderContinueCard();
   _updateHeroSummary();
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
@@ -195,6 +229,7 @@ function buildHome(instant){
 function refreshHomeState(){
   // 1. Same prologue as buildHome()
   _renderCalBtn();
+  _renderContinueCard();   // recompute the next target after progress changes
   const allL = UNITS_DATA.flatMap(u=>u.lessons).length;
   const doneL = UNITS_DATA.flatMap(u=>u.lessons).filter(l=>
     SCORES.some(s=>s.qid==='lq_'+l.id && s.pct>=80)

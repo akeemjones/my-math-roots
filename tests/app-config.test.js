@@ -51,6 +51,7 @@ function fakeStorage(initial) {
 // Every flag the simplification spec requires the config to govern.
 const REQUIRED_FLAGS = [
   'DEMO_MODE',
+  'SIMPLIFIED_NAV',
   'STREAK_CALENDAR',
   'ACTIVITY_REWARDS',
   'AI_PARENT_REPORT',
@@ -94,9 +95,9 @@ describe('shipping configuration exposes only the intended product', () => {
 
   // The core acceptance check: the exact enabled surface, enumerated. A new
   // flag defaulting to on, or a removed feature creeping back, fails here.
-  test('the enabled surface is exactly Demo Mode', () => {
+  test('the enabled surface is exactly Demo Mode and simplified nav', () => {
     const on = REQUIRED_FLAGS.filter((f) => isFeatureOn(f));
-    expect(on).toEqual(['DEMO_MODE']);
+    expect(on).toEqual(['DEMO_MODE', 'SIMPLIFIED_NAV']);
   });
 
   test.each([

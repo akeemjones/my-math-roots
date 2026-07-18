@@ -57,6 +57,11 @@ var APP_CONFIG = Object.freeze({
   // Limited Demo Mode replaces full guest mode (one grade, one unit).
   DEMO_MODE: true,
 
+  // Simplified student navigation: a prominent "Continue Learning" action on
+  // home that resumes the correct next lesson, so the home screen answers
+  // "what should I work on next?" first.
+  SIMPLIFIED_NAV: true,
+
   // ── Disabled in the simplified product ──
   STREAK_CALENDAR: false,          // calendar modal, activity dot, month swipe
   ACTIVITY_REWARDS: false,         // milestone badges (the only reward mechanic)
@@ -81,6 +86,7 @@ var APP_CONFIG = Object.freeze({
 var _LEGACY_DEFAULTS = Object.freeze({
   LAUNCH_GRADES: Object.freeze(['K', '1', '2', '3']),
   DEMO_MODE: false,                // master ships full guest mode
+  SIMPLIFIED_NAV: false,           // master has no Continue Learning card
   STREAK_CALENDAR: true,
   ACTIVITY_REWARDS: true,
   AI_PARENT_REPORT: true,

@@ -52,8 +52,9 @@ const _APP_GLOBALS = [
   'updateAccountUI','_signOut','updateSyncLabel','CUR','switchGrade',
   // nav.js
   'ALL_SCREENS','show','isUnitUnlocked','isLessonUnlocked','isUnitQuizUnlocked',
+  '_lessonPassed','nextLearningTarget','continueLearning',
   // home.js
-  'CAR','buildHome','_carouselInited','initCarousel','carouselGoTo',
+  'CAR','buildHome','_renderContinueCard','_carouselInited','initCarousel','carouselGoTo',
   '_skipNextHomeBuild','goHome','goHistory','showLockToast','toggleHeroGradePicker',
   // unit.js
   'openUnit','goUnit','playCarryAnim','play3dCarry','playBorrowAnim','renderEx',

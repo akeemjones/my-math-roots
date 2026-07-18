@@ -100,6 +100,46 @@ function isUnitQuizUnlocked(unitIdx){
   return u.lessons.every(l => SCORES.some(s => s.qid === 'lq_'+l.id && s.pct >= 80));
 }
 
+// ════════════════════════════════════════
+//  CONTINUE LEARNING — "what should I work on next?"
+// ════════════════════════════════════════
+// A lesson counts as done when its quiz was passed at >=80%, the same
+// predicate the unlock and progress-bar logic already use, so "continue"
+// agrees with what the rest of the app shows as complete.
+function _lessonPassed(lessonId){
+  return SCORES.some(s => s.qid === 'lq_'+lessonId && s.pct >= 80);
+}
+
+// The lesson the student should work on next: the first not-yet-passed lesson,
+// walking units and lessons in order. Pure over UNITS_DATA + SCORES.
+// Returns { unitIdx, lessonIdx, started, allDone }:
+//   - allDone   : every lesson in the grade is passed
+//   - started   : at least one lesson has been passed (=> "Continue" vs "Start")
+// When everything is done, points back at the last lesson so the card can offer
+// a review rather than a dead end.
+function nextLearningTarget(){
+  const units = (typeof UNITS_DATA !== 'undefined' && Array.isArray(UNITS_DATA)) ? UNITS_DATA : [];
+  let started = false, lastUnit = 0, lastLesson = 0;
+  for(let u = 0; u < units.length; u++){
+    const lessons = (units[u] && Array.isArray(units[u].lessons)) ? units[u].lessons : [];
+    for(let l = 0; l < lessons.length; l++){
+      lastUnit = u; lastLesson = l;
+      if(_lessonPassed(lessons[l].id)) { started = true; continue; }
+      return { unitIdx: u, lessonIdx: l, started: started, allDone: false };
+    }
+  }
+  // No units, or every lesson passed.
+  if(!units.length) return { unitIdx: 0, lessonIdx: 0, started: false, allDone: false };
+  return { unitIdx: lastUnit, lessonIdx: lastLesson, started: true, allDone: true };
+}
+
+// Open the next lesson. If a lesson-quiz for the target is paused, openLesson
+// surfaces its own resume banner, so this is the single "continue" entry point.
+function continueLearning(){
+  const t = nextLearningTarget();
+  if(typeof openLesson === 'function') openLesson(t.unitIdx, t.lessonIdx);
+}
+
 
 // ════════════════════════════════════════
 //  SWIPE BACK — iOS-style interactive transition (full-screen gesture)

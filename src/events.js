@@ -103,6 +103,7 @@
 
     // ── Home ────────────────────────────────────────────────────────────────
     openUnit:               (a)   => openUnit(Number(a)),
+    continueLearning:       ()    => typeof continueLearning === 'function' && continueLearning(),
     openUnitPinUnlock:      (a)   => openUnitPinUnlock(Number(a)),
     resumeQuiz:             (a)   => resumeQuiz(a),
     startFinalTest:         ()    => startFinalTest(),
