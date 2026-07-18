@@ -95,9 +95,21 @@ describe('shipping configuration exposes only the intended product', () => {
 
   // The core acceptance check: the exact enabled surface, enumerated. A new
   // flag defaulting to on, or a removed feature creeping back, fails here.
-  test('the enabled surface is exactly Demo Mode and simplified nav', () => {
+  test('the enabled surface is exactly the kept simplified-product features', () => {
     const on = REQUIRED_FLAGS.filter((f) => isFeatureOn(f));
-    expect(on).toEqual(['DEMO_MODE', 'SIMPLIFIED_NAV']);
+    // Demo mode, simplified nav, plus the three real features the owner kept:
+    // sound, custom quiz lengths, and quiz timers.
+    expect(on).toEqual([
+      'DEMO_MODE', 'SIMPLIFIED_NAV', 'SOUND_CONTROLS', 'CUSTOM_QUIZ_LENGTHS', 'QUIZ_TIMERS',
+    ]);
+  });
+
+  test.each([
+    'SOUND_CONTROLS',
+    'CUSTOM_QUIZ_LENGTHS',
+    'QUIZ_TIMERS',
+  ])('%s is kept (owner decision) — a real, working feature', (flag) => {
+    expect(isFeatureOn(flag)).toBe(true);
   });
 
   test.each([
@@ -107,9 +119,6 @@ describe('shipping configuration exposes only the intended product', () => {
     'AI_HINTS',
     'PUSH_NOTIFICATIONS',
     'REMINDERS',
-    'SOUND_CONTROLS',
-    'CUSTOM_QUIZ_LENGTHS',
-    'QUIZ_TIMERS',
     'FINAL_TESTS',
     'HARD_PROGRESSION_LOCKS',
     'ACCESS_CONTROL_GRIDS',
@@ -201,10 +210,20 @@ describe('legacy escape hatch', () => {
   test('master-off restores the features the pivot disables', () => {
     const cfg = legacy();
     expect(cfg.isFeatureOn('STREAK_CALENDAR')).toBe(true);
-    expect(cfg.isFeatureOn('QUIZ_TIMERS')).toBe(true);
+    expect(cfg.isFeatureOn('REMINDERS')).toBe(true);
     expect(cfg.isFeatureOn('HARD_PROGRESSION_LOCKS')).toBe(true);
     expect(cfg.isFeatureOn('INTERVENTION_OVERLAYS')).toBe(true);
     expect(cfg.isFeatureOn('DEMO_MODE')).toBe(false); // master ships full guest mode
+  });
+
+  // Timers, custom quiz lengths and sound are ON in BOTH modes -- kept features,
+  // not something the pivot toggles. The escape hatch does not change them.
+  test('kept features are on in both simplified and legacy mode', () => {
+    const cfg = legacy();
+    for (const flag of ['SOUND_CONTROLS', 'CUSTOM_QUIZ_LENGTHS', 'QUIZ_TIMERS']) {
+      expect(isFeatureOn(flag)).toBe(true);       // simplified
+      expect(cfg.isFeatureOn(flag)).toBe(true);   // legacy
+    }
   });
 
   // Fidelity guard: these two are off on master because their surfaces are

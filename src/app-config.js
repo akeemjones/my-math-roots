@@ -62,6 +62,13 @@ var APP_CONFIG = Object.freeze({
   // "what should I work on next?" first.
   SIMPLIFIED_NAV: true,
 
+  // ── Kept in the simplified product ──
+  // Real, working features the owner chose to retain. Kept honest here so the
+  // config reflects what actually ships, not what an earlier plan proposed.
+  SOUND_CONTROLS: true,            // real Web Audio system (quiz.js:25-100); toggle mutes it
+  CUSTOM_QUIZ_LENGTHS: true,       // parent-set lesson & unit quiz lengths — kept by owner decision
+  QUIZ_TIMERS: true,               // parent-set quiz time limits — kept by owner decision
+
   // ── Disabled in the simplified product ──
   STREAK_CALENDAR: false,          // calendar modal, activity dot, month swipe
   ACTIVITY_REWARDS: false,         // milestone badges (the only reward mechanic)
@@ -69,9 +76,6 @@ var APP_CONFIG = Object.freeze({
   AI_HINTS: false,                 // never worked: _fetchAIHint is undefined
   PUSH_NOTIFICATIONS: false,       // real backend, no reachable UI
   REMINDERS: false,                // inert: writes wb_reminders, nothing reads it
-  SOUND_CONTROLS: false,           // toggle exists, no audio system exists
-  CUSTOM_QUIZ_LENGTHS: false,      // does not sync; breaks difficulty balancing
-  QUIZ_TIMERS: false,              // see quiz.js elapsed-time note before enabling
   FINAL_TESTS: false,              // 50-Q test eagerly loads ~5.5MB
   HARD_PROGRESSION_LOCKS: false,   // replaced by Recommended/Ready/Review/Done
   ACCESS_CONTROL_GRIDS: false,     // parent per-unit/per-lesson unlock toggles
