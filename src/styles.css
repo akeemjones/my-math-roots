@@ -1230,6 +1230,13 @@ body.a11y-focus #qhint-btn:focus{
 .rev-step{ font-size:var(--fs-base); line-height:1.5; color:var(--txt); padding:3px 0 3px 14px; border-left:3px solid #e74c3c; margin-bottom:4px; }
 
 
+/* Inline targeted feedback (simplified product: replaces the full-screen
+   intervention overlay). Sits under the question card; acknowledge-to-continue. */
+.inline-feedback{ display:flex; justify-content:center; margin:14px 0 4px;
+                  animation:inlineFeedbackIn .22s ease-out both; }
+@keyframes inlineFeedbackIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){ .inline-feedback{ animation:none; } }
+
 .quiz-nav-row{ display:flex; align-items:center; margin-top:8px; gap:8px; }
 .next-btn{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-base);
             padding:11px 20px; border-radius:50px; border:2px solid #1a7a45; cursor:pointer;

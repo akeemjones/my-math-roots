@@ -708,6 +708,11 @@ function _runQuiz(bank, qid, label, type, unitIdx, _prebuiltQs, mode, count){
 }
 
 function _renderQ(){
+  // Clear any lingering inline targeted-feedback card before drawing the next
+  // question (it is a sibling of #qcard, so replacing #qcard.innerHTML would
+  // otherwise leave it stranded on screen).
+  var _staleInline = document.querySelector('[data-inline-feedback]');
+  if(_staleInline) _staleInline.remove();
   const qz = CUR.quiz;
   const u = CUR.unitIdx != null ? UNITS_DATA[CUR.unitIdx] : { color:'#6c5ce7' };
   const total = qz.questions.length;
@@ -1427,6 +1432,57 @@ function _tapGroupSubmit() {
   }, 120);
 }
 
+// Mount a targeted-feedback card. Both pause functions build the SAME card
+// markup (title / question / fix / visual / "Got it — continue" button) and hand
+// it here; the presentation is chosen by the INTERVENTION_OVERLAYS flag but the
+// dismissal wiring and downstream behavior are identical either way:
+//   flag ON  (legacy/master) → full-screen focus overlay ([data-focus-overlay]).
+//   flag OFF (simplified)    → inline card under the question
+//                              ([data-inline-feedback]); acknowledge-to-continue,
+//                              enforced by nextQ() which refuses to advance while
+//                              an inline card is present.
+// onDismiss runs after the card is removed (both paths call _resumeQuiz).
+function _mountInterventionCard(cardHTML, onDismiss){
+  // Single-fire: clear any prior card of either kind.
+  var stale = document.querySelector('[data-focus-overlay],[data-inline-feedback]');
+  if(stale) stale.remove();
+
+  var useOverlay = (typeof isFeatureOn !== 'function') || isFeatureOn('INTERVENTION_OVERLAYS');
+  var node = document.createElement('div');
+
+  if(useOverlay){
+    node.setAttribute('data-focus-overlay', '1');
+    node.style.cssText = [
+      'position:fixed','inset:0','z-index:99999',
+      'background:var(--modal-bg, rgba(255,255,255,0.82))',
+      'backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
+      '-webkit-backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
+      'display:flex','flex-direction:column',
+      'align-items:center','justify-content:center',
+      'padding:32px','box-sizing:border-box',
+      'font-family:var(--ff, "Boogaloo","Arial Rounded MT Bold",sans-serif)',
+      'color:var(--txt, #1a2535)'
+    ].join(';');
+    node.innerHTML = cardHTML;
+    document.body.appendChild(node);
+  } else {
+    node.setAttribute('data-inline-feedback', '1');
+    node.className = 'inline-feedback';
+    node.innerHTML = cardHTML;
+    var qcard = document.getElementById('qcard');
+    if(qcard && qcard.parentNode){ qcard.parentNode.insertBefore(node, qcard.nextSibling); }
+    else { document.body.appendChild(node); }
+    try { node.scrollIntoView({ behavior:'smooth', block:'nearest' }); } catch(_e){}
+  }
+
+  var btn = node.querySelector('#focus-overlay-got-it');
+  if(btn) btn.addEventListener('click', function(){
+    node.remove();
+    if(typeof onDismiss === 'function') onDismiss();
+  });
+  return node;
+}
+
 function _pauseForInterventionTapGroup(errorTag, q) {
   var content    = _buildInterventionContent(errorTag, q, null, null);
   // Skip cleanly when no good teaching card can be built — better than
@@ -1448,23 +1504,6 @@ function _pauseForInterventionTapGroup(errorTag, q) {
     errorTag:     errorTag,
     lessonTitle:  title
   };
-
-  var existing = document.querySelector('[data-focus-overlay]');
-  if (existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.setAttribute('data-focus-overlay', '1');
-  overlay.style.cssText = [
-    'position:fixed','inset:0','z-index:99999',
-    'background:var(--modal-bg, rgba(255,255,255,0.82))',
-    'backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
-    '-webkit-backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
-    'display:flex','flex-direction:column',
-    'align-items:center','justify-content:center',
-    'padding:32px','box-sizing:border-box',
-    'font-family:var(--ff, "Boogaloo","Arial Rounded MT Bold",sans-serif)',
-    'color:var(--txt, #1a2535)'
-  ].join(';');
 
   var LABEL_STYLE = 'font-size:0.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;' +
     'color:var(--txt2,#5a7080);margin-bottom:6px;font-family:var(--ff2,\'Nunito\',sans-serif)';
@@ -1502,7 +1541,7 @@ function _pauseForInterventionTapGroup(errorTag, q) {
     '<div><div style="' + LABEL_STYLE + ';text-align:left">Try it this way</div>' +
     '<div style="padding:10px 0">' + visualHTML + '</div></div>' : '';
 
-  overlay.innerHTML =
+  var cardHTML =
     '<div style="max-width:520px;width:100%;background:var(--card-bg,#fff);border-radius:var(--rad,22px);' +
       'box-shadow:var(--shad,0 6px 28px rgba(0,0,0,.16));padding:28px 28px 24px;' +
       'border:1px solid var(--border,rgba(0,0,0,.11));display:flex;flex-direction:column;gap:0">' +
@@ -1526,11 +1565,7 @@ function _pauseForInterventionTapGroup(errorTag, q) {
       '</div>' +
     '</div>';
 
-  document.body.appendChild(overlay);
-  document.getElementById('focus-overlay-got-it').addEventListener('click', function() {
-    overlay.remove();
-    _resumeQuiz();
-  });
+  _mountInterventionCard(cardHTML, _resumeQuiz);
 }
 
 // ── Topic-aware intervention dispatcher ──────────────────────────────────
@@ -2739,24 +2774,6 @@ function _pauseForIntervention(errorTag, selectedIndex){
 
   console.log("Intervention:", title);
 
-  // Remove any existing overlay
-  var existing = document.querySelector('[data-focus-overlay]');
-  if(existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.setAttribute('data-focus-overlay', '1');
-  overlay.style.cssText = [
-    'position:fixed','inset:0','z-index:99999',
-    'background:var(--modal-bg, rgba(255,255,255,0.82))',
-    'backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
-    '-webkit-backdrop-filter:var(--modal-blur, blur(28px) saturate(160%) brightness(1.04))',
-    'display:flex','flex-direction:column',
-    'align-items:center','justify-content:center',
-    'padding:32px','box-sizing:border-box',
-    'font-family:var(--ff, "Boogaloo","Arial Rounded MT Bold",sans-serif)',
-    'color:var(--txt, #1a2535)'
-  ].join(';');
-
   // ── Standard intervention shell ──────────────────────────────────────────
   // Layout is always the same (5 sections). Teaching content is situation-specific
   // (supplied by _buildInterventionContent via title / text / visualHTML).
@@ -2804,7 +2821,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
       '<div style="padding:10px 0">'+visualHTML+'</div>'+
     '</div>' : '';
 
-  overlay.innerHTML =
+  var cardHTML =
     '<div style="max-width:520px;width:100%;background:var(--card-bg,#fff);border-radius:var(--rad,22px);'+
       'box-shadow:var(--shad,0 6px 28px rgba(0,0,0,.16));padding:28px 28px 24px;'+
       'border:1px solid var(--border,rgba(0,0,0,.11));display:flex;flex-direction:column;gap:0">'+
@@ -2833,13 +2850,7 @@ function _pauseForIntervention(errorTag, selectedIndex){
       '</div>'+
     '</div>';
 
-  console.log("Mounting Focus Overlay");
-  document.body.appendChild(overlay);
-
-  document.getElementById('focus-overlay-got-it').addEventListener('click', function(){
-    overlay.remove();
-    _resumeQuiz();
-  });
+  _mountInterventionCard(cardHTML, _resumeQuiz);
 }
 
 function _resumeQuiz(){
@@ -2864,6 +2875,11 @@ function _resumeQuiz(){
 }
 
 function nextQ(){
+  // Acknowledge-to-continue: while an inline targeted-feedback card is showing,
+  // the student must dismiss it ("Got it — continue") before advancing. The
+  // legacy full-screen overlay blocks Next by covering the screen; this keeps
+  // parity for the inline card.
+  if(document.querySelector('[data-inline-feedback]')) return;
   const qz = CUR.quiz;
   if(!qz) return;
   if(qz.viewIdx < qz.idx){
