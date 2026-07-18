@@ -730,6 +730,17 @@ function _dbSection(key, titleHtml, bodyHtml, defaultOpen, extraClass) {
     + '</section>';
 }
 
+// Group wrapper for the simplified 4-section dashboard. Purely a labeled
+// container — the inner _dbSection accordions keep their own collapse state, so
+// this adds structure without a second layer of collapsing. Gated by
+// LEGACY_DASHBOARD_SECTIONS in renderDashboard (legacy renders the flat list).
+function _dbGroup(titleHtml, bodyHtml) {
+  return '<section class="db-group">'
+    + '<h2 class="db-group-title">' + titleHtml + '</h2>'
+    + '<div class="db-group-body">' + bodyHtml + '</div>'
+    + '</section>';
+}
+
 function _renderStudentSelector(students, activeId) {
   var opts = Object.values(students).map(function(s) {
     return '<option value="' + _esc(s.id) + '"' + (s.id === activeId ? ' selected' : '') + '>'
@@ -5528,10 +5539,9 @@ function renderDashboard() {
     appBtn.style.display = '';
   }
 
-  // Phase 2: parent-actionable content first; admin/settings collapsed
-  // into a closed-by-default Settings & Management accordion at the bottom.
-  // _renderManageProfiles() now lives inside _renderSettingsAccordion().
-  root.innerHTML =
+  // Fixed header block (student selector, name, grade view-filter) — always on
+  // top, independent of section grouping.
+  var _dbHeaderHtml =
     _renderStudentSelector(_students, _activeId) +
     '<h1 class="db-student-name">' + _esc(student.name) + '</h1>' +
     '<div class="db-grade-context" style="margin:2px 0 16px;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#37474f">'
@@ -5541,15 +5551,39 @@ function renderDashboard() {
     +   _dbViewGradeOptions(viewBand)
     + '</select>'
     + '<span style="color:#90a4ae;font-size:.75rem">(view filter only &mdash; does not change student\'s enrollment)</span>'
-    + '</div>' +
-    _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores) +
-    _renderPracticePlan(mastery, activityEvents, weak, review) +
-    _renderLearningInsightsV2(learningInsights) +
-    _renderUnitProgressMap(scores, activityEvents) +
-    _renderRecentQuizzes(scores) +
-    _renderActivitySnapshot(stats, scores, appTime, activity, streak, activityEvents) +
-    _renderProfilesSection() +
-    _renderSettingsSection();
+    + '</div>';
+
+  // The eight self-contained sections. Each returns finished HTML, so they can
+  // be freely re-bucketed into the simplified four-group layout below.
+  var _secActionSummary = _renderParentActionSummary(stats, mastery, activityEvents, student.name, scores);
+  var _secPracticePlan  = _renderPracticePlan(mastery, activityEvents, weak, review);
+  var _secInsights      = _renderLearningInsightsV2(learningInsights);
+  var _secUnitMap       = _renderUnitProgressMap(scores, activityEvents);
+  var _secQuizzes       = _renderRecentQuizzes(scores);
+  var _secActivity      = _renderActivitySnapshot(stats, scores, appTime, activity, streak, activityEvents);
+  var _secProfiles      = _renderProfilesSection();
+  var _secSettings      = _renderSettingsSection();
+
+  // LEGACY_DASHBOARD_SECTIONS on → the original flat 8-section list (master
+  // fidelity). Off (simplified product) → four intent-based groups:
+  //   Overview (how's it going) · Progress (the detail) · Practice (what next)
+  //   · Account (management). Mastery is not newly featured — the sections that
+  //   use it (Insights, Unit Map) keep their existing prominence; the known
+  //   wrong-table mastery read is tracked for the sync-reliability phase.
+  var _legacySections = (typeof isFeatureOn !== 'function') || isFeatureOn('LEGACY_DASHBOARD_SECTIONS');
+  var _dbBody;
+  if (_legacySections) {
+    _dbBody = _secActionSummary + _secPracticePlan + _secInsights + _secUnitMap
+            + _secQuizzes + _secActivity + _secProfiles + _secSettings;
+  } else {
+    _dbBody =
+      _dbGroup('👀 Overview', _secActionSummary + _secActivity) +
+      _dbGroup('📈 Progress', _secInsights + _secUnitMap + _secQuizzes) +
+      _dbGroup('🎯 Practice', _secPracticePlan) +
+      _dbGroup('👤 Account',  _secProfiles + _secSettings);
+  }
+
+  root.innerHTML = _dbHeaderHtml + _dbBody;
 
   // Render AI report footer
   var footerEl = document.getElementById('db-ai-footer');
