@@ -363,6 +363,36 @@ button{ -webkit-appearance:none; font-family:inherit;
    a decision point for a parent, not a place to keep a child engaged. Uses the
    existing type/colour tokens and honours safe areas so the choices are never
    under a notch or home indicator. */
+/* ── Profile selection (single-account landing) ─────────────────────────── */
+.psel-wrap{
+  max-width:560px; margin:0 auto; box-sizing:border-box;
+  padding:calc(var(--safe-top) + 48px) calc(var(--safe-right) + 20px)
+          calc(var(--safe-bottom) + 32px) calc(var(--safe-left) + 20px);
+  text-align:center; }
+.psel-title{
+  font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif; font-size:var(--fs-xxl);
+  color:var(--txt); margin:0 0 22px; }
+.psel-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:16px; justify-content:center; margin:0 auto 24px; }
+.psel-card{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:18px 12px; border:2.5px solid var(--border2); border-radius:18px;
+  background:var(--card,#fff); cursor:pointer; transition:transform .12s, box-shadow .12s;
+  font-family:'Nunito',sans-serif; }
+.psel-card:hover,.psel-card:focus-visible{ transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,.12); outline:none; }
+.psel-av{
+  width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:2rem; color:#fff; font-weight:800; }
+.psel-name{ font-size:var(--fs-md); font-weight:800; color:var(--txt); }
+.psel-grade{ font-size:var(--fs-sm); font-weight:600; color:var(--txt2); }
+.psel-empty{ grid-column:1/-1; font-family:'Nunito',sans-serif; font-size:var(--fs-md); color:var(--txt2); padding:24px; }
+.psel-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.psel-secondary{
+  font-family:'Nunito',sans-serif; font-size:var(--fs-base); font-weight:700;
+  padding:10px 18px; border-radius:12px; border:2px solid var(--border2);
+  background:transparent; color:var(--txt2); cursor:pointer; }
+
 .gr-wrap{
   max-width:520px; margin:0 auto; box-sizing:border-box;
   padding:calc(var(--safe-top) + 48px) calc(var(--safe-right) + 24px)

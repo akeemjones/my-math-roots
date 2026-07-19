@@ -315,3 +315,79 @@ async function _psCheckPin(){
     setTimeout(function(){ if(psInp) psInp.focus(); }, 300);
   }
 }
+
+// ════════════════════════════════════════
+//  PROFILE SELECTION SCREEN  (single-family-account model)
+//  The post-login landing: pick which child is learning. A child profile is
+//  application state, NOT a login — selecting one enters the learning app under
+//  the already-authenticated Family Account (parent Supabase session), with no
+//  family code, no PIN, and no session token. This is the PIN-free entry the
+//  parent-launched regime already provides via enterStudentLearningSession.
+// ════════════════════════════════════════
+function _pselGradeLabel(profile){
+  var g = (profile && profile.grade != null) ? String(profile.grade).trim().toLowerCase() : '';
+  if(g === 'k' || g === 'kindergarten' || g === '0') return 'Kindergarten';
+  if(g === '1') return 'Grade 1';
+  if(g === '2') return 'Grade 2';
+  if(g === '3') return 'Grade 3';
+  return '';
+}
+
+function _pselInitials(name){
+  var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  return (parts[0].charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+}
+
+// Render the child cards into #psel-grid. Reads the family-profile cache; the
+// same cache the switcher and (former) login card use.
+function buildProfileSelection(){
+  var grid = document.getElementById('psel-grid');
+  if(!grid) return;
+  var profiles = _psGetProfiles();
+  if(!profiles.length){
+    grid.innerHTML = '<div class="psel-empty">No child profiles yet. Add your first child to get started.</div>';
+    return;
+  }
+  grid.innerHTML = profiles.map(function(p){
+    var grad = 'linear-gradient(135deg,' + _psValidColor(p.avatar_color_from) + ',' + _psValidColor(p.avatar_color_to) + ')';
+    var av   = p.avatar_emoji ? _psEsc(p.avatar_emoji) : _psEsc(_pselInitials(p.display_name));
+    var gl   = _pselGradeLabel(p);
+    return '<button type="button" class="psel-card" role="listitem"'
+      + ' data-action="pselSelectChild" data-arg="' + _psEsc(p.id) + '">'
+      + '<div class="psel-av" style="background:' + grad + '">' + av + '</div>'
+      + '<div class="psel-name">' + _psEsc(p.display_name) + '</div>'
+      + (gl ? '<div class="psel-grade">' + gl + '</div>' : '')
+      + '</button>';
+  }).join('');
+}
+
+// Show the selection screen and (re)render its cards.
+function goProfileSelection(){
+  if(typeof buildProfileSelection === 'function') buildProfileSelection();
+  if(typeof show === 'function') show('profile-selection');
+}
+
+// Tap a child card → enter that child's learning app. No credential prompt.
+function pselSelectChild(id){
+  var profiles = _psGetProfiles();
+  var profile  = profiles.find(function(p){ return p.id === id; });
+  if(!profile) return;
+  if(typeof enterStudentLearningSession === 'function'){
+    enterStudentLearningSession({
+      studentProfileId: profile.id,
+      profile:          profile,
+      sessionToken:     null,            // parent-owned session; no student token
+      source:           'profile-selection'
+    });
+  }
+}
+
+// Add-child and Settings are parent-only. The parent-PIN gate + the four-section
+// Settings are wired in later commits; for now defer to the existing entries.
+function pselAddChild(){
+  if(typeof goSettings === 'function') goSettings();
+}
+function pselOpenSettings(){
+  if(typeof goSettings === 'function') goSettings();
+}

@@ -203,6 +203,11 @@
     psPinInput:             ()    => typeof psPinInput           === 'function' && psPinInput(),
     psPinFocus:             ()    => typeof psPinFocus           === 'function' && psPinFocus(),
     psBackToList:           ()    => typeof psBackToList         === 'function' && psBackToList(),
+    // ── Profile selection (single-account landing) ───────────────────────────
+    pselSelectChild:        (a)   => typeof pselSelectChild      === 'function' && pselSelectChild(a),
+    pselAddChild:           ()    => typeof pselAddChild         === 'function' && pselAddChild(),
+    pselOpenSettings:       ()    => typeof pselOpenSettings     === 'function' && pselOpenSettings(),
+    goProfileSelection:     ()    => typeof goProfileSelection   === 'function' && goProfileSelection(),
     // Login-screen native pin input
     _lsPinNativeInput:      ()    => typeof _lsPinNativeInput    === 'function' && _lsPinNativeInput(),
 

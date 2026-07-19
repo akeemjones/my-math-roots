@@ -1,7 +1,7 @@
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
-const ALL_SCREENS = ['login-screen','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen','grade-recovery-screen'];
+const ALL_SCREENS = ['login-screen','profile-selection','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen','grade-recovery-screen'];
 
 // Screens that put a student in front of curriculum. None of them may open
 // while the active grade is unsupported: the grade decides which content loads
