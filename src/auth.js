@@ -3494,15 +3494,7 @@ function updateAccountUI(){
   }
 }
 
-function _goParentDashboard(){
-  if(_supaUser){
-    show('dashboard-screen');
-    _dbInit();
-    _installHistoryGuard();
-  } else {
-    _showParentSignInGate();
-  }
-}
+// (_goParentDashboard removed — the standalone dashboard no longer exists.)
 
 function _showParentSignInGate(){
   if(document.getElementById('parent-gate-modal')) return;

@@ -99,7 +99,7 @@ describe('no content loads before the parent chooses', () => {
   });
 
   test('show() redirects to recovery rather than silently doing nothing', () => {
-    const fn = nav.match(/function show\(id\)\{[\s\S]*?\n  \/\/ Guard: parent-screen/)[0];
+    const fn = nav.match(/function show\(id\)\{[\s\S]*?\n  \/\/ Reset feedback form/)[0];
     expect(fn).toMatch(/_LEARNING_SCREENS\.indexOf\(id\) !== -1/);
     expect(fn).toMatch(/needsGradeRecovery\(localStorage\)/);
     expect(fn).toMatch(/id = 'grade-recovery-screen'/);

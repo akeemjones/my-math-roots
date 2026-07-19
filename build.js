@@ -103,7 +103,7 @@ async function build(){
     // Grade 3 — DEV BUILDS ONLY (see G3_FILES below).
     ...G3_FILES,
     'util.js','quiz-helpers.js','quiz-config.js','analytics.js','state.js','auth.js','nav.js','home.js','unit.js',
-    'visuals.js','key-ideas.js','question-engine.js','quiz.js','settings.js','ui.js','profile-switcher.js','events.js','boot.js','parent-progress.js','dashboard.js'
+    'visuals.js','key-ideas.js','question-engine.js','quiz.js','settings.js','ui.js','profile-switcher.js','events.js','boot.js','parent-progress.js','profile-management.js','dashboard.js'
   ];
   const jsFiles = SRC_FILES.map(f => ({
     name: f,

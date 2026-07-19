@@ -1290,13 +1290,13 @@ async function changePin(){
   const _mode = _pinModalMode;
   closePinModal(); // also resets _pinModalMode to 'change' and clears _pinModalCallback
   if(_mode === 'setup'){
-    // First-time setup: open parent controls immediately (callback was cleared by closePinModal)
+    // First-time setup: open the consolidated Settings immediately (the old
+    // parent-screen/parent-panel targets were removed).
     _setParentSession();
-    show('parent-screen');
-    document.getElementById('parent-panel').style.display = 'block';
+    _enterSettingsMode();
     updateAccountUI();
+    goSettings();
     _startParentSession();
-    updateParentStatus();
     return;
   }
   showLockToast('PIN saved!');

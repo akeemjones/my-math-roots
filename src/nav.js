@@ -1,7 +1,7 @@
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
-const ALL_SCREENS = ['login-screen','profile-selection','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','parent-screen','dashboard-screen','grade-recovery-screen'];
+const ALL_SCREENS = ['login-screen','profile-selection','home','unit-screen','lesson-screen','quiz-screen','results-screen','history-screen','settings-screen','grade-recovery-screen'];
 
 // Screens that put a student in front of curriculum. None of them may open
 // while the active grade is unsupported: the grade decides which content loads
@@ -20,11 +20,6 @@ function show(id){
      && needsGradeRecovery(localStorage)){
     console.warn('[grade] "' + id + '" blocked — unsupported grade needs a parent to choose.');
     id = 'grade-recovery-screen';
-  }
-  // Guard: parent-screen requires a valid parent session
-  if(id === 'parent-screen' && !isParentUnlocked()){
-    console.warn('[Security] Blocked unauthorized access to parent-screen');
-    return;
   }
   // Reset feedback form whenever navigating away from settings
   const _curScreen = ALL_SCREENS.find(s=>document.getElementById(s)?.classList.contains('on'));
@@ -46,7 +41,7 @@ function show(id){
   }
   // Hide the settings cog when inside settings, show everywhere else
   const cog = document.querySelector('.cog-btn');
-  if(cog) cog.style.display = (id === 'settings-screen' || id === 'login-screen' || id === 'parent-screen' || id === 'dashboard-screen') ? 'none' : '';
+  if(cog) cog.style.display = (id === 'settings-screen' || id === 'login-screen' || id === 'profile-selection') ? 'none' : '';
   // Profile button only appears on the home (hero) screen
   const prof = document.getElementById('prof-btn');
   if(prof) prof.style.display = (id === 'home') ? '' : 'none';
@@ -212,13 +207,12 @@ function lessonStatus(unitIdx, lessonIdx){
   const MAP = {
     'home':              { prev:null,              back:null },
     'login-screen':      { prev:null,              back:null },
-    'dashboard-screen':  { prev:null,              back:null },
+    'profile-selection': { prev:null,              back:null },
     'unit-screen':    { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
     'lesson-screen':  { prev:'unit-screen',     back:()=>goUnit() },
     'results-screen': { prev:'unit-screen',     back:()=>afterResults() },
     'history-screen': { prev:'home',            back:()=>{ playSwooshBack(); goHome(); } },
     'settings-screen':{ prev:()=>_settingsReturnScreen||'home', back:()=>goSettingsBack() },
-    'parent-screen':  { prev:'settings-screen', back:()=>{ playSwooshBack(); show('settings-screen'); const _se=document.getElementById('settings-screen'); if(_se&&_se._savedScrollTop) requestAnimationFrame(()=>{ _se.scrollTop=_se._savedScrollTop; }); } },
   };
 
   let curEl=null, prevEl=null, entry=null;

@@ -5328,36 +5328,7 @@ function dbSignOut() {
 
 // ── Manage Profiles ───────────────────────────────────────────────────────
 
-async function _fetchManagedProfiles() {
-  if (typeof _supa === 'undefined' || !_supa) return;
-  try {
-    var result = await Promise.race([
-      _supa
-        .from('student_profiles')
-        .select('id, display_name, age, avatar_emoji, avatar_color_from, avatar_color_to, username, updated_at, report_last_generated, report_last_text, grade, streak_current, streak_longest, streak_last_date, act_dates_json')
-        .order('created_at', { ascending: true }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
-    ]);
-    if (result.error) throw result.error;
-    _managedProfiles = result.data || [];
-    // Mirror Supabase grade into the per-profile local cache so the
-    // grade resolver and student-side reads work without re-fetching.
-    _managedProfiles.forEach(function(p) {
-      if (p && p.id && p.grade) _dbWriteProfileGrade(p.id, p.grade);
-    });
-    localStorage.setItem('mmr_family_profiles',
-      JSON.stringify(_managedProfiles.map(function(p) {
-        return { id: p.id, display_name: p.display_name, age: p.age,
-          avatar_emoji: p.avatar_emoji, avatar_color_from: p.avatar_color_from,
-          avatar_color_to: p.avatar_color_to, username: p.username, pin_hash: '',
-          grade: p.grade || null };
-      }))
-    );
-  } catch(e) {
-    try { _managedProfiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]'); }
-    catch(e2) { _managedProfiles = []; }
-  }
-}
+// (_fetchManagedProfiles relocated to src/profile-management.js)
 
 function _renderManageProfiles() {
   if (!_managedProfiles.length) {

@@ -20,6 +20,10 @@
 const fs = require('fs');
 const path = require('path');
 
+// The SELECT contract now lives in profile-management.js (_fetchManagedProfiles);
+// the per-student STREAK/ACT_DATES seed site still lives in dashboard.js. The
+// source-contract greps scan both.
+const FETCH_PATH = path.join(__dirname, '..', 'src', 'profile-management.js');
 const DASH_PATH = path.join(__dirname, '..', 'src', 'dashboard.js');
 
 // Pure mappers relocated to parent-progress.js; _renderActivitySnapshotInner
@@ -33,7 +37,9 @@ const { _renderActivitySnapshotInner } = require('../src/dashboard');
 // ── _fetchManagedProfiles SELECT contract ───────────────────────────
 describe('_fetchManagedProfiles SELECT contract (parent dashboard streak hydration)', () => {
   let src;
-  beforeAll(() => { src = fs.readFileSync(DASH_PATH, 'utf8'); });
+  beforeAll(() => {
+    src = fs.readFileSync(FETCH_PATH, 'utf8') + '\n' + fs.readFileSync(DASH_PATH, 'utf8');
+  });
 
   test('SELECT includes streak_current', () => {
     expect(src).toMatch(/\.select\([^)]*streak_current[^)]*\)/);
