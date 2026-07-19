@@ -2154,6 +2154,10 @@ img[data-coin]:active{ transform:scale(.95); }
 /* ── SETTINGS SCREEN ── */
 #settings-screen{ background-color:transparent; }
 #settings-screen .sc-in{ max-width:680px; margin:0 auto; padding:20px 16px env(safe-area-inset-bottom); }
+.set-group{ font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;
+  font-size:var(--fs-lg); color:var(--txt); margin:22px 4px 10px;
+  padding-bottom:6px; border-bottom:2px solid rgba(142,68,173,.35); letter-spacing:.3px; }
+.set-group:first-child{ margin-top:4px; }
 .set-section{ background:rgba(255,255,255,.30);
   border-radius:var(--rad); overflow:hidden; margin-bottom:16px;
   border-top:1.5px solid rgba(255,255,255,.80);

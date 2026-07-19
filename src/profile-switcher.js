@@ -383,11 +383,14 @@ function pselSelectChild(id){
   }
 }
 
-// Add-child and Settings are parent-only. The parent-PIN gate + the four-section
-// Settings are wired in later commits; for now defer to the existing entries.
+// Add-child and Settings are parent-only — both open the parent-PIN-gated
+// Settings. Add child lands in the Children section (deep-link wired with the
+// Children section build).
 function pselAddChild(){
-  if(typeof goSettings === 'function') goSettings();
+  if(typeof openSettings === 'function') openSettings();
+  else if(typeof goSettings === 'function') goSettings();
 }
 function pselOpenSettings(){
-  if(typeof goSettings === 'function') goSettings();
+  if(typeof openSettings === 'function') openSettings();
+  else if(typeof goSettings === 'function') goSettings();
 }

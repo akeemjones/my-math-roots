@@ -1083,24 +1083,12 @@ async function checkParentPin(){
       // If the parent was authenticating to confirm an unsupported-grade
       // recovery choice, apply it now instead of opening parent controls.
       if(_applyPendingRecoveryGrade()) return;
-      show('parent-screen');
-      document.getElementById('parent-panel').style.display = 'block';
-      updateAccountUI();
+      // Single-family-account model: the PIN gate opens the consolidated Settings
+      // screen (the old parent-screen/parent-panel targets are removed).
+      _pendingOpenSettings = false;
+      _enterSettingsMode();
+      goSettings();
       _startParentSession();
-      // Show first-time PIN change prompt if still using default
-      const isDefault = !localStorage.getItem(PIN_CHANGED_KEY);
-      if(isDefault){
-        msg.textContent = '⚠️ You are using the default PIN. Please set a custom PIN below for security!';
-        msg.style.color = '#e67e22';
-        setTimeout(()=>{
-          document.getElementById('pin-change-area').style.display='block';
-          document.getElementById('new-pin-inp').focus();
-        }, 400);
-      } else {
-        msg.textContent = '✅ Parent controls unlocked!';
-        msg.style.color = '#27ae60';
-      }
-      updateParentStatus();
     });
   } else {
     // Failed — increment counter and record timestamp
@@ -1844,6 +1832,44 @@ function switchGradeUI(newGrade){
 }
 
 let _settingsReturnScreen = 'home';
+// Set while the parent gate is being opened specifically to reach Settings, so
+// the shared parent-auth success handler knows to open Settings (vs. an inline
+// unlock elsewhere).
+let _pendingOpenSettings = false;
+
+// The single parent-PIN-gated entry to Settings. Children/Progress/Account and
+// the learning-preference controls all live behind it. The PIN is a local gate
+// only — it never creates a Supabase session or a second identity.
+function openSettings(){
+  if(typeof isParentUnlocked === 'function' && isParentUnlocked()){
+    _enterSettingsMode();
+    goSettings();
+    return;
+  }
+  _pendingOpenSettings = true;
+  if(typeof _openParentAuth === 'function') _openParentAuth();
+}
+
+// Mark Settings as the foreground app mode + stamp the short-lived gate window so
+// resolveInitialScreen restores Settings on reload only while the gate is valid.
+// Derived from the existing parent session so there is ONE gate, not two.
+function _enterSettingsMode(){
+  try {
+    localStorage.setItem('mmr_app_mode', 'settings');
+    var mins = (typeof PARENT_SESSION_MINS === 'number') ? PARENT_SESSION_MINS : 15;
+    localStorage.setItem('mmr_parent_gate_until', String(Date.now() + mins * 60 * 1000));
+  } catch(_e) {}
+}
+
+// Leave Settings: drop the settings mode + gate stamp so a reload returns to the
+// active child (or profile selection), never back into parent controls.
+function _exitSettingsMode(){
+  try {
+    localStorage.removeItem('mmr_parent_gate_until');
+    if(localStorage.getItem('mmr_active_student_id')) localStorage.setItem('mmr_app_mode', 'child');
+    else localStorage.removeItem('mmr_app_mode');
+  } catch(_e) {}
+}
 
 function goSettings(){
   _settingsReturnScreen = ALL_SCREENS.find(s => document.getElementById(s)?.classList.contains('on')) || 'home';
@@ -1882,11 +1908,18 @@ function goSettings(){
 
 function goSettingsBack(){
   playSwooshBack();
+  _exitSettingsMode();
   const ret = _settingsReturnScreen || 'home';
   _settingsReturnScreen = 'home';
-  if(ret === 'home' || ret === 'settings-screen' || ret === 'login-screen'
+  // Leaving Settings returns to the child learning context, or profile selection
+  // when no child is active. Removed destinations (parent/dashboard) fall through.
+  if(ret === 'settings-screen' || ret === 'login-screen'
      || ret === 'parent-screen' || ret === 'dashboard-screen'){
-    goHome();
+    if(!localStorage.getItem('mmr_active_student_id') && typeof goProfileSelection === 'function') goProfileSelection();
+    else goHome();
+  } else if(ret === 'home'){
+    if(!localStorage.getItem('mmr_active_student_id') && typeof goProfileSelection === 'function') goProfileSelection();
+    else goHome();
   } else {
     show(ret);
   }

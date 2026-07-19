@@ -142,7 +142,8 @@
     closeCoinLightbox:      ()    => closeCoinLightbox(),
 
     // ── Settings ────────────────────────────────────────────────────────────
-    goSettings:             ()    => goSettings(),
+    goSettings:             ()    => (typeof openSettings === 'function' ? openSettings() : goSettings()),
+    openSettings:           ()    => (typeof openSettings === 'function' && openSettings()),
     openProgressReport:     ()    => openProgressReport(),
     closeProgressReport:    ()    => closeProgressReport(),
     openPrReview:           (a)   => openPrReview(a),

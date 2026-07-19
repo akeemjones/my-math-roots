@@ -536,6 +536,9 @@
   </div>
   <div class="sc-in">
 
+    <!-- ═══ 1. CHILDREN ═══ -->
+    <h3 class="set-group">Children</h3>
+
     <!-- Student Info -->
     <div class="set-section">
       <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></span> Student Info</div>
@@ -561,6 +564,9 @@
         </div>
       </div>
     </div>
+
+    <!-- ═══ 2. LEARNING PREFERENCES ═══ -->
+    <h3 class="set-group">Learning Preferences</h3>
 
     <!-- Appearance -->
     <div class="set-section">
@@ -611,6 +617,18 @@
       </div>
     </div>
 
+    <!-- ═══ 3. PROGRESS ═══ -->
+    <h3 class="set-group">Progress</h3>
+    <div class="set-section" id="set-progress-section">
+      <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span> <span id="set-progress-child-label">Progress</span></div>
+      <div class="set-body">
+        <div id="set-progress-body" class="set-body-p">Select a child to see their recent progress.</div>
+      </div>
+    </div>
+
+    <!-- ═══ 4. ACCOUNT ═══ -->
+    <h3 class="set-group">Account</h3>
+
     <!-- Install App -->
     <div class="set-section">
       <div class="set-sec-head"><span class="set-sec-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Install App on iPhone or iPad</div>
@@ -624,15 +642,9 @@
       </div>
     </div>
 
-    <!-- Signed-in: dashboard + sign out -->
+    <!-- Signed-in: sign out (standalone dashboard removed — single-account model) -->
     <div id="signout-btn-wrap" style="text-align:center;padding:4px 0 24px;display:none">
       <div style="display:flex;flex-direction:row;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap">
-        <button type="button" data-action="_goParentDashboard" id="parent-dash-btn"
-          style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);padding:10px 22px;
-                 border-radius:50px;border:2px solid #8e44ad;background:transparent;
-                 color:#8e44ad;cursor:pointer;touch-action:manipulation">
-          Dashboard
-        </button>
         <button type="button" data-action="_signOut"
           style="font-family:'Boogaloo','Arial Rounded MT Bold',sans-serif;font-size:var(--fs-base);padding:10px 22px;
                  border-radius:50px;border:2px solid #e74c3c;background:transparent;

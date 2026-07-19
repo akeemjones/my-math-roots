@@ -103,7 +103,7 @@ const _APP_GLOBALS = [
   'getPin','isParentUnlocked','_setParentSession','_clearParentSession',
   '_PIN_FAIL_KEY','_PIN_FAIL_COUNT_KEY','_PIN_LOCKOUT_SIG_KEY','_PIN_MAX_ATTEMPTS',
   '_authClosing','_authPinBlurHandler','_openParentAuth','_closeParentAuth',
-  'goSettings','goSettingsBack','toggleGradePicker','pickGrade','_applyLaunchGradeVisibility',
+  'goSettings','openSettings','_enterSettingsMode','_exitSettingsMode','goSettingsBack','toggleGradePicker','pickGrade','_applyLaunchGradeVisibility',
   'chooseRecoveryGrade','_applyRecoveryGrade','_applyPendingRecoveryGrade','_pendingRecoveryGrade',
   '_fpAnswer','_gen5thGradeProblem','_fpProblem','_fpBlurHandler',
   'openForgotPin','closeForgotPin','refreshForgotProblem','checkForgotAnswer',
