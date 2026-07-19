@@ -1903,7 +1903,61 @@ function goSettings(){
   if(window._tpCleanups){ window._tpCleanups.forEach(fn=>fn()); window._tpCleanups = []; }
   _syncA11yUI();
   _refreshGradeList();
+  _renderSettingsProgress();
   show('settings-screen');
+}
+
+// Compact, honest progress for the currently selected child, built from the
+// relocated pure utilities in parent-progress.js. Verified data only — completed
+// quiz scores + recommended next lesson. No charts, mastery %, or time-on-task.
+function _renderSettingsProgress(){
+  var bodyEl  = document.getElementById('set-progress-body');
+  var labelEl = document.getElementById('set-progress-child-label');
+  if(!bodyEl) return;
+
+  var esc = function(s){ return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+
+  var activeId = localStorage.getItem('mmr_active_student_id');
+  var profiles = [];
+  try { profiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]'); } catch(_e) {}
+  var profile = (profiles || []).find(function(p){ return p && p.id === activeId; });
+  var name = (profile && profile.display_name) || 'This child';
+  if(labelEl) labelEl.textContent = name + '’s Progress';
+
+  var scores = (typeof SCORES !== 'undefined' && Array.isArray(SCORES)) ? SCORES : [];
+  var completed = scores.filter(function(s){ return s && s.pct != null && s.total > 0; });
+  if(!completed.length){
+    bodyEl.innerHTML = 'No quizzes completed yet. Progress appears here once ' + esc(name) + ' starts learning.';
+    return;
+  }
+
+  var stats = (typeof _computeOverallStats === 'function')
+    ? _computeOverallStats(scores)
+    : { accuracy: 0, quizCount: completed.length };
+
+  // Most recent results, newest first (score records carry an epoch-ms id).
+  var recent = completed.slice().sort(function(a,b){ return (b.id||0)-(a.id||0); }).slice(0, 5);
+  var rows = recent.map(function(s){
+    var pct = (s.pct != null) ? Math.round(s.pct) : 0;
+    var col = pct >= 80 ? '#27ae60' : (pct >= 60 ? '#e67e22' : '#e74c3c');
+    return '<div class="set-prog-row"><span class="set-prog-lbl">' + esc(s.label || s.qid || 'Quiz')
+      + '</span><span class="set-prog-pct" style="color:' + col + '">' + pct + '%</span></div>';
+  }).join('');
+
+  // Recommended next lesson lives in nav.js — guard in case it's unavailable.
+  var nextHtml = '';
+  try {
+    var nt = (typeof nextLearningTarget === 'function') ? nextLearningTarget() : null;
+    var ntLabel = nt && (nt.label || nt.title || nt.name);
+    if(ntLabel) nextHtml = '<div class="set-prog-next">Recommended next: <strong>' + esc(ntLabel) + '</strong></div>';
+  } catch(_e) {}
+
+  bodyEl.innerHTML =
+    '<div class="set-prog-summary"><strong>' + stats.quizCount + '</strong> quizzes · <strong>'
+      + stats.accuracy + '%</strong> average</div>'
+    + '<div class="set-prog-recent-h">Recent results</div>' + rows
+    + nextHtml;
 }
 
 function goSettingsBack(){

@@ -39,7 +39,7 @@ const ROOT = path.join(__dirname, '..');
 //   state.js      — normalizeGrade + the grade-namespaced storage keys.
 //                   dashboard.js calls normalizeGrade as a global.
 //   dashboard.js  — the subject under test.
-const BUNDLE_FILES = ['app-config.js', 'state.js', 'dashboard.js'];
+const BUNDLE_FILES = ['app-config.js', 'state.js', 'parent-progress.js', 'dashboard.js'];
 
 // An in-memory localStorage stand-in with the same surface the app uses.
 function makeStorage(initial) {

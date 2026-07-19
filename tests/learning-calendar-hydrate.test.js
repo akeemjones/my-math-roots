@@ -198,7 +198,7 @@ describe('_pullStudentProgress — family-code path still writes wb_streak and w
 // and _dbBuildStudentActDates. Re-validate those helpers here so a
 // regression in either codepath surfaces as a clear test failure.
 describe('Defensive coercion (canonical semantics, exercised via dashboard helpers)', () => {
-  const { _dbBuildStudentStreak, _dbBuildStudentActDates } = require('../src/dashboard');
+  const { _dbBuildStudentStreak, _dbBuildStudentActDates } = require('../src/parent-progress');
 
   test('missing/invalid streak values default to {current:0, longest:0, lastDate:null}', () => {
     expect(_dbBuildStudentStreak({})).toEqual({ current: 0, longest: 0, lastDate: null });

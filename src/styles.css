@@ -2158,6 +2158,12 @@ img[data-coin]:active{ transform:scale(.95); }
   font-size:var(--fs-lg); color:var(--txt); margin:22px 4px 10px;
   padding-bottom:6px; border-bottom:2px solid rgba(142,68,173,.35); letter-spacing:.3px; }
 .set-group:first-child{ margin-top:4px; }
+.set-prog-summary{ font-family:'Nunito',sans-serif; font-size:var(--fs-md); color:var(--txt); margin-bottom:10px; }
+.set-prog-recent-h{ font-family:'Nunito',sans-serif; font-size:var(--fs-sm); font-weight:800; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; margin:6px 0 4px; }
+.set-prog-row{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.12); font-family:'Nunito',sans-serif; font-size:var(--fs-base); }
+.set-prog-lbl{ color:var(--txt); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.set-prog-pct{ font-weight:800; flex:none; }
+.set-prog-next{ margin-top:10px; font-family:'Nunito',sans-serif; font-size:var(--fs-base); color:var(--txt); }
 .set-section{ background:rgba(255,255,255,.30);
   border-radius:var(--rad); overflow:hidden; margin-bottom:16px;
   border-top:1.5px solid rgba(255,255,255,.80);

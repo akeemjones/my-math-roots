@@ -11,11 +11,13 @@
 // Time is locked via jest.spyOn(Date, 'now') so the 7-day boundary
 // tests are deterministic.
 
+// Pure data helpers relocated to parent-progress.js; _renderSnapLessons (the
+// renderer) still lives in dashboard.js until the dashboard screen is removed.
 const {
   _getLast7DaysLessonQuizScores,
-  _renderSnapLessons,
   _last7DaysCutoffMs,
-} = require('../src/dashboard');
+} = require('../src/parent-progress');
+const { _renderSnapLessons } = require('../src/dashboard');
 
 const DAY = 86400000;
 const NOW = 1779400000000; // arbitrary fixed epoch ms

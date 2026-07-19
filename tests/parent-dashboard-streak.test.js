@@ -22,11 +22,13 @@ const path = require('path');
 
 const DASH_PATH = path.join(__dirname, '..', 'src', 'dashboard.js');
 
+// Pure mappers relocated to parent-progress.js; _renderActivitySnapshotInner
+// (the renderer) still lives in dashboard.js until the dashboard is removed.
 const {
   _dbBuildStudentStreak,
   _dbBuildStudentActDates,
-  _renderActivitySnapshotInner,
-} = require('../src/dashboard');
+} = require('../src/parent-progress');
+const { _renderActivitySnapshotInner } = require('../src/dashboard');
 
 // ── _fetchManagedProfiles SELECT contract ───────────────────────────
 describe('_fetchManagedProfiles SELECT contract (parent dashboard streak hydration)', () => {
