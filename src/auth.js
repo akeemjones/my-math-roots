@@ -939,37 +939,26 @@ function _lsObDone() {
 // that's _lsSnapTrack's job, so the dot-click and touch-snap paths share state
 // logic without fighting over transform.
 function _lsApplyCardState(idx) {
-  idx = parseInt(idx, 10) || 0;
-  // Move shared form to the active card's mount point
+  // Single Family Account card (student/family-code login removed). Always the
+  // sole card at index 0 — the shared form lives in its mount.
   var form = document.getElementById('ls-form-shared');
-  var mount = document.getElementById('ls-mount-' + idx);
-  if (form && mount) mount.appendChild(form);
-  // Update dot indicators
-  document.querySelectorAll('.ls-dot').forEach(function (dot, i) {
-    dot.classList.toggle('active', i === idx);
-  });
-  // Toggle .is-active on cards (CSS drives scale/opacity steady states)
+  var mount = document.getElementById('ls-mount-0');
+  if (form && mount && form.parentNode !== mount) mount.appendChild(form);
   var c0 = document.getElementById('ls-card-0');
-  var c1 = document.getElementById('ls-card-1');
-  if (c0) c0.classList.toggle('is-active', idx === 0);
-  if (c1) c1.classList.toggle('is-active', idx === 1);
-  _lsCardIdx = idx;
-  _lsSetRole(idx === 0 ? 'student' : 'parent');
-  if (idx === 0) _lsRenderStudentCard();
-  // Hide guest button on Parent/Teacher card — dashboard requires an account
-  var guestBtn = document.getElementById('ls-guest-btn');
-  if (guestBtn) guestBtn.style.display = idx === 0 ? '' : 'none';
-  // Watch the new active card so post-render content growth (validation msgs,
+  if (c0) c0.classList.add('is-active');
+  _lsCardIdx = 0;
+  _lsSetRole('parent');
+  // Watch the active card so post-render content growth (validation msgs,
   // password strength, waitlist panel, etc.) keeps outer height in sync.
   _lsObserveActiveCard();
 }
 
-// Animate the track to the given card index. Uses CSS transition on transform.
+// Single card — keep the track aligned at the start.
 function _lsSnapTrack(idx, dur) {
   var track = document.getElementById('ls-carousel-track');
   if (!track) return;
   track.style.transition = 'transform ' + (dur || 0.28) + 's cubic-bezier(.4,0,.2,1)';
-  track.style.transform  = 'translateX(' + (idx * -50) + '%)';
+  track.style.transform  = 'translateX(0)';
 }
 
 // Public entry — used by dot clicks (data-action="_lsCarouselGo") and any
@@ -1023,6 +1012,11 @@ function _lsInitCarousel() {
   var track = document.getElementById('ls-carousel-track');
   if (!track || track._carouselInited) return;
   track._carouselInited = true;
+
+  // Single Family Account card — no inter-card swipe navigation. Ensure the
+  // sole card is shown and skip the touch/drag handlers below.
+  _lsApplyCardState(0);
+  if (document.querySelectorAll('.ls-card').length < 2) return;
 
   var _startX = 0, _startY = 0, _startT = 0;
   var _intentSet = false, _isHoriz = false, _outerW = 0;

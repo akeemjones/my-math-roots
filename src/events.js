@@ -201,9 +201,6 @@
     openProfileSwitcher:    ()    => typeof openProfileSwitcher  === 'function' && openProfileSwitcher(),
     closeProfileSwitcher:   ()    => typeof closeProfileSwitcher === 'function' && closeProfileSwitcher(),
     psSelectProfile:        (a)   => typeof psSelectProfile      === 'function' && psSelectProfile(a),
-    psPinInput:             ()    => typeof psPinInput           === 'function' && psPinInput(),
-    psPinFocus:             ()    => typeof psPinFocus           === 'function' && psPinFocus(),
-    psBackToList:           ()    => typeof psBackToList         === 'function' && psBackToList(),
     // ── Profile selection (single-account landing) ───────────────────────────
     pselSelectChild:        (a)   => typeof pselSelectChild      === 'function' && pselSelectChild(a),
     pselAddChild:           ()    => typeof pselAddChild         === 'function' && pselAddChild(),
