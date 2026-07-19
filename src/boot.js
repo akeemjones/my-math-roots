@@ -458,39 +458,69 @@ function _recoverVisibleScreen(reason){
   console.warn('[MMR PWA recovery]', reason, 'no active screen; restoring route');
 
   var hasUser = typeof _supaUser !== 'undefined' && !!_supaUser;
-  var isGuest = localStorage.getItem('wb_guest_mode') === '1';
-  // Family-code student session: role + active-student + session-token.
-  // The session token is set only by a successful verify_student_pin RPC,
-  // so it's the proof that the user actually authenticated.
-  var hasStudentSession =
-    localStorage.getItem('mmr_user_role') === 'student'
-    && !!localStorage.getItem('mmr_active_student_id')
-    && !!localStorage.getItem('mmr_session_token');
 
-  // Hard guard: no auth, no guest, no valid student session → login.
-  // Stale role/active-student WITHOUT mmr_session_token does not qualify.
-  if(!hasUser && !isGuest && !hasStudentSession){
-    console.log('[MMR PWA recovery] signed-out → login', reason);
+  // Pure routing decision lives in app-config.js (resolveInitialScreen), so it is
+  // unit-testable without a DOM. Recovery resolves from persisted state directly
+  // (the active child was already validated at login) — no profile re-fetch on
+  // every thaw. Restores the selected child, an in-progress lesson/quiz, a valid
+  // Settings session, or profile selection — never a removed dashboard.
+  var route = (typeof resolveInitialScreen === 'function')
+    ? resolveInitialScreen(localStorage, hasUser)
+    : (hasUser ? 'profile-selection' : 'login');
+  console.log('[MMR PWA recovery] route', route, reason);
+  _showResolvedRoute(route);
+}
+window._recoverVisibleScreen = _recoverVisibleScreen;
+
+// ── Single-account route → screen mapping ───────────────────────────────────
+// Maps a resolveInitialScreen() result to the concrete screen show + build step.
+// The one choke point so first boot, auth callbacks, and blank-screen recovery
+// all render a resolved route identically.
+function _showResolvedRoute(route){
+  if(route === 'login'){
     if(typeof show === 'function') show('login-screen');
     return;
   }
-
-  if(hasUser){
-    if(typeof show === 'function') show('dashboard-screen');
-    if(typeof _dbInit === 'function') _dbInit();
+  if(route === 'profile-selection'){
+    if(typeof goProfileSelection === 'function') goProfileSelection();
+    else if(typeof show === 'function') show('profile-selection');
     return;
   }
-
-  // Family-code student or guest → home
-  if(hasStudentSession || isGuest){
-    if(typeof buildHome === 'function') buildHome();
-    if(typeof show === 'function') show('home');
+  if(route === 'settings'){
+    if(typeof show === 'function') show('settings-screen');
     return;
   }
-
-  if(typeof show === 'function') show('login-screen');
+  // 'child' or 'demo' — the learning home.
+  if(typeof buildHome === 'function') buildHome();
+  if(typeof show === 'function') show('home');
 }
-window._recoverVisibleScreen = _recoverVisibleScreen;
+window._showResolvedRoute = _showResolvedRoute;
+
+// Authoritative post-authentication routing. Every Family Account auth-success
+// path (email, OAuth, One Tap, password recovery, session restore, onboarding)
+// funnels here so there is ONE initial-screen decision. For a signed-in family
+// it refreshes the owned child profiles and DROPS a stale/foreign active-child
+// id — the active child must be one this Family Account owns — before resolving.
+async function _routeToInitialScreen(reason){
+  var hasUser = typeof _supaUser !== 'undefined' && !!_supaUser;
+  if(hasUser && typeof _fetchManagedProfiles === 'function'){
+    try { await _fetchManagedProfiles(); } catch(_e){}
+    var activeId = localStorage.getItem('mmr_active_student_id');
+    if(activeId && typeof _psGetProfiles === 'function'){
+      var owned = _psGetProfiles().some(function(p){ return p && p.id === activeId; });
+      if(!owned){
+        localStorage.removeItem('mmr_active_student_id');
+        localStorage.removeItem('mmr_app_mode');
+      }
+    }
+  }
+  var route = (typeof resolveInitialScreen === 'function')
+    ? resolveInitialScreen(localStorage, hasUser)
+    : (hasUser ? 'profile-selection' : 'login');
+  console.log('[MMR route]', reason, '→', route);
+  _showResolvedRoute(route);
+}
+window._routeToInitialScreen = _routeToInitialScreen;
 
 // BFCache restore (iOS fast app-switch freeze/thaw)
 window.addEventListener('pageshow', function(e){
@@ -610,13 +640,14 @@ if(localStorage.getItem('wb_guest_mode') === '1'){
   buildHome(); show('home'); _dismissSplash();
   if(typeof supabaseInit === 'function') supabaseInit();
 } else if (
-  localStorage.getItem('mmr_user_role') === 'student'
+  localStorage.getItem('mmr_app_mode') === 'child'
   && localStorage.getItem('mmr_active_student_id')
-  && localStorage.getItem('mmr_session_token')
 ) {
-  // Family-code student fast-path: home immediately. Supabase init runs in
-  // the background so RPCs (progress sync, unlocks) work right away. The
-  // suppress gate prevents INITIAL_SESSION from re-routing.
+  // Active-child fast-path: the last foreground context was a child mid-learning
+  // under the Family Account. Show the learning home immediately while Supabase
+  // re-auth runs in the background so RPCs (progress sync, unlocks) work right
+  // away. The suppress gate prevents INITIAL_SESSION from re-routing. No session
+  // token — the child is a profile, not a login.
   buildHome(); show('home'); _dismissSplash();
   if(typeof supabaseInit === 'function') supabaseInit();
 } else {
@@ -633,17 +664,14 @@ setTimeout(() => {
     _dismissSplash();
     const _isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
     if(_supaUser){
-      // Parent Supabase session present — route to parent dashboard.
-      // (Student sessions never sit behind a 5s+ splash — they hydrate
-      // synchronously from localStorage. If a grade-switch resume is in
-      // flight, the INITIAL_SESSION handler already consumed the flag.)
+      // Family Account session present — route via the authoritative resolver
+      // (profile selection, or the active child if one is already selected).
       // Defense-in-depth: if any learning context is observable, suppress nav.
       if (typeof _shouldSuppressAuthNavigation === 'function' && _shouldSuppressAuthNavigation()) {
         console.log('[MMR AUTH] safety-net 8s timeout suppressed — active learning context');
       } else {
-        console.log('[MMR AUTH] safety-net 8s timeout, _supaUser present -> dashboard');
-        show('dashboard-screen');
-        if(typeof _dbInit === 'function') _dbInit();
+        console.log('[MMR AUTH] safety-net 8s timeout, Family Account present -> resolve');
+        if(typeof _routeToInitialScreen === 'function') _routeToInitialScreen('safety-net-8s');
         if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
       }
     } else if(localStorage.getItem('wb_guest_mode') === '1'){

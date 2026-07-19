@@ -38,6 +38,12 @@ function _lsSetRole(role) {
   if (btnParent)  btnParent.classList.toggle('active',  role === 'parent');
 }
 
+// (Removed _enterParentMode: the dual-login "parent is in charge" role flip is
+//  obsolete in the single-family-account model. There is no second identity to
+//  switch to — after authentication the app routes via resolveInitialScreen to
+//  profile selection or the active child. Opening protected Settings sets its
+//  own short-lived parent-gate state and does not flip an auth role.)
+
 var _lsCardIdx = 0;
 
 // ── Student login state ──────────────────────────────────────────────────
@@ -367,6 +373,11 @@ async function enterStudentLearningSession(opts) {
   localStorage.setItem('mmr_active_student_id', studentId);
   localStorage.setItem('mmr_last_student_id',   studentId);
   localStorage.setItem('mmr_user_role',         'student');
+  // Application mode for the startup/recovery resolver: a child is now the
+  // foreground learning context under the Family Account. Replaces the old
+  // dual-login mmr_learning_active/mmr_session_token signals — a child is a
+  // profile, not a login, so there is no token to reason about.
+  localStorage.setItem('mmr_app_mode',          'child');
   localStorage.removeItem('wb_guest_mode');
 
   // 2. Per-profile grade resolution.
@@ -496,10 +507,12 @@ async function restoreStudentLearningSessionFromStorage(studentId) {
   try { profiles = JSON.parse(localStorage.getItem('mmr_family_profiles') || '[]'); } catch(_e) {}
   var profile = (profiles || []).find(function(p){ return p && p.id === studentId; });
   if (!profile) {
-    // Cache lost — fall back to parent dashboard rather than entering an unidentified state.
-    localStorage.setItem('mmr_user_role', 'parent');
-    if (typeof show === 'function') show('dashboard-screen');
-    if (typeof _dbInit === 'function') _dbInit();
+    // Cache lost — clear the unresolved active child and route via the resolver
+    // (re-fetches owned profiles → profile selection) rather than entering an
+    // unidentified state.
+    localStorage.removeItem('mmr_active_student_id');
+    localStorage.removeItem('mmr_app_mode');
+    if (typeof _routeToInitialScreen === 'function') _routeToInitialScreen('profile-cache-lost');
     return;
   }
   // INITIAL_SESSION only triggers the resume branch when _supaUser is set, so
@@ -914,7 +927,10 @@ async function _lsObSave() {
 function _lsObDone() {
   var modal = document.getElementById('ls-onboard-modal');
   if (modal) modal.remove();
-  show('dashboard-screen'); _dbInit(); _installHistoryGuard();
+  // First child created — route via the resolver (→ profile selection so the
+  // parent picks the child to start learning).
+  if (typeof _routeToInitialScreen === 'function') _routeToInitialScreen('onboarding-done');
+  if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
 }
 
 // Apply state for a given card index. Moves the shared form, updates dots,
@@ -1299,21 +1315,19 @@ function supabaseInit(){
       _authInitialSessionHandled = true;
       // (iii) Existing routing.
       if(_supaUser){
-        // Normal parent return — even if mmr_user_role==='student' is stale in
-        // localStorage from a closed mid-session tab, treat this as a parent visit
-        // and route to the parent dashboard.
-        _devLog('[MMR AUTH] INITIAL_SESSION parent route -> dashboard', {staleRole: localStorage.getItem('mmr_user_role')});
+        // Family Account session restored on load. Route via the authoritative
+        // resolver: restore the selected child if it is still owned, otherwise
+        // show profile selection. No dashboard.
+        _devLog('[MMR AUTH] INITIAL_SESSION family route -> resolver', {activeChild: localStorage.getItem('mmr_active_student_id')});
         localStorage.removeItem('mmr_resume_student_session'); // defensive
         await _pullOnLogin();
-        localStorage.setItem('mmr_user_role', 'parent');
         try {
           if (!_anaParentDashFired) {
             _anaParentDashFired = true;
-            _trackEvent('parent_dashboard_opened', {});
+            _trackEvent('parent_dashboard_opened', {}); // event name retained; analytics rename deferred
           }
         } catch (_) {}
-        show('dashboard-screen');
-        if (typeof _dbInit === 'function') _dbInit();
+        await _routeToInitialScreen('initial-session');
         if (typeof _renderCalBtn === 'function') _renderCalBtn();
         if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
         _dismissSplash();
@@ -1359,22 +1373,21 @@ function supabaseInit(){
         });
         return;
       }
-      // Fresh OAuth sign-in — always a parent. A resume cannot legitimately
-      // produce SIGNED_IN (only INITIAL_SESSION), so clear any stale resume flag.
-      console.log('[MMR AUTH] SIGNED_IN parent route -> dashboard');
+      // Fresh Family Account sign-in (email/OAuth/One Tap). A resume cannot
+      // legitimately produce SIGNED_IN (only INITIAL_SESSION), so clear any stale
+      // resume flag, then route via the authoritative resolver.
+      console.log('[MMR AUTH] SIGNED_IN family route -> resolver');
       localStorage.removeItem('wb_guest_mode');
       localStorage.removeItem('mmr_resume_student_session');
       await _pullOnLogin();
-      localStorage.setItem('mmr_user_role', 'parent');
       try {
         if (!_anaParentDashFired) {
           _anaParentDashFired = true;
-          _trackEvent('parent_dashboard_opened', {});
+          _trackEvent('parent_dashboard_opened', {}); // event name retained; analytics rename deferred
         }
       } catch (_) {}
       sessionStorage.removeItem('mmr_post_auth_redirect');
-      show('dashboard-screen');
-      if (typeof _dbInit === 'function') _dbInit();
+      await _routeToInitialScreen('signed-in');
       if (typeof _renderCalBtn === 'function') _renderCalBtn();
       if (typeof _installHistoryGuard === 'function') _installHistoryGuard();
     } else if(event === 'SIGNED_OUT'){
@@ -1474,8 +1487,10 @@ async function _lsOAuth(provider){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='⚠️ Not connected. Please wait and try again.'; }
     return;
   }
-  // Mark as parent BEFORE the OAuth redirect — this key survives the page reload
-  localStorage.setItem('mmr_user_role', 'parent');
+  // Start a fresh Family Account login: clear any stale active-child mode so the
+  // OAuth return resolves to profile selection (the resolver restores a child
+  // only if one is still validly selected). No auth-role flip.
+  localStorage.removeItem('mmr_app_mode');
   // Show loading state on the button
   const btn = [...document.querySelectorAll('#login-screen button')].find(b => (b.getAttribute('onclick')||'').includes(`_lsOAuth('${provider}')`));
   const origHTML = btn ? btn.innerHTML : '';
@@ -3543,12 +3558,10 @@ async function _parentGateEmailSignIn(){
       }
       return;
     }
-    localStorage.setItem('mmr_user_role', 'parent');
     var modal = document.getElementById('parent-gate-modal');
     if(modal) modal.remove();
-    console.log('[MMR AUTH] parent-gate email sign-in success -> dashboard');
-    show('dashboard-screen');
-    if(typeof _dbInit === 'function') _dbInit();
+    console.log('[MMR AUTH] Family Account email sign-in success -> resolver');
+    if(typeof _routeToInitialScreen === 'function') _routeToInitialScreen('email-signin');
     if(typeof _installHistoryGuard === 'function') _installHistoryGuard();
   } catch(e){
     if(msg){ msg.style.color='#e74c3c'; msg.textContent='Sign in failed. Please try again.'; }

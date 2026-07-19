@@ -204,6 +204,63 @@ function needsGradeRecovery(storage) {
   }
 }
 
+// ── Single-family-account startup / recovery routing ────────────────────────
+//
+// THE authoritative decision for which screen the app opens on — used by both
+// first boot and by blank-screen recovery (bfcache thaw / visibility / focus),
+// where the DOM is gone so the route must be reconstructed from PERSISTED state
+// alone. One resolver, one contract, no duplicated routing logic.
+//
+// The single-family-account model has exactly ONE authenticated identity (the
+// Family Account = a Supabase user). Children are PROFILES, not logins, so there
+// is no student session, no family code, and no session token to reason about.
+// The resolver distinguishes only:
+//
+//   'login'             — no Family Account and not in demo
+//   'demo'              — local-only demo (no cloud account)
+//   'profile-selection' — Family Account signed in, but no active child chosen
+//   'child'             — Family Account signed in, an active child is selected
+//   'settings'          — parent intentionally opened Settings and the parent
+//                         gate is still valid (mode reverts to child/selection
+//                         once the gate expires)
+//
+// State read (all application state, NOT authentication):
+//   hasUser                  — a Family Account Supabase session is live
+//   wb_guest_mode === '1'    — demo mode
+//   mmr_active_student_id    — the active child profile id (app state)
+//   mmr_app_mode             — 'child' | 'settings' (absent ⇒ profile-selection)
+//   mmr_parent_gate_until    — epoch ms the parent gate is valid until
+//
+// It deliberately does NOT read mmr_user_role: role is not a second identity in
+// this model. Pure: storage (+optional now) in, string out. Directly testable.
+function resolveInitialScreen(storage, hasUser, now) {
+  try {
+    var get = function (k) { return storage ? storage.getItem(k) : null; };
+    var demo = get('wb_guest_mode') === '1';
+
+    // No Family Account: demo runs the learning app locally; otherwise login.
+    if (!hasUser) return demo ? 'demo' : 'login';
+
+    // Family Account authenticated.
+    var appMode = get('mmr_app_mode');
+    if (appMode === 'settings') {
+      var until = parseInt(get('mmr_parent_gate_until'), 10);
+      var t = (typeof now === 'number')
+        ? now
+        : ((typeof Date !== 'undefined' && Date.now) ? Date.now() : 0);
+      // Restore Settings only while the parent gate is still valid; otherwise
+      // fall through so an expired gate never silently reopens parent controls.
+      if (until && until > t) return 'settings';
+    }
+
+    var activeChildId = get('mmr_active_student_id');
+    if (!activeChildId) return 'profile-selection';
+    return 'child';
+  } catch (_e) {
+    return 'login';
+  }
+}
+
 // Node/Jest bridge — same pattern as quiz-config.js. Guarded so the browser
 // bundle (no module object) is unaffected.
 if (typeof module !== 'undefined' && module.exports) {
@@ -217,5 +274,6 @@ if (typeof module !== 'undefined' && module.exports) {
     normalizeGradeToken,
     launchGrades,
     needsGradeRecovery,
+    resolveInitialScreen,
   };
 }

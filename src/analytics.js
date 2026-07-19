@@ -121,7 +121,7 @@ var _anaFlushTimer       = null;
 var _anaFlushing         = false;
 var _anaSessionStartTs   = 0;
 var _anaSessionEndedSent = false; // dedup: only fire session_ended once per page
-var _anaParentDashFired  = false; // dedup: only fire parent_dashboard_opened once per load
+var _anaParentDashFired  = false; // dedup: only fire the family-open event once per load
 
 // ── Privacy: strip PII keys from metadata ────────────────────────────────
 function _anaStripPii(metadata) {
