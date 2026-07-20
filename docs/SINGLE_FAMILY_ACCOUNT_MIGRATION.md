@@ -79,7 +79,15 @@ No backend dependency; ships with the new client. These are the Phase 3–8 comm
 
 Draft SQL to be reviewed; **not applied** here. Validate against live definitions first (§0.2).
 
-### B1 — HIGH: ownership check on child-data writes (Risk 1)
+### B1 — ✅ APPLIED TO PRODUCTION 2026-07-20 — ownership check on child-data writes (Risk 1)
+
+**No longer a deployment blocker.** Applied to project `omjegwtzirskgmgeojdn` ("My Math Roots") as migration `harden_child_data_ownership`; repo record: `supabase/migrations/20260720_child_data_ownership_hardening.sql`.
+
+Pre-flight showed **0 mis-owned rows** (so additive, no backfill). Verified after applying, read-only under a real JWT: own child **allowed**; foreign/bogus child **denied**; another account → this family's child **denied**; NULL `student_id` **still allowed**. Supabase security advisors: **0 errors** introduced. Rollback SQL is in the migration file header.
+
+Note: the new client never calls `push_student_progress`/`push_quiz_scores` — `_isStudentSession()` requires a student session token, which is always null now, so all syncing takes the parent path (`_pushAllParent` → direct upserts). That is precisely the path this policy covers, and it makes **B2 moot for the new client** (those RPCs matter only to old deployed clients).
+
+<details><summary>Original draft (superseded by the applied migration above)</summary>
 Today `student_progress` and `quiz_scores` direct upserts are gated by RLS on `user_id = auth.uid()` **only**. The browser-supplied `student_id` is *not* verified to belong to the authenticated parent, so a parent could tag rows with another family's `student_id`. Once the child app writes exclusively via this path (Bucket A), this is the authorization boundary.
 
 Draft options (pick one at review):
@@ -99,8 +107,10 @@ Draft options (pick one at review):
 - **or** route writes through a new ownership-checked `SECURITY DEFINER` RPC that asserts the same `EXISTS(...)` before upsert.
 - **or** a `BEFORE INSERT/UPDATE` trigger enforcing the same invariant.
 
-### B2 — HIGH: `push_student_progress` has no parent path (Risk 2)
-`push_student_progress` validates only via `_validate_pin_session` (token). A parent-owned child session cannot call it. Draft: **retire it** in favor of the direct-upsert path (after B1), **or** add an `auth.uid()`-owner branch mirroring `push_quiz_scores`.
+</details>
+
+### B2 — `push_student_progress` has no parent path (Risk 2) — **moot for the new client**
+`push_student_progress` validates only via `_validate_pin_session` (token). The new client never calls it: `_isStudentSession()` requires a student session token, which is always null now, so every sync takes the parent path. It remains live only for **old deployed clients**; retire it with Bucket C rather than adding a parent branch.
 
 ### B3 — MEDIUM: harden unauthenticated settings getters (Risk 4)
 `get_quiz_settings` (DRAFT `20260717`) and any superseded single-arg settings getters do `WHERE id = p_student_id` with no ownership/token check, granted to `anon`. Confirm the hardened 2-arg versions are deployed and harden/replace the DRAFT quiz-settings getter before it ships.
