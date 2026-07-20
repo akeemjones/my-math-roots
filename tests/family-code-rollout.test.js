@@ -72,46 +72,10 @@ describe('Family-code 8-digit migration — text contract', () => {
   });
 });
 
-describe('Family-code 8-digit frontend — auth.js contract', () => {
-  let src;
-  beforeAll(() => { src = fs.readFileSync(AUTH_JS, 'utf8'); });
-
-  test('regex is /^MMR-[0-9]{8}$/i (digits only, no hex/alphanumeric)', () => {
-    expect(src).toMatch(/\/\^MMR-\[0-9\]\{8\}\$\/i/);
-    // The legacy mixed regex should be gone.
-    expect(src).not.toMatch(/\[A-Z0-9\]\{4\}\|\[A-Z0-9\]\{8\}/);
-  });
-
-  test('_normalizeFamilyCode helper is defined', () => {
-    expect(src).toMatch(/function\s+_normalizeFamilyCode\s*\(\s*input\s*\)/);
-  });
-
-  test('family-code input is numeric-only with 8-char maxlength', () => {
-    expect(src).toContain('placeholder="12345678"');
-    expect(src).toContain('maxlength="8"');
-    expect(src).toContain('inputmode="numeric"');
-    expect(src).toContain('type="tel"');
-    expect(src).toContain('id="ls-family-code-prefix"');
-    // Legacy attributes should be absent.
-    expect(src).not.toContain('placeholder="MMR-00000000"');
-    expect(src).not.toContain('placeholder="MMR-0000"');
-    expect(src).not.toContain('maxlength="12"');
-  });
-
-  test('_lsFamilyCodeSetup uses _normalizeFamilyCode before RPC', () => {
-    // Verify the normalize call appears in the same function as the RPC call.
-    const setupIdx = src.indexOf('function _lsFamilyCodeSetup');
-    expect(setupIdx).toBeGreaterThan(-1);
-    const slice = src.slice(setupIdx, setupIdx + 2000);
-    expect(slice).toMatch(/_normalizeFamilyCode\(\s*inp\.value\s*\)/);
-    expect(slice).toMatch(/get_profiles_by_family_code/);
-  });
-
-  test('onboarding step-2 fallback uses 8-digit MMR-???????? placeholder', () => {
-    expect(src).toContain("'MMR-????????'");
-    expect(src).not.toContain("'MMR-????'");
-  });
-});
+// (Frontend auth.js family-code contract removed — the single-account client has
+//  no family-code login. The backend SQL contract above is retained because the
+//  RPCs stay live for old deployed clients until the deprecation window; see
+//  docs/SINGLE_FAMILY_ACCOUNT_MIGRATION.md.)
 
 describe('Family-code 8-digit frontend — dashboard.js Copy button', () => {
   let src;

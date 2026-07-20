@@ -40,11 +40,6 @@
     _lsOAuth:               (a)   => _lsOAuth(a),
     _lsSwitchTab:           (a)   => _lsSwitchTab(a),
     _lsSetRole:             (a)   => _lsSetRole(a),
-    _lsFamilyCodeSetup:     ()    => _lsFamilyCodeSetup(),
-    _lsSelectAvatar:        (a)   => _lsSelectAvatar(a),
-    _lsPinKey:              (a)   => _lsPinKey(a),
-    _lsPinBackspace:        ()    => _lsPinBackspace(),
-    _lsClearFamilyCache:    ()    => _lsClearFamilyCache(),
     _lsObSelectEmoji:       (a)   => _lsObSelectEmoji(a),
     _lsObPinKey:            (a)   => _lsObPinKey(a),
     _lsObPinBack:           ()    => _lsObPinBack(),
@@ -207,7 +202,6 @@
     pselOpenSettings:       ()    => typeof pselOpenSettings     === 'function' && pselOpenSettings(),
     goProfileSelection:     ()    => typeof goProfileSelection   === 'function' && goProfileSelection(),
     // Login-screen native pin input
-    _lsPinNativeInput:      ()    => typeof _lsPinNativeInput    === 'function' && _lsPinNativeInput(),
 
     // ── Auth (sign-out / parent auth) ────────────────────────────────────────
     _signOut:               ()    => typeof _signOut === 'function' && _signOut(),

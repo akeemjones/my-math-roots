@@ -45,10 +45,8 @@ function sliceAround(text, anchor, before, after) {
 function hydrateBody() {
   const start = src.indexOf('async function _hydrateStudentFromParentSession');
   expect(start).toBeGreaterThan(-1);
-  // The next top-level `async function` or `function ` after this one
-  // marks the end. We slice up to the next 'async function _' or
-  // 'function _lsStudentLogin'.
-  const after = src.indexOf('async function _lsStudentLogin', start);
+  // The next top-level function after this one marks the end.
+  const after = src.indexOf('async function _lsCheckOnboarding', start);
   expect(after).toBeGreaterThan(start);
   return src.slice(start, after);
 }

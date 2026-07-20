@@ -46,14 +46,8 @@ function _lsSetRole(role) {
 
 var _lsCardIdx = 0;
 
-// ── Student login state ──────────────────────────────────────────────────
-var _lsFamilyProfiles = null;   // cached Array<profile> from mmr_family_profiles
-var _lsSelectedStudentId = null; // id of avatar currently highlighted
-var _lsPinBuffer = [];           // digits entered so far (max 4)
-var _STU_FAIL_KEY   = 'mmr_stud_fail_ts';
-var _STU_FAIL_COUNT = 'mmr_stud_fail_count';
-var _STU_MAX_FAILS  = 5;
-var _STU_LOCK_MS    = 30000;
+// (Student-login state removed — no family-code/PIN login in the single-account
+//  model. Parent onboarding state below is retained.)
 
 // ── Parent onboarding state ──────────────────────────────────────────────
 var _obPinBuffer = [];
@@ -68,33 +62,7 @@ var _AVATAR_COLORS = {
   '🌟': { from: '#f59e0b', to: '#eab308' },
 };
 
-function _validateFamilyCode(code) {
-  if (code == null || code === '') return false;
-  // Canonical family code is MMR- followed by exactly 8 numeric digits.
-  // Backend mints this format via _generate_family_code (20260610). The
-  // /i flag tolerates "mmr-" prefix; the digits part is unaffected.
-  return /^MMR-[0-9]{8}$/i.test(String(code));
-}
-
-// Normalize any of the accepted user inputs to the canonical MMR-12345678.
-// Accepts:
-//   "12345678"            → "MMR-12345678"
-//   "MMR-12345678"        → "MMR-12345678"
-//   "mmr-12345678"        → "MMR-12345678"
-//   "  12 345 678  "      → "MMR-12345678"   (trims + strips spaces)
-//   "MMR-12-34-56-78"     → "MMR-12345678"   (strips internal dashes)
-// Returns null for any input that does not yield exactly 8 digits after
-// stripping. Callers should treat null as "show validation error".
-function _normalizeFamilyCode(input) {
-  if (input == null) return null;
-  var raw = String(input).trim().toUpperCase();
-  // Strip the MMR- prefix if user pasted the full canonical form.
-  if (raw.indexOf('MMR-') === 0) raw = raw.slice(4);
-  // Strip whitespace and dashes anywhere (paste-tolerance for "12-34-56-78").
-  raw = raw.replace(/[\s\-]/g, '');
-  if (!/^[0-9]{8}$/.test(raw)) return null;
-  return 'MMR-' + raw;
-}
+// (_validateFamilyCode / _normalizeFamilyCode removed — no family-code login.)
 
 function _lsEsc(s) {
   return String(s)
@@ -102,238 +70,10 @@ function _lsEsc(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function _lsValidColor(val) {
-  if (typeof val !== 'string') return '#f59e0b';
-  var v = val.trim();
-  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v) ? v : '#f59e0b';
-}
-
-function _buildAvatarHtml(profiles, selectedId) {
-  if (!profiles || !profiles.length) return '';
-  return profiles.map(function(p) {
-    var isSelected = p.id === selectedId;
-    var ringStyle = isSelected
-      ? 'border:2.5px solid rgba(255,255,255,0.85);box-shadow:0 0 0 3px rgba(245,158,11,0.45),0 4px 12px rgba(0,0,0,0.3);opacity:1'
-      : 'border:2.5px solid rgba(255,255,255,0.25);box-shadow:0 4px 12px rgba(0,0,0,0.3);opacity:0.7';
-    return '<div class="ls-avatar-item' + (isSelected ? ' ls-avatar-selected' : '') + '"'
-      + ' data-action="_lsSelectAvatar" data-arg="' + _lsEsc(p.id) + '"'
-      + ' data-id="' + _lsEsc(p.id) + '">'
-      + '<div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,'
-      + _lsValidColor(p.avatar_color_from) + ',' + _lsValidColor(p.avatar_color_to)
-      + ');display:flex;align-items:center;justify-content:center;font-size:1.5rem;' + ringStyle + '">'
-      + _lsEsc(p.avatar_emoji) + '</div>'
-      + '<div style="font-size:.72rem;color:' + (isSelected ? '#fff' : 'rgba(255,255,255,0.65)') + ';font-weight:'
-      + (isSelected ? '700' : '600') + ';margin-top:5px">' + _lsEsc(p.display_name) + '</div>'
-      + '</div>';
-  }).join('');
-}
-
-function _buildStudentCardHtml(profiles, selectedId, pinBuffer) {
-  if (!profiles || !profiles.length) {
-    return '<div style="padding:4px 0">'
-      + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:10px">Enter your family code</div>'
-      + '<div style="display:flex;align-items:stretch;justify-content:center;margin-bottom:12px;gap:0">'
-      + '<span id="ls-family-code-prefix" aria-hidden="true" style="display:flex;align-items:center;padding:0 14px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-right:none;border-radius:8px 0 0 8px;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);letter-spacing:.12em;color:rgba(255,255,255,0.92)">MMR-</span>'
-      + '<input id="ls-family-code-inp" type="tel" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="set-inp" placeholder="12345678"'
-      + ' maxlength="8" style="flex:1;text-align:center;letter-spacing:.15em;font-size:var(--fs-md);font-family:\'Boogaloo\',sans-serif;box-sizing:border-box;border-radius:0 8px 8px 0">'
-      + '</div>'
-      + '<div id="ls-family-code-msg" style="font-size:.78rem;color:#f87171;text-align:center;min-height:1.2rem;margin-bottom:8px"></div>'
-      + '<button data-action="_lsFamilyCodeSetup" style="width:100%;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#2c1a00;font-family:\'Boogaloo\',sans-serif;font-size:var(--fs-md);cursor:pointer;letter-spacing:.3px;touch-action:manipulation">Link This Device</button>'
-      + '</div>';
-  }
-  var buf = Array.isArray(pinBuffer) ? pinBuffer : [];
-  var selected = profiles.find(function(p) { return p.id === selectedId; }) || profiles[0];
-  var selId = selected ? selected.id : null;
-  var selName = selected ? _lsEsc(selected.display_name) : '';
-  var dots = '';
-  for (var i = 0; i < 4; i++) {
-    dots += i < buf.length
-      ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
-      : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-  }
-  return '<div style="margin-bottom:14px">'
-    + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;text-align:center;margin-bottom:10px">Who\'s playing?</div>'
-    + '<div class="ls-avatar-row">' + _buildAvatarHtml(profiles, selId) + '</div>'
-    + '</div>'
-    + '<div style="border-top:1px solid rgba(255,255,255,0.14);padding-top:14px">'
-    + '<div style="font-size:.68rem;color:rgba(255,255,255,.55);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">' + selName + '\'s PIN</div>'
-    + '<div style="position:relative;cursor:pointer;padding-bottom:2px">'
-    + '<div id="ls-pin-dots" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px">' + dots + '</div>'
-    + '<input type="tel" id="ls-pin-native" inputmode="numeric" pattern="[0-9]*" maxlength="4"'
-    + ' autocomplete="one-time-code" data-oninput="_lsPinNativeInput"'
-    + ' style="position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px;cursor:pointer;border:none;outline:none;background:transparent">'
-    + '</div>'
-    + '<div id="ls-pin-msg" style="font-size:.75rem;color:#f87171;text-align:center;min-height:1.1rem;margin-bottom:6px"></div>'
-    + '<div style="margin-top:8px;text-align:center;font-size:.68rem;color:rgba(255,255,255,0.35)">'
-    + 'New device? <span data-action="_lsClearFamilyCache" style="color:rgba(255,210,80,0.85);text-decoration:underline;cursor:pointer">Enter family code &#x2192;</span>'
-    + '</div>'
-    + '</div>';
-}
-
-function _lsRenderStudentCard() {
-  var body = document.getElementById('ls-student-body');
-  if (!body) return;
-  if (!_lsFamilyProfiles) {
-    try {
-      var raw = localStorage.getItem('mmr_family_profiles');
-      _lsFamilyProfiles = raw ? JSON.parse(raw) : [];
-    } catch(e) { _lsFamilyProfiles = []; }
-  }
-  if (!_lsSelectedStudentId && _lsFamilyProfiles && _lsFamilyProfiles.length) {
-    var last = localStorage.getItem('mmr_last_student_id');
-    _lsSelectedStudentId = last || _lsFamilyProfiles[0].id;
-  }
-  body.innerHTML = _buildStudentCardHtml(_lsFamilyProfiles, _lsSelectedStudentId, _lsPinBuffer);
-  // Wire up auto-dash formatter for family code input (State A only)
-  var _fcInp = document.getElementById('ls-family-code-inp');
-  if (_fcInp) {
-    _fcInp.addEventListener('input', function() {
-      // Suffix-only input: digits only, max 8. If the user pastes
-      // "MMR-12345678" (or "mmr-12345678"), strip the prefix first.
-      var raw = String(this.value || '').trim();
-      var up  = raw.toUpperCase();
-      if (up.indexOf('MMR-') === 0) raw = raw.slice(4);
-      // Strip everything except digits, then cap at 8.
-      var digits = raw.replace(/\D/g, '').slice(0, 8);
-      if (this.value !== digits) {
-        this.value = digits;
-        // Cursor sits at the end after auto-strip — acceptable UX for
-        // an 8-digit numeric field with a fixed visible prefix.
-      }
-    });
-  }
-  // Auto-focus the native numpad input (small delay for iOS keyboard)
-  if(_lsFamilyProfiles && _lsFamilyProfiles.length){
-    var _nativeInp = document.getElementById('ls-pin-native');
-    if(_nativeInp) setTimeout(function(){ _nativeInp.focus(); }, 60);
-  }
-  // Re-adapt outer height after student card body changes
-  if(typeof _lsAdaptHeight === 'function') _lsAdaptHeight();
-}
-
-async function _lsFamilyCodeSetup() {
-  var inp = document.getElementById('ls-family-code-inp');
-  var msg = document.getElementById('ls-family-code-msg');
-  if (!inp || !msg) return;
-  // Normalize: accepts suffix-only ("12345678"), pasted canonical
-  // ("MMR-12345678"), and case/space variants. Always returns the
-  // canonical "MMR-XXXXXXXX" or null.
-  var code = _normalizeFamilyCode(inp.value);
-  if (!code) {
-    msg.textContent = 'Enter your 8-digit family code (e.g. 12345678)';
-    return;
-  }
-  msg.textContent = '';
-  inp.disabled = true;
-
-  if (!_supa) { msg.textContent = 'No connection — please try again.'; inp.disabled = false; return; }
-
-  try {
-    var timeout = new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); });
-    var result = await Promise.race([
-      _supa.rpc('get_profiles_by_family_code', { p_family_code: code }),
-      timeout
-    ]);
-    if (result.error) throw result.error;
-    var profiles = result.data || [];
-    if (!profiles.length) {
-      msg.textContent = 'Family code not found — check with your parent.';
-      inp.disabled = false;
-      return;
-    }
-    localStorage.setItem('mmr_family_profiles', JSON.stringify(profiles));
-    _lsFamilyProfiles = profiles;
-    _lsSelectedStudentId = profiles[0].id;
-    _lsPinBuffer = [];
-    _lsRenderStudentCard();
-  } catch(e) {
-    msg.textContent = 'Could not connect — check your internet and try again.';
-    inp.disabled = false;
-  }
-}
-
-function _lsSelectAvatar(studentId) {
-  _lsSelectedStudentId = studentId;
-  _lsPinBuffer = [];
-  _lsRenderStudentCard();
-}
-
-function _lsPinKey(digit) {
-  // Lockout is enforced server-side by verify_student_pin (returns locked_until + attempts_left)
-  if (_lsPinBuffer.length >= 4) return;
-  _lsPinBuffer.push(String(digit));
-  var dots = document.getElementById('ls-pin-dots');
-  if (dots) {
-    var html = '';
-    for (var i = 0; i < 4; i++) {
-      html += i < _lsPinBuffer.length
-        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
-        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-    }
-    dots.innerHTML = html;
-  }
-  if (_lsPinBuffer.length === 4) _lsStudentLogin();
-}
-
-function _lsPinBackspace() {
-  if (!_lsPinBuffer.length) return;
-  _lsPinBuffer.pop();
-  var dots = document.getElementById('ls-pin-dots');
-  if (dots) {
-    var html = '';
-    for (var i = 0; i < 4; i++) {
-      html += i < _lsPinBuffer.length
-        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
-        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-    }
-    dots.innerHTML = html;
-  }
-}
-
-// Handles input from the native numpad on the login screen
-function _lsPinNativeInput() {
-
-  var inp = document.getElementById('ls-pin-native');
-  if (!inp) return;
-  // Keep only digits, max 4
-  var val = inp.value.replace(/\D/g, '').slice(0, 4);
-  inp.value    = val;
-  _lsPinBuffer = val.split('');
-
-  // Update dot indicators
-  var dots = document.getElementById('ls-pin-dots');
-  if (dots) {
-    var html = '';
-    for (var i = 0; i < 4; i++) {
-      html += i < _lsPinBuffer.length
-        ? '<div class="ls-pin-dot ls-pin-dot-filled"></div>'
-        : '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-    }
-    dots.innerHTML = html;
-  }
-
-  if (_lsPinBuffer.length === 4) {
-    inp.value = ''; // clear so it is ready for a retry
-    _lsStudentLogin();
-  }
-}
-
-// Shake pin dots and clear input — shared by login and profile-switcher
-function _lsShakePinDots(dotContainerId) {
-  var id  = dotContainerId || 'ls-pin-dots';
-  var el  = document.getElementById(id);
-  var inp = document.getElementById('ls-pin-native');
-  if (inp) inp.value = '';
-  if (el) {
-    el.classList.add('ls-pin-shake');
-    var emptyDots = '';
-    for (var i = 0; i < 4; i++) emptyDots += '<div class="ls-pin-dot ls-pin-dot-empty"></div>';
-    setTimeout(function() {
-      el.classList.remove('ls-pin-shake');
-      if (el) el.innerHTML = emptyDots;
-    }, 450);
-  }
-}
+// (Student-login card rendering + family-code/PIN entry removed. Everything from
+//  the avatar/PIN builders through _lsShakePinDots is gone — the login screen is
+//  a single Family Account card. _lsEsc above is kept; it is shared with parent
+//  onboarding.)
 
 // ─────────────────────────────────────────────────────────────────────────
 //  Shared student-learning-session hydrator
@@ -695,83 +435,6 @@ async function _hydrateStudentFromParentSession(studentId) {
   }
 }
 
-async function _lsStudentLogin() {
-  var msg = document.getElementById('ls-pin-msg');
-
-  var profile = _lsFamilyProfiles && _lsFamilyProfiles.find(function(p) { return p.id === _lsSelectedStudentId; });
-  if (!profile) { _lsPinBuffer = []; return; }
-
-  var entered = _lsPinBuffer.join('');
-  _lsPinBuffer = [];
-
-  if (!_supa) {
-    if (msg) msg.textContent = 'No connection — check your internet.';
-    return;
-  }
-
-  // Disable native input during network call to prevent double-submission
-  var nativeInp = document.getElementById('ls-pin-native');
-  if (nativeInp) { nativeInp.disabled = true; nativeInp.value = ''; }
-
-  try {
-    var result = await Promise.race([
-      _supa.rpc('verify_student_pin', { p_student_id: profile.id, p_pin: entered }),
-      new Promise(function(_, rej) { setTimeout(function() { rej(new Error('timeout')); }, 8000); })
-    ]);
-
-    if (nativeInp) nativeInp.disabled = false;
-    if (result.error) throw result.error;
-
-    var vr = result.data;
-
-    // ── Locked out ───────────────────────────────────────────────────────
-    if (vr && vr.locked_until) {
-      var secsLeft = Math.ceil((vr.locked_until - Date.now()) / 1000);
-      if (secsLeft > 0) {
-        if (msg) msg.textContent = 'Too many attempts. Try again in ' + secsLeft + 's.';
-        _lsShakePinDots('ls-pin-dots');
-        return;
-      }
-    }
-
-    // ── Wrong PIN ────────────────────────────────────────────────────────
-    if (!vr || !vr.success) {
-      var left = (vr && vr.attempts_left != null) ? vr.attempts_left : null;
-      if (msg) {
-        msg.textContent = (left === 0)
-          ? 'Locked for 5 minutes.'
-          : (left != null && left > 0)
-            ? 'Wrong PIN. ' + left + ' attempt' + (left === 1 ? '' : 's') + ' left.'
-            : 'Wrong PIN — try again.';
-      }
-      _lsShakePinDots('ls-pin-dots');
-      return;
-    }
-
-    // ── SUCCESS ──────────────────────────────────────────────────────────
-    localStorage.removeItem(_STU_FAIL_COUNT);
-    localStorage.removeItem(_STU_FAIL_KEY);
-    await enterStudentLearningSession({
-      studentProfileId: profile.id,
-      profile:          profile,
-      sessionToken:     vr.session_token,
-      source:           'student-login'
-    });
-
-  } catch (e) {
-    if (nativeInp) nativeInp.disabled = false;
-    if (msg) msg.textContent = 'Connection error — check your internet.';
-  }
-}
-
-function _lsClearFamilyCache() {
-  localStorage.removeItem('mmr_family_profiles');
-  localStorage.removeItem('mmr_last_student_id');
-  _lsFamilyProfiles = [];
-  _lsSelectedStudentId = null;
-  _lsPinBuffer = [];
-  _lsRenderStudentCard();
-}
 
 async function _lsCheckOnboarding() {
   if (!_supa || !_supaUser) return;
@@ -3425,11 +3088,9 @@ function _clearUserData(){
   localStorage.removeItem('mmr_user_role');
   localStorage.removeItem('mmr_resume_student_session');
   localStorage.removeItem('wb_guest_mode');
-  localStorage.removeItem(_STU_FAIL_KEY);
-  localStorage.removeItem(_STU_FAIL_COUNT);
-  _lsFamilyProfiles = null;
-  _lsSelectedStudentId = null;
-  _lsPinBuffer = [];
+  // Clear any legacy student-login fail counters left on older devices.
+  localStorage.removeItem('mmr_stud_fail_ts');
+  localStorage.removeItem('mmr_stud_fail_count');
 
   // Update UI to reflect logged-out state
   updateAccountUI();
