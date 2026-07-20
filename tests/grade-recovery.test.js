@@ -26,7 +26,10 @@ const path = require('path');
 const { needsGradeRecovery } = require('../src/app-config.js');
 
 const ROOT = path.join(__dirname, '..');
-const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+// Normalize CRLF -> LF. Several contract regexes below span line boundaries with
+// literal \n; on Windows checkouts git rewrites these files to CRLF, which would
+// otherwise make those matches silently return null.
+const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 
 function store(init) {
   const map = new Map(Object.entries(init || {}));
